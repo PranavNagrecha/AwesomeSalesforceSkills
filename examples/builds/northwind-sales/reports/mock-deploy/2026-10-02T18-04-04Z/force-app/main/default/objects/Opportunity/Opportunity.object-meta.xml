@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Opportunity.object-meta.xml - build northwind-sales, step M3-S05.
+
+  This file exists for one reason: a FlexiPage carries no assignment. The full field list of
+  the FlexiPage type is description, events, flexiPageRegions, masterLabel, pageTemplate,
+  parentFlexiPage, platformActionlist, quickActionList, sobjectType, template, type - eleven
+  fields, "none of them an audience"
+  (skills/admin/lightning-record-page-configuration/references/gotchas.md Gotcha 1). Ship the
+  flexipages folder alone and the deploy is green while every user still sees the old page.
+
+  The org default (Rung 3) lives here, in an ActionOverride whose actionName is View, type is
+  Flexipage, content is the page name and formFactor selects the environment. Block shape and
+  element order copied verbatim from
+  skills/admin/lightning-record-page-configuration/references/examples.md Example 1 Step 2.
+
+  Two blocks, not one. formFactor is a field on the override, not on the page: "Large is the
+  Lightning Experience desktop environment, Small is the Salesforce mobile app, and an absent
+  or null formFactor means Salesforce Classic. Three different values, three independent
+  assignments, one page... covering both is literally two overrides that differ in one
+  element" (gotchas.md Gotcha 3, quoting the ActionOverride reference). Assumption A17 puts
+  this build on Lightning Experience desktop AND the Salesforce mobile app, and the M3-S04
+  bundle declares supportedFormFactors Large and Small to match, so dropping the Small block
+  would leave mobile reps on whatever the next rung supplies. Note that the only fenced
+  OBJECT-file example in the library shows Large alone; the pair is fenced at app level
+  (gotchas.md Gotcha 3, the Dreamhouse sample). The element set is identical in both, and the
+  formFactor semantics quoted above are stated against ActionOverride - the object-level type.
+
+  Why this file ships on M3-S05 and not on the object-model step M1-S01: plan decision D10.
+  check_lightning_record_page_configuration.py reads objects/*/*.object-meta.xml relative to
+  its manifest-dir argument and does not recurse, so the page and its override must sit in one step
+  directory or the assignment check cannot run at all. No path collision: M1-S01 writes the
+  decomposed recordTypes, businessProcesses and fields files and no Opportunity.object-meta.xml.
+
+  This file carries actionOverrides and nothing else. It is a partial standard-object file:
+  deploying it adds the two overrides and changes no other Opportunity configuration.
+-->
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>View</actionName>
+        <content>Opportunity_Enterprise_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <type>Flexipage</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <content>Opportunity_Enterprise_Record_Page</content>
+        <formFactor>Small</formFactor>
+        <type>Flexipage</type>
+    </actionOverrides>
+</CustomObject>

@@ -1,0 +1,138 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-10-02T17-27-14Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S01/2026-10-02T17-27-14Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S01/2026-10-02T17-27-14Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S01",
+    "step_status_at_start": "built"
+  },
+  "summary": "Ran M4-S01's tests from the build directory. XML: ran with zero files; artefacts/M4-S01/ holds only deploy-order.md, so there was nothing to parse and this is recorded as such rather than as a pass of anything. Manifest: skipped-not-applicable. The step is type custom, declares no package.xml in outputs[], has no depends_on, and a probe runbook has no manifest members; the members of the report type and report it probes are M4-S02's, and the build-level manifest belongs to a docs step. No checker or command test is declared (the step's whole surface is two manual tests plus the always-on checks), so check_report_inventory.py was neither declared nor run here. check-outputs --hashes reported ok:true with no missing, empty or malformed output and recorded the hash of deploy-order.md. Two manual tests are deferred to the M4 gate, never ticked here; both are Given/When/Then shaped with observable outcomes, and a spot-check of deploy-order.md found every named claim present (three sf commands, six provisional codes marked UNVERIFIED, RPT-COL-01 offline-unverifiable by design, retrieve called a pre-deploy prerequisite, NEW Enterprise report type stated, SMB reportType check named in Phase A). results.json passed:true.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH row: every declared test was correctly classified as manual, both always-on checks completed (xml with zero files, manifest correctly skipped-not-applicable for type custom with a stated reason), and check-outputs exit code and JSON were observed directly. No checker or command was declared, so no exit code was left uncaptured. The artefact is complete, so neither MEDIUM nor LOW applies.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manual-test-quality",
+      "observation": "Both manual lines are tickable from deploy-order.md alone and every claim they name is present in the file.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S01/deploy-order.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "step-coverage",
+      "observation": "The step's only tests are manual, so nothing machine-checks the runbook; the always-on xml check ran over zero files and manifest was not applicable. A green step here means a human must read the file at the M4 gate. The builder's check_report_inventory.py run scanned 0 files and is undeclared, so it was not run or counted.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M4-S01].acceptance_tests"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "deploy-readiness",
+      "observation": "The runbook is a set of UNVERIFIED markers (U1-U6) that only an org can close: the six report column codes, the SMB report type, and whether a dry run rejects a wrong code on a custom report type. Passing this step does not discharge A28; the retrieve is a human pre-deploy prerequisite for M4-S02.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S01/deploy-order.md section 7"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-workflow",
+      "observation": "M4-S01 is now tested; the per-step documentation pass has not run yet.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M4-S01].status"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because a tested step's PLAN.md row, decisions.md entry and traceability row are build-doc-keeper's to write next, per build-orchestration.md Section 1 stage 4."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations, confidence rubric"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "sections 4 and 5: custom step row, test types, manifest rule"
+    },
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "playbook"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "shape check of the two manual lines"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S01",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M4-S01/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "ElementTree parse over artefacts/M4-S01 xml files (none found)",
+        "exit_code": null,
+        "verdict": "ran, 0 files"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "n/a - always-on structural check",
+        "exit_code": null,
+        "verdict": "skipped-not-applicable - type custom, no package.xml declared"
+      },
+      {
+        "name": "manual-1",
+        "type": "manual",
+        "runner": "not runnable here",
+        "exit_code": null,
+        "verdict": "deferred to M4 gate"
+      },
+      {
+        "name": "manual-2",
+        "type": "manual",
+        "runner": "not runnable here",
+        "exit_code": null,
+        "verdict": "deferred to M4 gate"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs plan.json M4-S01 --hashes",
+        "exit_code": 0,
+        "verdict": "pass - ok:true"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q26 and assumption A28, when artefacts/M4-S01/deploy-order.md is read, then it names the three sf commands verbatim, lists each of the six column codes M4-S02 uses (Opportunity$Name, Opportunity$StageName, Opportunity$Amount, Opportunity$Discount__c, Opportunity$CloseDate, Opportunity$Approval_Status__c) as provisional, states that RPT-COL-01 in check_report_inventory.py reports every one of them as unverifiable offline by design, and says that the retrieve is a pre-deploy prerequisite rather than a build step. Tickable from this file alone - no org and no later artefact is needed. [expected: ticked at the M4 milestone gate]",
+      "Given Q54's default, when the same file is read, then it also states that a NEW Enterprise-scoped report type is built rather than editing whatever report type the SMB pipeline report uses, and names checking the SMB report's report type as part of the same retrieve so the decision can be confirmed rather than assumed. [expected: ticked at the M4 milestone gate]"
+    ],
+    "tests_run": 2
+  }
+}

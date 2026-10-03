@@ -1,0 +1,464 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T14-26-26Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S05/2026-09-19T14-26-26Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S05/2026-09-19T14-26-26Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S05",
+    "api_version": "62.0 (DEFAULTED - plan.json carries no api_version key; agents/metadata-builder/AGENT.md Inputs falls back to 62.0, which is also what artefacts/M1-S01, M1-S02 and M2-S01 package.xml files already carry)"
+  },
+  "summary": "Built M2-S05 (ui, design-only): two Opportunity PathAssistants - Enterprise_Opportunity_Path (4 steps: Qualify, Discover, Propose, Negotiate) and Renewal_Opportunity_Path (2 steps: Renewal Review, Renewal Proposed) - plus settings/PathAssistant.settings-meta.xml, package.xml and deploy-order.md. Five files, all five declared in outputs[], nothing undeclared. Every element name is one of the six PathAssistant / three PathAssistantStep / two PathAssistantSettings elements the Metadata API field tables carry (api_meta.txt L94510-94529, L94545-94549, L124216-124224), quoted through skills/admin/path-and-guidance/references/metadata-examples.md sections 2, 3 and 5. No BusinessProcess block was copied from that file's section 1 (finding N3-F-01). All three declared checkers exited 0 on the first pass, 0 repair passes - but one of the three asserted nothing (see checker_results). check-outputs ok. Terminal status: built.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "agents/metadata-builder/AGENT.md Step 10: HIGH requires that every Questions-to-Ask row was answered from the plan rather than defaulted. Four were not. Q46 (one path per record type) and Q49 (who advances the stage) are still status 'open' in plan.json and were satisfied by assumptions A11 and A14, which the step's own inputs.defaults_applied records as defaults. Q47 (target org edition) and Q48 (auto-collapse) were never asked as step inputs at all and are carried by A12 and A13 - A13 explicitly notes Q48 carried NO proposed default and that the value true comes from the skill's metadata-examples section 3. That is the MEDIUM row, exactly: 'a documented skill default stood in for an unanswered question'. Everything on the HIGH side of the table holds - element grounding, first-pass checkers, check-outputs ok, declared outputs only - so this is not LOW. dimensions_skipped is non-empty, which the envelope schema also caps at MEDIUM.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Four of the seven admin/path-and-guidance Questions-to-Ask rows were answered by a recorded assumption rather than by a human: A11 (Q46 open), A12 (Q47 never asked on this step), A13 (Q48, which carried no proposed default), A14 (Q49 open). A fifth row - Q11's must-fill list - was answered but only partly writable: A16 records that the Decision Maker contact role cannot be a fieldNames entry, so it became guidance text. One admin/sales-process-mapping row ('walk me through the last deal you lost at proposal') has no answer anywhere on file and no documented default; it changed no element, so it did not block."
+    },
+    {
+      "dimension": "checker-pass",
+      "state": "partial",
+      "reason": "Two of the three declared checkers asserted something about these artefacts. The third, check_sales_process_mapping.py --manifest-dir artefacts/M2-S05, printed 'Scanned 0 file(s) - nothing asserted; check --manifest-dir' and exited 0. That exit code stands for nothing: the checker lints *.yaml/*.yml/*.csv sales-process maps and a retrieved OpportunityStage value set, and this step ships none of those. amend-step cannot fix it from here (it refuses a step whose status is running), so it is left for a human before the M2 gate."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "element-grounding",
+      "observation": "The upstream artefacts this step binds to were exact and needed no interpretation. All six picklistValueName values ('Qualify', 'Discover', 'Propose', 'Negotiate', 'Renewal Review', 'Renewal Proposed') were copied character for character out of M1-S01's two businessProcess files, including the space-not-underscore spelling of the two renewal stages, and both recordTypeName values off the recordType files' fullName. The build-scoped checker confirmed the binding: 'Checked 2 path(s): no issues found.' with zero NOTE lines, meaning it resolved both record types and matched every step name against the business processes and the value set.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "element-grounding",
+      "observation": "The N3-F-01 warning held. skills/admin/path-and-guidance/references/metadata-examples.md section 1 still shows an Opportunity BusinessProcess whose opening value carries <default>true</default> - the shape the org rejected on 2026-09-18 with 'Cannot specify a default on: Opportunity'. This step ships no BusinessProcess, and nothing was copied from that section. M1-S01's repaired files on disk now carry no <default> at all on the opening value and <default>false</default> on the rest, which is what run 2 of the mock deploy accepted.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/path-and-guidance/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "checker-pass",
+      "observation": "The checker added by amend-step on 2026-09-18 to clear a section-5 coverage WARN reads nothing in this step. check_sales_process_mapping.py --manifest-dir artefacts/M2-S05 prints 'Scanned 0 file(s) - nothing asserted; check --manifest-dir' and exits 0. The --manifest-dir tree-walk fix of 2026-09-18 works correctly - the checker's scope is yaml/csv sales-process maps and OpportunityStage value sets, and a pathAssistants/ + settings/ tree contains neither. Run at build scope the same command prints 'No issues found.', having actually read M1-S01's OpportunityStage file. So the amendment cleared the WARN without buying an assertion, and a green tick on that acceptance-test row will mean only that a checker ran. Remedies, all a human's: re-declare the test at scope 'build' with --manifest-dir artefacts, move it to an M2 milestone test, or accept that the skill is cited for its Questions-to-Ask table (Q2 came from it) rather than for its checker - and say which, in the test's description.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S05",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "question-coverage",
+      "observation": "Nothing in this build gives the Closed Won handoff a home, and a PathAssistant step is the cheapest one available. Q3 is answered - 'Finance needs the closed-won amount, products, discount and close date; Customer Success needs the account, products and contract start; both read the record' - and admin/sales-process-mapping's Questions-to-Ask table asks 'when a deal closes, who has to know, and what do they need from the record?' precisely because those obligations 'get built by nobody unless they are stage requirements'. This step deliberately writes no Closed Won step (the plan's own inputs.note says so, and an omitted step is the documented way to leave a chevron unconfigured), Q3 is not in this step's declared answers[], and key_fields_by_stage has no Closed Won row - so nothing was written. Worth the VP's decision at the M2 gate: one info block on Closed Won would put the Finance and CS handoff in front of the rep at the moment it matters.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "deploy-order",
+      "observation": "The Renewal path has no page to render on anywhere in this plan. M3-S05 is the only step that writes a FlexiPage and its own note records the scope: 'Only the Enterprise page is built ... the Renewal record type falls through to the org's existing Opportunity page'. Renewal_Opportunity_Path therefore renders only if Northwind's current Opportunity record page already carries runtime_sales_pathassistant:pathAssistant, and nothing in this build asserts that it does. check_path_and_guidance.py cannot raise it either - its FlexiPage check fires only when some Opportunity FlexiPage IS in the manifest and lacks the component, so an empty tree is silent by construction. deploy-order.md section 3 carries the grep a human can run against the org.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "question-coverage",
+      "observation": "The Renewal Proposed step's guidance names a 20% discount approval, and the provenance for the renewal ladder specifically is thinner than for the Enterprise one. Q11's answer states the gate for the Enterprise ladder ('Negotiate to Closed Won: Discount approved if above 20%'); the requirement states the rule for the team without distinguishing the two motions; and the planner put Discount__c and Approval_Status__c in key_fields_by_stage for Renewal Proposed, which is itself evidence the approval was expected to apply there. Q58's proposed default - 'one process ... used by both Enterprise and Renewal opportunities' - says the same, but Q58 is still open and is not in this step's declared answers[], so it was not treated as binding. The words are guidance, not enforcement, so nothing breaks either way; if renewals are exempt from the cap, that sentence should be struck before the M2 gate.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "question-coverage",
+      "observation": "The step's inputs.note narrates a sibling step as blocked when the plan says otherwise: 'The Discover step's info text carries Q11's product gate in words, because M2-S04 is blocked and words are what is left.' M2-S04's status in plan.json today is 'pending', and its own note records 'Unblocked 2026-09-15: admin/validation-rules now documents the mechanism this step was waiting on'. The instruction was followed either way - the Discover step's info names the product-line gate in words - but it was written as the fallback it is no longer, so nothing here should be read as evidence that the product rule will go unenforced. Prose-level drift; amend-step --prose-only is the writer for it, and not this agent's to run.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "step-tester is the next agent on this step: it runs the three declared checkers plus the always-on xml and manifest checks and writes tests/M2-S05/results.json, which is the only route from built to tested. Both manual acceptance tests on this step are for the human at the M2 gate, not for the tester: one reads the four Enterprise info blocks against Q2 and Q11, the other reads deploy-order.md section 3.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 3
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "it executes M2-S05's declared acceptance tests verbatim from the build directory and writes the results.json that set-status tested requires."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/path-and-guidance",
+      "path": "skills/admin/path-and-guidance/SKILL.md",
+      "used_for": "the Questions-to-Ask table (7 rows), the one-path-per-record-type constraint, the key-fields and guidance-text rules, and the Review Checklist"
+    },
+    {
+      "type": "skill",
+      "id": "admin/path-and-guidance",
+      "path": "skills/admin/path-and-guidance/references/metadata-examples.md",
+      "used_for": "sections 2, 3, 5, 6 and 7 - the PathAssistant and PathAssistantSettings element sets, the manifest member forms, the split-deploy order and the three verification queries. Section 1 was read and deliberately not used (N3-F-01)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/path-and-guidance",
+      "path": "skills/admin/path-and-guidance/references/gotchas.md",
+      "used_for": "gotchas 1, 4, 5, 7, 8, 9, 10, 11, 12 and 13 - what decides element order, what does not deploy, and what a green deploy fails to prove"
+    },
+    {
+      "type": "skill",
+      "id": "admin/path-and-guidance",
+      "path": "skills/admin/path-and-guidance/scripts/check_path_and_guidance.py",
+      "used_for": "declared acceptance test 1 (build scope), and reading its Check 6c to establish that an absent FlexiPage produces no note"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/SKILL.md",
+      "used_for": "the Questions-to-Ask table rows on stage subsets per motion and on who writes Probability / ForecastCategoryName"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/scripts/check_opportunity_management.py",
+      "used_for": "declared acceptance test 2 (step scope), and reading collect_paths to confirm it reads pathAssistants/ directly under --manifest-dir without recursing"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sales-process-mapping",
+      "path": "skills/admin/sales-process-mapping/SKILL.md",
+      "used_for": "the Questions-to-Ask row behind Q2 (who may move a deal into Negotiate) and the Closed Won handoff row behind the observation on Q3"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sales-process-mapping",
+      "path": "skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py",
+      "used_for": "declared acceptance test 3 (step scope) - and its --help, which is what establishes that its scope is yaml/csv maps and OpportunityStage value sets"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "sections 1 and 3 - the manifest-not-directories rule behind deploy-order.md section 4, and the production validate-then-quick sequence in section 8"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json is the only shared state; amend-step's preconditions), section 4 (the ui step-type row and the status machine), section 5 (checker scope, the declare-a-manifest rule, and the mock_deploy description)"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the 11-step Plan, the Step 4 four-source priority order, the Step 5 write rules and the Step 10 confidence rubric"
+    },
+    {
+      "type": "agent",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the Process Observations requirement, the Citations schema and the confidence rubric this agent's Step 10 overrides"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/reports/MILESTONE-M4-REPORT.md",
+      "used_for": "checked for an org-validated pathAssistant file to prefer over the skill's example; the only PathAssistant mention there is a not-in-this-milestone row, so no org-validated path file exists in examples/builds and the skill's example stood"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S05",
+    "step_type": "ui",
+    "build_mode": "design-only",
+    "status_path_taken": "Invoked directly (not under agents/build-step-runner), so this agent moved the step itself, exactly twice: pending -> running at the start of the run and running -> built at the end. No other write to plan.json. Two other builders were working M2-S02 and M2-S03 in parallel; nothing outside artefacts/M2-S05/ and envelopes/M2-S05/ was touched.",
+    "human_gate": "false on this step; no step:M2-S05 gate exists, and build_plan.py next listed M2-S05 as runnable (with M2-S03 and M2-S04) before the claim.",
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S05/pathAssistants/Renewal_Opportunity_Path.pathAssistant-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S05/settings/PathAssistant.settings-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S05/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S05/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml",
+        "metadata_type": "PathAssistant",
+        "element_source": "skills/admin/path-and-guidance/references/metadata-examples.md section 2 (api_meta.txt L94510-94529, L94545-94549)",
+        "declared_in_outputs": true,
+        "note": "4 steps. Closed Won and Closed Lost intentionally unconfigured (api_meta.txt L94525-94526)."
+      },
+      {
+        "path": "artefacts/M2-S05/pathAssistants/Renewal_Opportunity_Path.pathAssistant-meta.xml",
+        "metadata_type": "PathAssistant",
+        "element_source": "skills/admin/path-and-guidance/references/metadata-examples.md section 2 (api_meta.txt L94510-94529, L94545-94549)",
+        "declared_in_outputs": true,
+        "note": "2 steps, same reason for the two closed stages."
+      },
+      {
+        "path": "artefacts/M2-S05/settings/PathAssistant.settings-meta.xml",
+        "metadata_type": "PathAssistantSettings",
+        "element_source": "skills/admin/path-and-guidance/references/metadata-examples.md section 3 (api_meta.txt L124216-124224)",
+        "declared_in_outputs": true,
+        "note": "Both elements explicit; pathAssistantForOpportunityEnabled deliberately absent (API 34.0 and earlier)."
+      },
+      {
+        "path": "artefacts/M2-S05/package.xml",
+        "metadata_type": "Package",
+        "element_source": "skills/admin/path-and-guidance/references/metadata-examples.md section 5 (api_meta.txt L94576-94611, L108368-108369)",
+        "declared_in_outputs": true,
+        "note": "PathAssistant members named explicitly though the type takes a wildcard; Settings member is 'PathAssistant', the type name without its Settings suffix."
+      },
+      {
+        "path": "artefacts/M2-S05/deploy-order.md",
+        "metadata_type": "(note, not metadata)",
+        "element_source": "agents/metadata-builder/AGENT.md Step 7; skills/admin/change-management-and-deployment/references/metadata-examples.md sections 1 and 3",
+        "declared_in_outputs": true,
+        "note": "9 sections. Section 3 is the step's second manual acceptance test."
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "How many record types does this object have, and does each one need different guidance?",
+        "skill": "admin/path-and-guidance",
+        "answer": "Two - Enterprise and Renewal - each with its own guidance.",
+        "source": "step inputs (inputs.paths names two files) reinforced by assumption A11, which is the applied default for still-open Q46, and by decision D2",
+        "determined": "Two .pathAssistant-meta.xml files; recordTypeName Enterprise and Renewal",
+        "is_default": true
+      },
+      {
+        "question": "Is the driver picklist final, or are stage values still moving?",
+        "skill": "admin/path-and-guidance",
+        "answer": "Final as written in the requirement for both processes.",
+        "source": "clarification answer Q21 (answered)",
+        "determined": "Safe to write fieldName and recordTypeName at all - both are non-updateable, so a moving stage list would have made this a delete-and-recreate later",
+        "is_default": false
+      },
+      {
+        "question": "Which edition is every target org, including scratch orgs?",
+        "skill": "admin/path-and-guidance",
+        "answer": "Sales Cloud Enterprise in production, where pathAssistantEnabled already defaults true; the file ships anyway so a scratch org or Developer Edition rehearsal is not silently Path-off.",
+        "source": "assumption A12 (Q47 informational, unanswered at G1; default applied)",
+        "determined": "settings/PathAssistant.settings-meta.xml exists at all, with pathAssistantEnabled true",
+        "is_default": true
+      },
+      {
+        "question": "Does anyone need to see the guidance without clicking?",
+        "skill": "admin/path-and-guidance",
+        "answer": "Yes - ship the expand override.",
+        "source": "assumption A13. Q48 was unanswered AND carried no proposed default; the value comes from the skill's own metadata-examples section 3, which says ship it true unless there is a reason not to",
+        "determined": "canOverrideAutoPathCollapseWithUserPref true",
+        "is_default": true
+      },
+      {
+        "question": "Who advances the stage - a person in the UI, or automation?",
+        "skill": "admin/path-and-guidance (also admin/sales-process-mapping's 'how do deals actually get closed')",
+        "answer": "The rep, in the UI; no automation writes StageName.",
+        "source": "assumption A14, the applied default for still-open Q49",
+        "determined": "The guidance is addressed to a rep working the record. It also makes celebration possible at all - and there is no element to write it with, so no celebration is configured and deploy-order.md section 6 hands it to the cutover runbook as a manual step",
+        "is_default": true
+      },
+      {
+        "question": "Which of these key fields must be filled, versus merely visible?",
+        "skill": "admin/path-and-guidance",
+        "answer": "Q11, in full: Qualify->Discover Amount + Close Date; Discover->Propose at least one product and Next Step; Propose->Negotiate Primary Contact (Decision Maker role) and Discount; Negotiate->Closed Won discount approved if above 20%. Lead Source and Type shown for context only.",
+        "source": "clarification answer Q11 (answered) for the info text; step inputs key_fields_by_stage for the fieldNames, which outrank the answer text under Step 4",
+        "determined": "Each step's info block carries its stage's exit criteria in the requester's own terms; fieldNames carry exactly what key_fields_by_stage declares. Lead Source and Type appear in neither, because key_fields_by_stage lists them on no stage - recorded in deploy-order.md section 5 rather than silently added",
+        "is_default": false
+      },
+      {
+        "question": "Which Lightning record page will render this, and what template is it built on?",
+        "skill": "admin/path-and-guidance",
+        "answer": "Opportunity_Enterprise_Record_Page, built at M3-S05 - and only for the Enterprise record type.",
+        "source": "upstream plan (M3-S05's declared outputs and its inputs.note)",
+        "determined": "No FlexiPage here, and deploy-order.md section 3 states plainly that a green deploy of this step proves neither that Path is enabled nor that the component is on the page",
+        "is_default": false
+      },
+      {
+        "question": "Who is allowed to move a deal into Negotiation, and who actually does?",
+        "skill": "admin/sales-process-mapping",
+        "answer": "Only the owning rep, and only after the manager has seen the proposal; today reps move it whenever they like. Exit checklist: proposal sent, decision-maker identified, discount within policy or approval submitted.",
+        "source": "clarification answer Q2 (answered)",
+        "determined": "The Propose step's info block, verbatim in substance - it is the one place a rep sees the rule before breaking it",
+        "is_default": false
+      },
+      {
+        "question": "Do renewals run these same stages, or does the CSM run something else?",
+        "skill": "admin/sales-process-mapping",
+        "answer": "Two distinct ladders, hence two Sales Processes and two Record Types.",
+        "source": "decision D2, and M1-S01's two businessProcess artefacts read directly",
+        "determined": "Two paths with disjoint step sets; the Renewal path's two open stages are Renewal Review and Renewal Proposed",
+        "is_default": false
+      },
+      {
+        "question": "Which stages does each motion actually use, and which motion is the default?",
+        "skill": "admin/opportunity-management",
+        "answer": "Enterprise: Qualify, Discover, Propose, Negotiate, Closed Won, Closed Lost. Renewal: Renewal Review, Renewal Proposed, Closed Won, Closed Lost.",
+        "source": "upstream artefacts - artefacts/M1-S01/objects/Opportunity/businessProcesses/*.businessProcess-meta.xml, read for the exact fullName strings",
+        "determined": "Every picklistValueName, character for character",
+        "is_default": false
+      },
+      {
+        "question": "Which forecast bucket does each stage belong in, and what is its probability?",
+        "skill": "admin/opportunity-management",
+        "answer": "Q5 and Q6, both answered - already built into M1-S01's OpportunityStage value set.",
+        "source": "upstream artefact artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml",
+        "determined": "Nothing here. PathAssistant carries no forecast or probability element; recorded so the row is visibly answered-elsewhere rather than skipped",
+        "is_default": false
+      },
+      {
+        "question": "Does any integration or Apex write Probability or ForecastCategoryName directly? Will any opportunity be Private, or use splits or teams?",
+        "skill": "admin/opportunity-management",
+        "answer": "No to all - Q38, Q43 and Q7.",
+        "source": "clarification answers (Q7 answered; Q38 and Q43 open with defaults saying the same)",
+        "determined": "Nothing here; recorded because a yes would have made the key-field choices on the Negotiate and Renewal Proposed steps misleading",
+        "is_default": false
+      },
+      {
+        "question": "When a deal closes, who has to know, and what do they need from the record?",
+        "skill": "admin/sales-process-mapping",
+        "answer": "Q3, answered: Finance needs amount, products, discount and close date; Customer Success needs account, products and contract start; both read the record.",
+        "source": "clarification answer Q3 - NOT in this step's declared answers[], and key_fields_by_stage has no Closed Won row",
+        "determined": "Nothing was written. Closed Won carries no step by the plan's explicit instruction. Raised as a Process Observation for the M2 gate instead of widening the step",
+        "is_default": false
+      },
+      {
+        "question": "Walk me through the last deal you lost at proposal - what happened first?",
+        "skill": "admin/sales-process-mapping",
+        "answer": "Not on file. No clarification asks it and no documented default covers it.",
+        "source": "none of the four Step 4 sources",
+        "determined": "Nothing - it changes no element here, so it is an ambiguity rather than a block. It is the question that would have sharpened the Propose step's exit criteria beyond what Q2 dictated",
+        "is_default": false
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/path-and-guidance/scripts/check_path_and_guidance.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "Checked 2 path(s): no issues found.",
+        "reading": "Zero NOTE lines, which is what makes this one meaningful: it resolved both recordTypeName values against M1-S01's record types and matched all six picklistValueName values. Matches the string the planner recorded from its fixture run."
+      },
+      {
+        "command": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M2-S05",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "No issues found.",
+        "reading": "Path-internal shape: one path per (entityName, recordTypeName) pair, fieldName is StageName on both, recordTypeName present on both. It reads <manifest-dir>/pathAssistants/ without recursing, so step scope is correct for it."
+      },
+      {
+        "command": "python3 skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py --manifest-dir artefacts/M2-S05",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "Scanned 0 file(s) - nothing asserted; check --manifest-dir",
+        "reading": "REPORTED AS-IS AND NOT AS A PASS. Exit 0 over zero files asserts nothing about these artefacts. The checker's scope is *.yaml/*.yml/*.csv sales-process maps and a retrieved OpportunityStage value set (its own --help), and this step ships neither. See dimensions_skipped and the concerning observation."
+      },
+      {
+        "command": "python3 skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "build (diagnostic only)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "No issues found.",
+        "reading": "Run to establish what the declared form is missing, not as an acceptance test. At build scope it finds and checks M1-S01's OpportunityStage value set - i.e. the tree-walk fix of 2026-09-18 works; the step's tree simply holds nothing in scope."
+      },
+      {
+        "command": "python3 skills/admin/path-and-guidance/scripts/check_path_and_guidance.py --manifest-dir artefacts/M2-S05",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step (diagnostic only)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "4 NOTE lines (recordTypeName unresolved x2, step names not verified x2); 'Checked 2 path(s): 0 issue(s), 4 note(s).'",
+        "reading": "Run to verify the planner's stated reason for declaring test 1 at build scope. Confirmed exactly: at step scope this checker exits 0 having verified neither record type nor any step name."
+      }
+    ],
+    "xml_parse": "All 4 *.xml / *-meta.xml files under artefacts/M2-S05/ parse with xml.etree.ElementTree (both pathAssistants, the settings file, package.xml). The two info blocks containing '20%' and hyphens needed no entity escaping; no & or angle brackets were written into any text node.",
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "package.xml carries two <name> blocks. PathAssistant: members Enterprise_Opportunity_Path and Renewal_Opportunity_Path, each backed by a file of that stem under pathAssistants/. Settings: member PathAssistant - the type name without its Settings suffix (api_meta.txt L108368-108369) - backed by settings/PathAssistant.settings-meta.xml. Agreement holds in both directions: three metadata files on disk, three members, no member without a file. <version>62.0</version>.",
+    "api_version_note": "62.0, kept deliberately. plan.json carries no api_version key, so agents/metadata-builder/AGENT.md's Inputs fallback applies; artefacts/M1-S01, M1-S02 and M2-S01 all already declare 62.0, so mock_deploy.py's highest-version scan sees one number across the build. The only version-floored element here, canOverrideAutoPathCollapseWithUserPref, is API 47.0+.",
+    "org_interaction": "None. requires_org: false, build_mode design-only. No sf command was run, and scripts/mock_deploy.py was not run - it is named only as text in deploy-order.md section 8 for a human, where it is described as hard-coding --dry-run internally rather than as a flag anyone passes.",
+    "workflow_return": {
+      "step_id": "M2-S05",
+      "status": "built",
+      "artefacts": [
+        "artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml",
+        "artefacts/M2-S05/pathAssistants/Renewal_Opportunity_Path.pathAssistant-meta.xml",
+        "artefacts/M2-S05/settings/PathAssistant.settings-meta.xml",
+        "artefacts/M2-S05/package.xml",
+        "artefacts/M2-S05/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "Acceptance test 3 (check_sales_process_mapping.py at step scope) asserts nothing. Re-declare it at scope 'build' with --manifest-dir artefacts, move it to an M2 milestone test, or record that the skill is cited for its Questions-to-Ask table and not its checker. amend-step refuses a running step, so this is a human's call after the step settles.",
+      "The step's inputs.note calls M2-S04 blocked; plan.json says pending and M2-S04's own note says it was unblocked on 2026-09-15. amend-step --prose-only is the writer for that correction.",
+      "Closed Won carries no path step on either path, by instruction. Q3's Finance and Customer Success handoff therefore appears nowhere a rep will see it. Worth the VP's decision at the M2 gate.",
+      "Renewal_Opportunity_Path will render only if the org's existing Opportunity record page already carries runtime_sales_pathassistant:pathAssistant. M3-S05 builds the Enterprise page only. The grep to settle it is in deploy-order.md section 3.",
+      "Celebration/confetti has no metadata element. If it is wanted on Closed Won, it is a manual Setup step in production and in every sandbox refreshed afterwards - belongs on the M4-S04 cutover runbook.",
+      "Whether the 20% discount approval applies to Renewal opportunities is inferred rather than dictated (Q58 is still open). If renewals are exempt, strike that sentence from the Renewal Proposed step's info."
+    ]
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "it runs M2-S05's three declared checkers plus the always-on xml and manifest checks and writes tests/M2-S05/results.json, which is the only route from built to tested."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once M2-S05 is tested it carries the six open items, the four applied assumptions and the two paths into decisions.md, the workbook's UI section and traceability.md."
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T14-39-24Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T14-39-24Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T14-39-24Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S02"
+  },
+  "summary": "Tested M2-S02 (access, built by metadata-builder). Ran the three declared checkers verbatim from the build directory exactly as the plan declared them \u2014 check_permission_set_architecture.py and check_record_type_layouts.py at the plan's declared build scope (--manifest-dir artefacts), check_access_model.py at step scope (--manifest-dir artefacts/M2-S02) \u2014 plus the always-on xml parse (3/3 files) and manifest consistency check (PermissionSet and Profile each named explicitly in package.xml with a file behind each, both directions consistent, no coverage-gap exclusion applies to either type), plus check-outputs --hashes. All five runnable tests passed: all three checkers exited 0 (permission-set-architecture: 'No issues found.'; record-type-layouts: 1 REVIEW finding RTL-MERGE-01, lenient exit policy, no --strict; permission-sets-vs-profiles: 1 WARN finding PSVP-FLS-02, 0 blocking), xml all-parse, manifest consistent, check-outputs ok with no missing/empty/malformed paths. The record-type-layouts test's own description narrates a fixture run with '0 finding(s) detected'; this run printed 1 (the pre-adjudicated O-M1S02-03 identical-layouts REVIEW) \u2014 recorded as prose drift (O-M2S02-04) and judged by the declared expected (exit 0) and command, not the narrated numbers, per this run's explicit instructions. Both manual acceptance tests were checked against the Given/When/Then shape (all three clauses present, both Thens directly inspectable against the shipped XML and confirmed true) and deferred verbatim to the M2 milestone gate rather than ticked. results.json written with \"passed\": true and artefact_hashes from check-outputs --hashes; M2-S02 moved built -> tested via build_plan.py set-status (exit 0, 19 pre-existing WARNs about unrelated steps M1/M3/M4 printed on the full-plan validate pass, none naming M2-S02 or its cited skills).",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran (or was correctly classified as manual), both always-on checks completed, and every result came from an exit code this agent observed directly \u2014 the Step 7 HIGH row in agents/step-tester/AGENT.md. No command test was refused, no manifest exclusion had to be applied, and check-outputs reported ok with nothing missing, empty or malformed. The one prose divergence (O-M2S02-04) is a plan-description drift, not a test outcome, and does not affect this rubric.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml-well-formedness",
+    "manifest-consistency",
+    "checker-pass:permission-set-architecture",
+    "checker-pass:record-type-layouts",
+    "checker-pass:permission-sets-vs-profiles",
+    "check-outputs",
+    "manual-test-tickability"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "All three declared checkers exited 0 when run verbatim at their plan-declared scopes, matching metadata-builder's own build-time run exactly, including the permission-set-architecture checker's literal 'No issues found.' string.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S02/check_permission_set_architecture.stdout.txt",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-consistency",
+      "observation": "package.xml names both PermissionSet and Profile members explicitly (no wildcard), the Profile member matches the file stem including its space, and both have a file behind them, so the manifest test passes cleanly in both directions with no coverage-gap exclusion needed for either type.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/package.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manual-test-tickability",
+      "observation": "Both manual acceptance tests pass the Given/When/Then usability check (one Given, one When, and a Then whose every clause is directly readable off the shipped XML rather than requiring inference or a live org), so neither needs rewriting before it reaches the M2 gate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/profiles/Sales User.profile-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-documentation-drift",
+      "observation": "acceptance_tests[1]'s description (check_record_type_layouts.py) narrates a fixture run with '0 finding(s) detected'; this run printed 1 (REVIEW RTL-MERGE-01, the pre-existing M1 identical-layouts item already adjudicated at the M1 gate as O-M1S02-03, resurfacing here only because this checker runs at build scope over the whole artefacts/ tree). Recorded as O-M2S02-04 per this run's task instructions; step-tester judged the test by its declared expected ('exit 0') and its declared command, not by the narrated fixture numbers, per AGENT.md's 'never rewrite a declared command' rule. Not treated as a test failure.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "steps[M2-S02].acceptance_tests[1].description vs tests/M2-S02/check_record_type_layouts.stdout.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "field-level-security",
+      "observation": "deploy-order.md section 0 and metadata-builder's own envelope record that field-level security for Opportunity.Discount__c and Opportunity.Approval_Status__c is granted by no file across all three access steps in this build (M2-S01, M2-S02). This step's checkers cannot surface that gap because PSVP-FLS-01 only fires on a permission set granting object CRUD with zero field permissions, and Enterprise_Sales_Record_Types grants no object permissions at all \u2014 the rule has nothing to attach to. Not a defect in this step's own artefacts; carried forward as the same open gap metadata-builder already named.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/deploy-order.md",
+        "detail": "section 0, 'What that leaves open, and it is a real deploy-time gap'"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "set-status's own full-plan validate pass printed 19 pre-existing WARNs about other steps (M1, M3, M4) shipping a cited skill's checker with no declared acceptance test for it. None of the 19 name M2-S02 or its cited skills (admin/permission-set-architecture, admin/record-types-and-page-layouts, admin/permission-sets-vs-profiles); they predate this run and are outside this invocation's one-step scope, so nothing was changed on their account.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "stderr of `build_plan.py set-status ... M2-S02 tested`, 19 WARN lines naming M1-S01, M1-S02, M3-S02, M3-S03, M3-S04, M3-S05, M4-S01, M4-S02, M4-S03, M4-S04"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M2-S02 is now tested; build-doc-keeper is next to carry O-M2S02-02 and O-M2S02-04, the field-level-security open gap, and the two manual acceptance lines into decisions.md, the workbook's access section and traceability.md.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 6 role table"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Once a step is tested, build-doc-keeper is the agent that updates PLAN.md, workbook rows, decisions.md and traceability.md from it."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "the Plan this run followed end to end: Step 1 precondition, Step 2 xml, Step 3 manifest, Step 4 checker/manifest/manual dispatch and the never-rewrite-a-command rule, Step 5 results.json shape, Step 6 set-status transitions, Step 7 confidence table, Step 8 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and schema, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence and atomic-write rule for the tests/ and envelopes/ artefacts this run wrote"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was built, not ambiguous, no security-guard command declared)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 (access step type, status machine, built->tested transition and its check-outputs/results.json preconditions) and section 5 (acceptance-test types, checker-scope rule that the literal command governs, the cross-referential-checker list including check_permission_set_architecture.py and check_record_type_layouts.py, and the deny-list/never-rewrite rule)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the acceptanceTest and step outputs[] shape read directly from plan.json for M2-S02"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar (one <types> block per metadata type, <members> naming components, <name> naming the type) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format filename-to-metadata-type mapping used to derive PermissionSet/Enterprise_Sales_Record_Types and Profile/'Sales User' as the member names the manifest was checked against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirming neither PermissionSet nor Profile is a type with no standalone source file, so no manifest-check exclusion applied to either"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what makes a manual test line tickable by a human at the milestone gate rather than re-interpreted by them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then anatomy used to check the step's two manual acceptance tests before carrying them into skipped_manual[] rather than reporting them unusable"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "reading the prior run's envelope (envelopes/M2-S02/2026-09-19T14-25-55Z.json) and deploy-order.md to corroborate the declared-checker exit codes, the O-M2S02-02 PSVP-FLS-02 acceptance and the field-level-security open gap this run's task explicitly named"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "step_status_before": "built",
+    "step_status_after": "tested",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M2-S02/results.json",
+    "tests_run": 5,
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way package.xml <-> artefact-file consistency check",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "type": "checker",
+        "runner": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "type": "checker",
+        "runner": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+        "type": "checker",
+        "runner": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q4 and Q9, when artefacts/M2-S02/profiles/Sales User.profile-meta.xml is read, then it contains exactly two layoutAssignments blocks and two recordTypeVisibilities blocks, every recordTypeVisibilities carries <default>false</default>, and the file contains no userPermissions, objectPermissions, fieldPermissions, applicationVisibilities or classAccesses element - so the overlay adds access and revokes nothing the SMB team holds.",
+      "Given Q19, when the two files are read together, then reps and managers reach both record types through the permission set while the sales-ops admin (System Administrator) needs no row in either file, and the manager-versus-rep distinction appears nowhere in this step - it is a role-hierarchy fact, which is what decision D7 records."
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "artefact_hashes": {
+      "artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml": "c1a7d088166ee9e6117c3b98b4d86d0d91676096de148c4ccc1002202fc9e1bc",
+      "artefacts/M2-S02/profiles/Sales User.profile-meta.xml": "d3c159bcf4b43c3ef8848bd968ac96cfc2030a57be77bb2e65a0ec6a7bdd0cb6",
+      "artefacts/M2-S02/package.xml": "82dfb95a41d8a7841c0e21333c558608eb122f404ac8808ce7aade5dc3606bff",
+      "artefacts/M2-S02/deploy-order.md": "d7307b28b41cfcc18205a0ad2d217e2e22f7fd50ef190229fde13bfdf8fa64ce"
+    },
+    "workflow_return": {
+      "step_id": "M2-S02",
+      "status": "tested",
+      "passed": true,
+      "failed": [],
+      "results_path": ".sfskills/builds/northwind-sales/tests/M2-S02/results.json",
+      "tests_run": 5
+    }
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S02 is tested; build-doc-keeper carries its open items, the field-level-security gap and the two manual acceptance lines into decisions.md, the workbook and traceability.md."
+    }
+  ]
+}

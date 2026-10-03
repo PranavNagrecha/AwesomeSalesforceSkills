@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dashboard xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- M4-S02. The VP's tile: the whole open Enterprise pipeline by close month (requirement.md
+         item 5, Q24). dashboardType SpecifiedUser per Q24 and D7. NO runningUser element (A29): no
+         answer supplies the VP's username, and on deploy the platform fills an undefined runningUser
+         with the DEPLOYING user's username. Setting it is a mandatory pre-deploy step,
+         deploy-order.md section 6. A SpecifiedUser dashboard shows every viewer the running user's
+         data regardless of their own security settings.
+         The component re-reads the source report: chartSummary column Opportunity$Amount (U1, code 3)
+         and groupingColumn Opportunity$CloseDate (U1, code 5) are the same provisional codes as the
+         report, UNVERIFIED (2026-10-02). Charting the report's second grouping alone, and the
+         autoselectColumnsFromReport element name, are UNVERIFIED (2026-10-02), U9. The component
+         shape is the Metadata API guide's own SpecifiedUser dashboard sample. The right section is
+         empty on purpose (one tile asked for; components is optional), UNVERIFIED (2026-10-02), U10.
+         Repair after MOCK-DEPLOY-M4 run 1 (N4-F-03): the org requires sortBy on a chart component.
+         sortBy is RowLabelAscending, from the guide's DashboardComponentFilter enumeration (alphabetical
+         order by the label, here the close-month label of the tile's grouping).
+         No dashboard filter (A41), no subscription (A30), current snapshot only (A42). -->
+    <backgroundEndColor>#FFFFFF</backgroundEndColor>
+    <backgroundFadeDirection>Diagonal</backgroundFadeDirection>
+    <backgroundStartColor>#FFFFFF</backgroundStartColor>
+    <chartTheme>light</chartTheme>
+    <colorPalette>colorSafe</colorPalette>
+    <dashboardType>SpecifiedUser</dashboardType>
+    <description>The whole open Enterprise pipeline by close month for the VP. Runs as one specified user, so every viewer sees that user's data; the folder is limited to the Enterprise Managers group.</description>
+    <leftSection>
+        <columnSize>Wide</columnSize>
+        <components>
+            <autoselectColumnsFromReport>false</autoselectColumnsFromReport>
+            <chartSummary>
+                <aggregate>Sum</aggregate>
+                <axisBinding>y</axisBinding>
+                <column>Opportunity$Amount</column>
+            </chartSummary>
+            <componentType>Column</componentType>
+            <displayUnits>Auto</displayUnits>
+            <drillEnabled>true</drillEnabled>
+            <drillToDetailEnabled>false</drillToDetailEnabled>
+            <enableHover>true</enableHover>
+            <groupingColumn>Opportunity$CloseDate</groupingColumn>
+            <header>Enterprise pipeline</header>
+            <legendPosition>Bottom</legendPosition>
+            <report>Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage</report>
+            <showValues>true</showValues>
+            <sortBy>RowLabelAscending</sortBy>
+            <title>Open pipeline by close month</title>
+            <useReportChart>false</useReportChart>
+        </components>
+    </leftSection>
+    <rightSection>
+        <columnSize>Narrow</columnSize>
+    </rightSection>
+    <textColor>#000000</textColor>
+    <title>Enterprise Pipeline</title>
+    <titleColor>#000000</titleColor>
+    <titleSize>12</titleSize>
+</Dashboard>

@@ -1,0 +1,187 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T18-10-50Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S05/2026-09-19T18-10-50Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S05/2026-09-19T18-10-50Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S05",
+    "step_status_at_start": "built"
+  },
+  "summary": "Ran M3-S05's molecular tests from the build directory. XML: 3 of 3 files under artefacts/M3-S05/ (the flexipage, the Opportunity object override file, and package.xml) parsed with ElementTree. Manifest: this step's type is ui, a metadata step type, and package.xml exists under its own artefacts (declared in outputs[]), so the always-on check ran for real rather than skipping - FlexiPage member Opportunity_Enterprise_Record_Page and CustomObject member Opportunity each derive from a file present under artefacts/M3-S05/ and each appears explicitly (no wildcard) in package.xml, both directions consistent, no metadata-api-coverage-gaps exclusion needed. The one declared checker, check_lightning_record_page_configuration.py --manifest-dir artefacts/M3-S05, ran verbatim from the build directory and exited 0 ('No errors found (0 warning(s)).'), matching metadata-builder's own reported exit code from its build run. check-outputs confirmed ok:true (no missing/empty/malformed) and artefact_hashes were recorded for all 4 declared outputs via check-outputs --hashes. No command-type acceptance test is declared. Two manual acceptance tests are deferred to the M3 milestone gate, never ticked here; both are Given/When/Then-shaped with a named observable outcome per admin/acceptance-criteria-given-when-then, and both were spot-checked against the artefacts as due diligence (not part of the pass/fail contract): the object file's exactly-two-actionOverrides claim and deploy-order.md's app-override-wins caveat both match; the flexipage's subheader/sidebar placement, discountThreshold value and per-componentInstance identifier length claims all match. results.json passed:true (failed[] empty), so the step was moved built -> tested via set-status. Two UNVERIFIED markers the builder left inline on the flexipage (the sidebar region name for this template, and the c: prefix on the custom LWC) are, per the operator's framing of this run, the org's to settle and were not evaluated as part of this test pass - they are outside what this checker validates (identifiers, region capacity, operators and assignment, not a template's real region set or a component namespace against an org's component list) and outside this agent's scope regardless.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual (Step 7 HIGH row): both always-on checks completed (xml parsed all 3 files; manifest ran as a real two-directional check, not a skip, and came back consistent), the one declared checker's exit code (0) was observed directly by this agent from a verbatim re-run in the build directory, check-outputs reported ok:true with no missing/empty/malformed outputs, and no command-type test was refused because none is declared. Nothing here forced a MEDIUM or LOW reading.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_lightning_record_page_configuration.py reproduced the exact exit code and message metadata-builder's own envelope reported ('No errors found (0 warning(s)).', exit 0) when re-run independently, verbatim, from the build directory.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M3-S05/checker1_lightning_record_page_configuration.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both deferred manual lines matched the artefacts on every claim checked at spot-check: the object file's exactly-two-actionOverrides shape, deploy-order.md's app-override-wins caveat, the flexipage's subheader/sidebar component placement, the discountThreshold value of 20, and all three componentInstance identifiers being present and well under the 120-character API 53.0 ceiling. Unlike a prior step in this build (M3-S04), no undercount or mismatch was found in either line.",
+      "domain": "manual-test-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml; artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml; artefacts/M3-S05/deploy-order.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "This step's manifest check is a clean, literal case rather than an analogized carve-out: metadata-builder is the owning agent and standards/build-orchestration.md Section 5 states every metadata-builder-owned metadata step declares package.xml in outputs[], which this step does and which check-outputs confirmed present and non-empty. No operator instruction or prior-step precedent was needed to resolve how the always-on check should run here, unlike M3-S04's LWC-bundle step in the same build.",
+      "domain": "spec-clarity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md (Section 5); .sfskills/builds/northwind-sales/plan.json steps[M3-S05].outputs; tests/M3-S05/check_outputs.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The flexipage file carries two builder-authored UNVERIFIED markers (whether flexipage:recordHomeWithSubheaderTemplateDesktop actually provides a region named sidebar, and whether the c: prefix is correct for the custom LWC componentName). Per the operator's framing of this run these are the org's to settle and a parallel mock-deploy dry run may be in flight, but its result was not read as part of this test pass (it writes only under reports/mock-deploy/, not evidence for this agent). Neither the declared checker nor the xml/manifest checks can see either gap: the checker validates identifiers, region capacity, operators and assignment, not a template's real region-name set or a component namespace against an org's actual component list.",
+      "domain": "deploy-readiness",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml (inline UNVERIFIED comments, lines ~82-99)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "set-status's own preflight printed pre-existing WARNs across the plan for undeclared-checker skill citations, two of which are on this step itself (admin/path-and-guidance ships check_path_and_guidance.py, lwc/lwc-base-component-recipes ships check_lwc_base_component_recipes.py) - neither is declared as a checker test on M3-S05 or on milestone M3. Outside this run's scope to fix (this agent runs only what the plan declares) and not introduced by this run, but worth a human decision per build-orchestration.md Section 5's WARN remedy: declare the test with amend-step --add-checker, or drop the skill from skills[] if it was never meant to run.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py set-status output, this run"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M3-S05 is now tested; the per-step documentation pass has not run yet.",
+      "domain": "build-workflow",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json steps[M3-S05].status"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because a tested step's PLAN.md row, decisions.md entry and traceability row are build-doc-keeper's to write next, per build-orchestration.md Section 1 stage 4."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the ban on org writes and auto-chaining"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "8-section shape, Process Observations schema, confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence, atomic-write rule for the report/envelope pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "refusal enum; not invoked this run since no refusal condition was hit"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 metadata-builder package.xml guarantee and step-type table, Section 5 acceptance-test types/runners/pass-conditions and the always-on manifest rule this step's clean literal case falls under"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "shape of acceptance_tests[] and outputs[] read from plan.json"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar package.xml was judged against - one types block per type, members naming components, name naming the type"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "source-format filename-to-metadata-type mapping used to derive FlexiPage and CustomObject members from the two artefact files"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "checked for a no-standalone-file exclusion on either type; none applied since both FlexiPage and CustomObject ship as ordinary source-format files here"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Given/When/Then shape check applied to both of this step's manual acceptance tests before recording them as deferred rather than unusable"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S05",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M3-S05/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c (ElementTree.parse over artefacts/M3-S05/**/*.xml, *-meta.xml)",
+        "exit_code": null,
+        "verdict": "pass - 3 of 3 XML files parsed"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "n/a - always-on structural check, not a subprocess",
+        "exit_code": null,
+        "verdict": "consistent - FlexiPage and CustomObject members both file-backed, both directions"
+      },
+      {
+        "name": "skills/admin/lightning-record-page-configuration/scripts/check_lightning_record_page_configuration.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/lightning-record-page-configuration/scripts/check_lightning_record_page_configuration.py --manifest-dir artefacts/M3-S05",
+        "exit_code": 0,
+        "verdict": "pass - No errors found (0 warning(s))."
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/northwind-sales/plan.json M3-S05",
+        "exit_code": 0,
+        "verdict": "pass - ok:true, missing/empty/malformed all empty"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given D10 and assumption A38, when the object file is read, then it carries exactly two actionOverrides blocks - actionName View, type Flexipage, content Opportunity_Enterprise_Record_Page, formFactor Large and Small - and nothing else, and artefacts/M3-S05/deploy-order.md states that an app with its own Opportunity record page wins over this org default and must be re-pointed in Setup if Northwind runs one. [expected: ticked at the M3 milestone gate]",
+      "Given requirement.md item 4, when the flexipage file is read, then the Path component sits in the subheader region with hideUpdateButton false, the discountApprovalPanel sits in the sidebar region with its discountThreshold property set to 20, and every componentInstance carries an identifier of 120 characters or fewer. [expected: ticked at the M3 milestone gate]"
+    ],
+    "tests_run": 4
+  }
+}

@@ -1,0 +1,308 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T17-14-42Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S03/2026-09-19T17-14-42Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S03/2026-09-19T17-14-42Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S03",
+    "build_mode": "design-only",
+    "kind": "invocable",
+    "primary_sobject": "Opportunity",
+    "api_version": "62.0",
+    "api_version_source": "plan.json steps[M3-S03].inputs.api_version, kept over the run instruction to use 67.0 — the step note calls the 62.0/67.0 split deliberate and manual acceptance test 6 pins it",
+    "include_logger": false,
+    "process_definition_name": "Discount_Approval",
+    "invocation": "direct read of agents/apex-builder/AGENT.md as the step runner; this agent made both status transitions itself (pending -> running, running -> built)",
+    "answers": ["Q29", "Q30", "Q34", "Q35", "Q62"],
+    "assumptions": ["A23", "A35", "A36"],
+    "decisions": ["D5", "D6", "D9"],
+    "org_alias": null
+  },
+  "summary": "Built the four authored Apex classes and the verbatim TestDataFactory copy for M3-S03: OpportunityApprovalService (the body, one SOQL with WITH USER_MODE and one Approval.process(requests, false)), OpportunityApprovalController (@AuraEnabled, what the M3-S04 LWC imports), OpportunityApprovalSubmitAction (the single @InvocableMethod, List-in/List-out, one result per input in input order) and OpportunityApprovalServiceTest (six methods covering all three classes and three refusal paths, persona runAs per test-class-standards gotcha 13, system-mode fixture seed per gotcha 15). Ten of ten declared outputs written; check-outputs ok; all three declared checker tests exit 0 and each was proven live against a deliberately broken scratch copy. Two of those probes failed on first attempt and exposed real defects that are now fixed or written up: a named constant hid the approval-process name from check_approval_process_apex_patterns.py so its resolution rule was silently inert, and check_test_class_standards.py reads comments as code on its runAs path in both directions (a prose runAs call satisfied the ERROR; 97 possessive apostrophes in comments then blanked all seven real runAs calls). The run instruction to stamp 67.0 was refused in favour of the plan's 62.0. No compile check was possible and nothing was deployed.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "AGENT_CONTRACT.md Gate C row 3 caps confidence at MEDIUM when no offline compile check ran, and none could: there is no offline Apex compiler in the sf CLI and no org alias was supplied. Everything else meets the HIGH bar — all mandatory inputs came from plan.json, every recommendation cites a skill or template that exists, every emitted identifier resolves to a template file or a cited skill line, and all three declared checkers exit 0 with their liveness proven. Two inline UNVERIFIED markers (the Percent reading under A35, the Sales User profile name) are declared-assumption readings rather than unresolved symbols, so GATES.md Gate B's one-unresolved-symbol LOW rule does not apply.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "class-decomposition",
+    "governor-budget",
+    "security-posture",
+    "secret-handling",
+    "id-handling",
+    "bulk-safety",
+    "test-coverage"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "error-handling",
+      "state": "partial",
+      "reason": "ApplicationLogger is deliberately not wired: the step declares include_logger false, and the plan note records why — SecurityUtils references ApplicationLogger, which references Application_Log__c (eight fields) and Logger_Setting__mdt (one), a closure no step in this plan ships. Failures are therefore carried back to the caller as a SubmitOutcome message (Q30) rather than logged anywhere, which is what Q30 asked for but is not observability.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "test-coverage",
+      "state": "partial",
+      "reason": "Coverage is an estimate, not a measurement: no test run was possible without an org, and scripts/mock_deploy.py --test-level is the human's to run. The catch (DmlException) block in submitBatch is named as the branch expected to stay uncovered.",
+      "confidence_impact": "MEDIUM"
+    }
+  ],
+  "findings": [
+    {
+      "id": "M3S03-F-01",
+      "severity": "P1",
+      "title": "A declared acceptance test was exiting 0 having checked nothing, because a named constant hid the process name from the checker",
+      "detail": "check_approval_process_apex_patterns.py's RE_PROCESS_NAME matches only a string literal inside setProcessDefinitionNameOrId(...). The first draft passed a private static final constant, so the checker found no process name in the Apex at all, skipped its resolution rule and exited 0. Liveness probe C — renaming the process to Discount_Approval_Typo — did not fire, which is how it surfaced. The plan's own step note assumed the opposite ('check_approval_process_apex_patterns.py resolved that string against Opportunity.Discount_Approval.approvalProcess-meta.xml in a fixture run').",
+      "evidence": {
+        "checker": "skills/admin/approval-process-apex-patterns/scripts/check_approval_process_apex_patterns.py",
+        "rule_location": "RE_PROCESS_NAME, scan_apex()",
+        "probe": "setProcessDefinitionNameOrId('Discount_Approval_Typo') on a scratch copy",
+        "before_fix_exit": 0,
+        "after_fix_exit": 1
+      },
+      "recommendation": "Fixed in this step: the developer name is now written inline at the call with a comment saying why. Library follow-up: the checker could also resolve a name reached through a same-class String constant, so that better Apex does not silently withdraw the assertion."
+    },
+    {
+      "id": "M3S03-F-02",
+      "severity": "P1",
+      "title": "check_test_class_standards.py reads comments as code on its runAs path, producing both a false pass and a false fail on this step's own file",
+      "detail": "has_permissioned_runas, runas_arguments and find_fixture_seeded_as_persona all call strip_literals(text) on the raw file and never strip_comments, although the same module defines an offset-preserving strip_comments for exactly this purpose. False pass: the prose 'System.runAs(<permissioned rep>)' in a header comment satisfied the user-mode-test-without-runas ERROR on its own, and liveness probe B did not fire. False fail: with that prose removed, 97 possessive apostrophes in ordinary comments each opened a phantom string literal, and strip_literals blanked all seven real System.runAs calls — measured as 'raw runAs: 7 | after strip_literals: 0' — so the ERROR fired on a class that runs every assertion as a permissioned persona.",
+      "evidence": {
+        "checker": "skills/apex/test-class-standards/scripts/check_test_class_standards.py",
+        "functions": "has_permissioned_runas / runas_arguments / find_fixture_seeded_as_persona",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls",
+        "runas_calls_raw": 7,
+        "runas_calls_after_strip_literals": 0
+      },
+      "recommendation": "Worked around here, not fixed: the test class is written without possessive apostrophes in comments and without a spelled-out runAs call in prose, and both probes now behave. The real fix belongs in the library — strip comments before stripping literals on those three functions, with a comment-only and a real fixture, the same shape as the 2026-09-16 comment-aware sweep that did not reach this path. Same class of defect as apex/apex-security-patterns gotcha 'A Checker That Reads Comments As Code Flags Safe Classes'."
+    },
+    {
+      "id": "M3S03-F-03",
+      "severity": "P2",
+      "title": "apex/apex-security-patterns is cited in skills[] with no test running its checker, and declaring one today would block the step",
+      "detail": "build_plan.py next prints the standing advice. Run by hand, check_apex_security_patterns.py --manifest-dir artefacts/M3-S03 exits 1 with three findings, none fixable inside this step: two HIGH 'user-facing entry point lacks obvious read-access enforcement' against OpportunityApprovalController and OpportunityApprovalSubmitAction — a per-file heuristic meeting the deliberate three-class split of decision D6, where enforcement lives one call away in the service — and one MEDIUM 'public/global Apex class has no explicit sharing declaration (apiVersion 67.0)' against TestDataFactory.cls, the canonical template this step ships verbatim by contract. Widening scope to build does not help, because the rule never leaves the file.",
+      "evidence": {
+        "command": "python3 skills/apex/apex-security-patterns/scripts/check_apex_security_patterns.py --manifest-dir artefacts/M3-S03",
+        "exit": 1,
+        "count": 3
+      },
+      "recommendation": "Three real options for the human, in order of preference: (1) fix the template — give templates/apex/tests/TestDataFactory.cls an explicit sharing keyword, which clears the MEDIUM for every build that ships it; (2) teach the checker that a class whose only body is a delegation to another class in the same tree is not an unenforced entry point; (3) drop apex/apex-security-patterns from this step's skills[] if the answer is that its checker cannot express what this step needs. Declaring the checker unchanged would block M3-S03 on findings its own plan created."
+    },
+    {
+      "id": "M3S03-F-04",
+      "severity": "P2",
+      "title": "The run instruction to build at API 67.0 contradicts plan.json in three places; the plan was followed",
+      "detail": "The runner was told to stamp 67.0 as the earlier scenarios' Apex did. steps[M3-S03].inputs.api_version is '62.0'; the step note argues the 62.0/67.0 split at length and calls it deliberate; and manual acceptance test 6 pins it, ticking only if the four authored classes carry 62.0 while TestDataFactory carries 67.0. Under section 2 the plan is the only shared state, so 62.0 was used. This is not only a number: at 62.0 the default access mode is system mode and the explicit WITH USER_MODE on the service's one SOQL is what enforces FLS, whereas at 67.0 user mode is the default and the keyword states intent rather than providing the mechanism.",
+      "evidence": {
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "fields": "steps[M3-S03].inputs.api_version, steps[M3-S03].inputs.note, steps[M3-S03].acceptance_tests[5].description"
+      },
+      "recommendation": "If 67.0 is genuinely wanted for the build's Apex, it is an amend-step on inputs.api_version AND on manual acceptance test 6, followed by a documented -> running re-run of this step — not a runner-side edit. Raising the build's API version has stayed a plan-level decision in M1-S02, M2-S05, M3-S01 and M3-S02 alike."
+    },
+    {
+      "id": "M3S03-F-05",
+      "severity": "INFO",
+      "title": "OpportunityApprovalService exposes submitBatch, which the single-record requirement did not name",
+      "detail": "The feature summary says 'Submit exactly one', and by agents/apex-builder/AGENT.md Step 7 anything the approved requirement does not call for is a deviation to surface rather than a bonus. submitBatch exists because @InvocableMethod is a List-in / List-out contract and Flow hands the action a whole batch of interviews: looping submitOne would have put one SOQL and one Approval.process per input inside a loop. That defect would not have been caught by any declared checker — IM005 matches literal SOQL brackets and DML keywords, not a service call that performs them. submitOne remains the requirement's capability and the only method the controller calls.",
+      "evidence": {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S03/classes/OpportunityApprovalService.cls",
+        "query": "public static List<SubmitOutcome> submitBatch(List<Id> opportunityIds)"
+      },
+      "recommendation": "Accept it, or have the plan verifier rule that the invocable surface should be dropped and the action rebuilt as controller-only. Do not resolve it by looping submitOne."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The plan's step note had already settled the three-class split, the template closure, the API-version split and the absent package.xml, each against the rule it follows, and every one of those held on contact with the code.",
+      "domain": "build-planning",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M3-S03].inputs.note"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The upstream artefacts were specific enough to build against without guessing: allowedSubmitters type owner is what makes setSubmitterId(record.OwnerId) legal rather than hopeful under gotcha 11, and the permission set marking Approval_Status__c editable false is consistent with the field being written only by the process's own field updates.",
+      "domain": "artefact-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "A declared acceptance test was exiting 0 having checked nothing, because a named constant hid the approval-process name from the checker's literal-only match; only a deliberate liveness probe found it.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "heuristic",
+        "path": "skills/admin/approval-process-apex-patterns/scripts/check_approval_process_apex_patterns.py",
+        "query": "RE_PROCESS_NAME matches only a string literal inside setProcessDefinitionNameOrId(...)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "observation": "check_test_class_standards.py strips string literals but not comments before looking for runAs calls, which produced both a false pass and then a false fail on this step's own test class; measured as seven real System.runAs calls reduced to zero by apostrophes in ordinary possessive comments.",
+      "domain": "checker-correctness",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/test-class-standards/scripts/check_test_class_standards.py",
+        "query": "has_permissioned_runas / runas_arguments / find_fixture_seeded_as_persona call strip_literals on raw text",
+        "count": 7
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The step cites apex/apex-security-patterns but declares no test running its checker, and the checker exits 1 on this step's artefacts with three findings none of which this step may fix.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-security-patterns/scripts/check_apex_security_patterns.py",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The run instruction said API 67.0 and plan.json says 62.0 in three places including a pinning manual test; the plan was followed, but which one is intended changes the security idiom rather than just a number.",
+      "domain": "api-version",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M3-S03].inputs.api_version"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Assumption A35's Apex half is still unconfirmed, so the two Decimal discount literals in the test carry an inline UNVERIFIED marker; if a retrieved record shows Apex reading 0.25 rather than 25 they are the only thing that changes.",
+      "domain": "field-semantics",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls",
+        "query": "QUALIFYING_DISCOUNT / BELOW_THRESHOLD_DISCOUNT"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The test queries Profile by Name Sales User, taken from Q19 and the M2-S02 overlay file; M2-S02 already records that the exact name needs confirming in the target org, and here a mismatch surfaces as a QueryException in TestSetup rather than as a deploy error.",
+      "domain": "org-grounding",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/deploy-order.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The declared tests were run here for evidence, but tests/M3-S03/results.json is the tester's file to write and the step cannot reach tested without it.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because set-status tested requires tests/M3-S03/results.json with passed true and the recorded artefact hashes, which only step-tester writes."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Whether a thin @AuraEnabled delegate needs its own read-access enforcement is a judgement the per-file security heuristic cannot make.",
+      "domain": "fls",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S03/classes/OpportunityApprovalController.cls"
+      },
+      "suggested_followup_agent": "security-scanner",
+      "followup_reason": "Because the two HIGH findings in M3S03-F-03 need someone to rule on the three-class split rather than a file-scoped regex."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "M3-S04 is the next step and has to import against the controller signature this step just fixed.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json"
+      },
+      "suggested_followup_agent": "lwc-builder",
+      "followup_reason": "Because discountApprovalPanel imports submitForApproval(Id) and reads the four @AuraEnabled members of SubmitOutcome, which section 5 note 5 of the report spells out."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Sections 2, 4 (Apex row note, borrowed-agent condition 2), 5 (Apex exception, checker scope, outputs-must-exist) and the status machine"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Eight-section shape, Process Observations, confidence rubric, Apex security idiom by API version, and Gate C's three checks"
+    },
+    {
+      "type": "agent",
+      "id": "apex-builder",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "The playbook this run followed: class list, meta XML shape, test-class requirements, template provenance check, Step 7 grading"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-process-apex-patterns",
+      "path": "skills/admin/approval-process-apex-patterns/SKILL.md",
+      "used_for": "Every Approval.* identifier quoted verbatim, allOrNone=false, and gotchas 1, 2, 3, 11 and 15"
+    },
+    {
+      "type": "skill",
+      "id": "apex/invocable-methods",
+      "path": "skills/apex/invocable-methods/SKILL.md",
+      "used_for": "List-in/List-out contract, one action per outer class, the size-and-order rule, and the separate Apex class access grant"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/SKILL.md",
+      "used_for": "Gotchas 13, 14 and 15 — the persona runAs, the factory lookup rule, and seeding in system mode"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-security-patterns",
+      "path": "skills/apex/apex-security-patterns/SKILL.md",
+      "used_for": "Declaring with sharing rather than relying on the version default, and the version-gated access mode at 62.0"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-hardcoded-id-elimination",
+      "path": "skills/apex/apex-hardcoded-id-elimination/SKILL.md",
+      "used_for": "The describe-driven record-type idiom, quoted verbatim from references/examples.md lines 74-77 instead of written from memory"
+    },
+    {
+      "type": "template",
+      "id": "templates/apex/tests/TestDataFactory.cls",
+      "path": "templates/apex/tests/TestDataFactory.cls",
+      "used_for": "Shipped verbatim in this step; createAccounts, createOpportunities and insertAsSystem signatures copied from lines 19, 46 and 116"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/automation-selection.md",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q8 — No (custom UI needed) -> LWC calling imperative Apex",
+      "used_for": "The branch recorded as decision D5, which is why this step exists as Apex rather than a Screen Flow quick action"
+    },
+    {
+      "type": "example_build",
+      "id": "examples/builds/case-onboarding",
+      "path": "examples/builds/case-onboarding/README.md",
+      "used_for": "The mock-deploy evidence behind test-class-standards gotchas 13 to 15, which is what shaped this fixture"
+    }
+  ]
+}

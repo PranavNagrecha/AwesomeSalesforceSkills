@@ -1,0 +1,345 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-10-02T17-23-14Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S01/2026-10-02T17-23-14Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S01/2026-10-02T17-23-14Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S01",
+    "api_version": "62.0 (not supplied; plan.json carries no api_version, so the AGENT.md Inputs fallback applied - it matches every package.xml in the build, ten of ten at 62.0). This step stamps no file with it."
+  },
+  "summary": "Built M4-S01 (custom): the report-type and column-code probe runbook, written as the step's single declared output artefacts/M4-S01/deploy-order.md (202 lines, 15,671 bytes). It writes no metadata and no package.xml, as plan.json declares. The runbook names the plan's three sf commands verbatim and gives them runnable --target-org forms: list ReportFolder, list Report in a folder, retrieve Report. Phase A runs these against the SMB pipeline report to read its <reportType>. That confirms, rather than assumes, A40's decision to build a NEW Enterprise_Opportunity_Pipeline report type instead of editing whatever SMB uses (A4 retrieves the ReportType for Q54's blast radius if it is custom). Phase B covers a fact the plan's note did not spell out. The report type is new and two of the six columns (Discount__c, Approval_Status__c) are new M1-S01 fields, so no report in the org today can carry the six codes. Confirming them needs the ReportType deployed first, one scratch report built on it, a retrieve and a diff, which is the gotchas F-51 route. The note lists the six provisional Object$Field codes as UNVERIFIED (2026-10-02). It states that RPT-COL-01 reports each of them as unverifiable offline by design, and that a grouping field is skipped by the rule (proven by a fixture run). It also states that the retrieve is a pre-deploy prerequisite rather than a build step. It gives the validate-only command as text and ends with six UNVERIFIED markers that M4-S02 inherits. The cited checker scanned 0 files at exit 0, and check-outputs is ok. Terminal outcome: built.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 HIGH needs every Questions-to-Ask row answered from the plan rather than defaulted, and two in-scope rows rest on G1 defaults the planner applied (Q54 -> A40, Q57 -> A43). The other HIGH conditions hold: nothing emitted needed an element inventory, check-outputs is ok, and the one declared output was written and nothing else. The only checker scanned 0 files, which proves nothing about the runbook. The runbook's substance is a set of UNVERIFIED markers that only an org can close.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "question-coverage",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "not-run",
+      "reason": "The step emits no metadata element; there is no XML to trace to an inventory. The runbook's claims are grounded instead on the cited skill's fenced examples and quoted prose, and anything else is marked UNVERIFIED (2026-10-02) inline (U1-U6)."
+    },
+    {
+      "dimension": "checker-pass",
+      "state": "count-only",
+      "reason": "check_report_inventory.py --manifest-dir artefacts/M4-S01 printed 'Scanned 0 report/dashboard file(s); nothing matched the supplied inputs.' at exit 0 (also exit 0 under --strict). That exit asserts nothing about this step, because the step ships no report XML. The checker is not declared in the step's acceptance_tests[]."
+    },
+    {
+      "dimension": "manifest-consistency",
+      "state": "not-run",
+      "reason": "No package.xml exists for this step and none is declared. plan.json inputs.note says the custom step emits no package.xml fragment. The § 5 always-on manifest check applies only to the seven metadata step types, and custom is not one of them."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "planning",
+      "observation": "The planner split the org-only probe into its own custom step and wrote both manual tests so they can be ticked from this one file. M4-S02's checker-test description already predicts the six RPT-COL-01 INFO lines as the documented outcome, so the provisional codes are a recorded state at every level rather than a surprise at the tester.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "steps[M4-S01].acceptance_tests, steps[M4-S02].acceptance_tests[0].description"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "library-learning",
+      "observation": "Case-onboarding's org refusals (Cases -> CaseList, USERS.NAME -> OWNER, five rejected IsEscalated codes) reached the cited skill as gotchas F-50/F-51, a corrected example and checker rules RPT-TYPE-01, RPT-GRP-01 and RPT-COL-01. This step could therefore ground every 'do not guess' claim on the skill rather than on the example build alone.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/references/gotchas.md",
+        "probe": "F-50, F-51"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "deploy-sequencing",
+      "observation": "The plan's probe cannot confirm the six codes from anything already in the org. Enterprise_Opportunity_Pipeline is new (A40) and Discount__c and Approval_Status__c are new M1-S01 fields, so a report on the same report type only exists after the ReportType is deployed. Confirmation therefore needs a split deploy: ReportType first, then a scratch report, a retrieve and a diff, then the Report and Dashboard. The step's note ('diffed against a retrieve of a working report on the same report type before deploy') leaves that implicit. The runbook makes it § 3, and whether to split the M4 deploy is a decision for the M4 gate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Discount__c.field-meta.xml",
+        "probe": "A40 text; metadata-examples.md section 6 deploy-order paragraph"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-depth",
+      "observation": "RPT-COL-01 treats a report's own grouping fields as known codes. A provisional Object$Field grouping on a brand-new custom report type therefore draws no finding, and a reader could take that silence for confirmation. A fixture showed six columns giving six INFO lines, and the same report with Opportunity$StageName moved to groupingsDown giving five. The runbook says so. A skill-depth item: flag Object$Field groupings on a report type with no confirmed codes.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py",
+        "probe": "known_codes = grouping_fields | KNOWN_GOOD_COLUMN_CODES",
+        "count": 5
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "playbook",
+      "observation": "agents/metadata-builder/AGENT.md Step 6 says package.xml is written 'on every run of this agent, without exception', but this custom step declares only deploy-order.md, and its inputs.note says it emits no package.xml fragment. This run followed the plan (Step 5 rule 2; plan.json is the shared state). An empty manifest would have been an undeclared artefact. The playbook has no carve-out for a custom step with no metadata types.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "probe": "Step 6 vs plan.json steps[M4-S01].inputs.note"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "tooling",
+      "observation": "'build_plan.py next' and the set-status validation both advise declaring check_report_inventory.py on M4-S01. On this step that test would always print 'Scanned 0 report/dashboard file(s)' and assert nothing, because the step ships no report XML. The advice is noise for a custom step whose outputs carry no metadata, and declaring it would add a green tick with no content.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py",
+        "probe": "next advice: '1 cited checker(s) not declared - check_report_inventory.py'"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "brief-vs-plan",
+      "observation": "The caller's brief named eight column codes (adding Owner and record type) and asked for 'sf project retrieve start --metadata' commands. plan.json names six codes (A43 and acceptance test 1) and three commands, two of which are 'sf org list metadata'. Plan wins, so the runbook lists six. Owner, record-type and open-stage codes are covered generically in its § 5 (provisional, harvested in the same scratch report), with no code string proposed.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "steps[M4-S01].inputs.note and acceptance_tests[0]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "deploy-validation",
+      "observation": "No cited source or precedent says whether a single-request dry run of a new custom ReportType together with a Report on it validates the Report's column codes. Case-onboarding's report was on standard CaseList. If it does, the dry run is a cheap negative check. If it does not, a green dry run of M4-S02 could still let a wrong code through. Recorded as U4. The first mock_deploy run over M4-S02 settles it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "examples/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md",
+        "probe": "operator probe table (CaseList only)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Next is step-tester on M4-S01. The step declares only two manual tests, so the tester's work is the always-on checks plus recording both manual lines as deferred to the M4 gate.",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the two manual acceptance tests are tickable from deploy-order.md alone and the tester owns tests/M4-S01/results.json.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "steps[M4-S01].acceptance_tests"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/SKILL.md",
+      "used_for": "The Questions-to-Ask table (the report-type-reuse row and the two 'confirmed from a retrieve' rows bound to Q54 and Q26), and Recommended Workflow steps 3 (retrieve before you write), 5 (RPT-COL-01 meaning) and 6 (dry run first)."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+      "used_for": "Section 2: column codes are report-type-specific and take the Object$Field form for custom report types. Section 5: the fenced 'sf org list metadata --metadata-type ReportFolder / Report --folder' commands. Section 6: the fenced 'sf project retrieve start --metadata Report:/ReportType:' and '--dry-run' commands, and the split-deploy ordering sentence. Section 1: deployed=false hides a report type."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/gotchas.md",
+      "used_for": "F-50 (guessed reportType/grouping fail only at deploy; confirm each standard report type name, do not extrapolate the suffix; a dry run is not optional), F-51 (an un-guessable code is harvested by building it once by hand and retrieving, or shipped without it), and the shared-report-type blast-radius check."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/examples.md",
+      "used_for": "The corrected Case Aging report and its four live-proven wrong guesses, the precedent cited in runbook section 1."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/well-architected.md",
+      "used_for": "Official Sources Used: the Metadata API Developer Guide Report, ReportType and Folder sections that the metadata-examples statements rest on."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/templates/dashboard-design-template.md",
+      "used_for": "Read per playbook Step 3 item 3. Nothing from it entered this runbook, because M4-S01 designs no dashboard (M4-S02 does)."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py",
+      "used_for": "Its RPT-COL-01 rule (INFO, grouping fields and the four CaseList codes are skipped) and RPT-GRP-01, quoted in runbook section 4. Run against artefacts/M4-S01 (0 files scanned) and against two scratch fixtures to confirm the RPT-COL-01 behaviour the runbook states."
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md",
+      "used_for": "What the org refused on the precedent report step: the 255-char description, Cases -> CaseList, USERS.NAME -> OWNER, a field both grouping and column, and five rejected IsEscalated codes."
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/artefacts/M5-S01/deploy-order.md",
+      "used_for": "The house shape of a report step's runbook: an UNVERIFIED register with closed-by entries, and F-51's post-deploy harvest routes."
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 2 (plan.json is the only shared state; writers), section 4 (the custom row admits any requires_org:false agent; the status machine), and section 5 (checkers run verbatim from the build directory; the manifest check applies only to metadata step types; mock_deploy.py hard-codes --dry-run)."
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "The Process Observations, Citations and confidence requirements for this envelope."
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "The playbook: Step 7 (the deploy-order note ends with a validate-only command as text), Step 8 (run the cited checkers), Step 9 (check-outputs, then set-status in the standalone path), Step 10 (confidence) and Step 11 (envelope self-validation)."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S01",
+    "step_type": "custom",
+    "build_mode": "design-only",
+    "status_path_taken": "Invoked directly (not under agents/build-step-runner), so this agent moved the step itself, exactly twice: pending -> running at 2026-10-02T17:19:57Z, and running -> built after check-outputs returned ok. There were no other writes to plan.json.",
+    "human_gate": false,
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M4-S01/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M4-S01/deploy-order.md",
+        "type": "runbook (markdown; no metadata type)",
+        "source": "skills/admin/reports-and-dashboards SKILL.md, references/metadata-examples.md sections 1/2/5/6, references/gotchas.md F-50/F-51",
+        "declared": true,
+        "sha256": "4f90c5750f57b8350b47afaaf904330646cbc61bc19c691aff00ca3ac7a4c101",
+        "bytes": 15671
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Is the report type's API name confirmed from an org retrieve, not typed from memory?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "No. Q26: 'confirm the report type name and column codes from a retrieve during the build; never guess them'.",
+        "source": "clarification Q26 (answered)",
+        "determined": "The whole runbook. Section 2 A3 reads the SMB report's <reportType>, and U3 records the standard Opportunity type's name as unverified."
+      },
+      {
+        "question": "Is every filter, grouping and column code on this report harvested from a retrieved report, not guessed?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "No, the six codes are provisional (A28, risk high).",
+        "source": "clarification Q26 + assumption A28",
+        "determined": "Section 3 Phase B (deploy the ReportType first, build a scratch report, retrieve, diff), the section 4 table with a blank confirmed-code column, and U1."
+      },
+      {
+        "question": "Does this report type already back other reports?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Unknown. Q54 was left open at G1, and the planner applied its proposed default as A40: build a NEW Enterprise-scoped report type and edit nothing SMB uses.",
+        "source": "default (Q54 -> A40, applied in plan.json inputs.defaults_applied)",
+        "determined": "Section 2 item 1 (A3 reads SMB's <reportType>; A4 retrieves the ReportType if custom, for the blast-radius list), and U2."
+      },
+      {
+        "question": "(build input) Which reports filter on the current record type?",
+        "skill": "admin/record-types-and-page-layouts (Q9's source skill; not in this step's skills[])",
+        "answer": "The SMB pipeline report filters on Record Type = Master.",
+        "source": "clarification Q9 (answered)",
+        "determined": "Section 2 item 2: the SMB report carries a record-type filter code, which is evidence of this org's code form but not confirmation."
+      },
+      {
+        "question": "(build input) What exact number does the VP need, and what has to appear on the same row?",
+        "skill": "admin/requirements-gathering-for-sf (Q57's source skill; not in this step's skills[])",
+        "answer": "Opportunity Name, Stage, Amount, Discount, Close Date and Approval Status; base Opportunity; no join.",
+        "source": "default (Q57 -> A43, applied in plan.json inputs.defaults_applied)",
+        "determined": "The six rows of the section 4 table."
+      },
+      {
+        "question": "(build input) Should a parent with zero children still appear?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Q23: yes, with a product-count column. A43 and M4-S02's note descope the join and the column.",
+        "source": "clarification Q23 (answered) + A43",
+        "determined": "Nothing in this runbook. It is M4-S02's join decision, and its deploy-order.md records why."
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M4-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 0 report/dashboard file(s); nothing matched the supplied inputs.\"}",
+        "reading": "Scanned 0 file(s), so nothing was asserted. The step ships no report XML. Exit 0 here is the checker's empty-directory behaviour, not evidence about the runbook.",
+        "strict_rerun": "Same command with --strict: same output, exit 0."
+      },
+      {
+        "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir <scratchpad fixture a | b>",
+        "cwd": "repo root (fixtures in the session scratchpad, deleted after the run; nothing written to the build)",
+        "declared": false,
+        "scope": "fixture",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "a: 'Scanned 1 report/dashboard file(s); 7 finding(s) detected.' (six RPT-COL-01 INFO, one INFO unbounded-report line); --strict exit 0. b (Opportunity$StageName moved to groupingsDown): 'Scanned 1 report/dashboard file(s); 6 finding(s) detected.' (five RPT-COL-01, none for StageName).",
+        "reading": "Evidence for the two RPT-COL-01 statements in runbook section 4. It is not a test of this step."
+      }
+    ],
+    "xml_parse": {
+      "files": 0,
+      "result": "no *.xml under artefacts/M4-S01 (0 parsed, 0 errors)"
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "not applicable: no package.xml is declared or written (custom step, no metadata types)",
+    "api_version_note": "62.0, the AGENT.md Inputs fallback (plan.json carries none). It matches all ten package.xml files in the build. This step stamps no file.",
+    "org_interaction": "none: no sf command was run, and no org was contacted",
+    "brief_vs_plan": [
+      "The brief listed eight codes (adding Owner and record type). The plan lists six. The runbook follows the plan and covers further codes generically in section 5.",
+      "The brief described the commands as 'sf project retrieve start --metadata' commands. The plan names three commands, two of them 'sf org list metadata'. The runbook gives the plan's three verbatim, plus an A4 ReportType retrieve and the Phase B scratch-report retrieve, both in the skill's fenced form."
+    ],
+    "persistence_note": "The AGENT.md Persistence pair under docs/reports/metadata-builder/ was not written: the caller's scope allows writes only inside the build directory. The build-scoped envelope pair is the record (the driver's log friction 23 tracks this contract conflict).",
+    "workflow_return": {
+      "step_id": "M4-S01",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M4-S01/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "M4 gate: decide whether to split the M4 deploy (M1-S01 fields + M4-S02 ReportType first) so that Phase B can confirm the six codes. Otherwise accept the F-51 fallback for any code that cannot be harvested.",
+      "Run Phase A (section 2) against the target org before M4-S02 deploys, and record SMB's report type (closes U2, and U3 if standard).",
+      "Fill section 4's confirmed-code column. Any replaced code goes into M4-S02 through a rebuild, not a hand edit.",
+      "U4: the first mock_deploy run over M4-S02 shows whether a same-request dry run rejects a wrong column code on a new custom report type. Feed the answer back into admin/reports-and-dashboards gotchas."
+    ]
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "The step's two manual tests are the tester's to record (deferred to the M4 gate) in tests/M4-S01/results.json. This agent ticks nothing."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M4-S01 is tested, its documentation pass (render_step_docs.py or the agent) carries the four open items above into decisions.md."
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-18T13-56-11Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-18T13-56-11Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-18T13-56-11Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S01",
+    "scale": "project"
+  },
+  "summary": "Re-documented M1-S01 (object-model, scale project, build_mode design-only) after its N3-F-01 repair (reports/MOCK-DEPLOY-M1.md run 1-2; artefacts/M1-S01/deploy-order.md § 6) and re-test (step-tester run 2026-09-18T13-47-29Z, status tested). This step was already documented once (D-M1S01-01..04, O-M1S01-01..03, REQ-001..007, workbook Section 1). Per instruction this pass appends rather than rewrites: re-rendered PLAN.md/CLARIFICATIONS.md from plan.json; appended one deviation decision (D-M1S01-05, filing that the org rejects <default>true</default> on an Opportunity BusinessProcess and superseding D-M1S01-01's per-motion-default design, with the library gap in admin/opportunity-management metadata-examples.md § 2 named for the record) and one open item (O-M1S01-04, the now-UNVERIFIED question of where the default stage comes from, closed by the § 4 post-deploy SOQL) to decisions.md; updated only the two workbook rows and two traceability cells whose content actually changed (CWB-OBJ-002/CWB-OBJ-003 and REQ-002/REQ-003, the two BusinessProcess artefacts) rather than rewriting the step's other seven rows, which are byte-identical to the prior pass. decisions.md and traceability.md are shared with an in-flight parallel M1-S02 repair; both were re-read immediately before this run's edits and again confirmed unchanged immediately before writing, and no M1-S02 content was touched. check_workbook.py run on this step's slice (workbook/01-objects-and-fields.md) before moving the step. Moved M1-S01 documented (already-documented, tested-again) -> documented via build_plan.py set-status.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 MEDIUM: a step type mapping and requirement-id inference were not in play this run (this is a re-documentation of an already-minted set), but the repaired artefact carries a genuine grounding gap this pass could not close — D-M1S01-05's superseded mechanism (a per-BusinessProcess default) has no replacement documented in any of this step's five cited skills, so O-M1S01-04 is recorded UNVERIFIED rather than resolved, and the workbook/traceability text says so rather than asserting a stage. That is exactly Step 11's MEDIUM condition ('an artefact could not be placed... without judgment' / a real open question the row states rather than resolves). Not LOW: no row was written with an empty source_req_id or an empty verification cell, both edited rows' checker citations are the actual re-run exit codes from envelopes/M1-S01/2026-09-18T13-40-27Z.json and 2026-09-18T13-47-29Z.json, and idempotence held — the seven unaffected rows were left untouched rather than rewritten identically.",
+  "dimensions_compared": [
+    "workbook-row-placement",
+    "traceability-coverage",
+    "decision-log-completeness"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "rtm-lint",
+      "state": "not-run",
+      "reason": "check_rtm.py is not one of M1-S01's declared acceptance tests and is not named in this agent's own Step 12 self-validation (validate_envelope.py over this agent's own envelope). The instruction for this pass named check_workbook.py specifically; check_rtm.py remains a follow-up flagged in traceability.md's own header from the first documenting pass.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts/M1-S01 --repo-root ../../.. from .sfskills/builds/northwind-sales/ before the M1 milestone gate."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "repair-scope",
+      "observation": "The repair this pass documents touched exactly two lines across two files (the two BusinessProcess opening-stage <default> elements), and this documenting pass mirrors that scope exactly: two workbook rows and two traceability cells edited, the other seven CWB-OBJ rows and five other traceability rows left byte-identical to the 2026-09-15T19-39-32Z pass.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/workbook/01-objects-and-fields.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "decision-grounding",
+      "observation": "D-M1S01-05 and O-M1S01-04 both trace to a specific mock-deploy finding id (N3-F-01), a specific deploy-order.md section (§ 6), and a specific pair of envelope paths, rather than to a paraphrase of the repair's own summary line.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "library-gap",
+      "observation": "admin/opportunity-management references/metadata-examples.md § 2 still ships the <default>true</default>-on-Opportunity-BusinessProcess shape the org rejected, and admin/path-and-guidance references/metadata-examples.md § 1 carries an independent, uncited occurrence of the same shape (Enterprise_New_Business_Process). Neither skill has been corrected as of this pass; D-M1S01-05 files both for the library rather than treating N3-F-01 as a one-off build fact.",
+      "evidence": {
+        "source": "input",
+        "path": "skills/admin/opportunity-management/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "workbook-schema",
+      "observation": "check_workbook.py on workbook/01-objects-and-fields.md exits 1 with 9 issues, every one 'Missing canonical section' and zero per-row findings -- identical shape and count to the 2026-09-15T19-39-32Z pass. Structural (a whole-workbook linter run against a per-step slice), not evidence of a defect in the two edited rows.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/workbook/01-objects-and-fields.md",
+        "count": 9
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "milestone-status",
+      "observation": "The prior metadata-builder envelope (2026-09-18T13-40-27Z.md, Suggested follow-ups) characterised M1 as 'already documented/accepted before this repair.' plan.json shows milestone M1's own status as building and the milestone:M1 human gate as pending -- what was actually approved earlier was the step:M1-S01 gate history implicit in the documented -> running rebuild transition, not a milestone-level acceptance. No re-verification path (build-orchestration.md § 8) applies here: this is milestone M1's first, not-yet-run gate, once M1-S02's parallel repair also reaches documented.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "M1-S01 is documented again with its repair on record; M1-S02's parallel repair documenting pass is in flight separately and this run touched none of its files.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Once M1-S02's parallel repair also reaches documented, M1's first milestone gate (still pending, not yet a re-verification) can run over both repaired steps together."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/PLAN.md",
+      ".sfskills/builds/northwind-sales/CLARIFICATIONS.md",
+      ".sfskills/builds/northwind-sales/decisions.md",
+      ".sfskills/builds/northwind-sales/workbook/01-objects-and-fields.md",
+      ".sfskills/builds/northwind-sales/traceability.md"
+    ],
+    "workbook_rows": [
+      "CWB-OBJ-002",
+      "CWB-OBJ-003"
+    ],
+    "traceability_rows": [
+      "REQ-002",
+      "REQ-003"
+    ],
+    "decisions_appended": [
+      "D-M1S01-05",
+      "O-M1S01-04"
+    ],
+    "rows_replaced": [
+      "CWB-OBJ-002",
+      "CWB-OBJ-003",
+      "REQ-002",
+      "REQ-003"
+    ],
+    "check_workbook_results": [
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/01-objects-and-fields.md --repo-root ../../.. --allow-empty-section",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 1,
+        "issues": 9,
+        "issue_shape": "every issue is 'Missing canonical section' for one of the nine sections this slice does not carry; zero per-row findings -- identical to the 2026-09-15T19-39-32Z pass"
+      }
+    ],
+    "render_result": {
+      "command": "python3 scripts/build_plan.py render .sfskills/builds/northwind-sales/plan.json",
+      "exit_code": 0,
+      "output": "wrote .sfskills/builds/northwind-sales/PLAN.md; wrote .sfskills/builds/northwind-sales/CLARIFICATIONS.md"
+    },
+    "set_status_result": {
+      "command": "python3 scripts/build_plan.py set-status .sfskills/builds/northwind-sales/plan.json M1-S01 documented --run-agent build-doc-keeper --envelope envelopes/M1-S01/2026-09-18T13-56-11Z.json --result \"repair pass: workbook rows replaced 2; traceability rows replaced 2; decisions appended 2\" --started 2026-09-18T13:56:11Z",
+      "exit_code": 0
+    },
+    "repair_context": {
+      "finding": "N3-F-01",
+      "mock_deploy_report": "reports/MOCK-DEPLOY-M1.md",
+      "mock_deploy_runs": ["2026-09-18T13-34-25Z", "2026-09-18T13-43-49Z"],
+      "deploy_order_section": "artefacts/M1-S01/deploy-order.md § 6",
+      "repair_envelopes": [
+        "envelopes/M1-S01/2026-09-18T13-40-27Z.json",
+        "envelopes/M1-S01/2026-09-18T13-47-29Z.json"
+      ],
+      "prior_documenting_pass": "envelopes/M1-S01/2026-09-15T19-39-32Z.json"
+    }
+  },
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the Plan this run executed (Steps 1-9, 11, 12) - a per-step run, not a compile run, since M1-S01's agent is metadata-builder, not build-doc-keeper; Step 8's row-keyed replace-not-append idempotence rule, applied here to exactly the two rows/cells whose content changed"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, confidence rubric (overridden by AGENT.md Step 11)"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope shape, run_id convention, atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirmed no refusal condition applied - step status was tested, the precondition for a per-step documenting run"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "SS2 (rendered views vs plan.json as sole state; build directory layout), SS4 (object-model step type -> Section 1), SS6 (this agent's Tier-4 role), SS8 (set-status as the only status writer; skill-gap-in-decisions.md rule; the documented -> running rebuild transition and the re-verification path this run confirmed does NOT yet apply, since milestone:M1's own gate is still pending)"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step, acceptance_tests[] and outputs[] shape read from plan.json for M1-S01"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the row schema and the rule that a row edit replaces the existing row rather than duplicating it"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set and the pipe-delimited multi-value convention used to add D-M1S01-05 to REQ-002/REQ-003's decision_ref cell alongside D2"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape (date, decision, alternative rejected, source grounded in) applied to D-M1S01-05 and O-M1S01-04"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirmed the two manual tests on this step are unaffected by the repair and remain correctly recorded as outstanding rather than passed"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/decisions.md",
+      "used_for": "the precedent for a repair-driven decision entry appended after the step's original documenting pass (D-M1S01-05/D-M1S01-06 there), including the 'What it supersedes' framing and filing an open item the repair itself creates"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Not yet - M1's own milestone gate is still pending and M1-S02's parallel repair documenting pass has not yet landed. Recorded as the eventual next step once both M1 steps are documented again."
+    }
+  ]
+}

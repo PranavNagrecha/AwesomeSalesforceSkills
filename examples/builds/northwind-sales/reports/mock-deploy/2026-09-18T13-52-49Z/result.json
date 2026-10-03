@@ -1,0 +1,233 @@
+{
+  "status": 1,
+  "result": {
+    "checkOnly": true,
+    "completedDate": "2026-09-18T13:52:53.000Z",
+    "createdBy": "005dL00001j3fsD",
+    "createdByName": "Pranav Nagrecha",
+    "createdDate": "2026-09-18T13:52:51.000Z",
+    "details": {
+      "componentFailures": [
+        {
+          "changed": false,
+          "componentType": "Layout",
+          "created": false,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "layouts/Opportunity-Opportunity Enterprise Layout.layout",
+          "fullName": "Opportunity-Opportunity Enterprise Layout",
+          "problem": "Field:StageName must be Required",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "changed": false,
+          "componentType": "Layout",
+          "created": false,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "layouts/Opportunity-Opportunity Renewal Layout.layout",
+          "fullName": "Opportunity-Opportunity Renewal Layout",
+          "problem": "Field:StageName must be Required",
+          "problemType": "Error",
+          "success": false
+        }
+      ],
+      "componentSuccesses": [
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Approval_Status__c",
+          "id": "00NdL00002ejUwLUAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Discount__c",
+          "id": "00NdL00002ejUwMUAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "StandardValueSet",
+          "created": false,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "standardValueSets/OpportunityStage.standardValueSet",
+          "fullName": "OpportunityStage",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "BusinessProcess",
+          "created": true,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Enterprise_Sales_Process",
+          "id": "019dL000009i1EXQAY",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "BusinessProcess",
+          "created": true,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Renewal_Sales_Process",
+          "id": "019dL000009i1EYQAY",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "RecordType",
+          "created": true,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Enterprise",
+          "id": "012dL00000FUh8XQAT",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "RecordType",
+          "created": true,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Renewal",
+          "id": "012dL00000FUh8YQAT",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-09-18T13:52:53.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "package.xml",
+          "success": true
+        }
+      ],
+      "runTestResult": {
+        "numFailures": 0,
+        "numTestsRun": 0,
+        "totalTime": 0,
+        "codeCoverage": [],
+        "codeCoverageWarnings": [],
+        "failures": [],
+        "flowCoverage": [],
+        "flowCoverageWarnings": [],
+        "successes": []
+      }
+    },
+    "done": true,
+    "id": "0AfdL00000gXqSfSAK",
+    "ignoreWarnings": false,
+    "lastModifiedDate": "2026-09-18T13:52:53.000Z",
+    "numberComponentErrors": 2,
+    "numberComponentsDeployed": 7,
+    "numberComponentsTotal": 9,
+    "numberFiles": "8",
+    "numberTestErrors": 0,
+    "numberTestsCompleted": 0,
+    "numberTestsTotal": 0,
+    "rollbackOnError": true,
+    "runTestsEnabled": false,
+    "startDate": "2026-09-18T13:52:51.000Z",
+    "status": "Failed",
+    "success": false,
+    "zipSize": 3649,
+    "files": [
+      {
+        "fullName": "Opportunity.Enterprise_Sales_Process",
+        "type": "BusinessProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-18T13-52-49Z/force-app/main/default/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Renewal_Sales_Process",
+        "type": "BusinessProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-18T13-52-49Z/force-app/main/default/objects/Opportunity/businessProcesses/Renewal_Sales_Process.businessProcess-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Approval_Status__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-18T13-52-49Z/force-app/main/default/objects/Opportunity/fields/Approval_Status__c.field-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Discount__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-18T13-52-49Z/force-app/main/default/objects/Opportunity/fields/Discount__c.field-meta.xml"
+      },
+      {
+        "fullName": "Opportunity-Opportunity Enterprise Layout",
+        "type": "Layout",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-18T13-52-49Z/force-app/main/default/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+        "error": "Field:StageName must be Required"
+      },
+      {
+        "fullName": "Opportunity-Opportunity Renewal Layout",
+        "type": "Layout",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-18T13-52-49Z/force-app/main/default/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+        "error": "Field:StageName must be Required"
+      },
+      {
+        "fullName": "Opportunity.Enterprise",
+        "type": "RecordType",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-18T13-52-49Z/force-app/main/default/objects/Opportunity/recordTypes/Enterprise.recordType-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Renewal",
+        "type": "RecordType",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-18T13-52-49Z/force-app/main/default/objects/Opportunity/recordTypes/Renewal.recordType-meta.xml"
+      },
+      {
+        "fullName": "OpportunityStage",
+        "type": "StandardValueSet",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-18T13-52-49Z/force-app/main/default/standardValueSets/OpportunityStage.standardValueSet-meta.xml"
+      }
+    ],
+    "zipFileCount": 5,
+    "deployUrl": "https://orgfarm-76c95d6f7f-dev-ed.develop.my.salesforce.com/lightning/setup/DeployStatus/page?address=%2Fchangemgmt%2FmonitorDeploymentsDetails.apexp%3FasyncId%3D0AfdL00000gXqSfSAK%26retURL%3D%252Fchangemgmt%252FmonitorDeployment.apexp"
+  },
+  "warnings": [],
+  "api_version": {
+    "value": "62.0",
+    "source": "highest of: M1-S01=62.0, M1-S02=62.0"
+  },
+  "tests": {
+    "level": "NoTestRun",
+    "requested_tests": null,
+    "run": 0,
+    "passed": 0,
+    "failed": 0,
+    "coverage_pct": null,
+    "failures": [],
+    "coverage_warnings": [],
+    "per_class": []
+  },
+  "missing_members": []
+}

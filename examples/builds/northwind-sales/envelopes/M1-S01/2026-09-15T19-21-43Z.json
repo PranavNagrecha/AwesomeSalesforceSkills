@@ -1,0 +1,475 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-15T19-21-43Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-15T19-21-43Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-15T19-21-43Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S01",
+    "api_version": "62.0 (DEFAULTED - plan.json carries no api_version key; agent default per agents/metadata-builder/AGENT.md Inputs)"
+  },
+  "summary": "Built M1-S01 (object-model, scale project, build_mode design-only) as deploy-ready source-format metadata under artefacts/M1-S01/: the OpportunityStage StandardValueSet carrying the eight Northwind stages with probability, forecastCategory, won and closed on every value; the Enterprise_Sales_Process and Renewal_Sales_Process BusinessProcess files; the Enterprise and Renewal RecordType files binding them by bare process name; and the Discount__c (Percent 5/2) and Approval_Status__c (restricted Picklist) CustomField files. All nine declared outputs written, including package.xml (four <name> blocks, object-qualified BusinessProcess and RecordType members) and deploy-order.md, which leads with the StandardValueSet:OpportunityStage retrieve-and-merge that decision D1 and assumption A24 require. All five cited skills' checkers exited 0 on the first pass; check-outputs is ok; nothing was written outside artefacts/M1-S01/ and envelopes/M1-S01/.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 MEDIUM on two counts, neither of which is a defect in the artefacts. (1) question-coverage: Q40 is still open and the plan's defaults_applied maps it to assumption A5, so the record-type Questions-to-Ask row 'which picklist values differ between these processes, field by field?' was answered from a documented default rather than from a human answer; Q39 is likewise open and assumption A4 relies on a platform default this build ships nothing to guarantee. (2) element-grounding: <type>Percent</type>, <precision> and <scale> are not documented in any of the step's five cited skills, so Discount__c's numeric element set was taken from skills/admin/custom-field-creation - the skill that admin/object-creation-and-design names by hand as the owner of field design ('Field design itself is admin/custom-field-creation', references/metadata-examples.md L107). Every element is still copied, not recalled, but it came from a skill the step's skills[] does not list. Everything the HIGH row asks for otherwise holds: checkers 0 on the first pass, check-outputs ok, every declared output written and no metadata beyond them.",
+  "dimensions_compared": [
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "The Percent field type and the precision/scale pair are absent from all five cited skills and from the eight Mandatory Reads skills; they were sourced from skills/admin/custom-field-creation, which admin/object-creation-and-design delegates field design to by name. Root element names for the decomposed .businessProcess-meta.xml and .recordType-meta.xml files (<BusinessProcess>, <RecordType>) are documented in the cited skills only as a 'Root element' column pattern, and were confirmed against examples/builds/case-onboarding/reports/mock-deploy-fixes/, which are the files that actually cleared sf project deploy start --dry-run.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Add admin/custom-field-creation to M1-S01's skills[] via build_plan.py amend-step so the element table for Percent/precision/scale is a declared read rather than a delegated one."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Q40 (which picklists differ per record type) and Q39 (how stage movement is measured) are status 'open'. Q40 was answered from assumption A5 per the step's own defaults_applied {Q40: A5}; Q39's default is relied on through assumption A4 (risk medium) with no OpportunitySettings file in the build. Both are recorded as defaults, not as decisions.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Get the Sales Operations lead to answer Q39 before go-live - Opportunity field history cannot be backfilled - and confirm A5 at the M1 gate."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "All three declared checkers exited 0 on the first pass with no repair pass, and their stdout matched the strings the planner recorded from its fixture run word for word ('No issues found.', 'No findings.', 'No issues found across 0 object file(s) and 2 field file(s).').",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "The two cited skills whose checkers the plan did not declare as step tests (record-types-and-page-layouts, sales-process-mapping) were run anyway per AGENT.md Step 8 and also exited 0; the record-type checker reported '2 record type(s), 0 layout(s); 0 finding(s)', which is the expected half-view at step scope because M1-S02 owns the layouts.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "plan-quality",
+      "observation": "The step note pre-resolved the one trap that would otherwise have shipped a failing deploy - Q5's sign-off says 'Commit' while the metadata token is 'Forecast' - and the step's stage_values input already carried the token, so the answer and the artefact never had to be reconciled at build time.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "element-grounding",
+      "observation": "The step declares a Percent field with an explicit precision and scale but does not cite admin/custom-field-creation, the only skill in the library whose element table carries <type>Percent</type>, <precision> and <scale>; the four cited object/picklist skills document neither element.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/object-creation-and-design/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "deploy-order",
+      "observation": "Assumption A24 is carried at risk high and is genuinely unresolvable inside a design-only build: the OpportunityStage file on disk is a fragment of eight values, and deploying it without the org's retrieved active values would deactivate the SMB team's stages - the single way this milestone could break the process requirement item 6 says it must leave alone.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml",
+        "count": 8
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "question-coverage",
+      "observation": "Assumption A4 relies on OpportunitySettings.enableOpportunityFieldHistoryTracking defaulting to true while no step in the build ships an OpportunitySettings file, so nothing in this build verifies the assumption before stage history starts accruing - and history cannot be backfilled.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "persistence",
+      "observation": "Two contracts disagree about where this run's report pair belongs: AGENT.md's Persistence sub-section names docs/reports/metadata-builder/<run_id>.{md,json} in addition to the build-scoped pair, while this invocation was scoped to write only inside the build directory; only the build-scoped pair was written, and the docs/reports copy was deliberately not.",
+      "evidence": {
+        "source": "input",
+        "path": "agents/metadata-builder/AGENT.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "element-grounding",
+      "observation": "A5 reads 'no other field needs a per-record-type picklistValues block beyond Approval_Status__c, which is identical on both', which can be parsed either as requiring a block for Approval_Status__c or as stating none is needed; it was resolved as 'none needed' because a brand-new record type receives all current master values by default (picklist-and-value-sets gotchas Gotcha 5) and both record types are new.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/picklist-and-value-sets/references/gotchas.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "M1-S01 is built; the three declared checker tests plus the always-on xml and manifest checks and the two manual ticks are the tester's to run, not this agent's.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01",
+        "count": 7
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because this agent never runs a step's acceptance_tests or writes tests/M1-S01/results.json, and the manifest and manual tests have not been adjudicated by anyone yet."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "Decisions D1 and D2 are both adr_required and assumption A24 is at risk high; none of that has reached decisions.md, which is still the empty doc-keeper stub.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/decisions.md",
+        "count": 1
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because once M1-S01 is tested, the D1/A24 merge decision and the three manual post-deploy steps in deploy-order.md need to land in decisions.md and the traceability matrix rather than living only in this step's artefacts."
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "step_type": "object-model",
+    "step_scale": "project",
+    "build_mode": "design-only",
+    "status_path_taken": "invoked directly (not under agents/build-step-runner), so this agent ran the Step 9 standalone 'set-status ... built' command itself, per AGENT.md Step 9.",
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Renewal_Sales_Process.businessProcess-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/recordTypes/Enterprise.recordType-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/recordTypes/Renewal.recordType-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Discount__c.field-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Approval_Status__c.field-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md"
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "opportunity-management: 'Which forecast bucket does each stage belong in, and who signed off on that mapping?'",
+        "answer": "Qualify/Discover Pipeline, Propose BestCase, Negotiate Forecast, Renewal Review Pipeline, Renewal Proposed Forecast, Closed Won Closed, Closed Lost Omitted. Signed off by the VP Sales Ops (Q5). The UI word 'Commit' in Q5's answer is written as the metadata token 'Forecast' per assumption A2.",
+        "source": "step inputs (stage_values) - the planner's explicit binding, which already carried the tokens",
+        "element": "standardValueSets/OpportunityStage.standardValueSet-meta.xml, <forecastCategory> on all eight values"
+      },
+      {
+        "question": "opportunity-management: 'Which stages does each motion actually use, and which motion is the default?'",
+        "answer": "Enterprise: Qualify, Discover, Propose, Negotiate, Closed Won, Closed Lost (default Qualify). Renewal: Renewal Review, Renewal Proposed, Closed Won, Closed Lost (default Renewal Review). Two processes, two record types, per decision D2.",
+        "source": "step inputs (business_processes) + requirement.md item 1 + decision D2",
+        "element": "objects/Opportunity/businessProcesses/*.businessProcess-meta.xml, <values><default>"
+      },
+      {
+        "question": "picklist-and-value-sets: 'Is the org's existing set going to be retrieved before I edit it?'",
+        "answer": "No - a design-only build cannot retrieve. The shipped file is an eight-value fragment and deploy-order.md section 0 makes the retrieve-and-merge the first, blocking instruction. Decision D1; assumption A24 at risk high.",
+        "source": "decision D1 + assumption A24 (step inputs)",
+        "element": "deploy-order.md section 0; standardValueSets/OpportunityStage.standardValueSet-meta.xml"
+      },
+      {
+        "question": "picklist-and-value-sets: 'Is this a standard picklist, and if so which StandardValueSet name?'",
+        "answer": "Yes - Opportunity.StageName is the StandardValueSet named OpportunityStage, which takes no wildcard, so the package.xml member is named explicitly.",
+        "source": "cited skill (admin/picklist-and-value-sets references/metadata-examples.md sections 3 and 7)",
+        "element": "package.xml <members>OpportunityStage</members> under <name>StandardValueSet</name>"
+      },
+      {
+        "question": "picklist-and-value-sets: 'Does anything depend on the value set staying open?'",
+        "answer": "Approval_Status__c ships <restricted>true</restricted> exactly as the step input declares it ('restricted Picklist: Pending, Approved, Rejected'). No data load or integration writes it - the approval process does (Q22).",
+        "source": "step inputs (fields) + clarification Q22",
+        "element": "objects/Opportunity/fields/Approval_Status__c.field-meta.xml, <valueSet><restricted>"
+      },
+      {
+        "question": "Which value is the default on the OpportunityStage file, and which on each process?",
+        "answer": "None of the eight stages carries <default>true</default>; all are explicitly false. The org's existing default must survive the section-0 merge untouched, because moving the org-wide default stage would disturb the SMB record type that requirement.md item 6 says must not break. The per-motion default lives on the business process instead (Qualify, Renewal Review).",
+        "source": "requirement.md item 6 + cited skill (picklist metadata-examples section 1: exactly one default true per file; opportunity-management metadata-examples section 2: BusinessProcess values carry their own default)",
+        "element": "standardValueSets/OpportunityStage.standardValueSet-meta.xml <default>false</default> x8; businessProcesses/*.xml <values><default>true</default> x1 each"
+      },
+      {
+        "question": "record-types-and-page-layouts: 'Is this object Lead, Opportunity, Solution, or Case?'",
+        "answer": "Opportunity - so <businessProcess> is required on both record types, and carries the BARE process name inside the object definition while package.xml members are object-qualified.",
+        "source": "cited skill (record-types gotchas #6; opportunity-management metadata-examples section 2, api_meta.txt:42993-43008)",
+        "element": "objects/Opportunity/recordTypes/*.recordType-meta.xml <businessProcess>; package.xml BusinessProcess members"
+      },
+      {
+        "question": "record-types-and-page-layouts: 'Which picklist values differ between these processes, field by field?'",
+        "answer": "DEFAULT APPLIED - Q40 is open; the step's defaults_applied maps it to assumption A5: StageName is the only picklist that differs, and it is governed by the business process rather than by a picklistValues block. No picklistValues block is written for Approval_Status__c either, because a brand-new record type receives all current master values by default.",
+        "source": "documented default - assumption A5 standing in for open clarification Q40, plus admin/picklist-and-value-sets references/gotchas.md Gotcha 5",
+        "element": "objects/Opportunity/recordTypes/*.recordType-meta.xml - no <picklistValues> block on either file"
+      },
+      {
+        "question": "record-types-and-page-layouts: 'Do records already exist on the record type we are changing or retiring?'",
+        "answer": "About 140 open Enterprise deals sit on the generic record type; Q8 makes the reassignment a one-time post-go-live runbook step, not a data-migration build, with no field mapping change. Recorded in deploy-order.md section 3 with the at-risk query to run first.",
+        "source": "clarification Q8",
+        "element": "deploy-order.md section 3, manual step 2"
+      },
+      {
+        "question": "record-types-and-page-layouts: 'Which reports, list views and Flow entry criteria filter on this record type today?'",
+        "answer": "Two SMB list views and the SMB pipeline report filter on Record Type = Master and keep working because SMB stays on the generic record type; no Flow filters on record type (Q9). No artefact in this step names any of them.",
+        "source": "clarification Q9",
+        "element": "none - the answer is what this step deliberately does NOT write"
+      },
+      {
+        "question": "record-types-and-page-layouts: 'Are Person Accounts enabled on this org?'",
+        "answer": "DEFAULT APPLIED - assumption A6: not enabled, so no personAccountDefault element is needed. Nothing in this step carries a record-type visibility block in any case; those are M2-S02's.",
+        "source": "documented default - assumption A6 (Q41 unanswered at G1)",
+        "element": "objects/Opportunity/recordTypes/*.recordType-meta.xml - no personAccountDefault"
+      },
+      {
+        "question": "object-creation-and-design: 'Which field changes must be auditable, and who is asking?'",
+        "answer": "No field-level history is requested for either new field and no OpportunitySettings file ships (assumption A4), so both fields carry <trackHistory>false</trackHistory> and <trackFeedHistory>false</trackFeedHistory> explicitly rather than depending on an object flag this build does not set. Q39's stage-history question is separately recorded as a pre-go-live check in deploy-order.md section 3.",
+        "source": "assumption A4 + clarification Q39 (open)",
+        "element": "objects/Opportunity/fields/*.field-meta.xml <trackHistory>, <trackFeedHistory>"
+      },
+      {
+        "question": "Where does the discount live - Opportunity header or OpportunityLineItem?",
+        "answer": "A header field on the Opportunity, typed by the rep as the overall deal discount; line-item discounts are not used (Q12). Percent, precision 5, scale 2 per the step input - precision is the TOTAL digit count, so 5/2 is three digits left of the point and two right.",
+        "source": "clarification Q12 + step inputs (fields) + skills/admin/custom-field-creation references/metadata-examples.md section 3 for the precision/scale semantics",
+        "element": "objects/Opportunity/fields/Discount__c.field-meta.xml <type>Percent</type>, <precision>5</precision>, <scale>2</scale>"
+      },
+      {
+        "question": "Does Approval_Status__c carry a default value?",
+        "answer": "No - all three values are <default>false</default>. Q22 lists blank as a legal fourth state ('Pending, Approved, Rejected, blank'), set by the approval process, so a default would put every new Opportunity into a status nobody submitted.",
+        "source": "clarification Q22",
+        "element": "objects/Opportunity/fields/Approval_Status__c.field-meta.xml <valueSetDefinition><value><default>"
+      },
+      {
+        "question": "sales-process-mapping: 'Do renewals run these same stages, or does the CSM run something else?'",
+        "answer": "Different sequence - Renewal Review / Renewal Proposed / Closed Won / Closed Lost - which is two Sales Processes and therefore two Record Types (decision D2, assumption A1). The Path constraint settles what the stage lists left open: only one PathAssistant per record type per object.",
+        "source": "requirement.md item 1 + decision D2 + assumption A1",
+        "element": "the two businessProcess files and the two recordType files"
+      },
+      {
+        "question": "sales-process-mapping: 'What does the board pack call each forecast bucket?'",
+        "answer": "The standard forecast-category vocabulary (assumption A2). The design map speaks labels, the deployed XML speaks enum tokens: Q5's 'Commit' is <forecastCategory>Forecast</forecastCategory>. The word 'Commit' appears nowhere in any emitted file.",
+        "source": "assumption A2 + step note + admin/opportunity-management references/gotchas.md Gotcha 13",
+        "element": "standardValueSets/OpportunityStage.standardValueSet-meta.xml, Negotiate and Renewal Proposed"
+      },
+      {
+        "question": "change-management-and-deployment: what order must these components deploy in?",
+        "answer": "Value set, then business processes, then record types; the two custom fields are independent of that chain. One deploy resolves all four types together; the order matters for a split deploy and for reading failures. Outside-step dependencies (M1-S02 layouts, M2-S02 profile assignments, M2-S03/S04 validation rules, M3 approval process) are named in deploy-order.md section 2.",
+        "source": "cited skills' gotchas (opportunity-management Gotcha 6; record-types #6) + admin/change-management-and-deployment references/llm-anti-patterns.md Anti-Pattern 4",
+        "element": "deploy-order.md sections 1 and 2"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found.",
+        "changed": "nothing - passed on the first pass"
+      },
+      {
+        "command": "python3 skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No findings.",
+        "changed": "nothing - passed on the first pass"
+      },
+      {
+        "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found across 0 object file(s) and 2 field file(s).",
+        "changed": "nothing - passed on the first pass"
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": false,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 4 metadata file(s): 2 record type(s), 0 layout(s); 0 finding(s) detected.\"}",
+        "changed": "nothing - run per AGENT.md Step 8 because the skill is cited; the plan declares this checker at MILESTONE scope (--manifest-dir artefacts) because it is cross-step against M1-S02's layouts"
+      },
+      {
+        "command": "python3 skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py --manifest-dir artefacts/M1-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": false,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found.",
+        "changed": "nothing - run per AGENT.md Step 8 because the skill is cited"
+      }
+    ],
+    "xml_parse": "all 8 *.xml / *-meta.xml files under artefacts/M1-S01/ parse with xml.etree.ElementTree",
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "package.xml carries four <name> blocks - StandardValueSet (OpportunityStage), BusinessProcess (Opportunity.Enterprise_Sales_Process, Opportunity.Renewal_Sales_Process), RecordType (Opportunity.Enterprise, Opportunity.Renewal), CustomField (Opportunity.Discount__c, Opportunity.Approval_Status__c) - and agrees with disk in both directions: seven metadata files, seven members, no member without a file. No CustomObject member is written because this step writes no Opportunity.object-meta.xml. <version>62.0</version>.",
+    "workflow_return": {
+      "step_id": "M1-S01",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Renewal_Sales_Process.businessProcess-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/recordTypes/Enterprise.recordType-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/recordTypes/Renewal.recordType-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Discount__c.field-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Approval_Status__c.field-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/package.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "BLOCKING before deploy: retrieve StandardValueSet:OpportunityStage and merge the org's active values into the shipped eight-value file (D1 / A24, risk high). A partial file deactivates every value it omits, including the SMB team's stages.",
+      "Q39 is unanswered and A4 relies on the platform default for Opportunity field history tracking. History cannot be backfilled - confirm it is on before go-live.",
+      "Q40 is unanswered; A5 stood in. Confirm at the M1 gate that StageName is genuinely the only picklist differing between the two record types.",
+      "M1-S01's skills[] does not cite admin/custom-field-creation, which is the only source in the library for <type>Percent</type>, <precision> and <scale>. Consider amend-step.",
+      "The AGENT.md Persistence sub-section also names docs/reports/metadata-builder/<run_id>.{md,json}; this invocation was scoped to the build directory, so that pair was not written."
+    ]
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/picklist-and-value-sets",
+      "path": "skills/admin/picklist-and-value-sets/references/metadata-examples.md",
+      "used_for": "StandardValueSet / StandardValue element set and the ForecastCategories enum (section 3); the deactivate-by-omission rule behind D1 and deploy-order.md section 0; the StandardValueSet-takes-no-wildcard package.xml rule (section 7)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/picklist-and-value-sets",
+      "path": "skills/admin/picklist-and-value-sets/references/gotchas.md",
+      "used_for": "Gotcha 10 (omission is the deactivate instruction) and Gotcha 5 (a brand-new record type receives all current master values by default), which is what settled whether a picklistValues block was needed"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/references/metadata-examples.md",
+      "used_for": "BusinessProcess element set and the bare-vs-object-qualified fullName rule (section 2); the package.xml member forms and the value-set-before-process deploy order (sections 5 and 7)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/references/gotchas.md",
+      "used_for": "Gotcha 6 (a stage must exist globally before a process can list it) and Gotcha 13 (the metadata forecast vocabulary is not the SOQL one - 'Commit' is 'Forecast')"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "RecordType element set, the object-qualified RecordType package.xml member, and the fact that the default record type and layout assignment live only on Profile (M2-S02's dependency in deploy-order.md section 2)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+      "used_for": "#6 businessProcess is required on Opportunity and takes the bare name inside the object definition; #1 the at-risk-record query behind the Q8 reassignment runbook step"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/references/metadata-examples.md",
+      "used_for": "CustomField element ordering, the restricted valueSet / valueSetDefinition shape used for Approval_Status__c, and the CustomField description-length position (OCD-DESC-02 headroom)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sales-process-mapping",
+      "path": "skills/admin/sales-process-mapping/references/worked-examples.md",
+      "used_for": "section 4 (two sequences means two Sales Processes and therefore two Record Types) and section 5 (the stage value set as the single deployable block, and its verification SOQL)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sales-process-mapping",
+      "path": "skills/admin/sales-process-mapping/references/gotchas.md",
+      "used_for": "Gotcha 7 (deployed stage values are invisible until each record type is edited - manual step 1 in deploy-order.md) and Gotcha 8 (OpportunityStage is read-only, so verification is a query not an export-and-diff)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 4's dependency-driven deployment order, which is what deploy-order.md section 1 is sequenced from rather than from this agent's intuition"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-field-creation",
+      "path": "skills/admin/custom-field-creation/references/metadata-examples.md",
+      "used_for": "the FieldType enum member 'Percent' and the precision/scale pair with its total-digits semantics (section 3) - read because admin/object-creation-and-design delegates field design to this skill by name, and no cited skill carries these elements"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 object-model row and the step status machine; section 5 for who runs the acceptance tests (step-tester, not this agent) and the checker scope rules; section 8 for the skill-gap-not-freestyle rule"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope shape, run_id convention, dimensions_skipped states and the confidence-impact rule that caps this run at MEDIUM"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules this invocation is bound by, including the ban on org writes"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum - none was triggered on this run"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the Plan this run executed end to end, including the Step 3 grep test, the Step 5 output rules and the Step 10 confidence rubric"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/reports/mock-deploy-fixes/Support_Process.businessProcess-meta.xml",
+      "used_for": "confirming the decomposed DX root element names <BusinessProcess> and <RecordType> against files that actually cleared sf project deploy start --dry-run, rather than inferring them from the cited skills' Root-element column"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S01 is built; the three declared checker tests, the always-on xml and manifest checks and the two manual ticks are its to run and record in tests/M1-S01/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once the step is tested, D1, D2 and assumption A24 need to reach decisions.md and the traceability matrix - both are still empty stubs."
+    }
+  ]
+}

@@ -1,0 +1,632 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-10-02T19-41-27Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S04/2026-10-02T19-41-27Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S04/2026-10-02T19-41-27Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S04",
+    "api_version": "62.0 (not supplied; plan.json carries no api_version, so the AGENT.md Inputs fallback applied; it matches every step manifest)"
+  },
+  "summary": "Built M4-S04 (docs). package.xml is the build-level manifest: 23 types, 38 explicit members, API 62.0, no wildcards. It is the union of the eleven step manifests plus M3-S03's five ApexClass members and M3-S04's LightningComponentBundle, and it includes M2-S04's rule exactly once, as amended test 5 requires, although the step's inputs still call M2-S04 excluded. A two-way self-check over the whole artefacts tree is consistent, and the set matches the 44 components the org validated in MOCK-DEPLOY-M4 run 3. deploy-order.md is the cross-milestone order and cutover runbook. It splits the deploy into request 1 (36 members) and request 2 (the Report and Dashboard), as N4-F-06 requires, with the column codes and the runningUser handled between the halves. It lists four deploy-copy edits: the OpportunityStage merge, the related list, a new retrieve-and-merge of the Opportunity object file (object-creation-and-design Gotcha 10), and the runningUser. It also gives 17 pre-deploy checks with owners, 10 post-deploy steps, the four UAT negative cases, and 11 things the validate-only loop could not prove. The only command that validates anything is scripts/mock_deploy.py. Declared checker exit 0 (also --strict); XML parses; check-outputs ok. Outcome: built.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM. Every member is traced to a step manifest or file; the declared checker exited 0 on the first pass; check-outputs is ok; exactly the two declared outputs were written. HIGH fails because several Questions-to-Ask rows rest on documented defaults (A4, A34, the skill's production rollbackOnError rule) or are left to the release owner (test level), and because the runbook's key claims (E3's effect, the P-8 stage behaviour, the SMB page) are UNVERIFIED and only an org can settle them.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Rows answered from the plan or upstream artefacts where they existed; the test-level, validation-timing and backout rows have no plan answer and are written as release decisions; A4 and A34 are documented defaults standing in for open Q39 and Q58."
+    },
+    {
+      "dimension": "checker-pass",
+      "state": "partial",
+      "reason": "The one declared checker exits 0. Two cited skills' checkers are undeclared and out of scope for a docs step: check_opportunity_management.py asserts nothing at either scope; check_approval_design.py exits 1 at step scope (no approval file) and 0 at build scope. Recorded, not repaired: there is nothing in the artefact to fix."
+    }
+  ],
+  "deliverables": [
+    {
+      "kind": "xml",
+      "title": "Build-level package.xml (23 types, 38 members)",
+      "target_path": ".sfskills/builds/northwind-sales/artefacts/M4-S04/package.xml",
+      "content": "See the file; sha256 aa255b3f1b4d3df12cd5b044d9573dfbcbedab9ceb86d2c906024c1f279e152e"
+    },
+    {
+      "kind": "markdown",
+      "title": "Deploy order and go-live cutover runbook, M1-M4",
+      "target_path": ".sfskills/builds/northwind-sales/artefacts/M4-S04/deploy-order.md",
+      "content": "See the file; sha256 8672938cb31b73a3864dadba97eb97c6a2692fa953fba93f2cfa5d47acd8ec19"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-consistency",
+      "observation": "All eleven step manifests name members explicitly at one API version (62.0), so the build-level manifest is a pure union plus the six Apex and LWC members, and that union equals the 44 components the org validated in MOCK-DEPLOY-M4 run 3.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T18-04-04Z/summary.md",
+        "count": 38
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "deploy-order",
+      "observation": "Each step's deploy-order note already named its own retrieve-and-merge and post-deploy item (A24, A26, A29, A32, A34, D-M4S01-01), so the cutover runbook aggregates recorded facts instead of discovering them at the end.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts",
+        "probe": "*/deploy-order.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "deploy-order",
+      "observation": "M3-S05 ships a two-element Opportunity.object-meta.xml and its header says deploying it 'changes no other Opportunity configuration'. admin/object-creation-and-design Gotcha 10 says a partial object file replaces the whole object definition. MOCK-DEPLOY-M3 run 4 only showed that it deploys. The runbook makes a retrieve-and-merge (E3) a blocking pre-deploy step and marks the effect UNVERIFIED.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/object-creation-and-design/references/gotchas.md",
+        "probe": "Gotcha 10 vs artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml header"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "data-cutover",
+      "observation": "Q8 answers that the ~140-deal reassignment needs no field mapping, but none of the generic pipeline's open stages exists in Enterprise_Sales_Process, and admin/record-types-and-page-layouts Gotcha 1 says such values are cleared on a record-type change. A stage mapping then fires M2-S04's ISCHANGED(StageName) product rule for about 20 deals without products (Q16) unless the bypass holder runs it, which in turn invokes Q17's Chatter control.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml",
+        "probe": "plan.json clarifications Q8, Q16, Q17"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "requirement-6",
+      "observation": "The org-default record page has no record-type dimension (D-M3S05-01), so SMB records also open the Enterprise page, and the discount panel on it has no record-type gate. The plan recorded the Renewal consequence; the SMB one is implied but unstated against requirement item 6.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js",
+        "probe": "no RecordType reference in the bundle; artefacts/M3-S05/deploy-order.md section 3.2"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "plan-documentation-drift",
+      "observation": "steps[M4-S04].inputs still says M2-S04 is excluded and blocked, the fourth stale M2-S04 narration after O-M2S05-02, O-M2S04-03 and O-M4S02-08. Followed literally, it would have dropped a shipped rule from the build manifest; the amended acceptance test 5 caught it. depends_on also omits M2-S04 and M4-S01.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "steps[M4-S04].inputs.aggregates, inputs.note, depends_on, acceptance_tests[4]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-coverage",
+      "observation": "build_plan.py next advises declaring check_opportunity_management.py and check_approval_design.py on this docs step. At step scope the first asserts nothing and the second exits 1 on a tree with no approval file; neither should be declared. Same shape as O-M3S04-03 and driver's log frictions 39 and 52.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/approval-processes/scripts/check_approval_design.py",
+        "probe": "--manifest-dir artefacts/M4-S04 -> exit 1, 'no approval-process metadata files found'"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "tooling",
+      "observation": "scripts/mock_deploy.py copy_artefacts copies every non-.md file, so a --milestone M4 run puts M4-S03's uat-test-cases.yaml in the assembled source tree; no run has tested that. Separately, --without still refuses Dashboard (friction 64), so M4-S02's deploy-order.md section 10 offers a probe form the tool rejects.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/mock_deploy.py",
+        "probe": "copy_artefacts exclusion rule; component_file_suffixes has no Dashboard mapping"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "skill-depth",
+      "observation": "admin/record-types-and-page-layouts Gotcha 1 gives an 'SOQL to identify at-risk records' that uses ISPICKVAL() in a SOQL WHERE clause, which is formula syntax, not SOQL. The runbook does not copy it and writes the count in the shape of admin/opportunity-management query 8b instead.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+        "probe": "Gotcha 1 SOQL block"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "acceptance-tests",
+      "observation": "Acceptance test 4 says the only org-facing command the runbook offers is scripts/mock_deploy.py, while tests 7 and 11 require a retrieve-and-grep. The runbook treats read-only retrieves and SOQL as permitted reads, says so in its header, and offers mock_deploy.py as the only command that validates anything. The M4 gate decides whether that reading holds.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "steps[M4-S04].acceptance_tests[3], [6], [10]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "tester-contract",
+      "observation": "agents/step-tester/AGENT.md Step 3 item 3 looks for a member's file under the step's own artefact directory; a build-level manifest's files live in other steps' directories. The case-onboarding precedent's tester ran a whole-tree check (tests/M5-S05/manifest_check_wholetree.txt). Read literally, the wording would fail a correct build-level manifest.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/step-tester/AGENT.md",
+        "probe": "Step 3 item 3; examples/builds/case-onboarding/tests/M5-S05/"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Next is step-tester on M4-S04: the declared checker, the xml and manifest checks (whole-tree), and recording the ten manual tests (six at the M4 gate, four in UAT).",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the tester owns tests/M4-S04/results.json and the always-on manifest check, which must read the whole artefacts tree for a build-level manifest.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "steps[M4-S04].acceptance_tests"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "Once M4-S04 is documented, milestone-verifier on M4, with the M4-S03 UAT pack re-compiled so it carries this step's final test set (D-M4S03-01).",
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because M4's gate is the last pending gate and this step is its last step.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "human_gates milestone:M4 pending"
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S04",
+    "step_type": "docs",
+    "build_mode": "design-only",
+    "status_path_taken": "Invoked directly (not under agents/build-step-runner), so this agent moved the step itself exactly twice: pending -> running at 2026-10-02T19:28:05Z, then running -> built after check-outputs returned ok.",
+    "human_gate": false,
+    "artefacts": [
+      "artefacts/M4-S04/package.xml",
+      "artefacts/M4-S04/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M4-S04/package.xml",
+        "type": "Package (deploy manifest): 23 types, 38 members, version 62.0",
+        "source": "The eleven step manifests under artefacts/*/package.xml (member forms copied, not re-derived) plus M3-S03 classes/*.cls and M3-S04 lwc/discountApprovalPanel; skill member-form references: change-management-and-deployment metadata-examples section 1, opportunity-management section 5, approval-processes 'package.xml', reports-and-dashboards section 5, email-templates-and-alerts metadata-and-sender-identity",
+        "declared": true,
+        "sha256": "aa255b3f1b4d3df12cd5b044d9573dfbcbedab9ceb86d2c906024c1f279e152e",
+        "bytes": 7387
+      },
+      {
+        "path": "artefacts/M4-S04/deploy-order.md",
+        "type": "deploy order and go-live cutover runbook (markdown; no metadata type)",
+        "source": "every step's deploy-order.md; MOCK-DEPLOY-M1..M4; decisions.md open items; plan.json answers/assumptions; change-management-and-deployment (Deploy Contract, metadata-examples sections 3, 5, 6, release-plan-template)",
+        "declared": true,
+        "sha256": "8672938cb31b73a3864dadba97eb97c6a2692fa953fba93f2cfa5d47acd8ec19",
+        "bytes": 50278
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "manifest_selfcheck": {
+      "script": "stdlib two-way check, run from the scratchpad (not a build artefact)",
+      "result": "consistent",
+      "build_manifest": "23 types, 38 members, version 62.0, no wildcards, no duplicate members or type blocks",
+      "file_derived": "23 types, 38 members from every metadata file under artefacts/ except M4-S01, M4-S03 (documents) and M4-S04 itself; 0 unclassified files",
+      "file_to_manifest_uncovered": [],
+      "manifest_to_file_missing": [],
+      "step_manifest_union": "21 types, 32 members, every step at 62.0",
+      "added_beyond_union": [
+        "ApexClass:OpportunityApprovalController",
+        "ApexClass:OpportunityApprovalService",
+        "ApexClass:OpportunityApprovalServiceTest",
+        "ApexClass:OpportunityApprovalSubmitAction",
+        "ApexClass:TestDataFactory",
+        "LightningComponentBundle:discountApprovalPanel"
+      ],
+      "in_union_missing_from_build_manifest": [],
+      "m2_s04_rule_present_once": true,
+      "org_cross_check": "The 38 members equal the 44 components of reports/mock-deploy/2026-10-02T18-04-04Z/summary.md once Workflow expands to 2 WorkflowAlert + 4 WorkflowFieldUpdate."
+    },
+    "decision_record": [
+      {
+        "skill": "admin/change-management-and-deployment",
+        "question": "Which environment are we deploying to, and is rollbackOnError set explicitly?",
+        "answer": "Production target (requirement.md: Sales Cloud Enterprise production). rollbackOnError true, set explicitly, including the sandbox rehearsal.",
+        "source": "default: the skill's documented production rule (The Deploy Contract)",
+        "determined": "deploy-order.md section 9 row rollbackOnError"
+      },
+      {
+        "skill": "admin/change-management-and-deployment",
+        "question": "What test level are we asking for, and how long does it take?",
+        "answer": "Not on file. Two options written with evidence: RunSpecifiedTests with OpportunityApprovalServiceTest (per-class 94.2/100/100 in MOCK-DEPLOY-M3 run 5) or RunLocalTests (production default with Apex; run time not on file). Left to the release owner.",
+        "source": "unanswered; recorded as a release decision, changes no emitted element",
+        "determined": "deploy-order.md section 9 row testLevel; section 10 command 1 uses RunSpecifiedTests for the rehearsal"
+      },
+      {
+        "skill": "admin/change-management-and-deployment",
+        "question": "When will validation run relative to the window?",
+        "answer": "Validate against the actual target before the window; a sandbox validation licenses nothing in production.",
+        "source": "default: skill references/metadata-examples.md section 3",
+        "determined": "deploy-order.md section 9 row checkOnly"
+      },
+      {
+        "skill": "admin/change-management-and-deployment",
+        "question": "Is anything being deleted or retired in this release?",
+        "answer": "No. No destructiveChanges file exists anywhere under artefacts/.",
+        "source": "upstream artefacts (every depends_on step's outputs)",
+        "determined": "No destructive manifest written; package.xml carries additions only; section 1 'No deletions'"
+      },
+      {
+        "skill": "admin/change-management-and-deployment",
+        "question": "Which components arrive in a state a user can see, and which need a switch flipped?",
+        "answer": "Permission-set assignments (O-M2S01-01, M2-S02 section 8), group membership (A32), approval process order (A34), the reassignment (A37/Q8), Chatter control (Q17), optional celebration (O-M2S05-05).",
+        "source": "step inputs (assumptions, answers) and upstream deploy-order notes",
+        "determined": "deploy-order.md section 6 P-1 to P-10"
+      },
+      {
+        "skill": "admin/change-management-and-deployment",
+        "question": "If this behaves badly at 09:00, what exactly do we do?",
+        "answer": "Deactivate first (two rules or the approval process); full reversal from the A-15 pre-release retrieve; data reversal from the P-8 export.",
+        "source": "default: skill references/metadata-examples.md section 6 backout paths",
+        "determined": "deploy-order.md section 9 Backout; section 5 A-15"
+      },
+      {
+        "skill": "admin/change-management-and-deployment",
+        "question": "Did this release change records, not just metadata?",
+        "answer": "Yes: the ~140-deal reassignment (Q8).",
+        "source": "clarification Q8 (answered)",
+        "determined": "P-8 with an export step as the separately owned data backout"
+      },
+      {
+        "skill": "admin/opportunity-management",
+        "question": "Which stages does each motion actually use, and which motion is the default?",
+        "answer": "Enterprise: Qualify, Discover, Propose, Negotiate, Closed Won, Closed Lost; Renewal: Renewal Review, Renewal Proposed, Closed Won, Closed Lost (M1-S01 artefacts). The org's default stage stays where it is (D-M1S01-01).",
+        "source": "upstream artefacts M1-S01",
+        "determined": "Deploy rows 1, 3, 4; E1 merge rules; the P-8 mapping finding"
+      },
+      {
+        "skill": "admin/opportunity-management",
+        "question": "Does any integration or Apex write Probability or ForecastCategoryName directly?",
+        "answer": "Q38 is open. Recorded that a stage mapping in P-8 recomputes both (Gotcha 9).",
+        "source": "unanswered (Q38 open); no default needed for any emitted element",
+        "determined": "P-8 item 4"
+      },
+      {
+        "skill": "admin/opportunity-management",
+        "question": "How will we measure stage movement six months from now?",
+        "answer": "Q39 open; A4 relies on the platform default for history tracking.",
+        "source": "default: assumption A4",
+        "determined": "A-11 pre-deploy check"
+      },
+      {
+        "skill": "admin/approval-processes",
+        "question": "How many active approval processes will this object have, and in what order?",
+        "answer": "One built here; any existing production processes unknown (Q58 open). Order is not in the metadata and is set by hand after deploy.",
+        "source": "default: assumption A34",
+        "determined": "A-12 inventory and P-5 order step"
+      },
+      {
+        "skill": "admin/approval-processes",
+        "question": "Which actions fire on submit, approve, reject, and recall, and do those objects exist in the target org?",
+        "answer": "Two alerts and four field updates in Workflow:Opportunity, three Classic templates; all ship in request 1 ahead of the process.",
+        "source": "upstream artefacts M3-S01, M3-S02",
+        "determined": "Deploy rows 11 to 13"
+      },
+      {
+        "skill": "admin/approval-processes",
+        "question": "Where does each step's approver come from, and what happens when that source is empty?",
+        "answer": "The record owner's Manager (userHierarchyField); a blank Manager fails at submit time.",
+        "source": "upstream artefacts M3-S02 and open item O-M3S02-01",
+        "determined": "A-9 pre-deploy check"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M4-S04",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 2 manifest or metadata file(s); 0 finding(s) detected.\"}",
+        "strict_rerun": "Same command with --strict: same output, exit 0.",
+        "reading": "Lenient exit policy, --strict not passed (as declared); 0 findings at score 100, so no WARN is being tolerated. Scanned 2 files once deploy-order.md existed (the first run, before the note was written, scanned 1). It does not check member-to-file existence; the self-check below did."
+      },
+      {
+        "command": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M4-S04",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "INFO: [artefacts/M4-S04] No Opportunity stage value set, business process, record type or pathAssistant found. Nothing in this tree is in scope for this checker.\n\n0 error(s), 0 warning(s), 1 info.",
+        "reading": "Nothing in scope; asserts nothing. Also run at --manifest-dir artefacts: same INFO, exit 0 (the checker does not recurse into step directories)."
+      },
+      {
+        "command": "python3 skills/admin/approval-processes/scripts/check_approval_design.py --manifest-dir artefacts/M4-S04",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "stdout": "WARN: 1 finding(s) detected\n{\n  \"score\": 90,\n  \"findings\": [\n    {\n      \"severity\": \"HIGH\",\n      \"location\": \"\",\n      \"message\": \"no approval-process metadata files found\"\n    }\n  ],\n  \"summary\": \"Scanned 0 approval-process metadata files; no files matched the provided paths.\"\n}",
+        "reading": "Exit 1 because a docs step holds no approval-process file, not because of an artefact defect; there is nothing in the artefact to repair. At build scope (--manifest-dir artefacts artefacts, the form M3-S02 declares): score 100, 0 findings, exit 0. Not declared on the step, so it is not a gate; recorded, not repaired."
+      }
+    ],
+    "xml_parse": {
+      "files": 1,
+      "result": "artefacts/M4-S04/package.xml parsed with xml.etree.ElementTree; 0 errors"
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "deploy_order_hygiene": "deploy-order.md contains one 'sf project deploy start' occurrence, carrying --dry-run, describing what mock_deploy.py runs; no 'deploy validate', 'deploy quick', sfdx, force:*:deploy, curl or wget; the section 5 deny-list regex matches only that one line.",
+    "api_version_note": "62.0: every step manifest declares 62.0, plan.json carries no api_version, the AGENT.md Inputs default is 62.0. TestDataFactory.cls-meta.xml carries 67.0 by D-M3S03-01 (a class's own apiVersion governs its compile); MOCK-DEPLOY-M3 run 5 validated the set at 62.0.",
+    "org_interaction": "none: no sf command and no scripts/mock_deploy.py was run; no org was contacted",
+    "brief_vs_plan": [
+      "The brief said steps[M4-S04].amendments[] holds three amendments today; plan.json holds two (2026-10-02T18:52:18Z and 19:17:05Z). The plan wins.",
+      "The brief called the deny-list check 'test 3' (zero-based); this report numbers tests from 1, so it is test 4 here.",
+      "The brief grouped M4-S04 tests 8-13 as post-deploy UAT. plan.json makes tests 8, 9, 10 and 12 post-deploy UAT and tests 11 and 13 pre-deploy runbook checks ticked at the M4 gate; the runbook places them at A-7 and A-17. The plan wins.",
+      "The brief cited O-M2S01-01 for both permission-set assignments; O-M2S01-01 covers Sales_Ops_Validation_Bypass only. The Enterprise_Sales_Record_Types assignment (14 users) comes from artefacts/M2-S02/deploy-order.md section 8.",
+      "The brief's M4 order says 'ReportType FIRST in its own deploy'. The runbook puts the ReportType in request 1 with M1-M3, the group and the folders, and the Report and Dashboard in request 2. That meets N4-F-06's constraint (report not in the same deployment as its new type) and matches artefacts/M4-S02/deploy-order.md B4.",
+      "plan.json itself disagrees with itself: inputs.aggregates and inputs.note say M2-S04 is excluded and blocked, while amended acceptance test 5 and the step status say it shipped. The amended test and the status were followed."
+    ],
+    "persistence_note": "The AGENT.md Persistence pair under docs/reports/metadata-builder/ was not written: the caller's scope allows writes only inside the build directory. The build-scoped envelope pair is the record (driver's log friction 23).",
+    "workflow_return": {
+      "step_id": "M4-S04",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M4-S04/package.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S04/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "BLOCKING before request 1: retrieve CustomObject:Opportunity alone and merge M3-S05's two View actionOverrides into it (deploy-copy edit E3). admin/object-creation-and-design Gotcha 10 says a partial object file replaces the whole definition; M3-S05's header says it changes nothing else. No validate-only run can settle which; deploy-order.md section 2, A-5.",
+      "Decision before P-8: Q8 says the 140-deal reassignment needs no field mapping, but the Enterprise process offers none of the generic open stages and admin/record-types-and-page-layouts Gotcha 1 says absent values are cleared on a record-type change. The VP and the Sales Operations lead map the stages; a stage change then fires M2-S04's product rule (about 20 deals have no products, Q16) unless the bypass holder runs it, which brings in Q17's Chatter post. deploy-order.md section 6, P-8.",
+      "Decision for the VP (requirement.md item 6): the org-default record page M3-S05 activates has no record-type dimension, so SMB records also open Opportunity_Enterprise_Record_Page, with the discount panel (no record-type gate) unless an app-level assignment outranks it. Accept, or plan an app-level assignment. deploy-order.md section 5, A-8.",
+      "M4 gate: the deploy is two requests (N4-F-06). Request 1 = package.xml minus Report Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage and Dashboard Enterprise_Sales/Enterprise_Pipeline (36 members); request 2 = those two, after B-1 (column codes) and B-2 (runningUser). deploy-order.md section 4.",
+      "Name a person against each role before the window: release owner, sales-ops admin, Sales Operations lead (only the VP is named on file). deploy-order.md section 0.",
+      "Plan prose: steps[M4-S04].inputs.aggregates and inputs.note still call M2-S04 excluded/blocked, contradicting the amended acceptance test 5 and the step's documented status; depends_on omits M2-S04 and M4-S01 whose artefacts this step reads. amend-step --prose-only can fix the note (not the depends_on, which is set-plan's).",
+      "Do not declare check_opportunity_management.py or check_approval_design.py on M4-S04 as next advises: at step scope the first asserts nothing (exit 0, nothing in scope) and the second exits 1 on a tree with no approval file; at build scope the first still finds nothing and the second only re-checks M3-S02.",
+      "Rehearsal tooling: scripts/mock_deploy.py copies every non-.md file, so a --milestone M4 run puts M4-S03's uat-test-cases.yaml in the assembled tree (untested); and --without Dashboard is still refused (friction 64), so M4-S02 deploy-order.md section 10's probe form will not run. Fallback selector in deploy-order.md section 10."
+    ]
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "Questions to Ask (all seven rows bound in decision_record), The Deploy Contract (section 9), Recommended Workflow; read in full"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "Manifest member forms and the no-wildcard rule (section 1), the validate/quick-deploy semantics (section 3), backout paths (section 6)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/gotchas.md",
+      "used_for": "One deploy at a time, not in submission order (section 3 milestone-by-milestone note); rollbackOnError and test-level defaults"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 4 data-model-first ordering (deploy row 2); Anti-Pattern 6 post-deployment verification"
+    },
+    {
+      "type": "template",
+      "id": "admin/change-management-and-deployment/release-plan-template",
+      "path": "skills/admin/change-management-and-deployment/templates/release-plan-template.md",
+      "used_for": "Deploy contract rows, pre-release retrieve for backout (A-15), rollback-per-scenario shape (section 9)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "used_for": "The declared checker, run verbatim from the build directory (exit 0, also under --strict)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/SKILL.md",
+      "used_for": "Questions to Ask rows (stages per motion, Probability writers, history); configuration chain order for deploy rows 1, 3, 4"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/references/metadata-examples.md",
+      "used_for": "Section 5 wildcard answers (StandardValueSet and Settings by name); section 7 deploy-order note; section 8b query shape reused for the P-8 stage count"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/references/gotchas.md",
+      "used_for": "Gotcha 6 (stage exists globally first), Gotcha 9 (stage change recomputes Probability), Gotcha 17 (no default on an Opportunity business process)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/SKILL.md",
+      "used_for": "Questions to Ask row 1 (process order) and row 7 (actions and templates first); Recommended Workflow step 6"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/references/metadata-examples.md",
+      "used_for": "package.xml member forms; 'Retrieve, lint, deploy' ordering; the ProcessInstance verification queries cited for UAT"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/references/gotchas.md",
+      "used_for": "Blank approver fields fail at runtime (A-9); a record enters exactly one process by an order the metadata does not carry (A-12, P-5); actions are workflow actions (deploy row 12)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/references/gotchas.md",
+      "used_for": "Gotcha 10: a partial object file overwrites rather than merges, and retrieving the object rewrites profiles in the same request (E3, A-5, the deploy-not-retrieve warning)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/references/metadata-examples.md",
+      "used_for": "CustomObject wildcard support limited to field sets and record types: name the object explicitly"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "ValidationRule takes no wildcard; Object.RuleName member form; the CustomObject retrieve command form used in A-5"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md",
+      "used_for": "EmailTemplate takes no wildcard; Folder/Name member form with the EmailFolder as its own member"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "PermissionSet member form (file-name stem); assignment is record data, so P-1 and P-2 are post-deploy steps"
+    },
+    {
+      "type": "skill",
+      "id": "admin/assignment-rules",
+      "path": "skills/admin/assignment-rules/references/metadata-examples.md",
+      "used_for": "Mandatory read checked for member forms only: this build ships no AssignmentRules, so nothing from it enters the manifest"
+    },
+    {
+      "type": "skill",
+      "id": "admin/escalation-rules",
+      "path": "skills/admin/escalation-rules/references/metadata-examples.md",
+      "used_for": "Mandatory read checked for member forms only: this build ships no EscalationRules"
+    },
+    {
+      "type": "skill",
+      "id": "admin/entitlements-and-milestones",
+      "path": "skills/admin/entitlements-and-milestones/references/metadata-examples.md",
+      "used_for": "Mandatory read checked for member forms only: this build ships no entitlement metadata; its Settings no-per-setting-wildcard line corroborates Settings:PathAssistant by name"
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+      "used_for": "Section 5: Report and Dashboard take no wildcard; folders are bare members of the Report and Dashboard types"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+      "used_for": "'Verification: who actually holds the permission' query, copied into P-3 with the permission name substituted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+      "used_for": "Gotcha 1 (a record-type change clears absent picklist values; map before changing) behind the P-8 finding; its SOQL was not copied (formula syntax)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/lightning-record-page-configuration",
+      "path": "skills/admin/lightning-record-page-configuration/templates/lightning-record-page-configuration-template.md",
+      "used_for": "'Overrides being deleted' record for any View override the E3 merge replaces"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Sections 2 (plan is the only shared state), 4 (docs row: metadata-builder owns the build-level package.xml; borrowed-agent condition 2), 5 (The Apex exception, deploy deny-list, mock_deploy.py contract, probes are never gate evidence)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Envelope shape, Process Observations, Citations, confidence rubric (overridden by the playbook's Step 10)"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Atomic pair rule for the envelope and its markdown twin; the persistence note"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "Checked: no refusal condition applied (correct agent, legal type, no org alias, no deploy request)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "Run-time rules: one target, no org writes, no auto-chaining"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "The playbook followed: Steps 1 to 11, Step 10 confidence table, Output Contract"
+    },
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "Step 3 manifest check semantics, so the self-check covers both directions over the whole tree"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/artefacts/M5-S05/package.xml",
+      "used_for": "Precedent build-level manifest: union of step manifests plus Apex members, explicit members, folder-as-member Report form"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/artefacts/M5-S05/deploy-order.md",
+      "used_for": "Precedent runbook shape (member forms, deliberately absent, the order, validate-only command)"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md",
+      "used_for": "Run 3: the first manifest-mode validation that read a build-level manifest carrying Apex, including a Report folder member"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It owns tests/M4-S04/results.json, the declared checker run and the always-on xml and manifest checks for this step."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once the step is tested, the doc pass carries this envelope's open items into decisions.md and the traceability rows."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M4-S04 is the last step of M4, and milestone:M4 is the last pending gate."
+    }
+  ]
+}

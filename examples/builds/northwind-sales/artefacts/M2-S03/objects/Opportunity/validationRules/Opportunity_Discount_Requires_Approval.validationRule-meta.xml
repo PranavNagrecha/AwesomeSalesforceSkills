@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Opportunity_Discount_Requires_Approval</fullName>
+    <active>true</active>
+    <description>Blocks Closed Won above a 20% discount on Enterprise and Renewal deals until Approval_Status__c is Approved (Q15, Q16). Bypass: Bypass_Opportunity_Sales_Validation, granted by Sales_Ops_Validation_Bypass. 0.20 not 20: Discount__c is Percent (D8).</description>
+    <errorConditionFormula>AND(
+  NOT($Permission.Bypass_Opportunity_Sales_Validation),
+  OR(
+    RecordType.DeveloperName = "Enterprise",
+    RecordType.DeveloperName = "Renewal"
+  ),
+  ISPICKVAL(StageName, "Closed Won"),
+  NOT(ISBLANK(Discount__c)),
+  Discount__c > 0.20,
+  NOT(ISPICKVAL(Approval_Status__c, "Approved"))
+)</errorConditionFormula>
+    <errorDisplayField>Discount__c</errorDisplayField>
+    <errorMessage>A discount above 20% needs manager approval before this opportunity can be Closed Won - submit for approval from the Discount panel.</errorMessage>
+</ValidationRule>

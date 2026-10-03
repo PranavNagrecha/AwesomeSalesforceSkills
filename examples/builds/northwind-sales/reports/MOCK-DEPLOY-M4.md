@@ -1,0 +1,23 @@
+# Mock deploy — milestones M1–M4 (validate-only, `sfskills-dev`)
+
+Run 1 — 2026-10-02T17:53:20Z — `python3 scripts/mock_deploy.py plan.json --org-alias sfskills-dev --mode source --milestone M1 --milestone M2 --milestone M3 --milestone M4` (M4 steps built: M4-S01, M4-S02) → `reports/mock-deploy/2026-10-02T17-53-20Z/`
+
+- **Failed — 44 total, 42 ok, 3 errors.** Everything from M1–M3 and the group and both folders of M4-S02 pass.
+- **N4-F-01** `ReportType Enterprise_Opportunity_Pipeline` — "Could not find field RecordTypeId in table Opportunity": a custom report type's column for the record type is not the `RecordTypeId` field name; the correct column name is the org's to state (the retrieve in M4-S01's runbook is exactly for this) — the repair reads the cited skill and the Metadata API guide for the report-type column form for a record-type lookup and marks it UNVERIFIED until the next run.
+- **N4-F-02** `Report Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage` — "invalid report type": a consequence of N4-F-01 (the type it names failed to deploy).
+- **N4-F-03** `Dashboard Enterprise_Sales/Enterprise_Pipeline` — "Chart dashboard components require the sortBy attribute": a `DashboardComponent` of a chart type must carry `<sortBy>` (the guide lists the enumeration; the skill's chart example carries none — the fourth skill-vs-guide mismatch the builder listed).
+- Human decisions: none — both repairs are grounded in the org's own message; the column codes stay UNVERIFIED until the split deploy.
+
+Run 2 — 2026-10-02T18:00:02Z — same command, after the first repair (`RecordType.Name`; `<sortBy>`) → `reports/mock-deploy/2026-10-02T18-00-02Z/`
+
+- **Failed — 44 total, 42 ok, 3 errors.** `sortBy` accepted (N4-F-03 closed). **N4-F-04** Dashboard — "Chart dashboard components require the chartAxisRange attribute" (the guide marks it required; the skill's example lacks it — the second missing element the builder listed). **N4-F-05** ReportType — "Could not find field Name in table Record Type": the relationship form resolves to the Record Type table, but `Name` is not the exposed field. Report fails as a consequence.
+
+Run 3 — 2026-10-02T18:04:04Z — same command, after repair 2 (`<field>RecordType</field>`, `Opportunity$RecordType`, `<chartAxisRange>Auto</chartAxisRange>`) → `reports/mock-deploy/2026-10-02T18-04-04Z/`
+
+- **Failed — 44 total, 43 ok, 2 errors.** **`ReportType Enterprise_Opportunity_Pipeline` ok — the record-type column form is settled: the lookup's relationship name alone (`RecordType`, table `Opportunity`), org-verified 2026-10-02 after `RecordTypeId` and `RecordType.Name` were refused. `chartAxisRange` accepted (`Auto`).** Remaining: `Report` — "invalid report type" although its type validated in the same package; `Dashboard` — "no Report named … found", a consequence.
+- **N4-F-06**: a report on a custom report type that is created in the same deployment cannot be validated by checkOnly — the type does not exist yet when the report is checked. This is the split deploy D-M4S01-01 anticipated for the column codes, now required for the report itself: deploy the ReportType first, then the Report and Dashboard. In a validate-only loop the second half can never be green until the first half is deployed for real; the M4 gate accepts the report and dashboard on the strength of the checker, the manual tests and the type's validation.
+- Tooling note: `--probe --without "Dashboard:…"` is refused ("unmappable metadata type") — the probe's type map is built from the example builds, none of which shipped a dashboard (friction 64).
+
+Run 4 — 2026-10-02T19:43:19Z — **manifest mode**, `--milestone M1 --milestone M2 --milestone M3 --step M4-S02 --step M4-S04 --test-level RunSpecifiedTests --tests OpportunityApprovalServiceTest` (M4-S03's compiled docs excluded from the tree by selector; M4-S04's package.xml in the merge) → `reports/mock-deploy/2026-10-02T19-43-19Z/`
+
+- **Failed — 44 total, 43 ok, 2 errors; tests run 0.** First manifest-mode run that carries the five ApexClass members and the LightningComponentBundle: all accepted by manifest, as are every other M1–M4 member. The two errors are N4-F-06's pair (Report "invalid report type"; Dashboard "no Report named … found") — the same-package limitation the runbook resolves by its two-request split; a component failure aborts the test run, so this run carries no test result. **Gate evidence for `milestone:M4` is this run for the manifest plus `reports/MOCK-DEPLOY-M3.md` run 5 (source mode, 6/6 tests, 95.6%) for the Apex.** Request 1 of the runbook (36 members) cannot be rehearsed exactly in this tool because `--without` cannot map `Dashboard` (friction 64).

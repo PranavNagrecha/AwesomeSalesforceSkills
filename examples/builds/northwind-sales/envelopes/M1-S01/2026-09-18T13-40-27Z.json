@@ -1,0 +1,307 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-18T13-40-27Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-18T13-40-27Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-18T13-40-27Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S01",
+    "api_version": "62.0 (unchanged from the prior run - plan.json carries no api_version key)",
+    "repair_scope": "operator-scoped § 4 repair after run 1 of reports/MOCK-DEPLOY-M1.md (finding N3-F-01): remove <default> from the opening stage of both businessProcess-meta.xml files; change nothing else in the step's nine outputs"
+  },
+  "summary": "Repaired M1-S01 after an org finding reached a documented step. reports/MOCK-DEPLOY-M1.md run 1 (mode manifest, milestone M1) returned N3-F-01 (HIGH): the org rejects <default>true</default> on an Opportunity BusinessProcess ('Cannot specify a default on: Opportunity'), which both Enterprise_Sales_Process and Renewal_Sales_Process shipped on their opening stage per decision D1. Removed the <default> element from the Qualify block in Enterprise_Sales_Process.businessProcess-meta.xml and the Renewal Review block in Renewal_Sales_Process.businessProcess-meta.xml; no other element in either file, and no other file among the step's nine outputs, changed. Recorded the deviation from D1 in deploy-order.md § 6 ('Repair after run 1'), including that admin/opportunity-management metadata-examples § 2's New-Business example carries the same now-contradicted shape and is filed for the library, and an inline UNVERIFIED (2026-09-18) marker because none of this step's cited skills document what determines the shown default stage for an Opportunity business process once no value on it may carry <default>true</default>. All three declared checkers, plus the two cited-but-undeclared checkers, exited 0 on the first pass; all 8 XML/meta-XML files under artefacts/M1-S01 still parse; check-outputs is ok. Outcome: built.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 MEDIUM, carried over from the prior run plus one new item, none of which is a defect in the repaired artefacts. (1) element-grounding: unchanged from run 1 - Discount__c's <type>Percent</type>/<precision>/<scale> still trace to the uncited admin/custom-field-creation rather than to this step's own skills[]. (2) question-coverage: unchanged from run 1 - Q40/Q39 remain open, defaulted via A5/A4. (3) new this run - the deploy-order.md § 6 default-stage question is recorded as UNVERIFIED rather than resolved from a cited skill, per Step 10's MEDIUM row 'the step declared an output whose type the cited skills document only by worked example rather than by element table' (the BusinessProcess PicklistValue shape is documented by worked example, and that example is now known-wrong for Opportunity). Everything the HIGH row otherwise asks for holds: every emitted element (here, an element's removal) traced to org evidence and the Step 3 inventory, every checker exited 0 on the first pass, check-outputs ok, every declared output present and nothing else touched.",
+  "dimensions_compared": [
+    "checker-pass",
+    "manifest-consistency",
+    "element-grounding"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "deploy-order",
+      "state": "partial",
+      "reason": "The default-stage mechanism for an Opportunity BusinessProcess with no <default>true</default> value is not documented in any of this step's five cited skills (checked: admin/picklist-and-value-sets, admin/opportunity-management, admin/record-types-and-page-layouts, admin/object-creation-and-design, admin/sales-process-mapping). deploy-order.md § 6 records the only grounded fact (the global StandardValueSet default, preserved by § 0) and marks the per-process/per-record-type behaviour UNVERIFIED (2026-09-18) rather than asserting it.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Verify against the target org's actual Enterprise/Renewal record-type behaviour post-deploy with the § 4 SOQL, or deepen admin/opportunity-management with the org's documented behaviour for BusinessProcess default handling on Opportunity specifically before the next build copies § 2's example."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Unchanged from the prior run: Q40 answered via assumption A5's documented default, Q39 open and relying on assumption A4 (platform default for field history tracking).",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Same as the prior run's envelope - get Q39 answered before go-live; confirm A5 at the M1 gate."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "All three declared checkers (check_opportunity_management.py, check_picklist_and_value_sets.py, check_object_creation_and_design.py) and the two cited-but-undeclared checkers (check_record_type_layouts.py, check_sales_process_mapping.py) exited 0 on the repaired files with no repair pass needed, and none of their output strings changed from the prior run's envelope.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01",
+        "count": 5
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "scope-discipline",
+      "observation": "The repair touched exactly two lines across two files (the <default>true</default> element in each opening <values> block); the other five <values> blocks per process, all seven other declared outputs, and package.xml were re-verified unchanged and untouched.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "library-quality",
+      "observation": "admin/opportunity-management references/metadata-examples.md § 2's worked example ships <default>true</default> on the opening stage of an Opportunity BusinessProcess - the exact shape reports/MOCK-DEPLOY-M1.md run 1 shows the org rejecting with 'Cannot specify a default on: Opportunity'. A second, independent occurrence of the same shape lives in admin/path-and-guidance references/metadata-examples.md § 1 (Enterprise_New_Business_Process), which this step does not cite and this agent therefore did not touch, but which carries the identical now-contradicted pattern.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/opportunity-management/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "deploy-order",
+      "observation": "With no value on either BusinessProcess now carrying <default>true</default>, none of this step's cited skills state what stage a new Enterprise or Renewal Opportunity opens on, or whether that depends on the global StandardValueSet default being a member of the process's own stage subset. deploy-order.md § 6 records this as UNVERIFIED (2026-09-18) rather than asserting a mechanism.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "org-finding-scope",
+      "observation": "N3-F-01's org error text ('Cannot specify a default on: Opportunity') does not by itself distinguish whether the org rejects any <default> element on an Opportunity BusinessProcess value or specifically rejects <default>true</default>. The operator's scope instruction removed only the opening-stage (true) element and left every <default>false</default> element in place; this run followed that scope literally rather than removing <default> from every value, and did not independently re-validate the narrower reading against the org.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "M1-S01 returns to built after this repair; step-tester and build-doc-keeper both need to re-run since the milestone was already documented before this org finding arrived.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the step's declared acceptance tests (checker, xml, manifest, and the two manual ticks) need to be re-adjudicated against the repaired files, not assumed clean from this agent's own checker re-run."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "M1 was already an accepted/documented milestone before this repair; standards/build-orchestration.md § 8 names set-milestone's re-verification path (append to milestones[].reverifications[], regenerate the merged manifest, re-sign the gate only if the verdict or evidence changed) as the next step once M1-S02's parallel repair also lands.",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md",
+        "count": 1
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because a documented step was re-run after an org finding, and § 8 makes milestone re-verification, not a fresh gate sign, the correct next step once both M1-S01 and the parallel M1-S02 repair are built again."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the Plan this repair followed - Step 3's element-inventory discipline (an org-contradicted example is not license to invent a replacement), Step 8's checker-then-fix loop, and Step 9-11's check-outputs/set-status/validate-envelope sequence"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4's documented -> running and built -> running recovery transitions and status machine; § 8's re-verification path for set-milestone on an already-accepted milestone and the skill-gap-not-freestyle rule applied to the default-stage UNVERIFIED marker"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, the Process Observations requirement, the citation and observation schemas, and the Confidence rubric this run's Step 10 override applies"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope shape, run_id convention, and the atomic-write/persistence rules this repair's build-scoped envelope pair follows"
+    },
+    {
+      "type": "standard",
+      "id": "agent-rules",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules this invocation is bound by, including the ban on org writes and on mutating files outside the build directory"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum - none was triggered on this repair"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/references/metadata-examples.md",
+      "used_for": "§ 2's BusinessProcess worked example - identified as the source of decision D1's now-contradicted <default>true</default> shape on an Opportunity business process, and named in deploy-order.md § 6 as filed for the library"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sales-process-mapping",
+      "path": "skills/admin/sales-process-mapping/references/worked-examples.md",
+      "used_for": "§ 5's statement that <default> is required on every StandardValueSet value with exactly one true - the only documented <default> mechanism for OpportunityStage this step's skills[] carries, used to ground (and bound) the deploy-order.md § 6 UNVERIFIED note rather than inventing a per-process default rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/scripts/check_opportunity_management.py",
+      "used_for": "re-run against the repaired businessProcess-meta.xml files - exit 0, 'No issues found.'"
+    },
+    {
+      "type": "skill",
+      "id": "admin/picklist-and-value-sets",
+      "path": "skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py",
+      "used_for": "re-run against artefacts/M1-S01 - exit 0, 'No findings.', confirming the StandardValueSet file (untouched by this repair) still carries exactly one global default"
+    },
+    {
+      "type": "skill",
+      "id": "admin/object-creation-and-design",
+      "path": "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
+      "used_for": "re-run against artefacts/M1-S01 - exit 0, confirming the two untouched field files"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+      "used_for": "re-run per AGENT.md Step 8 (cited skill, checker not declared as a step-scope test) - exit 0, same INFO-only finding as the prior run"
+    },
+    {
+      "type": "skill",
+      "id": "admin/sales-process-mapping",
+      "path": "skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py",
+      "used_for": "re-run per AGENT.md Step 8 (cited skill, checker not declared as a step-scope test) - exit 0, 'No issues found.'"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "step_type": "object-model",
+    "step_scale": "project",
+    "build_mode": "design-only",
+    "repair": {
+      "reason": "§ 4 repair of a documented step after an org finding",
+      "operator_transition": "documented -> running (already applied before this run started)",
+      "triggering_report": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md, run 1, finding N3-F-01",
+      "org_error_text": "Cannot specify a default on: Opportunity",
+      "prior_envelope": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-15T19-21-43Z.json",
+      "deviation_from_decision": "D1 (this step's decision record, run 1: 'No stage carries <default>true</default>... The per-motion default lives on the BusinessProcess instead') - reversed for the opening-stage <default>true</default> element specifically; the surrounding design (per-motion stage subsets, two BusinessProcess/RecordType pairs) is unaffected",
+      "parallel_step_not_touched": "M1-S02 (its own § 4 repair is running concurrently; this run read no file under artefacts/M1-S02/ or envelopes/M1-S02/)"
+    },
+    "status_path_taken": "invoked directly (not under agents/build-step-runner); step was already 'running' (operator-applied documented -> running) when this run started, so this agent ran the Step 9 standalone 'set-status ... built' command itself, per AGENT.md Step 9",
+    "artefacts_modified": [
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Renewal_Sales_Process.businessProcess-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md"
+    ],
+    "artefacts_unchanged": [
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/recordTypes/Enterprise.recordType-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/recordTypes/Renewal.recordType-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Discount__c.field-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Approval_Status__c.field-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S01/package.xml"
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "xml_diff": {
+      "Enterprise_Sales_Process.businessProcess-meta.xml": "removed the two lines '<default>true</default>' from the <values><fullName>Qualify</fullName> block; the block's five siblings and every other element unchanged",
+      "Renewal_Sales_Process.businessProcess-meta.xml": "removed the two lines '<default>true</default>' from the <values><fullName>Renewal Review</fullName> block; the block's three siblings and every other element unchanged"
+    },
+    "deploy_order_repair_section": "§ 6 'Repair after run 1 (2026-09-18)' appended to deploy-order.md: cites N3-F-01 verbatim, states the deviation from decision D1, names admin/opportunity-management § 2's example as contradicted-by-org and filed for the library, and marks the default-stage-source question UNVERIFIED (2026-09-18) because no cited skill documents a per-BusinessProcess or per-RecordType default override for Opportunity",
+    "checker_results": [
+      {
+        "checker": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M1-S01",
+        "declared": true,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found."
+      },
+      {
+        "checker": "python3 skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py --manifest-dir artefacts/M1-S01",
+        "declared": true,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No findings."
+      },
+      {
+        "checker": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "declared": true,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found across 0 object file(s) and 2 field file(s)."
+      },
+      {
+        "checker": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S01",
+        "declared": false,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: 1 review/info finding(s); summary 'Scanned 4 metadata file(s): 2 record type(s), 0 layout(s); 1 finding(s) detected.'; INFO 'no Profile/PermissionSet in scope - assignment coverage not checked'"
+      },
+      {
+        "checker": "python3 skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py --manifest-dir artefacts/M1-S01",
+        "declared": false,
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found."
+      }
+    ],
+    "xml_parse": {
+      "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" artefacts/M1-S01",
+      "files_parsed": 8,
+      "result": "all parse"
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "package.xml untouched by this repair; still names StandardValueSet (OpportunityStage), BusinessProcess (Opportunity.Enterprise_Sales_Process, Opportunity.Renewal_Sales_Process), RecordType (Opportunity.Enterprise, Opportunity.Renewal) and CustomField (Opportunity.Discount__c, Opportunity.Approval_Status__c) - the repair changed a child element's value inside two members, not a member's existence, so no manifest edit was needed or made",
+    "workflow_return": {
+      "step_id": "M1-S01",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Renewal_Sales_Process.businessProcess-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/recordTypes/Enterprise.recordType-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/recordTypes/Renewal.recordType-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Discount__c.field-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Approval_Status__c.field-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/package.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "Confirm whether the org's rejection of <default> on an Opportunity BusinessProcess is specific to <default>true</default> or to the element as such; this repair kept <default>false</default> on the five/three sibling values per the operator's literal scope and did not independently re-validate that narrower reading against the org.",
+      "Verify, post-deploy, which stage a new Enterprise and a new Renewal Opportunity actually opens on, since no cited skill documents a per-process default for Opportunity now that neither BusinessProcess may assert one (deploy-order.md § 6, § 4 SOQL).",
+      "admin/opportunity-management references/metadata-examples.md § 2 (and admin/path-and-guidance references/metadata-examples.md § 1, same shape, uncited by this step) need a gotcha or per-object caveat before another build copies the <default>true</default>-on-Opportunity-BusinessProcess shape again."
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 5 Apex class file(s) under artefacts/M3-S03; 0 invocable-contract finding(s) in 0 file(s)."
+}

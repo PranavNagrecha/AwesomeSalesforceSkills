@@ -1,0 +1,136 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T17-22-41Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S03/2026-09-19T17-22-41Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S03/2026-09-19T17-22-41Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S03",
+    "step_status_at_start": "built"
+  },
+  "summary": "Ran M3-S03's molecular tests from the build directory. XML: 5 of 5 *-meta.xml files under artefacts/M3-S03/ parsed. Manifest: skipped-not-applicable under the apex-builder Apex exception (build-orchestration.md Section 5) - no package.xml is declared or present for this step, and its ApexClass members are aggregated at M4-S04, exactly as the step's own manifest test description states. All three declared checkers ran verbatim from the build directory and exited 0: check_approval_process_apex_patterns.py (--manifest-dir artefacts artefacts, scope build), check_invocable_methods.py (--manifest-dir artefacts/M3-S03), check_test_class_standards.py (--manifest-dir artefacts/M3-S03). check-outputs confirmed ok:true with artefact_hashes recorded. Two manual acceptance tests are deferred to the M3 milestone gate, never ticked here; both are Given/When/Then-shaped with an observable outcome, so neither is unusable, and both were spot-checked against the artefacts as due diligence (TestDataFactory pair diffs empty against the template with the 67.0/62.0 apiVersion split confirmed; OpportunityApprovalServiceTest.cls contains the two named assertions). apex/apex-security-patterns is cited in the step's skills[] but not declared as a test; run once for evidence only per instruction, it exits 1 with 3 findings (2 HIGH, 1 MEDIUM) matching apex-builder's own envelope finding M3S03-F-03 - not counted toward ran[]/failed[]/passed. results.json passed:true (failed[] empty), so the step was moved built -> tested via set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual (Step 7 HIGH row): both always-on checks completed, all three declared checkers' exit codes were observed directly by this agent, check-outputs reported ok:true with no missing/empty/malformed outputs, and no command-type test was declared to be refused. No manifest exclusion for a coverage-gap type (Step 3 rule 5) applied - the manifest test result here is the apex-builder Apex exception (Step 3 rule 1's second bullet), a documented and expected outcome for this step type/agent pairing rather than an incompleteness signal, so it does not trigger the MEDIUM row.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml-wellformedness",
+    "manifest-consistency",
+    "declared-checkers",
+    "check-outputs-precondition",
+    "manual-test-shape"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "manual-acceptance-execution",
+      "state": "not-run",
+      "reason": "Manual tests are ticked by a human at the milestone gate, never by this agent (AGENT.md Step 4, manual row). Both lines were shape-checked and spot-verified against the artefacts as due diligence only.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "apex-security-patterns-checker",
+      "state": "count-only",
+      "reason": "Cited in the step's skills[] but not declared as an acceptance test; running it as an undeclared test would block the step on findings the step cannot fix (per the run instruction). Run once for evidence: exit 1, 3 findings recorded in tests/M3-S03/evidence_apex_security_patterns.txt and results.json.evidence_only_not_declared[]. Not counted toward passed/failed.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "findings": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All three declared checkers reproduced apex-builder's own reported exit codes and summaries exactly when re-run independently from the build directory, and apex-builder had already proven each one live against a deliberately broken scratch copy per its own envelope.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M3-S03/checker1_approval_process.txt, checker2_invocable.txt, checker3_test_class_standards.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both manual acceptance-test lines on this step are Given/When/Then-shaped with an explicit observable outcome (per admin/acceptance-criteria-given-when-then), and independent spot-checks confirmed their factual claims: TestDataFactory.cls and its meta.xml diff empty against the canonical template with the recorded 67.0/62.0 apiVersion split, and OpportunityApprovalServiceTest.cls contains a Pending-after-submit assertion and a second-submit-refused assertion.",
+      "domain": "manual-test-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls, artefacts/M3-S03/classes/TestDataFactory.cls[-meta.xml]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "apex/apex-security-patterns is cited in this step's skills[] with no acceptance test declared for it, and its checker exits 1 on this step's own artefacts with 3 findings (2 HIGH entry-point read-access enforcement, 1 MEDIUM missing sharing keyword on the verbatim template copy) that this step cannot fix in isolation.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/apex-security-patterns/scripts/check_apex_security_patterns.py",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "AGENT.md Step 3's general wording says to search a depends_on step's artefacts for a package.xml before applying the type-based rule, and M3-S02 (a dependency) does have one; taken literally that could suggest comparing M3-S03's Apex files against M3-S02's manifest. build-orchestration.md Section 5's Apex exception is unconditional for an apex-builder-owned automation step and is the section step-tester's own Mandatory Reads names as normative, and it matches this step's own manifest test description verbatim (names M4-S04), so that is the reading applied. Worth tightening Step 3's prose so it does not read as contradicting Section 5.",
+      "domain": "spec-clarity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/step-tester/AGENT.md (Step 3), standards/build-orchestration.md (Section 5, 'The Apex exception')"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "set-status's own preflight printed 19 pre-existing WARNs across other steps in this plan (undeclared checkers on M1-S01, M1-S02, M3-S02, M3-S04, M3-S05, M4-S01 through M4-S04) - outside M3-S03's scope and not introduced by this run, but visible in this run's own tool output.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py set-status output, this run"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M3-S03 is now tested; the per-step documentation pass has not run yet.",
+      "domain": "build-workflow",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json steps[M3-S03].status"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because a tested step's PLAN.md row, decisions.md entry and traceability row are build-doc-keeper's to write next, per build-orchestration.md Section 1 stage 4."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules binding this invocation, including the ban on org writes and auto-chaining"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "8-section shape, Process Observations schema, confidence rubric this agent overrides"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence, atomic-write rule for the report/envelope pair"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "refusal enum; not invoked this run since no refusal condition was hit"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "Section 5 acceptance-test types/runners/pass-conditions, the Apex exception applied to this step's manifest test, Section 4 step-type table"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "shape of acceptance_tests[] and outputs[] read from plan.json"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "package.xml grammar the manifest check would be judged against, had one applied"},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "source-format filename-to-metadata-type mapping the manifest check would use, had one applied"},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "component types with no standalone file/manifest member, checked and found not to apply to this step's Apex classes"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "Given/When/Then shape check applied to both of this step's manual acceptance tests"}
+  ],
+  "extensions": {
+    "step_id": "M3-S03",
+    "results_path": "tests/M3-S03/results.json",
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "ElementTree parse over artefacts/M3-S03/**/*-meta.xml", "exit_code": null, "verdict": "pass"},
+      {"name": "manifest", "type": "manifest", "runner": "n/a - Apex exception", "exit_code": null, "verdict": "skipped-not-applicable, names M4-S04"},
+      {"name": "skills/admin/approval-process-apex-patterns/scripts/check_approval_process_apex_patterns.py", "type": "checker", "runner": "python3 skills/admin/approval-process-apex-patterns/scripts/check_approval_process_apex_patterns.py --manifest-dir artefacts artefacts", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/apex/invocable-methods/scripts/check_invocable_methods.py", "type": "checker", "runner": "python3 skills/apex/invocable-methods/scripts/check_invocable_methods.py --manifest-dir artefacts/M3-S03", "exit_code": 0, "verdict": "pass"},
+      {"name": "skills/apex/test-class-standards/scripts/check_test_class_standards.py", "type": "checker", "runner": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M3-S03", "exit_code": 0, "verdict": "pass"}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given no offline Apex compiler exists in the sf CLI, when this step is reviewed, then every non-platform identifier in the emitted code is quoted from admin/approval-process-apex-patterns/references/metadata-examples.md or from templates/apex/tests/TestDataFactory.cls, and TestDataFactory.cls[-meta.xml] diffs empty against the template (67.0 vs 62.0 on the four authored classes). [expected: ticked at the M3 milestone gate]",
+      "Given Q35, when OpportunityApprovalServiceTest.cls is read, then one method asserts a Pending ProcessInstance after submit and a second asserts a second submit while pending returns success false with a non-null message and creates no second pending instance. [expected: ticked at the M3 milestone gate]"
+    ],
+    "tests_run": 4
+  },
+  "followups": [
+    {"agent": "build-doc-keeper", "because": "the step is now tested and its PLAN.md row, decisions.md entry and traceability row have not been written yet"}
+  ]
+}

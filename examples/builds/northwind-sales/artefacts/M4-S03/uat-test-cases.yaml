@@ -1,0 +1,2410 @@
+# UAT test-case pack - Northwind Enterprise sales process
+# Compiled by agents/build-doc-keeper's M4-S03 compile run.
+# Record shape: skills/admin/uat-test-case-design/references/worked-examples.md section 4.
+# One case per manual acceptance test plan.json declares on a step or a milestone (48), plus one per open item in
+# decisions.md whose close condition is a human check and that no manual test already covers. Steps on the 48
+# manual-test cases are the test's own Then clause, split on its own boundaries; nothing is padded. Where a test
+# cannot be ticked as written, the gap is named in `gap` and the pass rule says the gate resolves it first.
+# Every ac_id resolves to a criterion in acceptance-criteria.md beside this file.
+# Incremental re-run: TC-M4-S04-T7..T11 are the five manual tests plan.json steps[M4-S04].amendments[0] added;
+# TC-M4-S02-T6, TC-M4-S03-T6 and TC-M4-S04-T5 follow their amended text. No other case changed.
+# Final re-run: plan.json steps[M4-S04].amendments[2] (2026-10-02T19:17:05Z) split compound tests 10 and 11 into tests
+# 10-13 and moved tests 8, 9, 10 and 12 to UAT after the first deploy; M4-S04 is now documented. Case ids follow the
+# 13-test numbering and no criterion id moved (AC-017.2 stays on test 10, AC-018.2 on test 12). TC-O-M4S04-01..03 are
+# M4-S04's open items that need a human check; its other open items are dispositioned at the end.
+project: "Northwind Enterprise sales process - build northwind-sales (design-only, scale project)"
+sandbox: "UNVERIFIED (2026-10-02): no UAT sandbox or target org is named in plan.json"
+run_context:
+  build: "northwind-sales; milestones M1-M3 approved, M4 pending"
+  sandbox: "UNVERIFIED (2026-10-02): not named in plan.json; org evidence so far is checkOnly against alias sfskills-dev (reports/MOCK-DEPLOY-M1.md to -M4.md)"
+  ui: "Lightning Experience; the Enterprise record page targets formFactor Large and Small (M3-S05)"
+  personas:
+    P-REP: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass"
+    P-MGR: "P-MGR - Enterprise manager: profile Sales User with the org's Sales Cloud permission set plus Enterprise_Sales_Record_Types; role Enterprise Manager (above Enterprise Rep, Q19); member of the Enterprise_Managers public group"
+    P-OPS: "P-OPS - the sales-ops admin seat holding the Sales_Ops_Validation_Bypass permission set (the one person Q13 allows past the rules); its profile is recorded in permission_setup"
+    REVIEWER: "Build reviewer at a milestone gate - no Salesforce seat; the oracle is a build file"
+  administrator_seat_note: "Q19 records the P-OPS seat as the org administrator profile. Every P-OPS case is paired with a P-REP control so a pass is attributable to Sales_Ops_Validation_Bypass and not to the profile."
+negative_path_rule: "negative_path is true only when the pass condition requires confirming that the delivered configuration blocks, omits or excludes a wrong state; a document that merely states a caution is not negative. Most negatives on manual-test cases are document-level exclusions, not functional denials."
+test_cases:
+  - case_id: TC-M1-S01-T6
+    ac_id: AC-001.3
+    req_id: REQ-001
+    source: "plan.json steps[M1-S01].acceptance_tests[5] (manual)"
+    gate: "milestone:M1 approved 2026-09-18T15:01:29Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M1 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M1-S01/deploy-order.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M1 gate; artefacts/M1-S01/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M1-S01/deploy-order.md"
+        expected: "Its first instruction is to run sf project retrieve start --metadata StandardValueSet:OpportunityStage against the target org"
+      - step: "Confirm in deploy-order.md"
+        expected: "The same instruction says to merge the retrieved active values into the shipped file"
+      - step: "Confirm in deploy-order.md"
+        expected: "The same paragraph states that a partial file deactivates every value it omits - including the SMB team's stages"
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S01/deploy-order.md as read at the M1 gate, with the reviewer's tick recorded against TC-M1-S01-T6"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M1S01-01"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M1-S01-T7
+    ac_id: AC-001.4
+    req_id: REQ-001
+    source: "plan.json steps[M1-S01].acceptance_tests[6] (manual)"
+    gate: "milestone:M1 approved 2026-09-18T15:01:29Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M1 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "the file must not contain the UI word Commit anywhere"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M1 gate; artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml"
+        expected: "Qualify/Discover/Propose/Negotiate carry 10/25/50/75 and Pipeline/Pipeline/BestCase/Forecast"
+      - step: "Confirm in OpportunityStage.standardValueSet-meta.xml"
+        expected: "Renewal Review and Renewal Proposed carry 60/85 and Pipeline/Forecast"
+      - step: "Confirm in OpportunityStage.standardValueSet-meta.xml"
+        expected: "Closed Won carries 100 with won and closed true"
+      - step: "Confirm in OpportunityStage.standardValueSet-meta.xml"
+        expected: "Closed Lost carries 0 with forecastCategory Omitted"
+      - step: "Confirm in OpportunityStage.standardValueSet-meta.xml"
+        expected: "The word 'Commit' appears nowhere in the file"
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml as read at the M1 gate, with the reviewer's tick recorded against TC-M1-S01-T7"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M1-S02-T4
+    ac_id: AC-010.1
+    req_id: REQ-010
+    source: "plan.json steps[M1-S02].acceptance_tests[3] (manual)"
+    gate: "milestone:M1 approved 2026-09-18T15:01:29Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M1 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M1-S02/deploy-order.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M1 gate; artefacts/M1-S02/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M1-S02/deploy-order.md"
+        expected: 'It names the exact sf project retrieve start --metadata "Layout:Opportunity-Opportunity Layout" command'
+      - step: "Confirm in deploy-order.md"
+        expected: "It says to copy the Opportunity Products relatedLists block verbatim from what the retrieve emits"
+      - step: "Confirm in deploy-order.md"
+        expected: "It states that hand-authoring the related-list name is what the instruction exists to prevent"
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S02/deploy-order.md as read at the M1 gate, with the reviewer's tick recorded against TC-M1-S02-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M1S02-01"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M1-S02-T5
+    ac_id: AC-008.2
+    req_id: REQ-008
+    source: "plan.json steps[M1-S02].acceptance_tests[4] (manual)"
+    gate: "milestone:M1 approved 2026-09-18T15:01:29Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M1 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "Approval_Status__c must be read-only, so a rep cannot edit the approval outcome on either layout"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M1 gate; artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml"
+        expected: "Each layout carries Name, AccountId, StageName, CloseDate and Amount"
+      - step: "Confirm in Opportunity-Opportunity Enterprise Layout.layout-meta.xml"
+        expected: "Each layout carries Discount__c editable and Approval_Status__c read-only"
+      - step: "Confirm in the file this clause names"
+        expected: "deploy-order.md records that the platform's layout-required set for Opportunity is unverified and is discovered by iterating scripts/mock_deploy.py --dry-run, one field per run"
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml as read at the M1 gate, with the reviewer's tick recorded against TC-M1-S02-T5"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    also_covers:
+      - "REQ-009"
+    gap: "Stale wording, recorded as decisions.md O-M1S02-02 and O-M1S02-04: the --dry-run flag named here does not exist on mock_deploy.py, and since D-M1S02-07 (2026-09-18) four layout items carry behavior=Required, three of them org-confirmed (Probability, Name, StageName) and CloseDate UNVERIFIED (2026-09-18). Step 3 cannot be ticked as written; the reviewer records what deploy-order.md section 6 now says."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S01-T5
+    ac_id: AC-012.2
+    req_id: REQ-012
+    source: "plan.json steps[M2-S01].acceptance_tests[4] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M2 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "the set must carry no objectPermissions, fieldPermissions or userPermissions"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml"
+        expected: "It grants exactly one custom permission"
+      - step: "Confirm in Sales_Ops_Validation_Bypass.permissionset-meta.xml"
+        expected: "It carries no objectPermissions, no fieldPermissions and no userPermissions"
+      - step: "Confirm in Sales_Ops_Validation_Bypass.permissionset-meta.xml"
+        expected: "Its description names the sales-ops admin as the only intended holder"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml as read at the M2 gate, with the reviewer's tick recorded against TC-M2-S01-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S02-T5
+    ac_id: AC-014.1
+    req_id: REQ-014
+    source: "plan.json steps[M2-S02].acceptance_tests[4] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M2 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "the overlay must carry no recordTypeVisibilities block and no userPermissions, objectPermissions, fieldPermissions, applicationVisibilities or classAccesses"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S02/profiles/Sales User.profile-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S02/profiles/Sales User.profile-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M2-S02/profiles/Sales User.profile-meta.xml"
+        expected: "It contains exactly two layoutAssignments blocks, one per new record type"
+      - step: "Confirm in Sales User.profile-meta.xml"
+        expected: "It contains no recordTypeVisibilities block at all - visibility for Enterprise and Renewal is granted by the Enterprise_Sales_Record_Types permission set (org finding N3-F-05, MOCK-DEPLOY-M2 run 1)"
+      - step: "Confirm in Sales User.profile-meta.xml"
+        expected: "It carries no userPermissions, objectPermissions, fieldPermissions, applicationVisibilities or classAccesses"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S02/profiles/Sales User.profile-meta.xml as read at the M2 gate, with the reviewer's tick recorded against TC-M2-S02-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S02-T6
+    ac_id: AC-013.2
+    req_id: REQ-013
+    source: "plan.json steps[M2-S02].acceptance_tests[5] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M2 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "the manager-versus-rep distinction must appear nowhere in either file"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml"
+        expected: "Reps and managers reach both record types through the permission set"
+      - step: "Confirm in Enterprise_Sales_Record_Types.permissionset-meta.xml"
+        expected: "The sales-ops admin (System Administrator) needs no row in either file"
+      - step: "Confirm in Enterprise_Sales_Record_Types.permissionset-meta.xml"
+        expected: "The manager-versus-rep distinction appears nowhere in this step - it is a role-hierarchy fact, which is what decision D7 records"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml as read at the M2 gate, with the reviewer's tick recorded against TC-M2-S02-T6"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S03-T4
+    ac_id: AC-015.2
+    req_id: REQ-015
+    source: "plan.json steps[M2-S03].acceptance_tests[3] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M2 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "the formula must not compare the Percent field against 20"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml"
+        expected: "The discount comparison is 'Discount__c > 0.20' and not '> 20'"
+      - step: "Confirm in Opportunity_Discount_Requires_Approval.validationRule-meta.xml"
+        expected: "The bypass clause NOT($Permission.Bypass_Opportunity_Sales_Validation) is the first argument of the outer AND"
+      - step: "Confirm in Opportunity_Discount_Requires_Approval.validationRule-meta.xml"
+        expected: "The record-type gate compares RecordType.DeveloperName with = rather than ISPICKVAL"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml as read at the M2 gate, with the reviewer's tick recorded against TC-M2-S03-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S03-T5
+    ac_id: AC-015.3
+    req_id: REQ-015
+    source: "plan.json steps[M2-S03].acceptance_tests[4] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M2 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml"
+        expected: "errorMessage is Q15's sentence verbatim: “A discount above 20% needs manager approval before this opportunity can be Closed Won - submit for approval from the Discount panel.” (plan.json steps[M2-S03].inputs.error_message; the em dash written as a hyphen)"
+      - step: "Confirm in Opportunity_Discount_Requires_Approval.validationRule-meta.xml"
+        expected: "errorMessage is 255 characters or fewer"
+      - step: "Confirm in Opportunity_Discount_Requires_Approval.validationRule-meta.xml"
+        expected: "errorDisplayField is Discount__c, so the error lands on the field the rep has to change rather than at the top of the page"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml as read at the M2 gate, with the reviewer's tick recorded against TC-M2-S03-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S04-T4
+    ac_id: AC-019.1
+    req_id: REQ-019
+    source: "plan.json steps[M2-S04].acceptance_tests[3] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M2 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S04/deploy-order.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S04/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M2-S04/deploy-order.md"
+        expected: "Section 2.1 records formula-context availability of HasOpportunityLineItem as org-verified by MOCK-DEPLOY-M2 run 1 (2026-09-19, the formula compiled under checkOnly)"
+      - step: "Confirm in deploy-order.md"
+        expected: "Section 2.2 records re-firing after a line-item deletion as still unverified, with 'forward gate only' stated"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S04/deploy-order.md as read at the M2 gate, with the reviewer's tick recorded against TC-M2-S04-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S05-T5
+    ac_id: AC-016.2
+    req_id: REQ-016
+    source: "plan.json steps[M2-S05].acceptance_tests[4] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M2 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml"
+        expected: "The Discover step's info text names 'at least one product line added from the price book' and a booked Next Step"
+      - step: "Confirm in Enterprise_Opportunity_Path.pathAssistant-meta.xml"
+        expected: "The Propose step's info text names a primary contact with the Decision Maker contact role"
+      - step: "Confirm in Enterprise_Opportunity_Path.pathAssistant-meta.xml"
+        expected: "The Negotiate step's key fields are Discount__c, Approval_Status__c and CloseDate"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml as read at the M2 gate, with the reviewer's tick recorded against TC-M2-S05-T5"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    gap: "The test's closing clause - 'even though M2-S04 cannot enforce the product one' - is stale: M2-S04 shipped the product gate as a validation rule (REQ-019; decisions.md O-M2S05-02 records the same drift in this step's inputs.note). The three checks above are unaffected."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-S05-T6
+    ac_id: AC-018.1
+    req_id: REQ-018
+    source: "plan.json steps[M2-S05].acceptance_tests[5] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M2 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S05/deploy-order.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S05/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M2-S05/deploy-order.md"
+        expected: "It states that a green PathAssistant deploy proves neither that Path is enabled nor that the component is on the record page"
+      - step: "Confirm in deploy-order.md"
+        expected: "It points at M3-S05 as the step that puts the component on the page"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S05/deploy-order.md as read at the M2 gate, with the reviewer's tick recorded against TC-M2-S05-T6"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    also_covers:
+      - "REQ-016"
+      - "REQ-017"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S01-T4
+    ac_id: AC-020.1
+    req_id: REQ-020
+    source: "plan.json steps[M3-S01].acceptance_tests[3] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "neither notification may address the manager, and the rejection body must not attempt to merge the comments"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email exists"
+    steps:
+      - step: "Open artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email"
+        expected: "Discount_Rejected.email names the Approval History related list as where the manager's comments are, rather than attempting to merge them into the body"
+      - step: "Confirm in Discount_Rejected.email"
+        expected: "Discount_Approved.email and Discount_Rejected.email each address the opportunity owner rather than the manager"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S01-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S01-T5
+    ac_id: AC-020.2
+    req_id: REQ-020
+    source: "plan.json steps[M3-S01].acceptance_tests[4] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml"
+        expected: "Each of the three .email-meta.xml files carries uiType Aloha, type text, available true and encodingKey UTF-8"
+      - step: "Confirm in Discount_Approval_Request.email-meta.xml"
+        expected: "Each subject is 230 characters or fewer"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S01-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S02-T4
+    ac_id: AC-021.4
+    req_id: REQ-021
+    source: "plan.json steps[M3-S02].acceptance_tests[3] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "allowedSubmitters must carry exactly one entry, and a recalled record must not show Rejected"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml"
+        expected: "recordEditability is AdminOnly and allowRecall is true"
+      - step: "Confirm in Opportunity.Discount_Approval.approvalProcess-meta.xml"
+        expected: "finalApprovalRecordLock and finalRejectionRecordLock are both false"
+      - step: "Confirm in Opportunity.Discount_Approval.approvalProcess-meta.xml"
+        expected: "allowedSubmitters carries exactly one entry of type owner"
+      - step: "Confirm in Opportunity.Discount_Approval.approvalProcess-meta.xml"
+        expected: "recallActions fires a field update whose operation is Null, so a recalled record shows a blank Approval Status rather than Rejected"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S02-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S02-T5
+    ac_id: AC-021.5
+    req_id: REQ-021
+    source: "plan.json steps[M3-S02].acceptance_tests[4] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S02/deploy-order.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S02/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M3-S02/deploy-order.md"
+        expected: "It states that the process ships active true"
+      - step: "Confirm in deploy-order.md"
+        expected: "It states that approval process ORDER is not in the metadata and must be set in Setup after deploy"
+      - step: "Confirm in deploy-order.md"
+        expected: "It states that the Apex in M3-S03 names the process explicitly, so order affects only the standard Submit for Approval button"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S02/deploy-order.md as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S02-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S02-T6
+    ac_id: AC-021.6
+    req_id: REQ-021
+    source: "plan.json steps[M3-S02].acceptance_tests[5] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml"
+        expected: "Notify_Owner_Discount_Approved carries a non-empty recipients block of <type>owner</type>"
+      - step: "Confirm in Opportunity.workflow-meta.xml"
+        expected: "Notify_Owner_Discount_Rejected carries a non-empty recipients block of <type>owner</type> - the opportunity owner, and therefore the rep Q32 named"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S02-T6"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S03-T6
+    ac_id: AC-022.1
+    req_id: REQ-022
+    source: "plan.json steps[M3-S03].acceptance_tests[5] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S03/classes/TestDataFactory.cls as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S03/classes/TestDataFactory.cls exists"
+    steps:
+      - step: "Open artefacts/M3-S03/classes/TestDataFactory.cls"
+        expected: "Every non-platform identifier in the emitted code is quoted from admin/approval-process-apex-patterns/references/metadata-examples.md or from templates/apex/tests/TestDataFactory.cls, with the documented signatures"
+      - step: "Confirm in TestDataFactory.cls"
+        expected: "TestDataFactory.cls in this step diffs empty against templates/apex/tests/TestDataFactory.cls"
+      - step: "Confirm in TestDataFactory.cls"
+        expected: "TestDataFactory.cls-meta.xml diffs empty against templates/apex/tests/TestDataFactory.cls-meta.xml and carries <apiVersion>67.0</apiVersion>"
+      - step: "Confirm in TestDataFactory.cls"
+        expected: "OpportunityApprovalService, OpportunityApprovalController, OpportunityApprovalSubmitAction and OpportunityApprovalServiceTest carry API 62.0 - the deliberate split this step's note records"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S03/classes/TestDataFactory.cls as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S03-T6"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    gap: "Its criterion fails the Given/When/Then outcome rule (its Then names Apex classes and .cls files); see acceptance-criteria.md 'Source criteria that fail the outcome rule'. The case is kept because the plan declares the test."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S03-T7
+    ac_id: AC-022.2
+    req_id: REQ-022
+    source: "plan.json steps[M3-S03].acceptance_tests[6] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "a second submit while pending must return success false and create no second pending instance"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls exists"
+    steps:
+      - step: "Open artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls"
+        expected: "One method asserts that a ProcessInstance with Status Pending exists for the opportunity after a submit"
+      - step: "Confirm in OpportunityApprovalServiceTest.cls"
+        expected: "A second method asserts that a second submit while pending returns success false with a non-null failure message"
+      - step: "Confirm in OpportunityApprovalServiceTest.cls"
+        expected: "The same method asserts that no second pending instance is created"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S03-T7"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S04-T4
+    ac_id: AC-023.2
+    req_id: REQ-023
+    source: "plan.json steps[M3-S04].acceptance_tests[3] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "three of the four cases pin the button disabled: at a discount of 20, and at 25 with Pending or Approved"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S04/lwc/discountApprovalPanel/__tests__/discountApprovalPanel.test.js as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S04/lwc/discountApprovalPanel/__tests__/discountApprovalPanel.test.js exists"
+    steps:
+      - step: "Open artefacts/M3-S04/lwc/discountApprovalPanel/__tests__/discountApprovalPanel.test.js"
+        expected: "Four cases stub the getRecord wire and assert the button's disabled property"
+      - step: "Confirm in discountApprovalPanel.test.js"
+        expected: "Disabled is true at a discount of 20"
+      - step: "Confirm in discountApprovalPanel.test.js"
+        expected: "Disabled is false at 25 with no approval status"
+      - step: "Confirm in discountApprovalPanel.test.js"
+        expected: "Disabled is true at 25 with Approval_Status__c Pending, and true at 25 with Approved"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S04/lwc/discountApprovalPanel/__tests__/discountApprovalPanel.test.js as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S04-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M3S04-01"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S04-T5
+    ac_id: AC-023.3
+    req_id: REQ-023
+    source: "plan.json steps[M3-S04].acceptance_tests[4] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "supportedFormFactors must be Large and Small only, and the target scoped to Opportunity only"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml"
+        expected: "discountThreshold is a design attribute with default 20 and a description naming the Opportunity_Discount_Requires_Approval validation rule"
+      - step: "Confirm in discountApprovalPanel.js-meta.xml"
+        expected: "supportedFormFactors are Large and Small only"
+      - step: "Confirm in discountApprovalPanel.js-meta.xml"
+        expected: "The component targets lightning__RecordPage scoped to the Opportunity object"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S04-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S05-T4
+    ac_id: AC-024.2
+    req_id: REQ-024
+    source: "plan.json steps[M3-S05].acceptance_tests[3] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "the object file must carry nothing besides the two actionOverrides blocks"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml"
+        expected: "The object file carries exactly two actionOverrides blocks - actionName View, type Flexipage, content Opportunity_Enterprise_Record_Page, formFactor Large and Small - and nothing else"
+      - step: "Confirm in the file this clause names"
+        expected: "artefacts/M3-S05/deploy-order.md states that an app with its own Opportunity record page wins over this org default and must be re-pointed in Setup if Northwind runs one"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S05-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-S05-T5
+    ac_id: AC-024.3
+    req_id: REQ-024
+    source: "plan.json steps[M3-S05].acceptance_tests[4] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml"
+        expected: "The Path component sits in the subheader region with hideUpdateButton false"
+      - step: "Confirm in Opportunity_Enterprise_Record_Page.flexipage-meta.xml"
+        expected: "The discountApprovalPanel sits in the sidebar region with its discountThreshold property set to 20"
+      - step: "Confirm in Opportunity_Enterprise_Record_Page.flexipage-meta.xml"
+        expected: "Every componentInstance carries an identifier of 120 characters or fewer"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml as read at the M3 gate, with the reviewer's tick recorded against TC-M3-S05-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S01-T1
+    ac_id: AC-025.1
+    req_id: REQ-025
+    source: "plan.json steps[M4-S01].acceptance_tests[0] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S01/deploy-order.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M4 gate; artefacts/M4-S01/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M4-S01/deploy-order.md"
+        expected: "It names the three sf commands verbatim"
+      - step: "Confirm in deploy-order.md"
+        expected: "It lists each of the six column codes M4-S02 uses (Opportunity$Name, Opportunity$StageName, Opportunity$Amount, Opportunity$Discount__c, Opportunity$CloseDate, Opportunity$Approval_Status__c) as provisional"
+      - step: "Confirm in deploy-order.md"
+        expected: "It states that RPT-COL-01 in check_report_inventory.py reports every one of them as unverifiable offline by design"
+      - step: "Confirm in deploy-order.md"
+        expected: "It says that the retrieve is a pre-deploy prerequisite rather than a build step"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S01/deploy-order.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S01-T1"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S01-T2
+    ac_id: AC-025.2
+    req_id: REQ-025
+    source: "plan.json steps[M4-S01].acceptance_tests[1] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S01/deploy-order.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M4 gate; artefacts/M4-S01/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M4-S01/deploy-order.md"
+        expected: "It states that a NEW Enterprise-scoped report type is built rather than editing whatever report type the SMB pipeline report uses"
+      - step: "Confirm in deploy-order.md"
+        expected: "It names checking the SMB report's report type as part of the same retrieve, so the decision can be confirmed rather than assumed"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S01/deploy-order.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S01-T2"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S02-T4
+    ac_id: AC-026.3
+    req_id: REQ-026
+    source: "plan.json steps[M4-S02].acceptance_tests[3] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "each folder must carry a single folderShares entry, so nobody outside the Enterprise_Managers group reads deal amounts and discounts"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M4 gate; artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml"
+        expected: "Each of the two folder files is accessType Shared with a single folderShares entry granting View to the Enterprise_Managers group"
+      - step: "Confirm in the file this clause names"
+        expected: "artefacts/M4-S02/deploy-order.md states that the group ships with no members and that the sales-ops admin adds the two managers and the VP in Setup - because Group metadata carries no membership"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S02-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M4S02-11"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S02-T5
+    ac_id: AC-026.4
+    req_id: REQ-026
+    source: "plan.json steps[M4-S02].acceptance_tests[4] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "no runningUser element may be present in the shipped file"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M4 gate; artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml"
+        expected: "dashboardType is SpecifiedUser and no runningUser element is present"
+      - step: "Confirm in the file this clause names"
+        expected: "deploy-order.md names setting runningUser to the VP's username as a mandatory pre-deploy step"
+      - step: "Confirm in the file this clause names"
+        expected: "deploy-order.md states that the platform otherwise substitutes the deploying user's, and that a SpecifiedUser dashboard shows every viewer the running user's data regardless of their own security settings"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S02-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M4S02-02"
+      - "O-M4S02-07"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S02-T6
+    ac_id: AC-026.5
+    req_id: REQ-026
+    source: "plan.json steps[M4-S02].acceptance_tests[5] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "the report must carry no product-count column"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M4 gate; artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml"
+        expected: "The report carries no product-count column"
+      - step: "Confirm in the file this clause names"
+        expected: "deploy-order.md records why"
+      - step: "Confirm in the file this clause names"
+        expected: "deploy-order.md states that a join to Opportunity Product was rejected because it returns one row per line item and would double-count Amount"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S02-T6"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    amended: "Corrected after G5 by the prose-only amendment plan.json steps[M4-S02].amendments[0] (2026-10-02T18:52:43Z), which appends: 'M2-S04 was unblocked on 2026-09-15 and shipped Opportunity.Opportunity_Products_Required_At_Propose as an org-validated rule (MOCK-DEPLOY-M2 run 3); read every clause that assumes a blocked or empty M2-S04 as satisfied by that rule's presence - the exclusion it describes does not apply.' The Given ('M2-S04's block') and the reason step 2 expects ('the same line-item count M2-S04 is blocked on') are read that way; steps 1 and 3 are unaffected."
+    gap: "Step 2 is ticked against the reason deploy-order.md actually gives, recorded verbatim, because the amended text no longer fixes what that reason must say. decisions.md O-M4S02-08's other half - that Q23's 'see the gap' could now be met by a HasOpportunityLineItem column - is a column decision for the gate, not a defect in this case."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S03-T5
+    ac_id: AC-001.5
+    req_id: REQ-001
+    source: "plan.json steps[M4-S03].acceptance_tests[4] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S03/configuration-workbook.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M4 gate; artefacts/M4-S03/configuration-workbook.md exists"
+    steps:
+      - step: "Open artefacts/M4-S03/configuration-workbook.md"
+        expected: "The Assumptions Register lists all 43 assumption rows"
+      - step: "Confirm in configuration-workbook.md"
+        expected: "Every row names an owner who can close it"
+      - step: "Confirm in configuration-workbook.md"
+        expected: "Every row names the step ids it constrains"
+      - step: "Confirm in configuration-workbook.md"
+        expected: "The three rows carrying risk high - A24 the OpportunityStage union, A28 the report column codes and A29 the dashboard runningUser - are called out rather than buried in the list"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S03/configuration-workbook.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S03-T5"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    keyed_by: "names no single requirement; keyed to the requirement of the first prerequisite its own text names (A24, the OpportunityStage union, constrains M1-S01 / REQ-001)"
+    gap: "No source names an individual for most owners: plan.json assumptions[] carries no owner key, so the register joins each assumption to its clarification's owner_role, or for the five with no clarification to the owner cell of the workbook rows of the step it constrains. Only VP Sales Operations resolves to a person (Pranav, requirement.md 'Asked by'). Step 2 is satisfied with roles, not names, unless the gate supplies names."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S03-T6
+    ac_id: AC-019.2
+    req_id: REQ-019
+    source: "plan.json steps[M4-S03].acceptance_tests[5] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S03/traceability.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M4 gate; artefacts/M4-S03/traceability.md exists"
+    steps:
+      - step: "Open artefacts/M4-S03/traceability.md"
+        expected: "The traceability row for the product-before-Propose requirement (REQ-019) names M2-S04"
+      - step: "Confirm in traceability.md"
+        expected: "The workbook's Validation Rules section carries the M2-S04 row (CWB-VR-002)"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S03/traceability.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S03-T6"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    amended: "Corrected after G5 by the prose-only amendment plan.json steps[M4-S03].amendments[1] (2026-10-02T18:52:43Z), which appends: 'M2-S04 was unblocked on 2026-09-15 and shipped Opportunity.Opportunity_Products_Required_At_Propose as an org-validated rule (MOCK-DEPLOY-M2 run 3); read every clause that assumes a blocked or empty M2-S04 as satisfied by that rule's presence - the exclusion it describes does not apply.' Read that way, the blocked_reason clause is satisfied by the rule's presence: the REQ-019 row names M2-S04 and the rule, and CWB-VR-002 carries it. Steps 1 and 2 already tick against that reading; no blocked_reason exists to quote and none is needed."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T4
+    ac_id: AC-001.6
+    req_id: REQ-001
+    source: "plan.json steps[M4-S04].acceptance_tests[3] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "the runbook must contain no sf project deploy start without --dry-run"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S04/deploy-order.md as it stands in the build directory"
+    precondition: "M4-S04 is documented (tests/M4-S04/results.json: passed true, this test listed in skipped_manual); artefacts/M4-S04/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M4-S04/deploy-order.md"
+        expected: "It contains no sf project deploy start without --dry-run anywhere"
+      - step: "Confirm in deploy-order.md"
+        expected: "The only org-facing command it offers is scripts/mock_deploy.py <plan.json> --org-alias <alias> --milestone <id>, which a release owner may choose to run"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/deploy-order.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S04-T4"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M4S04-04"
+    keyed_by: "names no requirement at all; keyed by the fallback rule to the lowest-numbered requirement in the build-level manifest the runbook governs"
+    gap: "decisions.md O-M4S04-04: the runbook also offers read-only retrieves and SOQL queries, because tests 7 and 11 require retrieve-and-grep checks, so step 2 fails as written. The requester's decision, for the gate to record, is that read-only org commands are permitted in a runbook and the deny-list is about deploys. Step 1 is unaffected."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T5
+    ac_id: AC-019.3
+    req_id: REQ-019
+    source: "plan.json steps[M4-S04].acceptance_tests[4] (manual; reworded by plan.json steps[M4-S04].amendments[0] (2026-10-02T18:52:18Z))"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S04/package.xml as it stands in the build directory"
+    precondition: "M4-S04 is documented (tests/M4-S04/results.json: passed true, this test listed in skipped_manual); artefacts/M4-S04/package.xml exists"
+    steps:
+      - step: "Open artefacts/M4-S04/package.xml"
+        expected: "Opportunity.Opportunity_Products_Required_At_Propose appears exactly once as a ValidationRule member"
+      - step: "Confirm the member against the artefacts tree"
+        expected: "Its file is behind it: artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml"
+      - step: "Confirm in the file this clause names"
+        expected: "deploy-order.md lists the rule in the validation-rule position after M2-S01's custom permission"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/package.xml as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S04-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    amended: "Reworded after G5 by plan.json steps[M4-S04].amendments[0] (2026-10-02T18:52:18Z): the original text ('Given M2-S04 ships nothing ... appears as a manifest member nowhere') assumed a blocked step and would have dropped a shipped, org-validated rule (MOCK-DEPLOY-M2 run 3) from the manifest. The case follows the reworded text, and is no longer a negative case."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T6
+    ac_id: AC-001.7
+    req_id: REQ-001
+    source: "plan.json steps[M4-S04].acceptance_tests[5] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S04/deploy-order.md as it stands in the build directory"
+    precondition: "M4-S04 is documented (tests/M4-S04/results.json: passed true, this test listed in skipped_manual); artefacts/M4-S04/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M4-S04/deploy-order.md"
+        expected: "Retrieve and merge OpportunityStage has a named owner and an ordered position"
+      - step: "Confirm in deploy-order.md"
+        expected: "Discover the layout-required fields, and retrieve the products related-list name, each have a named owner and an ordered position"
+      - step: "Confirm in deploy-order.md"
+        expected: "Confirm the report column codes, set the dashboard runningUser, and populate the Enterprise Managers group each have a named owner and an ordered position"
+      - step: "Confirm in deploy-order.md"
+        expected: "Set approval process order, reassign the 140 open Enterprise deals, and record every bypass use in Chatter each have a named owner and an ordered position"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/deploy-order.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S04-T6"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M4S04-09"
+    keyed_by: "spans nine prerequisites; keyed to the requirement of the first one its text names (retrieve and merge OpportunityStage, REQ-001)"
+    gap: "decisions.md O-M4S04-09: owners are named by role (release owner, sales-ops admin, Sales Operations lead) and only the VP is named on file as a person; a role satisfies the owner check unless the gate supplies a person per role before the window."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T7
+    ac_id: AC-010.3
+    req_id: REQ-010
+    source: "plan.json steps[M4-S04].acceptance_tests[6] (manual; added by plan.json steps[M4-S04].amendments[0] (2026-10-02T18:52:18Z))"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S04/deploy-order.md as it stands in the build directory"
+    precondition: "M4-S04 is documented (tests/M4-S04/results.json: passed true, this test listed in skipped_manual); artefacts/M4-S04/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M4-S04/deploy-order.md"
+        expected: "Its cutover runbook carries the retrieve-and-copy of the Opportunity Products related list - retrieved from the org's current Opportunity layout and copied into both the Enterprise and Renewal layouts, never hand-authored - as a pre-deploy step"
+      - step: "Confirm in deploy-order.md"
+        expected: "That step has a named owner"
+      - step: "Confirm in deploy-order.md"
+        expected: "That step sits before the Layout deploy"
+      - step: "Read the milestone:M4 gate record"
+        expected: "It records REQ-010 as covered by this runbook step rather than by metadata"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/deploy-order.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S04-T7"
+      - type: artefact
+        of: "the milestone:M4 gate record in plan.json human_gates[], naming REQ-010's coverage"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document and a gate record a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M1S02-01"
+      - "O-M4S04-09"
+    gap: "Step 4's oracle is the record the M4 gate itself writes. decisions.md O-M4S04-09: owners are named by role (release owner, sales-ops admin, Sales Operations lead) and only the VP is named on file as a person; a role satisfies the owner check unless the gate supplies a person per role before the window. The related list is still absent from both shipped layouts (traceability REQ-010): this case proves the runbook carries the copy, not that the related list renders - TC-O-M1S02-01 is that check."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T8
+    ac_id: AC-004.3
+    req_id: REQ-004
+    source: "plan.json steps[M4-S04].acceptance_tests[7] (manual; added by plan.json steps[M4-S04].amendments[0] (2026-10-02T18:52:18Z); expected moved to UAT by amendments[2] (2026-10-02T19:17:05Z))"
+    gate: "UAT after the first deploy, not the M4 gate (plan.json expected, set by steps[M4-S04].amendments[2]); milestone:M4 pending"
+    persona: "Sales User profile with the org's Sales Cloud permission set (Q19) and without the Enterprise_Sales_Record_Types permission set - P-REP minus that set; the Sales User overlay carries no recordTypeVisibilities block (CWB-PERM-004), so the seat holds no grant for either new record type"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "neither new record type may be offered to a user who holds no grant for it, and that user's existing default must not move"
+    permission_setup:
+      - "Assign the org's Sales Cloud permission set only"
+      - "Do not assign Enterprise_Sales_Record_Types"
+      - "Confirm in Setup that the tester's profile grants visibility to neither Opportunity.Enterprise nor Opportunity.Renewal - the test's own Given ('nor a profile grant for the new types')"
+    data_setup:
+      - "Before deploy, record the tester's default Opportunity record type - the SMB default the Then says is unchanged"
+    precondition: "Run against the target org after deploy, as one of the runbook's post-deploy checks; UI per run_context (Lightning Experience)"
+    steps:
+      - step: "After deploy, as the tester, start a new Opportunity"
+        expected: "Neither Enterprise nor Renewal is offered on the New dialog"
+      - step: "Read the record type the new Opportunity defaults to"
+        expected: "It is the default recorded before deploy - the SMB default is unchanged"
+    evidence:
+      - type: screenshot
+        of: "the New Opportunity dialog as the tester sees it after deploy"
+      - type: artefact
+        of: "the tester's default Opportunity record type as recorded before and after deploy"
+    pass_rule: "Steps 1 and 2 together; either new record type offered, or a moved default, is a fail"
+    automation_candidate: none
+    automation_rationale: "The oracle is the record-type choice the persona is offered after a deploy; the test places it among the runbook's post-deploy checks"
+    gap: "Runs in UAT after the first deploy; this layer never deploys, so the run follows the release owner's deploy. The sandbox is not named in plan.json."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T9
+    ac_id: AC-016.3
+    req_id: REQ-016
+    source: "plan.json steps[M4-S04].acceptance_tests[8] (manual; added by plan.json steps[M4-S04].amendments[0] (2026-10-02T18:52:18Z); expected moved to UAT by amendments[2] (2026-10-02T19:17:05Z))"
+    gate: "UAT after the first deploy, not the M4 gate (plan.json expected, set by steps[M4-S04].amendments[2]); milestone:M4 pending"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "the Enterprise Path must not render on an Opportunity of the SMB record type"
+    permission_setup:
+      - "Assign Enterprise_Sales_Record_Types and the org's Sales Cloud permission set to P-REP"
+    data_setup:
+      - "One Opportunity of the SMB record type - the generic record type the SMB team stays on (Q9)"
+    precondition: "Run against the target org after deploy; UI per run_context (Lightning Experience)"
+    steps:
+      - step: "After deploy, as P-REP, open the SMB Opportunity's record page"
+        expected: "The record's type reads the SMB record type"
+      - step: "Read the Path area of that page"
+        expected: "The Enterprise Path's stages and key fields do not render for it"
+    evidence:
+      - type: screenshot
+        of: "the SMB Opportunity's record page after deploy"
+    pass_rule: "Step 2 meets its expected result on the record step 1 shows is SMB; any Enterprise Path stage or key field on that page is a fail"
+    automation_candidate: none
+    automation_rationale: "The oracle is a rendered record page"
+    gap: "The test names no persona: P-REP is used because the Path binds by record type and P-REP can open both record types (Q4: SMB and Enterprise see each other's pipeline). Runs in UAT after the first deploy; this layer never deploys, so the run follows the release owner's deploy."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T10
+    ac_id: AC-017.2
+    req_id: REQ-017
+    source: "plan.json steps[M4-S04].acceptance_tests[9] (manual; added by plan.json steps[M4-S04].amendments[0] (2026-10-02T18:52:18Z); split and moved to UAT by amendments[2] (2026-10-02T19:17:05Z))"
+    gate: "UAT after the first deploy, not the M4 gate (plan.json expected, set by steps[M4-S04].amendments[2]); milestone:M4 pending"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "the Renewal Path's two stages must not render on an Opportunity of the Enterprise record type"
+    permission_setup:
+      - "Assign Enterprise_Sales_Record_Types and the org's Sales Cloud permission set to P-REP"
+    data_setup:
+      - "One Opportunity of the Enterprise record type"
+    precondition: "Run against the target org after deploy; UI per run_context (Lightning Experience)"
+    steps:
+      - step: "After deploy, as P-REP, open the Enterprise Opportunity's record page"
+        expected: "The record's type reads Enterprise"
+      - step: "Read the Path area of that page"
+        expected: "The Renewal Path's two stages (Renewal Review, Renewal Proposed) do not render for it"
+    evidence:
+      - type: screenshot
+        of: "the Enterprise Opportunity's record page after deploy"
+    pass_rule: "Step 2 meets its expected result on the record step 1 shows is Enterprise; a Renewal stage on that page is a fail"
+    automation_candidate: none
+    automation_rationale: "The oracle is a rendered record page"
+    amended: "Split by plan.json steps[M4-S04].amendments[2] (2026-10-02T19:17:05Z): the former compound test's second clause (the pre-deploy grep, O-M2S05-04) is now test 11, case TC-M4-S04-T11. This case keeps criterion AC-017.2."
+    gap: "The test names no persona; P-REP opens both record types. Runs in UAT after the first deploy; this layer never deploys, so the run follows the release owner's deploy. The sandbox is not named in plan.json."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T11
+    ac_id: AC-017.3
+    req_id: REQ-017
+    source: "plan.json steps[M4-S04].acceptance_tests[10] (manual; split out of the former compound test 10 by plan.json steps[M4-S04].amendments[2] (2026-10-02T19:17:05Z))"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S04/deploy-order.md as it stands in the build directory"
+    precondition: "M4-S04 is documented (tests/M4-S04/results.json: passed true, this test listed in skipped_manual); artefacts/M4-S04/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M4-S04/deploy-order.md"
+        expected: "Its cutover runbook carries, as a pre-deploy step, the retrieve of the org's existing Opportunity record page that the Renewal record type falls through to (O-M2S05-04) and a grep of it for runtime_sales_pathassistant:pathAssistant"
+      - step: "Confirm in deploy-order.md"
+        expected: "That step has a named owner"
+      - step: "Confirm in deploy-order.md"
+        expected: "It names the decision if the component is absent: add it to that page, or accept that the Renewal Path does not render"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/deploy-order.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S04-T11"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M2S05-04"
+      - "O-M4S04-09"
+    gap: "decisions.md O-M4S04-09: owners are named by role (release owner, sales-ops admin, Sales Operations lead) and only the VP is named on file as a person; a role satisfies the owner check unless the gate supplies a person per role before the window. This case proves the runbook carries the grep; TC-O-M2S05-04 is the case that runs it against the org."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T12
+    ac_id: AC-018.2
+    req_id: REQ-018
+    source: "plan.json steps[M4-S04].acceptance_tests[11] (manual; added by plan.json steps[M4-S04].amendments[0] (2026-10-02T18:52:18Z); split and moved to UAT by amendments[2] (2026-10-02T19:17:05Z))"
+    gate: "UAT after the first deploy, not the M4 gate (plan.json expected, set by steps[M4-S04].amendments[2]); milestone:M4 pending"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass; a second user, P-MGR as in run_context, stands for the test's 'others'"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "one user's collapse must not carry to any other user: the Path stays expanded for others"
+    permission_setup:
+      - "Assign Enterprise_Sales_Record_Types and the org's Sales Cloud permission set to P-REP and to P-MGR"
+    data_setup:
+      - "One Enterprise Opportunity that both P-REP and P-MGR can open"
+      - "P-MGR has not collapsed the Path on that record before the run"
+    precondition: "Run against the target org after deploy, with the PathAssistant setting deployed with the user-preference override enabled (artefacts/M2-S05/settings/PathAssistant.settings-meta.xml, canOverrideAutoPathCollapseWithUserPref true); UI per run_context (Lightning Experience)"
+    steps:
+      - step: "After deploy, as P-REP, collapse the Path on the Enterprise Opportunity and reopen the record"
+        expected: "The Path stays collapsed for P-REP"
+      - step: "As P-MGR, open the same record"
+        expected: "The Path is expanded for P-MGR"
+    evidence:
+      - type: screenshot
+        of: "the reopened record as P-REP, with the Path collapsed"
+      - type: screenshot
+        of: "the same record as P-MGR, with the Path expanded"
+    pass_rule: "Steps 1 and 2 together; a Path that reopens expanded for P-REP, or opens collapsed for P-MGR, is a fail"
+    automation_candidate: none
+    automation_rationale: "The oracle is a rendered record page seen by two users"
+    amended: "Split by plan.json steps[M4-S04].amendments[2] (2026-10-02T19:17:05Z): the former compound test left the override value unstated and needed a scratch rehearsal. This half states the override (true) and runs in the target org; the rehearsal clause is test 13, case TC-M4-S04-T13. This case keeps criterion AC-018.2."
+    gap: "The test names no persona: P-REP collapses the Path and P-MGR stands for 'others'. Runs in UAT after the first deploy; this layer never deploys, so the run follows the release owner's deploy. The sandbox is not named in plan.json."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-S04-T13
+    ac_id: AC-018.3
+    req_id: REQ-018
+    source: "plan.json steps[M4-S04].acceptance_tests[12] (manual; split out of the former compound test 11 by plan.json steps[M4-S04].amendments[2] (2026-10-02T19:17:05Z))"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S04/deploy-order.md as it stands in the build directory"
+    precondition: "M4-S04 is documented (tests/M4-S04/results.json: passed true, this test listed in skipped_manual); artefacts/M4-S04/deploy-order.md exists; the test's Given - a scratch-org or sandbox rehearsal is part of the cutover runbook"
+    steps:
+      - step: "Open artefacts/M4-S04/deploy-order.md"
+        expected: "It states that the PathAssistant setting member deploys with M2-S05"
+      - step: "Confirm in deploy-order.md"
+        expected: "It states that a rehearsal without that setting shows neither Path - the setting is load-bearing, not a default"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/deploy-order.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-S04-T13"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    gap: "The test's Given assumes the runbook includes a scratch-org or sandbox rehearsal. If it includes none, the reviewer records that the Given does not hold and the gate decides whether the case applies."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M1-T3
+    ac_id: AC-001.8
+    req_id: REQ-001
+    source: "plan.json milestones[M1].acceptance_tests[2] (manual)"
+    gate: "milestone:M1 approved 2026-09-18T15:01:29Z; the gate record does not itemize this line"
+    persona: "Named owner of the OpportunityStage merge - the Sales-ops admin role in CWB-OBJ-001's owner cell (no individual is named in any source); retrieves with their own org login, no permission set exercised"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "Q19: the named owner's own org login; no permission set is exercised by this check"
+    data_setup:
+      - "None - reads artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M1 gate; artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml exists"
+    steps:
+      - step: "At the M1 gate, compare the OpportunityStage file about to be deployed with the retrieve of the org's active stage values"
+        expected: "A named owner confirms the OpportunityStage file about to be deployed is the union of the org's currently active stage values and the eight new ones"
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml as read at the M1 gate, with the reviewer's tick recorded against TC-M1-T3"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    open_items:
+      - "O-M1S01-01"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M1-T4
+    ac_id: AC-002.2
+    req_id: REQ-002
+    source: "plan.json milestones[M1].acceptance_tests[3] (manual)"
+    gate: "milestone:M1 approved 2026-09-18T15:01:29Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M1 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "no file in the M1 tree may name the SMB record type, either SMB list view or the SMB pipeline report"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M1-S01/package.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M1 gate; artefacts/M1-S01/package.xml exists"
+    steps:
+      - step: "Open artefacts/M1-S01/package.xml"
+        expected: "No file anywhere in artefacts/M1-S01 or artefacts/M1-S02 names the SMB record type"
+      - step: "Confirm in package.xml"
+        expected: "No file names either SMB list view, or the SMB pipeline report"
+    evidence:
+      - type: artefact
+        of: "artefacts/M1-S01/package.xml as read at the M1 gate, with the reviewer's tick recorded against TC-M1-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    also_covers:
+      - "REQ-001"
+      - "REQ-014"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-T5
+    ac_id: AC-019.4
+    req_id: REQ-019
+    source: "plan.json milestones[M2].acceptance_tests[4] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the G4 record ticks this line as 'the product gate shipped as a validation rule, not as Path guidance; no deferred owner needed' (G4 numbers it test 4, counting from 0)"
+    persona: "Build reviewer at the M2 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S04/deploy-order.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S04/deploy-order.md exists"
+    steps:
+      - step: "At the M2 gate, confirm with the approver what they read"
+        expected: "The approver has read artefacts/M2-S04/deploy-order.md section 2.1 (org-verified: HasOpportunityLineItem compiles in formula context)"
+      - step: "Confirm in deploy-order.md"
+        expected: "The approver has read section 2.2 (still unverified: re-firing after a line-item deletion is a forward gate only)"
+      - step: "Confirm in deploy-order.md"
+        expected: "The approver has recorded that no deferred owner for a library gap is needed"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S04/deploy-order.md as read at the M2 gate, with the reviewer's tick recorded against TC-M2-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M2-T6
+    ac_id: AC-012.3
+    req_id: REQ-012
+    source: "plan.json milestones[M2].acceptance_tests[5] (manual)"
+    gate: "milestone:M2 approved 2026-09-19T15:54:03Z; the G4 record answers it: by metadata nobody holds either set; intended holders are the sales-ops admin (bypass) and the Enterprise/Renewal persona (G4 numbers it test 5)"
+    persona: "Approver of milestone:M2 - VP Sales Operations (Pranav, per the G4 record); no Salesforce permission set is exercised"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M2 gate; artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml exists"
+    steps:
+      - step: "At the M2 gate, ask the approver to name who gains each permission set"
+        expected: "The approver names every person who gains the bypass permission (the sales-ops admin, and nobody else)"
+      - step: "Confirm in Sales_Ops_Validation_Bypass.permissionset-meta.xml"
+        expected: "The approver names every person who gains the two record types (the 12 reps, the 2 managers and the sales-ops admin)"
+    evidence:
+      - type: artefact
+        of: "artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml as read at the M2 gate, with the reviewer's tick recorded against TC-M2-T6"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    also_covers:
+      - "REQ-013"
+    open_items:
+      - "O-M2S01-01"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-T4
+    ac_id: AC-021.7
+    req_id: REQ-021
+    source: "plan.json milestones[M3].acceptance_tests[3] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: true
+    negative_basis: "recall must clear the field and send nothing"
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml exists"
+    steps:
+      - step: "Open artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml"
+        expected: "Submit writes Pending and locks"
+      - step: "Confirm in Opportunity.workflow-meta.xml"
+        expected: "Approve writes Approved, unlocks and emails the rep; reject writes Rejected, unlocks and emails the rep"
+      - step: "Confirm in Opportunity.workflow-meta.xml"
+        expected: "Recall clears the field and sends nothing"
+      - step: "Confirm in Opportunity.workflow-meta.xml"
+        expected: "The one clause not delivered as asked - the manager's comments inside the rejection email - is visible as assumption A27 rather than as a silent substitution"
+    evidence:
+      - type: artefact
+        of: "artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml as read at the M3 gate, with the reviewer's tick recorded against TC-M3-T4"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    also_covers:
+      - "REQ-020"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M3-T5
+    ac_id: AC-022.3
+    req_id: REQ-022
+    source: "plan.json milestones[M3].acceptance_tests[4] (manual)"
+    gate: "milestone:M3 approved 2026-10-02T17:14:17Z; the gate record does not itemize this line"
+    persona: "Build reviewer at the M3 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads reports/MOCK-DEPLOY-M3.md as it stands in the build directory"
+    precondition: "Build directory .sfskills/builds/northwind-sales/ at the M3 gate; reports/MOCK-DEPLOY-M3.md exists"
+    steps:
+      - step: "At the M3 gate, open reports/MOCK-DEPLOY-M3.md and the summary.md the gate cites"
+        expected: "A reviewer confirms that scripts/mock_deploy.py has been run for M3"
+      - step: "Confirm in MOCK-DEPLOY-M3.md"
+        expected: "Its summary.md is attached to the gate"
+    evidence:
+      - type: artefact
+        of: "reports/MOCK-DEPLOY-M3.md as read at the M3 gate, with the reviewer's tick recorded against TC-M3-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    keyed_by: "names no single requirement; keyed to the requirement of the first artefact its text names (the Apex, M3-S03 / REQ-022)"
+    also_covers:
+      - "REQ-023"
+      - "REQ-021"
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-T4
+    ac_id: AC-001.9
+    req_id: REQ-001
+    source: "plan.json milestones[M4].acceptance_tests[3] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S04/deploy-order.md as it stands in the build directory"
+    precondition: "M4-S04 is documented (tests/M4-S04/results.json: passed true); artefacts/M4-S04/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M4-S04/deploy-order.md"
+        expected: "Each of the nine prerequisites has a named owner in the cutover runbook"
+      - step: "Confirm in deploy-order.md"
+        expected: "The OpportunityStage union, the report column codes and the dashboard runningUser are marked as blocking the deploy rather than as follow-ups"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/deploy-order.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-T4"
+    pass_rule: "Every step meets its expected result; the gap recorded on this case is resolved by the gate first"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    keyed_by: "spans nine prerequisites; keyed to the requirement of the first of the three blocking ones its text names (the OpportunityStage union, REQ-001)"
+    also_covers:
+      - "REQ-025"
+      - "REQ-026"
+    open_items:
+      - "O-M4S04-09"
+    gap: "decisions.md O-M4S04-09: owners are named by role (release owner, sales-ops admin, Sales Operations lead) and only the VP is named on file as a person; a role satisfies the owner check unless the gate supplies a person per role before the window."
+    pass_fail: "Not Run"
+
+  - case_id: TC-M4-T5
+    ac_id: AC-004.2
+    req_id: REQ-004
+    source: "plan.json milestones[M4].acceptance_tests[4] (manual)"
+    gate: "milestone:M4 pending; ticked at the M4 milestone gate"
+    persona: "Build reviewer at the M4 milestone gate - no Salesforce seat; the oracle is a build file"
+    sandbox: "n/a - build-record check in .sfskills/builds/northwind-sales/ (no org)"
+    negative_path: false
+    permission_setup:
+      - "None - no Salesforce seat; the oracle is a build file"
+    data_setup:
+      - "None - reads artefacts/M4-S04/deploy-order.md as it stands in the build directory"
+    precondition: "M4-S04 is documented (tests/M4-S04/results.json: passed true); artefacts/M4-S04/deploy-order.md exists"
+    steps:
+      - step: "Open artefacts/M4-S04/deploy-order.md"
+        expected: "The reassignment of about 140 open Enterprise deals to the Enterprise record type is an ordered step with an owner"
+      - step: "Confirm in deploy-order.md"
+        expected: "The step has a stated position relative to the deploy"
+      - step: "Confirm in deploy-order.md"
+        expected: "It is described as a one-time data update rather than as a migration"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/deploy-order.md as read at the M4 gate, with the reviewer's tick recorded against TC-M4-T5"
+    pass_rule: "Every step meets its expected result"
+    automation_candidate: none
+    automation_rationale: "The oracle is a build document a human reads at the milestone gate; no in-org transaction observes it"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M1S01-02
+    ac_id: AC-001.10
+    req_id: REQ-001
+    source: "decisions.md O-M1S01-02 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Sales Operations lead (Q39 owner_role) reading the target org's Opportunity settings through a metadata retrieve - no profile or permission set is exercised"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "None - a read of org settings"
+    data_setup:
+      - "None - an org setting, not record data"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Retrieve or read the target org's Opportunity settings before go-live"
+        expected: "The value of enableOpportunityFieldHistoryTracking is recorded with the date it was read"
+      - step: "Compare it with assumption A4"
+        expected: "The value is true; if it is false, the gap is raised to the Sales Operations lead before go-live, because history cannot be backfilled"
+    evidence:
+      - type: screenshot
+        of: "the Opportunity settings value, or the retrieved settings file excerpt"
+    pass_rule: "Step 2 reads true; any other value is a fail raised before go-live"
+    automation_candidate: none
+    automation_rationale: "An org setting read once before go-live; no in-transaction assertion observes it"
+    keyed_by: "assumption A4 constrains M1-S01; keyed to its first requirement (REQ-001, the stage values whose movement Q39 asks to measure)"
+    open_items:
+      - "O-M1S01-02"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M1S01-04
+    ac_id: AC-002.3
+    req_id: REQ-002
+    source: "decisions.md O-M1S01-04 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "Assign Enterprise_Sales_Record_Types (M2-S02) and the org's Sales Cloud permission set to P-REP"
+      - "Do not assign Sales_Ops_Validation_Bypass"
+    data_setup:
+      - "One new Enterprise Opportunity and one new Renewal Opportunity, created by P-REP after deploy"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "As P-REP, create one Enterprise and one Renewal Opportunity without choosing a stage"
+        expected: "Both records save"
+      - step: "Run the post-deploy SOQL in artefacts/M1-S01/deploy-order.md section 4 for both record ids"
+        expected: "Each record's StageName is returned by the query and recorded"
+      - step: "Compare each StageName with its process's stage list"
+        expected: "The Enterprise record's stage is one of Qualify, Discover, Propose, Negotiate, Closed Won, Closed Lost; the Renewal record's is one of Renewal Review, Renewal Proposed, Closed Won, Closed Lost"
+    evidence:
+      - type: soql
+        of: "the section 4 query result for both ids"
+    pass_rule: "Steps 2 and 3 together; a stage outside the record's own process is a fail"
+    automation_candidate: apex
+    automation_rationale: "Insert both records in a test transaction and assert StageName against each process's stage list"
+    also_covers:
+      - "REQ-003"
+    open_items:
+      - "O-M1S01-04"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M1S02-01
+    ac_id: AC-010.2
+    req_id: REQ-010
+    source: "decisions.md O-M1S02-01 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "the pasted element must diff empty against the retrieve, so no hand-typed related-list name ships"
+    permission_setup:
+      - "Assign Enterprise_Sales_Record_Types and the org's Sales Cloud permission set to P-REP"
+      - "Do not assign Sales_Ops_Validation_Bypass"
+    data_setup:
+      - "One Enterprise Opportunity owned by P-REP"
+      - "The org's Standard Price Book with at least one active product (requirement.md says the org already has one)"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Before deploy, diff the relatedLists element in both shipped layouts against the retrieved Opportunity Layout"
+        expected: "Both diffs are empty"
+      - step: "After deploy, as P-REP open the Enterprise Opportunity"
+        expected: "The Opportunity Products related list is on the page"
+      - step: "Add one product line from the Standard Price Book and save"
+        expected: "The line saves and appears in the related list"
+    evidence:
+      - type: artefact
+        of: "the two relatedLists diffs"
+      - type: screenshot
+        of: "the related list showing the saved product line"
+    pass_rule: "All three steps; a non-empty diff in step 1 is a fail even if step 3 passes"
+    automation_candidate: none
+    automation_rationale: "The oracle is a rendered related list and a file diff; no in-transaction assertion observes page layout content"
+    open_items:
+      - "O-M1S02-01"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M2S01-01
+    ac_id: AC-012.1
+    req_id: REQ-012
+    source: "decisions.md O-M2S01-01, O-M2S01-04 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-OPS - the sales-ops admin seat holding the Sales_Ops_Validation_Bypass permission set (the one person Q13 allows past the rules); its profile is recorded in permission_setup"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "nobody but the sales-ops admin may hold the bypass, by assignment or through a profile"
+    permission_setup:
+      - "Q19: the P-OPS seat's profile is the org's administrator profile; this case reads assignments and does not rely on that profile's access"
+      - "Assign Sales_Ops_Validation_Bypass to the sales-ops admin only"
+    data_setup:
+      - "None - permission data only"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "After deploy, assign Sales_Ops_Validation_Bypass to the sales-ops admin and to nobody else (Q13)"
+        expected: "One assignment exists"
+      - step: "Run the SetupEntityAccess to PermissionSetAssignment query in artefacts/M2-S01/deploy-order.md section 4 for Bypass_Opportunity_Sales_Validation"
+        expected: "Exactly one assignee is returned: the sales-ops admin"
+      - step: "Read PermissionSet.IsOwnedByProfile on every row the query returns"
+        expected: "No row reads true - the permission reaches nobody through a profile"
+      - step: "Run the same query for Enterprise_Sales_Record_Types (G4 extends the check to both sets)"
+        expected: "The assignees are the Enterprise reps and managers milestone M2 test 6 names"
+    evidence:
+      - type: soql
+        of: "the section 4 query result for both permission sets"
+    pass_rule: "Steps 2 and 3 together; a second assignee or any profile-owned grant is a fail"
+    automation_candidate: none
+    automation_rationale: "Assignment is record data in the target org; the oracle is a query run after go-live"
+    open_items:
+      - "O-M2S01-01"
+      - "O-M2S01-04"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M2S02-03
+    ac_id: AC-014.2
+    req_id: REQ-014
+    source: "decisions.md O-M2S02-03 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Release owner preparing the target-org deploy (no Salesforce permission set exercised; reads build files and the target org's metadata)"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "Read access to the target org's profile list"
+    data_setup:
+      - "None"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "List the target org's profiles before deploy"
+        expected: "The list is recorded with its date"
+      - step: "Find the profile the 12 reps and 2 managers hold (Q19)"
+        expected: "Its Name is exactly Sales User, matching the file stem and the package member"
+    evidence:
+      - type: screenshot
+        of: "the profile list entry"
+    pass_rule: "Step 2 matches exactly; any difference is fixed in the file and manifest before deploy"
+    automation_candidate: none
+    automation_rationale: "An org fact read once before deploy"
+    open_items:
+      - "O-M2S02-03"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M2S03-02
+    ac_id: AC-015.4
+    req_id: REQ-015
+    source: "decisions.md O-M2S03-02 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Release owner preparing the target-org deploy (no Salesforce permission set exercised; reads build files and the target org's metadata)"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "no pre-existing automation may write the four fields after save"
+    permission_setup:
+      - "Read access to the target org's automation on Opportunity"
+    data_setup:
+      - "None"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "List every workflow rule and field update on Opportunity in the target org, excluding the four this build adds in M3-S02"
+        expected: "The list is recorded"
+      - step: "For each, record the fields it writes"
+        expected: "None writes StageName, Amount, Discount__c or Approval_Status__c"
+    evidence:
+      - type: screenshot
+        of: "the Opportunity workflow rules list and each field update's target"
+    pass_rule: "Step 2 finds none; one found is a fail raised against assumption A8 before go-live"
+    automation_candidate: none
+    automation_rationale: "An inventory of the target org's existing automation"
+    open_items:
+      - "O-M2S03-02"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M2S03-03
+    ac_id: AC-015.5
+    req_id: REQ-015
+    source: "decisions.md O-M2S03-03 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Release owner preparing the target-org deploy (no Salesforce permission set exercised; reads build files and the target org's metadata)"
+    sandbox: "n/a - no org; build files or a local run"
+    negative_path: true
+    negative_basis: "the rule must never reach the org without the approval process"
+    permission_setup:
+      - "None - reads build files"
+    data_setup:
+      - "None"
+    precondition: "M4-S04 is built; before go-live"
+    steps:
+      - step: "Read the cutover runbook's deploy order"
+        expected: "M2-S03's rule and M3-S02's approval process are in the same release"
+      - step: "Read the build-level package.xml"
+        expected: "Both ValidationRule:Opportunity.Opportunity_Discount_Requires_Approval and ApprovalProcess:Opportunity.Discount_Approval are members"
+    evidence:
+      - type: artefact
+        of: "artefacts/M4-S04/package.xml and deploy-order.md"
+    pass_rule: "Both steps; a release plan that ships the rule first is a fail"
+    automation_candidate: none
+    automation_rationale: "A release-plan read, not an in-org behaviour"
+    also_covers:
+      - "REQ-021"
+    open_items:
+      - "O-M2S03-03"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M2S03-04A
+    ac_id: AC-015.1
+    req_id: REQ-015
+    source: "decisions.md O-M2S03-04 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "a rep without the bypass is blocked at Closed Won above 20% with no approval"
+    permission_setup:
+      - "Assign Enterprise_Sales_Record_Types and the org's Sales Cloud permission set"
+      - "Do not assign Sales_Ops_Validation_Bypass - its absence is the test condition"
+    data_setup:
+      - "One Enterprise Opportunity owned by P-REP at Negotiate, Discount__c 25%, Approval_Status__c blank"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "As P-REP, open an Enterprise Opportunity at Negotiate with Discount__c 25% and Approval_Status__c blank"
+        expected: "The record opens"
+      - step: "Set the stage to Closed Won and save"
+        expected: "The save is rejected with “A discount above 20% needs manager approval before this opportunity can be Closed Won - submit for approval from the Discount panel.” on the Discount__c field"
+      - step: "Reload the record"
+        expected: "StageName still reads Negotiate"
+    evidence:
+      - type: screenshot
+        of: "the error on Discount__c"
+      - type: soql
+        of: "SELECT StageName FROM Opportunity WHERE Id = :oppId"
+    pass_rule: "Steps 2 and 3 together; a save that succeeds is a fail"
+    automation_candidate: apex
+    automation_rationale: "Validation runs in the save transaction; a Database.update with allOrNone false returns the error - no such test exists in this build (decisions.md O-M2S03-04)"
+    open_items:
+      - "O-M2S03-04"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M2S03-04B
+    ac_id: AC-012.1
+    req_id: REQ-015
+    source: "decisions.md O-M2S03-04 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-OPS - the sales-ops admin seat holding the Sales_Ops_Validation_Bypass permission set (the one person Q13 allows past the rules); its profile is recorded in permission_setup"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "Assign Sales_Ops_Validation_Bypass to P-OPS (after deploy - assignment is data)"
+      - "Q19: the P-OPS seat's profile is the org's administrator profile; step 1 is the control that shows the rule fires for a non-holder, so the pass is attributable to the custom permission"
+    data_setup:
+      - "One Enterprise Opportunity at Negotiate, Discount__c 25%, Approval_Status__c blank"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Run TC-O-M2S03-04A first"
+        expected: "The same save is rejected for P-REP"
+      - step: "As P-OPS, open an Enterprise Opportunity at Negotiate with Discount__c 25% and Approval_Status__c blank, set the stage to Closed Won and save"
+        expected: "The save succeeds and StageName reads Closed Won"
+      - step: "Post the reason on the record's Chatter feed (Q17)"
+        expected: "The post is on the record"
+    evidence:
+      - type: screenshot
+        of: "the saved record at Closed Won"
+      - type: screenshot
+        of: "the Chatter post"
+    pass_rule: "Steps 1 and 2 together; step 2 alone proves nothing about the permission"
+    automation_candidate: apex
+    automation_rationale: "System.runAs a user holding the permission set and assert the update succeeds - not written in this build (decisions.md O-M2S03-04)"
+    also_covers:
+      - "REQ-012"
+    open_items:
+      - "O-M2S03-04"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M2S04-05A
+    ac_id: AC-019.5
+    req_id: REQ-019
+    source: "decisions.md O-M2S04-05 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "a rep without the bypass cannot move a product-less Enterprise deal to Propose"
+    permission_setup:
+      - "Assign Enterprise_Sales_Record_Types and the org's Sales Cloud permission set"
+      - "Do not assign Sales_Ops_Validation_Bypass"
+    data_setup:
+      - "One Enterprise Opportunity owned by P-REP at Discover with no product lines"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "As P-REP, open the Enterprise Opportunity at Discover with no product lines"
+        expected: "HasOpportunityLineItem reads false"
+      - step: "Set the stage to Propose and save"
+        expected: "The save is rejected with “Add at least one product before moving this opportunity to Propose.” on the Stage field"
+      - step: "Reload the record"
+        expected: "StageName still reads Discover"
+    evidence:
+      - type: screenshot
+        of: "the error on StageName"
+      - type: soql
+        of: "SELECT StageName, HasOpportunityLineItem FROM Opportunity WHERE Id = :oppId"
+    pass_rule: "Steps 2 and 3 together"
+    automation_candidate: apex
+    automation_rationale: "Validation runs in the save transaction; the two Apex tests that would make this a regression test are named in admin/validation-rules but owned by no step (decisions.md O-M2S04-05)"
+    open_items:
+      - "O-M2S04-05"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M2S04-05B
+    ac_id: AC-019.6
+    req_id: REQ-019
+    source: "decisions.md O-M2S04-05 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-OPS - the sales-ops admin seat holding the Sales_Ops_Validation_Bypass permission set (the one person Q13 allows past the rules); its profile is recorded in permission_setup"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "Assign Sales_Ops_Validation_Bypass to P-OPS"
+      - "Q19: the P-OPS seat's profile is the org's administrator profile; TC-O-M2S04-05A is the control that shows the rule fires for a non-holder"
+    data_setup:
+      - "One Enterprise Opportunity at Discover with no product lines"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Run TC-O-M2S04-05A first"
+        expected: "The same save is rejected for P-REP"
+      - step: "As P-OPS, set the stage of a product-less Enterprise Opportunity to Propose and save"
+        expected: "The save succeeds and StageName reads Propose"
+    evidence:
+      - type: soql
+        of: "SELECT StageName FROM Opportunity WHERE Id = :oppId"
+    pass_rule: "Steps 1 and 2 together"
+    automation_candidate: apex
+    automation_rationale: "System.runAs a holder of the permission set and assert the update succeeds - not written in this build"
+    also_covers:
+      - "REQ-012"
+    open_items:
+      - "O-M2S04-05"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M2S05-04
+    ac_id: AC-017.1
+    req_id: REQ-017
+    source: "decisions.md O-M2S05-04, O-M3S05-03 (operator entry, line 1375), O-M3S05-04 (renderer entry, line 1408) (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "Assign Enterprise_Sales_Record_Types and the org's Sales Cloud permission set to P-REP"
+    data_setup:
+      - "One Renewal Opportunity owned by P-REP at Renewal Review"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Before deploy, run sf project retrieve start --metadata FlexiPage against the target org and grep the flexipages folder for runtime_sales_pathassistant:pathAssistant"
+        expected: "The files that carry the component are recorded"
+      - step: "After deploy, as P-REP open the Renewal Opportunity"
+        expected: "The page it resolves to is recorded by name"
+      - step: "Read the path on that page"
+        expected: "It shows Renewal Review and Renewal Proposed"
+    evidence:
+      - type: artefact
+        of: "the grep output"
+      - type: screenshot
+        of: "the Renewal record page with its path"
+    pass_rule: "Step 3 shows the Renewal path; a page with no path component is a fail"
+    automation_candidate: none
+    automation_rationale: "The oracle is a rendered record page"
+    open_items:
+      - "O-M2S05-04"
+      - "O-M3S05-03 (operator entry, line 1375)"
+      - "O-M3S05-04 (renderer entry, line 1408)"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M3S01-03
+    ac_id: AC-020.3
+    req_id: REQ-020
+    source: "decisions.md O-M3S01-03 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass (submitter); P-MGR approves or rejects"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "P-REP and P-MGR as in run_context; P-MGR is P-REP's Manager"
+    data_setup:
+      - "Two Enterprise Opportunities owned by P-REP with Discount__c 25%, at Negotiate"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "As P-REP, submit the first Opportunity for approval"
+        expected: "P-MGR receives Discount_Approval_Request"
+      - step: "As P-MGR, approve it"
+        expected: "P-REP receives Discount_Approved; its body shows Approval_Status__c as Approved"
+      - step: "Submit the second Opportunity and, as P-MGR, reject it"
+        expected: "P-REP receives Discount_Rejected; its body shows Approval_Status__c as Rejected and points at the Approval History related list"
+      - step: "Read the Discount__c value in each body"
+        expected: "The rendered value is recorded verbatim"
+    evidence:
+      - type: email
+        of: "the three messages as received"
+    pass_rule: "Steps 2 and 3 show the post-update status; a stale status means the line is deleted from the template"
+    automation_candidate: none
+    automation_rationale: "The oracle is a delivered email"
+    also_covers:
+      - "REQ-021"
+    open_items:
+      - "O-M3S01-03"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M3S02-01
+    ac_id: AC-021.8
+    req_id: REQ-021
+    source: "decisions.md O-M3S02-01 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Release owner preparing the target-org deploy (no Salesforce permission set exercised; reads build files and the target org's metadata)"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "no owner may have a blank Manager, or submission fails at run time"
+    permission_setup:
+      - "Read access to User records"
+    data_setup:
+      - "The org's current users who own Enterprise or Renewal opportunities, including the 140 deals Q8 reassigns"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "List every user who owns an Enterprise or Renewal opportunity, with their Manager"
+        expected: "The list is recorded with its date"
+      - step: "Check the Manager column"
+        expected: "No row is blank"
+    evidence:
+      - type: soql
+        of: "the owner list with each Manager"
+    pass_rule: "Step 2 finds no blank Manager; G5 placed this in the M4 runbook as a pre-deploy data check"
+    automation_candidate: none
+    automation_rationale: "User data in the target org, read once before go-live"
+    open_items:
+      - "O-M3S02-01"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M3S04-01
+    ac_id: AC-023.4
+    req_id: REQ-023
+    source: "decisions.md O-M3S04-01 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Developer running the Jest harness locally - no Salesforce profile or permission set; the oracle is the test runner"
+    sandbox: "n/a - no org; build files or a local run"
+    negative_path: false
+    permission_setup:
+      - "None - a local test run"
+    data_setup:
+      - "None"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Copy the bundle into an SFDX project that carries the Jest harness and run sfdx-lwc-jest"
+        expected: "The run completes"
+      - step: "Read the result"
+        expected: "16 passed, 0 failed"
+    evidence:
+      - type: artefact
+        of: "the Jest run output"
+    pass_rule: "Step 2 reads 16 passed and 0 failed"
+    automation_candidate: none
+    automation_rationale: "A local test-runner execution, not an in-org assertion"
+    open_items:
+      - "O-M3S04-01"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M3S04-02
+    ac_id: AC-023.5
+    req_id: REQ-023
+    source: "decisions.md O-M3S04-02 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-REP - Enterprise rep: profile Sales User with the org's Sales Cloud permission set (Q19) plus the Enterprise_Sales_Record_Types permission set (M2-S02); role Enterprise Rep; does not hold Sales_Ops_Validation_Bypass"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "Assign Enterprise_Sales_Record_Types and the org's Sales Cloud permission set to P-REP"
+    data_setup:
+      - "One Enterprise Opportunity owned by P-REP with Discount__c 20% and Approval_Status__c blank"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "As P-REP, open the Opportunity on the Enterprise record page"
+        expected: "The panel shows the discount and the approval status"
+      - step: "Read the discount value the panel displays"
+        expected: "It reads 20, not 0.20"
+      - step: "Read the Submit button state"
+        expected: "Disabled"
+    evidence:
+      - type: screenshot
+        of: "the panel at 20%"
+    pass_rule: "Steps 2 and 3; a value of 0.20 means the threshold design attribute and the Jest suite are wrong"
+    automation_candidate: none
+    automation_rationale: "One record read in the org settles what the UI API returns"
+    open_items:
+      - "O-M3S04-02"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M3S05-02
+    ac_id: AC-024.4
+    req_id: REQ-024
+    source: "decisions.md O-M3S05-02 (operator entry, line 1368), O-M3S05-03 (renderer entry, line 1402) (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Release owner preparing the target-org deploy (no Salesforce permission set exercised; reads build files and the target org's metadata)"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "no app-level Opportunity page may silently outrank the org default"
+    permission_setup:
+      - "Metadata retrieve access to the target org"
+    data_setup:
+      - "None"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Run the retrieve commands in artefacts/M3-S05/deploy-order.md section 3.1"
+        expected: "The CustomApplication files are retrieved"
+      - step: "List every app that assigns its own Opportunity record page"
+        expected: "The list is recorded; it is empty, or each entry carries a re-point decision"
+    evidence:
+      - type: artefact
+        of: "the retrieved files and the recorded list"
+    pass_rule: "Step 2 is empty or every entry is re-pointed before go-live"
+    automation_candidate: none
+    automation_rationale: "A metadata inventory of the target org"
+    open_items:
+      - "O-M3S05-02 (operator entry, line 1368)"
+      - "O-M3S05-03 (renderer entry, line 1402)"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M4S01-02
+    ac_id: AC-025.3
+    req_id: REQ-025
+    source: "decisions.md O-M4S01-02 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Release owner preparing the target-org deploy (no Salesforce permission set exercised; reads build files and the target org's metadata)"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "Metadata retrieve access to the target org"
+    data_setup:
+      - "None"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Run Phase A of artefacts/M4-S01/deploy-order.md section 2 against the target org"
+        expected: "The retrieve completes"
+      - step: "Record the SMB pipeline report's report type and the org's report folders"
+        expected: "Both are written into the runbook with the date"
+    evidence:
+      - type: artefact
+        of: "the retrieve output"
+    pass_rule: "Step 2 recorded before M4-S02 deploys"
+    automation_candidate: none
+    automation_rationale: "A metadata retrieve of the target org"
+    open_items:
+      - "O-M4S01-02"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M4S02-05
+    ac_id: AC-025.4
+    req_id: REQ-025
+    source: "decisions.md O-M4S01-01, O-M4S01-03, O-M4S02-03, O-M4S02-05 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Release owner preparing the target-org deploy (no Salesforce permission set exercised; reads build files and the target org's metadata)"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "the report may not ship without its record-type criterion, and no code may be hand-edited"
+    permission_setup:
+      - "Deploy access for the release owner"
+    data_setup:
+      - "None"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Deploy the first half: Group, ReportType, folders and the M1-S01 fields"
+        expected: "The first half deploys"
+      - step: "Retrieve a throwaway report on the new type and compare its column codes with section 4 of artefacts/M4-S01/deploy-order.md"
+        expected: "Every code is confirmed or replaced, and the confirmed-code column is filled"
+      - step: "Deploy the Report and Dashboard"
+        expected: "The report carries the record-type criterion code"
+    evidence:
+      - type: artefact
+        of: "the filled section 4 and the retrieved throwaway report"
+    pass_rule: "All three steps; a report without the record-type criterion is a fail"
+    automation_candidate: none
+    automation_rationale: "A staged deploy in the target org"
+    also_covers:
+      - "REQ-026"
+    open_items:
+      - "O-M4S01-01"
+      - "O-M4S01-03"
+      - "O-M4S02-03"
+      - "O-M4S02-05"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M4S02-06
+    ac_id: AC-026.6
+    req_id: REQ-026
+    source: "decisions.md O-M4S02-01, O-M4S02-06 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-MGR - Enterprise manager: profile Sales User with the org's Sales Cloud permission set plus Enterprise_Sales_Record_Types; role Enterprise Manager (above Enterprise Rep, Q19); member of the Enterprise_Managers public group"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "P-MGR as in run_context, added to the Enterprise_Managers group"
+    data_setup:
+      - "Open Enterprise opportunities owned by reps under each of the two managers"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Read the target org's Opportunity org-wide default"
+        expected: "The value is recorded"
+      - step: "As P-MGR, run Open_Enterprise_Pipeline_By_Stage"
+        expected: "The owners of the rows returned are recorded"
+      - step: "Compare with the org-wide default"
+        expected: "Private: every row's owner reports to P-MGR. Public: the gate records how Q4 and Q24 were ranked"
+    evidence:
+      - type: screenshot
+        of: "the org-wide default"
+      - type: screenshot
+        of: "the report as P-MGR"
+    pass_rule: "Step 3 holds for the recorded org-wide default"
+    automation_candidate: none
+    automation_rationale: "Report output for a real user under the org's real sharing"
+    open_items:
+      - "O-M4S02-01"
+      - "O-M4S02-06"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M4S02-07
+    ac_id: AC-026.7
+    req_id: REQ-026
+    source: "decisions.md O-M4S02-02, O-M4S02-07 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Release owner preparing the target-org deploy (no Salesforce permission set exercised; reads build files and the target org's metadata)"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "the dashboard must not run as the deploying user"
+    permission_setup:
+      - "None - prepares a deploy copy"
+    data_setup:
+      - "None"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "Obtain the VP's username for the target org, or the gate's service-user decision"
+        expected: "One username is recorded"
+      - step: "Insert it as runningUser in the deploy copy"
+        expected: "The deploy copy carries runningUser with that username"
+      - step: "After deploy, open the dashboard's properties"
+        expected: "The running user is the recorded username, not the deploying user"
+    evidence:
+      - type: artefact
+        of: "the deploy copy's runningUser line"
+      - type: screenshot
+        of: "the dashboard's running user after deploy"
+    pass_rule: "Step 3 names the recorded user"
+    automation_candidate: none
+    automation_rationale: "A deploy-copy edit and an org read"
+    open_items:
+      - "O-M4S02-02"
+      - "O-M4S02-07"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M4S02-11
+    ac_id: AC-026.8
+    req_id: REQ-026
+    source: "decisions.md O-M4S02-11 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "P-OPS - the sales-ops admin seat holding the Sales_Ops_Validation_Bypass permission set (the one person Q13 allows past the rules); its profile is recorded in permission_setup; then P-MGR checks folder access"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: false
+    permission_setup:
+      - "Q19: the P-OPS seat's profile is the org's administrator profile; adding group members is the admin task A32 assigns to the sales-ops admin"
+    data_setup:
+      - "None"
+    precondition: "Run against the target org at the point the steps name (before deploy, after deploy, or before go-live)"
+    steps:
+      - step: "As P-OPS, add the two Enterprise managers and the VP to Enterprise_Managers"
+        expected: "The group lists exactly those three users"
+      - step: "As P-MGR, open the Enterprise_Sales report folder and dashboard folder"
+        expected: "Both folders open and list their items"
+    evidence:
+      - type: screenshot
+        of: "the group's member list"
+      - type: screenshot
+        of: "both folders as P-MGR"
+    pass_rule: "Both steps"
+    automation_candidate: none
+    automation_rationale: "Membership is set up in the org after deploy"
+    open_items:
+      - "O-M4S02-11"
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M4S04-01
+    ac_id: AC-024.5
+    req_id: REQ-024
+    source: "decisions.md O-M4S04-01, O-M4S04-05 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "Sales-ops admin preparing the deploy copy, the owner O-M4S04-01 records (no Salesforce permission set exercised; retrieves the target org's metadata)"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "no deploy request may carry M3-S05's two-element Opportunity object file unmerged"
+    permission_setup:
+      - "Metadata retrieve access to the target org"
+    data_setup:
+      - "None"
+    precondition: "Before deploy request 1 (deploy-order.md section 2, A-5); run against the target org"
+    steps:
+      - step: "Retrieve CustomObject:Opportunity alone from the target org"
+        expected: "The org's Opportunity object file is retrieved"
+      - step: "Merge M3-S05's two View actionOverrides into the retrieved file in the deploy copy (deploy-copy edit E3)"
+        expected: "The deploy copy's Opportunity object file carries the org's retrieved definition plus the two actionOverrides blocks"
+      - step: "Open artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml"
+        expected: "It still carries only the two actionOverrides blocks; the merge lives in the deploy copy, never in the artefact (D-M4S04-01)"
+    evidence:
+      - type: artefact
+        of: "the retrieved Opportunity object file and the merged deploy copy, recorded before request 1"
+    pass_rule: "All three steps before request 1 starts; a request that carries the two-element file unmerged is a fail"
+    automation_candidate: none
+    automation_rationale: "A metadata retrieve and a deploy-copy edit against the target org"
+    open_items:
+      - "O-M4S04-01"
+      - "O-M4S04-05"
+    gap: "UNVERIFIED (2026-10-02) in the source: no validate-only run can settle whether a partial object file replaces the whole definition (O-M4S04-05). The requester made the merge blocking either way (O-M4S04-01), so the case does not depend on the answer."
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M4S04-02
+    ac_id: AC-004.4
+    req_id: REQ-004
+    source: "decisions.md O-M4S04-02, O-M4S04-06 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "The VP and the Sales Operations lead, who settle the stage mapping (O-M4S04-02); the update runs from the seat holding the Sales_Ops_Validation_Bypass permission set where it moves a product-less deal into a gated stage"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "no reassigned deal may lose its stage to the record-type switch, and no bypassed save may go without its Chatter post"
+    permission_setup:
+      - "The seat that runs the update holds Sales_Ops_Validation_Bypass (P-OPS in run_context) wherever the mapping moves a product-less deal into a gated stage"
+    data_setup:
+      - "The open Enterprise deals Q8 reassigns (about 140, assumption A37), as the runbook's SOQL selects them"
+    precondition: "After deploy and before P-8 (deploy-order.md section 6); run against the target org"
+    steps:
+      - step: "Run the runbook's SOQL that counts the affected deals"
+        expected: "The count is recorded with the date"
+      - step: "The VP and the Sales Operations lead map each of the generic pipeline's open stages to a stage Enterprise_Sales_Process offers"
+        expected: "A mapping for every open generic stage is recorded before P-8"
+      - step: "Run the one-time update that reassigns the deals per the mapping"
+        expected: "Every reassigned deal carries a mapped Enterprise stage; none has a cleared Stage"
+      - step: "Read the Chatter feed of each deal whose save used the bypass"
+        expected: "Each one carries a post recording the bypass use (Q17)"
+    evidence:
+      - type: artefact
+        of: "the recorded mapping and the SOQL count"
+      - type: artefact
+        of: "the reassigned deals' Stage values after the update, and the Chatter posts on bypassed saves"
+    pass_rule: "All four steps; a reassigned deal with a cleared Stage, or a bypassed save with no Chatter post, is a fail"
+    automation_candidate: none
+    automation_rationale: "A one-time data update and a recorded decision in the target org"
+    also_covers:
+      - "REQ-019"
+    open_items:
+      - "O-M4S04-02"
+      - "O-M4S04-06"
+    gap: "Q8's answer and assumption A37 say the reassignment needs no field mapping; O-M4S04-02 records why it does. The case records the mapping the VP and the Sales Operations lead settle; it does not make it. No P-REP control is paired with the bypass seat here, because the case attributes no access outcome to the permission set."
+    pass_fail: "Not Run"
+
+  - case_id: TC-O-M4S04-03
+    ac_id: AC-024.6
+    req_id: REQ-024
+    source: "decisions.md O-M4S04-03, O-M4S04-07 (open item needing a human check)"
+    gate: "milestone:M4 pending; run in UAT or at cutover as the precondition states"
+    persona: "An SMB-team user without the Enterprise_Sales_Record_Types permission set (profile not on file; recorded at the run); the VP records the A-8 decision"
+    sandbox: "UNVERIFIED (2026-10-02): target org or UAT sandbox not named in plan.json"
+    negative_path: true
+    negative_basis: "an SMB record must not open the Enterprise page and its discount panel without the VP's recorded acceptance"
+    permission_setup:
+      - "Do not assign Enterprise_Sales_Record_Types"
+      - "Record the SMB-team user's profile beside the result"
+    data_setup:
+      - "One Opportunity of the SMB record type"
+    precondition: "The VP's A-8 decision (deploy-order.md section 5) is recorded before deploy; step 2 runs against the target org after deploy"
+    steps:
+      - step: "Read the A-8 decision record"
+        expected: "It records one choice: an app-level assignment scoped to the Enterprise record type, or acceptance that SMB records open Opportunity_Enterprise_Record_Page"
+      - step: "After deploy, as the SMB-team user, open the SMB Opportunity"
+        expected: "With an app-level assignment, the page is not Opportunity_Enterprise_Record_Page and shows no discount approval panel; with acceptance, the page shown is recorded against the decision"
+    evidence:
+      - type: artefact
+        of: "the A-8 decision record"
+      - type: screenshot
+        of: "the SMB Opportunity's record page as the SMB-team user sees it after deploy"
+    pass_rule: "Step 2 matches the choice step 1 records; an SMB record on the Enterprise page with no recorded acceptance is a fail"
+    automation_candidate: none
+    automation_rationale: "A rendered record page in the target org, judged against a recorded decision"
+    open_items:
+      - "O-M4S04-03"
+      - "O-M4S04-07"
+    pass_fail: "Not Run"
+
+open_items_not_compiled_as_cases:
+  - id: "O-M1S01-01"
+    disposition: covered
+    reason: "the human check is milestone M1 test 3 (TC-M1-T3), linked there; also step test TC-M1-S01-T6"
+  - id: "O-M1S01-03"
+    disposition: closed
+    reason: "M2-S02 shipped the visibility permission set and the profile layout assignments; assignment of the set is data and is checked in TC-O-M2S01-01 step 4"
+  - id: "O-M1S02-02"
+    disposition: process
+    reason: "plan prose (A25 wording, a --dry-run flag that does not exist); superseded by D-M1S02-07 and O-M1S02-04; named as the gap on TC-M1-S02-T5"
+  - id: "O-M1S02-03"
+    disposition: decided
+    reason: "G3 decided the identical layouts stay separate"
+  - id: "O-M1S02-04"
+    disposition: library
+    reason: "a one-element mock_deploy probe that settles a library fact (whether CloseDate is layout-required); the shipped four-item set validated in MOCK-DEPLOY-M1 run 4, so no acceptance check of this build depends on it"
+  - id: "O-M2S01-02"
+    disposition: closed
+    reason: "recorded CLOSED by a prose-only amendment"
+  - id: "O-M2S01-03"
+    disposition: decision
+    reason: "a clarification nobody asked (should the grant expire?); closed by an answer, not by a check"
+  - id: "O-M2S02-01"
+    disposition: closed
+    reason: "recorded CLOSED by D-M2S02-03 (both entries)"
+  - id: "O-M2S02-02"
+    disposition: accepted
+    reason: "accepted by design at the M2 gate"
+  - id: "O-M2S02-04"
+    disposition: process
+    reason: "plan prose drift; a prose-only amendment"
+  - id: "O-M2S03-01"
+    disposition: decided
+    reason: "G4: the discount cap applies to Enterprise and Renewal"
+  - id: "O-M2S04-01"
+    disposition: decided
+    reason: "G4: the product gate stays Enterprise-only"
+  - id: "O-M2S04-02"
+    disposition: decision
+    reason: "Q42 needs an answer from the Sales Operations lead; assumption A7 stands in"
+  - id: "O-M2S04-03"
+    disposition: process
+    reason: "milestone-level prose; no writer existed at the time (amend-milestone now does)"
+  - id: "O-M2S04-04"
+    disposition: decision
+    reason: "creation directly at a gated stage saves by design; blocking it would be a separate ISNEW() rule nobody asked for"
+  - id: "O-M2S04-06"
+    disposition: process
+    reason: "stored build-scope checker evidence went stale; re-run before a gate"
+  - id: "O-M2S05-01"
+    disposition: process
+    reason: "a checker declared at a scope where it asserts nothing"
+  - id: "O-M2S05-02"
+    disposition: process
+    reason: "plan prose drift; named as the gap on TC-M2-S05-T5"
+  - id: "O-M2S05-03"
+    disposition: decision
+    reason: "Q3's handoff; Q3's own answer puts notification out of scope (plan.json scope.out)"
+  - id: "O-M2S05-05"
+    disposition: decision
+    reason: "stage-advance celebration is a manual Setup step if the VP wants it"
+  - id: "O-M2S05-06"
+    disposition: decided
+    reason: "G4 kept the Renewal reading of the discount rule"
+  - id: "O-M3S01-01"
+    disposition: closed
+    reason: "the M3 report confirms showApprovalHistory is true on the process"
+  - id: "O-M3S01-02"
+    disposition: process
+    reason: "A27 wording; G5 carried it to M4 as prose"
+  - id: "O-M3S03-01"
+    disposition: library
+    reason: "the checker should follow constants; G5 carried it as library backlog"
+  - id: "O-M3S03-02"
+    disposition: library
+    reason: "a security checker's per-file rule and the template's sharing keyword; library backlog"
+  - id: "O-M3S03-03"
+    disposition: closed
+    reason: "MOCK-DEPLOY-M3 run 5 compiled the Apex and ran 6/6 tests at 95.6% coverage"
+  - id: "O-M3S03-04"
+    disposition: process
+    reason: "a layer rule (record an org test run as a declared test for Apex steps)"
+  - id: "O-M3S04-03"
+    disposition: library
+    reason: "build_plan.py next's checker advice"
+  - id: "O-M3S04-04"
+    disposition: library
+    reason: "the canonical LWC skeleton's if:true"
+  - id: "O-M3S05-01 (operator entry, line 1360)"
+    disposition: closed
+    reason: "MOCK-DEPLOY-M3 run 4 org-verified the sidebar region and the c: prefix"
+  - id: "O-M3S05-01 (renderer entry, line 1390)"
+    disposition: closed
+    reason: "MOCK-DEPLOY-M3 run 4 org-verified the sidebar region"
+  - id: "O-M3S05-02 (renderer entry, line 1396)"
+    disposition: closed
+    reason: "MOCK-DEPLOY-M3 run 4 org-verified the c: prefix"
+  - id: "O-M3S05-04 (operator entry, line 1382)"
+    disposition: library
+    reason: "no org-validated FlexiPage in the library; run 4 is now the first"
+  - id: "O-M3S05-05"
+    disposition: process
+    reason: "two checkers undeclared on M3-S05"
+  - id: "O-M3S05-06"
+    disposition: library
+    reason: "the cited skill lacks a Questions section"
+  - id: "O-M3S05-07"
+    disposition: note
+    reason: "a description of the step's two manual tests, which are cases TC-M3-S05-T4 and TC-M3-S05-T5"
+  - id: "O-M4S01-04"
+    disposition: library
+    reason: "feed the dry-run behaviour back into admin/reports-and-dashboards; MOCK-DEPLOY-M4 run 3 recorded it (N4-F-06)"
+  - id: "O-M4S02-04"
+    disposition: library
+    reason: "skill depth for admin/reports-and-dashboards"
+  - id: "O-M4S02-08"
+    disposition: process
+    reason: "the prose-only amendment it asked for landed (plan.json steps[M4-S02].amendments[0]); the optional column decision remains, named as the gap on TC-M4-S02-T6"
+  - id: "O-M4S02-09"
+    disposition: process
+    reason: "a prose-only amendment"
+  - id: "O-M4S02-10"
+    disposition: process
+    reason: "declare check_queues.py on M4-S02"
+  - id: "O-M4S02-12"
+    disposition: closed
+    reason: "MOCK-DEPLOY-M4 runs 2 and 3 ran; run 3 org-verified the record-type column form (RecordType). Writing it into deploy-order.md is a builder edit, not a human check"
+  - id: "O-M4S02-13"
+    disposition: closed
+    reason: "same as O-M4S02-12"
+  - id: "O-M4S03-01"
+    disposition: decision
+    reason: "four workbook sections with no rows (4, 7, 9, 10); its own close condition is acceptance at the M4 gate, and the compiled workbook states each section's reason"
+  - id: "O-M4S03-02"
+    disposition: library
+    reason: "check_rtm.py's empty-marker list (exactly 'none'); RTM checker backlog"
+  - id: "O-M4S04-04"
+    disposition: covered
+    reason: "named as the gap on TC-M4-S04-T4: step 2 fails as written unless the gate records the requester's decision that read-only org commands are permitted"
+  - id: "O-M4S04-08"
+    disposition: covered
+    reason: "the two-request deploy is exercised by TC-O-M4S02-05 (deploy, confirm the codes, then the Report and Dashboard) and TC-O-M4S02-07 (runningUser before request 2); TC-O-M4S02-05's first half is a subset of request 1's 36 members"
+  - id: "O-M4S04-09"
+    disposition: covered
+    reason: "named as the gap on TC-M4-S04-T6, TC-M4-S04-T7, TC-M4-S04-T11 and TC-M4-T4, which ask for a named owner; the gate supplies a person per role"
+  - id: "O-M4S04-10"
+    disposition: process
+    reason: "plan prose drift (steps[M4-S04].inputs still call M2-S04 blocked); a prose-only amendment, and depends_on is set-plan's"
+  - id: "O-M4S04-11"
+    disposition: process
+    reason: "advice not to declare two checkers that assert nothing at step scope on M4-S04"
+  - id: "O-M4S04-12"
+    disposition: library
+    reason: "mock_deploy.py tooling: it copies this pack into an assembled M4 tree, and --without Dashboard is still refused (friction 64)"

@@ -1,0 +1,285 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T15-08-49Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S04/2026-09-19T15-08-49Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S04/2026-09-19T15-08-49Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S04",
+    "api_version": "62.0 (plan.json carries no api_version; AGENT.md Inputs fallback, unchanged from the prior run)",
+    "invocation_kind": "REPAIR pass, not a fresh build, per the caller's instruction; scoped to N3-F-06 (reports/MOCK-DEPLOY-M2.md) and nothing else"
+  },
+  "summary": "Repaired step M2-S04 after mock-deploy run 1 (2026-09-19T14:56:10Z, reports/MOCK-DEPLOY-M2.md) rejected its one component with N3-F-06: 'Validation rule description cannot be longer than 255 characters long.' The shipped <description> was 766 characters because the first build wrote both of deploy-order.md section 2's UNVERIFIED claims into it, in addition to the business justification and bypass name skills/admin/validation-rules Recommended Workflow step 4 asks for. Rewrote <description> to 205 characters (business justification + bypass name only, per the skill); <fullName>, <active>, <errorConditionFormula>, <errorDisplayField> and <errorMessage> are byte-identical to the pre-repair file. Resolved deploy-order.md section 2.1 (HasOpportunityLineItem's formula-context availability) to ORG-VERIFIED 2026-09-19, citing run 1's compile pass and reports/MOCK-DEPLOY-M2.md's own statement that the claim is settled; section 2.2 (re-firing after a line-item deletion) stays UNVERIFIED and now says explicitly that a checkOnly deploy exercises no deletion. Added deploy-order.md section 6 ('Repair after run 1') recording N3-F-06 and the change, and renumbered the note's downstream sections (old 6-10 -> new 7-11) with every internal cross-reference updated to match. Both declared checkers re-ran verbatim and exited 0 with zero repair passes (the fix touched only <description>, which neither checker inspects); check-outputs is ok. Step moved pending -> running -> built via set-status.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Same rationale as the original build envelope (2026-09-19T14-41-29Z), unchanged by this repair: four of Step 10's five HIGH clauses hold (every emitted element still traces to the Step 3 inventory, both declared checkers exit 0 on the first pass, check-outputs is ok, exactly the three declared outputs exist and nothing else), but Q42 remains 'open' in plan.json and this step still carries it via assumption A7's default rather than a decision, which caps confidence at MEDIUM independent of the repair's own cleanliness. The description-length defect itself is not a confidence signal for this run since it was found by the org (an acceptance test this agent does not run) and is now fixed and re-verified against the same checkers.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Unchanged from the original build: Q42 is status 'open' in plan.json and was answered by assumption A7 (recorded in the step's inputs.defaults_applied). This repair did not touch inputs{} or the formula, so the gap is carried forward rather than reopened.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Have the Sales Operations lead answer Q42 at the M2 gate, as the original envelope already recommended."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "org-verification",
+      "observation": "Run 1's dry-run compile pass over this rule's errorConditionFormula is the first org contact this build has had with the HasOpportunityLineItem-in-formula-context question, and it resolved cleanly: the only error the org returned for this component was the description-length rule, not a field-availability or unknown-token compile error, which is exactly the affirmative case deploy-order.md section 2.1 (as originally written) said would settle the claim.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M2.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "repair-scope-discipline",
+      "observation": "The repair changed exactly one XML element. A diff against the pre-repair file (reconstructed from the run-1 envelope and this step's own history) shows <fullName>, <active>, <errorConditionFormula>, <errorDisplayField> and <errorMessage> are byte-identical; only <description> changed, from 766 to 205 characters.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-stability",
+      "observation": "Both declared checkers reproduced their pre-repair results exactly (check_validation_rules.py: one REVIEW finding, score 100, exit 0; check_products_and_pricebooks.py: 'No issues found.', exit 0), confirming the description rewrite did not disturb anything either checker inspects.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "library-coverage",
+      "observation": "skills/admin/validation-rules documents a 255-character ceiling for errorMessage (Recommended Workflow step 4; check_validation_rules.py's CRITICAL/HIGH findings) but states no ceiling for description, and check_validation_rules.py carries no length rule for description at all. Nothing in this step's declared checkers would have caught the 766-character value before an org did; the org's rejection message was the only signal. Queued by the caller as VR-DESC-01 (Cursor task 18); this agent did not edit the skill or the checker.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "manual-test-drift",
+      "observation": "The step's declared manual acceptance test still reads 'both appear verbatim with the dry-run settlement named for the first' without itself distinguishing that one claim is now ORG-VERIFIED and the other remains UNVERIFIED; the test's expected condition still holds (both claims do appear in deploy-order.md, now with their current status), but a re-run of step-tester should confirm the manual tick is evaluated against the section as it now reads rather than against its 2026-09-15 wording.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "skill-currency",
+      "observation": "skills/admin/validation-rules/references/examples.md still carries its own UNVERIFIED (2026-09-15) marker on HasOpportunityLineItem's formula-context availability, which run 1 has now settled by org contact for API 62.0. This agent does not edit skill content, so the marker and the org finding now disagree until a skill-authoring pass reconciles them.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/references/examples.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step is back at 'built' after tested -> failed -> pending -> running -> built; its tests/M2-S04/results.json (if any survived the reset) reflects the pre-repair artefact hashes, not this repair's.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S04"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Re-runs the step's five declared acceptance tests against the repaired artefacts and writes a fresh tests/M2-S04/results.json with current artefact_hashes, which set-status tested requires."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "deploy-order.md section 6 now carries a step-level record of N3-F-06 and its repair, and section 2.1 is now ORG-VERIFIED; decisions.md and traceability.md do not yet reflect either change.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Owns decisions.md and traceability.md; carries the repair and the now-resolved UNVERIFIED claim into both once the step is re-tested. Not invoked here per the caller's instruction that a doc-keeper is already running in parallel on M2-S02/M2-S03/M2-S05 and M2-S04's own docs are this agent's to leave alone until tested."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S04",
+    "step_type": "validation",
+    "build_mode": "design-only",
+    "api_version": "62.0",
+    "status": "built",
+    "blocked_reason": null,
+    "invocation_path": "direct read (not under agents/build-step-runner), as a REPAIR pass per the caller's instruction. This agent set both step statuses itself per AGENT.md Step 9: pending -> running at the start (2026-09-19T15:04:37Z) and running -> built at the end (2026-09-19T15:08:49Z).",
+    "artefacts": [
+      "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml",
+      "artefacts/M2-S04/package.xml",
+      "artefacts/M2-S04/deploy-order.md"
+    ],
+    "undeclared_artefacts": [],
+    "repair_record": {
+      "trigger": "N3-F-06, reports/MOCK-DEPLOY-M2.md, mock-deploy run 1 (2026-09-19T14:56:10Z, reports/mock-deploy/2026-09-19T14-56-10Z/): 'Validation rule description cannot be longer than 255 characters long.'",
+      "operator_reset": "plan.json steps[M2-S04].runs[] already recorded the org rejection and the operator's reset (tested -> failed -> pending) at 2026-09-19T15:02:51Z, before this run claimed the step.",
+      "file_changed": "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml",
+      "element_changed": "description only",
+      "before_length_chars": 766,
+      "after_length_chars": 205,
+      "before_description": "Enterprise deals must carry at least one price-book line before the stage moves into Propose, Negotiate or Closed Won (Q11, Q15). Reads the platform-maintained read-only boolean HasOpportunityLineItem rather than a roll-up, formula field or trigger (admin/products-and-pricebooks Gotcha 8). NOT(ISNEW()) and ISCHANGED(StageName) are load-bearing, not boilerplate: the field is false during the Opportunity's own insert, and without the transition guard every later save of a product-less deal already at Propose is rejected (Gotcha 15, Q16). Closed Lost deliberately out of scope. Bypass: Bypass_Opportunity_Sales_Validation, granted by Sales_Ops_Validation_Bypass (Q13, D3). Forward gate only - it does not catch deletion of the last line item; see deploy-order.md.",
+      "after_description": "Requires at least one product before an Enterprise Opportunity advances to Propose, Negotiate or Closed Won (Q11, Q15). Bypass: Bypass_Opportunity_Sales_Validation, granted via Sales_Ops_Validation_Bypass.",
+      "other_elements_verified_unchanged": ["fullName", "active", "errorConditionFormula", "errorDisplayField", "errorMessage"],
+      "verification_method": "diff -u against the pre-repair content reconstructed from the run-1 envelope (envelopes/M2-S04/2026-09-19T14-41-29Z.json) and from plan.json's own record of the pre-repair inputs; only the <description> line differs",
+      "source_for_new_description": "skills/admin/validation-rules SKILL.md Recommended Workflow step 4: \"Write the XML from references/metadata-examples.md: active, description (business justification and bypass name), errorConditionFormula, errorDisplayField, errorMessage under 255 characters.\"",
+      "deploy_order_changes": [
+        "Section 2 header and lead-in rewritten to state one claim is now org-verified and one is not",
+        "Section 2.1 header changed to ORG-VERIFIED (2026-09-19); body rewritten to cite reports/MOCK-DEPLOY-M2.md and reports/mock-deploy/2026-09-19T14-56-10Z/ as the settling run, with the original 2026-09-15 corpus-only text kept inline as superseded rather than deleted; forward-looking 'how it gets settled' guidance replaced with the retrospective finding",
+        "Section 2.2 header changed to 'STILL UNVERIFIED (2026-09-15, unresolved by run 1)'; body otherwise unchanged, and it already stated a checkOnly deploy exercises no deletion",
+        "New section 6 'Repair after run 1' inserted, recording N3-F-06, cause, repair, byte-identical-elsewhere claim, and the VR-DESC-01 library gap",
+        "Old sections 6-10 renumbered to 7-11; every internal cross-reference to those sections (five in total) updated to match; cross-references to other documents' own section numbers (change-management-and-deployment references, M2-S01's deploy-order.md, standards/build-orchestration.md section 5) were left untouched because they are not this file's numbering"
+      ],
+      "library_gap_recorded_not_fixed": "VR-DESC-01 (Cursor task 18): skills/admin/validation-rules caps errorMessage at 255 and check_validation_rules.py enforces it, but neither the skill nor the checker states or checks a description ceiling."
+    },
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output_summary": "WARN: 1 finding(s) detected (0 blocking). score 100. Scanned 2 validation rule(s) across 2 file(s); 1 finding(s) detected. The one finding is the same REVIEW advisory as before the repair: 'picklist logic has no explicit blank guard' on this step's rule.",
+        "assessment": "Identical to the pre-repair result recorded in envelope 2026-09-19T14-41-29Z. The description rewrite did not change anything this checker inspects (it does not read description at all)."
+      },
+      {
+        "command": "python3 skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py --manifest-dir artefacts/M2-S04",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output_summary": "No issues found.",
+        "assessment": "Identical to the pre-repair result. This checker's scope contains one ValidationRule and no Product2/Pricebook2/PricebookEntry metadata, so it asserts nothing about this step either way."
+      },
+      {
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" artefacts/M2-S04",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output_summary": "Both *.xml files under artefacts/M2-S04 parse: package.xml and the validationRule-meta.xml (with the new, shorter description).",
+        "assessment": "AGENT.md Step 8's always-on pre-check, run so the tester's always-on xml check finds nothing new."
+      }
+    ],
+    "manifest_consistency": {
+      "members_declared": [
+        "Opportunity.Opportunity_Products_Required_At_Propose"
+      ],
+      "files_on_disk": [
+        "objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml"
+      ],
+      "agrees_both_directions": true,
+      "wildcard_used": false,
+      "note": "Unchanged by this repair. package.xml was not touched."
+    },
+    "unverified_claims_carried": [
+      {
+        "id": "UNVERIFIED (2026-09-15), ORG-VERIFIED (2026-09-19) - formula-context availability",
+        "claim": "HasOpportunityLineItem is addressable inside a validation-rule errorConditionFormula.",
+        "carried_in": [
+          "artefacts/M2-S04/deploy-order.md section 2.1"
+        ],
+        "settled_by": "Run 1 of scripts/mock_deploy.py at --milestone M2 (reports/MOCK-DEPLOY-M2.md; reports/mock-deploy/2026-09-19T14-56-10Z/): the sf project deploy start --dry-run compiled this rule's formula and returned no field-availability error.",
+        "resolved_here": true,
+        "note": "Resolved by reading and citing the org run, not by this agent re-deploying anything. skills/admin/validation-rules/references/examples.md still carries the superseded corpus-only marker; this agent does not edit skill content (see Process Observations)."
+      },
+      {
+        "id": "UNVERIFIED (2026-09-15) - re-firing after a line-item deletion",
+        "claim": "The Apex Developer Guide and the Object Reference (knowledge/imports/salesforce-channel-revenue-management.md:4299-4302) contradict each other on whether a child line-item change re-fires an Opportunity validation rule.",
+        "carried_in": [
+          "artefacts/M2-S04/deploy-order.md section 2.2"
+        ],
+        "settled_by": "Not settled. A checkOnly deploy compiles a formula; it does not exercise a deletion. Deploy-order.md section 2.2 says so explicitly.",
+        "resolved_here": false
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    }
+  },
+  "citations": [
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "The playbook this repair executed, read in full again before acting: Step 1-3 (confirming this remains this agent's step and type), Step 5 rule 1 (element grounding for the sole changed element), Step 8 (re-running the declared checkers verbatim), Step 9-11 (check-outputs, set-status, envelope self-validation)."
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Section shape, the Process Observations requirement and schema, the Citations schema, the run_id convention."
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 (the validation step-type row and the built<->running recovery transition used to re-claim this step) and section 5 (checker scope, always-on xml/manifest checks, check-outputs semantics) - both read in full again for this repair per the caller's instruction."
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "The closed envelope shape - build payload under extensions, required top-level fields."
+    },
+    {
+      "type": "standard",
+      "id": "observation-schema",
+      "path": "agents/_shared/schemas/observation.schema.json",
+      "used_for": "Category/severity enum and the suggested_followup required-fields rule applied to the Process Observations above."
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "Recommended Workflow step 4 - the exact source for what a ValidationRule description is supposed to carry (business justification and bypass name), which is what the repaired description now carries and only that."
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+      "used_for": "Re-run verbatim at build scope as this step's first declared acceptance test; its docstring is also the source for confirming it carries no description length rule, cited in Process Observations as the VR-DESC-01 gap."
+    },
+    {
+      "type": "skill",
+      "id": "admin/products-and-pricebooks",
+      "path": "skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py",
+      "used_for": "Re-run verbatim at step scope as this step's second declared acceptance test."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "Re-runs the step's five declared acceptance tests against the repaired artefacts and writes a fresh tests/M2-S04/results.json with current artefact_hashes, which set-status tested requires and this agent does not produce."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Owns decisions.md and traceability.md; once the step is re-tested, carries the N3-F-06 repair and the now-ORG-VERIFIED section 2.1 claim into both. Not invoked here - a doc-keeper is already running in parallel on M2-S02/M2-S03/M2-S05, and M2-S04's own docs are left for it to pick up once tested."
+    }
+  ]
+}

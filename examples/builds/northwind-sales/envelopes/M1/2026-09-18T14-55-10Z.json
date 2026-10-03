@@ -1,0 +1,443 @@
+{
+  "agent": "milestone-verifier",
+  "mode": "single",
+  "run_id": "2026-09-18T14-55-10Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1/2026-09-18T14-55-10Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1/2026-09-18T14-55-10Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "milestone_id": "M1",
+    "approver_name": "<name> (not supplied; gate line rendered with the placeholder)",
+    "scale": "project",
+    "build_mode": "design-only",
+    "org_alias": "sfskills-dev (read from reports/mock-deploy evidence only; this agent made no org connection)"
+  },
+  "summary": "First verification of milestone M1 (Enterprise and Renewal data model) in build northwind-sales. Both steps are documented, no step is blocked, and the plan gate is approved, so the precondition holds and M1 has no predecessor milestone. Verdict ready-with-findings: 28 cross-step references resolved with 0 unresolved and 0 unclassifiable; deployment order agrees with every artefact's type and no dependency runs backwards; the merged manifest (5 types, 9 members, one version 62.0, no member collision) is byte-identical to the manifest the org validated on mock-deploy run 4; both runnable declared acceptance tests exit as expected and the two manual ones are collected into a six-line gate checklist. It is not ready-for-gate because three things a reader of that word would not expect are true: the OpportunityStage value set is a fragment that deactivates the SMB pipeline if deployed as it stands (O-M1S01-01, A24 high), requirement item 2's Opportunity Products related list has no artefact and no test (REQ-010, an ERROR from check_rtm.py), and which stage a new Opportunity opens on is UNVERIFIED (O-M1S01-04). Eight open items carried; approving the gate accepts all eight. The three checker-coverage WARNs were run as undeclared advisory evidence and two of the three assert nothing at all over M1's artefacts.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every MEDIUM/LOW trigger in the agent's own Step 10 table is absent and every HIGH condition is met on a literal reading, but reaching HIGH needs two interpretive stretches, so the score is held one step down. (1) The HIGH row requires 'every declared acceptance test ran'; two of M1's four declared tests are `manual` and were collected rather than run, and the playbook's 'every runnable test' carve-out is written for scale: ask only and does not extend to this scale: project plan. (2) The Step 3 trichotomy (resolved here / resolved earlier / unresolved) has no outcome for the 12 standard-field layout references, which no symbol inventory could hold and which rest on org evidence from a mock-deploy run this agent did not perform. Nothing about the verification's coverage is in doubt: the artefact set was complete, all 13 recorded artefact hashes matched on disk, and the resolution, order, merge and manifest checks were computed rather than asserted.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "deploy-order",
+    "merged-manifest",
+    "manual-checklist",
+    "requirement-closure"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "reference-resolution",
+      "state": "partial",
+      "reason": "All 28 references were classified and none is unresolved or unclassifiable, but 12 of them — the six standard Opportunity fields on each of the two layouts — cannot be resolved against any symbol inventory this build could hold, because no step defines them. They rest on org evidence (mock-deploy run 4, checkOnly, 9/9 Succeeded) that this agent read rather than produced.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Nothing to retry in-build; standard-field references are only ever settled by a validation against the org, which run 4 already provides."
+    },
+    {
+      "dimension": "milestone-acceptance-tests",
+      "state": "partial",
+      "reason": "Two of the four declared milestone acceptance tests ran (the cross-step checker and the manifest-consistency check, both passing). The other two are type `manual` and are collected into the Step 7 checklist rather than run — by the playbook's own instruction that manual tests go to Step 7, and because no agent may tick a manual test on a human's behalf.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "The two manual lines are ticked by a named human at the milestone gate; they have no automatable form."
+    }
+  ],
+  "findings": [
+    {
+      "id": "MV-M1-01",
+      "severity": "P1",
+      "title": "REQ-010: requirement item 2's Opportunity Products related list has no artefact and no test",
+      "detail": "Neither layout ships a relatedLists block, so a rep who opens either page as deployed cannot add a product line. requirement.md item 2 ('reps add products from our price book to every Enterprise opportunity') is not satisfied by milestone M1. check_rtm.py, run this session exactly as traceability.md documents, reports ERROR row 11: coverage gap: REQ-010 has no test id while status is 'In Build'. This verifier confirmed independently that the gap is uncatchable by any test M1 declares: a grep for 'relatedList' across check_record_type_layouts.py, check_opportunity_management.py and check_products_and_pricebooks.py returns nothing, so no checker cited anywhere in M1 reads for the element.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/traceability.md",
+        "linter": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..",
+        "linter_result": "10 rows, build schema, 1 coverage gap, 0 orphans, 1 error, 14 warnings",
+        "open_item": "O-M1S02-01",
+        "assumption": "A26 (medium), unmet"
+      },
+      "recommendation": "Close it one of two ways at the gate, never by re-labelling the status: (a) the O-M1S02-01 retrieve produces a relatedLists block in both layouts AND a test that reads for one, or (b) a human re-homes requirement item 2 onto a later step. The related-list API name is a retrieval alias present in no skill in this library and must be copied verbatim from a live-org retrieve, not typed."
+    },
+    {
+      "id": "MV-M1-02",
+      "severity": "P1",
+      "title": "BLOCKING before any real deploy: the shipped OpportunityStage value set is a fragment, not a deployable file",
+      "detail": "standardValueSets/OpportunityStage.standardValueSet-meta.xml contains only the eight new Northwind stages. For a value set, omission is the deactivate instruction: deploying it as it stands deactivates every OpportunityStage value it does not name, including every stage the SMB team's generic pipeline runs on — which is precisely the requirement (requirement.md item 6) this milestone was told not to break. No validation can surface this: mock-deploy run 1 records the partial value set validating cleanly, because a checkOnly deploy never deactivates anything. A green dry run is not evidence here.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml",
+        "count": 8,
+        "open_item": "O-M1S01-01",
+        "assumption": "A24, risk high",
+        "deploy_order_note": "artefacts/M1-S01/deploy-order.md § 0 (BLOCKING)"
+      },
+      "recommendation": "Gate checklist lines 1 and 5 are the same fact at two altitudes — line 1 confirms the instruction is written down, line 5 requires a named owner to own having done it. The merge is sf project retrieve start --metadata \"StandardValueSet:OpportunityStage\", keeping the org's existing <default>true</default> untouched and retiring values with <isActive>false</isActive> rather than deleting the element."
+    },
+    {
+      "id": "MV-M1-03",
+      "severity": "P2",
+      "title": "UNVERIFIED: which stage a new Enterprise or Renewal Opportunity opens on",
+      "detail": "After the N3-F-01 repair removed <default>true</default> from both business processes (the org rejects a default on an Opportunity BusinessProcess outright), none of M1-S01's five cited skills documents a per-BusinessProcess or per-RecordType default-stage mechanism for Opportunity. The likely mechanism is that the Stage field takes whatever stage carries <default>true</default> on the global value set with no per-process override, but no cited skill states this for Opportunity, and if the org's existing global default is not a member of the Enterprise or Renewal stage subset the answer is unresolved by anything in this step's skills.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md",
+        "section": "§ 6, 'Where the default stage now comes from'",
+        "open_item": "O-M1S01-04",
+        "marker": "UNVERIFIED (2026-09-18)"
+      },
+      "recommendation": "Closed only by the post-deploy SOQL in deploy-order.md § 4, cross-checked against each process's stage subset — never by reading what the UI shows as selected by default."
+    },
+    {
+      "id": "MV-M1-04",
+      "severity": "P2",
+      "title": "MOCK-DEPLOY-M1.md run 4 states the CloseDate inference as confirmed; run 4 proves sufficiency, not necessity",
+      "detail": "CloseDate carries behavior=Required on both layouts on the strength of an inference (Opportunity's three nillable=false standard fields are Name, StageName, CloseDate), set in the same repair pass as StageName, one round ahead of any deploy message naming it. Run 4 then validated the pair 9/9. That proves the shipped configuration deploys; it cannot distinguish 'the platform requires CloseDate on the layout' from 'Required is merely accepted there', because no run ever tested CloseDate at Edit after the other three were fixed, and run 3's silence proves nothing under the one-field-per-run behaviour. reports/MOCK-DEPLOY-M1.md run 4 nonetheless says the UNVERIFIED marker 'resolves to confirmed at the next doc-keeper pass' and its closing line counts CloseDate among four org facts. That reading goes one step past the evidence, and it sits in the document a gate reader is most likely to skim. Three fields are org-confirmed: Probability, Name, StageName. This report does not state CloseDate as an org fact.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+        "corroborating": "reports/mock-deploy/2026-09-18T13-57-17Z/result.json — status Succeeded, checkOnly true, numberComponentErrors 0",
+        "open_item": "O-M1S02-04"
+      },
+      "recommendation": "The close condition is cheap and decisive and was not run here: one further scripts/mock_deploy.py round against a copy of either layout with CloseDate back at behavior=Edit and everything else unchanged. It matters beyond this build — the fact is on its way into the library, and a skill rule asserting CloseDate is layout-required on Opportunity would claim more than this evidence carries. A rule saying the four-item set validates is exactly what was observed."
+    },
+    {
+      "id": "MV-M1-05",
+      "severity": "P2",
+      "title": "Two of the three checker-coverage WARNs name a checker that can assert nothing over M1's artefacts, and a third passes a broken value set at the scope it was run",
+      "detail": "The three § 5 WARNs on M1 could not be declared (amend-step refuses a step past pending/blocked, and both are documented), so all three checkers were run as undeclared advisory evidence at --manifest-dir artefacts. All three exit 0, and the exit codes are close to meaningless. check_opportunity_management.py says so itself ('Nothing in this tree is in scope for this checker') — it reads fixed paths at depth 1 with glob, not rglob; the declared M1-S01 step test already runs it at artefacts/M1-S01 where it does assert. check_products_and_pricebooks.py scans classes/, triggers/, settings/, flows/, profiles/, objects/Product2 and objects/PricebookEntry, none of which exist in M1 — structurally vacuous, so no invocation against M1 could assert anything. check_sales_process_mapping.py looks the most convincing and is the most misleading: its stage-metadata check reads one fixed path, <manifest-dir>/standardValueSets/OpportunityStage.standardValueSet-meta.xml, and the file is one level deeper. Confirmed by negative control in the session scratchpad (nothing in the build directory was touched): a copy of the tree with an illegal <forecastCategory>Commit</forecastCategory> and a wrong probability injected still exits 0 with 'No issues found.' at --manifest-dir artefacts, and exits 1 naming the enum violation at --manifest-dir artefacts/M1-S01.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "python3 skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py --manifest-dir artefacts  vs  --manifest-dir artefacts/M1-S01",
+        "negative_control": "broken tree: build scope exit 0 'No issues found.'; step scope exit 1 'ERROR: Stage Propose: <forecastCategory>Commit</forecastCategory> is not a member of the ForecastCategories enumeration'",
+        "count": 3
+      },
+      "recommendation": "At the next documented → running rebuild of M1-S01, declare admin/sales-process-mapping's checker at --manifest-dir artefacts/M1-S01 (via amend-step --add-checker), not at tree root — that is the only scope at which its exit code carries an assertion. Do not quote any of the three build-scope exit codes in this run as evidence."
+    },
+    {
+      "id": "MV-M1-06",
+      "severity": "P2",
+      "title": "Design question unresolved at the gate: the Enterprise and Renewal layouts are byte-identical",
+      "detail": "Both layout files hash to 0ee76271ffc8d988f8d7d18369e1be1f — byte-for-byte identical, differing only in file name, and confirmed still identical after all three of the 2026-09-18 org-driven repairs (every org message named both files, never one alone). The declared milestone checker surfaces this as its REVIEW finding. Nothing in Q14, Q20 or the step's inputs gives the Renewal motion a field the Enterprise motion does not also carry; the second file exists because decision D2 produced two record types.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/",
+        "count": 2,
+        "open_item": "O-M1S02-03",
+        "checker_finding": "REVIEW — merge candidates (SKILL.md workflow step 2)"
+      },
+      "recommendation": "A human decides at this gate: keep two files (defensible — it leaves room for the motions to diverge without a later record-type change) or merge to one shared layout. Recorded as a question because inventing a Renewal-specific field or collapsing the pair would each assert an answer nobody gave."
+    },
+    {
+      "id": "MV-M1-07",
+      "severity": "P2",
+      "title": "The A25 manual acceptance test's wording is behind its artefact and names a flag that does not exist",
+      "detail": "plan.json step M1-S02 acceptance_tests[4] still reads that the platform's layout-required set for Opportunity 'is unverified and is discovered by iterating scripts/mock_deploy.py --dry-run, one field per run'. The observable is still present and the test is still tickable, but a human reading only that line at the gate would not learn that three fields are now org-confirmed and a fourth shipped ahead of confirmation. The same line carries the older error that mock_deploy.py takes a --dry-run flag; the dry run is the script's only behaviour and there is no flag.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "locator": "steps[M1-S02].acceptance_tests[4].description",
+        "open_item": "O-M1S02-04 (second half) and O-M1S02-02"
+      },
+      "recommendation": "Prose only — type, expected and scope are unchanged — so the writer is build_plan.py amend-step --prose-only and it is the planner's call, not this agent's. One amendment closes both O-M1S02-02 and O-M1S02-04's documentation half."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All 13 artefact_hashes recorded across the two steps' results.json files still match the bytes on disk, so the recorded test verdicts describe exactly the artefacts this verification read.",
+      "domain": "test-evidence-integrity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/",
+        "count": 13
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "This run's independently merged milestone manifest is byte-for-byte identical to the one scripts/mock_deploy.py assembled and the org validated on run 4, so two independent merges of the same step manifests agreed exactly and the org accepted the result.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MILESTONE-M1-package.xml",
+        "query": "diff reports/MILESTONE-M1-package.xml reports/mock-deploy/2026-09-18T13-57-17Z/package.xml",
+        "count": 0
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "plan.json's scale of project agrees with the clarifier's recorded sizing line (D=8, S=9, O=3, integration=no; no override) — D and S each cross the project threshold and the tier is the highest signal, so there is no unrecorded override and no count that should have re-tiered the build.",
+      "domain": "ceremony-sizing",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/drivers-log.md",
+        "query": "scale: project (D=8 metadata types, S=9 skills with question tables, O=3 objects, integration=no; no override)"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "decisions.md O-M1S02-04 states its own close condition and refuses to round the CloseDate inference up to a fact, and it names why the doc keeper could not clear the marker itself — the build's documentation caught the overstatement in its sibling report before this verifier did.",
+      "domain": "evidence-discipline",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/decisions.md",
+        "locator": "O-M1S02-04"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Two of the three checkers the § 5 coverage WARNs name cannot assert anything over M1's artefacts at all, so the WARN reads as 'a check is missing' when for admin/products-and-pricebooks no invocation against this milestone could ever have run one.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "check_products_and_pricebooks.py scans classes/ triggers/ settings/ flows/ profiles/ objects/Product2 objects/PricebookEntry — none present in M1",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "check_sales_process_mapping.py exits 0 with 'No issues found.' over a deliberately broken OpportunityStage value set when pointed at the artefacts tree root, because its stage check reads one fixed path at depth 1 while the file sits one level down — a silent pass that looks identical to a real one.",
+      "domain": "checker-scope",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "negative control in scratchpad: --manifest-dir <broken>/artefacts exit 0; --manifest-dir <broken>/artefacts/M1-S01 exit 1 on the illegal ForecastCategories member",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "reports/MOCK-DEPLOY-M1.md run 4 records the CloseDate UNVERIFIED marker as resolving to confirmed and counts CloseDate among four org facts, which is one step past what a Succeeded checkOnly run carries — and it sits in the document a gate reader is most likely to skim rather than in the decisions log that states the limit correctly.",
+      "domain": "evidence-overreach",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+        "locator": "run 4 closing paragraph"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Both record types and both layouts deploy in M1 and none of the four is reachable by any user until M2-S02 lands, because layoutAssignments and the default record type live only on Profile — the milestone's goal statement reads as delivered while the configuration is inert.",
+      "domain": "deploy-order",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md",
+        "locator": "§ 2, Profile layoutAssignments row",
+        "count": 4
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The verifier's Step 10 HIGH row requires that every declared acceptance test ran, and the carve-out reading it as every runnable test is written for scale: ask only — leaving no stated rule for a scale: project milestone whose declared set includes manual tests, which is every milestone in this build.",
+      "domain": "agent-contract",
+      "evidence": {
+        "source": "input",
+        "path": "agents/milestone-verifier/AGENT.md",
+        "locator": "Step 10 confidence table and its scale: ask note",
+        "count": 4
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The Step 3 trichotomy has no outcome for a standard-field reference: the six standard Opportunity fields on each layout are neither resolved in this milestone, nor in an earlier one, nor unresolved, and forcing them into resolved would overstate what the symbol inventory proved.",
+      "domain": "agent-contract",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/",
+        "query": "Name, AccountId, StageName, CloseDate, Amount, Probability",
+        "count": 12
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The Wave 10 persistence pair under docs/reports/milestone-verifier/ was not written because the caller scoped every write to the build directory; the envelope pair under envelopes/M1/ and the two build-scoped outputs under reports/ were written as the build-orchestration contract requires.",
+      "domain": "deliverable-contract",
+      "evidence": {
+        "source": "input",
+        "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+        "locator": "Persistence (Wave 10 contract)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "An org alias is already on file for this build and the merged milestone manifest now exists as one file, which is the input a risk score wants.",
+      "domain": "release-readiness",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MILESTONE-M1-package.xml",
+        "count": 9
+      },
+      "suggested_followup_agent": "deployment-risk-scorer",
+      "followup_reason": "Because reports/MILESTONE-M1-package.xml is now a single 9-member manifest and sfskills-dev is a reachable alias, so the change set can be risk-scored against a real org before the human decides the gate — recommended only; this agent does not invoke it."
+    }
+  ],
+  "extensions": {
+    "milestone": "M1",
+    "report_path": "reports/MILESTONE-M1-REPORT.md",
+    "verdict": "ready-with-findings",
+    "passed": false,
+    "is_reverification": false,
+    "precondition": {
+      "steps_in_milestone": ["M1-S01", "M1-S02"],
+      "all_documented": true,
+      "blocked_steps": [],
+      "predecessor_gate": "n/a — M1 is the first milestone",
+      "plan_gate": "approved 2026-09-15T19:14:01Z",
+      "milestone_gate_before_this_run": "pending, never approved"
+    },
+    "symbol_inventory": {
+      "earlier_milestones_indexed": 0,
+      "businessProcess": ["Enterprise_Sales_Process", "Renewal_Sales_Process"],
+      "recordType": ["Opportunity.Enterprise", "Opportunity.Renewal"],
+      "field": ["Opportunity.Approval_Status__c", "Opportunity.Discount__c"],
+      "layout": ["Opportunity-Opportunity Enterprise Layout", "Opportunity-Opportunity Renewal Layout"],
+      "picklist_OpportunityStage": ["Qualify", "Discover", "Propose", "Negotiate", "Renewal Review", "Renewal Proposed", "Closed Won", "Closed Lost"],
+      "picklist_Approval_Status__c": ["Pending", "Approved", "Rejected"],
+      "object_fullNames": [],
+      "queues_groups_permissionsets_businesshours_milestonetypes_entitlementprocesses_flows": []
+    },
+    "reference_resolution": [
+      {"class": "Validation rule field references", "instances": 0, "result": "not present in M1 — validation rules are M2-S03 / M2-S04"},
+      {"class": "Assignment rule criteria", "instances": 0, "result": "not present in M1"},
+      {"class": "Permission set grants", "instances": 0, "result": "not present in M1 — access is M2-S01 / M2-S02"},
+      {"class": "Flow field references", "instances": 0, "result": "not present in M1"},
+      {"class": "Entitlement process milestones", "instances": 0, "result": "not present in M1"},
+      {"class": "Layout and path assignments", "instances": 16, "resolved_in_milestone": 4, "resolved_against_org": 12, "unresolved": 0, "result": "4 custom-field references resolved in M1-S01; 12 standard-field references resolve against the org, confirmed by mock-deploy run 4. No PathAssistant in M1."},
+      {"class": "RecordType -> BusinessProcess (additional class present in this milestone)", "instances": 2, "resolved_in_milestone": 2, "unresolved": 0},
+      {"class": "BusinessProcess -> picklist value (additional class present in this milestone)", "instances": 10, "resolved_in_milestone": 10, "unresolved": 0},
+      {"totals": {"references": 28, "unresolved": 0, "unclassifiable": 0, "fourth_outcome_standard_fields": 12}}
+    ],
+    "deploy_order": [
+      {"artefact": "Opportunity.Discount__c", "type": "CustomField", "recorded_position": "2 of 10", "sequence_position": 2, "agrees": true},
+      {"artefact": "Opportunity.Approval_Status__c", "type": "CustomField", "recorded_position": "2 of 10", "sequence_position": 2, "agrees": true},
+      {"artefact": "OpportunityStage", "type": "StandardValueSet", "recorded_position": "3 of 10", "sequence_position": 3, "agrees": true},
+      {"artefact": "Opportunity.Enterprise_Sales_Process", "type": "BusinessProcess", "recorded_position": "4 of 10 (with record types)", "sequence_position": "no slot of its own", "agrees": true, "note": "documented judgement — an Opportunity record type is rejected without its process; deploy-order.md § 1 orders process before record type within the slot"},
+      {"artefact": "Opportunity.Renewal_Sales_Process", "type": "BusinessProcess", "recorded_position": "4 of 10 (with record types)", "sequence_position": "no slot of its own", "agrees": true},
+      {"artefact": "Opportunity.Enterprise", "type": "RecordType", "recorded_position": "4 of 10", "sequence_position": 4, "agrees": true},
+      {"artefact": "Opportunity.Renewal", "type": "RecordType", "recorded_position": "4 of 10", "sequence_position": 4, "agrees": true},
+      {"artefact": "Opportunity-Opportunity Enterprise Layout", "type": "Layout", "recorded_position": "5 of 10", "sequence_position": 5, "agrees": true},
+      {"artefact": "Opportunity-Opportunity Renewal Layout", "type": "Layout", "recorded_position": "5 of 10", "sequence_position": 5, "agrees": true},
+      {"verdict": "no contradiction; no dependency runs backwards", "backward_dependency_checks": {"permission_set_granting_a_later_field": "no PermissionSet in M1 — the permission-set-deployment-ordering failure cannot occur here; it becomes live at M2-S02", "automation_before_its_routing": "no Flow, FlowDefinition or Apex in M1 — flow-deployment-activation-ordering has no instance here"}}
+    ],
+    "merged_manifest_path": "reports/MILESTONE-M1-package.xml",
+    "merged_manifest": {
+      "types": 5,
+      "members": 9,
+      "version": "62.0",
+      "version_conflict": null,
+      "members_in_two_steps": [],
+      "files_reaching_no_types_block": [],
+      "files_excluded_by_kind": ["artefacts/M1-S01/package.xml", "artefacts/M1-S02/package.xml", "artefacts/M1-S01/deploy-order.md", "artefacts/M1-S02/deploy-order.md"],
+      "wildcards": 0,
+      "byte_identical_to": "reports/mock-deploy/2026-09-18T13-57-17Z/package.xml (the manifest the org validated on run 4)"
+    },
+    "acceptance_tests": [
+      {
+        "type": "checker",
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "run_from": "build directory",
+        "exit_code": 0,
+        "expected": "exit 0",
+        "verdict": "pass",
+        "stdout_summary": "Scanned 6 metadata file(s): 2 record type(s), 2 layout(s); 2 finding(s) detected.",
+        "findings": ["REVIEW — the two layouts are identical after normalisation (merge candidates)", "INFO — no Profile/PermissionSet in scope, assignment coverage not checked"],
+        "note": "lenient without --strict, as the plan declares deliberately; neither finding fails the run"
+      },
+      {
+        "type": "manifest",
+        "expected": "consistent",
+        "verdict": "pass",
+        "member_to_file": "9 of 9 members have a file behind them",
+        "file_to_member": "9 of 9 component files reach a <types> block; 0 unreached"
+      },
+      {"type": "manual", "verdict": "collected into the Step 7 checklist (line 5)", "ran": false},
+      {"type": "manual", "verdict": "collected into the Step 7 checklist (line 6)", "ran": false}
+    ],
+    "undeclared_checkers_run_as_advisory_evidence": [
+      {"skill": "admin/sales-process-mapping", "warn_on_step": "M1-S01", "command": "python3 skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py --manifest-dir artefacts", "exit_code": 0, "stdout": "No issues found.", "asserts": "nothing — vacuous at this scope; proven by negative control", "advisory": true},
+      {"skill": "admin/opportunity-management", "warn_on_step": "M1-S02", "command": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts", "exit_code": 0, "stdout": "INFO: [artefacts] No Opportunity stage value set, business process, record type or pathAssistant found. Nothing in this tree is in scope for this checker.", "asserts": "nothing — self-declared empty scope; the declared M1-S01 step test runs it at artefacts/M1-S01 where it does assert", "advisory": true},
+      {"skill": "admin/products-and-pricebooks", "warn_on_step": "M1-S02", "command": "python3 skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py --manifest-dir artefacts", "exit_code": 0, "stdout": "No issues found.", "asserts": "nothing — structurally vacuous; scans directories M1 does not contain", "advisory": true},
+      {"note": "All three are UNDECLARED on M1 and could not be declared now (amend-step refuses a step past pending/blocked; both M1 steps are documented). None of these exit codes is a milestone acceptance-test result and none changes the verdict."}
+    ],
+    "manual_checklist": [
+      "M1-S01 — (BLOCKING before any real deploy) Read artefacts/M1-S01/deploy-order.md. Ticks when its first instruction is to run sf project retrieve start --metadata StandardValueSet:OpportunityStage against the target org and merge the retrieved active values into the shipped file, and it states in the same paragraph that a partial file deactivates every value it omits — including the SMB team's stages.",
+      "M1-S01 — Read the eight standardValue blocks. Ticks when Qualify/Discover/Propose/Negotiate carry 10/25/50/75 and Pipeline/Pipeline/BestCase/Forecast, Renewal Review and Renewal Proposed carry 60/85 and Pipeline/Forecast, Closed Won carries 100 with won and closed true, Closed Lost carries 0 with forecastCategory Omitted — and the word 'Commit' appears nowhere in the file.",
+      "M1-S02 — (BLOCKING before any real deploy) Read artefacts/M1-S02/deploy-order.md. Ticks when it names the exact sf project retrieve start --metadata \"Layout:Opportunity-Opportunity Layout\" command, says to copy the Opportunity Products relatedLists block verbatim from what the retrieve emits, and states that hand-authoring the related-list name is what the instruction exists to prevent.",
+      "M1-S02 — Read both layout files. Ticks when each carries Name, AccountId, StageName, CloseDate and Amount, plus Discount__c editable and Approval_Status__c read-only, and deploy-order.md records that the platform's layout-required set for Opportunity is unverified and is discovered by iterating scripts/mock_deploy.py, one field per run. [WORDING BEHIND ITS ARTEFACT — see O-M1S02-04 and O-M1S02-02: three fields are now org-confirmed, a fourth shipped ahead of confirmation, and mock_deploy.py has no --dry-run flag.]",
+      "M1 milestone — (BLOCKING, assumption A24 risk high) Ticks when a named owner confirms the OpportunityStage file about to be deployed is the union of the org's currently active stage values and the eight new ones — because a partial file deactivates every value it omits, which is the single way this milestone could break the SMB pipeline it is designed to leave alone.",
+      "M1 milestone — Ticks when the whole M1 artefact tree is listed and no file anywhere names the SMB record type, either SMB list view, or the SMB pipeline report."
+    ],
+    "open_items_carried_to_the_gate": [
+      {"id": "O-M1S01-01", "risk": "high (A24)", "blocking_before_deploy": true, "summary": "OpportunityStage value set is a fragment; retrieve-and-merge required or every omitted stage, including the SMB team's, is deactivated"},
+      {"id": "O-M1S01-04", "risk": "medium", "unverified": true, "summary": "which stage a new Enterprise or Renewal Opportunity opens on, now that neither business process carries a default"},
+      {"id": "O-M1S02-01", "risk": "medium (A26)", "blocking_before_deploy": true, "summary": "Opportunity Products related list absent from both layouts; requirement item 2 unsatisfied; REQ-010 is an ERROR from check_rtm.py"},
+      {"id": "O-M1S02-03", "risk": "low", "summary": "the two layouts are byte-identical — keep both or merge, a decision for the human at this gate"},
+      {"id": "O-M1S02-04", "risk": "low", "unverified": true, "summary": "whether CloseDate is platform-required on an Opportunity layout; run 4 proves sufficiency, not necessity"},
+      {"id": "O-M1S02-02", "risk": "low", "summary": "the A25 manual-test wording still describes the required set as unverified and names a --dry-run flag mock_deploy.py does not have"},
+      {"id": "O-M1S01-02", "risk": "low", "summary": "carried from M1-S01 but not gate-blocking: Q39 unanswered, Opportunity field history tracking rests on an unconfirmed platform default and cannot be backfilled"},
+      {"id": "O-M1S01-03", "risk": "low", "summary": "carried from M1-S01: record types and layouts deploy in M1 and are unreachable by any user until M2-S02"}
+    ],
+    "requirement_closure": {
+      "source": "traceability.md (build-layer RTM)",
+      "linter_command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..",
+      "linter_result": "10 rows, build schema, 1 coverage gap, 0 orphans, 1 error, 14 warnings",
+      "linter_is_a_declared_test": false,
+      "closed_by_m1": ["REQ-002", "REQ-003", "REQ-006", "REQ-007"],
+      "artefact_delivered_but_not_yet_actionable": ["REQ-001 (org safety decided by O-M1S01-01)", "REQ-004", "REQ-005", "REQ-008", "REQ-009"],
+      "not_closed": ["REQ-010 — no artefact, no test; requirement.md item 2 is not satisfied by milestone M1"]
+    },
+    "validate_warns_on_m1": [
+      "step M1-S01 skills: admin/sales-process-mapping ships check_sales_process_mapping.py but no checker test on the step or on milestone M1 runs it",
+      "step M1-S02 skills: admin/opportunity-management ships check_opportunity_management.py but no checker test on the step or on milestone M1 runs it",
+      "step M1-S02 skills: admin/products-and-pricebooks ships check_products_and_pricebooks.py but no checker test on the step or on milestone M1 runs it"
+    ],
+    "org_evidence_read_not_produced": {
+      "report": "reports/MOCK-DEPLOY-M1.md",
+      "runs": 4,
+      "latest": "reports/mock-deploy/2026-09-18T13-57-17Z/",
+      "status": "Succeeded",
+      "checkOnly": true,
+      "components": "9 total, 0 errors",
+      "test_level": "NoTestRun, runTestsEnabled false, 0 tests run, coverage n/a — correct for a milestone with no Apex, stated so nobody reads run 4 as evidence any test executed",
+      "note": "This agent ran no sf command and no mock_deploy.py invocation. The four runs pre-date this verification."
+    },
+    "optional_validate_only_command": "sf project deploy start --manifest .sfskills/builds/northwind-sales/reports/MILESTONE-M1-package.xml --dry-run --target-org <alias>   # OPTIONAL, human-run, sandbox target; never run by this agent",
+    "set_milestone_command": "python3 scripts/build_plan.py set-milestone .sfskills/builds/northwind-sales/plan.json M1 --status verified --report-path reports/MILESTONE-M1-REPORT.md",
+    "gate_brief_command": "python3 scripts/build_plan.py brief .sfskills/builds/northwind-sales/plan.json M1",
+    "gate_command": "python3 scripts/build_plan.py gate .sfskills/builds/northwind-sales/plan.json milestone:M1 approve --by \"<name>\"",
+    "gate_preconditions_checked_by_section_3": {
+      "plan_gate_approved": true,
+      "predecessor_milestone_gate_approved": "n/a — M1 is the first milestone",
+      "every_step_documented_or_blocked_with_reason": true,
+      "will_be_refused": false
+    },
+    "gate_note": "This agent printed the gate command and did not run it. human_gates[milestone:M1] is still pending. Approving accepts all open items above, including two marked BLOCKING before any real deploy, and accepts that requirement item 2 is not delivered by this milestone."
+  },
+  "citations": [
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "§ 2 (MILESTONE-<id>-REPORT.md is written not rendered and recorded with set-milestone; build directory layout; amend-step refusal conditions), § 3 (the G3 gate is the human's and the conditions under which gate milestone:Mk approve is refused), § 3.1 (scale: project selects the full ceremony — the ask-tier one-page and gate accept deltas do not apply), § 4 (step types, statuses, the documented → running rebuild edge), § 5 (acceptance-test types and runners, checker scope, the deploy deny-list, mock_deploy.py as the human's own validation), § 7 (this agent runs after the milestone's steps), § 8 (set-milestone is the only plan write this agent makes)"},
+    {"type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "the eight-section shape, the mandatory Process Observations block and its healthy/concerning/ambiguous/follow-up categories, the confidence rubric this agent's Step 10 overrides, and rule 7 (never deploy, never mutate outside the supplied paths)"},
+    {"type": "standard", "id": "agent-rules", "path": "AGENT_RULES.md", "used_for": "the run-time rules for this invocation — no org writes, no auto-chaining to another agent"},
+    {"type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "the persisted-envelope requirement, the atomic-write rule, the run_id convention, and the dimensions_skipped three-way state classification"},
+    {"type": "standard", "id": "refusal-codes", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "checked against the precondition; no refusal condition fired — no step is pending/running/built/tested/failed, none is blocked, the plan gate is approved and M1 has no predecessor"},
+    {"type": "standard", "id": "build-plan-schema", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "the milestone, gate and step fields this agent reads"},
+    {"type": "standard", "id": "output-envelope-schema", "path": "agents/_shared/schemas/output-envelope.schema.json", "used_for": "this envelope's shape, including that everything beyond the contract goes under extensions and that the top-level report_path is this agent's own markdown, not the acceptance report"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "the manifest grammar and the single <version> element the merged milestone package.xml must carry, explicit members over wildcards for a CI-grade manifest, and the validate-vs-quick-deploy distinction behind the Step 8 command choice"},
+    {"type": "skill", "id": "devops/permission-set-deployment-ordering", "path": "skills/devops/permission-set-deployment-ordering/SKILL.md", "used_for": "the ordering failure the Step 4 check exists to catch — a fieldPermissions entry for a field not yet in the org. Recorded as having no instance in M1 (no PermissionSet ships) rather than as passed, and named forward to M2-S02"},
+    {"type": "skill", "id": "devops/flow-deployment-activation-ordering", "path": "skills/devops/flow-deployment-activation-ordering/SKILL.md", "used_for": "where automation sits in the order and what a Flow's active state means on arrival — recorded as having no instance in M1 (no Flow, FlowDefinition or Apex) rather than as passed"},
+    {"type": "skill", "id": "devops/deployment-error-diagnosis", "path": "skills/devops/deployment-error-diagnosis/SKILL.md", "used_for": "the deploy-time error each unresolved reference would have produced — INVALID_CROSS_REFERENCE_KEY for a record type naming an absent business process or a layout item naming an absent field, and the picklist-value-missing component error for a process listing an absent stage; also the bare-vs-object-qualified name split as the most common cross-reference failure in a package of this shape"},
+    {"type": "skill", "id": "devops/pre-deployment-checklist", "path": "skills/devops/pre-deployment-checklist/SKILL.md", "used_for": "the go/no-go items the acceptance report must cover so that 'verified' means checked rather than quiet — dependency completeness, the validation-deploy reading, and the rule that a green sandbox validation does not predict the real deploy (which is exactly why the fragment value set is BLOCKING)"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "the form each manual checklist line must take to be tickable by someone who was not in the build loop — a stated precondition, a click-level action, and one boolean observable outcome; and the go-criteria shape behind 'approving accepts these open items'"},
+    {"type": "skill", "id": "admin/requirements-traceability-matrix", "path": "skills/admin/requirements-traceability-matrix/SKILL.md", "used_for": "the build-layer RTM column set traceability.md follows, the coverage-gap and orphan views as the only two things a gate reads, and the rule that a Deferred or Dropped row needs a decision record rather than a deleted row — applied to REQ-010, which stays In Build rather than being re-labelled"},
+    {"type": "agent", "id": "milestone-verifier", "path": "agents/milestone-verifier/AGENT.md", "used_for": "the eleven-step plan this run followed, the three-verdict rule, the Step 10 confidence table, and the envelope-location contract (segment is the milestone id, and the acceptance report path belongs under extensions)"},
+    {"type": "example_build", "id": "case-onboarding", "path": "examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md", "used_for": "the precedent that a milestone's green checkers can still let platform rules through that only an org catches — the reason this report treats the four northwind mock-deploy runs as the strongest evidence in the milestone and says which of its claims they do not reach"}
+  ],
+  "followups": [
+    {"agent": "deployment-risk-scorer", "because": "the merged milestone manifest now exists as one 9-member file and an org alias is already on file, so the change set can be risk-scored against a real org before the human decides the gate — recommended only, not invoked"}
+  ]
+}

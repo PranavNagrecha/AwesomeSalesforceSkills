@@ -1,0 +1,6 @@
+Scanned 5 Apex class file(s); audited 2 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 5 Apex class file(s); audited 2 @IsTest artifact(s); 0 finding(s)."
+}

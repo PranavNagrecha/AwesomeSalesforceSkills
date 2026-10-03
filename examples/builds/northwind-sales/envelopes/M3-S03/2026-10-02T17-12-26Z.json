@@ -1,0 +1,69 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-10-02T17-12-26Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S03/2026-10-02T17-12-26Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S03/2026-10-02T17-12-26Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales",
+    "step_id": "M3-S03",
+    "builder_envelope": "envelopes/M3-S03/2026-09-19T18-17-01Z.json",
+    "results": "tests/M3-S03/results.json",
+    "renderer": "scripts/render_step_docs.py"
+  },
+  "summary": "Backfilled M3-S03 by render_step_docs.py: 10 workbook rows in 06-automation.md, REQ-022 minted, 0 open items carried from the builder envelope(s) to decisions.md, operator D- entries appended. Set M3-S03 tested -> documented.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Rows are derived, not narrated: every workbook row carries a real source_req_id and the verification the tester recorded; the traceability row joins artefact to test result. MEDIUM because the requirement sentence and any D- entries came from the operator, not from a re-read of the clarifications.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "decisions-appended",
+    "workbook-rows-written",
+    "traceability-row-written"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "",
+      "observation": "Renderer pass for M3-S03: deterministic rows from the builder envelope and results.json.",
+      "evidence": {
+        "source": "envelope",
+        "path": "envelopes/M3-S03/2026-09-19T18-17-01Z.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "the next step in the chain, once built"
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the row schema, the append-only decisions rule, the traceability column set and the status transition this renderer reproduces"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S03",
+    "rows": [
+      "CWB-AUTO-005",
+      "CWB-AUTO-006",
+      "CWB-AUTO-007",
+      "CWB-AUTO-008",
+      "CWB-AUTO-009",
+      "CWB-AUTO-010",
+      "CWB-AUTO-011",
+      "CWB-AUTO-012",
+      "CWB-AUTO-013",
+      "CWB-AUTO-014"
+    ],
+    "req": "REQ-022",
+    "open_items_carried": 0
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the next step in the chain, once built"
+    }
+  ]
+}

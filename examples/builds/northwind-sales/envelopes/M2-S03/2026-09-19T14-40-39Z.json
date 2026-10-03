@@ -1,0 +1,223 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T14-40-39Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S03/2026-09-19T14-40-39Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S03/2026-09-19T14-40-39Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S03"
+  },
+  "summary": "Tested M2-S03 (validation, built by metadata-builder). Ran both declared checkers verbatim from the build directory exactly as the plan wrote them: check_validation_rules.py at the plan's declared build scope (--manifest-dir artefacts), which printed 'Scanned 1 validation rule(s) across 1 file(s); 0 finding(s) detected.' and exited 0, matching the plan's own fixture description; and check_opportunity_management.py at step scope (--manifest-dir artefacts/M2-S03), which exited 0 with one INFO ('Nothing in this tree is in scope for this checker') because this step's only artefact is a ValidationRule and nothing of the type that checker inspects (stage values, business process, record type definitions, pathAssistants) lives under this step's directory -- recorded honestly as a not-in-scope pass, not as a positive validation of the rule. Also ran the always-on xml parse (2/2 files), the always-on manifest consistency check (ValidationRule named explicitly in package.xml with a file behind it, both directions consistent, no coverage-gap exclusion applies), and check-outputs --hashes (ok, nothing missing/empty/malformed). All four runnable tests passed. The step's two manual acceptance tests were checked against the Given/When/Then shape (both have all three clauses and a directly-inspectable Then) and deferred verbatim to the M2 milestone gate rather than ticked; as a courtesy this run also read the shipped XML against both Then clauses without ticking them, and both hold. results.json written with \"passed\": true and artefact_hashes from check-outputs --hashes; M2-S03 moved built -> tested via build_plan.py set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran (or was correctly classified as manual), both always-on checks completed, and every result came from an exit code this agent observed directly -- the Step 7 HIGH row in agents/step-tester/AGENT.md. No command test was refused, no manifest exclusion had to be applied, and check-outputs reported ok with nothing missing, empty or malformed. The opportunity-management checker's not-in-scope INFO does not itself trigger the MEDIUM row (that row is keyed to a refused command test, a coverage-gap manifest exclusion, or a check-outputs problem, none of which occurred) -- it is reported as a Process Observation instead of a confidence downgrade, per this run's instruction to record it honestly rather than read it as a pass on the rule.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml-well-formedness",
+    "manifest-consistency",
+    "checker-pass:validation-rules",
+    "checker-pass:opportunity-management",
+    "check-outputs",
+    "manual-test-tickability"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "check_validation_rules.py exited 0 at the plan's declared build scope and actually resolved every field/permission token the formula names (Discount__c, Approval_Status__c, errorDisplayField, the $Permission token) against M1-S01's fields and M2-S01's custom permission, matching the plan's own fixture description verbatim -- this is a checker that proved something, not merely a green exit.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S03/check_validation_rules.stdout.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-coverage",
+      "observation": "check_opportunity_management.py's declared test on this step exits 0 with an INFO saying nothing in artefacts/M2-S03/ is in its scope -- the checker was added to this step by amend-step --add-checker on 2026-09-18 to close a §5 coverage warning (the step cites admin/opportunity-management in skills[]), but a validation-rule step has no stage value, business process, record type or pathAssistant for it to inspect. The exit 0 satisfies the declared 'expected: exit 0' and is recorded as a pass, but it validates nothing about this step's actual artefact; a reader of a green test list should not infer the rule's Opportunity-management correctness was checked here.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S03/check_opportunity_management.stdout.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "plan-documentation-drift",
+      "observation": "plan.json's inputs.note for this step states the errorMessage is '129 characters'; the shipped errorMessage (read directly from the deployed XML with ElementTree) is 132 characters. Both are well under the 255-character limit the step's second manual test checks, so the declared expected outcome is unaffected either way, but the discrepancy is in the plan's own prose and worth a human's eye before it is cited as a fact elsewhere.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml",
+        "detail": "errorMessage element, len()==132 vs plan.json steps[M2-S03].inputs.note's '129 characters'"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "set-status's own full-plan validate pass printed 19 pre-existing WARNs about other steps (M1, M3, M4) shipping a cited skill's checker with no declared acceptance test for it. None of the 19 name M2-S03 or its cited skills (admin/validation-rules, admin/custom-permissions, admin/opportunity-management); they predate this run and are outside this invocation's one-step scope, so nothing was changed on their account.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "stderr of `build_plan.py set-status ... M2-S03 tested`, 19 WARN lines naming M1-S01, M1-S02, M3-S02, M3-S03, M3-S04, M3-S05, M4-S01, M4-S02, M4-S03, M4-S04"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M2-S03 is now tested; build-doc-keeper is next to carry the deploy-order.md dependency notes, the two manual acceptance lines and this step's discount-cap decision into decisions.md, the workbook's validation section and traceability.md.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 6 role table"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Once a step is tested, build-doc-keeper is the agent that updates PLAN.md, workbook rows, decisions.md and traceability.md from it."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "the Plan this run followed end to end: Step 1 precondition, Step 2 xml, Step 3 manifest, Step 4 checker/manifest/manual dispatch and the never-rewrite-a-command rule, Step 5 results.json shape, Step 6 set-status transitions, Step 7 confidence table, Step 8 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and schema, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence and atomic-write rule for the tests/ and envelopes/ artefacts this run wrote"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was built, not ambiguous, no security-guard command declared)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 (validation step type, status machine, built->tested transition and its check-outputs/results.json preconditions) and section 5 (acceptance-test types, the checker-scope rule that the literal command governs regardless of declared scope, and the deny-list/never-rewrite rule)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the acceptanceTest and step outputs[] shape read directly from plan.json for M2-S03"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar (one <types> block per metadata type, <members> naming components, <name> naming the type) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format filename-to-metadata-type mapping used to derive ValidationRule/Opportunity_Discount_Requires_Approval as the member name the manifest was checked against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirming ValidationRule is not a type with no standalone source file, so no manifest-check exclusion applied"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what makes a manual test line tickable by a human at the milestone gate rather than re-interpreted by them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then anatomy used to check both of the step's manual acceptance tests before carrying them into skipped_manual[] rather than reporting them unusable"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "reading the prior run's envelope (envelopes/M2-S03/2026-09-19T14-31-57Z.json) to corroborate the declared-checker exit codes this run's task explicitly named"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S03",
+    "step_status_before": "built",
+    "step_status_after": "tested",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M2-S03/results.json",
+    "tests_run": 4,
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way package.xml <-> artefact-file consistency check",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+        "type": "checker",
+        "runner": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M2-S03",
+        "type": "checker",
+        "runner": "skills/admin/opportunity-management/scripts/check_opportunity_management.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given D8 and assumption A35, when the errorConditionFormula is read, then the discount comparison is 'Discount__c > 0.20' and not '> 20', the bypass clause NOT($Permission.Bypass_Opportunity_Sales_Validation) is the first argument of the outer AND, and the record-type gate compares RecordType.DeveloperName with = rather than ISPICKVAL.",
+      "Given Q15, when errorMessage is read, then it is Q15's sentence verbatim, is 255 characters or fewer, and errorDisplayField is Discount__c so the error lands on the field the rep has to change rather than at the top of the page."
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "artefact_hashes": {
+      "artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml": "593648c6b4037ffc2ccd6d04a7357e95820e0966c4c30a3ada704e8bb22bea51",
+      "artefacts/M2-S03/package.xml": "d62abc641b7364020ec3856c7b9beeee7188c0ce00bb1ccccda2667b89c70467",
+      "artefacts/M2-S03/deploy-order.md": "f7300c43c98e327b5f0fcc903b067d0671359923153ebbe483ca8860c3fa0d69"
+    },
+    "workflow_return": {
+      "step_id": "M2-S03",
+      "status": "tested",
+      "passed": true,
+      "failed": [],
+      "results_path": ".sfskills/builds/northwind-sales/tests/M2-S03/results.json",
+      "tests_run": 4
+    }
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S03 is tested; build-doc-keeper carries the deploy-order dependency notes and the two manual acceptance lines into decisions.md, the workbook and traceability.md."
+    }
+  ]
+}

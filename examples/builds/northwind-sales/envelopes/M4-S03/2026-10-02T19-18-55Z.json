@@ -1,0 +1,63 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-10-02T19-18-55Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T19-18-55Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T19-18-55Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales",
+    "step_id": "M4-S03",
+    "builder_envelope": "envelopes/M4-S03/2026-10-02T19-15-35Z.json",
+    "results": "tests/M4-S03/results.json",
+    "renderer": "scripts/render_step_docs.py"
+  },
+  "summary": "Documented M4-S03 by render_step_docs.py: 4 workbook rows in 99-other-configuration.md, REQ-027 minted, 0 open items carried from the builder envelope(s) to decisions.md, operator D- entries appended. Set M4-S03 tested -> documented.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Rows are derived, not narrated: every workbook row carries a real source_req_id and the verification the tester recorded; the traceability row joins artefact to test result. MEDIUM because the requirement sentence and any D- entries came from the operator, not from a re-read of the clarifications.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "decisions-appended",
+    "workbook-rows-written",
+    "traceability-row-written"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "",
+      "observation": "Renderer pass for M4-S03: deterministic rows from the builder envelope and results.json.",
+      "evidence": {
+        "source": "envelope",
+        "path": "envelopes/M4-S03/2026-10-02T19-15-35Z.json"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "the next step in the chain, once built"
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the row schema, the append-only decisions rule, the traceability column set and the status transition this renderer reproduces"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S03",
+    "rows": [
+      "CWB-OTHER-026",
+      "CWB-OTHER-027",
+      "CWB-OTHER-028",
+      "CWB-OTHER-029"
+    ],
+    "req": "REQ-027",
+    "open_items_carried": 0
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the next step in the chain, once built"
+    }
+  ]
+}

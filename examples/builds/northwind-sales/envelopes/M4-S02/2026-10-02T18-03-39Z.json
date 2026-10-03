@@ -1,0 +1,220 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-10-02T18-03-39Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S02/2026-10-02T18-03-39Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S02/2026-10-02T18-03-39Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S02",
+    "api_version": "62.0 (unchanged; package.xml untouched)"
+  },
+  "summary": "Repair pass 2 on M4-S02 after MOCK-DEPLOY-M4 run 2. N4-F-05: ReportType column RecordType.Name replaced by RecordType (the lookup field's own relationship name, table Opportunity), and the Report's filter column moved to Opportunity$RecordType, value Enterprise kept; both UNVERIFIED (2026-10-02): org run 3 settles the column name; runs 1-2 rejected RecordTypeId and RecordType.Name. N4-F-04: chartAxisRange Auto added to the dashboard chart component, sortBy kept (guide table says lowercase auto, samples say Auto; the org judges). Diff against the pre-edit copy touches exactly three metadata files plus deploy-order.md (appended section 14 only). Declared checker exit 0 (6 findings: 5 RPT-COL-01 INFO, 1 runningUser MEDIUM), check_queues exit 0, XML parse ok, check-outputs ok. Terminal outcome: built (standalone path).",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 HIGH fails: the record-type column name RecordType is the one remaining documented lookup form, not a verified standard-object example (two prior forms were rejected), chartAxisRange case is ambiguous between guide table and samples, and Questions-to-Ask rows rest on the same planner defaults as the first build. Declared checker exit 0 on the first pass, check-outputs ok, only declared outputs touched.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "RecordType (ReportType column) and Opportunity$RecordType (Report filter) are org facts the guide does not give for a standard-object record type; marked UNVERIFIED (2026-10-02): org run 3 settles the column name. chartAxisRange case (Auto vs auto) is judged by the org."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "repair",
+      "observation": "Each org message named one element, so the repair stayed at three metadata files; a byte diff against the pre-edit copy shows package.xml, both folders and the group unchanged and deploy-order.md only gained section 14.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md",
+        "probe": "section 14"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-depth",
+      "observation": "Third guess at the record-type report-type column (RecordTypeId, RecordType.Name, now RecordType). admin/reports-and-dashboards documents no verified column form for a standard-object record type, and the operator's retrieve of twelve custom report types had none to copy. Each guess cost an org round-trip; the skill needs a verified example from the org's answer on run 3.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+        "probe": "section 1 report type example; no record-type lookup column"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "dashboard",
+      "observation": "The operator reports the guide's table lists chartAxisRange as lowercase auto while its samples use Auto. Auto is used here, matching metadata-examples.md line 295. This agent did not re-open the guide PDF in this pass; the case question is left for the org.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+        "probe": "line 295 chartAxisRange Auto"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "report",
+      "observation": "If the org treats the RecordType column as an Id-typed lookup, the filter value Enterprise (a label) may need to be the developer name or an Id. A value mismatch would not fail deploy; it would show as an empty report, which the M4 manual tests exercise.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+        "probe": "criteriaItems Opportunity$RecordType"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/SKILL.md",
+      "used_for": "metadata-examples.md (report type, dashboard examples), gotchas.md F-49 to F-51; both defects absent from them."
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/scripts/check_queues.py",
+      "used_for": "self-check, exit 0 (group file untouched)."
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "sections 4 and 5, status machine and repair path."
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "playbook, steps 5 to 11."
+    },
+    {
+      "type": "standard",
+      "id": "salesforce-metadata-api-summer-26",
+      "path": "https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf",
+      "used_for": "ReportType and Dashboard component documentation as cited by the repair brief and prior builds; not re-opened in this pass."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "Re-run the step's checks over the repaired files and re-record the three manual tests."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once tested, refresh the workbook rows for the report type, report and dashboard."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S02",
+    "step_type": "ui",
+    "build_mode": "design-only",
+    "status_path_taken": "standalone: set-status running at start, built at end by this agent",
+    "human_gate": true,
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md",
+        "declared": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Record-type column form in the report type",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "RecordType (table Opportunity)",
+        "source": "operator repair brief after run 2 (N4-F-05); the relationship name itself is the remaining documented lookup-column form",
+        "determined": "ReportType sections/columns/field and Report filter column Opportunity$RecordType"
+      },
+      {
+        "question": "Dashboard chart axis range",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Auto",
+        "source": "skill example metadata-examples.md line 295 and guide samples; org message N4-F-04",
+        "determined": "Dashboard leftSection component chartAxisRange"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M4-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "Scanned 5 report/dashboard file(s); 6 finding(s) detected. 5 RPT-COL-01 INFO on provisional codes (incl. Opportunity$RecordType), 1 runningUser MEDIUM"
+      },
+      {
+        "command": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir artefacts/M4-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "No issues found."
+      }
+    ],
+    "xml_parse": "ok",
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "package.xml untouched; every member still backed by a file",
+    "api_version_note": "62.0, unchanged",
+    "org_interaction": "none",
+    "external_sources": [
+      "api_meta.pdf (Summer '26), scratchpad text copy"
+    ],
+    "diff_summary": "changed: reportTypes/...reportType-meta.xml (comment, field RecordType.Name -> RecordType); reports/.../Open_Enterprise_Pipeline_By_Stage.report-meta.xml (comment, criteriaItems column Opportunity$RecordType.Name -> Opportunity$RecordType); dashboards/.../Enterprise_Pipeline.dashboard-meta.xml (comment, + chartAxisRange Auto); deploy-order.md (appended section 14 only). Byte-identical: package.xml, group, both folders.",
+    "unverified_markers": [
+      "RecordType (ReportType column)",
+      "Opportunity$RecordType (Report filter)",
+      "chartAxisRange Auto vs auto case"
+    ],
+    "workflow_return": {
+      "step_id": "M4-S02",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "Run MOCK-DEPLOY-M4 run 3; record the accepted record-type column name in deploy-order.md section 14 and close U7 and U8."
+    ]
+  }
+}

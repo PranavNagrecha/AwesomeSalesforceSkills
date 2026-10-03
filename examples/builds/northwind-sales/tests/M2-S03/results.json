@@ -1,0 +1,74 @@
+{
+  "step_id": "M2-S03",
+  "ran": [
+    "xml",
+    "manifest",
+    "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+    "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M2-S03",
+    "check-outputs"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given D8 and assumption A35, when the errorConditionFormula is read, then the discount comparison is 'Discount__c > 0.20' and not '> 20', the bypass clause NOT($Permission.Bypass_Opportunity_Sales_Validation) is the first argument of the outer AND, and the record-type gate compares RecordType.DeveloperName with = rather than ISPICKVAL. (expected: ticked at the M2 milestone gate; deferred to that gate, not ticked by step-tester)",
+    "Given Q15, when errorMessage is read, then it is Q15's sentence verbatim, is 255 characters or fewer, and errorDisplayField is Discount__c so the error lands on the field the rep has to change rather than at the top of the page. (expected: ticked at the M2 milestone gate; deferred to that gate, not ticked by step-tester)"
+  ],
+  "test_detail": [
+    {
+      "name": "xml",
+      "type": "xml",
+      "runner": "xml.etree.ElementTree, one parse per *.xml / *-meta.xml under artefacts/M2-S03/",
+      "files_checked": [
+        "artefacts/M2-S03/package.xml",
+        "artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml"
+      ],
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "all 2 files parse"
+    },
+    {
+      "name": "manifest",
+      "type": "manifest",
+      "runner": "two-way consistency check between artefacts/M2-S03/package.xml and the files under artefacts/M2-S03/, per skills/devops/salesforce-dx-project-structure filename-to-type mapping",
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "package.xml carries one <types> block: ValidationRule, member Opportunity.Opportunity_Discount_Requires_Approval (object-dot-rule-name form), matching the single file objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml. No wildcard used. File-to-manifest: the one file is covered. Manifest-to-file: the one explicit member has a file. ValidationRule is not on skills/devops/metadata-api-coverage-gaps' no-standalone-file list, so no exclusion applies. Note (not a check failure): deploy-order.md § 4 flags this Object.RuleName member form as UNVERIFIED against the Metadata API Developer Guide, which shows no ValidationRule manifest sample; the form is internally consistent with M1-S01's RecordType/BusinessProcess members and is what the manifest-vs-file check here is judged against regardless."
+    },
+    {
+      "name": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+      "type": "checker",
+      "runner": "declared command, run verbatim from the build directory, scope: build",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 1 validation rule(s) across 1 file(s); 0 finding(s) detected.\", \"blocking\": 0}. Matches the plan's own declared build-scope fixture output verbatim. check-outputs also ok, so both pass conditions (exit 0 and check-outputs ok) are met. Raw capture: tests/M2-S03/check_validation_rules.stdout.txt."
+    },
+    {
+      "name": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M2-S03",
+      "type": "checker",
+      "runner": "declared command, run verbatim from the build directory, scope: step",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "INFO: [artefacts/M2-S03] No Opportunity stage value set, business process, record type or pathAssistant found. Nothing in this tree is in scope for this checker. -- 0 error(s), 0 warning(s), 1 info. Declared expected ('exit 0') is met, and check-outputs is ok, so the pass condition holds. Recorded honestly: this exit 0 is a not-in-scope result, not a positive validation of anything opportunity-management-specific about this step's validation rule -- the checker found no stage value set, business process, record type definition or pathAssistant to check inside artefacts/M2-S03/, because this step's only artefact is a ValidationRule and step-scope sees only this step's own directory. Raw capture: tests/M2-S03/check_opportunity_management.stdout.txt."
+    },
+    {
+      "name": "manual",
+      "type": "manual",
+      "runner": "not runnable by step-tester",
+      "exit_code": null,
+      "verdict": "deferred",
+      "detail": "Two manual acceptance tests, both checked against the Given/When/Then shape before being carried into skipped_manual[]. Test 1 (errorConditionFormula shape): Given names D8 and assumption A35, When names one observable action (reading errorConditionFormula), Then names three checkable facts. All clauses present and the Then is directly inspectable against the shipped XML -- this run inspected it as a courtesy (not as a tick): Discount__c > 0.20 is present (not > 20), NOT($Permission.Bypass_Opportunity_Sales_Validation) is the first argument of the outer AND, and RecordType.DeveloperName is compared with = rather than ISPICKVAL in both OR branches. Test 2 (errorMessage shape): Given names Q15, When names one observable action (reading errorMessage), Then names three checkable facts. All clauses present and the Then is directly inspectable: the shipped errorMessage is 132 characters (well under 255) and errorDisplayField is Discount__c. Both lines are usable at the gate rather than unusable. Carried into skipped_manual[] for milestone-verifier; not ticked here."
+    }
+  ],
+  "check_outputs": {
+    "ok": true,
+    "step": "M2-S03",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "artefact_hashes": {
+    "artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml": "593648c6b4037ffc2ccd6d04a7357e95820e0966c4c30a3ada704e8bb22bea51",
+    "artefacts/M2-S03/package.xml": "d62abc641b7364020ec3856c7b9beeee7188c0ce00bb1ccccda2667b89c70467",
+    "artefacts/M2-S03/deploy-order.md": "f7300c43c98e327b5f0fcc903b067d0671359923153ebbe483ca8860c3fa0d69"
+  }
+}

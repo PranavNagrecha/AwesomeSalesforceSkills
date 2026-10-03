@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Enterprise_Opportunity_Path</members>
+        <members>Renewal_Opportunity_Path</members>
+        <name>PathAssistant</name>
+    </types>
+    <types>
+        <members>PathAssistant</members>
+        <name>Settings</name>
+    </types>
+    <version>62.0</version>
+</Package>

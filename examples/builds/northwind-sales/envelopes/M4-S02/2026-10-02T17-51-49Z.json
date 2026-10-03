@@ -1,0 +1,654 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-10-02T17-51-49Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S02/2026-10-02T17-51-49Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S02/2026-10-02T17-51-49Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S02",
+    "api_version": "62.0 (not supplied; plan.json carries no api_version, so the AGENT.md Inputs fallback applied; every package.xml in the build is 62.0, and the caller brief also named 62.0)."
+  },
+  "summary": "Built M4-S02 (ui): six metadata files, a package.xml and a deploy-order note, matching the step's eight declared outputs with nothing undeclared. Group Enterprise_Managers ships empty, with doesIncludeBosses false (A32, Q25). ReportType Enterprise_Opportunity_Pipeline is new, on Opportunity with no join (A40), listing the six M1-S01/standard fields plus RecordTypeId. Report Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage is Summary format, grouped by Stage then Close Date by month, with columns Name, Amount (Sum), Discount and Approval Status. Its filter is record type Enterprise and stage not Closed Won/Closed Lost, it has no scope element (D7) and no product-count column. Dashboard Enterprise_Sales/Enterprise_Pipeline is SpecifiedUser with no runningUser (A29) and one Column tile: Sum of Amount by close month. Both folders are Shared with a single View share to the group. Every column code is provisional: M4-S01's U1-U6 are carried verbatim, U7-U14 are new, and all are marked UNVERIFIED (2026-10-02). Declared checker: exit 0, score 95, 5 files, 6 findings (five RPT-COL-01 INFO by design plus the runningUser MEDIUM). The test description predicted 6+1; the reason is in deploy-order section 3. Self-checks: check_queues 0, check_deployment_manifest 0. check-outputs ok. Terminal outcome: built.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 HIGH fails on two counts. Five in-scope Questions-to-Ask rows rest on planner-applied G1 defaults (A30, A31, A40-A43) rather than answers. And Dashboard is documented by the cited skill only as a worked example, so the component's chartSummary, groupingColumn and autoselectColumnsFromReport came from the Metadata API guide section the reference cites rather than from a skill element table. Everything else meets HIGH: every element name and enum traced to the skill fences or that guide section, the declared checker exited 0 on the first pass with 0 repairs, check-outputs is ok, and exactly the declared outputs were written. Separately from the rubric, seven column codes and the RecordTypeId section field are org facts that only Phase B can confirm.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Every element name and enum value is traced (skill fences, then the Metadata API guide sections the skill reference cites). The seven report column codes and the ReportType RecordTypeId field name are org data values no file can ground; they are provisional and marked UNVERIFIED (2026-10-02) as U1, U7 and U8, and they close only by the M4-S01 Phase B harvest."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "planning",
+      "observation": "M4-S01's runbook anticipated this step's extra codes (its section 5 names a record-type filter and an open-or-closed filter as provisional) and proved by fixture that RPT-COL-01 skips grouping fields. This step could carry the six markers verbatim and add U7-U14 without re-deriving the code-confirmation procedure.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S01/deploy-order.md",
+        "probe": "sections 4, 5 and 7"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "library-learning",
+      "observation": "The case-onboarding org refusals reached the cited skill and its checker. RPT-DESC-01 (255-char description), RPT-GRP-01 (grouping also listed as a column) and RPT-COL-01 shaped this report before any org saw it: Stage and Close Date are groupings only, and both descriptions are under 235 characters.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/references/gotchas.md",
+        "probe": "F-49, F-50, F-51"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "requirements-sharing",
+      "observation": "Q24 wants each manager's report limited to their own reps 'by role hierarchy', but Q4 says SMB and Enterprise 'see each other's pipeline; no sharing change', which suggests a public Opportunity OWD. D7 proves a manager CAN see their reps' deals (sharing tree Q2). It does not prove they cannot see the other manager's, and the tree's own Q1 says a public OWD must be tightened first, which Q4 forbids. With scope omitted per the plan, the report may show every manager the whole Enterprise pipeline. Recorded as U12/B3 in deploy-order.md section 8; the OWD is not on file.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "clarifications Q4, Q24; decisions D7; standards/decision-trees/sharing-selection.md Q1-Q2"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "planning",
+      "observation": "Prose drift of the kind decisions.md already logged as O-M2S05-02. M4-S02's inputs.note and its third manual test still give 'M2-S04's block' as the reason the product-count column is descoped, but M2-S04 was unblocked on 2026-09-15 through HasOpportunityLineItem and is documented. The descope still holds, because HasOpportunityLineItem is a has-at-least-one flag rather than a count. But a yes/no HasOpportunityLineItem column would meet Q23's 'so the manager sees the gap' with no join, and that is a planner decision.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "steps[M2-S04].status, steps[M2-S04].amendments[0], steps[M4-S02].inputs.note, acceptance_tests[5]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "planning",
+      "observation": "The plan declares one report to serve both a by-stage manager report and a by-close-month VP tile. A dashboard component charts a grouping of its source report, and a field cannot be both a grouping and a column (RPT-GRP-01), so Close Date had to become the report's second grouping (month). That moves it off the row A43 lists. It also changes the checker count: the test description predicts six RPT-COL-01 lines and seven findings, and the built step gives five and six. Exit 0 holds; only the prose differs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "steps[M4-S02].acceptance_tests[0].description; assumptions A43"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-depth",
+      "observation": "admin/reports-and-dashboards documents Dashboard only by a two-component example. Its fences carry no chartSummary, no component groupingColumn, no autoselectColumnsFromReport, no aggregateTypes 'Sum' and no Opportunity scope values, so this step took them from the Summer '26 Metadata API guide that the reference cites. Four guide-versus-skill drifts surfaced: gotchas F-49 says the guide does not state the 255-character description limit, but the Summer '26 Report table now does; ReportChart.summaryAxisRange is 'Required' for bar charts in the guide, but the skill's report chart fence omits it; the guide's DashboardComponent table lists chartAxisRange as 'auto'/'manual' while the skill and the guide's own samples write 'Auto'; and the guide's table names isAutoSelectFromReport while its sample writes autoselectColumnsFromReport. These are deepen-a-skill signals (build-orchestration section 8).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+        "probe": "sections 2-3 vs api_meta.pdf (262) Report, ReportChart, DashboardComponent"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-depth",
+      "observation": "check_report_inventory.py scans report column codes for RPT-COL-01 but not a dashboard component's chartSummary/column or groupingColumn, so the two provisional codes the dashboard carries draw no finding. check_queues.py (cited skill admin/queues-and-public-groups) is not declared on this step; build_plan.py next prints the amend-step --add-checker remedy. This agent ran it as a self-check: exit 0, also under --strict.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py",
+        "probe": "check_dashboard_source(); audit_manifest_dir()"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "access",
+      "observation": "Q24 names the VP as the dashboard's running user, but no answer supplies a username (A29), and the skill recommends a named service user that never leaves for every SpecifiedUser dashboard. The XML ships with no runningUser. deploy-order.md section 6 makes setting it a mandatory pre-deploy substitution in the deploy copy (B2) and records the deactivation risk. Choosing the VP or a service user is the human's call.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "clarifications Q24; assumptions A29; skills/admin/reports-and-dashboards/references/gotchas.md \"SpecifiedUser Dashboards Die With the Running User\""
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "access",
+      "observation": "Q25 says the sales-ops admin 'manages' the folders, but the plan writes one View share to the group and no Manage share. The admin's management rights therefore rest on an administrative permission that no answer names (U13).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "clarifications Q25; steps[M4-S02].inputs.folder_share"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "Run the step tester on M4-S02: it runs the declared checker verbatim plus the always-on xml and manifest checks, and records the three manual tests for the M4 gate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "probe": "steps[M4-S02].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "The tester owns tests/M4-S02/results.json; this agent ticks nothing."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "access",
+      "observation": "Once an org is connected, confirm U12: does an Enterprise manager see the other manager's reps' opportunities under the current Opportunity OWD?",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md",
+        "probe": "section 8"
+      },
+      "suggested_followup_agent": "access-path-explainer",
+      "followup_reason": "It traces why a user can or cannot see a record, which is exactly the Q4-versus-Q24 question; it requires an org this design-only build does not have."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/SKILL.md",
+      "used_for": "Questions to Ask (nine rows bound in the decision record); Recommended Workflow steps 2-7; the dashboardType three-value rule; Sharing Model Impact on Reports."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+      "used_for": "Sections 1 (ReportType element set, category enum, deployed), 2 (Report element set, Object$Field code form, operator enum, groupingsDown caps, dateGranularity, scope values), 3 (Dashboard required elements, dashboardType semantics, runningUser deploy behaviour, componentType list), 4 (folder accessType/folderShares), 5 (package.xml, no wildcard, bare folder member), 6 (deploy order), 7 (verification SOQL)."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/gotchas.md",
+      "used_for": "F-49 (description 255), F-50 (guessed codes; grouping cannot also be a column), F-51 (un-guessable code: harvest or ship without), SpecifiedUser dies with running user, bad runningUser becomes the deployer, Public includes portal users, FolderShare ignored on package install, mixed scope."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/references/examples.md",
+      "used_for": "Case Aging Report: the org-validated Report shape (columns/filter/groupingsDown order, no scope) adapted for the report."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/templates/dashboard-design-template.md",
+      "used_for": "Folder-before-dashboard ordering; SpecifiedUser checklist (service user, environment substitution, post-deploy Type check)."
+    },
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py",
+      "used_for": "Declared checker, run verbatim from the build directory; read for RPT-COL-01 grouping skip and exit tiers."
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/SKILL.md",
+      "used_for": "Public group vs queue; Questions to Ask; Recommended Workflow step 6 (checker)."
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/references/metadata-examples.md",
+      "used_for": "Group element set (doesIncludeBosses, name), membership not in Group metadata, deploy the group before anything that names it, package.xml Group type."
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/references/gotchas.md",
+      "used_for": "Gotcha 3 (flat groups), Gotcha 6 (roleAndSubordinatesInternal rename; not used here because the group has no members)."
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/scripts/check_queues.py",
+      "used_for": "Self-check (cited, undeclared): exit 0, also under --strict."
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "Mandatory Read 8: validate in lower environments in the production order; post-deploy switches with owners; deploy-order note basis."
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "used_for": "Self-check of the step package.xml: exit 0, 0 findings."
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Sections 2 (plan is the only shared state; set-status only), 4 (ui step type; status machine; rebuild edges), 5 (checker run verbatim from the build dir; check-outputs; deploy deny-list; mock_deploy is the human's)."
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Process Observations, Citations schema, confidence rubric (overridden by the playbook Step 10)."
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Atomic envelope pair; dimensions_skipped forces MEDIUM or LOW."
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "No refusal condition met (agent, type and inputs all in scope)."
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "Step fields this agent reads and the ones it leaves alone (only status and runs change, via set-status)."
+    },
+    {
+      "type": "decision_tree",
+      "id": "sharing-selection",
+      "path": "standards/decision-trees/sharing-selection.md",
+      "branch": "Q1 (public OWD -> tighten first) and Q2 (hierarchy access), as recorded in D7; not re-decided",
+      "used_for": "Read to test D7 against Q24's 'only their own reps'; the gap is recorded as U12."
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "The playbook followed (Steps 1-11)."
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/artefacts/M5-S01/reports/Support_Operations/Escalated_Open_Cases.report-meta.xml",
+      "used_for": "Org-validated report and folder shapes (CaseList report and Support_Operations folder survived checkOnly after F-49/F-50)."
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/reports/MOCK-DEPLOY-M5.md",
+      "used_for": "Runs 1-2: the F-49/F-50/F-51 refusals and the accepted rebuild; scope omitted and accepted."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S02",
+    "step_type": "ui",
+    "build_mode": "design-only",
+    "status_path_taken": "Invoked directly (not under agents/build-step-runner), so this agent moved the step itself, exactly twice: pending -> running at 2026-10-02T17:39:31Z, and running -> built after check-outputs returned ok, carrying this envelope. There were no other writes to plan.json.",
+    "human_gate": {
+      "gate": "step:M4-S02",
+      "status": "approved",
+      "at": "2026-10-02T17:15:11Z"
+    },
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/groups/Enterprise_Managers.group-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales.dashboardFolder-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M4-S02/groups/Enterprise_Managers.group-meta.xml",
+        "type": "Group",
+        "source": "skills/admin/queues-and-public-groups/references/metadata-examples.md \"Public group used as a queue member and a sharing-rule target\"; Metadata API guide, Group (doesIncludeBosses Required, API 18.0+)",
+        "declared": true,
+        "sha256": "5a17148a575c041719ae9b12c9413cc16dd33b77b3809c7694543f8619bc8cf8",
+        "bytes": 893
+      },
+      {
+        "path": "artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+        "type": "ReportType",
+        "source": "skills/admin/reports-and-dashboards/references/metadata-examples.md section 1 (adapted: no join, one section); Metadata API guide, ReportType (join optional; fields by API name)",
+        "declared": true,
+        "sha256": "ca63a558932b69058a57005e2e6d334fbea62467de0725a028e9dd4875782e37",
+        "bytes": 2508
+      },
+      {
+        "path": "artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml",
+        "type": "Report (folder; ReportFolder root)",
+        "source": "skills/admin/reports-and-dashboards/references/metadata-examples.md section 4; precedent examples/builds/case-onboarding/artefacts/M5-S01/reports/Support_Operations-meta.xml",
+        "declared": true,
+        "sha256": "9ec460b43a8f26a230693ca0ac19ea1d0e0ae341eab9927c060766cee8bf70f7",
+        "bytes": 667
+      },
+      {
+        "path": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+        "type": "Report",
+        "source": "skills/admin/reports-and-dashboards/references/metadata-examples.md section 2 and references/examples.md \"Case Aging Report\" (org-validated shape); Metadata API guide ReportSummaryType (Sum), ReportGrouping/UserDateGranularity (Month)",
+        "declared": true,
+        "sha256": "1e4ee2a734b7e009e79c44f9d938ab1be05f7ef7a7dbdd6d21b0c9c978bb53e8",
+        "bytes": 3341
+      },
+      {
+        "path": "artefacts/M4-S02/dashboards/Enterprise_Sales.dashboardFolder-meta.xml",
+        "type": "Dashboard (folder; DashboardFolder root)",
+        "source": "skills/admin/reports-and-dashboards/references/metadata-examples.md section 4",
+        "declared": true,
+        "sha256": "3a123dff9a7ad95997184c884e70af1f18054ff7386338377e5c8e296728ee91",
+        "bytes": 756
+      },
+      {
+        "path": "artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+        "type": "Dashboard",
+        "source": "skills/admin/reports-and-dashboards/references/metadata-examples.md section 3 (required elements, dashboardType); Metadata API guide SpecifiedUser grid-layout sample definition (component chartSummary, groupingColumn, autoselectColumnsFromReport), DashboardComponentSection (components optional)",
+        "declared": true,
+        "sha256": "55398d006e55c78a7f72ee9205245dfbc0d51fac0195e86160603c3d79ffe62f",
+        "bytes": 3121
+      },
+      {
+        "path": "artefacts/M4-S02/package.xml",
+        "type": "Package manifest",
+        "source": "skills/admin/reports-and-dashboards/references/metadata-examples.md section 5; skills/admin/queues-and-public-groups/references/metadata-examples.md package.xml",
+        "declared": true,
+        "sha256": "bfb92fc6145c9d838a474d90e2c94a8673a1e5058f9692eb7064e492753844df",
+        "bytes": 690
+      },
+      {
+        "path": "artefacts/M4-S02/deploy-order.md",
+        "type": "deploy-order note (markdown; no metadata type)",
+        "source": "skills/admin/reports-and-dashboards references sections 4-7 and gotchas; skills/admin/change-management-and-deployment SKILL.md; artefacts/M4-S01/deploy-order.md sections 4 and 7 carried verbatim",
+        "declared": true,
+        "sha256": "637799e023c5d61d304ed6578d96f543a449860508bdeeefe18df74dc30351e4",
+        "bytes": 30588
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Should a parent record with zero child records still appear?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Q23: 'Yes, show it - with the product count column so the manager sees the gap.'",
+        "source": "clarification Q23 (answered) + step inputs.note",
+        "determined": "ReportType with no join (every opportunity is a row, with or without products); no product-count column (inputs.note descope; deploy-order section 7)."
+      },
+      {
+        "question": "Does every viewer need to see the same numbers, or their own?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Q24: report rows per manager via role hierarchy; dashboard shows the full Enterprise pipeline as the VP.",
+        "source": "clarification Q24 (answered) + D7 + A29",
+        "determined": "Report: no scope element (rows follow sharing; U12). Dashboard: dashboardType SpecifiedUser, no runningUser (B2/U14)."
+      },
+      {
+        "question": "Who is allowed to see these rows, and who is allowed to open the folder?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Q25: managers + VP via the Enterprise Managers public group with View; the admin manages it.",
+        "source": "clarification Q25 (answered) + step inputs.folder_share",
+        "determined": "Both folders accessType Shared, one folderShares View -> Group Enterprise_Managers; Group doesIncludeBosses false (audience named exactly); no Manage share (U13)."
+      },
+      {
+        "question": "Is anyone going to email, export, or subscribe to this?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Unanswered, no proposed default; A30: nothing built.",
+        "source": "assumption A30 (default applied by the planner)",
+        "determined": "No subscription metadata."
+      },
+      {
+        "question": "Does this report type already back other reports?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Q54 open; A40: build a new report type, edit nothing.",
+        "source": "assumption A40 (Q54 proposed default)",
+        "determined": "New ReportType Enterprise_Opportunity_Pipeline."
+      },
+      {
+        "question": "Is a dashboard going to filter this, and on which field?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Q55 open; A41: no filter.",
+        "source": "assumption A41 (Q55 proposed default)",
+        "determined": "No dashboardFilters; no dashboardFilterColumns."
+      },
+      {
+        "question": "How far back does the answer need to go?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Q56 open; A42: current snapshot only.",
+        "source": "assumption A42 (Q56 proposed default)",
+        "determined": "No historical trending, no reporting snapshot."
+      },
+      {
+        "question": "Is the report type's API name confirmed from an org retrieve?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Q26: No - confirm from a retrieve; never guess.",
+        "source": "clarification Q26 (answered)",
+        "determined": "Custom report type named by this build (no standard type used); its deployment precedes Phase B (B4)."
+      },
+      {
+        "question": "Is every filter, grouping and column code harvested from a retrieved report?",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "No (Q26, A28); provisional Object$Field codes.",
+        "source": "clarification Q26 + assumption A28 + M4-S01 runbook",
+        "determined": "Seven provisional codes carried with UNVERIFIED (2026-10-02) markers (U1, U8); B1 blocks deploy until Phase B."
+      },
+      {
+        "question": "What is on the row? (Q57, requirements-gathering)",
+        "skill": "admin/reports-and-dashboards (via the step answers list)",
+        "answer": "Q57 open; A43: Name, Stage, Amount, Discount, Close Date, Approval Status; base Opportunity, no join.",
+        "source": "assumption A43 (Q57 proposed default)",
+        "determined": "Four columns (Amount summed) + Stage and Close Date as groupings 1 and 2 (Close Date by month, for the VP tile)."
+      },
+      {
+        "question": "Can reps open it? (Q63)",
+        "skill": "admin/reports-and-dashboards (via the step answers list)",
+        "answer": "Q63 open; A31: no folder access for reps; no FLS hiding.",
+        "source": "assumption A31 (Q63 proposed default)",
+        "determined": "Single View share to the group only."
+      },
+      {
+        "question": "Who works this pool, and how does that list change? (queues skill, applied to the group)",
+        "skill": "admin/queues-and-public-groups",
+        "answer": "Two managers + VP (Q25); membership is not deployable (A32).",
+        "source": "clarification Q25 + assumption A32",
+        "determined": "Group ships empty; post-deploy Setup step with owner in deploy-order section 5."
+      },
+      {
+        "question": "Which objects will the queue own / who is notified / Omni-Channel / retirement? (queues skill)",
+        "skill": "admin/queues-and-public-groups",
+        "answer": "Not applicable: a public group owns no records and sends no queue email.",
+        "source": "skill guidance (queues vs public groups table)",
+        "determined": "No Queue metadata."
+      },
+      {
+        "question": "Which Enterprise filter? (implied by A43 and the M4 goal)",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "Record type Enterprise (Q9: SMB filters on Master; Q8: 140 deals move to Enterprise) and stage not Closed Won / Closed Lost (M1-S01 values).",
+        "source": "clarifications Q8, Q9 + upstream artefact M1-S01",
+        "determined": "filter 1 AND 2 AND 3: Opportunity$RecordTypeId equals Enterprise (U8); Opportunity$StageName notEqual Closed Won; notEqual Closed Lost. ReportType lists RecordTypeId (U7)."
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M4-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "Scanned 5 report/dashboard file(s); 6 finding(s) detected. score 95",
+        "findings": [
+          {
+            "severity": "INFO",
+            "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+            "message": "RPT-COL-01 `Opportunity$Approval_Status__c` (columns) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+          },
+          {
+            "severity": "INFO",
+            "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+            "message": "RPT-COL-01 `Opportunity$Amount` (columns) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+          },
+          {
+            "severity": "INFO",
+            "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+            "message": "RPT-COL-01 `Opportunity$Discount__c` (columns) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+          },
+          {
+            "severity": "INFO",
+            "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+            "message": "RPT-COL-01 `Opportunity$Name` (columns) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+          },
+          {
+            "severity": "INFO",
+            "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+            "message": "RPT-COL-01 `Opportunity$RecordTypeId` (filter/criteriaItems) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+          },
+          {
+            "severity": "MEDIUM",
+            "location": "artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml::Enterprise Pipeline",
+            "message": "dashboardType is SpecifiedUser with no runningUser - on deploy the field is populated with the deploying user's username"
+          }
+        ],
+        "reading": "Expected state, not a defect: five RPT-COL-01 INFO lines (Opportunity$Name, $Amount, $Discount__c, $Approval_Status__c, $RecordTypeId) flag provisional codes by design, and they are NOT fixed by changing codes. The one MEDIUM is the SpecifiedUser-with-no-runningUser finding (A29), which deploy-order section 6 covers. The test description predicted six RPT-COL-01 lines and seven findings. The difference is that StageName and CloseDate are groupings, which RPT-COL-01 skips, and the record-type filter adds one.",
+        "strict_rerun": "Same command with --strict: exit 1 (the MEDIUM is WARN-tier), as the test description predicts; --strict is deliberately not declared."
+      },
+      {
+        "command": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir artefacts/M4-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "Public Groups found (1): Enterprise Managers, no members listed. No issues found.",
+        "strict_rerun": "exit 0"
+      },
+      {
+        "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M4-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "Scanned 7 manifest or metadata file(s); 0 finding(s) detected. score 100"
+      }
+    ],
+    "xml_parse": {
+      "files": 7,
+      "result": "all 7 *.xml / *-meta.xml under artefacts/M4-S02 parse with xml.etree.ElementTree (0 errors)"
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "consistent by inspection in both directions: Group Enterprise_Managers, ReportType Enterprise_Opportunity_Pipeline, Report Enterprise_Sales (bare folder) + Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage, Dashboard Enterprise_Sales (bare folder) + Enterprise_Sales/Enterprise_Pipeline; each member has a file and each file a member; no wildcard on Report or Dashboard.",
+    "api_version_note": "62.0 in package.xml (AGENT.md fallback; matches the build). No element used here is gated above 62.0 in the guide; Report crossFilters (66.0+) and Group description (62.0+) are not used.",
+    "org_interaction": "none: no sf command and no scripts/mock_deploy.py were run (its argument list was read from source only).",
+    "external_sources": [
+      {
+        "title": "Metadata API Developer Guide, Summer '26 (API 67.0)",
+        "url": "https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf",
+        "sections": [
+          "Report (fields; description max 255)",
+          "ReportColumn",
+          "ReportSummaryType (Sum)",
+          "ReportGrouping / UserDateGranularity (Month)",
+          "ReportFilterItem (operators)",
+          "ReportChart / ChartSummary",
+          "Dashboard (fields; runningUser deploy behaviour)",
+          "DashboardComponent (chartSummary, groupingColumn, useReportChart)",
+          "Lightning Experience dashboard sample definition (SpecifiedUser)",
+          "DashboardComponentSection (components optional)",
+          "ReportType / ReportTypeColumn",
+          "Group (doesIncludeBosses Required; members not migrated)"
+        ],
+        "why": "The section the cited skill reference names as its source (playbook Step 5 rule 1); fetched read-only to the session scratchpad."
+      }
+    ],
+    "brief_vs_plan": [
+      "The brief and the step:M4-S02 gate notes say 'the Enterprise Manager role'. plan.json declares a public GROUP (Enterprise_Managers, groups/Enterprise_Managers.group-meta.xml), and Q25 names a public group. plan.json wins: no Role was built.",
+      "The brief says to scope the report 'by owner role/hierarchy as the skill documents'. plan.json says scope is omitted, leaving rows to sharing (D7, Q24). The skill documents no Opportunity scope value, so both point to no scope element. The risk that sharing does not narrow is recorded as U12.",
+      "The brief frames the six codes as 'UNVERIFIED (2026-10-02) U1-U6'. In M4-S01, U1 is the six codes and U2-U6 are other items (SMB report type, standard type name, dry-run behaviour, DX project, private folder). Both M4-S01 tables are carried verbatim.",
+      "The brief says to mark the running user UNVERIFIED if no answer names one. Q24 names the VP but no answer gives a username, so runningUser is absent (A29) and the username is U14."
+    ],
+    "unverified_markers": [
+      {
+        "id": "U1-U6",
+        "origin": "M4-S01 (carried verbatim, not resolved)",
+        "where": "deploy-order.md sections 3 and 11; report and dashboard XML comments"
+      },
+      {
+        "id": "U7",
+        "marker": "ReportType section field RecordTypeId (API name vs relationship name)"
+      },
+      {
+        "id": "U8",
+        "marker": "Report filter code Opportunity$RecordTypeId and value Enterprise"
+      },
+      {
+        "id": "U9",
+        "marker": "Dashboard component charting the report's second grouping alone; autoselectColumnsFromReport spelling; default month sort"
+      },
+      {
+        "id": "U10",
+        "marker": "Empty rightSection accepted by the org"
+      },
+      {
+        "id": "U11",
+        "marker": "Group doesIncludeBosses reach to folder shares"
+      },
+      {
+        "id": "U12",
+        "marker": "Per-manager row narrowing depends on the Opportunity OWD (Q4 vs Q24)"
+      },
+      {
+        "id": "U13",
+        "marker": "Sales-ops admin's folder-management permission"
+      },
+      {
+        "id": "U14",
+        "marker": "The VP's username in the target org (absent, not guessed)"
+      }
+    ],
+    "reads_order_note": "The eight Mandatory Reads skills were completed after the artefacts were first drafted (change-management-and-deployment was read before the envelope). The read added one deploy-order line (validate in a sandbox in production order) and changed no metadata. The other six floor skills govern no type this step emits.",
+    "persistence_note": "The AGENT.md Persistence pair under docs/reports/metadata-builder/ was not written: the caller allows writes only inside the build directory. The build-scoped envelope pair is the record, as with M4-S01.",
+    "workflow_return": {
+      "step_id": "M4-S02",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/groups/Enterprise_Managers.group-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales.dashboardFolder-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/package.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "M4 gate: split the M4 deploy (B4: Group, ReportType, folders and M1-S01 fields first) so that Phase B can confirm the codes. The record-type criterion (U8) cannot ship absent; for any other code that cannot be harvested, the F-51 fallback applies.",
+      "B3/U12: confirm the Opportunity OWD. If it is public, Q4 and Q24 conflict for the managers' report and a human must rank them (deploy-order section 8).",
+      "B2/U14: obtain the VP's username per target org and substitute runningUser in the deploy copy, or decide on a service user (deploy-order section 6).",
+      "O-3: Q23's 'see the gap' could be met by a HasOpportunityLineItem yes/no column (amend-step and rebuild). Correct the stale 'M2-S04 block' prose in inputs.note and manual test 3 with amend-step --prose-only.",
+      "O-4: the checker-test description predicts six RPT-COL-01 lines and seven findings; the built step gives five and six (amend-step --prose-only).",
+      "O-5: declare check_queues.py on M4-S02 (amend-step --add-checker admin/queues-and-public-groups). Self-check exit 0.",
+      "Post-deploy: the sales-ops admin adds the two Enterprise managers and the VP to the Enterprise Managers group (A32)."
+    ]
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "It runs the declared checker verbatim plus the always-on xml and manifest checks, and records the three manual tests for the M4 gate in tests/M4-S02/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M4-S02 is tested, its documentation pass (render_step_docs.py or the agent) carries this envelope's open items into decisions.md."
+    }
+  ]
+}

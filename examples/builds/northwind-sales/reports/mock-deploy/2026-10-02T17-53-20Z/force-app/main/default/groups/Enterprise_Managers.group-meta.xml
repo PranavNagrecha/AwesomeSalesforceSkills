@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- M4-S02. Public group for the Enterprise Sales report and dashboard folders (Q25). Shape from
+         skills/admin/queues-and-public-groups/references/metadata-examples.md ("Public group used as a
+         queue member and a sharing-rule target"). Ships with NO members: Group metadata carries no
+         membership (A32); the sales-ops admin adds the two Enterprise managers and the VP in Setup after
+         deploy (deploy-order.md section 5). doesIncludeBosses is false so the group grants nobody above
+         its members anything: Q25 names the folder audience exactly. Whether this checkbox reaches
+         folder shares at all is UNVERIFIED (2026-10-02), U11 in deploy-order.md. -->
+    <doesIncludeBosses>false</doesIncludeBosses>
+    <name>Enterprise Managers</name>
+</Group>

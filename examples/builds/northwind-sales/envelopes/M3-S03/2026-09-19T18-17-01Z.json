@@ -1,0 +1,189 @@
+{
+  "agent": "apex-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T18-17-01Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S03/2026-09-19T18-17-01Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S03/2026-09-19T18-17-01Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S03",
+    "build_mode": "design-only",
+    "kind": "invocable",
+    "primary_sobject": "Opportunity",
+    "api_version": "62.0",
+    "invocation": "REPAIR pass, direct read of agents/apex-builder/AGENT.md as the step runner, per standards/build-orchestration.md sections 4-5 (documented -> running -> built, re-run before tested per the built -> running / re-run-before-tested shape)",
+    "trigger": "reports/MOCK-DEPLOY-M3.md run 4 (2026-09-19T18:10:13Z) — RunSpecifiedTests against sfskills-dev: 6 run, 0 passed, 6 failed, coverage 32.4%, every method throwing System.QueryException: sObject type 'Opportunity' is not supported at OpportunityApprovalService.submitBatch line 79 (the service's WITH USER_MODE SOQL) inside System.runAs(persona)",
+    "finding_id": "N3-F-08",
+    "root_cause": "The persona (profile Sales User + Enterprise_Sales_Record_Types, which by design grants record types and two field permissions and no object permissions) has no Opportunity object permission in the validating org. Q19 assumed the org's existing Sales Cloud permission set would supply object CRUD; that set is not in this build and not in sfskills-dev.",
+    "requester_decision": "The test seeds the grant the code under test needs: a test-scoped PermissionSet (Test_Opportunity_Access) with an ObjectPermissions row on Opportunity (Read/Create/Edit true, ViewAllRecords false), assigned to both the manager and the rep alongside Enterprise_Sales_Record_Types, inserted inside the existing self-user mixed-DML fence in seedFixture. FieldPermissions rows are deliberately withheld unless the org refuses again on FLS.",
+    "scope": "Write only inside artefacts/M3-S03/ and envelopes/M3-S03/; plan.json only via set-status; no deploy; no secrets."
+  },
+  "summary": "Repaired M3-S03's test fixture for N3-F-08 (the object-level twin of scenario-1's field-level Gotcha 15 finding). OpportunityApprovalServiceTest.seedFixture now inserts a test-scoped PermissionSet (Test_Opportunity_Access) plus one ObjectPermissions row granting Opportunity Read/Create/Edit (ViewAllRecords false), and assigns it to both the manager and the rep inside the same self-user System.runAs fence that already carries the Enterprise_Sales_Record_Types assignments — PermissionSet and ObjectPermissions are both setup objects (apex/mixed-dml-and-setup-objects), so no new fence was needed, only two more inserts and two more PermissionSetAssignment rows in the existing one. One class-header sentence (the Gotcha 15 bullet) now names the repair and N3-F-08; one class constant (TEST_OBJECT_ACCESS_PERMISSION_SET) was added; every other line of every one of the step's five classes is unchanged. All three of the step's declared checker acceptance tests were re-run verbatim from the build directory and all exit 0: check_approval_process_apex_patterns.py (build scope, 0 findings), check_invocable_methods.py (step scope, 0 findings) and check_test_class_standards.py (step scope, 0 findings, ERROR=0 WARN=0 — the new setup-object inserts sit inside the self-user fence, not a persona runAs body, so they do not trip fixture-seeded-as-persona). check-outputs is ok (no missing/empty/malformed). No compile check ran (no target_org_alias, and no offline Apex compiler exists in the sf CLI) and nothing was deployed. The step moved documented -> running -> built; it has not been re-tested or re-documented, and the org has not yet re-validated the fix — that is the operator's next mock_deploy.py run.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Capped at MEDIUM per AGENT_CONTRACT.md Gate C row 3 and GATES.md Gate D: no target_org_alias was supplied and no offline Apex compiler exists, so no compile check ran and the coverage improvement this repair is meant to produce is unverified against sfskills-dev. Everything checkable without an org meets the HIGH bar: all three declared checkers exit 0 verbatim, check-outputs is ok, every identifier is either unchanged from the already-shipped classes or a standard ObjectPermissions/PermissionSet field/constructor pattern grounded against skills/admin/permission-set-architecture's metadata-examples.md query (SobjectType, PermissionsRead, PermissionsCreate, PermissionsEdit, PermissionsViewAllRecords), and the requester's decision was implemented literally (Name/Label as specified, ViewAllRecords false, no FieldPermissions pre-empted). dimensions_skipped carries one MEDIUM-impact entry (test-coverage) which on its own caps the score at MEDIUM even independent of the compile-check rule.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "security-posture"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "test-coverage",
+      "state": "partial",
+      "reason": "The QueryException root cause is fixed by construction (the persona now holds Opportunity Read/Create/Edit before the service's WITH USER_MODE SOQL runs) and all three declared static checkers pass, but no test actually ran: there is no offline Apex test runner, and re-executing scripts/mock_deploy.py --test-level RunSpecifiedTests --tests OpportunityApprovalServiceTest against sfskills-dev is the operator's action, not this run's.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Re-run mock_deploy.py --mode source --test-level RunSpecifiedTests --tests OpportunityApprovalServiceTest --milestone M3 and read the new summary.md for pass/fail and per-class coverage."
+    },
+    {
+      "dimension": "class-decomposition",
+      "state": "not-run",
+      "reason": "This repair touches only the test class's fixture method; the three-class split (service/controller/action) and the shipped TestDataFactory copy are unchanged from the prior built run and were not re-reviewed.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "governor-budget",
+      "state": "not-run",
+      "reason": "The two added setup-object inserts run once per test-class execution inside @TestSetup, not per invocation of the code under test, so they do not change the service's or controller's or action's per-invocation SOQL/DML/CPU budget that the original envelope already estimated.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "bulk-safety",
+      "state": "not-run",
+      "reason": "No change to any bulk path; the fixture still seeds one account and two opportunities, unchanged from the prior built run.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "error-handling",
+      "state": "not-run",
+      "reason": "Unchanged from the prior built run: include_logger is false by plan design (Q30 returns a SubmitOutcome message rather than logging), and this repair does not touch that path.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "id": "M3S03-F-06",
+      "severity": "P1",
+      "title": "N3-F-08 repaired: seedFixture now grants the persona Opportunity object CRUD through a test-scoped PermissionSet, matching the requester's decision",
+      "detail": "Root cause per MOCK-DEPLOY-M3.md run 4: every one of the six test methods threw System.QueryException: sObject type 'Opportunity' is not supported at OpportunityApprovalService.submitBatch line 79 because the persona held Enterprise_Sales_Record_Types (record types plus two field permissions, no object grant) and no other permission set in this build or in sfskills-dev supplies Opportunity object CRUD. Fix: inside the existing self-user System.runAs(new User(Id = UserInfo.getUserId())) fence in seedFixture, insert a PermissionSet named Test_Opportunity_Access (Label 'Test Opportunity Access'), then one ObjectPermissions row (SobjectType Opportunity, PermissionsRead/Create/Edit true, PermissionsViewAllRecords false), then extend the existing PermissionSetAssignment insert to assign it to both manager and rep alongside personaSet. PermissionSet and ObjectPermissions are both on the mixed-DML setup-object list (apex/mixed-dml-and-setup-objects), so both inserts had to stay inside that fence rather than the persona runAs blocks in the @IsTest methods — they already did, so no new fence was introduced.",
+      "evidence": {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls",
+        "query": "seedFixture: PermissionSet testObjectAccess = new PermissionSet(...); insert new ObjectPermissions(...); insert new List<PermissionSetAssignment>{...}",
+        "source_report": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M3.md, run 4"
+      },
+      "recommendation": "Re-run scripts/mock_deploy.py with --test-level RunSpecifiedTests --tests OpportunityApprovalServiceTest against sfskills-dev to confirm the org accepts the grant and coverage clears the 75% RunSpecifiedTests floor per class. If the org throws again on FLS for a specific field (Name, StageName, CloseDate or Amount were named as the at-risk set), add a FieldPermissions row for that field only at that point — the requester's decision was explicit that this is not to be pre-empted."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The self-user mixed-DML fence in seedFixture was already shaped correctly for this repair: extending it to also carry PermissionSet and ObjectPermissions DML needed no structural change, only two more inserts and two more PermissionSetAssignment rows inside the fence that was already there for the User and PermissionSetAssignment inserts.",
+      "domain": "test-fixture-design",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls",
+        "query": "System.runAs(new User(Id = UserInfo.getUserId())) { ... }"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Q19's assumption that the org's existing Sales Cloud permission set supplies Opportunity object CRUD was not grounded against the validating org before the plan built three milestones and four mock-deploy runs on top of it; it surfaced only when Apex tests actually executed on run 4, the first run where --test-level moved past NoTestRun.",
+      "domain": "requirements-grounding",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M3-S03].inputs.note: 'Q19 relies on the org's existing Sales Cloud set, which sfskills-dev does not have'"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "skills/apex/test-class-standards Gotcha 15 documents the field-level seeding pattern this build already followed (seed in system mode, act as the persona) but has no twin gotcha for the object-level case this repair just hit — seed the object grant itself when no permission set in the build or the org supplies it. The checker (check_test_class_standards.py) has no rule that would have caught the missing object grant before the org did.",
+      "domain": "skill-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/apex/test-class-standards/references/gotchas.md",
+        "query": "Gotcha 15: Seed In System Mode, Act As The Persona"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether the persona also needs FieldPermissions on Name, StageName, CloseDate or Amount in sfskills-dev is unresolved by design — the requester's decision deferred adding those rows until the org proves they are needed, so the next mock-deploy run is what actually answers it, not this repair.",
+      "domain": "fls",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls",
+        "query": "comment above the ObjectPermissions insert: 'Add FieldPermissions rows here only if the org refuses again on FLS'"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "The fix is verified statically (three checkers, check-outputs) but not against the org; the next real signal is whatever scripts/mock_deploy.py --test-level RunSpecifiedTests returns on sfskills-dev.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M3.md"
+      },
+      "suggested_followup_agent": "apex-test-failure-triager",
+      "followup_reason": "Because if run 5 still fails — for example on FLS for one of the four named fields — apex-test-failure-triager is the agent that diagnoses an existing Apex test run failure rather than this one repairing a fixture blind a second time."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "This step is now built but not tested or documented; step-tester and build-doc-keeper have not run against the repaired fixture.",
+      "domain": "build-loop",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because set-status tested requires tests/M3-S03/results.json with passed true over the current artefact hashes, which only step-tester writes, and the artefact hash changed with this edit."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Sections 4-5: the built -> running / documented -> running re-run shape, step status machine, acceptance-test checker-scope rules (build scope for check_approval_process_apex_patterns.py, step scope for the other two), and the deploy deny-list confirming this repair never deploys"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Eight-section shape, Process Observations requirement, confidence rubric, and Gate C's three self-verification checks (symbol grounding, identifier provenance, compile-check-capped-at-MEDIUM)"
+    },
+    {
+      "type": "agent",
+      "id": "apex-builder",
+      "path": "agents/apex-builder/AGENT.md",
+      "used_for": "The playbook this repair followed: Step 3 (wire through the existing security pattern), Step 5 (test-class-standards compliance), Step 7 (Gate C verification before returning the artefact), and the Output Contract's Process Observations shape"
+    },
+    {
+      "type": "skill",
+      "id": "apex/test-class-standards",
+      "path": "skills/apex/test-class-standards/SKILL.md",
+      "used_for": "Gotcha 15 (seed in system mode, act as the persona) is the field-level precedent this repair extends to the object level; check_test_class_standards.py's fixture-seeded-as-persona rule confirmed the new inserts, sitting in the self-user fence rather than a persona runAs body, do not trip it"
+    },
+    {
+      "type": "skill",
+      "id": "apex/mixed-dml-and-setup-objects",
+      "path": "skills/apex/mixed-dml-and-setup-objects/SKILL.md",
+      "used_for": "PermissionSet and ObjectPermissions are both setup objects that cannot share a transaction with Account/Opportunity DML, confirming the new inserts belong inside the existing self-user runAs fence rather than beside the record data"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "Grounded the ObjectPermissions field names and the object-permission dependency chain (Create/Edit require Read; ViewAllRecords requires Read) against references/metadata-examples.md rather than writing them from memory"
+    },
+    {
+      "type": "skill",
+      "id": "apex/apex-security-patterns",
+      "path": "skills/apex/apex-security-patterns/SKILL.md",
+      "used_for": "The step's declared skill covering the WITH USER_MODE enforcement this repair grants the persona access to satisfy; no change was made to OpportunityApprovalService itself"
+    }
+  ]
+}

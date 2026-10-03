@@ -1,0 +1,26 @@
+{
+  "step_id": "M4-S04",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M4-S04"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given section 5's deploy deny-list and this layer's rule that it never deploys, when artefacts/M4-S04/deploy-order.md is read, then it contains no sf project deploy start without --dry-run anywhere, and the only org-facing command it offers is scripts/mock_deploy.py <plan.json> --org-alias <alias> --milestone <id>, which a release owner may choose to run. [expected: ticked at the M4 milestone gate]",
+    "Given M2-S04 was unblocked on 2026-09-15 and shipped Opportunity.Opportunity_Products_Required_At_Propose as an org-validated rule (MOCK-DEPLOY-M2 run 3), when package.xml and deploy-order.md are read together, then that rule appears exactly once as a ValidationRule member with its file behind it, and deploy-order.md lists it in the validation-rule position after M2-S01's custom permission - amended after G5: the original text assumed a blocked step and would have dropped a shipped rule from the manifest. [expected: ticked at the M4 milestone gate]",
+    "Given Q8, Q17, Q25, Q26 and the eight assumptions this step carries, when the cutover runbook section is read, then each of the nine post-deploy or pre-deploy prerequisites has a named owner and an ordered position - retrieve and merge OpportunityStage, discover the layout-required fields, retrieve the products related-list name, confirm the report column codes, set the dashboard runningUser, populate the Enterprise Managers group, set approval process order, reassign the 140 open Enterprise deals, and record every bypass use in Chatter. [expected: ticked at the M4 milestone gate]",
+    "Given assumption A26 (REQ-010: the Opportunity Products related list is retrieved from the org's current Opportunity layout and copied into both Enterprise and Renewal layouts, never hand-authored), when deploy-order.md's cutover runbook is read, then it carries that retrieve-and-copy as a pre-deploy step with a named owner before the Layout deploy, and the M4 gate records REQ-010 as covered by this runbook step rather than by metadata - the related list has had no artefact and no test since M1. [expected: ticked at the M4 milestone gate]",
+    "Negative case for REQ-004 (Enterprise and Renewal record types): given a user holding neither Enterprise_Sales_Record_Types nor a profile grant for the new types, when they create an Opportunity after deploy, then neither Enterprise nor Renewal is offered on the New dialog and the SMB default is unchanged - a UAT step, recorded in the runbook's post-deploy checks. [expected: ticked in UAT after the first deploy, not at the M4 gate]",
+    "Negative case for REQ-016 (Enterprise Path): given an Opportunity of the SMB record type, when its record page is opened after deploy, then the Enterprise Path's stages and key fields do not render for it - the Path is bound to the Enterprise record type only. [expected: ticked in UAT after the first deploy, not at the M4 gate]",
+    "Negative case for REQ-017 (Renewal Path, a): given an Opportunity of the Enterprise record type, when its record page is opened after deploy, then the Renewal Path's two stages do not render for it - the Renewal Path is bound to the Renewal record type only. [expected: ticked in UAT after the first deploy, not at the M4 gate]",
+    "Pre-deploy check for REQ-017 (Renewal Path, b): given the Renewal record type falls through to the org's existing Opportunity record page (O-M2S05-04), when the cutover runbook is read, then it carries the retrieve-and-grep of that page for runtime_sales_pathassistant:pathAssistant as a pre-deploy step with a named owner, and names the decision if the component is absent (add it to that page, or accept that the Renewal Path does not render). [expected: ticked at the M4 milestone gate]",
+    "Negative case for REQ-018 (Path setting, a): given the PathAssistant org setting is deployed with the user-preference override enabled (artefacts/M2-S05/settings/PathAssistant.settings-meta.xml, canOverrideAutoPathCollapseWithUserPref true), when a user collapses the Path and reopens the record, then it stays collapsed for that user and expanded for others. [expected: ticked in UAT after the first deploy, not at the M4 gate]",
+    "Pre-deploy check for REQ-018 (Path setting, b): given a scratch-org or sandbox rehearsal is part of the cutover runbook, when the runbook is read, then it states that the PathAssistant setting member deploys with M2-S05 and that a rehearsal without it shows neither Path - the setting is load-bearing, not a default. [expected: ticked at the M4 milestone gate]"
+  ],
+  "artefact_hashes": {
+    "artefacts/M4-S04/package.xml": "aa255b3f1b4d3df12cd5b044d9573dfbcbedab9ceb86d2c906024c1f279e152e",
+    "artefacts/M4-S04/deploy-order.md": "8672938cb31b73a3864dadba97eb97c6a2692fa953fba93f2cfa5d47acd8ec19"
+  }
+}

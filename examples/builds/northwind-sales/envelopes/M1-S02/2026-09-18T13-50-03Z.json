@@ -1,0 +1,252 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-18T13-50-03Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-50-03Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-50-03Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S02",
+    "api_version": "62.0 (unchanged - plan.json still carries no api_version key)",
+    "invocation_kind": "second iteration of the § 4 repair cycle, after the step had already been carried to tested; reset by the coordinator's instructed path tested -> failed -> pending -> running before this run started. Org evidence: reports/MOCK-DEPLOY-M1.md run 2, finding N3-F-03"
+  },
+  "summary": "Second repair iteration on M1-S02, following the same shape as the run-1 repair (envelope 2026-09-18T13-39-55Z). reports/MOCK-DEPLOY-M1.md run 2 (2026-09-18T13:43Z, after both M1-S01's and this step's run-1 fixes had landed) returned N3-F-03 (HIGH): 'Field:Name must be Required' on both layouts - the second of the two failure shapes admin/record-types-and-page-layouts documents (an existing layoutItems entry whose behavior must change, distinct from run 1's 'no entry exists at all' shape for Probability). Fix: both artefacts/M1-S02/layouts/*.layout-meta.xml now carry <behavior>Required</behavior> on the Name layoutItems entry (was Edit); no other line in either file changed, and package.xml is unaffected (no new component or member - only an existing item's child element changed). deploy-order.md §6 gained a 'Second discovery (run 2)' subsection: the N3-F-03 finding, the fix, and confirmation that A25 now covers two fields (Probability, Name) and is still not closed - a third field may surface on the next dry run. The step's declared checker was re-run verbatim and reproduced exactly the run-1-repair result: exit 0, one REVIEW (identical-layout merge candidate) and one INFO (no Profile/PermissionSet in scope) - the expected result named in the invocation. check-outputs is ok; all three artefacts parse. Outcome: built.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Unchanged from the run-1 repair's own MEDIUM, for the same two reasons neither this run nor the last one touches: element-grounding (Layout is documented by worked example, not an element table; admin/products-and-pricebooks still carries no deployable XML) and question-coverage (three Questions-to-Ask rows remain unanswered; A25 is now confirmed for two fields but still not closed). The Name behavior flip is grounded exactly as the Probability addition was - metadata-examples.md's behavior table plus gotchas.md #13's platform-required-field pattern - and is additionally confirmed by the org's own second deploy message, which is the strongest evidence this file's grounding gets. checker-pass and manifest-consistency stay HIGH-eligible: the declared checker exited 0 on the first pass, check-outputs is ok, and every declared output still exists with nothing undeclared written.",
+  "dimensions_compared": [
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Unchanged reason from both prior runs: Layout is documented by worked example rather than an element table, and admin/products-and-pricebooks still carries no deployable XML. The behavior change this run makes (Name: Edit -> Required) is grounded in the same metadata-examples.md behavior table plus gotchas.md #13, and confirmed by the org's second deploy message (N3-F-03).",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Unchanged: add deployable XML to admin/products-and-pricebooks, or drop it from M1-S02's skills[] via amend-step."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Unchanged: three Questions-to-Ask rows (Person Accounts, IsPrivate, report/list-view filters) remain unanswered and untouched by this repair. A25 now covers two confirmed fields (Probability from run 1, Name from this run) but remains open pending a dry run that returns no further layout-required-field message.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Run scripts/mock_deploy.py again over M1 to see whether a third required-field or behavior message surfaces; deploy-order.md §6's 'Second discovery' subsection names this explicitly."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "deploy-order",
+      "observation": "N3-F-03 is the second of the two failure shapes admin/record-types-and-page-layouts/references/metadata-examples.md's layout-required-fields table names ('Field:<F> must be Required', for a field already present with the wrong behavior), distinct from run 1's N3-F-02 ('Layout must contain an item for required layout field: <F>', for a field with no entry at all). The repair procedure this build already had in deploy-order.md §3 item 2 named both shapes and their fixes before either was hit, so this run applied a documented fix rather than improvising one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "The re-run checker output is byte-for-byte the same finding set as the run-1 repair's re-run (one REVIEW merge-candidate finding, one INFO no-Profile-in-scope finding, exit 0), confirming the change to Name's behavior did not disturb anything else this checker inspects - in particular it did not create a new zero-Required-items INFO (both layouts already carry a Required item from run 1) and did not change the two files' equality (they are still identical after normalisation, since the same edit was applied to both).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "deploy-order",
+      "observation": "Q11's answer - that must-fill enforcement for ordinary fields lives in validation rules, not on the layout - now has two platform-required exceptions on this one layout (Probability, Name) rather than one. Neither exception was requested by Q11 or Q20; both were discovered from the org after the fact. A third dry run finding a further exception would not be a surprise given gotchas.md #12's one-field-per-run pattern, and deploy-order.md §6 says so, but a reader skimming only Q11's answer and not §6 could still conclude no field on this layout is platform-required.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "deploy-order",
+      "observation": "A25 now covers two fields but is still not closed - the same open status as after the run-1 repair, just with more evidence behind it. deploy-order.md §6's 'Second discovery' subsection restates the standing instruction to keep iterating scripts/mock_deploy.py. Two consecutive rounds each finding exactly one new item is not evidence the set is now complete; it is two data points on an unknown-length list.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "manifest-consistency",
+      "observation": "This is the second time this step has been carried through built -> tested and then reset back through failed -> pending -> running for a repair discovered by the org. The plan's runs[] array for M1-S02 now holds seven entries across two build/test/doc-keeper cycles. Nothing here is wrong - the state machine is built for exactly this recovery path (standards/build-orchestration.md §4) - but a reader of plan.json who stops at the first tested entry rather than the last run would misread the step's current state.",
+      "evidence": {
+        "source": "plan_field",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 7
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "step_type": "ui",
+    "step_scale": "project",
+    "build_mode": "design-only",
+    "status_path_taken": "invoked directly (not under agents/build-step-runner) as the second iteration of a § 4 repair cycle; the coordinator reset the step tested -> failed -> pending -> running before this run started via build_plan.py set-status (three separate CLI calls, all exit 0), and this agent ran the Step 9/11 set-status and validate-envelope itself for this run: M1-S02 running -> built.",
+    "repair_context": {
+      "trigger": "reports/MOCK-DEPLOY-M1.md run 2, finding N3-F-03 (HIGH)",
+      "finding_text": "Field:Name must be Required (on both Opportunity-Opportunity Enterprise Layout and Opportunity-Opportunity Renewal Layout)",
+      "reset_transitions": [
+        "M1-S02: tested -> failed (result: N3-F-03 from reports/MOCK-DEPLOY-M1.md run 2)",
+        "M1-S02: failed -> pending (result: reset for clean retry after N3-F-03)",
+        "M1-S02: pending -> running (result: repair run: set Name behavior=Required per N3-F-03)"
+      ],
+      "prior_envelope": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-39-55Z.json",
+      "prior_run_result": "Repair after N3-F-02: added Probability (behavior=Required) next to Amount on both layouts per gotchas #13; deploy-order.md sec6 added; declared checker exit 0 (2 findings: 1 REVIEW + 1 INFO, both pre-existing/unrelated); check-outputs ok"
+    },
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md"
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "diff_summary": [
+      {
+        "path": "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+        "change": "Changed the existing Name layoutItems entry's <behavior> from Edit to Required, in the first layoutColumns of the 'Opportunity Information' layoutSections. No other line changed."
+      },
+      {
+        "path": "artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+        "change": "Identical change, same position. No other line changed."
+      },
+      {
+        "path": "artefacts/M1-S02/package.xml",
+        "change": "Unchanged - no new component type or member introduced."
+      },
+      {
+        "path": "artefacts/M1-S02/deploy-order.md",
+        "change": "Appended a 'Second discovery (run 2)' subsection to §6: the N3-F-03 finding, the fix applied, and the updated (still-open) A25 status covering two confirmed fields. No existing text edited."
+      }
+    ],
+    "decision_record": [
+      {
+        "question": "N3-F-03 fix: what behavior does the existing Name layoutItems entry carry?",
+        "answer": "Required, changed from Edit. The org's second dry run reports 'Field:Name must be Required' - the second of the two layout-required-field failure shapes the skill's table names, for an item that already exists but carries the wrong behavior. Per gotchas.md #13, this is the same platform-required-field pattern as Probability (run 1) and Status on Case: a deploy precondition, not the Edit/Required design choice Q11 otherwise leaves open for ordinary fields.",
+        "source": "org evidence reports/MOCK-DEPLOY-M1.md run 2 (N3-F-03) + skills/admin/record-types-and-page-layouts/references/gotchas.md #13",
+        "element": "both layouts: Name layoutItems entry, behavior changed Edit -> Required, in the Opportunity Information section, first layoutColumns"
+      },
+      {
+        "question": "Does confirming Name closes assumption A25?",
+        "answer": "No - still partially discharged, now covering two fields (Probability, Name) instead of one. The org's dry run continues to report one missing-or-wrong-behavior field per run (gotchas.md #12), so a third field or behavior correction may still surface. deploy-order.md §6's new subsection records this and keeps the iterate-the-dry-run instruction standing.",
+        "source": "org evidence reports/MOCK-DEPLOY-M1.md run 2 + skills/admin/record-types-and-page-layouts/references/gotchas.md #12",
+        "element": "artefacts/M1-S02/deploy-order.md §6, 'Second discovery (run 2)' subsection (new)"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "declared_scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: 2 review/info finding(s) detected\n{\n  \"score\": 100,\n  \"findings\": [\n    {\n      \"severity\": \"REVIEW\",\n      \"location\": \"artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml\",\n      \"message\": \"layouts Opportunity-Opportunity Enterprise Layout, Opportunity-Opportunity Renewal Layout on Opportunity are identical after normalisation \\u2014 merge candidates (SKILL.md workflow step 2); if two record types must differ, differentiate the layouts or share one.\"\n    },\n    {\n      \"severity\": \"INFO\",\n      \"location\": \"\",\n      \"message\": \"no Profile/PermissionSet in scope \\u2014 assignment coverage not checked\"\n    }\n  ],\n  \"summary\": \"Scanned 6 metadata file(s): 2 record type(s), 2 layout(s); 2 finding(s) detected.\"\n}",
+        "changed": "Nothing about the finding set changed relative to the run-1 repair's re-run: same one REVIEW (identical-layout merge candidate, still true after this run's edit since it was applied identically to both files) and one INFO (no Profile/PermissionSet in scope, unrelated to this step's own artefacts). This is the exact result the invocation named as expected."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "xml_parse": {
+      "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" .sfskills/builds/northwind-sales/artefacts/M1-S02",
+      "result": "all 3 *.xml / *-meta.xml files under artefacts/M1-S02/ parse (package.xml, both layout-meta.xml files)"
+    }
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+      "used_for": "#13 - a field the platform requires on the layout carries behavior=Required as a deploy precondition, applied here to Name exactly as it was to Probability in the prior run; #12 - the dry run reports one missing-or-wrong-behavior field per run, why A25 remains open after two confirmed fields"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "The layout-required-standard-fields section's two deploy-message-to-fix mappings - this run applies the second shape ('Field:<F> must be Required' -> change an existing item's behavior) after the prior run applied the first"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+      "used_for": "The step's declared build-scoped checker, re-run verbatim after this repair"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4's tested -> failed -> pending -> running recovery path (used by the coordinator's reset before this run) and § 8's re-verification path, still pending for milestone M1"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "Step 5 (element-grounding rule), Step 7 (deploy-order note), Step 8 (re-run the cited checker, fix the artefact never the checker), Step 9 (check-outputs then set-status), Step 11 (self-validate the envelope)"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Process Observations shape, Citations schema, confidence rubric (overridden by AGENT.md Step 10, itself unchanged by this repair)"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope + markdown pair, atomic-write and persistence rules for this run"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales-M1-S02-prior-repair",
+      "path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-39-55Z.md",
+      "used_for": "The run-1 repair's artefact state, decision record and checker baseline this second iteration extends"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales-M1-S02-deploy-order",
+      "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md",
+      "used_for": "§3 item 2 (the A25 discovery procedure) and §6 (the repair log this run extends with its own subsection)"
+    },
+    {
+      "type": "probe",
+      "id": "mock-deploy-M1-run-2",
+      "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+      "used_for": "The org finding (N3-F-03) that triggered this second repair and the field/behavior it named"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S02 is built again after this second repair; the declared build-scoped checker, the always-on xml and manifest checks, and the two manual ticks against the updated deploy-order.md are its to re-run and record in tests/M1-S02/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "N3-F-03, the Name fix, and A25's updated (still-open) status need to reach decisions.md and the traceability matrix alongside the N3-F-02 entries already there."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M1's re-verification (standards/build-orchestration.md § 8) is still pending after two rounds of org findings against this milestone; it should run once no further mock-deploy round returns a new finding for either M1-S01 or M1-S02."
+    }
+  ]
+}

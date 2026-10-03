@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- M4-S02. DO NOT DEPLOY until M4-S01's Phase B harvest has confirmed every code below
+         (artefacts/M4-S01/deploy-order.md section 3; this step's deploy-order.md section 3).
+         Every report column code in this file is provisional (A28, risk high), in the documented
+         Object$Field form for a custom report type (metadata-examples.md section 2):
+           Opportunity$Name               UNVERIFIED (2026-10-02)  U1, code 1 - column
+           Opportunity$StageName          UNVERIFIED (2026-10-02)  U1, code 2 - grouping 1 and filter items 2-3
+           Opportunity$Amount             UNVERIFIED (2026-10-02)  U1, code 3 - column, summed
+           Opportunity$Discount__c        UNVERIFIED (2026-10-02)  U1, code 4 - column
+           Opportunity$CloseDate          UNVERIFIED (2026-10-02)  U1, code 5 - grouping 2, by month
+           Opportunity$Approval_Status__c UNVERIFIED (2026-10-02)  U1, code 6 - column
+           Opportunity$RecordType         UNVERIFIED (2026-10-02): org run 3 settles the column name; runs
+                                          1-2 rejected RecordTypeId and RecordType.Name. U8 - filter item 1
+                                          (beyond the six; M4-S01 section 5), the Object$Field form applied to
+                                          the report type's RecordType column (N4-F-05 repair), and its value
+                                          "Enterprise" (U8). Risk: if the column is an Id-typed lookup the value
+                                          may need the developer name form instead of the label; the org judges.
+         StageName and CloseDate are groupings, so they are not also columns (RPT-GRP-01, F-50), and
+         RPT-COL-01 says nothing about them. That silence is not confirmation (M4-S01 section 4).
+         No product-count column: see deploy-order.md section 7. No scope element: rows follow the
+         viewer's record access (D7, Q24); see deploy-order.md section 8 (U12). -->
+    <columns>
+        <field>Opportunity$Name</field>
+    </columns>
+    <columns>
+        <aggregateTypes>Sum</aggregateTypes>
+        <field>Opportunity$Amount</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Discount__c</field>
+    </columns>
+    <columns>
+        <field>Opportunity$Approval_Status__c</field>
+    </columns>
+    <description>Open Enterprise opportunities by stage, then close month, with amount, discount and approval status, for the Enterprise managers. Rows follow the viewer's record access.</description>
+    <filter>
+        <booleanFilter>1 AND 2 AND 3</booleanFilter>
+        <criteriaItems>
+            <column>Opportunity$RecordType</column>
+            <operator>equals</operator>
+            <value>Enterprise</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Opportunity$StageName</column>
+            <operator>notEqual</operator>
+            <value>Closed Won</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>Opportunity$StageName</column>
+            <operator>notEqual</operator>
+            <value>Closed Lost</value>
+        </criteriaItems>
+    </filter>
+    <format>Summary</format>
+    <groupingsDown>
+        <field>Opportunity$StageName</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Month</dateGranularity>
+        <field>Opportunity$CloseDate</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Open Enterprise Pipeline by Stage</name>
+    <reportType>Enterprise_Opportunity_Pipeline</reportType>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+</Report>

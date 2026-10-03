@@ -1,0 +1,156 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-19T15-11-50Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T15-11-50Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T15-11-50Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S02"
+  },
+  "summary": "Documented M2-S02 (access, tested by step-tester run 2026-09-19T14-39-24Z, \"passed\": true). Read plan.json, the newest envelope (tester, 2026-09-19T14-39-24Z) and the builder's own envelope (2026-09-19T14-25-55Z) alongside tests/M2-S02/results.json and artefacts/M2-S02/deploy-order.md. Appended one design-trade-off decision (D-M2S02-01: the permission set grants record-type visibility only, no field-level security) and four open items to decisions.md (O-M2S02-01 HIGH: FLS for Discount__c/Approval_Status__c granted by no file in this build; O-M2S02-02: PSVP-FLS-02 accepted by design; O-M2S02-03: profile Name 'Sales User' UNVERIFIED; O-M2S02-04: stale fixture-count prose in acceptance_tests[1].description). Minted REQ-013 and REQ-014, continuing from REQ-012, and wrote two rows into workbook/03-profiles-permission-sets-and-psgs.md (CWB-PERM-003, CWB-PERM-004) plus two rows into workbook/99-other-configuration.md (CWB-OTHER-005 for package.xml, CWB-OTHER-006 for deploy-order.md) since neither manifest artefact is a migration artefact. Wrote two matrix rows into traceability.md joining REQ-013/REQ-014 to M2-S02's artefacts, test results and both outstanding manual acceptance tests, added the M2-S02 test-id key paragraph (T1=check_permission_set_architecture.py, T2=check_record_type_layouts.py, T3=check_access_model.py) and a coverage paragraph. No pre-existing row in decisions.md, any workbook file or traceability.md was touched or renumbered. Set M2-S02 tested -> documented via build_plan.py set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Both artefacts (PermissionSet, Profile overlay) produced a workbook row with a real source_req_id, a recommended_agent and a stated verification step; both requirements the step serves (REQ-013, REQ-014) have a traceability row joining artefact to test result; the step type (access) mapped cleanly to Section 3 with no fallback to Other configuration; a second pass over the same step's keys would replace rather than duplicate any row. Per Step 11's HIGH row in agents/build-doc-keeper/AGENT.md.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "decisions-appended",
+    "workbook-rows-written",
+    "traceability-rows-written",
+    "idempotence-keys"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "documentation-completeness",
+      "observation": "Every field the workbook row schema requires (row_id, target_value, owner, source_req_id, recommended_agent, recommended_skills, status, notes) was sourced from plan.json, the two envelopes or tests/M2-S02/results.json for both new rows; nothing was narrated.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/workbook/03-profiles-permission-sets-and-psgs.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "fls",
+      "observation": "This step closes the M1 record-type selectability gap (O-M1S01-03) but opens a field-level-security gap of its own: Discount__c and Approval_Status__c are FLS-invisible after every access step this build has shipped (M2-S01, M2-S02). Carried forward as O-M2S02-01 rather than left implicit in prose, because it changes whether REQ-013/REQ-014 can ever legitimately reach 'Released'.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/deploy-order.md",
+        "detail": "section 0"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "M2-S04 (built, tested in parallel per this run's own instructions) is not yet documented, so REQ-018 through whatever ids it will mint, and its ValidationRule:Opportunity.Opportunity_Products_Required_At_Propose artefact, remain outside this matrix for now. check_rtm.py's own orphan report already names that artefact as a REVIEW orphan — expected and not this run's to close.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "steps[M2-S04].status"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M2-S02 is now documented. milestone-verifier is not yet appropriate for M2 as a whole — M2-S04 is still short of documented — but is the right next step once every M2 step reaches documented.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 6 role table"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Cross-step checks and the M2 acceptance report can only run meaningfully once every step in the milestone, including M2-S04, is documented."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the Plan this run followed: Step 1 precondition, Step 3 decisions, Step 4 workbook rows and the access-step section-3 map entry, Step 5 deploy position, Step 6 verification step, Step 7 traceability, Step 8 idempotence, Step 9 set-status, Step 11 confidence, Step 12 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, Process Observations schema and requirement, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the envelope/report persistence pair and run_id conventions this run's own envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was tested, not out of scope or ambiguous)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json as sole shared state, rendered views, set-status as the only writer), section 4 (access step type, status machine tested->documented), section 6 (this agent's role)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concepts 1-3: the ten canonical sections, the row schema (row_id, target_value, owner, source_req_id, source_story_id, recommended_agent, recommended_skills, status, notes) and the access-step routing to Section 3"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set (req_id, source, requirement, step_id, artefact, agent, decision_ref, test_id, test_type, status) traceability.md already follows, and the REQ-XXX id convention for minting REQ-013/REQ-014"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape (date, decision, alternative rejected, source grounded in) applied to D-M2S02-01"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "recording the step's two outstanding manual tests as acceptance evidence in traceability.md rather than as narrated prose"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirming the two manual tests quoted from tests/M2-S02/results.json are already in Given/When/Then shape before carrying them verbatim into the traceability rows"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/decisions.md",
+      ".sfskills/builds/northwind-sales/workbook/03-profiles-permission-sets-and-psgs.md",
+      ".sfskills/builds/northwind-sales/workbook/99-other-configuration.md",
+      ".sfskills/builds/northwind-sales/traceability.md"
+    ],
+    "workbook_rows": ["CWB-PERM-003", "CWB-PERM-004", "CWB-OTHER-005", "CWB-OTHER-006"],
+    "traceability_rows": ["REQ-013", "REQ-014"],
+    "decisions_appended": ["D-M2S02-01", "O-M2S02-01", "O-M2S02-02", "O-M2S02-03", "O-M2S02-04"],
+    "rows_replaced": [],
+    "checker_runs": {
+      "check_workbook.py --workbook workbook/03-profiles-permission-sets-and-psgs.md": "exit 1 (9 x 'Missing canonical section' — expected for a per-step slice; 0 row-level findings)",
+      "check_workbook.py --workbook workbook/99-other-configuration.md": "exit 1 (10 x 'Missing canonical section' — expected; 0 row-level findings)",
+      "check_rtm.py --file traceability.md --manifest-dir artefacts": "exit 1 after this step's rows were added, unchanged from before them — the sole ERROR is the pre-existing REQ-010 coverage gap; 24 WARNs, all pre-existing id-shape/source-shape conventions; 1 orphan (M2-S04's validation rule, out of this run's scope)"
+    }
+  },
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Cross-step checks over the whole M2 milestone are only meaningful once every M2 step, including M2-S04, reaches documented."
+    }
+  ]
+}

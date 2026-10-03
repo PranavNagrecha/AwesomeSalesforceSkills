@@ -1,0 +1,76 @@
+{
+  "step_id": "M2-S05",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/path-and-guidance/scripts/check_path_and_guidance.py",
+    "skills/admin/opportunity-management/scripts/check_opportunity_management.py",
+    "skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given Q2 and Q11, when the Enterprise path's four pathAssistantSteps are read, then the Discover step's info text names 'at least one product line added from the price book' and a booked Next Step, the Propose step's info text names a primary contact with the Decision Maker contact role, and the Negotiate step's key fields are Discount__c, Approval_Status__c and CloseDate - so every exit criterion the requester dictated is visible to a rep even though M2-S04 cannot enforce the product one.",
+    "Given admin/path-and-guidance's rule that a path is not evidence the feature is on, when artefacts/M2-S05/deploy-order.md is read, then it states that a green PathAssistant deploy proves neither that Path is enabled nor that the component is on the record page, and points at M3-S05 as the step that puts it there."
+  ],
+  "details": [
+    {
+      "name": "xml",
+      "type": "xml",
+      "runner": "python3 -c (xml.etree.ElementTree, stdlib)",
+      "scope": "step (artefacts/M2-S05/, recursive)",
+      "files_checked": 4,
+      "exit_code": null,
+      "verdict": "pass",
+      "note": "All 4 *.xml / *-meta.xml files under artefacts/M2-S05/ parsed: package.xml, settings/PathAssistant.settings-meta.xml, pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml, pathAssistants/Renewal_Opportunity_Path.pathAssistant-meta.xml."
+    },
+    {
+      "name": "manifest",
+      "type": "manifest",
+      "runner": "two-way consistency check per standards/build-orchestration.md §5 and step-tester AGENT.md Step 3",
+      "exit_code": null,
+      "verdict": "pass",
+      "note": "package.xml declares PathAssistant members Enterprise_Opportunity_Path and Renewal_Opportunity_Path (both files present under pathAssistants/) and Settings member PathAssistant (file settings/PathAssistant.settings-meta.xml present, using the documented Settings file-to-member form: the type name without the 'Settings' suffix). No file without a covering member; no member without a file. No wildcards used."
+    },
+    {
+      "name": "skills/admin/path-and-guidance/scripts/check_path_and_guidance.py",
+      "type": "checker",
+      "command": "python3 skills/admin/path-and-guidance/scripts/check_path_and_guidance.py --manifest-dir artefacts",
+      "scope_declared": "build",
+      "scope_executed": "artefacts (agrees with declared scope)",
+      "exit_code": 0,
+      "stdout": "Checked 2 path(s): no issues found.",
+      "check_outputs_ok": true,
+      "verdict": "pass"
+    },
+    {
+      "name": "skills/admin/opportunity-management/scripts/check_opportunity_management.py",
+      "type": "checker",
+      "command": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M2-S05",
+      "scope_declared": "step",
+      "scope_executed": "artefacts/M2-S05 (agrees with declared scope)",
+      "exit_code": 0,
+      "stdout": "No issues found.",
+      "check_outputs_ok": true,
+      "verdict": "pass"
+    },
+    {
+      "name": "skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py",
+      "type": "checker",
+      "command": "python3 skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py --manifest-dir artefacts/M2-S05",
+      "scope_declared": "step",
+      "scope_executed": "artefacts/M2-S05 (agrees with declared scope)",
+      "exit_code": 0,
+      "stdout": "Scanned 0 file(s) — nothing asserted; check --manifest-dir",
+      "check_outputs_ok": true,
+      "verdict": "pass (exit 0 per declared 'expected: exit 0'; the checker asserted nothing over this tree — see Process Observations, not a pass on the paths' content)"
+    }
+  ],
+  "artefact_hashes": {
+    "artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml": "a44df92cc3cab8ce9c3dbf7581ed3d69865ddcceecae141e25df0456436178d0",
+    "artefacts/M2-S05/pathAssistants/Renewal_Opportunity_Path.pathAssistant-meta.xml": "a0cabb37eed9bd6ee1f5f30c58150d16df67d7647ab1870ebfb37bf165a42614",
+    "artefacts/M2-S05/settings/PathAssistant.settings-meta.xml": "51447628e76f4cbd0b340172fb4e1408f2d7d2f04e0744884dcfcbbb7cb58206",
+    "artefacts/M2-S05/package.xml": "e19fe6de65f579e29df48fb3a0dca3e0f6c21c972c5ef7c3776e29e5e029c678",
+    "artefacts/M2-S05/deploy-order.md": "343d5eb47e929be48166af8f46b8e881c97e8125529d91c91aba342cbbde1292"
+  }
+}

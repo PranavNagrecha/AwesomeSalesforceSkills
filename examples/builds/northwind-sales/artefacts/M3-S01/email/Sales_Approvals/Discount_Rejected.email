@@ -1,0 +1,16 @@
+Your discount request was rejected.
+
+Opportunity: {!Opportunity.Name}
+Amount:      {!Opportunity.Amount}
+Discount:    {!Opportunity.Discount__c}
+
+Approval status now on the record: {!Opportunity.Approval_Status__c}
+
+The opportunity is unlocked again, so you can revise the discount and submit it
+for approval a second time.
+
+Your manager's reason is in the Comments column of the Approval History related
+list on the opportunity. Open the record and read it there - this email cannot
+carry it.
+
+Northwind Sales Operations

@@ -1,0 +1,16 @@
+A discount above 20% needs your approval before this deal can be closed won.
+
+Opportunity: {!Opportunity.Name}
+Stage:       {!Opportunity.StageName}
+Close date:  {!Opportunity.CloseDate}
+Amount:      {!Opportunity.Amount}
+Discount:    {!Opportunity.Discount__c}
+
+The opportunity is locked while your decision is outstanding, so the figures
+above cannot change under you after it was submitted.
+
+Approve or reject it from the approval request in Salesforce. Put your reasoning
+in the Comments box on that screen - the rep is told to read it on the Approval
+History related list, because the outcome emails cannot quote it back to them.
+
+Northwind Sales Operations

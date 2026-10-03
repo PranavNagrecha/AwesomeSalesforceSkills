@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Opportunity.Enterprise_Sales_Process</members>
+        <members>Opportunity.Renewal_Sales_Process</members>
+        <name>BusinessProcess</name>
+    </types>
+    <types>
+        <members>Opportunity.Approval_Status__c</members>
+        <members>Opportunity.Discount__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Opportunity-Opportunity Enterprise Layout</members>
+        <members>Opportunity-Opportunity Renewal Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Opportunity.Enterprise</members>
+        <members>Opportunity.Renewal</members>
+        <name>RecordType</name>
+    </types>
+    <types>
+        <members>OpportunityStage</members>
+        <name>StandardValueSet</name>
+    </types>
+    <version>62.0</version>
+</Package>

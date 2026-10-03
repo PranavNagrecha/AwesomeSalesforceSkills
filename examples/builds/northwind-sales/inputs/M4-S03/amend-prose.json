@@ -1,0 +1,40 @@
+{
+ "acceptance_tests": [
+  {
+   "type": "checker",
+   "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook artefacts/M4-S03/configuration-workbook.md",
+   "description": "This checker takes --workbook (with --file as its alias) rather than --manifest-dir, so validate's non-standard-argument-form WARN on this line is correct and unavoidable per standards/build-orchestration.md section 5's follow-up note. Fixture run over a ten-section workbook in exactly this shape ended 'OK: workbook ... passes all checks.' at exit 0, after three iterations that establish what it enforces: section headings must be '## Section <n> - <Name>' and not '## <n>. <Name>'; every recommended_skills entry must resolve to a real SKILL.md; and every Sharing Settings row must cite sharing-selection.md. One INFO remains on the Automation row ('no automation choice to cite - artefact is configuration') and never affects the exit code. Exit policy: bare - any ERROR fails and there is no severity flag. Empty/missing file: 'file not found' at exit 1.",
+   "expected": "exit 0"
+  },
+  {
+   "type": "checker",
+   "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M4-S03/traceability.md --manifest-dir artefacts",
+   "scope": "build",
+   "description": "scope build is declared because the command's --manifest-dir already reads the whole artefacts tree: the matrix is checked against every step's components, not against this step's own directory. Both flags are declared together and each does a different job - under --manifest-dir discovery alone a missing matrix is an INFO at exit 0, while under --file a missing path prints 'does not exist (or is not a file). Nothing was validated.' and exits 1, so the --file half is what makes an absent document a failure. Fixture run over a two-row build-schema matrix printed '0 coverage gap(s), 0 orphan(s), 0 error(s)' at exit 0; the same matrix with untyped artefact names raised two WARNs, 'artefact has no metadata type - write <MetadataType>:<ApiName>', which is why every row here carries the type prefix. Exit policy: lenient, with --strict promoting WARNs; not passed, because the orphan WARN is how an incomplete matrix reports itself rather than how it fails. A row whose status is In Build with no artefact and no test id is an ERROR at exit 1.",
+   "expected": "exit 0"
+  },
+  {
+   "type": "checker",
+   "command": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir artefacts/M4-S03",
+   "description": "--manifest-dir rather than --file, deliberately: the flag makes the checker read the case pack and the criteria document together, so every ac_id is resolved. Fixture evidence - a three-case pack alone printed 'OK - 3 case(s), 0 run-sheet row(s), no criteria file present so ac_id resolution was skipped'; the same pack beside acceptance-criteria.md printed 'OK - 3 case(s), 0 run-sheet row(s), 3 criterion id(s) cross-checked'. Both exit 0, and only the second is a real check. Required per case: case_id, ac_id, req_id, persona, sandbox, steps, evidence and pass_rule, with no persona naming System Administrator, and at least one negative_path case per req_id - a two-case fixture missing the negative for REQ-001 failed with 'no case is marked negative - every requirement needs at least one case that proves the feature blocks the wrong action' at exit 1. Exit policy: lenient, --strict promotes warnings; not passed.",
+   "expected": "exit 0"
+  },
+  {
+   "type": "checker",
+   "command": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --manifest-dir artefacts/M4-S03",
+   "description": "--manifest-dir rather than --file, which is the standard form this checker does accept and which keeps this line clear of validate's non-standard-argument-form WARN. It scans recursively and lints only what looks like a criteria document: over a fixture directory holding all four of this step's outputs it printed 'Checking: .../acceptance-criteria.md' then '1 document(s) checked - 0 error(s), 0 warning(s).' and exited 0, ignoring the workbook, the matrix and the YAML pack. What it enforces was learned the hard way on that fixture: a Then clause describing a blocked save without quoting the message failed with 'Then-fails clause has no exact error message in quotes and no # TBD marker' at exit 1, so every negative criterion here quotes the validation rule's errorMessage verbatim. Note the file must carry a 'Scenario:' header, an acceptance_criteria: YAML record or a criteria table - a folder with none of those exits 2 on nothing to lint, so this exit code is only meaningful because check-outputs confirms acceptance-criteria.md exists and is non-empty first. Exit policy: bare on ERROR; warnings never fail the run.",
+   "expected": "exit 0",
+   "scope": "step"
+  },
+  {
+   "type": "manual",
+   "description": "Given 30 informational clarifications were left unanswered at G1 and eleven org facts nobody supplied, when the workbook's assumptions section is read, then all 39 assumption rows appear with a named owner who can close each one and the step ids each constrains, and the three rows carrying risk high - which are exactly the three pre-deploy prerequisites: A24 the OpportunityStage union, A28 the report column codes and A29 the dashboard runningUser - are called out rather than buried in the list.",
+   "expected": "ticked at the M4 milestone gate"
+  },
+  {
+   "type": "manual",
+   "description": "Given M2-S04 ships nothing in this release, when traceability.md is read, then its row for the product-before-Propose requirement names M2-S04 with its blocked_reason verbatim rather than being silently absent, and the workbook's Validation Rules section carries the same row rather than only the rule that did ship.",
+   "expected": "ticked at the M4 milestone gate"
+  }
+ ]
+}

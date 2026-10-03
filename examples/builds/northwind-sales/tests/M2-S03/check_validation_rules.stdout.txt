@@ -1,0 +1,6 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 1 validation rule(s) across 1 file(s); 0 finding(s) detected.",
+  "blocking": 0
+}

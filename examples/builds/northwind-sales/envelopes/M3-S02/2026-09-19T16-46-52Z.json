@@ -1,0 +1,218 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T16-46-52Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-46-52Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-46-52Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S02",
+    "api_version": "62.0 (unchanged; fallback recorded on the first build)",
+    "build_mode": "design-only",
+    "invocation": "direct read of agents/metadata-builder/AGENT.md as a REPAIR pass on a blocked step, not a fresh build — per explicit instruction, not the standalone-vs-runner distinction Step 9 draws. This agent therefore set both status transitions itself.",
+    "repair_scope": "plan.json.steps[M3-S02].amendments[] (2 entries, both already recorded before this run started) and the first build's envelope envelopes/M3-S02/2026-09-19T16-38-52Z.md"
+  },
+  "summary": "Repaired the already-built-then-blocked M3-S02 without rebuilding it from scratch. plan.json carried two amendments dated 2026-09-19 (16:25Z and 16:42:59Z): amendment 1 added a check_email_templates.py test at step scope to clear a section-5 warning; amendment 2 withdrew that same test (it can only scan zero files at --manifest-dir artefacts/M3-S02, because this step's four declared outputs contain no email-template artefact by design) and narrowed inputs.entry_criteria_formula to exclude Closed Won and Closed Lost, closing a submit-then-recall path that would have fired Clear_Approval_Status and committed the state M2-S03's validation rule exists to prevent. This run: (1) set-status blocked -> running, no step gate (human_gate is false on this step; the transition is unconditionally legal per scripts/build_plan.py ALLOWED_TRANSITIONS); (2) replaced only the <entryCriteria><formula> text in the approval-process XML with the amended formula, character for character, > escaped as &gt; — a diff proves nothing else in that file, the workflow file, or package.xml changed; (3) added a new deploy-order.md section 9 recording why, renumbering the two sections after it (9->10, 10->11), and left the section-3 UNVERIFIED marker on RecordType.DeveloperName untouched; (4) re-ran the step's now-current declared checker (check_approval_design.py --manifest-dir artefacts artefacts, scope build) at exit 0 with 0 findings, ran the same checker at step scope for evidence (exit 1, the same single cross-step REVIEW finding as the first build), re-parsed all three XML files, ran check-outputs (ok), and set-status running -> built. Nothing was deployed; plan.json was touched only by the two set-status calls.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "AGENT.md Step 10, MEDIUM row, unchanged from the first build for the same reason: Q58, Q59, Q60 and Q61 are still status: open in plan.json, still answered only by the plan's recorded defaults (A19-A22), and this repair did not touch inputs.answers or inputs.assumptions. What improved: the declared checker set is now internally consistent — the one declared checker test (build scope) exited 0 on the first pass with 0 repair passes, and no declared test can fail on a tree it was never meant to read, which was the specific defect this repair closed. check-outputs is ok and every declared output was written (four files, all pre-existing, two edited) and nothing else. The HIGH bar is not met only because of the still-open Q58-Q61 defaults, exactly as the first build recorded.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Unchanged from the first build: Q58-Q61 remain open clarifications answered only by recorded defaults A19-A22. This repair's inputs diff (amendment 2) touched only entry_criteria_formula and acceptance_tests, not answers/assumptions, so question coverage did not change.",
+      "confidence_impact": "MEDIUM"
+    },
+    {
+      "dimension": "checker-pass",
+      "state": "count-only",
+      "reason": "One declared checker exists after the repair (check_approval_design.py, scope build) and it exited 0 on the first pass. The email-templates checker that failed in the first build is no longer declared, per amendment 2 — there is nothing left in this dimension to be partial about.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The blocked -> running repair path worked exactly as standards/build-orchestration.md describes for a non-human-gated step: no step:<id> gate record exists for M3-S02 (human_gate is false), so the transition needed no approval, and scripts/build_plan.py's ALLOWED_TRANSITIONS confirmed blocked -> {pending, running} in the source rather than by inference from the CLI --help text alone.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/build_plan.py (ALLOWED_TRANSITIONS, line ~142-149); .sfskills/builds/northwind-sales/plan.json steps[M3-S02].human_gate"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "Both amendments were fully self-contained: the withdrawn checker test and the narrowed formula required editing exactly one metadata file (the entryCriteria formula) and no others. The workflow file and package.xml needed zero changes, which is consistent with the amendment's own 'fields' list (acceptance_tests, inputs) naming nothing else.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M3-S02].amendments[1].fields"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-hygiene",
+      "observation": "deploy-order.md's sections 9 and 10 were renumbered to 10 and 11 to make room for the new repair section at 9. No cross-reference to '§ 9' or '§ 10' by number exists elsewhere in this build (plan.json's manual acceptance-test descriptions quote content, not section numbers), so the renumbering is not known to break anything, but it is the kind of edit that would if a future step's note ever cites this file by number.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -rn 'M3-S02/deploy-order' .sfskills/builds/northwind-sales/ and grep -n '§ 9\\|§ 10' .sfskills/builds/northwind-sales/artefacts/M3-S02/deploy-order.md (before edit, no hits)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "org-readiness",
+      "observation": "Carried forward, unaffected by this repair: with useApproverFieldOfRecordOwner true the hierarchy field is read on the record owner, so a manager-owned deal above 20% routes to that manager's own Manager. No clarification on this build says whether managers own deals or whether either manager has Manager populated, and this repair's entry-criteria narrowing does not touch that gap.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/approval-processes/references/gotchas.md ('Blank Approver Fields Fail at Runtime'); requirement.md; clarification Q32 (unchanged since the first build)"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "automation-design",
+      "observation": "The UNVERIFIED marker on entryCriteria as a <formula> element and on RecordType.DeveloperName resolving inside it stands unchanged after this repair. The two new NOT(ISPICKVAL(StageName, ...)) clauses use a pattern already proven in M2-S03's validation rule, so they are not a second open question of their own, but they do not resolve the pre-existing one either — only the M3 mock deploy can.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M3-S02/deploy-order.md § 3 and the new § 9; skills/admin/approval-processes/references/metadata-examples.md (every fenced example uses criteriaItems, none uses formula)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "Both of this step's declared acceptance tests can now run to a meaningful result: the checker exits 0 as declared, and the manual tests are unaffected by either amendment.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M3-S02].acceptance_tests (post-amendment)"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It owns the acceptance tests this run only rehearsed for evidence, and the declared checker no longer needs a path fix before that run means something."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the Plan this repair followed — Step 8's re-run-and-fix loop and repair-pass discipline (fix the artefact, never the checker), Step 9's set-status usage, Step 10's confidence table, Step 11's envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement, the citation schema, and the confidence rubric metadata-builder's Step 10 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 3 (gate records and the step:<id> gate pattern — confirming M3-S02 carries none, since human_gate is false), § 4 (automation step type, design-only owner metadata-builder, the step-type/artefact table), § 5 (acceptance-test types, checker scope semantics for build vs step, the manifest rule, the deny-list that keeps this run from ever deploying)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/SKILL.md",
+      "used_for": "confirming the entryCriteria formula element this repair edited is the same one bound at the first build — no new element was introduced"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/scripts/check_approval_design.py",
+      "used_for": "the re-run checker, both at declared build scope (exit 0) and at step scope for evidence (exit 1, the same cross-step REVIEW finding as the first build)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/scripts/check_email_templates.py",
+      "used_for": "confirming, by reading its is_template_artefact() matcher, that the withdrawn step-scope test could not have scanned anything this step owns — grounds for § 9's first paragraph"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/gotchas.md",
+      "used_for": "the quoted Apex Developer Guide rule that a workflow field update re-saves a record without re-running custom validation rules — the reasoning § 9's second paragraph restates for why the entry criteria were narrowed"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales/M3-S02 (first build)",
+      "path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-38-52Z.md",
+      "used_for": "the baseline this repair diffed against — confidence rationale, decision record, checker results and process observations not restated here are unchanged from this file"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S02",
+    "step_type": "automation",
+    "milestone": "M3",
+    "build_id": "northwind-sales",
+    "terminal_status": "built",
+    "repair_pass": true,
+    "prior_run_envelope": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-38-52Z.json",
+    "amendments_applied": [
+      "2026-09-19T16:25:18Z — added check_email_templates.py at step scope (later withdrawn)",
+      "2026-09-19T16:42:59Z — withdrew that test; narrowed inputs.entry_criteria_formula to exclude Closed Won and Closed Lost"
+    ],
+    "status_path_taken": "explicit repair instruction: set-status blocked->running, edit artefacts, re-run checkers, set-status running->built — both transitions written by this agent",
+    "blocked_reason": null,
+    "artefacts_edited_this_run": [
+      "artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml (entryCriteria/formula text only)",
+      "artefacts/M3-S02/deploy-order.md (new § 9, renumbered § 9→§10 and § 10→§11)"
+    ],
+    "artefacts_unchanged_this_run": [
+      "artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml",
+      "artefacts/M3-S02/package.xml"
+    ],
+    "diff": {
+      "approval_process_xml": "-        <formula>AND(NOT(ISBLANK(Discount__c)), Discount__c &gt; 0.20, OR(RecordType.DeveloperName = \"Enterprise\", RecordType.DeveloperName = \"Renewal\"))</formula>\n+        <formula>AND(AND(NOT(ISBLANK(Discount__c)), Discount__c &gt; 0.20, OR(RecordType.DeveloperName = \"Enterprise\", RecordType.DeveloperName = \"Renewal\")), NOT(ISPICKVAL(StageName, \"Closed Won\")), NOT(ISPICKVAL(StageName, \"Closed Lost\")))</formula>",
+      "confirmed_no_other_change": "diff -u against a reconstruction of the pre-edit file showed exactly this one line changed; the workflow file and package.xml were never opened for writing this run"
+    },
+    "checker_results": [
+      {
+        "declared": true,
+        "scope": "build",
+        "command": "python3 skills/admin/approval-processes/scripts/check_approval_design.py --manifest-dir artefacts artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_verbatim": "{\n  \"score\": 100,\n  \"findings\": [],\n  \"summary\": \"Scanned 1 approval-process metadata file(s); 0 finding(s) detected.\"\n}"
+      },
+      {
+        "declared": false,
+        "scope": "step",
+        "command": "python3 skills/admin/approval-processes/scripts/check_approval_design.py --manifest-dir artefacts/M3-S02 artefacts/M3-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 1,
+        "why_run": "evidence only, reproducing the cross-step reference the plan's scope: build declaration exists to absorb",
+        "stdout_verbatim": "WARN: 1 finding(s) detected\n{\n  \"score\": 100,\n  \"findings\": [\n    {\n      \"severity\": \"REVIEW\",\n      \"location\": \"artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml\",\n      \"message\": \"emailTemplate 'Sales_Approvals/Discount_Approval_Request' could not be resolved because the tree contains no *.email-meta.xml files; confirm it exists in the target org before deploying\"\n    }\n  ],\n  \"summary\": \"Scanned 1 approval-process metadata file(s); 1 finding(s) detected. Note: no email templates found, so emailTemplate references were not resolved.\"\n}"
+      },
+      {
+        "declared": false,
+        "scope": "step",
+        "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" artefacts/M3-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 0,
+        "note": "3/3 XML files parse (approvalProcess, workflow, package.xml) after the formula edit"
+      },
+      {
+        "note": "check_email_templates.py was NOT re-run as a declared test in this pass — amendment 2 withdrew it from acceptance_tests[] before this run started. It is not currently declared on M3-S02."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "never_deployed": "No sf command was run. scripts/mock_deploy.py was not invoked; deploy-order.md § 11 (renumbered from § 10) is text for a human."
+  }
+}

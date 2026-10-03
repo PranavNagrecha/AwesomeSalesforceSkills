@@ -1,0 +1,230 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-10-02T17-59-15Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S02/2026-10-02T17-59-15Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S02/2026-10-02T17-59-15Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S02",
+    "api_version": "62.0 (unchanged; package.xml untouched)"
+  },
+  "summary": "Repair pass on M4-S02 after MOCK-DEPLOY-M4 run 1. N4-F-01: ReportType column RecordTypeId replaced by RecordType.Name (guide ReportType sample lookup-column form relationship.field), and the Report's record-type filter column moved to Opportunity$RecordType.Name; both UNVERIFIED (2026-10-02): org run 2 settles the column name. N4-F-03: sortBy RowLabelAscending added to the dashboard chart component (guide DashboardComponentFilter enumeration). N4-F-02 needed no change of its own. Diff against the pre-repair copy touches exactly three metadata files, plus deploy-order.md which only gained an appended section 13 and the library gap. Declared checker exit 0, score 95, 5 RPT-COL-01 INFO plus the runningUser MEDIUM (unchanged). check_queues exit 0, XML parse ok, check-outputs ok. Terminal outcome: built (standalone path, set-status by this agent).",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 HIGH fails: the record-type column name RecordType.Name is the best-grounded form from the guide's lookup-column sample, not a documented standard-object example, and the Questions-to-Ask rows still rest on the same planner defaults as the first build. Checker exit 0 on the first pass, check-outputs ok, only declared outputs touched.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "RecordType.Name (ReportType column) and Opportunity$RecordType.Name (Report filter) are org facts the guide does not give for a standard-object record type; marked UNVERIFIED (2026-10-02): org run 2 settles the column name."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "repair",
+      "observation": "The org's two messages each named a single element, so the repair could stay at three files; a byte diff against a pre-repair copy proves package.xml, both folders and the group are unchanged. Source: diff in extensions.diff_summary.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md",
+        "probe": "section 13"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-depth",
+      "observation": "admin/reports-and-dashboards documents no record-type lookup column for a custom report type on a standard object: metadata-examples.md section 1 and gotchas F-49..F-51 are silent, and the guide's only lookup-column lines are api_meta.txt 105949 and 105954 (ReportType sample: <field>obj_lookup__c.Id</field>, <field>obj_lookup__c.Name</field>, table Account). The first build applied the guide's line 105998 'refers to fields by using their API names' literally and the org rejected RecordTypeId.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+        "probe": "section 1 and gotchas F-49 to F-51; api_meta.txt lines 105949, 105954, 105998"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-depth",
+      "observation": "The skill's dashboard chart example carries no sortBy; its only sortBy (metadata-examples.md line 310, RowValueDescending) sits on a component outside the chart example. The guide's DashboardComponentFilter enumeration is at api_meta.txt 48467-48477 (RowLabelAscending 48471), with the sortBy row at 48234 and the GroupingSortProperties row at 48127-48131.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md",
+        "probe": "line 310 sortBy; guide api_meta.txt lines 48127-48131, 48234, 48467-48477"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "dashboard",
+      "observation": "The guide says a component with groupings stores sort information in GroupingSortProperties (api_meta.txt 48127-48131, API 46.0+), yet the org demands sortBy. Only sortBy was added; run 2 shows whether groupingSortProperties is also wanted.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+        "probe": "sortBy and groupingColumn"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "report-type",
+      "observation": "RecordType.Name versus RecordType (or another form) cannot be settled offline. The report filter value Enterprise is a label/name, which fits a .Name column; if the org wants the Id the value would have to change.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+        "probe": "RecordType.Name column and report filter"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/reports-and-dashboards",
+      "path": "skills/admin/reports-and-dashboards/SKILL.md",
+      "used_for": "metadata-examples.md (report type, dashboard examples), gotchas.md F-49 to F-51; both defects absent from them."
+    },
+    {
+      "type": "skill",
+      "id": "admin/queues-and-public-groups",
+      "path": "skills/admin/queues-and-public-groups/scripts/check_queues.py",
+      "used_for": "self-check, exit 0 (group file untouched)."
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "sections 4 and 5, status machine and repair path."
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "playbook, steps 5 to 11."
+    },
+    {
+      "type": "standard",
+      "id": "salesforce-metadata-api-summer-26",
+      "path": "https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf",
+      "used_for": "ReportType sample definition and usage (lookup columns, API names); DashboardComponentFilter enumeration; sortBy rows."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "Re-run the step's checks over the repaired files and re-record the three manual tests."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once tested, refresh the workbook rows for the report type, report and dashboard."
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S02",
+    "step_type": "ui",
+    "build_mode": "design-only",
+    "status_path_taken": "standalone: set-status running at start, built at end by this agent",
+    "human_gate": true,
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+        "declared": true
+      },
+      {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md",
+        "declared": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Record-type column form in the report type",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "RecordType.Name",
+        "source": "Metadata API guide ReportType sample (lookup relationship.field); org message N4-F-01",
+        "determined": "ReportType sections/columns/field and Report filter column Opportunity$RecordType.Name"
+      },
+      {
+        "question": "Dashboard chart sort",
+        "skill": "admin/reports-and-dashboards",
+        "answer": "RowLabelAscending",
+        "source": "guide DashboardComponentFilter enumeration; org message N4-F-03; tile is by close month",
+        "determined": "Dashboard leftSection component sortBy"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M4-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "Scanned 5 report/dashboard file(s); 6 finding(s) detected. score 95 (5 RPT-COL-01 INFO on provisional codes, 1 runningUser MEDIUM)"
+      },
+      {
+        "command": "python3 skills/admin/queues-and-public-groups/scripts/check_queues.py --manifest-dir artefacts/M4-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "No issues found."
+      }
+    ],
+    "xml_parse": "ok",
+    "check_outputs": {
+      "ok": true,
+      "step": "M4-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "package.xml untouched; every member still backed by a file",
+    "api_version_note": "62.0, unchanged",
+    "org_interaction": "none",
+    "external_sources": [
+      "api_meta.pdf (Summer '26), scratchpad text copy"
+    ],
+    "diff_summary": "changed: reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml (comment, field RecordTypeId -> RecordType.Name); reports/.../Open_Enterprise_Pipeline_By_Stage.report-meta.xml (comment, criteriaItems column Opportunity$RecordTypeId -> Opportunity$RecordType.Name); dashboards/.../Enterprise_Pipeline.dashboard-meta.xml (comment, + sortBy RowLabelAscending); deploy-order.md (appended section 13 only). Byte-identical: package.xml, group, both folders.",
+    "unverified_markers": [
+      "RecordType.Name (ReportType column)",
+      "Opportunity$RecordType.Name (Report filter)"
+    ],
+    "workflow_return": {
+      "step_id": "M4-S02",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S02/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "Run MOCK-DEPLOY-M4 run 2; record the accepted record-type column name in deploy-order.md section 13 and close U7 and U8."
+    ]
+  }
+}

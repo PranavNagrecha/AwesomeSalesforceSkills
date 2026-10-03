@@ -1,0 +1,168 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-19T15-49-24Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T15-49-24Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T15-49-24Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S02"
+  },
+  "summary": "SECOND documenting pass on M2-S02 (access), after the N3-F-05/O-M2S02-01 repair pass (metadata-builder, 2026-09-19T15-22-09Z) and its re-test (step-tester, 2026-09-19T15-29-15Z, \"passed\": true). The FIRST documenting pass (envelope 2026-09-19T15-11-50Z) already minted REQ-013/REQ-014 and appended D-M2S02-01 and O-M2S02-01 through O-M2S02-04 to decisions.md — none of that was duplicated. This pass appended two new decisions (D-M2S02-02: the repair dropped the profile's recordTypeVisibilities block entirely after org rejection N3-F-05; D-M2S02-03: by requester decision, Enterprise_Sales_Record_Types gained fieldPermissions for Discount__c edit and Approval_Status__c read, narrowing D-M2S02-01 and closing HIGH open item O-M2S02-01) and one closing entry (O-M2S02-01 marked CLOSED, citing the repair envelope and reports/MOCK-DEPLOY-M2.md run 3 as evidence). Updated, in place, the two pre-existing rows CWB-PERM-003/CWB-PERM-004 in workbook/03-profiles-permission-sets-and-psgs.md and the two pre-existing traceability.md rows REQ-013/REQ-014, to state the repaired content: CWB-PERM-003/REQ-013 now carry the two fieldPermissions grants; CWB-PERM-004/REQ-014 now carry zero recordTypeVisibilities blocks and the two manual tests' current wording (amended --prose-only by the operator at 2026-09-19T15:33:50Z, before this pass started). Every other row in decisions.md, every workbook file, and traceability.md was left byte-identical; decisions.md was only appended to, never rewritten. Set M2-S02 tested -> documented via build_plan.py set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Both repaired artefacts kept their existing source_req_id, recommended_agent and verification step, and the two requirements they serve (REQ-013, REQ-014) still have a traceability row joining artefact to the current test result; the repair changed content, not the row keys, so the idempotent replace-in-place left row_id and req_id stable across the update. The one gap that would have capped confidence at MEDIUM — no field-level security anywhere in the build — is exactly what this pass's repair closes, and check_access_model.py's re-run confirms PSVP-FLS-01 stays silent with the new grants in place. Per Step 11's HIGH row in agents/build-doc-keeper/AGENT.md.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "decisions-appended",
+    "workbook-rows-replaced",
+    "traceability-rows-replaced",
+    "idempotence-keys"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "documentation-completeness",
+      "observation": "The repair envelope's diff section named exactly two changes (profile recordTypeVisibilities removed; permission-set fieldPermissions added), and both workbook rows and both traceability rows were updated to state exactly those two changes and nothing more — no other cell in either row was rewritten.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T15-22-09Z.json"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "gate-evidence",
+      "observation": "A HIGH-severity open item (O-M2S02-01) closed within the same milestone's build window, with a requester decision on record and org evidence (mock-deploy run 3, Succeeded 18/18) rather than left open into the M2 gate. This is the kind of finding a milestone verifier should not have to re-discover.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M2.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "workbook-narrative-drift",
+      "observation": "This pass updated only the CWB-PERM-003/004 rows and the REQ-013/014 rows, per its own scope. The pre-existing 'Coverage, as of M2-S02' narrative paragraph further down traceability.md still reads 'Neither row is satisfiable on field-level security... decisions.md O-M2S02-01 (HIGH)', which the row updates in this same pass now contradict. Left untouched deliberately — it is prose commentary, not a matrix row, and this pass's scope was named as the rows only — but flagged here so a reader of the full file notices the drift rather than trusting the stale sentence.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/traceability.md",
+        "detail": "the 'Coverage, as of M2-S02' paragraph, unedited by this pass"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "Both M2-S02 and M2-S04 are now documented in this same invocation. milestone-verifier is the next agent, since every M2 step is now documented and reports/MOCK-DEPLOY-M2.md run 3 (2026-09-19T15:26:20Z, Succeeded, 18/18) is the gate evidence on file.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 6 role table"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Cross-step checks and the M2 acceptance report are now meaningful with every M2 step documented."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the Plan this run followed: Step 1 precondition, Step 3 decisions (append-only, no duplicate of the first pass's entries), Step 4 workbook rows replaced in place, Step 7 traceability rows replaced in place, Step 8 idempotence (row-keyed replace, not append), Step 9 set-status, Step 11 confidence, Step 12 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, Process Observations schema and requirement, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the envelope/report persistence pair and run_id conventions this run's own envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was tested, not out of scope or ambiguous)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json as sole shared state, rendered views, set-status as the only writer), section 4 (access step type, status machine tested->documented), section 6 (this agent's role)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concepts 1-3: the row schema this pass's in-place update kept intact (row_id, target_value, owner, source_req_id, source_story_id, recommended_agent, recommended_skills, status, notes)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set traceability.md already follows, kept stable across this pass's in-place row update"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape (date, decision, alternative rejected, source grounded in) applied to D-M2S02-02 and D-M2S02-03"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "recording the two manual tests' current, corrected wording as acceptance evidence rather than the stale-as-worded text the tester's run flagged"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirming the corrected manual test 1 wording is still in Given/When/Then shape before carrying it into the traceability row"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/decisions.md",
+      ".sfskills/builds/northwind-sales/workbook/03-profiles-permission-sets-and-psgs.md",
+      ".sfskills/builds/northwind-sales/traceability.md"
+    ],
+    "workbook_rows": [
+      "CWB-PERM-003",
+      "CWB-PERM-004"
+    ],
+    "traceability_rows": [
+      "REQ-013",
+      "REQ-014"
+    ],
+    "decisions_appended": [
+      "D-M2S02-02",
+      "D-M2S02-03",
+      "O-M2S02-01 (CLOSED)"
+    ],
+    "rows_replaced": [
+      "CWB-PERM-003",
+      "CWB-PERM-004",
+      "REQ-013",
+      "REQ-014"
+    ],
+    "checker_runs": {
+      "check_workbook.py --workbook workbook/03-profiles-permission-sets-and-psgs.md --allow-empty-section": "exit 1 (9 x 'Missing canonical section' — expected for a per-step slice; 0 row-level findings)",
+      "check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..": "exit 1, unchanged in kind from before this pass's row updates — the sole ERROR is the pre-existing REQ-010 coverage gap; 27 WARNs, all pre-existing id-shape/source-shape conventions; 0 orphans"
+    }
+  },
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Every M2 step is now documented and reports/MOCK-DEPLOY-M2.md run 3 is the gate evidence on file."
+    }
+  ]
+}

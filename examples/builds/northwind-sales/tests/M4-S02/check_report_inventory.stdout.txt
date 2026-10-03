@@ -1,0 +1,36 @@
+{
+  "score": 95,
+  "findings": [
+    {
+      "severity": "INFO",
+      "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+      "message": "RPT-COL-01 `Opportunity$Name` (columns) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+    },
+    {
+      "severity": "INFO",
+      "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+      "message": "RPT-COL-01 `Opportunity$Approval_Status__c` (columns) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+    },
+    {
+      "severity": "INFO",
+      "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+      "message": "RPT-COL-01 `Opportunity$Discount__c` (columns) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+    },
+    {
+      "severity": "INFO",
+      "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+      "message": "RPT-COL-01 `Opportunity$Amount` (columns) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+    },
+    {
+      "severity": "INFO",
+      "location": "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml::Open Enterprise Pipeline by Stage",
+      "message": "RPT-COL-01 `Opportunity$RecordType` (filter/criteriaItems) is not one of this report's own grouping fields or a code already confirmed for this report type - column codes are report-type-specific and cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying"
+    },
+    {
+      "severity": "MEDIUM",
+      "location": "artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml::Enterprise Pipeline",
+      "message": "dashboardType is SpecifiedUser with no runningUser - on deploy the field is populated with the deploying user's username"
+    }
+  ],
+  "summary": "Scanned 5 report/dashboard file(s); 6 finding(s) detected."
+}

@@ -1,0 +1,475 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-18T15-16-34Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S01/2026-09-18T15-16-34Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S01/2026-09-18T15-16-34Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S01",
+    "api_version": "62.0 (DEFAULTED - plan.json carries no api_version key; agents/metadata-builder/AGENT.md Inputs falls back to 62.0, which is also what artefacts/M1-S01/package.xml and artefacts/M1-S02/package.xml already carry)"
+  },
+  "summary": "Built M2-S01 (access, scale project, build_mode design-only): the Bypass_Opportunity_Sales_Validation custom permission and the Sales_Ops_Validation_Bypass permission set that grants it, plus the step's package.xml and deploy-order.md. Four declared outputs written, nothing else. The custom permission carries only <description> and <label> (no <isLicensed>, no <requiredPermission>, no <connectedApp>); the permission set carries <label>, <description>, <hasActivationRequired>false and exactly one <customPermissions> node - no objectPermissions, no fieldPermissions, no userPermissions, no license - which is what the step's manual acceptance test requires a human to be able to read off the file. Element names and enum values come only from skills/admin/custom-permissions/references/metadata-examples.md (sections 2 and 5, 'Where the files live', 'package.xml') and skills/admin/permission-set-architecture/references/metadata-examples.md (sections 1, 2, 5); the shapes match the org-validated precedent at examples/builds/case-onboarding/artefacts/M2-S01/. Both declared checkers exited 0 on the first pass with zero repair passes; all three *.xml files parse; check-outputs returned ok. Two prose divergences from the plan's own test descriptions are recorded rather than papered over: the custom-permissions checker printed 0 info (not the 1 info the planner's fixture saw) because the description was trimmed to 197 characters as inputs.note asked, and at build scope it printed Consumers 0 (not 1) because M2-S03's validation rule does not exist yet.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 MEDIUM on one count: documented skill defaults stood in for two Questions-to-Ask rows no clarification answers - hasActivationRequired=false (the value both cited references write out on purpose) for 'Does any permission need step-up activation?', and an omitted <license> for 'Which user or permission set license does every person in this persona hold?' (Q19 names profiles, not licences). Everything else in the HIGH row holds: every element traced to the Step 3 inventory, both cited checkers exited 0 on the first pass, check-outputs ok, every declared output written and nothing else.",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Three Questions-to-Ask rows across the two access skills could not be answered from the plan. (1) custom-permissions 'Does anything already hold this access through a profile?' - unanswerable in a design-only build: it needs the SetupEntityAccess baseline query against a live org, which this agent may not run. (2) custom-permissions / permission-set-architecture 'Should any of this expire?' - no answered clarification puts an end date on the grant; it was treated as a standing capability of the sales-ops admin role and no expiring assignment was designed. (3) permission-set-architecture 'Which user or permission set license does every person in this persona hold?' - Q19 answers in profiles (System Administrator for the sales-ops admin), not in licences, so <license> was left out per the Object Reference guidance quoted in the skill.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "The profile-baseline row closes with the SetupEntityAccess query in deploy-order.md section 4 at deploy time, not in this build. The expiry row closes with a one-line answer from the Sales Operations lead: standing capability or time-boxed grant."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "Both declared checkers exited 0 on the first pass with zero repair passes, and the permission-set checker printed the exact string the planner recorded from its fixture run ('No issues found.').",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "planning-quality",
+      "observation": "The plan sized this step to exactly what the two skills can ground: every element the step needed (description, label, hasActivationRequired, customPermissions/enabled+name, and the two package.xml types) is in a fenced example in a cited skill, so the Step 3 gap rule never came close to firing.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-documentation-drift",
+      "observation": "The step's first acceptance-test description narrates fixture output this run did not reproduce: it says step scope printed 'Summary: 0 error(s), 0 warning(s), 1 info.' and build scope printed 'Consumers 1', while this run printed 0 info at both scopes (the description was trimmed to 197 characters, under the CP-DESC-02 threshold, exactly as the step's own inputs.note asked) and Consumers 0 at both scopes (M2-S03's validation rule is not built yet, so nothing in artefacts/ names the permission).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "steps[M2-S01].acceptance_tests[0].description vs the run recorded in extensions.checker_results"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-internal-consistency",
+      "observation": "inputs.note asks for a description under 200 characters while acceptance_tests[0].description records a fixture that raised CP-DESC-02 (which only fires at 200+), so the two cannot both describe the shipped file; the note was followed because step inputs are the higher-priority source and CP-DESC-02 is headroom the build does not have to spend.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "steps[M2-S01].inputs.note vs steps[M2-S01].acceptance_tests[0].description"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "deploy-order",
+      "observation": "This step's artefacts validate green on their own whether or not the bypass is ever wired to anything: a validation rule whose $Permission token names a permission the org lacks evaluates to false silently rather than failing the deploy (custom-permissions gotcha 4), so a green M2-S01 deploy is not evidence the discount cap has an escape hatch - only a run that carries M2-S03 with it is.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/custom-permissions/references/gotchas.md",
+        "detail": "Gotcha 4, restated in artefacts/M2-S01/deploy-order.md section 2"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "access-review",
+      "observation": "Nothing in this build assigns the permission set, and nothing in it can: PermissionSetAssignment is record data inserted through Apex or Data Loader, so the sentence 'the sales-ops admin is the only person who can save past that rule' in the M2 milestone goal is true of the design and unproven of any org until someone runs the SetupEntityAccess query in deploy-order.md section 4.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+        "detail": "section 4 - assignment is data, not metadata"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "naming",
+      "observation": "The declared API name Bypass_Opportunity_Sales_Validation diverges from the per-domain form Bypass_Validation_<Domain> that templates/admin/validation-rule-patterns.md (the step's own declared template) prescribes; the declared output path is not this agent's to rename, so the divergence is recorded in deploy-order.md section 6 rather than corrected, and M2-S03/M2-S04 must spell the declared name.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/admin/validation-rule-patterns.md",
+        "detail": "'Bypass contract' section vs plan.json steps[M2-S01].outputs[0]"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "bypass-contract",
+      "observation": "The same template calls the Integration_Bypass__c hierarchy custom setting non-optional alongside the custom permission ('Both, in practice'), and this build ships only the permission; Q13 answers that no integration writes Enterprise opportunities, which is the reason, but it is a deliberate half of a contract the template states as a whole.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/admin/validation-rule-patterns.md",
+        "detail": "'Bypass contract' section vs plan.json clarifications Q13"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "agents/step-tester on M2-S01 next: it runs the two declared checkers plus the always-on xml and manifest checks and writes tests/M2-S01/results.json, which is the only thing that can move this step past built.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 5"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because it runs M2-S01's two declared checkers plus the always-on xml and manifest checks and writes tests/M2-S01/results.json, which is the only route from built to tested."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S01",
+    "step_type": "access",
+    "step_scale": "project",
+    "build_mode": "design-only",
+    "status_path_taken": "Invoked directly (not under agents/build-step-runner), so this agent moved the step itself: pending -> running at the start (run appended with --envelope envelopes/M2-S01/2026-09-18T15-16-34Z.json) and running -> built at the end, per AGENT.md Step 9's standalone path.",
+    "human_gate": "step:M2-S01 was already approved at 2026-09-15T19:14:28Z, which is why set-status running was not refused. This agent neither requested nor recorded a gate.",
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M2-S01/customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S01/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S01/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M2-S01/customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml",
+        "metadata_type": "CustomPermission",
+        "element_source": "skills/admin/custom-permissions/references/metadata-examples.md section 2 ('Bypass custom permission (description names the consumer)'), adapted; 'Where the files live' for the directory, suffix and the no-<fullName> rule",
+        "declared_in_outputs": true,
+        "notes": "description 197 chars (CP-DESC-01 ERROR ceiling 255, CP-DESC-02 INFO threshold 200); label 35 of 80 chars; isLicensed deliberately absent (gotcha 7)."
+      },
+      {
+        "path": "artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml",
+        "metadata_type": "PermissionSet",
+        "element_source": "skills/admin/custom-permissions/references/metadata-examples.md section 5 for the <customPermissions> grant shape; skills/admin/permission-set-architecture/references/metadata-examples.md sections 1 and 2 for label/description/hasActivationRequired and for the function-set rule that object rows belong elsewhere",
+        "declared_in_outputs": true,
+        "notes": "description 181 chars (PSA-DESC-01 ERROR ceiling 255, PSA-DESC-02 INFO threshold 200); exactly one customPermissions node; no objectPermissions, fieldPermissions, userPermissions, recordTypeVisibilities, tabSettings, applicationVisibilities, classAccesses, flowAccesses or license."
+      },
+      {
+        "path": "artefacts/M2-S01/package.xml",
+        "metadata_type": "Package manifest",
+        "element_source": "skills/admin/custom-permissions/references/metadata-examples.md 'package.xml' sample (CustomPermission + PermissionSet types together); skills/admin/change-management-and-deployment/references/metadata-examples.md section 1 for the <types>/<members>/<name>/<version> reading",
+        "declared_in_outputs": true,
+        "notes": "Both members named explicitly although both types accept *, so the manifest and the files agree in both directions."
+      },
+      {
+        "path": "artefacts/M2-S01/deploy-order.md",
+        "metadata_type": "deploy-order note (not a component)",
+        "element_source": "AGENT.md Step 7; skills/admin/change-management-and-deployment/references/metadata-examples.md sections 1 and 3; the two access skills' gotchas",
+        "declared_in_outputs": true,
+        "notes": "Carries the rationale both skills say must not be squeezed into a description, the FLS statement, the post-deploy assignment and evidence steps, and the validate-only command."
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "custom-permissions: 'What exactly does holding this permission let someone do, in one sentence?'",
+        "answer": "It suppresses the Opportunity sales validation rules for its holder - one sentence, no 'and', so one permission rather than two.",
+        "source": "clarification answers (Q13, Q17)",
+        "element": "customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml <description> first sentence"
+      },
+      {
+        "question": "custom-permissions: 'Is this a bypass? If so, which named rules does it suppress?'",
+        "answer": "Yes. Opportunity_Discount_Requires_Approval (M2-S03) and Opportunity_Products_Required_At_Propose (M2-S04), both of which put NOT($Permission.Bypass_Opportunity_Sales_Validation) first inside their outer AND.",
+        "source": "step inputs (note) plus the two downstream steps' own inputs in plan.json, and decision D3",
+        "element": "<description> consumer list, and section 2 of deploy-order.md"
+      },
+      {
+        "question": "custom-permissions: 'Which contexts read it - validation rule, formula, Flow, Apex, LWC, component visibility?'",
+        "answer": "Validation-rule formulas only. No Flow formula resource, no FeatureManagement.checkPermission call, no @salesforce/customPermission import and no component-visibility filter is in this build's scope, so none of those spellings appears anywhere.",
+        "source": "step inputs and the plan's step list (no Apex, LWC or FlexiPage step names this permission)",
+        "element": "the absence of any other consumer spelling; only $Permission.X is named, in deploy-order.md section 2"
+      },
+      {
+        "question": "custom-permissions: 'Does another custom permission have to be on for this one to make sense?'",
+        "answer": "No. One permission, no dependency.",
+        "source": "step inputs (custom_permission names exactly one)",
+        "element": "absence of <requiredPermission> (and therefore no 'ship the target in the same package' constraint)"
+      },
+      {
+        "question": "custom-permissions: 'Who revokes it, and what proves it was revoked?'",
+        "answer": "The Sales Operations lead - the owner_role recorded on Q13. The proof is the SetupEntityAccess -> PermissionSetAssignment query, not a metadata diff, because only enabled grants are ever retrieved (gotcha 8).",
+        "source": "clarification answers (Q13 owner_role) plus the skill's gotcha",
+        "element": "'Owner: Sales Operations lead' in the PermissionSet <description>, and deploy-order.md section 4"
+      },
+      {
+        "question": "custom-permissions: 'Does anything already hold this access through a profile?'",
+        "answer": "UNANSWERABLE in a design-only build - it needs a live-org baseline. Recorded as an open item; the baseline query is written into deploy-order.md section 4 as a post-deploy step, and no Profile file is written here.",
+        "source": "none of the four Step 4 sources; recorded as an ambiguity",
+        "element": "nothing written; deploy-order.md section 4 carries the query and the IsOwnedByProfile reading"
+      },
+      {
+        "question": "custom-permissions / permission-set-architecture: 'Is the grant permanent, or should it expire?' / 'Should any of this expire?'",
+        "answer": "Treated as permanent. No answered clarification puts an end date on it and Q13 describes a standing capability of the sales-ops admin role, not a migration window. Recorded as an ambiguity, with the expiring-assignment alternative named in deploy-order.md section 4.",
+        "source": "no source answered it; the requirement and Q13 imply a standing role",
+        "element": "nothing written - ExpirationDate lives on PermissionSetAssignment, which is record data this build does not produce"
+      },
+      {
+        "question": "permission-set-architecture: 'Which objects does this capability touch, and at what CRUD level?'",
+        "answer": "None. This is a function/bypass set: it grants one custom permission and no object access at all.",
+        "source": "step inputs and the step's own manual acceptance test",
+        "element": "absence of <objectPermissions> and <fieldPermissions> - which is also why PSVP-FLS-01 does not apply, stated in deploy-order.md section 3"
+      },
+      {
+        "question": "permission-set-architecture: 'Does anything here need View All Records or Modify All Records?'",
+        "answer": "No.",
+        "source": "step inputs; the manual acceptance test requires the set to grant one custom permission and nothing else",
+        "element": "absence of viewAllRecords / modifyAllRecords (no objectPermissions block exists to carry them)"
+      },
+      {
+        "question": "permission-set-architecture: 'Is this bundle for a named person or for a standing role that changes people?'",
+        "answer": "A standing role - the sales-ops admin. No permission set group is built: one set with one grant has nothing to compose.",
+        "source": "clarification answers (Q13, Q19)",
+        "element": "the PermissionSet <description> naming the sales-ops admin as the only holder; no PermissionSetGroup file"
+      },
+      {
+        "question": "permission-set-architecture: 'Does any permission need step-up activation?'",
+        "answer": "DEFAULT (skills/admin/permission-set-architecture/references/metadata-examples.md sections 1 and 2, which write hasActivationRequired=false on purpose; the custom-permissions section 5 sample carries the same line): false. No clarification asks for session-based activation on this bypass.",
+        "source": "documented skill default - no answer in the plan",
+        "element": "<hasActivationRequired>false</hasActivationRequired>"
+      },
+      {
+        "question": "permission-set-architecture: 'Which user or permission set license does every person in this persona hold?'",
+        "answer": "DEFAULT (the Object Reference guidance quoted in skills/admin/permission-set-architecture/references/metadata-examples.md section 2: leave LicenseId empty when the set may be held by users on different licences): <license> omitted. Q19 answers in profiles - System Administrator for the sales-ops admin - not in licences, so the licence boundary is not on file.",
+        "source": "documented skill default - the plan answers a different question",
+        "element": "absence of <license>"
+      },
+      {
+        "question": "permission-set-architecture: 'Who checks the group after deploy, and against which user?'",
+        "answer": "No group exists, so there is no PermissionSetGroup.Status poll to run. For the set itself: the Sales Operations lead, against the sales-ops admin user, using the SetupEntityAccess query.",
+        "source": "clarification answers (Q13 owner_role) plus the skill's verification section",
+        "element": "deploy-order.md section 4, 'Evidence is a query, not a diff'"
+      },
+      {
+        "question": "validation-rules: 'Which users and integrations must be able to save a record the rule would reject?'",
+        "answer": "The sales-ops admin only, via a custom permission granted by a permission set; no integration writes Enterprise opportunities (Q13). This is the row that produced the whole step.",
+        "source": "clarification answers (Q13, reinforced by Q17 and Q27)",
+        "element": "both files, and the consumer list in the CustomPermission <description>"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "declared_scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "Custom permissions defined: 1 / Permission sets / profiles parsed: 1 / Distinct permissions referenced: 0. Coverage: Bypass_Opportunity_Sales_Validation, Consumers 0, Granted by permission set 'Sales_Ops_Validation_Bypass'. Summary: 0 error(s), 0 warning(s), 0 info.",
+        "changed": "nothing - passed on the first pass",
+        "divergence_from_plan_prose": "The plan's test description records a fixture with 1 info and Consumers 1 at build scope. This run printed 0 info (description trimmed to 197 chars, under the CP-DESC-02 threshold of 200, as inputs.note asked) and Consumers 0 (M2-S03's validation rule is not built yet, so nothing under artefacts/ references the permission). expected 'exit 0' is met."
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "declared_scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found.",
+        "changed": "nothing - passed on the first pass"
+      },
+      {
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts/M2-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": false,
+        "declared_scope": "step (evidence only - not a declared test)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "Identical to the build-scope run: Consumers 0, 'Summary: 0 error(s), 0 warning(s), 0 info.'",
+        "changed": "nothing",
+        "why_run": "To measure the step-scope vs build-scope difference the plan's test description asserts. Today there is none, because the only consumer is in an unbuilt step."
+      },
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts/M2-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": false,
+        "declared_scope": "step (evidence only - not a declared test)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found.",
+        "changed": "nothing"
+      },
+      {
+        "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts/M2-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": false,
+        "declared_scope": "step (AGENT.md Step 8 - a cited skill that ships a checker; this step declares no test for it because milestone M2 runs it at build scope)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: 1 finding(s) detected (0 blocking); REVIEW 'no validation rule metadata files found in the supplied path(s) -- an empty manifest dir is not itself a defect'. score 100, blocking 0.",
+        "changed": "nothing - correct: this step writes no validation rule. M2-S03 and M2-S04 do, and milestone M2's first acceptance test runs this checker across artefacts/."
+      }
+    ],
+    "xml_parse": "all 3 *.xml / *-meta.xml files under artefacts/M2-S01/ parse with xml.etree.ElementTree (package.xml, the permission set, the custom permission).",
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "package.xml carries two <name> blocks - CustomPermission (member Bypass_Opportunity_Sales_Validation) and PermissionSet (member Sales_Ops_Validation_Bypass) - with <version>62.0</version>. Every member has a file behind it and every metadata file is covered by a member; both types accept the * wildcard and both are named explicitly anyway. This is what the step's manifest acceptance test asserts.",
+    "api_version_note": "62.0, matching artefacts/M1-S01/package.xml and artefacts/M1-S02/package.xml. plan.json carries no api_version key, so AGENT.md's documented fallback applies; keeping one version across the build also keeps scripts/mock_deploy.py's pick_api_version (highest <version> across the selected steps) from silently raising the build's version at this step.",
+    "org_interaction": "None. requires_org: false, build_mode design-only. No sf command was run and scripts/mock_deploy.py was not invoked; deploy-order.md section 7 writes its invocation as text for a human, and notes that the script hard-codes --dry-run so there is no such flag for an operator to pass.",
+    "workflow_return": {
+      "step_id": "M2-S01",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M2-S01/customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M2-S01/package.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M2-S01/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      {
+        "id": "O-M2S01-01",
+        "risk": "medium",
+        "summary": "Nothing assigns Sales_Ops_Validation_Bypass. PermissionSetAssignment is record data, so the M2 goal sentence 'the sales-ops admin is the only person who can save past that rule' is a design claim until the SetupEntityAccess query in deploy-order.md section 4 is run against the org.",
+        "closes_with": "The post-deploy assignment plus the timestamped query result, captured as the access-review artefact."
+      },
+      {
+        "id": "O-M2S01-02",
+        "risk": "low",
+        "summary": "acceptance_tests[0].description narrates fixture output this run did not reproduce (1 info, Consumers 1) and contradicts inputs.note's under-200-character instruction.",
+        "closes_with": "build_plan.py amend-step --prose-only on M2-S01 - the structural fields (type, command, scope, expected) are unchanged, so it is a prose correction and the planner's call, not this agent's."
+      },
+      {
+        "id": "O-M2S01-03",
+        "risk": "low",
+        "summary": "The expiry question has no answer on file; the grant ships as a permanent standing capability.",
+        "closes_with": "One line from the Sales Operations lead at the M2 gate: standing capability, or a time-boxed PermissionSetAssignment with ExpirationDate per admin/permission-set-expiration."
+      },
+      {
+        "id": "O-M2S01-04",
+        "risk": "low",
+        "summary": "No live-org baseline exists for whether a profile already grants equivalent access (custom-permissions gotcha 1); a profile-borne grant is invisible in the Custom Permissions related list.",
+        "closes_with": "The SetupEntityAccess query with IsOwnedByProfile read, before or immediately after the deploy."
+      }
+    ]
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/SKILL.md",
+      "used_for": "the Questions-to-Ask table, the bypass pattern, and the API-name constraints"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+      "used_for": "the CustomPermission element set (sections 2, 3, 4), the PermissionSet grant shape (section 5), 'Where the files live', the package.xml sample, 'Retrieve and deploy' ordering, and the SetupEntityAccess verification queries"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/gotchas.md",
+      "used_for": "gotcha 1 (profile-borne grants hide), 4 (rename breaks references silently), 7 (isLicensed is read-only), 8 (a retrieve cannot prove revocation), 9 (DeveloperName rules), 10 (255-character description)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/templates/custom-permissions-template.md",
+      "used_for": "the context checklist - API name, label, consumer contexts, description, grant path - bound in the decision record"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "the Questions-to-Ask table on licence boundary, CRUD scope, sharing overrides, persona vs person, expiry, activation and post-deploy verification"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/metadata-examples.md",
+      "used_for": "the PermissionSet element set (sections 1 and 2), the function-set rule that object rows belong elsewhere, section 4 (assignment is record data, ExpirationDate), section 5 (manifest and deploy order), section 7 (description length, PSA-DESC-01/02)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/references/gotchas.md",
+      "used_for": "licence boundaries, 'A Partial Permission Set File Is A Revocation', 'Object And Field Permissions Vanish From A Retrieve That Omits The Object', the description-length cascade, and session-based sets inside a group"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "the Questions-to-Ask row 'Which users and integrations must be able to save a record the rule would reject?' - the row that produced this step"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/metadata-examples.md",
+      "used_for": "Example 1's bypass-first formula shape, confirming the $Permission token M2-S03 and M2-S04 must resolve against this step's file-name stem"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/SKILL.md",
+      "used_for": "the PSVP-FLS-01 / PSVP-FLS-02 rule conditions, to state in deploy-order.md section 3 why a bypass set needs no FLS rows while a persona set does"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "section 1 for the manifest reading ('Metadata API references the components listed in the manifest, not the directories in the .zip file') and section 3 for the production validate -> quick-deploy sequence named in deploy-order.md section 7"
+    },
+    {
+      "type": "template",
+      "id": "templates/admin/validation-rule-patterns.md",
+      "path": "templates/admin/validation-rule-patterns.md",
+      "used_for": "the bypass contract - NOT($Permission.X) first inside the outer AND, the Bypass_Validation_<Domain> naming form this step diverges from, and the Integration_Bypass__c custom setting this build does not ship"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json is the only shared state; only build_plan.py subcommands write it), section 4 (the access step type and the status machine), section 5 (checker scope, the always-on xml and manifest checks, and the rule that every metadata-builder step declares its package.xml)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement, the Citations schema and the confidence rubric Step 10 overrides"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the Plan this run followed - Step 2's scale-ask note, Step 3's XML-fence test and gap rule, Step 4's four input sources, Steps 6-9 and the Step 10 confidence table"
+    },
+    {
+      "type": "example_build",
+      "id": "examples/builds/case-onboarding",
+      "path": "examples/builds/case-onboarding/artefacts/M2-S01/customPermissions/Bypass_Case_Intake_Validation.customPermission-meta.xml",
+      "used_for": "the org-validated precedent for a bypass CustomPermission + granting PermissionSet pair and its deploy-order note structure"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "it runs M2-S01's two declared checkers plus the always-on xml and manifest checks and writes tests/M2-S01/results.json, which is the only route from built to tested."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once M2-S01 is tested it carries the four open items and the FLS statement into decisions.md, the workbook's access section and traceability.md."
+    }
+  ]
+}

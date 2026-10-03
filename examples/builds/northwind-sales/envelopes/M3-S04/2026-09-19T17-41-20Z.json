@@ -1,0 +1,358 @@
+{
+  "agent": "lwc-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T17-41-20Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S04/2026-09-19T17-41-20Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S04/2026-09-19T17-41-20Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S04",
+    "build_mode": "design-only",
+    "component_name": "discountApprovalPanel",
+    "feature_summary": "Show the Opportunity discount and approval status on the record page and submit the discount approval, enabling the button only when the discount is above the policy threshold and nothing is already pending or approved",
+    "binding_kind": "record-page",
+    "data_shape": "record-form",
+    "target_objects": "Opportunity",
+    "public_api": "recordId,discountThreshold",
+    "a11y_tier": "wcag-aa",
+    "include_tests": true,
+    "emit_controller": false,
+    "api_version": "62.0",
+    "api_version_source": "NOT supplied by the plan. steps[M3-S04].inputs{} carries no api_version \u2014 the run brief said to read one there and there is none, which is the one brief/plan disagreement on this step. Resolved instead by agents/lwc-builder/AGENT.md Step 6's order: (1) no sibling LWC bundle exists anywhere in this build, (2) the repo has no sfdx-project.json, (3) no org alias, so (4) the value is stated and its derivation recorded \u2014 all nine package.xml files under artefacts/ declare <version>62.0</version>, and M3-S03's four authored classes, including the controller this bundle imports, are pinned at 62.0 by decision D-M3S03-01.",
+    "invocation": "direct read of agents/lwc-builder/AGENT.md as the step runner; this agent made both status transitions itself (pending -> running, running -> built)",
+    "answers": [
+      "Q22",
+      "Q30",
+      "Q34",
+      "Q35",
+      "Q51",
+      "Q52"
+    ],
+    "assumptions": [
+      "A17",
+      "A18",
+      "A35"
+    ],
+    "decisions": [
+      "D5",
+      "D8"
+    ],
+    "org_alias": null
+  },
+  "summary": "Built the four declared outputs of M3-S04 \u2014 discountApprovalPanel.html, .js, .js-meta.xml and __tests__/discountApprovalPanel.test.js \u2014 and nothing else; no .css was written because the plan declares none and an undeclared file in the artefact tree is one check-outputs never confirms. The panel reads Discount__c and Approval_Status__c through the platform twice over and through Apex not at all: lightning-record-view-form renders them with the platform's labels, Percent formatting and per-field FLS, while @wire(getRecord) provisions the same two fields so the button rule can be computed in JavaScript. Both go through Lightning Data Service and share its cache. The Submit button calls OpportunityApprovalController.submitForApproval(Id opportunityId) \u2014 the @AuraEnabled entry point M3-S03 built, never the @InvocableMethod, which cannot carry @AuraEnabled \u2014 and handles both refusal shapes: a returned SubmitOutcome with success=false and a message (Q30's shape, and the ordinary case) and a thrown error (the exceptional one). Success refreshes the record with notifyRecordUpdateAvailable([{recordId}]), which is Q34's 'the component refreshes the record after submit' and the documented call for a UI API wire; refreshApex on a non-Apex adapter is deprecated and is not used. The threshold is the discountThreshold design attribute defaulting to 20, coerced with Number() because App Builder hands Integer properties over as strings. The declared checker exits 0 with the exact line the plan's test description predicted, and was proven live against two deliberately broken scratch copies rather than trusted on a zero-finding line. check-outputs ok; the one XML file parses. The Jest suite was NOT run: @salesforce/sfdx-lwc-jest is not installed, this repo has no package.json or node_modules, and installing one is forbidden by the agent's Scope Guardrails. No compile check was possible and nothing was deployed.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "AGENT_CONTRACT.md Gate C row 3 caps confidence at MEDIUM when no compile check ran, and none could: no org alias was supplied, so there was no way to validate the bundle against an org. Two further unexecuted checks push in the same direction rather than lower: the Jest suite could not be run for want of a harness, and no JavaScript parse check ran either \u2014 `node --check` exits 0 on deliberately broken input once a file contains an `import` statement (proven here with a control file), and V8 does not parse the decorators an LWC module uses, so there is no stdlib-adjacent parser in this environment that would catch a syntax error in the .js. Everything else meets the HIGH bar: every mandatory input came from plan.json, every import resolves to a file under the build (the Apex method by exact signature and parameter name, both fields by path), every lightning-* tag and attribute is quoted from a cited skill's code-examples with the source's own UNVERIFIED markers carried across, and the one declared checker exits 0 with its liveness proven in both directions. The single inline UNVERIFIED marker is assumption A35's Percent reading, which the plan already carries as a medium-risk assumption, not an unresolved symbol.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "data-strategy",
+    "accessibility",
+    "public-api-shape",
+    "dom-mode",
+    "styling-isolation",
+    "meta-xml-targets",
+    "test-coverage",
+    "lws-readiness"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "event-shape",
+      "state": "not-run",
+      "reason": "The bundle dispatches exactly one event \u2014 ShowToastEvent, whose bubbles/composed shape is the platform module's, not this component's. It has no parent to notify and no sibling to coordinate with (M3-S05 drops it into a sidebar region on its own), so there is no CustomEvent of its own to shape. Emitting one for symmetry would be an unread public surface.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "controller-security",
+      "state": "not-run",
+      "reason": "emit_controller is false. OpportunityApprovalController was built, reviewed and checked in M3-S03 (with sharing declared rather than inherited, WITH USER_MODE on the service's single SOQL at api 62.0); this step imports it and adds no Apex, so there is no controller of this step's to secure.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "test-coverage",
+      "state": "partial",
+      "reason": "Sixteen Jest cases were written, including the four the step's manual acceptance test names verbatim, and the cited jest-a11y checker's assertion rules pass over them. None of them was executed: @salesforce/sfdx-lwc-jest does not resolve in this environment (proven), there is no package.json or jest.config.js, and the agent's Scope Guardrails forbid npm install. The suite is reviewed evidence, not passing evidence.",
+      "confidence_impact": "MEDIUM"
+    }
+  ],
+  "findings": [
+    {
+      "id": "M3S04-F-01",
+      "severity": "P2",
+      "title": "`next`'s --add-checker advice would block this step on two of its three suggestions",
+      "detail": "build_plan.py next advises declaring check_wire_service_patterns.py, check_lwc_jest_testing_with_accessibility.py and check_invocable_methods.py on M3-S04, and \u00a7 5's validate WARN says the same. All three were run here as supplementary evidence, and only one of the three would be a real assertion. check_wire_service_patterns.py --manifest-dir artefacts/M3-S04 exits 0 with 0 findings over 1 JavaScript file and is worth declaring. check_lwc_jest_testing_with_accessibility.py --root artefacts/M3-S04 --project-root . exits 1 with exactly two findings, both of which are 'package.json not found at project root' and 'jest.config.js not found at project root' \u2014 the build directory is not an SFDX project and this step declares neither file, so declaring this checker would fail a correct step for the absence of files no step in this plan produces. Its four rules that do bear on the bundle (a __tests__ directory exists, the test file carries a11y assertions, no document.querySelector, no setTimeout) all pass. check_invocable_methods.py --manifest-dir artefacts/M3-S04 prints 'WARN: no Apex classes found' and exits 0 with score 100 \u2014 it would assert nothing, because the invocable lives in M3-S03. The skill is cited here for knowledge (why the LWC imports the controller and not the action), which is a legitimate read with no artefact of this step to check.",
+      "evidence": {
+        "declared_checker_exit": 0,
+        "wire_service_patterns_exit": 0,
+        "jest_a11y_exit": 1,
+        "jest_a11y_findings": [
+          "package.json not found at project root",
+          "jest.config.js not found at project root"
+        ],
+        "invocable_methods_exit": 0,
+        "invocable_methods_summary": "No .cls files found under artefacts/M3-S04."
+      },
+      "recommendation": "Declare only check_wire_service_patterns.py, with amend-step --add-checker lwc/wire-service-patterns, while the step is still amendable. Leave the other two WARNs standing and say why: one asserts about a project layout the build layer does not have, the other about Apex this step does not ship. Library follow-up: check_lwc_jest_testing_with_accessibility.py's two project-setup rules are the only thing separating it from a build-layer-usable checker; a --skip-project-setup flag, or demoting those two to advisory, would make it declarable on any build step."
+    },
+    {
+      "id": "M3S04-F-02",
+      "severity": "P2",
+      "title": "`node --check` is a silent no-op on any file containing an import statement, so it reads as a passing syntax check while asserting nothing",
+      "detail": "The obvious way to sanity-check an emitted .js without a harness is `node --check <file>`. It exits 0 on this bundle's JavaScript \u2014 and it also exits 0 on a control file containing `import { x } from \"y\";` followed by unbalanced braces. The same node build fails correctly (exit 1, SyntaxError printed) on a broken CommonJS file with no import statement, so the failure mode is specific: once module detection kicks in, --check stops reporting. Separately, V8 does not parse the decorator syntax (@api, @wire) an LWC module uses at all, so even a working ESM --check would be the wrong parser. Reported because a future run in this build could quite reasonably quote a green `node --check` as evidence the file compiles, exactly as this run nearly did.",
+      "evidence": {
+        "control_broken_esm": "import { x } from \"y\"; class A { @api foo; bar( { }  -> node --check exit 0",
+        "control_broken_cjs": "function f( {  -> node --check exit 1, SyntaxError: Unexpected end of input",
+        "node_version": "v22.17.0"
+      },
+      "recommendation": "Do not quote `node --check` as evidence for an LWC .js file. There is no parser in this environment that handles decorators; the real check is the Jest run (which needs the sfdx-lwc-jest harness) or an org-side dry run via scripts/mock_deploy.py, both of which are the human's."
+    },
+    {
+      "id": "M3S04-F-03",
+      "severity": "INFO",
+      "title": "The component's user-facing strings are hard-coded English, because this build ships no CustomLabel",
+      "detail": "skills/lwc/lwc-internationalization and agents/lwc-builder/AGENT.md Step 3 both say user-facing text belongs in custom labels imported through @salesforce/label, so the bundle is not pinned to en-US. Every sentence in this panel \u2014 the button label, the six-branch hint, the outcome messages and the toast titles \u2014 is a literal instead. The reason is structural rather than an oversight: no step in this plan produces a CustomLabel artefact, so a @salesforce/label import would resolve to nothing at deploy time, and adding one would be an output this step does not declare (\u00a7 4, borrowed-agent condition 2).",
+      "evidence": {
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js",
+        "query": "string literals in submitHint, handleSubmit and failWith"
+      },
+      "recommendation": "If Northwind ever runs this org in more than one language, the remedy is a CustomLabel step ahead of M3-S04 and a re-run of this one; it is not a change this step could have made on its own. Worth a line in the M3 milestone report so the gate sees it."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The upstream artefacts were precise enough to build against without a single guess: the controller's method signature and parameter name, the picklist's exact three values and the fact that blank means nothing was ever submitted all came off files in this build rather than from memory.",
+      "domain": "artefact-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S03/classes/OpportunityApprovalController.cls",
+        "query": "public static OpportunityApprovalService.SubmitOutcome submitForApproval(Id opportunityId)"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The plan's step note had already settled the data strategy, the refresh call, the toast module and the design-attribute threshold against the rule each one follows, and every one of those held on contact with the skills; the note predicted the checker's output line word for word and the run reproduced it.",
+      "domain": "build-planning",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M3-S04].inputs.note and acceptance_tests[0].description"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The validation rule written in M2-S03 already tells the rep to 'submit for approval from the Discount panel', so the error message a blocked save produces and the panel this step builds name each other \u2014 coherence across two milestones that nothing in the plan forced.",
+      "domain": "user-experience",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml",
+        "query": "errorMessage"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "Two of the three checkers next advises declaring on this step cannot assert anything about it \u2014 one fails on the absence of a package.json the build layer never has, the other finds no Apex because the Apex is in M3-S03 \u2014 so following the printed advice verbatim would block a correct step.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/lwc/lwc-jest-testing-with-accessibility/scripts/check_lwc_jest_testing_with_accessibility.py",
+        "query": "check_package_json / check_jest_config fire at project root, not on the bundle",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The only offline syntax check available for an emitted LWC module, node --check, exits 0 on deliberately broken input once the file contains an import statement, so a run could quote it as a passing compile check while it asserts nothing.",
+      "domain": "checker-correctness",
+      "evidence": {
+        "source": "heuristic",
+        "path": "/usr/local/bin/node",
+        "query": "node --check on a control file with an import statement and unbalanced braces -> exit 0; same file without the import -> exit 1"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "templates/lwc/component-skeleton/componentSkeleton.html, which the repo offers as the canonical bundle shell, is still written with legacy if:true directives that agents/lwc-builder/AGENT.md Step 4 and skills/lwc/lwc-conditional-rendering both forbid in new bundles, so copying the template faithfully would produce a template the skill rejects.",
+      "domain": "template-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/lwc/component-skeleton/componentSkeleton.html",
+        "query": "if:true={state.loading} / if:true={hasError} / if:true={isReady}",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "The run brief said to read this step's API version from plan.json inputs and there is none there, so the version was derived from the build's own package.xml files and the M3-S03 decision instead; which version a reader intends for the bundle is therefore recorded rather than declared.",
+      "domain": "api-version",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M3-S04].inputs has no api_version key; steps[M3-S03].inputs.api_version = 62.0",
+        "count": 0
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "Assumption A35's UI API half is still unconfirmed, so the component compares a Percent field against the plain number 20 while the validation rule and the approval entry criteria in the same build compare the same threshold against 0.20; if a retrieved record shows the UI API returning the fraction, the threshold getter and two Jest literals are the whole of the change.",
+      "domain": "field-semantics",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js",
+        "query": "get discount() / get isAboveThreshold()"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Q52 and Q51 were both left unanswered at G1 and applied as defaults A18 and A17, which between them fix the panel as read-only and its toast module as platformShowToastEvent; adding an Experience Cloud target later changes the toast import, not just the meta XML.",
+      "domain": "requirements",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "clarifications Q51, Q52 status=open; assumptions A17, A18"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "observation": "An independent accessibility, performance and security pass over the emitted bundle would check the axes this run asserted for itself.",
+      "domain": "quality-assurance",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S04/lwc/discountApprovalPanel"
+      },
+      "suggested_followup_agent": "lwc-auditor",
+      "followup_reason": "Because the builder auditing its own bundle is the weakest form of the check, and lwc-auditor runs check_lwc_accessibility.py and the security rules this step never declared."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Sections 2 (plan is the only shared state), 4 (ui step type, borrowed-agent condition 2 \u2014 declare only outputs the agent's Output Contract names \u2014 and the status machine) and 5 (checker scope, exit-policy forms, outputs-must-exist)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Eight-section shape, the Process Observations requirement, the confidence rubric, and Gate C's three checks including row 3's MEDIUM cap when no compile check runs"
+    },
+    {
+      "type": "agent",
+      "id": "lwc-builder",
+      "path": "agents/lwc-builder/AGENT.md",
+      "used_for": "The playbook this run followed: Step 1 data strategy, Step 2 bundle structure and record-page targets, Step 3 module order and diagnosability, Step 4 a11y-first template and lwc:if, Step 6 the apiVersion resolution order and the design-attribute-is-a-string rule, Step 7 the Jest blocks, Step 9 Gate C"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-base-component-recipes",
+      "path": "skills/lwc/lwc-base-component-recipes/SKILL.md",
+      "used_for": "The base-component-first decision, the output-field-must-be-a-direct-child rule, the container question behind the toast module, and the Jest stub rules; references/code-examples.md's accountSummaryPanel bundle was copy-renamed for the card + record-view-form + js-meta.xml shape"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/wire-service-patterns",
+      "path": "skills/lwc/wire-service-patterns/SKILL.md",
+      "used_for": "Decision Guidance (UI API wire for a standard record read; imperative for the write), property-versus-function form, the three-way refresh routing table that selects notifyRecordUpdateAvailable over refreshApex, and the loading-is-not-error rule; references/code-examples.md section 2 supplied the getRecord + notifyRecordUpdateAvailable shape and section 5 the jest.mock of uiRecordApi"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-jest-testing-with-accessibility",
+      "path": "skills/lwc/lwc-jest-testing-with-accessibility/SKILL.md",
+      "used_for": "The createElement harness, the microtask-per-boundary rule, the list of a11y dimensions jsdom can assert (live region text, shadowRoot.activeElement, role and tabindex) and those it cannot, and the { virtual: true } requirement on an @salesforce/apex mock"
+    },
+    {
+      "type": "skill",
+      "id": "apex/invocable-methods",
+      "path": "skills/apex/invocable-methods/SKILL.md",
+      "used_for": "The stackable-annotations row (@Deprecated only), which is why this component imports OpportunityApprovalController.submitForApproval rather than the @InvocableMethod on OpportunityApprovalSubmitAction"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-accessibility",
+      "path": "skills/lwc/lwc-accessibility/SKILL.md",
+      "used_for": "The focus contract at every state change, polite role=status versus assertive role=alert, the tabindex 0/-1 rule, and the shadow-boundary gotcha that argues against aria-describedby on a base component host"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-app-builder-config",
+      "path": "skills/lwc/lwc-app-builder-config/SKILL.md",
+      "used_for": "isExposed plus at least one target, the per-target property type set (Boolean/Integer/String on a record page), the objects-scoping rule, and the one-way-door table that argued against declaring min/max on the threshold; references/code-examples.md fixed the child order inside targetConfig"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-conditional-rendering",
+      "path": "skills/lwc/lwc-conditional-rendering/SKILL.md",
+      "used_for": "lwc:if only (never if:true), a single getter-backed boolean per directive, and the mount/unmount consequence that kept the live region outside any branch"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-imperative-apex",
+      "path": "skills/lwc/lwc-imperative-apex/SKILL.md",
+      "used_for": "Mode 2's async/await with a loading flag cleared in finally, and the non-cacheable-write pattern for a button-driven call"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-template-refs",
+      "path": "skills/lwc/lwc-template-refs/SKILL.md",
+      "used_for": "lwc:ref plus this.refs instead of this.template.querySelector, and the rule that refs exist only after a render \u2014 which is why the focus target is in a handler and never in connectedCallback"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-testing",
+      "path": "skills/lwc/lwc-testing/SKILL.md",
+      "used_for": "references/code-examples.md's getRecord + getFieldValue component and its suite, the data-id selector convention, and llm-anti-patterns.md's 'Mocking the module the component does not import' \u2014 which is why only notifyRecordUpdateAvailable is replaced and the getRecord adapter is left intact"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-toast-and-notifications",
+      "path": "skills/lwc/lwc-toast-and-notifications/SKILL.md",
+      "used_for": "references/code-examples.md's ShowToastEventName listener on the host element, which is how the suite asserts a toast without a custom moduleNameMapper"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lifecycle-hooks",
+      "path": "skills/lwc/lifecycle-hooks/SKILL.md",
+      "used_for": "The rule against empty hooks \u2014 this bundle implements none, because the wire provisions on its own and there is nothing to clean up"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-error-boundaries",
+      "path": "skills/lwc/lwc-error-boundaries/SKILL.md",
+      "used_for": "The error-normalisation shape (body as array for UI API reads, object for Apex) and the errorCallback placement rule, which this bundle has no descendant custom component to apply"
+    },
+    {
+      "type": "template",
+      "id": "templates/lwc/patterns/imperativeApexPattern.js",
+      "path": "templates/lwc/patterns/imperativeApexPattern.js",
+      "used_for": "Copy-renamed for handleSubmit: loading flag, try/catch/finally, ShowToastEvent on both paths, and the formatError shape that became reduceError"
+    },
+    {
+      "type": "template",
+      "id": "templates/lwc/component-skeleton/componentSkeleton.js-meta.xml",
+      "path": "templates/lwc/component-skeleton/componentSkeleton.js-meta.xml",
+      "used_for": "The bundle-configuration shell; its apiVersion 67.0 and its three targets were replaced with the build's 62.0 and the single record-page target this step needs"
+    },
+    {
+      "type": "template",
+      "id": "templates/lwc/jest.config.js",
+      "path": "templates/lwc/jest.config.js",
+      "used_for": "Read to confirm the harness this suite would run under; NOT emitted, because the step declares no jest.config.js output and the build directory is not an SFDX project"
+    },
+    {
+      "type": "decision_tree",
+      "id": "standards/decision-trees/automation-selection.md",
+      "path": "standards/decision-trees/automation-selection.md",
+      "branch": "Q8 \u2014 No (the action needs custom UI) -> LWC calling imperative Apex (see templates/lwc/patterns/imperativeApexPattern.js)",
+      "used_for": "The branch recorded as plan decision D5, which is why this step is an LWC with an imperative Apex call rather than a Screen Flow quick action"
+    }
+  ]
+}

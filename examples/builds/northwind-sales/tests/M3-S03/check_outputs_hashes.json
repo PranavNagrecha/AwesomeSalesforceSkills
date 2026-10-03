@@ -1,0 +1,12 @@
+{
+  "artefacts/M3-S03/classes/OpportunityApprovalService.cls": "6c0d60bc72175835480a80593378480a122f213816068a6da2f56761e45aee9c",
+  "artefacts/M3-S03/classes/OpportunityApprovalService.cls-meta.xml": "3a31d117e3c855b937d340b20754b03ad66c0c156d57b7c64011aa5437437b51",
+  "artefacts/M3-S03/classes/OpportunityApprovalController.cls": "48100fbf72bbd44c84ef7683485e8382fa017d70dd9d3e673649d1fc7c7a6eda",
+  "artefacts/M3-S03/classes/OpportunityApprovalController.cls-meta.xml": "3a31d117e3c855b937d340b20754b03ad66c0c156d57b7c64011aa5437437b51",
+  "artefacts/M3-S03/classes/OpportunityApprovalSubmitAction.cls": "cc3d299ffbfc2b52b7b70bcc70b25ca4390c788b7cd3521067f69ca1c1266c1b",
+  "artefacts/M3-S03/classes/OpportunityApprovalSubmitAction.cls-meta.xml": "3a31d117e3c855b937d340b20754b03ad66c0c156d57b7c64011aa5437437b51",
+  "artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls": "7ba05df740c925fb1d4a328f14b8bdea1b507b32f0d912cdbe4169e6b14c2905",
+  "artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls-meta.xml": "3a31d117e3c855b937d340b20754b03ad66c0c156d57b7c64011aa5437437b51",
+  "artefacts/M3-S03/classes/TestDataFactory.cls": "a11df9e2221ceb5e3324690f3029224a98ab436cb7c7969d21916b02f711445b",
+  "artefacts/M3-S03/classes/TestDataFactory.cls-meta.xml": "a242f6e22b472afffbd726be71165de394e417355cdf1edd81b5601278ddea32"
+}

@@ -1,0 +1,6 @@
+{
+  "artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml": "8fc7ee41508e512c954028132478d013ae4a281d07a5ec19b67d011ebf4c4d85",
+  "artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml": "c6dd843289e6950431e025e46b0578fca467a673e2a1fcac2f4c80a86c3ddbe8",
+  "artefacts/M3-S02/package.xml": "82615f3e20723539cc11528049e2b6d79c739d919f020a9a8d5cb1c0c74b4309",
+  "artefacts/M3-S02/deploy-order.md": "fe0392fcfa9cae1b7fabcbff4be86373782045b2795a876a9624b8b9b9e5f741"
+}

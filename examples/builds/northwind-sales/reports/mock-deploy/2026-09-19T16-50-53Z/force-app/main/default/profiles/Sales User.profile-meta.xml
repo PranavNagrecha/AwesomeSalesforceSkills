@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Profile xmlns="http://soap.sforce.com/2006/04/metadata">
+    <layoutAssignments>
+        <layout>Opportunity-Opportunity Enterprise Layout</layout>
+        <recordType>Opportunity.Enterprise</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>Opportunity-Opportunity Renewal Layout</layout>
+        <recordType>Opportunity.Renewal</recordType>
+    </layoutAssignments>
+</Profile>

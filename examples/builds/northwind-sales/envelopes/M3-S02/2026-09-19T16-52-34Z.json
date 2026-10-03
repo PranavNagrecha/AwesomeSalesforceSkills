@@ -1,0 +1,176 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T16-52-34Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-52-34Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-52-34Z.json",
+  "summary": "Ran the molecular tests for M3-S02 (automation, agent metadata-builder) of build northwind-sales at scale project, after the 2026-09-19T16:46:52Z repair that withdrew the declared check_email_templates.py test (this step writes no email-template artefact by design; M3-S01 owns them) and narrowed entryCriteria to exclude Closed Won/Closed Lost. Both always-on checks passed: xml over 3 files (package.xml, the approval-process meta, the workflow meta), and manifest against artefacts/M3-S02/package.xml (ApprovalProcess:Opportunity.Discount_Approval and Workflow:Opportunity, each with a backing file, no unmatched member or file). The one declared checker, check_approval_design.py --manifest-dir artefacts artefacts (scope: build), exited 0 with 0 findings, resolving all six workflow actions and the M3-S01 email template. check-outputs confirmed all 4 declared outputs present, non-empty and parseable, and fresh hashes were captured into results.json.artefact_hashes. All three declared manual tests carry a well-formed Given/When/Then with a named observable outcome and are deferred verbatim to the M3 milestone gate; this agent spot-read the artefacts behind each and found them consistent, but did not tick them. Step moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly (agents/step-tester/AGENT.md Step 7). No manifest exclusion was needed and check-outputs reported no missing/empty/malformed output, so the MEDIUM conditions do not apply.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The repair recorded in plan.json amendments[] was scoped exactly as described: entryCriteria in the approval-process XML now reads AND(AND(NOT(ISBLANK(Discount__c)), Discount__c > 0.20, OR(...)), NOT(ISPICKVAL(StageName, \"Closed Won\")), NOT(ISPICKVAL(StageName, \"Closed Lost\"))), and no other field on the process or the workflow changed shape from the first build's envelope.",
+      "domain": "repair-scope",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_approval_design.py's own summary line states it resolved all six <action> references to definitions in workflows/Opportunity.workflow-meta.xml and the <emailTemplate> to one of M3-S01's three email-meta.xml files, so the cross-step dependency this step's checker scope: build exists to cover is exercised on every run, not assumed.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M3-S02/check_approval_design.stdout.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both alerts in workflows/Opportunity.workflow-meta.xml carry a non-empty <recipients><type>owner</type></recipients> block, and deploy-order.md states the process ships active true with order left for manual Setup configuration and M3-S03's Apex naming the process explicitly -- both read consistently with what their manual tests claim, though this agent does not tick them.",
+      "domain": "manual-test-support",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "set-status printed a plan-wide WARN naming this step: admin/validation-rules is cited in M3-S02.skills[] but no acceptance test on this step or on milestone M3 runs check_validation_rules.py. Per the invocation context this is advisory by decision and this agent takes no action on it; it is reported here as the AGENT_CONTRACT process-observations obligation, not as a defect in this run.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Nothing this agent could not resolve on its own: the withdrawn email-checker test left no residue in acceptance_tests[] (only in the amendment history), and the two argument surfaces check_approval_design.py's fixture history documents (--manifest-dir alone, positional-only, both together) behaved exactly as the step's own test description predicted when run here.",
+      "domain": "test-declaration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M3-S02 is now tested and ready for documentation.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because a tested step is build-doc-keeper's precondition for writing PLAN.md, workbook, decisions and traceability rows for M3-S02."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the ban on org writes and auto-chaining"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence, atomic-write rule and the envelope shape for this run"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirmed no refusal condition applied (step status was built, not ambiguous)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "SS4-5: step type table, the five acceptance-test types and runners, checker-scope rule, deny-list, and check-outputs preconditions for built/tested"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "shape of acceptance_tests[] and outputs[] read from plan.json for M3-S02, and the amendment record shape used to confirm the repair"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar (one <types> block per type, <members> naming components) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "source-format filename-to-metadata-type mapping used to derive the ApprovalProcess and Workflow members from the artefact files"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "checked whether ApprovalProcess or Workflow have no standalone source file; neither does, so no manifest exclusion applied"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "verified all three declared manual tests carry a Given/When/Then shape with a named observable outcome before carrying them into skipped_manual[]"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S02",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M3-S02/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c (xml.etree.ElementTree, always-on)",
+        "exit_code": 0,
+        "verdict": "pass - all 3 *.xml/*-meta.xml files under artefacts/M3-S02/ parsed"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "step-tester (always-on, per standards/build-orchestration.md SS5)",
+        "exit_code": 0,
+        "verdict": "pass - package.xml consistent: ApprovalProcess:Opportunity.Discount_Approval and Workflow:Opportunity both backed by a file, no unmatched member or file"
+      },
+      {
+        "name": "skills/admin/approval-processes/scripts/check_approval_design.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/approval-processes/scripts/check_approval_design.py --manifest-dir artefacts artefacts",
+        "exit_code": 0,
+        "verdict": "pass - {\"score\": 100, \"findings\": [], \"summary\": \"Scanned 1 approval-process metadata file(s); 0 finding(s) detected.\"}"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q31 and Q33, when the approval process file is read, then recordEditability is AdminOnly, allowRecall is true, finalApprovalRecordLock and finalRejectionRecordLock are both false, allowedSubmitters carries exactly one entry of type owner, and recallActions fires a field update whose operation is Null so a recalled record shows a blank Approval Status rather than Rejected.",
+      "Given D9 and assumption A34, when artefacts/M3-S02/deploy-order.md is read, then it states that the process ships active true, that approval process ORDER is not in the metadata and must be set in Setup after deploy, and that the Apex in M3-S03 names the process explicitly so order affects only the standard Submit for Approval button.",
+      "Given admin/email-templates-and-alerts/references/gotchas.md:70 records an empty recipient set as a silent failure - 'A .workflow file whose alert carries a template, a description and a senderType but an empty recipient set deploys successfully, appears in Setup, is selectable from Flow - and delivers nothing. There is no runtime error and no entry in the debug log to look for.' - when artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml is read, then each of Notify_Owner_Discount_Approved and Notify_Owner_Discount_Rejected carries a non-empty recipients block of <type>owner</type>, which is the opportunity owner and therefore the rep Q32 named. This is a manual line because neither declared checker reads recipients: check_approval_design.py resolves workflow actions by name only, and check_email_templates.py is declared at --manifest-dir artefacts/M3-S01 and never sees this step's workflow file."
+    ],
+    "tests_run": 3
+  }
+}

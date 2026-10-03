@@ -1,0 +1,446 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-18T14-36-28Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T14-36-28Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T14-36-28Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S02"
+  },
+  "summary": "Second documenting pass over M1-S02 (ui, scale project, design-only), after three org-driven layout repairs that landed between the first pass (2026-09-15T20-18-25Z) and this one. Precondition held: the step was tested, tests/M1-S02/results.json carries \"passed\": true with fresh artefact_hashes, and its newest envelope is the step-tester's 2026-09-18T14-00-27Z run. PLAN.md and CLARIFICATIONS.md were re-rendered from plan.json (exit 0). Two entries were appended to decisions.md: D-M1S02-07, a deviation recording all three repairs (N3-F-02 added Probability as Required; N3-F-03 set Name Required; N3-F-04 set StageName Required with CloseDate set in the same pass), what they supersede in D-M1S02-01/D-M1S02-02, and the library filing; and O-M1S02-04, the residue run 4 did not settle. Four workbook rows were replaced in place, keyed by row_id (CWB-LAYOUT-001/002 in Section 2 - Page Layouts + Lightning Pages, the section the ui step type maps to; CWB-OTHER-003/004 in the Other configuration default section, where Step 4 routes a package.xml and a deploy-order note that are not migration artefacts), and three traceability rows (REQ-008, REQ-009, REQ-010). The rows now state the four Required items, the checker's current findings (1 REVIEW + 1 INFO, replacing the two 'marks no field behavior=Required' INFOs the 2026-09-15 rows carried), and the org evidence: reports/MOCK-DEPLOY-M1.md run 4, Succeeded, 9/9 components. One claim was deliberately NOT carried forward as confirmed: run 4 proves the shipped four-item set validates, not that CloseDate is itself platform-required - it was never named by the org - so the UNVERIFIED (2026-09-18) marker in artefacts/M1-S02/deploy-order.md section 6 still stands, contradicting run 4's note that it 'resolves to confirmed at the next doc-keeper pass'; this agent also does not write inside artefacts/. The tester's drift finding is recorded as O-M1S02-04 with the exact amend-step --prose-only command for the planner; plan.json prose was not touched. Checkers run and reported honestly: check_workbook.py exit 1 on both slices (9 and 10 issues, every one a 'Missing canonical section' for a section a per-step slice does not carry, zero row-level findings - confirmed meaningful by a positive control that made the linter reject a planted placeholder status), and check_rtm.py exit 1 (10 rows, 0 orphans, 1 error, 14 warnings). That one error is new to the file and true: normalising REQ-010's status cell from '**In Build**' to the bare enum token surfaced a coverage gap the bold markers had been hiding as a waived WARN - REQ-010 has no test because no declared test reads for a relatedLists element. It is reported, not papered over. M1-S02 moved tested -> documented (set-status exit 0, 23 plan-wide checker-coverage WARNs printed, 2 of them this step's). Milestone M1's gate is pending and has never been approved, so the next action is M1's FIRST verification, not a section 8 re-verification.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 table, MEDIUM row: two of the step's four artefacts (package.xml, deploy-order.md) are placed in the Other configuration default section rather than a numbered one - the judgment Step 4's docs row asks for (are they migration artefacts? no), so a placed row with a flag rather than a dropped one. Not HIGH for two further reasons this run turned up: an ERROR now stands in traceability.md (REQ-010 has no test id while status is In Build), and a claim the sources disagree about - whether CloseDate is platform-required - was resolved by writing the weaker true statement rather than the stronger one the mock-deploy report invited. Every row does carry a real source_req_id and a verification cell, and re-running produced no duplicates.",
+  "dimensions_compared": [
+    "plan.json step record + runs[]",
+    "tests/M1-S02/results.json",
+    "envelopes/M1-S02 (3 builder repair runs + tester)",
+    "artefacts/M1-S02 (2 layouts, package.xml, deploy-order.md section 6)",
+    "reports/MOCK-DEPLOY-M1.md runs 1-4 + reports/mock-deploy/2026-09-18T13-57-17Z",
+    "workbook rows (4)",
+    "traceability rows (3)",
+    "decisions.md append"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "workbook-linter-row-validation-of-other-configuration",
+      "state": "partial",
+      "reason": "check_workbook.py recognises a section only from a heading matching '^#{2,3}\\s+Section\\s+(\\d+)\\s*[---]\\s*(.+)$', so the rows under the 'Other configuration' heading in workbook/99-other-configuration.md (CWB-OTHER-003, CWB-OTHER-004) were parsed into no section and were not row-validated - only the Section 2 rows were. The file's own intro already documents this gap; numbering it 'Section 11' would invent an eleventh canonical section, which admin/configuration-workbook-authoring Concept 2 forbids.",
+      "confidence_impact": "LOW",
+      "retry_hint": "Re-lint those two rows on the M4-S03 compile run, where they land under a recognised canonical heading, or extend check_workbook.py to parse an 'Other configuration' heading."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The three repairs are fully reconstructable from the build's own record without reading the artefacts: each org message is quoted verbatim in reports/MOCK-DEPLOY-M1.md, each fix has its own metadata-builder envelope with a decision_record entry naming the gotcha it rests on, and deploy-order.md section 6 carries a write-up per round. That is what let this pass write D-M1S02-07 from sources rather than from inference.",
+      "domain": "build-record-completeness",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M1.md; envelopes/M1-S02/2026-09-18T13-39-55Z.json, T13-50-03Z.json, T13-54-29Z.json; artefacts/M1-S02/deploy-order.md section 6"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The library has already been through this exact failure once, on Case: examples/builds/case-onboarding/decisions.md D-M1S02-05 records four layout-required Case facts found the same way, and the remedy that closed it was checker rules RL-REQ-01/02 in admin/record-types-and-page-layouts plus gotchas 12 and 13. Those two gotchas are exactly what let this build's builder read run 1's message correctly on the first try and write Required rather than Edit - the earlier deepening paid off in a different object's build.",
+      "domain": "skill-feedback-loop",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "examples/builds/case-onboarding/decisions.md D-M1S02-05; skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py lines 55-63, 131-137"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The checker's layout-required rules are still Case-only by construction - CASE_LAYOUT_REQUIRED_ITEMS is a three-name tuple with the comment 'do not extend this to another object without a dry run', and RL-REQ-03 is an ADVISORY name-like-field smoke test for every other standard object. So the four Opportunity facts this build bought with four mock-deploy rounds are not yet encoded anywhere a checker can enforce them, and the next Opportunity build in this library will rediscover them the same way unless Cursor task 18 lands. The step's declared checker passed clean both before and after the repairs, which is correct behaviour for a rule set that does not cover Opportunity - and is also why no gate in this loop caught it.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py; tests/M1-S02/checker_check_record_type_layouts.stdout.txt (2 findings, neither about required fields)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "reports/MOCK-DEPLOY-M1.md run 4 instructs that the UNVERIFIED (2026-09-18) marker on CloseDate 'resolves to confirmed at the next doc-keeper pass'. This pass did not resolve it, on two independent grounds, and both are worth a human's attention: the doc keeper does not write inside artefacts/ (so the instruction named an agent that cannot carry it out), and run 4's evidence proves the four-item set is sufficient to validate, not that CloseDate is individually necessary - it was set one round ahead of any finding and no org message ever named it. Recorded as O-M1S02-04 with a one-round close condition rather than rounded up.",
+      "domain": "evidence-strength",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "reports/MOCK-DEPLOY-M1.md run 4; artefacts/M1-S02/deploy-order.md section 6 'Third discovery (run 3)'; agents/build-doc-keeper/AGENT.md 'What This Agent Does NOT Do'"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "Normalising REQ-010's status cell from '**In Build**' to the bare enum token 'In Build' turned a waived WARN into an ERROR in check_rtm.py: the bold markers had put the value outside the closed status enum, and the linter waives a coverage gap on a status it does not recognise as a build status. Emphasis markup inside an enum cell is therefore not cosmetic - it silently suppresses the rule that cell drives. The gap it was hiding is real (REQ-010 has no artefact and no test, which the row has said in prose since 2026-09-15), so the error is left standing and named rather than re-hidden.",
+      "domain": "documentation-mechanics",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "traceability.md REQ-010; skills/admin/requirements-traceability-matrix/scripts/check_rtm.py check 5"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "build_plan.py set-status printed 23 section-5 checker-coverage WARNs plan-wide this run, two of them M1-S02's own (admin/opportunity-management ships check_opportunity_management.py and admin/products-and-pricebooks ships check_products_and_pricebooks.py, neither declared as an acceptance test on the step or on milestone M1). Unchanged from the tester's run and not a defect in the artefacts, but the M1 gate is where a human sees the count, and amend-step --add-checker is the one-line remedy for the two on this step.",
+      "domain": "plan-checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "build_plan.py set-status plan.json M1-S02 documented, stderr this run",
+        "count": 23
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "check_rtm.py's 14 warnings are mostly a standing disagreement between this build's writing conventions and the linter's expectations, not defects: every source cell in this matrix is multi-valued ('Q20, Q14, Q22, D2') and every decision_ref uses the doc keeper's own D-M<m>S<nn>-<nn> ids rather than the plan's bare D<n>, both of which the linter flags. Changing either would lose information, so nothing was changed; whether the linter or the convention should move is a call for whoever owns the RTM skill, not for a documentation pass.",
+      "domain": "convention-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../.. , this run"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The two layouts remain byte-identical after all three repairs - both files were repaired identically and their artefact_hashes are the same digest - so the merge question O-M1S02-03 raised on 2026-09-15 is exactly as open as it was, and the repairs are evidence on its side rather than against it: the platform's required set is a property of the object, not of the record type, so nothing the org said differentiates the pair. Still a human's call at the M1 gate; this pass asserts no answer.",
+      "domain": "element-grounding",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M1-S02/results.json artefact_hashes (both layouts 91b17142...); decisions.md O-M1S02-03"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Both M1 steps are now documented and gate milestone:M1 is pending with no by/at - this is M1's FIRST verification, not a section 8 re-verification of an accepted milestone. build_plan.py next confirms it: \"gate 'milestone:M1' is 'pending', not 'approved'\". The M1-S01 doc-keeper envelope of 2026-09-18T13-56-11Z reached the same reading independently, so no envelope in this build contradicts it.",
+      "domain": "workflow",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json human_gates milestone:M1; build_plan.py next, this run; envelopes/M1-S01/2026-09-18T13-56-11Z.md"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because M1's two steps are documented and only a cross-step verification report can put the four repairs, the REQ-010 coverage error and the open CloseDate residue in front of the human signing gate milestone:M1."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Two writes this pass identified belong to other owners and were left unrun: the prose-only plan amendment that brings the A25 manual test's wording up to the org-confirmed state (planner, via build_plan.py amend-step --prose-only), and the CloseDate close condition plus the deploy-order.md marker it would clear (metadata-builder, through a documented -> running rebuild, and only after gate milestone:M1 is approved).",
+      "domain": "ownership",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "decisions.md O-M1S02-04; standards/build-orchestration.md section 2 (amend-step --prose-only) and section 4 (documented -> running)"
+      },
+      "suggested_followup_agent": "metadata-builder",
+      "followup_reason": "Because only the step's owning builder may edit artefacts/M1-S02, so only it can run the one-round CloseDate test and clear the UNVERIFIED marker its own earlier run wrote."
+    }
+  ],
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "M1's two steps are both documented; the milestone:M1 gate has never been approved and this is its first verification."
+    },
+    {
+      "agent": "metadata-builder",
+      "because": "Owns artefacts/M1-S02, so the CloseDate close condition and the stale UNVERIFIED marker are its writes, not the doc keeper's."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules for this invocation: no org writes, no files outside the paths this agent owns, no auto-chaining"
+    },
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the playbook itself: Steps 1-9 and 11-12, the step-type to workbook-section map, the row bindings and the idempotence rule"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "eight-section shape, the Process Observations requirement and the confidence rubric this agent's Step 11 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the atomic-write rule for the markdown/JSON envelope pair and the run_id format"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "checked the enum and confirmed no refusal applied - the step was tested, both inputs were supplied, and no artefact lacked a source_req_id"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (rendered views are never hand-edited; plan.json is written only through the CLI; amend-step --prose-only is the writer for test prose), section 4 (the ui step type, the docs-row routing of package.xml and the deploy-order note, the documented -> running rebuild edge), section 6 (this agent's per-step job), section 8 (a skill gap in decisions.md is the signal to deepen a skill)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "which step fields this agent reads (inputs, outputs, acceptance_tests, runs) and which it must leave alone"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the envelope's fixed field set (additionalProperties false) and the extensions payload this agent's documentation results travel in"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concepts 1-3: the ten canonical sections, the full row schema, the never-a-placeholder status enum, one-agent-per-row routing; and its scripts/check_workbook.py, run over both edited slices"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set this file is written in, the REQ-XXX id convention and the closed status enum that REQ-010's bolded cell had fallen outside of; and its scripts/check_rtm.py"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape both appended entries follow - date, step, agent, the alternative rejected and the source it was grounded in, in one central append-only location"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "how a test result is recorded as acceptance evidence, so each traceability row says what was verified (checker exit 0 with named findings, plus the org's own 9/9 validation) rather than that something ran green"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "read for the compiled pack's record shape; no pack is produced on a per-step run, so it bounded what this pass did NOT write (the two manual tests stay quoted in skipped_manual, not promoted to cases)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then bar the two outstanding manual tests were re-read against before this pass reported the A25 one's wording as stale but still tickable"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "the step's own cited skill: gotchas 12 and 13 and the RL-REQ-01/02/03 checker rules, read to state accurately what the library did and did not hold about Opportunity layout-required fields"
+    },
+    {
+      "type": "example_build",
+      "id": "examples/builds/case-onboarding",
+      "path": "examples/builds/case-onboarding/decisions.md",
+      "used_for": "the append precedent for a repair entry, and D-M1S02-05 - the same layout-required failure worked end to end on Case, including the checker rules that closed it"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/PLAN.md",
+      ".sfskills/builds/northwind-sales/CLARIFICATIONS.md",
+      ".sfskills/builds/northwind-sales/decisions.md",
+      ".sfskills/builds/northwind-sales/workbook/02-page-layouts-and-lightning-pages.md",
+      ".sfskills/builds/northwind-sales/workbook/99-other-configuration.md",
+      ".sfskills/builds/northwind-sales/traceability.md"
+    ],
+    "workbook_rows": [
+      {
+        "row_id": "CWB-LAYOUT-001",
+        "section": "2 - Page Layouts + Lightning Pages",
+        "file": "workbook/02-page-layouts-and-lightning-pages.md",
+        "artefact": "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+        "source_req_id": "REQ-008; REQ-010",
+        "status": "executed",
+        "deploy_position": "5 of 10 (layouts)"
+      },
+      {
+        "row_id": "CWB-LAYOUT-002",
+        "section": "2 - Page Layouts + Lightning Pages",
+        "file": "workbook/02-page-layouts-and-lightning-pages.md",
+        "artefact": "artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+        "source_req_id": "REQ-009; REQ-010",
+        "status": "executed",
+        "deploy_position": "5 of 10 (layouts)"
+      },
+      {
+        "row_id": "CWB-OTHER-003",
+        "section": "Other configuration (Step 4 default for a non-migration package.xml)",
+        "file": "workbook/99-other-configuration.md",
+        "artefact": "artefacts/M1-S02/package.xml",
+        "source_req_id": "REQ-008; REQ-009",
+        "status": "executed",
+        "deploy_position": "not a component"
+      },
+      {
+        "row_id": "CWB-OTHER-004",
+        "section": "Other configuration (Step 4 default for a non-migration deploy-order note)",
+        "file": "workbook/99-other-configuration.md",
+        "artefact": "artefacts/M1-S02/deploy-order.md",
+        "source_req_id": "REQ-008; REQ-009; REQ-010",
+        "status": "executed",
+        "deploy_position": "not a component"
+      }
+    ],
+    "traceability_rows": [
+      {
+        "req_id": "REQ-008",
+        "step_id": "M1-S02",
+        "artefact": "Layout:Opportunity-Opportunity Enterprise Layout",
+        "test_id": "M1-S02-T1",
+        "test_type": "checker",
+        "status": "In UAT",
+        "change": "repair facts, current checker findings and the run-4 org evidence added; decision_ref gains D-M1S02-07"
+      },
+      {
+        "req_id": "REQ-009",
+        "step_id": "M1-S02",
+        "artefact": "Layout:Opportunity-Opportunity Renewal Layout",
+        "test_id": "M1-S02-T1",
+        "test_type": "checker",
+        "status": "In UAT",
+        "change": "same as REQ-008; both files were repaired identically in the same runs"
+      },
+      {
+        "req_id": "REQ-010",
+        "step_id": "M1-S02",
+        "artefact": "none - deliberately absent from both layouts",
+        "test_id": "",
+        "test_type": "",
+        "status": "In Build",
+        "change": "status cell normalised from '**In Build**' to the bare enum token, which surfaced the coverage ERROR; the linter result added to test_result. Substance unchanged: no relatedLists block ships."
+      }
+    ],
+    "decisions_appended": [
+      {
+        "id": "D-M1S02-07",
+        "kind": "deviation",
+        "date": "2026-09-18",
+        "subject": "the three layout-required-field repairs (N3-F-02/03/04) and what they supersede in D-M1S02-01 and D-M1S02-02"
+      },
+      {
+        "id": "O-M1S02-04",
+        "kind": "open item",
+        "date": "2026-09-18",
+        "subject": "whether CloseDate is platform-required, plus the two texts that still describe the required-field question as open"
+      }
+    ],
+    "rows_replaced": [
+      "CWB-LAYOUT-001",
+      "CWB-LAYOUT-002",
+      "CWB-OTHER-003",
+      "CWB-OTHER-004",
+      "REQ-008",
+      "REQ-009",
+      "REQ-010"
+    ],
+    "rows_newly_written": [],
+    "idempotence_note": "Every row this pass wrote already existed from the 2026-09-15T20-18-25Z pass and was replaced in place by row_id (workbook) and by req_id plus step_id (traceability); nothing was appended, no id was renumbered, and no row belonging to M1-S01 was touched. decisions.md is the one append-only surface: D-M1S02-07 and O-M1S02-04 were appended after a guard confirmed neither id was already present.",
+    "check_workbook_results": [
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/02-page-layouts-and-lightning-pages.md --repo-root ../../.. --allow-empty-section",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 1,
+        "issues": 9,
+        "issue_shape": "all nine are 'Missing canonical section' for the sections this per-step slice does not carry; zero row-level findings. Identical in shape and count to the run taken before this pass edited the file.",
+        "positive_control": "A scratchpad copy with CWB-LAYOUT-001's status replaced by 'TBD' produced 'ERROR: [Page Layouts + Lightning Pages] row CWB-LAYOUT-001: status `TBD` is a placeholder', which is how this run knows the linter did parse and validate the two Section 2 rows rather than skipping them."
+      },
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/99-other-configuration.md --repo-root ../../.. --allow-empty-section",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 1,
+        "issues": 10,
+        "issue_shape": "all ten are 'Missing canonical section'; zero row-level findings, but see dimensions_skipped - the rows under the 'Other configuration' heading are parsed into no section and are not row-validated at all. Same count as before this pass."
+      }
+    ],
+    "rtm_lint_result": {
+      "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..",
+      "cwd": ".sfskills/builds/northwind-sales",
+      "exit_code": 1,
+      "declared_acceptance_test": false,
+      "result": "10 rows, build schema, 1 coverage gap, 0 orphans, 1 error, 14 warnings",
+      "error": "row 11 (REQ-010): coverage gap - REQ-010 has no test id while status is 'In Build'",
+      "note": "Not one of M1-S02's declared acceptance tests, so this run changes no test verdict; tests/M1-S02/results.json (passed: true) stands as the tester wrote it. The error appeared only after this pass normalised REQ-010's status token - before that the bold markers put the value outside the enum and the gap was waived to a WARN. Left standing and recorded in the file's intro and in the row itself."
+    },
+    "render_result": {
+      "command": "python3 scripts/build_plan.py render .sfskills/builds/northwind-sales/plan.json",
+      "exit_code": 0,
+      "output": "wrote .sfskills/builds/northwind-sales/PLAN.md; wrote .sfskills/builds/northwind-sales/CLARIFICATIONS.md"
+    },
+    "set_status_result": {
+      "command": "python3 scripts/build_plan.py set-status .sfskills/builds/northwind-sales/plan.json M1-S02 documented --run-agent build-doc-keeper --envelope envelopes/M1-S02/2026-09-18T14-36-28Z.json --result \"repair pass 2: workbook rows replaced 4; traceability rows replaced 3; decisions appended 2\" --started 2026-09-18T14:29:16Z",
+      "exit_code": 0,
+      "stdout": "M1-S02: tested -> documented (run appended: build-doc-keeper)",
+      "warns_printed": 23,
+      "warns_for_this_step": [
+        "admin/opportunity-management ships check_opportunity_management.py but no checker test on the step or on milestone M1 runs it",
+        "admin/products-and-pricebooks ships check_products_and_pricebooks.py but no checker test on the step or on milestone M1 runs it"
+      ]
+    },
+    "repair_context": {
+      "findings": [
+        "N3-F-02",
+        "N3-F-03",
+        "N3-F-04"
+      ],
+      "mock_deploy_report": "reports/MOCK-DEPLOY-M1.md",
+      "mock_deploy_runs": [
+        "2026-09-18T13-34-25Z",
+        "2026-09-18T13-43-49Z",
+        "2026-09-18T13-52-49Z",
+        "2026-09-18T13-57-17Z"
+      ],
+      "org_evidence": "reports/mock-deploy/2026-09-18T13-57-17Z/summary.md - Succeeded, checkOnly, 9 components total, 0 errors, both Layout members ok",
+      "deploy_order_section": "artefacts/M1-S02/deploy-order.md section 6 and its two subsections",
+      "repair_envelopes": [
+        "envelopes/M1-S02/2026-09-18T13-39-55Z.json",
+        "envelopes/M1-S02/2026-09-18T13-50-03Z.json",
+        "envelopes/M1-S02/2026-09-18T13-54-29Z.json"
+      ],
+      "tester_envelope": "envelopes/M1-S02/2026-09-18T14-00-27Z.json",
+      "prior_documenting_pass": "envelopes/M1-S02/2026-09-15T20-18-25Z.json",
+      "layout_items_now": "7 layoutItems plus 1 emptySpace per file: Name Required, AccountId Edit, StageName Required, CloseDate Required, Amount Edit, Probability Required, Discount__c Edit, Approval_Status__c Readonly"
+    },
+    "not_done_and_why": [
+      {
+        "item": "Clear the UNVERIFIED (2026-09-18) CloseDate marker in artefacts/M1-S02/deploy-order.md section 6",
+        "why": "Two reasons, either sufficient: this agent does not write inside artefacts/ (playbook, What This Agent Does NOT Do), and run 4 proves the shipped set validates rather than that CloseDate is individually required. reports/MOCK-DEPLOY-M1.md run 4 says the marker 'resolves to confirmed at the next doc-keeper pass'; that instruction is recorded as contradicted in decisions.md O-M1S02-04 rather than followed.",
+        "owner": "metadata-builder, through a documented -> running rebuild after gate milestone:M1 is approved"
+      },
+      {
+        "item": "Correct the A25 manual acceptance test's wording in plan.json",
+        "why": "plan.json is written only through build_plan.py, and test prose is amend-step --prose-only's field - the planner's call, not a documentation pass's. The exact command is in decisions.md O-M1S02-04.",
+        "owner": "build-planner or a human operator"
+      },
+      {
+        "item": "Declare the two undeclared checkers on M1-S02",
+        "why": "acceptance_tests[] is a plan field; amend-step --add-checker is its writer, and the step is documented rather than pending, so the amendment path runs through the planner.",
+        "owner": "build-planner or a human operator"
+      },
+      {
+        "item": "Persist the Wave-10 pair under docs/reports/build-doc-keeper/",
+        "why": "The invocation scoped this run's writes to .sfskills/builds/northwind-sales/. The envelope pair under envelopes/M1-S02/ is the persisted deliverable for this run, per the build-layer paths standards/build-orchestration.md section 2 defines and the output-envelope schema accepts.",
+        "owner": "n/a - recorded so the omission is visible rather than silent"
+      }
+    ],
+    "next_command_for_a_human": {
+      "command": "/verify-milestone   (build directory .sfskills/builds/northwind-sales/, milestone M1)",
+      "equivalently": "Follow agents/milestone-verifier/AGENT.md for milestone M1 in .sfskills/builds/northwind-sales/",
+      "unrun": true,
+      "why": "Both M1 steps are documented and build_plan.py next reports \"gate 'milestone:M1' is 'pending', not 'approved' - the build refuses to start M2 until a human approves it\". The gate carries no by/at, so this is M1's first verification, not a section 8 re-verification of an accepted milestone."
+    }
+  }
+}

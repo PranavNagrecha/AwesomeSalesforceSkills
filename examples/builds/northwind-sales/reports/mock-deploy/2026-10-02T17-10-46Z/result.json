@@ -1,0 +1,902 @@
+{
+  "status": 0,
+  "result": {
+    "checkOnly": true,
+    "completedDate": "2026-10-02T17:11:09.000Z",
+    "createdBy": "005dL00001j3fsD",
+    "createdByName": "Pranav Nagrecha",
+    "createdDate": "2026-10-02T17:10:55.000Z",
+    "details": {
+      "componentSuccesses": [
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-10-02T17:10:58.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Approval_Status__c",
+          "id": "00NdL00002fLRUPUA4",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-10-02T17:10:58.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Discount__c",
+          "id": "00NdL00002fLRUQUA4",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:00.000Z",
+          "deleted": false,
+          "fileName": "classes/OpportunityApprovalController.cls",
+          "fullName": "OpportunityApprovalController",
+          "id": "01pdL00000aUMrBQAW",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:00.000Z",
+          "deleted": false,
+          "fileName": "classes/OpportunityApprovalService.cls",
+          "fullName": "OpportunityApprovalService",
+          "id": "01pdL00000aUMrCQAW",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:00.000Z",
+          "deleted": false,
+          "fileName": "classes/OpportunityApprovalServiceTest.cls",
+          "fullName": "OpportunityApprovalServiceTest",
+          "id": "01pdL00000aUMrDQAW",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:00.000Z",
+          "deleted": false,
+          "fileName": "classes/OpportunityApprovalSubmitAction.cls",
+          "fullName": "OpportunityApprovalSubmitAction",
+          "id": "01pdL00000aUMrEQAW",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApexClass",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:00.000Z",
+          "deleted": false,
+          "fileName": "classes/TestDataFactory.cls",
+          "fullName": "TestDataFactory",
+          "id": "01pdL00000aUMrFQAW",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "LightningComponentBundle",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "lwc/discountApprovalPanel",
+          "fullName": "discountApprovalPanel",
+          "id": "0RbdL000007WjArSAK",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "StandardValueSet",
+          "created": false,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "standardValueSets/OpportunityStage.standardValueSet",
+          "fullName": "OpportunityStage",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomPermission",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "customPermissions/Bypass_Opportunity_Sales_Validation.customPermission",
+          "fullName": "Bypass_Opportunity_Sales_Validation",
+          "id": "0CPdL000000eTPtWAM",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomObject",
+          "created": false,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "BusinessProcess",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Enterprise_Sales_Process",
+          "id": "019dL000009jMqPQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "BusinessProcess",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Renewal_Sales_Process",
+          "id": "019dL000009jMqQQAU",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "RecordType",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Enterprise",
+          "id": "012dL00000FdAmrQAF",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "RecordType",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Renewal",
+          "id": "012dL00000FdAmsQAF",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ValidationRule",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Opportunity_Discount_Requires_Approval",
+          "id": "03ddL00000CFKdpQAH",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ValidationRule",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Opportunity_Products_Required_At_Propose",
+          "id": "03ddL00000CFKdqQAH",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Layout",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "layouts/Opportunity-Opportunity Enterprise Layout.layout",
+          "fullName": "Opportunity-Opportunity Enterprise Layout",
+          "id": "00hdL00000iOcqnQAC",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Layout",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "layouts/Opportunity-Opportunity Renewal Layout.layout",
+          "fullName": "Opportunity-Opportunity Renewal Layout",
+          "id": "00hdL00000iOcqoQAC",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EmailFolder",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "email/Sales_Approvals-meta.xml",
+          "fullName": "Sales_Approvals",
+          "id": "00ldL00000RAgb7QAD",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EmailTemplate",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "email/Sales_Approvals/Discount_Approval_Request.email",
+          "fullName": "Sales_Approvals/Discount_Approval_Request",
+          "id": "00XdL00000aNyYDUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EmailTemplate",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "email/Sales_Approvals/Discount_Approved.email",
+          "fullName": "Sales_Approvals/Discount_Approved",
+          "id": "00XdL00000aNyYEUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "EmailTemplate",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "email/Sales_Approvals/Discount_Rejected.email",
+          "fullName": "Sales_Approvals/Discount_Rejected",
+          "id": "00XdL00000aNyYFUA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "FlexiPage",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "flexipages/Opportunity_Enterprise_Record_Page.flexipage",
+          "fullName": "Opportunity_Enterprise_Record_Page",
+          "id": "0M0dL00000ItfMjSAJ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Workflow",
+          "created": false,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "workflows/Opportunity.workflow",
+          "fullName": "Opportunity",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "WorkflowFieldUpdate",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "workflows/Opportunity.workflow",
+          "fullName": "Opportunity.Clear_Approval_Status",
+          "id": "04YdL00000ON63hUAD",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "WorkflowFieldUpdate",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "workflows/Opportunity.workflow",
+          "fullName": "Opportunity.Set_Approval_Status_Approved",
+          "id": "04YdL00000ON63iUAD",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "WorkflowFieldUpdate",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "workflows/Opportunity.workflow",
+          "fullName": "Opportunity.Set_Approval_Status_Pending",
+          "id": "04YdL00000ON63jUAD",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "WorkflowFieldUpdate",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "workflows/Opportunity.workflow",
+          "fullName": "Opportunity.Set_Approval_Status_Rejected",
+          "id": "04YdL00000ON63kUAD",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "WorkflowAlert",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "workflows/Opportunity.workflow",
+          "fullName": "Opportunity.Notify_Owner_Discount_Approved",
+          "id": "01WdL000001R4oXUAS",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "WorkflowAlert",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "workflows/Opportunity.workflow",
+          "fullName": "Opportunity.Notify_Owner_Discount_Rejected",
+          "id": "01WdL000001R4oYUAS",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ApprovalProcess",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "approvalProcesses/Opportunity.Discount_Approval.approvalProcess",
+          "fullName": "Opportunity.Discount_Approval",
+          "id": "04adL000003B3FNQA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Profile",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "profiles/Sales User.profile",
+          "fullName": "Sales User",
+          "id": "00edL00000XKOG5QAP",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Enterprise_Sales_Record_Types.permissionset",
+          "fullName": "Enterprise_Sales_Record_Types",
+          "id": "0PSdL00000dTlYAWA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Sales_Ops_Validation_Bypass.permissionset",
+          "fullName": "Sales_Ops_Validation_Bypass",
+          "id": "0PSdL00000dTlYBWA0",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PathAssistantSettings",
+          "created": false,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "settings/PathAssistant.settings",
+          "fullName": "PathAssistant",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PathAssistant",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "pathAssistants/Enterprise_Opportunity_Path.pathAssistant",
+          "fullName": "Enterprise_Opportunity_Path",
+          "id": "1CPdL000000eTPuWAM",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PathAssistant",
+          "created": true,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "pathAssistants/Renewal_Opportunity_Path.pathAssistant",
+          "fullName": "Renewal_Opportunity_Path",
+          "id": "1CPdL000000eTPvWAM",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-10-02T17:11:03.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "package.xml",
+          "success": true
+        }
+      ],
+      "runTestResult": {
+        "codeCoverage": [
+          {
+            "id": "01pdL00000aUMrCQAW",
+            "locationsNotCovered": [
+              {
+                "column": 0,
+                "line": 127,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 131,
+                "numExecutions": 0,
+                "time": -1
+              },
+              {
+                "column": 0,
+                "line": 132,
+                "numExecutions": 0,
+                "time": -1
+              }
+            ],
+            "name": "OpportunityApprovalService",
+            "namespace": null,
+            "numLocations": 52,
+            "numLocationsNotCovered": 3,
+            "type": "Class",
+            "dmlInfo": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01pdL00000aUMrBQAW",
+            "name": "OpportunityApprovalController",
+            "namespace": null,
+            "numLocations": 2,
+            "numLocationsNotCovered": 0,
+            "type": "Class",
+            "dmlInfo": [],
+            "locationsNotCovered": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          },
+          {
+            "id": "01pdL00000aUMrEQAW",
+            "name": "OpportunityApprovalSubmitAction",
+            "namespace": null,
+            "numLocations": 14,
+            "numLocationsNotCovered": 0,
+            "type": "Class",
+            "dmlInfo": [],
+            "locationsNotCovered": [],
+            "methodInfo": [],
+            "soqlInfo": [],
+            "soslInfo": []
+          }
+        ],
+        "numFailures": 0,
+        "numTestsRun": 6,
+        "successes": [
+          {
+            "id": "01pdL00000aUMrDQAW",
+            "methodName": "belowThresholdOpportunityIsRefusedByEntryCriteria",
+            "name": "OpportunityApprovalServiceTest",
+            "namespace": null,
+            "time": 325
+          },
+          {
+            "id": "01pdL00000aUMrDQAW",
+            "methodName": "controllerReturnsTheServiceOutcomeToTheComponent",
+            "name": "OpportunityApprovalServiceTest",
+            "namespace": null,
+            "time": 641
+          },
+          {
+            "id": "01pdL00000aUMrDQAW",
+            "methodName": "invocableReturnsOneResultPerRequestInInputOrder",
+            "name": "OpportunityApprovalServiceTest",
+            "namespace": null,
+            "time": 1745
+          },
+          {
+            "id": "01pdL00000aUMrDQAW",
+            "methodName": "secondSubmitWhilePendingIsRefusedWithAReason",
+            "name": "OpportunityApprovalServiceTest",
+            "namespace": null,
+            "time": 523
+          },
+          {
+            "id": "01pdL00000aUMrDQAW",
+            "methodName": "submitsQualifyingOpportunityAsItsOwner",
+            "name": "OpportunityApprovalServiceTest",
+            "namespace": null,
+            "time": 462
+          },
+          {
+            "id": "01pdL00000aUMrDQAW",
+            "methodName": "unreadableOpportunityIsReportedWithoutASubmission",
+            "name": "OpportunityApprovalServiceTest",
+            "namespace": null,
+            "time": 500
+          }
+        ],
+        "totalTime": 5977,
+        "codeCoverageWarnings": [],
+        "failures": [],
+        "flowCoverage": [],
+        "flowCoverageWarnings": []
+      },
+      "componentFailures": []
+    },
+    "done": true,
+    "id": "0AfdL00000gznejSAA",
+    "ignoreWarnings": false,
+    "lastModifiedDate": "2026-10-02T17:11:09.000Z",
+    "numberComponentErrors": 0,
+    "numberComponentsDeployed": 38,
+    "numberComponentsTotal": 38,
+    "numberFiles": "51",
+    "numberTestErrors": 0,
+    "numberTestsCompleted": 6,
+    "numberTestsTotal": 6,
+    "rollbackOnError": true,
+    "runTestsEnabled": true,
+    "startDate": "2026-10-02T17:10:55.000Z",
+    "status": "Succeeded",
+    "success": true,
+    "zipSize": 43000,
+    "files": [
+      {
+        "fullName": "OpportunityApprovalController",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/OpportunityApprovalController.cls"
+      },
+      {
+        "fullName": "OpportunityApprovalController",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/OpportunityApprovalController.cls-meta.xml"
+      },
+      {
+        "fullName": "OpportunityApprovalService",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/OpportunityApprovalService.cls"
+      },
+      {
+        "fullName": "OpportunityApprovalService",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/OpportunityApprovalService.cls-meta.xml"
+      },
+      {
+        "fullName": "OpportunityApprovalServiceTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/OpportunityApprovalServiceTest.cls"
+      },
+      {
+        "fullName": "OpportunityApprovalServiceTest",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/OpportunityApprovalServiceTest.cls-meta.xml"
+      },
+      {
+        "fullName": "OpportunityApprovalSubmitAction",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/OpportunityApprovalSubmitAction.cls"
+      },
+      {
+        "fullName": "OpportunityApprovalSubmitAction",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/OpportunityApprovalSubmitAction.cls-meta.xml"
+      },
+      {
+        "fullName": "TestDataFactory",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/TestDataFactory.cls"
+      },
+      {
+        "fullName": "TestDataFactory",
+        "type": "ApexClass",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/classes/TestDataFactory.cls-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Discount_Approval",
+        "type": "ApprovalProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Enterprise_Sales_Process",
+        "type": "BusinessProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Renewal_Sales_Process",
+        "type": "BusinessProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/objects/Opportunity/businessProcesses/Renewal_Sales_Process.businessProcess-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Approval_Status__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/objects/Opportunity/fields/Approval_Status__c.field-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Discount__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/objects/Opportunity/fields/Discount__c.field-meta.xml"
+      },
+      {
+        "fullName": "Opportunity",
+        "type": "CustomObject",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/objects/Opportunity/Opportunity.object-meta.xml"
+      },
+      {
+        "fullName": "Bypass_Opportunity_Sales_Validation",
+        "type": "CustomPermission",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml"
+      },
+      {
+        "fullName": "Sales_Approvals",
+        "type": "EmailFolder",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/email/Sales_Approvals.emailFolder-meta.xml"
+      },
+      {
+        "fullName": "Sales_Approvals/Discount_Approval_Request",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/email/Sales_Approvals/Discount_Approval_Request.email"
+      },
+      {
+        "fullName": "Sales_Approvals/Discount_Approval_Request",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml"
+      },
+      {
+        "fullName": "Sales_Approvals/Discount_Approved",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/email/Sales_Approvals/Discount_Approved.email"
+      },
+      {
+        "fullName": "Sales_Approvals/Discount_Approved",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/email/Sales_Approvals/Discount_Approved.email-meta.xml"
+      },
+      {
+        "fullName": "Sales_Approvals/Discount_Rejected",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/email/Sales_Approvals/Discount_Rejected.email"
+      },
+      {
+        "fullName": "Sales_Approvals/Discount_Rejected",
+        "type": "EmailTemplate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/email/Sales_Approvals/Discount_Rejected.email-meta.xml"
+      },
+      {
+        "fullName": "Opportunity_Enterprise_Record_Page",
+        "type": "FlexiPage",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml"
+      },
+      {
+        "fullName": "Opportunity-Opportunity Enterprise Layout",
+        "type": "Layout",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml"
+      },
+      {
+        "fullName": "Opportunity-Opportunity Renewal Layout",
+        "type": "Layout",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml"
+      },
+      {
+        "fullName": "discountApprovalPanel",
+        "type": "LightningComponentBundle",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/lwc/discountApprovalPanel/discountApprovalPanel.html"
+      },
+      {
+        "fullName": "discountApprovalPanel",
+        "type": "LightningComponentBundle",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/lwc/discountApprovalPanel/discountApprovalPanel.js"
+      },
+      {
+        "fullName": "discountApprovalPanel",
+        "type": "LightningComponentBundle",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml"
+      },
+      {
+        "fullName": "Enterprise_Opportunity_Path",
+        "type": "PathAssistant",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml"
+      },
+      {
+        "fullName": "Renewal_Opportunity_Path",
+        "type": "PathAssistant",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/pathAssistants/Renewal_Opportunity_Path.pathAssistant-meta.xml"
+      },
+      {
+        "fullName": "Enterprise_Sales_Record_Types",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml"
+      },
+      {
+        "fullName": "Sales_Ops_Validation_Bypass",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml"
+      },
+      {
+        "fullName": "Sales User",
+        "type": "Profile",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/profiles/Sales User.profile-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Enterprise",
+        "type": "RecordType",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/objects/Opportunity/recordTypes/Enterprise.recordType-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Renewal",
+        "type": "RecordType",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/objects/Opportunity/recordTypes/Renewal.recordType-meta.xml"
+      },
+      {
+        "fullName": "PathAssistant",
+        "type": "Settings",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/settings/PathAssistant.settings-meta.xml"
+      },
+      {
+        "fullName": "OpportunityStage",
+        "type": "StandardValueSet",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/standardValueSets/OpportunityStage.standardValueSet-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Opportunity_Discount_Requires_Approval",
+        "type": "ValidationRule",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Opportunity_Products_Required_At_Propose",
+        "type": "ValidationRule",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml"
+      },
+      {
+        "fullName": "Opportunity",
+        "type": "Workflow",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/workflows/Opportunity.workflow-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Notify_Owner_Discount_Approved",
+        "type": "WorkflowAlert",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/workflows/Opportunity.workflow-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Notify_Owner_Discount_Rejected",
+        "type": "WorkflowAlert",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/workflows/Opportunity.workflow-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Clear_Approval_Status",
+        "type": "WorkflowFieldUpdate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/workflows/Opportunity.workflow-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Set_Approval_Status_Approved",
+        "type": "WorkflowFieldUpdate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/workflows/Opportunity.workflow-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Set_Approval_Status_Pending",
+        "type": "WorkflowFieldUpdate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/workflows/Opportunity.workflow-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Set_Approval_Status_Rejected",
+        "type": "WorkflowFieldUpdate",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-10-02T17-10-46Z/force-app/main/default/workflows/Opportunity.workflow-meta.xml"
+      }
+    ],
+    "zipFileCount": 35,
+    "deployUrl": "https://orgfarm-76c95d6f7f-dev-ed.develop.my.salesforce.com/lightning/setup/DeployStatus/page?address=%2Fchangemgmt%2FmonitorDeploymentsDetails.apexp%3FasyncId%3D0AfdL00000gznejSAA%26retURL%3D%252Fchangemgmt%252FmonitorDeployment.apexp"
+  },
+  "warnings": [],
+  "api_version": {
+    "value": "62.0",
+    "source": "highest of: M1-S01=62.0, M1-S02=62.0, M2-S01=62.0, M2-S02=62.0, M2-S03=62.0, M2-S04=62.0, M2-S05=62.0, M3-S01=62.0, M3-S02=62.0, M3-S05=62.0"
+  },
+  "tests": {
+    "level": "RunSpecifiedTests",
+    "requested_tests": [
+      "OpportunityApprovalServiceTest"
+    ],
+    "run": 6,
+    "passed": 6,
+    "failed": 0,
+    "coverage_pct": 95.6,
+    "failures": [],
+    "coverage_warnings": [],
+    "per_class": [
+      {
+        "name": "OpportunityApprovalService",
+        "type": "Class",
+        "locations": 52,
+        "not_covered": 3,
+        "pct": 94.2
+      },
+      {
+        "name": "OpportunityApprovalController",
+        "type": "Class",
+        "locations": 2,
+        "not_covered": 0,
+        "pct": 100.0
+      },
+      {
+        "name": "OpportunityApprovalSubmitAction",
+        "type": "Class",
+        "locations": 14,
+        "not_covered": 0,
+        "pct": 100.0
+      }
+    ]
+  },
+  "missing_members": []
+}

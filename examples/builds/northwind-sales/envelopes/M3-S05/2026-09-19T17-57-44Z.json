@@ -1,0 +1,511 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T17-57-44Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S05/2026-09-19T17-57-44Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S05/2026-09-19T17-57-44Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S05",
+    "api_version": "62.0 (DEFAULTED - plan.json carries no top-level api_version key and steps[M3-S05].inputs carries none either; agents/metadata-builder/AGENT.md Inputs falls back to 62.0. The only api_version string anywhere in plan.json is on steps[9] (M3-S03), which is an Apex step's own pin, not a plan-level value.)",
+    "brief_vs_plan_disagreements": [
+      "The calling brief said to set the discountThreshold property 'only if the answers ask for a non-default threshold'. plan.json wins: steps[M3-S05].acceptance_tests[4] requires 'the discountApprovalPanel sits in the sidebar region with its discountThreshold property set to 20'. The property is written explicitly with value 20, which equals the bundle's own default in artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml. Recorded here per the brief's own instruction to say so in the envelope.",
+      "The brief asked for grounding on 'an org-validated FlexiPage under examples/builds/'. There is none. examples/builds/ contains no *.flexipage-meta.xml at all, and the single FlexiPage string in that tree is examples/builds/case-onboarding/envelopes/M1-S02/2026-09-06T04-05-00Z.json recording the opposite: 'Confirms a classic Layout is the right artefact and that no FlexiPage or formFactor override is in scope for this step.' No FlexiPage in this library has ever been through an org. Grounding is the cited skills' fences only, and the two shapes they do not cover are marked UNVERIFIED inline.",
+      "The brief said 'if activation requires a Profile overlay, the Sales User overlay of M2-S02 is the precedent'. It does not. Org-default activation (Rung 3) is an ActionOverride on the CustomObject and carries no profile dimension at all; skills/admin/lightning-record-page-configuration/references/gotchas.md #7 states there is no permission-set or profile rung below Rung 1. No Profile file was written and the UNVERIFIED profile Name of O-M2S02-03 is not load-bearing for this step."
+    ]
+  },
+  "summary": "Built M3-S05 (ui, design-only): the Opportunity Enterprise Lightning record page and its org-default activation. Four files, all four declared in outputs[] and nothing else written. flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml - type RecordPage, sobjectType Opportunity, template flexipage:recordHomeWithSubheaderTemplateDesktop, three regions: subheader holding runtime_sales_pathassistant:pathAssistant (hideUpdateButton false, variant linear), main holding force:detailPanel, sidebar holding c:discountApprovalPanel with discountThreshold 20. Every componentInstance carries an identifier (41, 17 and 23 characters; the cap is 120). objects/Opportunity/Opportunity.object-meta.xml - exactly two actionOverrides blocks, actionName View, type Flexipage, content Opportunity_Enterprise_Record_Page, formFactor Large and Small, and nothing else. package.xml - FlexiPage + CustomObject, explicit members, version 62.0. deploy-order.md - seven sections, including the app-default precedence warning the step's manual test requires and the Renewal fall-through (O-M2S05-04) which this step does not close. The declared checker exited 0 after one repair pass (an XML-illegal '--' inside a comment in the object file). check-outputs ok. Two shapes could not be grounded in any cited skill and are marked UNVERIFIED (2026-09-19) inline in the flexipage and tabulated in deploy-order.md section 3.3: that this template provides a region named 'sidebar', and the c: namespace prefix on a custom LWC in a componentInstance.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "agents/metadata-builder/AGENT.md Step 10. Not HIGH on two counts, either of which alone caps it. (1) 'every Questions-to-Ask row was answered from the plan rather than defaulted' fails: the step's two bound answers, Q50 and Q51, are both status 'open' in plan.json and both were resolved by a recorded default (A15 and A17 respectively, with defaults_applied naming them), and the third assumption A38 - which app-level overrides exist at Northwind - answers a question no clarification ever asked. (2) 'every emitted element traced to the Step 3 inventory' fails on two shapes: the 'sidebar' region name is declared by plan.json but no cited skill fences this template's region set, and the c: namespace prefix on a custom LWC componentName is documented only in admin/service-console-configuration, which this step does not cite. Both are marked UNVERIFIED (2026-09-19) inline rather than presented as grounded. Not LOW: check-outputs is ok, all four declared outputs were written, nothing landed outside artefacts/M3-S05/, the step is not blocked, and the declared checker passed on repair pass 1 of 3.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Every element NAME and enum VALUE emitted traces to a fence in a cited skill: flexiPageRegions / itemInstances / componentInstance / componentInstanceProperties / componentName / identifier / name / type / masterLabel / sobjectType / template / description from admin/lightning-record-page-configuration (SKILL.md, examples.md, gotchas.md #1 field list) and admin/path-and-guidance metadata-examples.md section 4; actionOverrides / actionName=View / content / formFactor=Large|Small / type=Flexipage from lightning-record-page-configuration examples.md Example 1 step 2 and gotchas.md #1 and #3. Two VALUES are not so traced and are marked UNVERIFIED inline: the region name 'sidebar' for this specific template, and the 'c:' prefix in c:discountApprovalPanel. Neither is an invented element name - both are values the plan or the upstream artefact supplies - but neither could be confirmed from this step's own cited skills, which is why this dimension is partial rather than complete."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "admin/lightning-record-page-configuration has no '## Questions to Ask Before Configuring' section at all - it predates the convention (frontmatter updated: 2026-08-15; the convention binds skills created or updated on/after 2026-09-04). Its '## Before Starting' block carries five equivalent questions and those were bound instead. The two skills that do have the section, admin/path-and-guidance (7 rows) and lwc/lwc-base-component-recipes (7 rows), are mostly rows this step does not own - they were answered on M2-S05 and M3-S04 and are inherited here rather than re-decided. 14 rows were bound in total; 3 were answered by a recorded default rather than by an answer."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "upstream-binding",
+      "observation": "Every upstream fact this step needed was exact and needed no interpretation: the bundle name, its target, and the discountThreshold design attribute (type Integer, default 20) all came verbatim out of the M3-S04 js-meta.xml, and the two path names came out of M2-S05's artefact file names.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "plan-quality",
+      "observation": "The step's notes field pre-recorded the two traps this build type actually falls into - the missing identifiers in the path-and-guidance fence, and the non-recursive glob that forces the object file into this step - and both were exactly as described, which turned what would have been two discovery cycles into zero.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 2
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "cross-step-assertion",
+      "observation": "Running check_path_and_guidance.py at build scope over artefacts/ (advisory; the step declares it at no scope) now returns 'Checked 2 path(s): no issues found' where before this step it could only stay silent - its Check 6c indexes flexipages/*.flexipage-meta.xml by rglob, so this page is the first thing in the build that makes that check assert anything at all.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/path-and-guidance/scripts/check_path_and_guidance.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "checker-coverage",
+      "observation": "check_path_and_guidance.py Check 6c indexes FlexiPage components by sobjectType, not by record type, so one Opportunity page carrying runtime_sales_pathassistant:pathAssistant silences the note for BOTH paths - including Renewal_Opportunity_Path, whose record type this build never assigns a page to; the green build-scope result therefore reads as closing O-M2S05-04 when it does not.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/path-and-guidance/scripts/check_path_and_guidance.py",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "skill-gap",
+      "observation": "No FlexiPage has ever been through an org anywhere in this library: examples/builds/ contains zero *.flexipage-meta.xml files, and the only FlexiPage mention in that tree is a case-onboarding envelope recording that no FlexiPage was in scope - so every Lightning-page shape this repo ships is fence-grounded and none is org-validated, which is precisely the gap the two UNVERIFIED markers in this step sit in.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "examples/builds",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "skill-shape",
+      "observation": "admin/lightning-record-page-configuration ships no '## Questions to Ask Before Configuring' section, so an agent binding its questions has to notice that '## Before Starting' is the equivalent block; its five bullets are genuinely question-shaped and were bound as such, but nothing in the file says they play that role.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/lightning-record-page-configuration/SKILL.md",
+        "count": 5
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "skill-consistency",
+      "observation": "Two cited files disagree on the casing of the same two enum values and the disagreement is documented rather than resolved: SKILL.md gives the org-default override as actionName 'view' and type 'flexipage', while examples.md Example 1 and gotchas.md #1 give 'View' and 'Flexipage' and gotchas.md #1 explains why ('the reference lists the enum values lower-cased; retrieved .object-meta.xml files carry them capitalised'); the capitalised form was written, matching the fence, the plan's manual test, and the checker's case-insensitive type comparison.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/lightning-record-page-configuration/references/gotchas.md",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "template-regions",
+      "observation": "Whether flexipage:recordHomeWithSubheaderTemplateDesktop provides a region named 'sidebar' is not settled by any file in this repo - SKILL.md names header/main/sidebar as the slots templates define in general, the plan declares the sidebar placement, and the one fence for this template shows only subheader and main - so the placement is written as declared and marked UNVERIFIED for the org to settle.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/path-and-guidance/references/metadata-examples.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "namespace",
+      "observation": "The c: prefix for a custom LWC on a record page appears exactly once in the whole skills tree - c:consoleTelephonyListener in admin/service-console-configuration/references/metadata-examples.md - and that skill is not cited by this step, so the prefix was written on the strength of a non-cited reference and marked UNVERIFIED rather than presented as grounded.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "grep -rn 'componentName>c:' skills/",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "assignment-precedence",
+      "observation": "Which Lightning apps expose Opportunity at Northwind was never asked - assumption A38 records the gap rather than an answer - so this step writes the lowest of four assignment rungs without knowing whether either higher rung already exists, which is the exact shape of the failure examples.md Example 3 documents.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "next-stage",
+      "observation": "The step's four acceptance tests - one checker, the always-on xml and manifest checks, and two manual lines - have not been run by this agent as tests and no tests/M3-S05/results.json exists.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests",
+        "count": 0
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because it runs M3-S05's declared checker plus the always-on xml and manifest checks and writes tests/M3-S05/results.json, which set-status tested requires."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "org-validation",
+      "observation": "Both UNVERIFIED shapes in this step are settled by one org round trip and by nothing short of it, and the layer's own org-facing check is a human's to run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S05/deploy-order.md",
+        "count": 2
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because once M3-S05 is tested it carries this step's decisions and open items into decisions.md, and the mock-deploy run that settles the two UNVERIFIED markers belongs to a human before the G3 decision, not to an agent."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/lightning-record-page-configuration",
+      "path": "skills/admin/lightning-record-page-configuration/SKILL.md",
+      "used_for": "the FlexiPage element set and required fields, the region/facet model and the 100-component cap, the 120-character identifier rule, the four-rung assignment ladder, 'activation is assignment', and the five '## Before Starting' questions bound in place of a Questions-to-Ask table"
+    },
+    {
+      "type": "skill",
+      "id": "admin/lightning-record-page-configuration",
+      "path": "skills/admin/lightning-record-page-configuration/references/examples.md",
+      "used_for": "Example 1 step 2 - the verbatim actionOverrides block shape and element order for the org default; Example 1 step 4 - the manifest member forms; Example 3 - the app-scoped override that outranks an org default, which is deploy-order.md section 3.1"
+    },
+    {
+      "type": "skill",
+      "id": "admin/lightning-record-page-configuration",
+      "path": "skills/admin/lightning-record-page-configuration/references/gotchas.md",
+      "used_for": "#1 the eleven FlexiPage fields, none of them an audience, and the incomplete-manifest rule; #2 the precedence quote and the pageOrSobjectType warning; #3 the formFactor enum and why covering Large and Small is two overrides; #4 sobjectType is a one-way door; #5 the API 49.0 and 53.0 shape changes that make identifier mandatory; #6 the Tooling API audit forms"
+    },
+    {
+      "type": "template",
+      "id": "admin/lightning-record-page-configuration/lightning-record-page-configuration-template.md",
+      "path": "skills/admin/lightning-record-page-configuration/templates/lightning-record-page-configuration-template.md",
+      "used_for": "section 2's assignment-matrix table shape, reproduced as deploy-order.md section 4 with the form-factor coverage and overrides-being-deleted rows"
+    },
+    {
+      "type": "skill",
+      "id": "admin/path-and-guidance",
+      "path": "skills/admin/path-and-guidance/references/metadata-examples.md",
+      "used_for": "section 4 - the FlexiPage fence this page's structure is copied from: componentName runtime_sales_pathassistant:pathAssistant, region subheader, hideUpdateButton false, variant linear, force:detailPanel in main, and the template name; section 6 - making the page visible last in a split deploy"
+    },
+    {
+      "type": "skill",
+      "id": "admin/path-and-guidance",
+      "path": "skills/admin/path-and-guidance/SKILL.md",
+      "used_for": "the Questions-to-Ask row 'Which Lightning record page will render this, and what template is it built on?', which is the row this step exists to answer"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-base-component-recipes",
+      "path": "skills/lwc/lwc-base-component-recipes/references/code-examples.md",
+      "used_for": "the App Builder availability rule - only components whose isExposed is true and whose targets include the page type are listable - which is what makes the M3-S04 bundle placeable here, quoted in deploy-order.md section 3.3"
+    },
+    {
+      "type": "skill",
+      "id": "lwc/lwc-base-component-recipes",
+      "path": "skills/lwc/lwc-base-component-recipes/SKILL.md",
+      "used_for": "the container question whose answer is assumption A17, which is why the object-level assignment is written at both Large and Small rather than Large alone"
+    },
+    {
+      "type": "skill",
+      "id": "admin/service-console-configuration",
+      "path": "skills/admin/service-console-configuration/references/metadata-examples.md",
+      "used_for": "the only fenced example in this library of a custom LWC inside a FlexiPage componentInstance (c:consoleTelephonyListener) - read to ground the c: prefix, and cited here precisely because it is NOT one of this step's skills[], which is why the prefix is marked UNVERIFIED rather than grounded"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 the plan-is-the-only-shared-state rule and the build-directory layout; section 4 the ui step-type row and the status machine; section 5 the acceptance-test types, the run-from-the-build-directory rule for checkers, and the rule that every metadata-builder metadata step declares its own package.xml"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the whole plan - Step 3's grep test for deployable XML, Step 4's four-source binding order, Step 5's three writing rules, Step 6's manifest constraints, Step 7's deploy-order note, Step 8's three-repair-pass limit, Step 9's check-outputs gate and the standalone set-status path, Step 10's confidence table"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and its four categories, the Citations schema, and rule 7 - never deploy, never write outside the supplied paths"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/envelopes/M1-S02/2026-09-06T04-05-00Z.json",
+      "used_for": "checked for an org-validated FlexiPage to ground against, per the brief; it records the opposite - no FlexiPage or formFactor override in scope for that step - and examples/builds/ contains no .flexipage-meta.xml at all"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S05",
+    "step_type": "ui",
+    "build_mode": "design-only",
+    "status_path_taken": "Invoked directly (not under agents/build-step-runner), so this agent moved the step itself, twice and only twice: pending -> running before writing anything, and running -> built after check-outputs returned ok. AGENT.md Step 9's standalone path.",
+    "human_gate": "false on this step; no step:M3-S05 gate exists in human_gates[], and build_plan.py next offered M3-S05 as runnable.",
+    "artefacts": [
+      "artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml",
+      "artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml",
+      "artefacts/M3-S05/package.xml",
+      "artefacts/M3-S05/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml",
+        "metadata_type": "FlexiPage",
+        "element_source": "skills/admin/path-and-guidance/references/metadata-examples.md section 4 (structure, component names, properties, template) + skills/admin/lightning-record-page-configuration/references/gotchas.md #5 and SKILL.md (the identifier requirement and the 120-character cap) + gotchas.md #1 (the description field)",
+        "declared_in_outputs": true,
+        "note": "3 regions, 3 componentInstances, 3 identifiers (41 / 17 / 23 chars). No visibilityRule anywhere: only the Enterprise record type is in scope and no component needs a filter. No parentFlexiPage and no mode - see decision_record. Two UNVERIFIED (2026-09-19) markers inline."
+      },
+      {
+        "path": "artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml",
+        "metadata_type": "CustomObject (partial - actionOverrides only)",
+        "element_source": "skills/admin/lightning-record-page-configuration/references/examples.md Example 1 step 2 (block shape and element order) + gotchas.md #3 (the formFactor enum and the two-overrides rule)",
+        "declared_in_outputs": true,
+        "note": "Exactly two actionOverrides blocks and nothing else, per the step's manual acceptance test. Ships here rather than on M1-S01 per decision D10; no collision, M1-S01 writes only decomposed recordTypes/businessProcesses/fields."
+      },
+      {
+        "path": "artefacts/M3-S05/package.xml",
+        "metadata_type": "Package manifest",
+        "element_source": "skills/admin/lightning-record-page-configuration/references/examples.md Example 1 step 4 and SKILL.md 'Pattern: Moving a Page and Its Assignment Between Orgs'",
+        "declared_in_outputs": true,
+        "note": "FlexiPage + CustomObject, explicit members, version 62.0. CustomApplication - the third type that pattern names - deliberately absent: this build writes no application file. Recorded in the manifest's own comment and in deploy-order.md section 5."
+      },
+      {
+        "path": "artefacts/M3-S05/deploy-order.md",
+        "metadata_type": "deploy-order note (AGENT.md Step 7)",
+        "element_source": "skills/admin/change-management-and-deployment (the note's role) + the cited skills' gotchas; assignment matrix shape from the lightning-record-page-configuration template section 2",
+        "declared_in_outputs": true,
+        "note": "8 sections. Section 3.1 carries the app-default precedence warning the step's manual test requires verbatim; section 3.2 carries the Renewal fall-through (O-M2S05-04) and states this step does not close it; section 3.3 tabulates both UNVERIFIED shapes; section 6 is the validate-only command as text, unrun."
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Which page type is this? (admin/lightning-record-page-configuration, '## Before Starting' 1)",
+        "skill": "admin/lightning-record-page-configuration",
+        "answer": "RecordPage.",
+        "source": "step inputs (inputs.flexipage names an Opportunity record page) and requirement.md item 4 ('On the record page, reps should see...')",
+        "determined": "<type>RecordPage</type>",
+        "is_default": false
+      },
+      {
+        "question": "Which apps reach this object? (same, 2)",
+        "skill": "admin/lightning-record-page-configuration",
+        "answer": "Unknown. No clarification asked, and this build writes no application file.",
+        "source": "assumption A38, which records the gap rather than an answer",
+        "determined": "No CustomApplication member in package.xml; deploy-order.md section 3.1 carries the enumeration a human must do, and the retrieve command to do it with",
+        "is_default": true
+      },
+      {
+        "question": "Which form factors are in scope? (same, 3)",
+        "skill": "admin/lightning-record-page-configuration",
+        "answer": "Lightning Experience desktop and the Salesforce mobile app. No Experience Cloud.",
+        "source": "assumption A17 (Q51's proposed default, unanswered at G1; defaults_applied maps Q51 -> A17), corroborated by the M3-S04 bundle's supportedFormFactors Large and Small",
+        "determined": "Two actionOverrides blocks, formFactor Large and formFactor Small",
+        "is_default": true
+      },
+      {
+        "question": "Is sobjectType already set? (same, 4)",
+        "skill": "admin/lightning-record-page-configuration",
+        "answer": "Opportunity, fixed at first save and unchangeable afterwards.",
+        "source": "step inputs (the page name) and requirement.md",
+        "determined": "<sobjectType>Opportunity</sobjectType>, plus the one-way-door warning in deploy-order.md section 7",
+        "is_default": false
+      },
+      {
+        "question": "What is the deployment path? (same, 5)",
+        "skill": "admin/lightning-record-page-configuration",
+        "answer": "A manifest deploy carrying the page and its assignment together; this is a design-only build, so no deploy is run.",
+        "source": "standards/build-orchestration.md section 5 and the build's design-only build_mode",
+        "determined": "package.xml naming both types; deploy-order.md section 6 gives the validate-only command as text for a human",
+        "is_default": false
+      },
+      {
+        "question": "Which Lightning record page will render this, and what template is it built on? (admin/path-and-guidance Questions-to-Ask row 7 = Q50)",
+        "skill": "admin/path-and-guidance",
+        "answer": "A new page, Opportunity_Enterprise_Record_Page, on flexipage:recordHomeWithSubheaderTemplateDesktop.",
+        "source": "step inputs (inputs.flexipage and inputs.template are the planner's explicit binding and outrank everything else per AGENT.md Step 4); Q50 itself is status 'open' and defaults_applied maps it to A15 - build new rather than edit the org's existing page",
+        "determined": "The page's masterLabel, file name and <template><name>",
+        "is_default": true
+      },
+      {
+        "question": "Which region does the Path component go in? (admin/path-and-guidance metadata-examples.md section 4)",
+        "skill": "admin/path-and-guidance",
+        "answer": "subheader - the region only a template providing one supplies.",
+        "source": "the cited fence, and step inputs.components.subheader",
+        "determined": "flexiPageRegions name subheader, type Region, holding runtime_sales_pathassistant:pathAssistant",
+        "is_default": false
+      },
+      {
+        "question": "Does the Path keep its stage-advance button?",
+        "skill": "admin/path-and-guidance",
+        "answer": "Yes - hideUpdateButton false, variant linear, both as the guide's sample sets them.",
+        "source": "the cited fence (documented default), reinforced by the step's manual acceptance test which names hideUpdateButton false",
+        "determined": "Two componentInstanceProperties on the path component",
+        "is_default": true
+      },
+      {
+        "question": "Where does the discount/approval panel go, and under what componentName?",
+        "skill": "lwc/lwc-base-component-recipes",
+        "answer": "The sidebar region, as c:discountApprovalPanel.",
+        "source": "step inputs.components.sidebar names the bundle; the bundle name and its lightning__RecordPage target come from the upstream artefact artefacts/M3-S04/.../discountApprovalPanel.js-meta.xml; the c: prefix comes from admin/service-console-configuration, NOT from a cited skill",
+        "determined": "The third flexiPageRegions block, with both the region name and the prefix marked UNVERIFIED (2026-09-19)",
+        "is_default": false
+      },
+      {
+        "question": "Is the discountThreshold design attribute set on the page, or left to the bundle's default?",
+        "skill": "lwc/lwc-base-component-recipes",
+        "answer": "Set explicitly to 20.",
+        "source": "plan.json steps[M3-S05].acceptance_tests[4] requires it; the value matches the bundle's own default=20. The calling brief said to set it only for a non-default threshold - plan.json wins and the disagreement is recorded in inputs_received.",
+        "determined": "componentInstanceProperties name discountThreshold, value 20",
+        "is_default": false
+      },
+      {
+        "question": "Where does the page's activation live, and on which step?",
+        "skill": "admin/lightning-record-page-configuration",
+        "answer": "An ActionOverride on objects/Opportunity/Opportunity.object-meta.xml, shipped in THIS step.",
+        "source": "plan decision D10 (explicit), grounded on examples.md Example 1 step 2 and on check_lightning_record_page_configuration.py's non-recursive objects/*/*.object-meta.xml glob",
+        "determined": "The object file's location inside artefacts/M3-S05/",
+        "is_default": false
+      },
+      {
+        "question": "One override or two?",
+        "skill": "admin/lightning-record-page-configuration",
+        "answer": "Two - Large and Small.",
+        "source": "gotchas.md #3 ('covering both is literally two overrides that differ in one element') bound onto assumption A17; the step's manual acceptance test names both",
+        "determined": "Two actionOverrides blocks. Note: the only fenced OBJECT-file example in the library shows Large alone; the pair is fenced at app level. The formFactor semantics quoted are stated against ActionOverride, the object-level type, which is what carries the extrapolation.",
+        "is_default": false
+      },
+      {
+        "question": "Does the page inherit from a parent page, and do its regions carry a merge mode?",
+        "skill": "admin/lightning-record-page-configuration",
+        "answer": "No parentFlexiPage and no mode.",
+        "source": "no answer, no assumption, no plan input; the two cited fences disagree (examples.md Example 1 carries both, path-and-guidance section 4 carries neither) and the tie was broken on the path-and-guidance fence because it is the closer match - same object, same template, same subheader region",
+        "determined": "Both elements omitted. Reasoning is in the flexipage's own header comment: mode selects how a region merges with the parent's region of the same name, so it is meaningless without a parent, and inheriting flexipage__default_rec_L would pull the platform default page's regions into a page whose three regions the plan states exactly.",
+        "is_default": false
+      },
+      {
+        "question": "Does any component need a visibility rule?",
+        "skill": "admin/lightning-record-page-configuration",
+        "answer": "No.",
+        "source": "the plan declares three components and no filter for any of them; only the Enterprise record type is in scope for this page",
+        "determined": "No visibilityRule element anywhere in the page. The operator enum (EQUAL, NE, CONTAINS, GT, GE, LT, LE) was read and not used.",
+        "is_default": false
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/lightning-record-page-configuration/scripts/check_lightning_record_page_configuration.py --manifest-dir artefacts/M3-S05",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 1,
+        "stdout": "No errors found (0 warning(s)).",
+        "pass_1_output": "ERROR: artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml: not well-formed XML: not well-formed (invalid token): line 31, column 4 | ERROR: artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml: record page 'Opportunity_Enterprise_Record_Page' has no override pointing at it in this tree. | 2 error(s), 0 warning(s). | exit 1",
+        "pass_1_fix": "One cause, two symptoms. The object file's provenance comment contained the literal string '--manifest-dir'; '--' is illegal inside an XML comment, so the file did not parse, so collect_assignments() indexed no override, so the page correctly reported as unassigned. Reworded to 'its manifest-dir argument'. No metadata element changed. The second ERROR is the checker's headline finding working exactly as designed - it is what separates a deployed page from a visible one - and it disappeared with the parse failure.",
+        "reading": "Exit 0 with zero warnings is the meaningful result here, not just a clean bill: the zero-warning half means no override in this tree points at a page outside it, and the no-ERROR half means the page IS pointed at. --strict was deliberately not passed, per the step's declared command; it would promote the outside-the-tree warning to an error, and there is nothing in this tree for it to catch. Empty-directory behaviour, per the step's test description: exit 1 on 'no flexipages/*.flexipage-meta.xml found'."
+      },
+      {
+        "command": "python3 skills/admin/path-and-guidance/scripts/check_path_and_guidance.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "build (advisory - run because AGENT.md Step 8 says to run every cited skill's checker; the step declares it at no scope)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "Checked 2 path(s): no issues found.",
+        "reading": "This is the first run in the build where Check 6c asserts anything: it rglobs flexipages/*.flexipage-meta.xml, indexes componentNames by sobjectType, and reports a note when an Opportunity page in the manifest lacks runtime_sales_pathassistant:pathAssistant. Before this step there was no page in the tree and it stayed silent by construction. Read with the caveat in Process Observations: the index is keyed by sobjectType, not record type, so one page silences the note for both paths."
+      },
+      {
+        "command": "python3 skills/admin/path-and-guidance/scripts/check_path_and_guidance.py --manifest-dir artefacts/M3-S05",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step (advisory)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "No PathAssistant metadata found under artefacts/M3-S05 - nothing to check. | Scanned 0 file(s) - nothing asserted; check --manifest-dir",
+        "reading": "A vacuous pass, and the checker says so itself. Recorded rather than counted: at step scope this checker asserts nothing about this step, because the paths it reasons from live in M2-S05. If it is ever declared on this step it needs scope build, which is the form run above."
+      },
+      {
+        "command": "python3 skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py --manifest-dir artefacts/M3-S05",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": false,
+        "scope": "step (advisory)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "WARN: artefacts/M3-S05: no LWC bundles and no HTML templates found - nothing to check.",
+        "reading": "Another vacuous pass. This checker audits bundle internals and this step writes none - the bundle is M3-S04's, where it belongs. Exit 0 here is the absence of a subject, not a verdict."
+      },
+      {
+        "command": "python3 -c \"import xml.etree.ElementTree as ET, pathlib; [ET.parse(p) for p in sorted(pathlib.Path('artefacts/M3-S05').rglob('*.xml'))]\"",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": "always-on (AGENT.md Step 8; the step also declares it as acceptance_tests[1])",
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 1,
+        "stdout": "3 files parsed OK",
+        "reading": "Same repair as the checker's pass 1 - the '--' in an XML comment - found by the same edit. All three of *.flexipage-meta.xml, *.object-meta.xml and package.xml parse."
+      }
+    ],
+    "xml_parse": "All 3 *.xml / *-meta.xml files under artefacts/M3-S05/ parse with xml.etree.ElementTree. deploy-order.md is markdown and is not parsed. One repair pass: an XML-illegal '--' inside a provenance comment in the object file.",
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "package.xml carries two <name> blocks. FlexiPage: member Opportunity_Enterprise_Record_Page, backed by flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml. CustomObject: member Opportunity, backed by objects/Opportunity/Opportunity.object-meta.xml. Both directions hold - every metadata file on disk is covered by a member, every member is backed by a file. deploy-order.md and package.xml itself are not metadata components and take no member. No wildcard is used; neither type is one this library documents as wildcard-refusing (that is EmailTemplate), but explicit members are what make the two-directional agreement assertable.",
+    "api_version_note": "62.0, DEFAULTED. plan.json carries no top-level api_version key; steps[M3-S05].inputs carries none; the one api_version string in the file belongs to the M3-S03 Apex step. agents/metadata-builder/AGENT.md Inputs: 'defaults to the plan's api_version, then to 62.0'. It also matches every other package.xml under artefacts/ and the M3-S04 bundle's own pin, so mock_deploy.py's highest-version scan across M3 sees one number. Two floors in this step - API 49.0 for itemInstances, API 53.0 for the required identifier - are both cleared.",
+    "org_interaction": "None. requires_org: false, build_mode design-only, no org alias on file. No sf command was run. scripts/mock_deploy.py was not run and is not this agent's to run; the validate-only command in deploy-order.md section 6 is text for a human.",
+    "plan_writes": "Exactly two, both via build_plan.py set-status: pending -> running at 2026-09-19T17:57:44Z before any file was written, and running -> built after check-outputs returned ok. plan.json was never hand-edited and no other subcommand was called against it.",
+    "scope_note": "Only the Enterprise record page is built, per the plan. The Renewal record type falls through to whatever the org already has, and O-M2S05-04 - recorded in artefacts/M2-S05/deploy-order.md section 3 - is NOT closed by this step. deploy-order.md section 3.2 says so explicitly and explains why the advisory build-scope path checker going green does not amount to closing it.",
+    "workflow_return": {
+      "step_id": "M3-S05",
+      "status": "built",
+      "artefacts": [
+        "artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml",
+        "artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml",
+        "artefacts/M3-S05/package.xml",
+        "artefacts/M3-S05/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "UNVERIFIED (2026-09-19): that flexipage:recordHomeWithSubheaderTemplateDesktop provides a region named 'sidebar'. Settled by opening the template in Lightning App Builder or retrieving any page built on it. If the name differs, one <name> element changes. A region name the template does not define is a deploy-time failure the checker cannot see.",
+      "UNVERIFIED (2026-09-19): the c: namespace prefix on a custom LWC componentName. Grounded only in admin/service-console-configuration, which this step does not cite. Settled by the dry run in deploy-order.md section 6.",
+      "A38 is open, medium risk: nobody has enumerated which Lightning apps expose Opportunity at Northwind. Rungs 1 and 2 both outrank the org default this step writes, and both live in CustomApplication metadata this build does not contain. deploy-order.md section 3.1 carries the retrieve commands. Do this before the M3 gate, not after.",
+      "O-M2S05-04 stays open: nothing in this build asserts that the page a Renewal Opportunity resolves to carries runtime_sales_pathassistant:pathAssistant. Note also that the org default written here is not record-type-scoped - ActionOverride on CustomObject has no recordType field - so it makes the Enterprise page the default for Renewal too unless a higher rung says otherwise.",
+      "Two cited checkers are undeclared on this step: check_path_and_guidance.py and check_lwc_base_component_recipes.py. build_plan.py next prints the amend-step --add-checker command for both. Before declaring them, read the advisory results above: at step scope both are vacuous passes, and only check_path_and_guidance.py at scope build asserts anything (and its Check 6c is keyed by sobjectType, not record type).",
+      "admin/lightning-record-page-configuration ships no '## Questions to Ask Before Configuring' section. Its '## Before Starting' block is the equivalent and was bound as such. A library follow-up, not a build blocker.",
+      "The step's two manual acceptance tests are for the M3 milestone gate. Both were written to be tickable from the files as they stand: two actionOverrides blocks and nothing else in the object file plus the app-default sentence in deploy-order.md (test 3), and the Path in subheader with hideUpdateButton false, the panel in sidebar with discountThreshold 20, and every identifier under 120 characters (test 4)."
+    ]
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "it runs M3-S05's declared checker plus the always-on xml and manifest checks and writes tests/M3-S05/results.json with the artefact hashes that set-status tested requires."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once M3-S05 is tested it carries this step's decision record and its four open items into decisions.md and traceability.md; the deterministic half is scripts/render_step_docs.py per standards/build-orchestration.md section 4."
+    }
+  ]
+}

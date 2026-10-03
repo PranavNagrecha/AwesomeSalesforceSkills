@@ -1,0 +1,5 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 1 approval-process file(s) and 5 Apex file(s); 0 finding(s) detected."
+}

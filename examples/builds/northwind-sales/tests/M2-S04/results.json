@@ -1,0 +1,73 @@
+{
+  "step_id": "M2-S04",
+  "ran": [
+    "xml",
+    "manifest",
+    "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+    "python3 skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py --manifest-dir artefacts/M2-S04",
+    "check-outputs"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given the two UNVERIFIED (2026-09-15) claims in the step note (formula-context availability of HasOpportunityLineItem; the official-source conflict on re-firing after a line-item deletion), when artefacts/M2-S04/deploy-order.md is read at the M2 gate, then both appear verbatim with the dry-run settlement named for the first and 'forward gate only' stated for the second. (expected: ticked at the M2 milestone gate; deferred to that gate, not ticked by step-tester -- see Process Observations: this test's Given wording predates the 2026-09-19 org verification of the first claim, recorded in deploy-order.md section 2.1)"
+  ],
+  "test_detail": [
+    {
+      "name": "xml",
+      "type": "xml",
+      "runner": "xml.etree.ElementTree, one parse per *.xml / *-meta.xml under artefacts/M2-S04/",
+      "files_checked": [
+        "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml",
+        "artefacts/M2-S04/package.xml"
+      ],
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "all 2 files parse. Raw capture: tests/M2-S04/xml_parse.stdout.txt."
+    },
+    {
+      "name": "manifest",
+      "type": "manifest",
+      "runner": "two-way consistency check between artefacts/M2-S04/package.xml and the files under artefacts/M2-S04/, per skills/devops/salesforce-dx-project-structure filename-to-type mapping",
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "package.xml carries one <types> block: ValidationRule, member Opportunity.Opportunity_Products_Required_At_Propose (object-dot-rule-name form, per skills/devops/metadata-api-retrieve-deploy's <types>/<members>/<name> grammar), matching the single file objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml. No wildcard used. File-to-manifest: the one file is covered. Manifest-to-file: the one explicit member has a file. package.xml is byte-identical to the prior tested run (hash aa61dafca5b2b10753d739c8a31c22da4df787da9365382372509ea98d94a433, unchanged by the description-only repair). ValidationRule is not on any no-standalone-file coverage-gap list, so no exclusion applies."
+    },
+    {
+      "name": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+      "type": "checker",
+      "runner": "declared command, run verbatim from the build directory, scope: build",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "{\"score\": 100, \"findings\": [{\"severity\": \"REVIEW\", \"location\": \"artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml::Opportunity_Products_Required_At_Propose\", \"message\": \"picklist logic has no explicit blank guard\"}], \"summary\": \"Scanned 2 validation rule(s) across 2 file(s); 1 finding(s) detected.\", \"blocking\": 0}. stderr carries one non-fatal line ('WARN: 1 finding(s) detected (0 blocking)'), exit code unaffected. Matches this run's expected output verbatim (2 validation rules scanned, 1 REVIEW blank-guard advisory, exit 0) -- the repair changed only the <description> element (766 -> 205 chars), which this checker does not inspect. check-outputs also ok, so both pass conditions (exit 0 and check-outputs ok) are met. Raw capture: tests/M2-S04/check_validation_rules.std{out,err}.txt, check_validation_rules.exit.txt."
+    },
+    {
+      "name": "python3 skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py --manifest-dir artefacts/M2-S04",
+      "type": "checker",
+      "runner": "declared command, run verbatim from the build directory, scope: step",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "stdout: \"No issues found.\" Declared expected ('exit 0') is met and check-outputs is ok, so the pass condition holds. This step's artefact tree carries one ValidationRule and no Product2 / Pricebook2 / PricebookEntry metadata, so this exit 0 asserts nothing demonstrable about the step -- consistent with the prior tested run's finding and the builder's own control-run finding (an identical run against a genuinely empty directory produces the same 'No issues found.' at exit 0). Recorded as a pass against the declared expectation, not as evidence the product-catalog side of the rule was validated. Raw capture: tests/M2-S04/check_products_and_pricebooks.std{out,err}.txt, check_products_and_pricebooks.exit.txt."
+    },
+    {
+      "name": "manual",
+      "type": "manual",
+      "runner": "not runnable by step-tester",
+      "exit_code": null,
+      "verdict": "deferred",
+      "detail": "One manual acceptance test, checked against the Given/When/Then shape (skills/admin/acceptance-criteria-given-when-then) before being carried into skipped_manual[]. Given names two UNVERIFIED (2026-09-15) claims; When names one observable action (reading artefacts/M2-S04/deploy-order.md at the M2 gate); Then names two checkable, oracle-bearing facts. All three clauses present and the Then is directly inspectable, per skills/admin/uat-and-acceptance-criteria's if/then testability bar. Inspected as a courtesy, not as a tick: deploy-order.md section 2.1 carries the HasOpportunityLineItem formula-context claim verbatim, now marked 'ORG-VERIFIED (2026-09-19)' with the dry-run settlement named (reports/MOCK-DEPLOY-M2.md run 1) rather than left as a bare UNVERIFIED marker -- the original UNVERIFIED text is kept, superseded rather than deleted, so the Then clause's literal wording ('appear verbatim with the dry-run settlement named for the first') still holds. Section 2.2 carries the re-firing-after-deletion claim verbatim under 'FORWARD GATE ONLY', still genuinely unresolved. Flagged in Process Observations: the test's own Given premise ('the two UNVERIFIED claims') predates the 2026-09-19 org verification of the first claim and is now stale phrasing, even though the artefact still satisfies the literal Then. Deferred to the M2 gate per this agent's contract; not ticked here."
+    }
+  ],
+  "check_outputs": {
+    "ok": true,
+    "step": "M2-S04",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "artefact_hashes": {
+    "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml": "f45857d52d53d410e4fd1f64541a26bbeb25f31a989a540db4b86a98590d6d92",
+    "artefacts/M2-S04/package.xml": "aa61dafca5b2b10753d739c8a31c22da4df787da9365382372509ea98d94a433",
+    "artefacts/M2-S04/deploy-order.md": "e4c3a4729ba16c1158d8e80c6493ec79376b2ed533c1423f5d578a46f5bcff78"
+  }
+}

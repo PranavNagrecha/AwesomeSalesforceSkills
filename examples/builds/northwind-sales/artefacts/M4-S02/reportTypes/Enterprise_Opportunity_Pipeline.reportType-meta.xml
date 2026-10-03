@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- M4-S02. New Enterprise-scoped custom report type (A40); no existing report type is edited.
+         baseObject Opportunity with NO join: a join to Opportunity Product returns one row per line item
+         and would double-count Amount (plan.json steps[M4-S02].inputs.note; deploy-order.md section 7).
+         Shape from skills/admin/reports-and-dashboards/references/metadata-examples.md section 1.
+         Section fields are the field API names on Opportunity; Discount__c and Approval_Status__c come
+         from M1-S01 and must be in the org before this file deploys.
+         The record type is listed so the report can filter on the Enterprise record type. Repairs after
+         MOCK-DEPLOY-M4: run 1 (N4-F-01) rejected field RecordTypeId in table Opportunity; run 2 (N4-F-05)
+         rejected RecordType.Name ("Could not find field Name in table Record Type"), so the relationship
+         form resolves to the Record Type table but Name is not the field it exposes. The column is now the
+         lookup field's own relationship name, RecordType, in table Opportunity.
+         UNVERIFIED (2026-10-02): org run 3 settles the column name; runs 1-2 rejected RecordTypeId and RecordType.Name.
+         -->
+    <baseObject>Opportunity</baseObject>
+    <category>opportunities</category>
+    <deployed>true</deployed>
+    <description>Enterprise open-pipeline reporting on Opportunity alone, with no join, so each opportunity is one row and Amount is never repeated per product line.</description>
+    <label>Enterprise Opportunity Pipeline</label>
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Name</field>
+            <table>Opportunity</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>StageName</field>
+            <table>Opportunity</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Amount</field>
+            <table>Opportunity</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Discount__c</field>
+            <table>Opportunity</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>CloseDate</field>
+            <table>Opportunity</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Approval_Status__c</field>
+            <table>Opportunity</table>
+        </columns>
+        <columns>
+            <checkedByDefault>false</checkedByDefault>
+            <field>RecordType</field>
+            <table>Opportunity</table>
+        </columns>
+        <masterLabel>Opportunities</masterLabel>
+    </sections>
+</ReportType>

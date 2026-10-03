@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApprovalProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <allowRecall>true</allowRecall>
+    <allowedSubmitters>
+        <type>owner</type>
+    </allowedSubmitters>
+    <approvalPageFields>
+        <field>Name</field>
+        <field>Owner</field>
+        <field>Amount</field>
+        <field>Discount__c</field>
+    </approvalPageFields>
+    <approvalStep>
+        <assignedApprover>
+            <approver>
+                <type>userHierarchyField</type>
+            </approver>
+        </assignedApprover>
+        <description>The opportunity owner's manager signs off on any discount above 20% (Q32).</description>
+        <label>Manager Approval</label>
+        <name>Manager_Approval</name>
+    </approvalStep>
+    <description>Discounts above 20% on Enterprise and Renewal opportunities need the record owner's manager. One step; the record is locked while pending and unlocks on either outcome (Q31, Q32, Q33, D4).</description>
+    <emailTemplate>Sales_Approvals/Discount_Approval_Request</emailTemplate>
+    <enableMobileDeviceAccess>false</enableMobileDeviceAccess>
+    <entryCriteria>
+        <formula>AND(AND(NOT(ISBLANK(Discount__c)), Discount__c &gt; 0.20, OR(RecordType.DeveloperName = "Enterprise", RecordType.DeveloperName = "Renewal")), NOT(ISPICKVAL(StageName, "Closed Won")), NOT(ISPICKVAL(StageName, "Closed Lost")))</formula>
+    </entryCriteria>
+    <finalApprovalActions>
+        <action>
+            <name>Set_Approval_Status_Approved</name>
+            <type>FieldUpdate</type>
+        </action>
+        <action>
+            <name>Notify_Owner_Discount_Approved</name>
+            <type>Alert</type>
+        </action>
+    </finalApprovalActions>
+    <finalApprovalRecordLock>false</finalApprovalRecordLock>
+    <finalRejectionActions>
+        <action>
+            <name>Set_Approval_Status_Rejected</name>
+            <type>FieldUpdate</type>
+        </action>
+        <action>
+            <name>Notify_Owner_Discount_Rejected</name>
+            <type>Alert</type>
+        </action>
+    </finalRejectionActions>
+    <finalRejectionRecordLock>false</finalRejectionRecordLock>
+    <initialSubmissionActions>
+        <action>
+            <name>Set_Approval_Status_Pending</name>
+            <type>FieldUpdate</type>
+        </action>
+    </initialSubmissionActions>
+    <label>Discount Approval</label>
+    <nextAutomatedApprover>
+        <useApproverFieldOfRecordOwner>true</useApproverFieldOfRecordOwner>
+        <userHierarchyField>Manager</userHierarchyField>
+    </nextAutomatedApprover>
+    <recallActions>
+        <action>
+            <name>Clear_Approval_Status</name>
+            <type>FieldUpdate</type>
+        </action>
+    </recallActions>
+    <recordEditability>AdminOnly</recordEditability>
+    <showApprovalHistory>true</showApprovalHistory>
+</ApprovalProcess>

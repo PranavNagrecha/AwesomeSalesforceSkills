@@ -1,0 +1,7 @@
+[
+  {
+    "path": "artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml",
+    "parsed": true,
+    "message": null
+  }
+]

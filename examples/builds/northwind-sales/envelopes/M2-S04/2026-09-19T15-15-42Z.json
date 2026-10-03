@@ -1,0 +1,221 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T15-15-42Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S04/2026-09-19T15-15-42Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S04/2026-09-19T15-15-42Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S04"
+  },
+  "summary": "Re-tested M2-S04 (validation, built by metadata-builder) after the N3-F-06 repair (envelope envelopes/M2-S04/2026-09-19T15-08-49Z.json) rewrote <description> from 766 to 205 characters; every other element of the ValidationRule and package.xml are byte-identical to the run this step's first test pass (2026-09-19T14-59-39Z) covered. Ran both declared checkers verbatim from the build directory exactly as the plan wrote them: check_validation_rules.py at the plan's declared build scope (--manifest-dir artefacts), which scanned two validation rules across two files and printed 'Scanned 2 validation rule(s) across 2 file(s); 1 finding(s) detected.' with one REVIEW-severity advisory on this step's rule ('picklist logic has no explicit blank guard') -- exit 0, unaffected by the description-only repair, matching the prior tested run's output; and check_products_and_pricebooks.py at step scope (--manifest-dir artefacts/M2-S04), which exited 0 with 'No issues found.' -- this step's artefact tree carries one ValidationRule and no Product2/Pricebook2/PricebookEntry metadata, so the exit asserts nothing demonstrable about the step, recorded as a pass against the declared expectation and not as catalog validation, exactly as the prior tester recorded it. Also ran the always-on xml parse (2/2 files parse), the always-on manifest consistency check (ValidationRule named explicitly in package.xml with a file behind it, both directions consistent, no wildcard, package.xml byte-identical to the prior run), and check-outputs --hashes (ok, nothing missing/empty/malformed; the validation-rule file and deploy-order.md hashes changed from the prior tested run's stale ones, package.xml did not). All four runnable tests passed. The step's one manual acceptance test was checked against the Given/When/Then shape (all three clauses present, Then directly inspectable) and deferred verbatim to the M2 milestone gate rather than ticked. As a courtesy this run also read deploy-order.md against both Then clauses: section 2.1 now reads 'ORG-VERIFIED (2026-09-19)' with the dry-run settlement named (superseding the original UNVERIFIED marker, which is kept verbatim rather than deleted), and section 2.2 still states 'FORWARD GATE ONLY' as unresolved -- both Then-clause facts hold, but the manual test's own Given premise ('the two UNVERIFIED claims') now reads as stale phrasing against a step where one claim has since been org-verified; flagged in Process Observations rather than resolved here, since ticking or rewording a milestone-gate manual test is not this agent's role. tests/M2-S04/results.json overwritten (previous run's artefact_hashes were stale against the repaired file) with \"passed\": true and fresh artefact_hashes from check-outputs --hashes; M2-S04 moved built -> tested via build_plan.py set-status, called once.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran (or was correctly classified as manual), both always-on checks completed, and every result came from an exit code this agent observed directly -- the Step 7 HIGH row in agents/step-tester/AGENT.md. No command test was refused, no manifest exclusion had to be applied, and check-outputs reported ok with nothing missing, empty or malformed. The products-and-pricebooks checker's unproven exit 0 and the manual test's stale Given premise are reported as Process Observations rather than confidence downgrades, since neither is a refused command, a coverage-gap exclusion, nor a check-outputs problem -- the three conditions the MEDIUM row is keyed to.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml-well-formedness",
+    "manifest-consistency",
+    "checker-pass:validation-rules",
+    "checker-pass:products-and-pricebooks",
+    "check-outputs",
+    "manual-test-tickability"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "repair-isolation",
+      "observation": "The N3-F-06 description repair changed exactly one element (<description>, 766 -> 205 chars) and nothing else. Both declared checkers produced byte-identical stdout to the prior tested run, package.xml's hash is unchanged, and only the validation-rule file's and deploy-order.md's hashes moved. A repair this narrow is the reason a description-length org rejection could be fixed and re-tested without disturbing anything the first test pass already established (formula, errorDisplayField, errorMessage, manifest membership).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S04/check_outputs_hashes.stdout.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-coverage",
+      "observation": "check_products_and_pricebooks.py's declared test on this step exits 0 with 'No issues found.' but this step's artefact tree has no Product2, Pricebook2 or PricebookEntry metadata for it to inspect -- the same finding the prior tested run and the builder's own control run recorded. The declared 'expected: exit 0' is met and is recorded as a pass, but a reader of a green test list should not infer the rule's product-catalog correctness was checked by this test.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S04/check_products_and_pricebooks.stdout.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "info",
+      "domain": "manual-test-wording",
+      "observation": "The step's manual acceptance test opens 'Given the two UNVERIFIED (2026-09-15) claims' -- true when the test was written, but deploy-order.md section 2.1 has since been updated to 'ORG-VERIFIED (2026-09-19)', superseding rather than deleting the original UNVERIFIED text. The Then clause ('both appear verbatim with the dry-run settlement named for the first') still literally holds, because the doc keeps the original wording and adds the settlement rather than replacing it -- so this run defers the test rather than reporting it unusable. But a human reading the test's Given at the M2 gate without also reading deploy-order.md section 2.1 in full could reasonably believe both claims remain open, which they do not. This is a wording-currency question for the manual test itself, not an artefact defect, and step-tester does not edit acceptance-test text -- named here for the M2 gate and for build-doc-keeper.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S04/deploy-order.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "set-status's full-plan validate pass printed 19 pre-existing WARNs about other steps (M1, M3, M4) shipping a cited skill's checker with no declared acceptance test for it. None name M2-S04 or its cited skills (admin/validation-rules, admin/products-and-pricebooks); they predate this run and are outside this invocation's one-step scope, so nothing was changed on their account. This matches the set the prior M2-S04 test run and the M2-S03 test run observed, confirming no new WARN was introduced by this re-test.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "stderr of `build_plan.py set-status ... M2-S04 tested`, 19 WARN lines naming M1-S01, M1-S02, M3-S02, M3-S03, M3-S04, M3-S05, M4-S01, M4-S02, M4-S03, M4-S04"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M2-S04 is tested again. build-doc-keeper is next to carry deploy-order.md's section 6 repair record, the now-org-verified section 2.1 claim, the still-open section 2.2 claim, and the record-type-scope disagreement with M2-S03 (open item O-M2S04-01) into decisions.md, the workbook's validation section and traceability.md -- and to consider rewording the manual acceptance test's Given clause per the manual-test-wording observation above. A doc-keeper run is in progress in parallel on M2-S02/M2-S03/M2-S05 per this run's task brief and did not touch M2-S04, tests/M2-S04/ or envelopes/M2-S04/ during this run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 6 role table"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Once a step is tested, build-doc-keeper is the agent that updates PLAN.md, workbook rows, decisions.md and traceability.md from it, and is best placed to weigh whether the manual test's wording should be refreshed before the M2 gate."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "the Plan this run followed end to end: Step 1 precondition, Step 2 xml, Step 3 manifest, Step 4 checker/manifest/manual dispatch and the never-rewrite-a-command rule, Step 5 results.json shape, Step 6 set-status transitions, Step 7 confidence table, Step 8 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and schema, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence and atomic-write rule for the tests/ and envelopes/ artefacts this run wrote"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was built, not ambiguous, no security-guard command declared)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 (validation step type, status machine, built->tested transition and its check-outputs/results.json preconditions) and section 5 (acceptance-test types, the checker-scope rule that the literal command governs regardless of declared scope, the deny-list/never-rewrite rule, and the checker-shape/command-shape ERRORs)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the acceptanceTest and step outputs[] shape read directly from plan.json for M2-S04"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar (one <types> block per metadata type, <members> naming components, <name> naming the type) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format filename-to-metadata-type mapping used to derive ValidationRule/Opportunity_Products_Required_At_Propose as the member name the manifest was checked against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirmed ValidationRule needed no manifest-check exclusion; per the prior run's citation-accuracy observation, this skill does not carry an enumerated no-standalone-file type list, which did not affect this step's verdict"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "the if/then testability bar used to confirm the manual test's Then clause is directly inspectable before deferring it"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then anatomy used to check the step's one manual acceptance test, and to notice the Given clause's premise is now stale against deploy-order.md section 2.1"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "reading the repair run's envelope (envelopes/M2-S04/2026-09-19T15-08-49Z.json) to confirm which single element changed and corroborate the pre-repair checker exit codes"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S04",
+    "step_status_before": "built",
+    "step_status_after": "tested",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M2-S04/results.json",
+    "tests_run": 4,
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way package.xml <-> artefact-file consistency check",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+        "type": "checker",
+        "runner": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py --manifest-dir artefacts/M2-S04",
+        "type": "checker",
+        "runner": "skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given the two UNVERIFIED (2026-09-15) claims in the step note (formula-context availability of HasOpportunityLineItem; the official-source conflict on re-firing after a line-item deletion), when artefacts/M2-S04/deploy-order.md is read at the M2 gate, then both appear verbatim with the dry-run settlement named for the first and 'forward gate only' stated for the second."
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "artefact_hashes": {
+      "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml": "f45857d52d53d410e4fd1f64541a26bbeb25f31a989a540db4b86a98590d6d92",
+      "artefacts/M2-S04/package.xml": "aa61dafca5b2b10753d739c8a31c22da4df787da9365382372509ea98d94a433",
+      "artefacts/M2-S04/deploy-order.md": "e4c3a4729ba16c1158d8e80c6493ec79376b2ed533c1423f5d578a46f5bcff78"
+    },
+    "workflow_return": {
+      "step_id": "M2-S04",
+      "status": "tested",
+      "passed": true,
+      "failed": [],
+      "results_path": ".sfskills/builds/northwind-sales/tests/M2-S04/results.json",
+      "tests_run": 4
+    }
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S04 is tested; build-doc-keeper carries the repair record, the now-org-verified claim and the manual-test-wording observation into decisions.md, the workbook and traceability.md."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+=== EVIDENCE ONLY (not declared, not run as test): check_apex_security_patterns.py ===
+WARN: 3 finding(s) detected
+{
+  "score": 75,
+  "findings": [
+    {
+      "severity": "HIGH",
+      "location": "artefacts/M3-S03/classes/OpportunityApprovalController.cls",
+      "message": "user-facing entry point lacks obvious read-access enforcement (`WITH USER_MODE`, `AccessLevel.USER_MODE`, or describe checks)"
+    },
+    {
+      "severity": "HIGH",
+      "location": "artefacts/M3-S03/classes/OpportunityApprovalSubmitAction.cls",
+      "message": "user-facing entry point lacks obvious read-access enforcement (`WITH USER_MODE`, `AccessLevel.USER_MODE`, or describe checks)"
+    },
+    {
+      "severity": "MEDIUM",
+      "location": "artefacts/M3-S03/classes/TestDataFactory.cls",
+      "message": "public/global Apex class has no explicit sharing declaration (apiVersion 67.0)"
+    }
+  ],
+  "summary": "Scanned 5 Apex file(s); 3 security-pattern finding(s) detected."
+}
+EXIT: 1

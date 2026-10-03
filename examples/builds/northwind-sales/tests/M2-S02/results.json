@@ -1,0 +1,94 @@
+{
+  "step_id": "M2-S02",
+  "ran": [
+    "xml",
+    "manifest",
+    "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+    "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+    "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+    "check-outputs"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given Q4 and Q9, when artefacts/M2-S02/profiles/Sales User.profile-meta.xml is read, then it contains exactly two layoutAssignments blocks and two recordTypeVisibilities blocks, every recordTypeVisibilities carries <default>false</default>, and the file contains no userPermissions, objectPermissions, fieldPermissions, applicationVisibilities or classAccesses element - so the overlay adds access and revokes nothing the SMB team holds. (expected: ticked at the M2 milestone gate; deferred to that gate, not ticked by step-tester; STALE as worded against the repaired artefact - see test_detail below)",
+    "Given Q19, when the two files are read together, then reps and managers reach both record types through the permission set while the sales-ops admin (System Administrator) needs no row in either file, and the manager-versus-rep distinction appears nowhere in this step - it is a role-hierarchy fact, which is what decision D7 records. (expected: ticked at the M2 milestone gate; deferred to that gate, not ticked by step-tester)"
+  ],
+  "test_detail": [
+    {
+      "name": "xml",
+      "type": "xml",
+      "runner": "xml.etree.ElementTree, one parse per *.xml / *-meta.xml under artefacts/M2-S02/",
+      "files_checked": [
+        "artefacts/M2-S02/package.xml",
+        "artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml",
+        "artefacts/M2-S02/profiles/Sales User.profile-meta.xml"
+      ],
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "all 3 files parse (deploy-order.md is a markdown note, not a metadata file, and is excluded per the source-format mapping)"
+    },
+    {
+      "name": "manifest",
+      "type": "manifest",
+      "runner": "two-way consistency check between artefacts/M2-S02/package.xml and the files under artefacts/M2-S02/, per skills/devops/salesforce-dx-project-structure filename-to-type mapping",
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "package.xml is byte-identical to the prior run (hash 82dfb95a...606bff, unchanged by the repair): two <types> blocks, PermissionSet (member Enterprise_Sales_Record_Types, matching permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml's file-name stem) and Profile (member 'Sales User', matching profiles/Sales User.profile-meta.xml's file-name stem including the space). Both members named explicitly (no wildcard). File-to-manifest: both files covered. Manifest-to-file: both members have a file. Neither PermissionSet nor Profile is on the skills/devops/metadata-api-coverage-gaps no-standalone-file list, so no exclusion applies. The repair changed the content of both metadata files but not their identity or location, so the manifest relationship this test judges is unaffected."
+    },
+    {
+      "name": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+      "type": "checker",
+      "runner": "declared command, run verbatim from the build directory (scope: build, per section 5's cross-referential-checker list — this checker's recordTypeVisibilities and fieldPermissions assertions need M1-S01's record types and fields)",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "No issues found. Matches the plan's own fixture description and the pre-repair run exactly. PSVP-FLS-01 does not apply here (that rule lives in check_access_model.py, not this checker); this checker's own description/length rules (PSA-DESC-01/02) are silent because the permission set's revised 195-character description stays under both thresholds. Raw capture: tests/M2-S02/check_permission_set_architecture.stdout.txt."
+    },
+    {
+      "name": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+      "type": "checker",
+      "runner": "declared command, run verbatim from the build directory (scope: build, per section 5's cross-referential-checker list — this checker's layoutAssignments assertion spans M1-S02's layouts, M1-S01's record types and this step's assignments)",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "Scanned 9 metadata file(s): 2 record type(s), 2 layout(s); 1 finding(s) detected. Finding: REVIEW RTL-MERGE-01 on the two M1-S02 layouts being identical after normalisation — the pre-existing M1 item already adjudicated at the M1 gate as open item O-M1S02-03 ('identical layouts stay separate; the record types differ in process, the layouts will diverge in M3'). Re-surfaced here only because this checker runs at build scope over the whole artefacts/ tree, unaffected by this step's repair (the profile's dropped recordTypeVisibilities and the permission set's new fieldPermissions touch neither layout file). Exit policy is lenient (no --strict passed), so a REVIEW finding does not fail the run; declared expected is 'exit 0' and that is what ran. Raw capture: tests/M2-S02/check_record_type_layouts.stdout.txt."
+    },
+    {
+      "name": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+      "type": "checker",
+      "runner": "declared command, run verbatim from the build directory (scope: step; added by amend-step --add-checker on 2026-09-18 per the step's own inputs.note and amendments[])",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "Scanned 2 access-model metadata file(s); 1 finding(s) detected. Finding: WARN PSVP-FLS-02 on profiles/Sales User.profile-meta.xml ('profile carries zero objectPermissions and zero fieldPermissions, and no PermissionSetGroup exists anywhere in the scanned tree'). Exit policy: --strict not passed, so WARN/INFO advisories do not fail the run ('blocking': 0 in the JSON output). Accepted by design (O-M2S02-02) — the profile's zero fieldPermissions is unchanged by this repair (the two new fieldPermissions blocks landed in Enterprise_Sales_Record_Types.permissionset-meta.xml, not the profile), so PSVP-FLS-02 still applies to the same file for the same reason as the pre-repair run. PSVP-FLS-01 (a permission set granting object CRUD with zero field permissions) stays silent as expected: Enterprise_Sales_Record_Types still declares no objectPermissions element after the repair, so the shape that rule fires on is still absent — confirmed by reading the raw stdout, which names only PSVP-FLS-02. Raw capture: tests/M2-S02/check_access_model.stdout.txt."
+    },
+    {
+      "name": "manual (1 of 2)",
+      "type": "manual",
+      "runner": "not runnable by step-tester",
+      "exit_code": null,
+      "verdict": "deferred",
+      "detail": "Given/When/Then shape check: Given names Q4 and Q9, When names one observable action (reading the profile file), Then names five checkable facts. Structurally usable. BUT stale against the repaired artefact: the Then asserts 'exactly two layoutAssignments blocks and two recordTypeVisibilities blocks, every recordTypeVisibilities carries <default>false</default>' — the current profiles/Sales User.profile-meta.xml carries two layoutAssignments blocks (true) and ZERO recordTypeVisibilities blocks (both were removed in the repair pass to resolve the org's N3-F-05 refusal; see artefacts/M2-S02/deploy-order.md section 6.1). The 'two recordTypeVisibilities blocks... default=false' clause is now false as literally worded, though the remainder of the Then (no userPermissions/objectPermissions/fieldPermissions/applicationVisibilities/classAccesses element in the profile) is still true — fieldPermissions were added to the permission set file, not the profile. The test's wording assumes the profile still carries record-type visibility; it no longer does (visibility for both record types is now carried solely by the permission set, per deploy-order.md section 6.1). Reported as unusable-as-worded rather than ticked or silently passed; carried into skipped_manual[] verbatim per AGENT.md (this agent does not rewrite acceptance-test text), with the staleness flagged for the milestone gate reviewer and for build-doc-keeper/plan amendment."
+    },
+    {
+      "name": "manual (2 of 2)",
+      "type": "manual",
+      "runner": "not runnable by step-tester",
+      "exit_code": null,
+      "verdict": "deferred",
+      "detail": "Given/When/Then shape check: Given names Q19, When names one observable action (reading both files together), Then names two checkable facts plus one negative claim. All three clauses present. Re-checked against the repaired artefacts, not just the pre-repair ones: reps/managers still reach both record types through the permission set (now with two additional fieldPermissions grants layered on, which does not change the 'through the permission set' claim); the sales-ops admin still needs no row in either file (A39, unchanged); the manager-versus-rep distinction still appears nowhere in either file. This test's wording does not assume the set carries no field permissions, so the repair does not make it stale. Usable at the gate rather than unusable. Carried into skipped_manual[] for milestone-verifier; not ticked here."
+    }
+  ],
+  "check_outputs": {
+    "ok": true,
+    "step": "M2-S02",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "notes": "This run supersedes the stale 2026-09-19T14-39-24Z step-tester run: the artefact hashes changed after a repair pass (metadata-builder, run 2026-09-19T15-22-09Z) that (1) dropped both recordTypeVisibilities blocks from profiles/Sales User.profile-meta.xml after the org refused the overlay on mock-deploy dry run 1 (N3-F-05, reports/MOCK-DEPLOY-M2.md) — the two layoutAssignments blocks are byte-identical to before — and (2) added two fieldPermissions blocks (Discount__c editable, Approval_Status__c read-only) to permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml, closing HIGH open item O-M2S02-01 by requester decision. All three declared checkers still exit 0 on the repaired artefacts, matching the same findings as before (permission-set-architecture: no issues; record-type-layouts at build scope: 1 REVIEW RTL-MERGE-01, pre-adjudicated O-M1S02-03; permission-sets-vs-profiles at step scope: 1 WARN PSVP-FLS-02, accepted O-M2S02-02). Manual test 1's wording is now stale against the repaired profile (see test_detail); manual test 2 is unaffected. Both manual tests remain deferred to the M2 milestone gate, not ticked or failed here.",
+  "artefact_hashes": {
+    "artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml": "19b33c2d6064ff78e6829da6b3edda257d3d4895b92deb54a268d7252f4078ff",
+    "artefacts/M2-S02/profiles/Sales User.profile-meta.xml": "16711dc6f59f1dd38c2ffa734b4b8d55d8421874c0b2a1e7e7ba60c35812790b",
+    "artefacts/M2-S02/package.xml": "82dfb95a41d8a7841c0e21333c558608eb122f404ac8808ce7aade5dc3606bff",
+    "artefacts/M2-S02/deploy-order.md": "2db0ea2f90600a1ea567377ecf8150dc26e74e8f3f6526fb28d2ac22b1486710"
+  }
+}

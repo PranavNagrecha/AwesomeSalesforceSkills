@@ -1,0 +1,128 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-10-02T20-04-17Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T20-04-17Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T20-04-17Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S03"
+  },
+  "summary": "M4-S03 (docs): xml ran with zero files, manifest not applicable (no package.xml; build-level manifest is M4-S04), four declared checkers exit 0 over the final incremental compile (workbook; RTM 28 rows 0 errors 42 warnings; UAT 73 cases 0 errors; AC format 0), check-outputs ok with fresh hashes, two manual tests deferred to the M4 gate. Status set tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was classified manual, both always-on checks completed, every result came from an exit code observed this run; check-outputs ok.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml",
+    "manifest",
+    "checker:4",
+    "manual:2"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "",
+      "observation": "check_rtm.py exits 0 with 42 warnings (decision_ref id-shape WARNs, e.g. rows 27-29 'see decisions.md D-M4S0n-*' is not the D<n> shape); lenient exit policy, not a failure.",
+      "evidence": {
+        "source": "checker",
+        "path": "tests/M4-S03/check_rtm.stderr.txt"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "surface at the M4 gate"
+    },
+    {
+      "category": "ambiguous",
+      "severity": "info",
+      "domain": "",
+      "observation": "The first manual test says 'all 43 assumption rows' and the second reads 'M2-S04 ships nothing' with an amendment saying the opposite; both are G/W/T shaped with observable outcomes and are left for the human gate to tick against the compiled pack.",
+      "evidence": {
+        "source": "plan.json",
+        "path": "steps[M4-S03].acceptance_tests"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "collect both into the M4 checklist"
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "",
+      "observation": "All four checkers ran verbatim from the build directory; check_uat_case.py cross-checked 87 criterion ids against the criteria document, so the ac_id resolution was a real check.",
+      "evidence": {
+        "source": "checker",
+        "path": "tests/M4-S03/check_uat_case.stdout.txt"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "no action; record at the M4 gate"
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "procedure, always-on checks, results contract"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 5 acceptance-test runners and docs-step manifest rule"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S03",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M4-S03/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "always-on",
+        "exit_code": 0,
+        "verdict": "pass (zero files)"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "always-on",
+        "exit_code": null,
+        "verdict": "skipped-not-applicable (docs step, no package.xml; build-level manifest is M4-S04)"
+      },
+      {
+        "name": "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py",
+        "type": "checker",
+        "runner": "python3 (declared command)",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+        "type": "checker",
+        "runner": "python3 (declared command)",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "skills/admin/uat-test-case-design/scripts/check_uat_case.py",
+        "type": "checker",
+        "runner": "python3 (declared command)",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py",
+        "type": "checker",
+        "runner": "python3 (declared command)",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given 30 informational clarifications were left unanswered at G1 and eleven org facts nobody supplied, when the workbook's assumptions section is read, then all 43 assumption rows appear with a named owner who can close each one and the step ids each constrains, and the three rows carrying risk high - which are exactly the three pre-deploy prerequisites: A24 the OpportunityStage union, A28 the report column codes and A29 the dashboard runningUser - are called out rather than buried in the list. [expected: ticked at the M4 milestone gate]",
+      "Given M2-S04 ships nothing in this release, when traceability.md is read, then its row for the product-before-Propose requirement names M2-S04 with its blocked_reason verbatim rather than being silently absent, and the workbook's Validation Rules section carries the same row rather than only the rule that did ship. [Amended after G5: M2-S04 was unblocked on 2026-09-15 and shipped Opportunity.Opportunity_Products_Required_At_Propose as an org-validated rule (MOCK-DEPLOY-M2 run 3); read every clause that assumes a blocked or empty M2-S04 as satisfied by that rule's presence - the exclusion it describes does not apply.] [expected: ticked at the M4 milestone gate]"
+    ],
+    "tests_run": 6
+  }
+}

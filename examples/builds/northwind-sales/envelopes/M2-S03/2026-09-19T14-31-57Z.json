@@ -1,0 +1,449 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T14-31-57Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S03/2026-09-19T14-31-57Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S03/2026-09-19T14-31-57Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S03",
+    "api_version": "62.0 (not supplied; plan.json carries no api_version, so AGENT.md Inputs falls back to 62.0)"
+  },
+  "summary": "Built M2-S03 (type validation) as declared: one ValidationRule, Opportunity.Opportunity_Discount_Requires_Approval, blocking Closed Won above a 20% discount on the Enterprise and Renewal record types unless Approval_Status__c is Approved, with NOT($Permission.Bypass_Opportunity_Sales_Validation) first inside the outer AND. Three declared outputs written and nothing else: the rule file, package.xml (one ValidationRule member, version 62.0) and deploy-order.md. Both declared checkers exited 0 on the first pass with zero repair passes; both emitted XML files parse; check-outputs returned ok. This is the first step in the build that consumes the M2-S01 custom permission, and check_custom_permissions.py --manifest-dir artefacts now reports it with Consumers 1, which M2-S01's first acceptance test said to expect once M2-S03 shipped. Status path: standalone invocation, so this agent set pending -> running at the start and running -> built at the end itself.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 rubric. Everything in the HIGH row holds except its last clause: every element name and enum value traces to the Step 3 inventory (admin/validation-rules references/metadata-examples.md Example 1 and Example 2 supplied all six ValidationRule elements and the package.xml member form); both declared checkers exited 0 on the FIRST pass; check-outputs returned ok; all three declared outputs were written and no undeclared metadata was. The clause that fails is 'every Questions-to-Ask row was answered from the plan rather than defaulted'. Three rows of admin/validation-rules' table are carried by plan assumptions applied to informational clarifications the requester left unanswered at G1 rather than by answers: A8 (no workflow field update writes StageName/Amount/Discount__c/Approval_Status__c after save - recorded at risk medium, and the one that could make this rule not a database invariant), A9 (no compound field) and A10 (ISPICKVAL rather than ISBLANK on a picklist). A9 and A10 I could verify against the emitted formula; A8 cannot be verified without an org and is the reason question-coverage is recorded as partial in dimensions_skipped. A non-empty dimensions_skipped caps confidence at MEDIUM by the envelope schema in any case.",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Of admin/validation-rules' nine Questions-to-Ask rows, six were answered from the plan (Q12 object-of-the-edit, Q13 bypass holders, Q15 message text, Q16 dirty data, plus the layout row answered from M1-S02's artefacts and the has-products row that belongs to M2-S04 rather than here). Three rest on plan assumptions rather than answers: A8 (workflow field update - risk: medium, unverifiable offline; the check is Setup -> Workflow Rules filtered to Opportunity in the target org, and deploy-order.md section 6 names it), A9 (compound fields) and A10 (picklist blank guard). A9 and A10 were additionally verified by inspecting the emitted formula, so only A8 is genuinely open. Of admin/custom-permissions' seven rows, two are not addressable by a consuming step and belong to M2-S01, which already answered them: 'Does anything already hold this access through a profile?' needs a live SetupEntityAccess query this agent may not run, and 'Who revokes it, and what proves it was revoked?' is answered in artefacts/M2-S01/deploy-order.md section 4 rather than here. Of admin/opportunity-management's seven rows, all seven were answered at M1-S01 (forecast buckets, motion-to-record-type matrix, splits, teams, IsPrivate, history) and none of them changes an element of this rule; the only facts this step took from that skill are the stage names and record-type developer names, read from M1-S01's artefacts rather than re-asked."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "cross-step-wiring",
+      "observation": "The bypass wiring closed on the first try: check_custom_permissions.py --manifest-dir artefacts now reports Bypass_Opportunity_Sales_Validation with Consumers 1 and 'Granted by permission set Sales_Ops_Validation_Bypass', which is exactly what M2-S01's first acceptance test predicted would happen once M2-S03 shipped - the same command reported Consumers 0 when M2-S01 ran.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts",
+        "detail": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts -> exit 0, 'Consumers 1'"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "error-placement",
+      "observation": "errorDisplayField=Discount__c will actually render inline rather than silently relocating to Top of Page: both layouts M1-S02 shipped carry Discount__c with <behavior>Edit</behavior>, so the field is visible on every layout for both record types this rule gates.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts",
+        "count": 2,
+        "detail": "grep -c 'Discount__c' over both layout files -> 1 each, with behavior Edit"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-prose-accuracy",
+      "observation": "The step's inputs.note states 'errorMessage is Q15's wording at 129 characters'; the string the same inputs block supplies as error_message is 132 characters. The claim is prose, the value is the input, and the input is what was written - both are far inside the 255 cap, so nothing about the artefact changes, but the number in the note is wrong by three.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 132,
+        "detail": "len(steps[M2-S03].inputs.error_message) == 132; inputs.note says 129"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-heuristics",
+      "observation": "check_validation_rules.py's picklist-blank-guard advisory is a whole-formula substring test - it emits REVIEW when 'ISPICKVAL(' appears and 'ISBLANK(' does not, without checking that the two name the same field. This formula's ISBLANK is on Discount__c, a Percent field, and its ISPICKVALs are on StageName and Approval_Status__c, so the advisory is silenced by a clause that has nothing to do with the picklists. The clause is there for its own reason (see the decision record), not to quiet the checker, but a reader should not take the clean run as evidence that the picklist guards were examined.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "detail": "line ~547: if \"ISPICKVAL(\" in upper_formula and \"ISBLANK(\" not in upper_formula"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "template-divergence",
+      "observation": "templates/admin/validation-rule-patterns.md's 'Bypass contract' says the Integration_Bypass__c hierarchy custom setting and the Bypass_Validation_<Domain> custom permission are 'NOT optional' and calls a missing bypass a P1 finding; this rule ships the custom-permission half only. Q13 and the plan's scope.out rule out every integration, and no Integration_Bypass__c custom setting exists anywhere in this build for a $Setup token to resolve against, so writing one would have been a reference to a component nothing creates. The same template also gives the naming form Bypass_Validation_Opportunity, where the plan declares Bypass_Opportunity_Sales_Validation - M2-S01 already recorded that divergence for the same reason (a declared output path is not an agent's to rename). Two divergences from one shared template across two steps is worth a look at whether the template's 'both, in practice' should carry an explicit no-integrations carve-out.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "templates/admin/validation-rule-patterns.md",
+        "detail": "'Bypass contract' section; compare artefacts/M2-S01/deploy-order.md section 6 'Naming divergence, recorded not corrected'"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "rule-scope",
+      "observation": "Which record types the discount cap covers is stated three different ways in the build and only one of them is specific: requirement.md item 2 puts the sentence inside a paragraph about Enterprise opportunities, the step's own inputs.note describes 'the record-type relevance gate' in the singular, and the M2 milestone goal says 'an Enterprise or Renewal deal above a 20% discount'. The tie-breaker used was M3-S02's already-planned approval entry criteria, which is on file verbatim as OR(RecordType.DeveloperName = \"Enterprise\", RecordType.DeveloperName = \"Renewal\") - matching it means every deal this rule blocks is a deal the approval process will accept. If the requester meant Enterprise only, this rule and M3-S02 both need the same one-line narrowing, and the human gate is where to say so.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "milestones[M2].goal vs steps[M2-S03].inputs.note vs steps[M3-S02].inputs.entry_criteria_formula"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "data-quality",
+      "observation": "Q16 says about 6 open Enterprise deals already carry a discount above 20% and that no clean-up is in scope, and the rule therefore ships active=true against the skill's own ship-inactive-when-the-data-is-dirty advice. Those six are not frozen - the rule only fires at Closed Won above the cap without an approval - but whoever closes one of them will be told to submit for approval, and M3's approval process is not built yet. Between this deploy and M3's, such a deal has a rule that blocks it and no process to unblock it except the sales-ops admin bypass.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "clarifications Q16 answer; milestones M2 vs M3 ordering; steps[M3-S02].status"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "agents/step-tester on M2-S03, because this agent does not run the step's acceptance tests, does not tick its two manual rows and does not write tests/M2-S03/results.json - and the two manual rows are precisely the ones a human has to read the formula for.",
+      "suggested_followup_agent": "step-tester",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "steps[M2-S03].acceptance_tests: 2 checker, 1 xml, 1 manifest, 2 manual"
+      },
+      "followup_reason": "The step's acceptance_tests carry two manual rows that only a human reading the errorConditionFormula can tick (the 0.20-not-20 threshold with bypass-first ordering, and the verbatim errorMessage with errorDisplayField on Discount__c), plus four automated tests this agent ran for its own repair loop but is not the recorded runner of. step-tester is the agent that executes them verbatim from the build directory and writes tests/M2-S03/results.json, which set-status tested requires."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S03",
+    "step_type": "validation",
+    "step_scale": "project",
+    "build_mode": "design-only",
+    "status_path_taken": "standalone: this agent ran set-status pending -> running at the start and running -> built at the end (AGENT.md Step 9). It was not invoked by agents/build-step-runner, so no second writer set the terminal status.",
+    "human_gate": false,
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S03/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S03/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml",
+        "metadata_type": "ValidationRule",
+        "element_source": "skills/admin/validation-rules/references/metadata-examples.md - 'The type in one table' (the six-element table), Example 2 (the DX source-format <ValidationRule> root and file path), Example 1 (the bypass-first / relevance-gate / business-condition force order and the RecordType.DeveloperName = \"...\" text comparison)",
+        "declared_in_outputs": true
+      },
+      {
+        "path": "artefacts/M2-S03/package.xml",
+        "metadata_type": "Package (manifest fragment)",
+        "element_source": "skills/admin/validation-rules/references/metadata-examples.md 'package.xml' (Object.RuleName member form, no wildcard for ValidationRule) and skills/admin/change-management-and-deployment/references/metadata-examples.md section 1",
+        "declared_in_outputs": true
+      },
+      {
+        "path": "artefacts/M2-S03/deploy-order.md",
+        "metadata_type": "note (not metadata)",
+        "element_source": "skills/admin/change-management-and-deployment/references/metadata-examples.md sections 1 and 3; the cited skills' gotchas.md files",
+        "declared_in_outputs": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "validation-rules: 'Which field does the user actually edit to cause this - the one on the record, or a child record?'",
+        "answer": "A header field on the Opportunity, Discount__c (Percent), typed by the rep. Line-item discounts are not used.",
+        "source": "clarification answer Q12",
+        "element": "the formula is written on Opportunity at all, and reads Discount__c rather than an OpportunityLineItem roll-up"
+      },
+      {
+        "question": "validation-rules: 'Which users and integrations must be able to save a record the rule would reject?'",
+        "answer": "Only the sales-ops admin, via a custom permission granted by a permission set. No integrations write Enterprise opportunities.",
+        "source": "clarification answers Q13, Q17; decision D3",
+        "element": "NOT($Permission.Bypass_Opportunity_Sales_Validation) as the first argument of the outer AND; no $Setup clause"
+      },
+      {
+        "question": "validation-rules: 'Does the message fit in 255 characters and name both the problem and the fix?'",
+        "answer": "Yes - the step's inputs.error_message, used character for character, at 132 characters.",
+        "source": "step inputs (error_message), from clarification answer Q15",
+        "element": "<errorMessage> (132 chars; the step note's '129' is off by three - see process observations)"
+      },
+      {
+        "question": "validation-rules: 'Is the field the error should attach to on every layout for every record type in scope?'",
+        "answer": "Yes. Both M1-S02 layouts carry Discount__c with behavior Edit, so the error renders inline rather than relocating to Top of Page.",
+        "source": "upstream artefacts (M1-S02 layouts), checked directly",
+        "element": "<errorDisplayField>Discount__c</errorDisplayField>"
+      },
+      {
+        "question": "validation-rules: 'Does the data already violate this rule today?'",
+        "answer": "Yes - about 6 open Enterprise deals are above 20%. Q16 nevertheless decided the rules apply on next save only, with no clean-up in scope, so the rule ships ACTIVE rather than taking the skill's deploy-inactive default.",
+        "source": "clarification answer Q16",
+        "element": "<active>true</active> - a decision against a documented skill default, recorded in deploy-order.md section 5"
+      },
+      {
+        "question": "validation-rules: 'Does the formula call ISBLANK( or ISNULL( directly on a picklist field?'",
+        "answer": "No. The two picklists (StageName, Approval_Status__c) are read only through ISPICKVAL, which accepts a picklist directly. The one ISBLANK is on Discount__c, a Percent field.",
+        "source": "assumption A10 (Q45 informational, unanswered, default applied) - and verified against the emitted formula",
+        "element": "ISPICKVAL(StageName, \"Closed Won\") and NOT(ISPICKVAL(Approval_Status__c, \"Approved\")); no TEXT() wrapper needed, and VR-PICK-01 does not fire"
+      },
+      {
+        "question": "validation-rules: 'Does the formula touch an address, a person name, or a dependent picklist?'",
+        "answer": "No. Discount__c (Percent), Approval_Status__c (restricted picklist, not dependent), StageName and RecordType.DeveloperName are all ordinary formula-addressable fields.",
+        "source": "assumption A9 (Q44 informational, unanswered, default applied) - and verified against M1-S01's field files",
+        "element": "the whole formula; the API 20.0 compound-field prohibition is not in play"
+      },
+      {
+        "question": "validation-rules: 'Is any workflow field update or automation writing this field after save?'",
+        "answer": "Assumed not. A8 records that no legacy automation writes StageName, Amount, Discount__c or Approval_Status__c after save, at risk: medium. It cannot be verified offline.",
+        "source": "assumption A8 (Q43 informational, unanswered, default applied)",
+        "element": "nothing in the XML; recorded in deploy-order.md section 6 as a pre-go-live check in the target org"
+      },
+      {
+        "question": "Which record types does the cap apply to? (relevance gate, step note)",
+        "answer": "Both Enterprise and Renewal. The M2 milestone goal says 'an Enterprise or Renewal deal above a 20% discount', and M3-S02's already-planned approval entry_criteria_formula is OR(RecordType.DeveloperName = \"Enterprise\", RecordType.DeveloperName = \"Renewal\") - so matching it keeps the rule and the escape hatch on the same population.",
+        "source": "the plan (milestones[M2].goal) and the upstream/sibling step record steps[M3-S02].inputs.entry_criteria_formula; flagged as an ambiguity in process observations",
+        "element": "OR(RecordType.DeveloperName = \"Enterprise\", RecordType.DeveloperName = \"Renewal\") as the second argument of the outer AND"
+      },
+      {
+        "question": "Is the threshold 0.20 or 20?",
+        "answer": "0.20. A Percent field carries the fraction in formula context; the same representation is already in M3-S02's entry criteria.",
+        "source": "decisions D8 and assumption A35; step inputs threshold_formula_representation = '0.20'",
+        "element": "Discount__c > 0.20"
+      },
+      {
+        "question": "Should the discount test carry a blank guard?",
+        "answer": "Yes - NOT(ISBLANK(Discount__c)) before the comparison, for two reasons the plan already holds. (1) The skill's 'Blank vs Null in Number and Currency Fields' gotcha documents ISBLANK as the correct null test for a number/currency field and notes that 0 is not blank. (2) M3-S02's entry criteria is AND(NOT(ISBLANK(Discount__c)), Discount__c > 0.20, ...), so writing the same pair here guarantees that every deal this rule blocks is a deal the approval process accepts. It also incidentally silences the checker's picklist-blank-guard REVIEW advisory, which is a substring test - see process observations; that was not the reason for the clause.",
+        "source": "skills/admin/validation-rules/references/gotchas.md; sibling step record steps[M3-S02].inputs.entry_criteria_formula",
+        "element": "NOT(ISBLANK(Discount__c)) as the fourth argument of the outer AND"
+      },
+      {
+        "question": "Should the rule carry ISCHANGED(StageName) / NOT(ISNEW()) guards, as M2-S04's product gate will?",
+        "answer": "No. This rule gates a state, not a transition: a deal must not sit at Closed Won above the cap without an approval however it got there, including an insert straight at Closed Won and including an edit that raises the discount without touching the stage. The guards are mandatory for M2-S04 (gotchas.md Gotcha 15, because HasOpportunityLineItem is false on every insert) and would create a hole here.",
+        "source": "skills/admin/validation-rules/references/gotchas.md Gotcha 15 and templates/admin/validation-rule-patterns.md 'IsChanged / IsNew patterns'",
+        "element": "the absence of ISCHANGED and NOT(ISNEW()); recorded in deploy-order.md section 5"
+      },
+      {
+        "question": "custom-permissions: 'Which contexts read it - validation rule, formula, Flow, Apex, LWC, component visibility?'",
+        "answer": "A validation-rule formula, in this step. The formula spelling has no CustomPermission. segment - that extra segment belongs to FlexiPage component visibility only (Gotcha 6).",
+        "source": "skills/admin/custom-permissions/references/metadata-examples.md section 6 'Consumer snippets'; M2-S01's own decision record",
+        "element": "$Permission.Bypass_Opportunity_Sales_Validation, spelled without the CustomPermission. segment"
+      },
+      {
+        "question": "custom-permissions: 'Is this a bypass? If so, which named rules does it suppress?'",
+        "answer": "Yes, and this is one of the two named rules. M2-S01's CustomPermission description already names Opportunity_Discount_Requires_Approval (M2-S03) as a consumer; the API name had to match it character for character or the token would resolve to nothing.",
+        "source": "upstream artefact artefacts/M2-S01/customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml (its <description>)",
+        "element": "the exact token spelling, now confirmed by check_custom_permissions.py reporting Consumers 1"
+      },
+      {
+        "question": "opportunity-management: which stage literal, and which record-type developer names?",
+        "answer": "'Closed Won' (a value of both business processes M1-S01 shipped), and the developer names Enterprise and Renewal (M1-S01's two recordType files). RecordType.DeveloperName is text, so it is compared with = and never with ISPICKVAL - which is also what this skill's own workflow step 5 says validation rules should reference.",
+        "source": "upstream artefacts (M1-S01 businessProcesses and recordTypes) and skills/admin/opportunity-management/SKILL.md",
+        "element": "ISPICKVAL(StageName, \"Closed Won\") and the two RecordType.DeveloperName = \"...\" comparisons"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "declared_scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 1 validation rule(s) across 1 file(s); 0 finding(s) detected.\", \"blocking\": 0}",
+        "changed": "nothing - passed on the first pass",
+        "note": "Matches the plan's recorded fixture exactly, including the summary string. At build scope VR-REF-01 resolved Discount__c and Approval_Status__c against M1-S01's field files and errorDisplayField against the same inventory, and VR-REF-02 resolved $Permission.Bypass_Opportunity_Sales_Validation against M2-S01's customPermissions/ directory. No INFO 'field inventory absent at this scope' line was printed, which is the positive signal that those resolutions actually happened. --strict was not passed, and there was no REVIEW advisory for it to promote."
+      },
+      {
+        "command": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M2-S03",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "declared_scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "INFO: [artefacts/M2-S03] No Opportunity stage value set, business process, record type or pathAssistant found. Nothing in this tree is in scope for this checker. / 0 error(s), 0 warning(s), 1 info.",
+        "changed": "nothing - passed on the first pass",
+        "note": "Declared on 2026-09-18 by amend-step --add-checker to clear the section 5 checker-coverage WARN for a cited skill. Its exit 0 here is an honest 'nothing in scope', not a pass over this rule: the checker's own docstring lists stage value sets, business processes, record types, PathAssistants and Opportunity.settings, and a ValidationRule is none of those. --strict was not passed; with it, the INFO would become a failure, which is worth knowing before anyone adds the flag. The artefacts this checker does cover were verified at M1-S01 and M1-S02."
+      },
+      {
+        "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": false,
+        "declared_scope": "build (declared on milestone M2, not on this step)",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "Custom permissions defined: 1 / Permission sets / profiles parsed: 3 / Distinct permissions referenced: 1. Coverage: Bypass_Opportunity_Sales_Validation, Consumers 1, Granted by permission set 'Sales_Ops_Validation_Bypass'. Summary: 0 error(s), 0 warning(s), 0 info.",
+        "changed": "nothing - passed on the first pass",
+        "note": "Run because admin/custom-permissions is one of this step's cited skills and AGENT.md Step 8 says to run every cited skill's checker, not only the declared ones. This is the run that shows the wiring closed: Consumers went 0 -> 1 and Distinct permissions referenced went 0 -> 1 against M2-S01's own recorded run."
+      }
+    ],
+    "xml_parse": {
+      "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" .sfskills/builds/northwind-sales/artefacts/M2-S03",
+      "files": 2,
+      "result": "all parse"
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S03",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "Consistent in both directions. One metadata file on disk (objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml) and one explicit member (Opportunity.Opportunity_Discount_Requires_Approval under <name>ValidationRule</name>). No wildcard: the Metadata API does not support * for ValidationRule, and a wildcard there retrieves nothing while reporting success. deploy-order.md is a note and package.xml is the manifest itself, so neither is a member.",
+    "api_version_note": "62.0. plan.json carries no api_version, so AGENT.md's Inputs table falls back to 62.0 - the same value M1-S01, M1-S02 and M2-S01 all declare, which keeps mock_deploy.py's highest-version rule seeing one version across the build. Nothing in this step raises it.",
+    "org_interaction": "None. requires_org: false, build_mode design-only. No sf command was run, nothing was deployed or validated against an org, and scripts/mock_deploy.py was not invoked - its --dry-run is hard-coded inside the script rather than being a flag a human passes, and deploy-order.md section 7 says so rather than describing a flag.",
+    "workflow_return": {
+      "step_id": "M2-S03",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M2-S03/package.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M2-S03/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      {
+        "id": "O-M2S03-01",
+        "topic": "record-type scope of the discount cap",
+        "detail": "requirement.md item 2 reads Enterprise-only in context; the M2 milestone goal and M3-S02's entry criteria read Enterprise OR Renewal. The rule was written to match M3-S02. Confirm at the M2 gate; narrowing it later is a one-line change in two files.",
+        "status": "open"
+      },
+      {
+        "id": "O-M2S03-02",
+        "topic": "A8 is unverified and it is the assumption that could make this rule not an invariant",
+        "detail": "Custom validation rules do not re-run after a workflow field update re-saves the record. A8 assumes no legacy automation writes StageName, Amount, Discount__c or Approval_Status__c, at risk: medium, and it cannot be checked offline. Setup -> Workflow Rules filtered to Opportunity, before go-live.",
+        "status": "open"
+      },
+      {
+        "id": "O-M2S03-03",
+        "topic": "a live rule with no approval process yet",
+        "detail": "The rule is active and M3's approval process is not built. Between this deploy and M3's, one of the ~6 existing above-cap deals that reaches Closed Won has a rule blocking it and no submit path except the sales-ops admin bypass. Either deploy M2 and M3 together, or accept the window explicitly.",
+        "status": "open"
+      },
+      {
+        "id": "O-M2S03-04",
+        "topic": "nothing proves the bypass bypasses until someone holds it",
+        "detail": "The checkers match file-name stems, not grants. PermissionSetAssignment ships in no manifest. Assign Sales_Ops_Validation_Bypass to the sales-ops admin, then save a Closed Won Opportunity at 25% with no approval as that user. deploy-order.md section 8 carries the procedure; the two Apex tests that would make it a regression test are in no step of this build.",
+        "status": "open"
+      }
+    ]
+  },
+  "citations": [
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the Plan this run followed end to end: Step 1-2 ownership and type check, Step 3 XML-fence grep and element inventory, Step 4 question binding, Step 5 write rules, Step 6 package.xml, Step 7 deploy-order note, Step 8 checkers, Step 9 check-outputs and set-status, Step 10 confidence, Step 11 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the mandatory Process Observations block, the Citations schema, and rule 7 (never deploy, never write outside the given paths)"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "the run-time rules this invocation is bound by: no org writes, one target per invocation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and redaction expectations for the envelope pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "the canonical refusal enum - checked and not needed; this run neither refused nor blocked"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json is the only shared state; no hand edits; the build-directory layout and the skills symlink), section 4 (the validation step type and its design-only owner; the status machine), section 5 (checker scope step vs build, the deploy deny-list, the rule that every metadata-builder metadata step declares its package.xml, and check-outputs gating set-status built)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{} and outputs[] read here, and which fields this agent leaves alone"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/output-envelope.schema.json",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape - build payload under extensions, never a top-level artefacts key - and the rule that a non-empty dimensions_skipped caps confidence at MEDIUM"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "the ValidationRule element table and its six elements, the 255-character errorMessage cap, the errorDisplayField relocation condition, the bypass-preference table, the formula force order, and the Questions to Ask Before Configuring rows bound in the decision record"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/metadata-examples.md",
+      "used_for": "Example 1 (bypass first, RecordType.DeveloperName compared with = because DeveloperName is text, business condition last) and Example 2 (the DX source-format <ValidationRule> root, file path and fullName behaviour); the package.xml Object.RuleName member form and the no-wildcard rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/gotchas.md",
+      "used_for": "'Rules Fire During Data Loads', 'Blank vs Null in Number and Currency Fields' (the reason for NOT(ISBLANK(Discount__c))), 'errorDisplayField Silently Relocates to Top of Page', 'A Workflow Field Update Re-Saves the Record', 'Opportunity Validation Rules Do Not Fire When a Line Item Changes the Opportunity', 'ValidationRule Does Not Support the Wildcard', 'Translated Error Messages', Gotcha 14 (ISBLANK on a picklist) and Gotcha 15 (why ISCHANGED/ISNEW belong to M2-S04 and not here)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/gotchas.md",
+      "used_for": "Gotcha 4 - a $Permission token naming an absent or renamed permission evaluates false silently, with no error; the reason section 2.1 of deploy-order.md exists"
+    },
+    {
+      "type": "skill",
+      "id": "admin/custom-permissions",
+      "path": "skills/admin/custom-permissions/references/metadata-examples.md",
+      "used_for": "section 6 'Consumer snippets' - the validation-rule bypass spelling $Permission.X with no CustomPermission. segment, which the FlexiPage form does carry; 'Where the files live' for the file-name-stem-is-the-API-name rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/SKILL.md",
+      "used_for": "the statement that Path guides and validation rules enforce, and that validation rules reference RecordType.DeveloperName to enforce stage-specific requirements per motion; its Questions-to-Ask rows, all of which were settled at M1-S01"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "section 1 (the manifest shape, the object-qualified ValidationRule member with its own UNVERIFIED marker, and 'Metadata API references the components listed in the manifest, not the directories in the .zip file') and section 3 (the production validate -> quick deploy sequence quoted in deploy-order.md section 7)"
+    },
+    {
+      "type": "template",
+      "id": "templates/admin/validation-rule-patterns.md",
+      "path": "templates/admin/validation-rule-patterns.md",
+      "used_for": "'The canonical VR shape' (bypass first, relevance gate second, business rule last), 'Bypass contract' (the Integration_Bypass__c half this rule diverges from, with Q13 as the reason), and 'IsChanged / IsNew patterns'"
+    },
+    {
+      "type": "example_build",
+      "id": "examples/builds/case-onboarding",
+      "path": "examples/builds/case-onboarding/artefacts/M2-S01",
+      "used_for": "named by admin/custom-permissions section 7 as the committed precedent for a bypass permission whose description carries its consumer list; read as the house shape for the consumer-naming convention this step's token had to match"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M2-S03 is built and untested: this agent does not run acceptance tests, does not tick the two manual rows, and does not write tests/M2-S03/results.json, which set-status tested requires."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once M2-S03 is tested, the workbook row, the traceability row and the four open items in extensions.open_items_for_the_human need to reach decisions.md and traceability.md."
+    }
+  ]
+}

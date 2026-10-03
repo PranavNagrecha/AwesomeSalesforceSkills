@@ -1,0 +1,12 @@
+{
+  "score": 100,
+  "findings": [
+    {
+      "severity": "REVIEW",
+      "location": "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml::Opportunity_Products_Required_At_Propose",
+      "message": "picklist logic has no explicit blank guard"
+    }
+  ],
+  "summary": "Scanned 2 validation rule(s) across 2 file(s); 1 finding(s) detected.",
+  "blocking": 0
+}

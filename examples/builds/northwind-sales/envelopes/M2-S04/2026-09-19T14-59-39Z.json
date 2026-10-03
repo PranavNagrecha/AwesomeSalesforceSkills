@@ -1,0 +1,221 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T14-59-39Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S04/2026-09-19T14-59-39Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S04/2026-09-19T14-59-39Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S04"
+  },
+  "summary": "Tested M2-S04 (validation, built by metadata-builder). Ran both declared checkers verbatim from the build directory exactly as the plan wrote them: check_validation_rules.py at the plan's declared build scope (--manifest-dir artefacts), which now scans two validation rules (M2-S03's and this step's) and printed 'Scanned 2 validation rule(s) across 2 file(s); 1 finding(s) detected.' with one REVIEW-severity advisory on this step's rule ('picklist logic has no explicit blank guard') -- exit 0, exactly as the step's own inputs.note predicted before this run; and check_products_and_pricebooks.py at step scope (--manifest-dir artefacts/M2-S04), which exited 0 with 'No issues found.' This run independently re-ran that same command against a freshly created, genuinely empty directory outside the build tree and got the byte-identical output and exit code, confirming the builder's own prior control-run finding -- recorded honestly as an exit 0 with nothing demonstrably asserted about this step's artefact, not as a positive validation of the catalog side of the rule. Also ran the always-on xml parse (2/2 files), the always-on manifest consistency check (ValidationRule named explicitly in package.xml with a file behind it, both directions consistent, no wildcard), and check-outputs --hashes (ok, nothing missing/empty/malformed). All four runnable tests passed. The step's one manual acceptance test was checked against the Given/When/Then shape (all three clauses present, Then directly inspectable) and deferred verbatim to the M2 milestone gate rather than ticked; as a courtesy this run also read deploy-order.md against both Then clauses without ticking them, and both hold -- section 2.1 names the dry-run settlement for the HasOpportunityLineItem formula-context claim, section 2.2 states 'forward gate only' for the re-firing-after-deletion conflict. results.json written with \"passed\": true and artefact_hashes from check-outputs --hashes; M2-S04 moved built -> tested via build_plan.py set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran (or was correctly classified as manual), both always-on checks completed, and every result came from an exit code this agent observed directly -- the Step 7 HIGH row in agents/step-tester/AGENT.md. No command test was refused, no manifest exclusion had to be applied (none was needed: ValidationRule plainly has a standalone file), and check-outputs reported ok with nothing missing, empty or malformed. The products-and-pricebooks checker's unproven exit 0 does not itself trigger the MEDIUM row (that row is keyed to a refused command test, a coverage-gap manifest exclusion, or a check-outputs problem, none of which occurred) -- it is reported as a Process Observation instead of a confidence downgrade, per this run's instruction to record it honestly rather than read it as a pass on the catalog side of the rule.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml-well-formedness",
+    "manifest-consistency",
+    "checker-pass:validation-rules",
+    "checker-pass:products-and-pricebooks",
+    "check-outputs",
+    "manual-test-tickability"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "check_validation_rules.py exited 0 at the plan's declared build scope and its output changed exactly as predicted once a second rule entered the tree -- from M2-S03's prior 'Scanned 1 validation rule(s)... 0 finding(s)' to this run's 'Scanned 2 validation rule(s)... 1 finding(s)', with the one new finding matching the step's own inputs.note prediction verbatim. This is a checker that proved something about the whole tree, not merely a green exit repeated by coincidence.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S04/check_validation_rules.stdout.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-coverage",
+      "observation": "check_products_and_pricebooks.py's declared test on this step exits 0 with 'No issues found.' -- the checker was added to this step by amend-step --add-checker on 2026-09-18 to close a section 5 coverage warning (the step cites admin/products-and-pricebooks in skills[]), but a validation-rule step has no Product2, Pricebook2 or PricebookEntry metadata for it to inspect. This run independently confirmed the builder's own control-run finding: the identical command against a genuinely empty directory prints the byte-identical 'No issues found.' at exit 0. The exit 0 satisfies the declared 'expected: exit 0' and is recorded as a pass, but a reader of a green test list should not infer the rule's product-catalog correctness was checked here.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S04/check_products_and_pricebooks.stdout.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "citation-accuracy",
+      "observation": "This agent's own Mandatory Reads (agents/step-tester/AGENT.md, 'What the tester judges for itself' item 3) cites skills/devops/metadata-api-coverage-gaps as documenting 'the component types that legitimately have no standalone file or no manifest member.' Reading that skill in full during this run found no such enumerated list -- its content covers Metadata Coverage Report support status (Metadata API / source tracking / unlocked packages / 2GP), a different question from which types lack a standalone source file for a manifest-vs-file check. This did not change the manifest verdict on this step (ValidationRule plainly has a standalone file, so no exclusion question arose), but the citation itself does not deliver what the playbook says it does, which would matter on a future step involving a genuinely file-less type.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "set-status's own full-plan validate pass printed 19 pre-existing WARNs about other steps (M1, M3, M4) shipping a cited skill's checker with no declared acceptance test for it. None name M2-S04 or its cited skills (admin/validation-rules, admin/products-and-pricebooks); they predate this run and are outside this invocation's one-step scope, so nothing was changed on their account. This is the same 19-line set M2-S03's test run observed 19 minutes earlier, confirming no new WARN was introduced by this step.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "stderr of `build_plan.py set-status ... M2-S04 tested`, 19 WARN lines naming M1-S01, M1-S02, M3-S02, M3-S03, M3-S04, M3-S05, M4-S01, M4-S02, M4-S03, M4-S04"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M2-S04 is now tested; build-doc-keeper is next to carry deploy-order.md's dependency notes, the two UNVERIFIED (2026-09-15) claims, the record-type-scope disagreement with M2-S03 (open item O-M2S04-01), and this step's remaining open items into decisions.md, the workbook's validation section and traceability.md. A doc-keeper run is already in progress in parallel on M2-S02/M2-S03/M2-S05 per this run's task brief and does not touch M2-S04 or tests/.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 6 role table"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Once a step is tested, build-doc-keeper is the agent that updates PLAN.md, workbook rows, decisions.md and traceability.md from it."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "the Plan this run followed end to end: Step 1 precondition, Step 2 xml, Step 3 manifest, Step 4 checker/manifest/manual dispatch and the never-rewrite-a-command rule, Step 5 results.json shape, Step 6 set-status transitions, Step 7 confidence table, Step 8 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and schema, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence and atomic-write rule for the tests/ and envelopes/ artefacts this run wrote"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was built, not ambiguous, no security-guard command declared)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 (validation step type, status machine, built->tested transition and its check-outputs/results.json preconditions) and section 5 (acceptance-test types, the checker-scope rule that the literal command governs regardless of declared scope, the deny-list/never-rewrite rule, and the checker-shape/command-shape ERRORs)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the acceptanceTest and step outputs[] shape read directly from plan.json for M2-S04"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar (one <types> block per metadata type, <members> naming components, <name> naming the type) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format filename-to-metadata-type mapping used to derive ValidationRule/Opportunity_Products_Required_At_Propose as the member name the manifest was checked against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "checked for a no-standalone-file type list to confirm ValidationRule needed no manifest-check exclusion; the skill does not in fact carry that list, flagged in Process Observations as a citation-accuracy gap"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what makes a manual test line tickable by a human at the milestone gate rather than re-interpreted by them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then anatomy used to check the step's one manual acceptance test before carrying it into skipped_manual[] rather than reporting it unusable"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "reading the prior run's envelope (envelopes/M2-S04/2026-09-19T14-41-29Z.json) to corroborate the declared-checker exit codes and the products-and-pricebooks control-run finding this run's task explicitly named and then independently reproduced"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S04",
+    "step_status_before": "built",
+    "step_status_after": "tested",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M2-S04/results.json",
+    "tests_run": 4,
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way package.xml <-> artefact-file consistency check",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+        "type": "checker",
+        "runner": "skills/admin/validation-rules/scripts/check_validation_rules.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py --manifest-dir artefacts/M2-S04",
+        "type": "checker",
+        "runner": "skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given the two UNVERIFIED (2026-09-15) claims in the step note (formula-context availability of HasOpportunityLineItem; the official-source conflict on re-firing after a line-item deletion), when artefacts/M2-S04/deploy-order.md is read at the M2 gate, then both appear verbatim with the dry-run settlement named for the first and 'forward gate only' stated for the second."
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S04",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "artefact_hashes": {
+      "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml": "fbb65f4f10b45a5c98120549129a236631f3ba44447cca77854c7b74f4420620",
+      "artefacts/M2-S04/package.xml": "aa61dafca5b2b10753d739c8a31c22da4df787da9365382372509ea98d94a433",
+      "artefacts/M2-S04/deploy-order.md": "251eea467cf6e84bf94c8165515769c2226ec5e56328cbb0c12bdeb115f4aa73"
+    },
+    "workflow_return": {
+      "step_id": "M2-S04",
+      "status": "tested",
+      "passed": true,
+      "failed": [],
+      "results_path": ".sfskills/builds/northwind-sales/tests/M2-S04/results.json",
+      "tests_run": 4
+    }
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S04 is tested; build-doc-keeper carries the deploy-order dependency notes, the two UNVERIFIED claims and the open items into decisions.md, the workbook and traceability.md."
+    }
+  ]
+}

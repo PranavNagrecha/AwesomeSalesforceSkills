@@ -1,0 +1,53 @@
+{
+  "step_id": "M3-S03",
+  "run_id": "2026-10-02T17-10-56Z",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/approval-process-apex-patterns/scripts/check_approval_process_apex_patterns.py",
+    "skills/apex/invocable-methods/scripts/check_invocable_methods.py",
+    "skills/apex/test-class-standards/scripts/check_test_class_standards.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given no offline Apex compiler exists in the sf CLI, when this step is reviewed, then every non-platform identifier in the emitted code is quoted from admin/approval-process-apex-patterns/references/metadata-examples.md or from templates/apex/tests/TestDataFactory.cls - Approval.ProcessSubmitRequest, setObjectId, setProcessDefinitionNameOrId, setSubmitterId, setSkipEntryCriteria, setComments, Approval.process(req, false), isSuccess, getInstanceStatus, getErrors, Database.Error.getStatusCode/getMessage, and TestDataFactory.createAccounts / createOpportunities with their documented signatures - and TestDataFactory.cls in this step diffs empty against templates/apex/tests/TestDataFactory.cls, and TestDataFactory.cls-meta.xml diffs empty against templates/apex/tests/TestDataFactory.cls-meta.xml and therefore carries <apiVersion>67.0</apiVersion> while OpportunityApprovalService, OpportunityApprovalController, OpportunityApprovalSubmitAction and OpportunityApprovalServiceTest carry 62.0 - a deliberate split recorded in this step's note, not a slip. Ticking this line is also what records the template's provenance, because this step declares no deploy-order.md. [expected: ticked at the M3 milestone gate]",
+    "Given Q35, when OpportunityApprovalServiceTest.cls is read, then one method asserts that a ProcessInstance with Status Pending exists for the opportunity after a submit, and a second asserts that a second submit while pending returns success false with a non-null failure message and creates no second pending instance. [expected: ticked at the M3 milestone gate]"
+  ],
+  "manual_shape_check": {
+    "skill": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+    "note": "Both manual lines carry an explicit Given, When and Then naming an observable outcome, so neither is unusable. Spot-checked as due diligence only (never ticked here): TestDataFactory.cls and its meta.xml diff empty against templates/apex/tests/TestDataFactory.cls[-meta.xml] (67.0 on the template, 62.0 on the four authored classes); OpportunityApprovalServiceTest.cls still contains submitsQualifyingOpportunityAsItsOwner (Pending ProcessInstance assertion) and secondSubmitWhilePendingIsRefusedWithAReason after the repair."
+  },
+  "manifest": {
+    "status": "skipped-not-applicable",
+    "reason": "Step type is automation, owner is apex-builder - the Apex exception in standards/build-orchestration.md Section 5. apex-builder's Output Contract names no package.xml (Section 4 borrowed-agent condition 2 forbids declaring an output the owning agent does not produce), so this step's ApexClass members are aggregated into the build-level package.xml by the docs step it does not yet have a manifest of its own. No package.xml exists under artefacts/M3-S03/ and none is declared in this step's outputs[]; the step's own acceptance_tests[4] (type manifest) names M4-S04 as the step that will carry these members, matching plan.json.",
+    "names_step": "M4-S04",
+    "step_declares_package_xml_in_outputs": false
+  },
+  "evidence_only_not_declared": [
+    {
+      "checker": "skills/apex/apex-security-patterns/scripts/check_apex_security_patterns.py --manifest-dir artefacts/M3-S03",
+      "reason": "Cited in skills[] but undeclared by decision; NOT re-run in this run. tests/M3-S03/evidence_apex_security_patterns.txt is the capture from the 2026-09-19T17-22-41Z run and predates the repair of OpportunityApprovalServiceTest.cls; it is not evidence about the current artefacts.",
+      "counted": false
+    }
+  ],
+  "check_outputs": {
+    "ok": true,
+    "step": "M3-S03",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "artefact_hashes": {
+    "artefacts/M3-S03/classes/OpportunityApprovalService.cls": "6c0d60bc72175835480a80593378480a122f213816068a6da2f56761e45aee9c",
+    "artefacts/M3-S03/classes/OpportunityApprovalService.cls-meta.xml": "3a31d117e3c855b937d340b20754b03ad66c0c156d57b7c64011aa5437437b51",
+    "artefacts/M3-S03/classes/OpportunityApprovalController.cls": "48100fbf72bbd44c84ef7683485e8382fa017d70dd9d3e673649d1fc7c7a6eda",
+    "artefacts/M3-S03/classes/OpportunityApprovalController.cls-meta.xml": "3a31d117e3c855b937d340b20754b03ad66c0c156d57b7c64011aa5437437b51",
+    "artefacts/M3-S03/classes/OpportunityApprovalSubmitAction.cls": "cc3d299ffbfc2b52b7b70bcc70b25ca4390c788b7cd3521067f69ca1c1266c1b",
+    "artefacts/M3-S03/classes/OpportunityApprovalSubmitAction.cls-meta.xml": "3a31d117e3c855b937d340b20754b03ad66c0c156d57b7c64011aa5437437b51",
+    "artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls": "7ba05df740c925fb1d4a328f14b8bdea1b507b32f0d912cdbe4169e6b14c2905",
+    "artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls-meta.xml": "3a31d117e3c855b937d340b20754b03ad66c0c156d57b7c64011aa5437437b51",
+    "artefacts/M3-S03/classes/TestDataFactory.cls": "a11df9e2221ceb5e3324690f3029224a98ab436cb7c7969d21916b02f711445b",
+    "artefacts/M3-S03/classes/TestDataFactory.cls-meta.xml": "a242f6e22b472afffbd726be71165de394e417355cdf1edd81b5601278ddea32"
+  }
+}

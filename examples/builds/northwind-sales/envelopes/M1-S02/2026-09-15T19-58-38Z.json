@@ -1,0 +1,384 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-15T19-58-38Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T19-58-38Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T19-58-38Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S02",
+    "api_version": "62.0 (DEFAULTED - plan.json carries no api_version key; agent default per agents/metadata-builder/AGENT.md Inputs, and the same value M1-S01 stamped)"
+  },
+  "summary": "Built M1-S02 (ui, scale project, build_mode design-only) as deploy-ready source-format metadata under artefacts/M1-S02/: one metadata type (Layout), two components, plus package.xml and deploy-order.md. All four declared outputs written; no metadata written that the step did not declare. The declared build-scoped record-type/layout cross-check exited 0 over artefacts/ with 2 record type(s) and 2 layout(s) resolved against each other. Neither layout ships a relatedLists block (A26) and neither marks any field behavior=Required (A25); both omissions are deliberate, grounded, and carried in deploy-order.md.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 MEDIUM on two counts, neither a defect in the artefacts. (1) question-coverage: three Questions-to-Ask rows across the cited skills have no answer anywhere on file (Person Accounts; whether any Opportunity will be marked IsPrivate; which reports and list views filter on these record types today) - none of them changes a byte of either layout, but the HIGH row asks for every row answered from the plan. Two org facts the layouts turn on are carried as assumptions rather than answers: A25 (the platform's layout-required standard-field set for Opportunity is unverified) and A26 (the Opportunity Products related-list API name must come from a retrieve). (2) element-grounding: Layout is documented in the cited skills by worked example plus a how-to-read-it list, not by an element table, which is the Step 10 MEDIUM condition verbatim; and one cited skill, admin/products-and-pricebooks, carries no deployable XML at all. Everything the HIGH row otherwise asks for holds: every element written traces to the Step 3 inventory, every checker exited 0 on the first pass with no repair pass, check-outputs is ok, and every declared output was written and nothing else.",
+  "dimensions_compared": [
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Three grounding notes. (a) admin/products-and-pricebooks returned NO path from the AGENT.md Step 3 grep - it carries no fenced XML under references/, in SKILL.md or under templates/ - so a literal reading of the Step 3 gap rule ('it fires on one condition only: the grep returned no path at all') would block this step. It was not blocked: that skill supplies no element this step writes, and the one element it could have supplied (the Opportunity Products relatedLists block) is deliberately not written per assumption A26. The by-name handoff followed instead is inside a cited skill - admin/opportunity-management/references/metadata-examples.md section 4, which names the retrieve-and-copy procedure and forbids hand-authoring a related-list name - and it is cited as type skill. (b) Layout is documented in admin/record-types-and-page-layouts/references/metadata-examples.md as a worked example with a how-to-read-it list, not as an element table; every element written (layoutSections, customLabel, detailHeading, editHeading, label, layoutColumns, layoutItems, behavior, field, emptySpace, style) and both enum values used (Edit, Readonly, TwoColumnsTopToBottom) are copied from it. (c) The DX file-name form layouts/<Object>-<Layout Name>.layout-meta.xml, the <Layout> root element and the fact that a Layout carrying only layoutSections - no relatedLists, no quickActionList - is accepted by an org were confirmed against examples/builds/case-onboarding/reports/mock-deploy-fixes/Case-Case Support Layout.layout-meta.xml, a file that cleared sf project deploy start --dry-run on run 5 of MOCK-DEPLOY-M1.md.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Either add deployable XML to admin/products-and-pricebooks (an Opportunity layout relatedLists block would be the natural home, once someone has retrieved the real related-list name from an org), or drop it from M1-S02's skills[] via build_plan.py amend-step and cite admin/opportunity-management for the product-line half of Q14 instead. Separately, agents/metadata-builder/AGENT.md Step 3's gap rule needs a clause for a skill cited for context that owns no metadata type in the step."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Of the 15 Questions-to-Ask rows across the three cited skills, admin/products-and-pricebooks contributes none - at version 1.0.0 (updated 2026-04-06) it predates the mandatory Questions-to-Ask section and has no such table. Three rows have no answer on file and no documented default: 'Are Person Accounts enabled on this org?' (not applicable to an Opportunity layout), 'Will any opportunity ever be marked Private?' (IsPrivate is on neither layout, and nothing here depends on it), and 'Which reports, list views, and Flow entry criteria filter on this record type today?' (M4-S02 owns the report). None of the three can change what was written, so none is a blocking ambiguity under Step 4. Q20 answered which standard fields the requester wants; the platform's own layout-required set is a different question that no answer supplies, and it is carried as assumption A25 at risk medium rather than as an answer.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "A25 and A26 both close the same way and only against an org: run scripts/mock_deploy.py --org-alias <alias> --step M1-S02 to name the layout-required fields one per run, and sf project retrieve start --metadata \"Layout:Opportunity-Opportunity Layout\" to get the Opportunity Products related-list block. Both are written into artefacts/M1-S02/deploy-order.md sections 0 and 3."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "The declared build-scoped test did what it was declared to do. Run at --manifest-dir artefacts it reported 'Scanned 6 metadata file(s): 2 record type(s), 2 layout(s)' - both halves of the M1 pair present - while the same checker at --manifest-dir artefacts/M1-S02 reports '0 record type(s), 2 layout(s)', which is the blind half-view the plan's test description predicted word for word. The planner's scope reasoning held at run time.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts",
+        "count": 6
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "deploy-order",
+      "observation": "M1-S01's deploy-order.md section 2 already named this step's layouts as a downstream dependency and named the milestone-scoped checker as the thing that only becomes real once both step directories exist. The two notes agree without anyone reconciling them.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "checker-pass",
+      "observation": "The declared checker exited 0 - which is what the test asserts - but printed 2 INFO findings ('layout marks no field behavior=Required') where the planner's fixture run recorded '0 finding(s) detected'. The fixture layouts evidently carried at least one Required item and these do not. The divergence is a real design difference, not a regression: marking any Opportunity field Required on the layout is precisely what references/gotchas.md #13 forbids without a dry run, and Q11 puts the must-fill enforcement in the M2-S03/M2-S04 validation rules. No field was marked Required to make a cosmetic string match an INFO-level fixture note.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "element-grounding",
+      "observation": "Both layout files are byte-for-byte identical; they differ only in file name. admin/record-types-and-page-layouts lists 'record type with an identical page layout to another record type' as a merge candidate to surface proactively (SKILL.md, Proactive Triggers; llm-anti-patterns.md Anti-Pattern 3, the 1:1 layout-per-record-type mapping). Nothing in the step's inputs, in Q14 or in Q20 differentiates the two field sets, so the second layout exists because decision D2 produced two record types, not because anyone asked for a different page. It is defensible - it leaves room for the motions to diverge later without a record-type change - but it should be a decision someone signs, and it is carried as item 4 of deploy-order.md section 3.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "element-grounding",
+      "observation": "A cited skill supplied nothing writable. admin/products-and-pricebooks carries no fenced XML anywhere (the Step 3 grep returns no path), no Questions to Ask Before Configuring table, and no mention of a page layout or a related list in any of its files. It is cited for the product-line half of Q14 ('the products related list is on both'), which is exactly the element this step cannot write, and the instruction that resolved it came from admin/opportunity-management instead.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/products-and-pricebooks",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "deploy-order",
+      "observation": "Both layouts ship incomplete against requirement item 2: with no relatedLists block, a deployed Enterprise layout shows no Opportunity Products related list, so a rep cannot add a product line from the page. The gap is deliberate (A26) and the retrieve instruction is section 0 of the deploy-order note, but a reader who takes 'the M1 layouts are built' as 'reps can add products' will be wrong, in the same shape as M1-S01's open item O-M1S01-03.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "checker-pass",
+      "observation": "Assumption A25 and the step's manual acceptance test both name 'scripts/mock_deploy.py --dry-run', and that flag does not exist. The script's --help states it is validation-only, always runs sf project deploy start --dry-run (checkOnly), and that 'there is no flag to disable --dry-run and no --deploy option; that is by design'. Written into deploy-order.md as the runnable form - python3 scripts/mock_deploy.py <plan> --org-alias <alias> --step M1-S02 - with an explicit sentence that the --dry-run in A25's wording is the behaviour and not a flag, so the human ticking the manual test can match the two.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "scripts/mock_deploy.py",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "element-grounding",
+      "observation": "agents/metadata-builder/AGENT.md Step 3's gap rule says it fires 'on one condition only: the grep in item 2 returned no path at all'. admin/products-and-pricebooks meets that condition exactly, so a literal reading blocks this step with skill-gap. It was not blocked, because the rule's own blocked-exit message must name 'the metadata type and the specific elements the step needed' and this skill was needed for no element - the tell that the rule was written for a skill that owns a type the step emits, not for a skill cited as context. The judgement is recorded rather than hidden; a reviewer who disagrees should read this observation, not the artefacts.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "question-coverage",
+      "observation": "Q19 gives the profile matrix (Sales User for reps and managers, System Administrator for sales ops, the manager distinction by role rather than profile) and it determines nothing in this step - a Layout file carries no profile reference. It determines M2-S02's Profile file entirely. Recorded here so the M1 gate does not read 'the layouts are built' as 'the right people see them'; nobody is assigned to either layout until M2-S02, which is human-gated.",
+      "evidence": {
+        "source": "plan_field",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "deploy-order",
+      "observation": "Two contracts disagree on where this run's report pair belongs. AGENT.md's Persistence (Wave 10 contract) sub-section names docs/reports/metadata-builder/<run_id>.{md,json} as well, while this invocation was scoped to write only inside the build directory. Only the build-scoped pair was written - the same resolution M1-S01's run recorded.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/metadata-builder/AGENT.md",
+        "count": 1
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "step_type": "ui",
+    "step_scale": "project",
+    "build_mode": "design-only",
+    "status_path_taken": "invoked directly (not under agents/build-step-runner), so this agent ran the Step 9 set-status itself: M1-S02 running -> built.",
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md"
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "record-types-and-page-layouts: 'Is a field being marked Required on the layout meant to be enforced everywhere?'",
+        "answer": "No. Q11 splits the per-stage fields into must-fill and shown-for-context, and the must-fill half is a validation-rule backlog (M2-S03 Opportunity_Discount_Requires_Approval, M2-S04 Opportunity_Products_Required_At_Propose), not a layout backlog. Layout Required binds to that layout only - API, Flow and every other layout ignore it (gotchas #11) - so using it here would look like enforcement and enforce nothing.",
+        "source": "clarification answer Q11 (listed in the step's inputs.answers)",
+        "element": "both layouts: every layoutItems/behavior is Edit or Readonly; none is Required"
+      },
+      {
+        "question": "record-types-and-page-layouts: 'Which standard fields does the platform require on this object's layout?'",
+        "answer": "Unknown, and deliberately not asserted. Q20's answer names the five the requester wants on both layouts (Name, AccountId, StageName, CloseDate, Amount) and they are all present. The platform's own layout-required set for Opportunity is a different question: metadata-examples.md says in bold not to extrapolate the Case set, and gotchas #13 names this exact temptation - 'Do not generalise Status to StageName on Opportunity ... without a dry run against the target org'. Carried as assumption A25, risk medium, with the iterate-the-dry-run discovery procedure in deploy-order.md section 3 item 2.",
+        "source": "clarification answer Q20 for the five fields; assumption A25 for the platform set",
+        "element": "both layouts: five layoutItems in the Opportunity Information section, all behavior=Edit; no field carries behavior=Required"
+      },
+      {
+        "question": "record-types-and-page-layouts (Q14, via admin/validation-rules): 'Is the product-line field and the discount field confirmed to be on every layout, for every record type, that reps and managers use?'",
+        "answer": "Discount__c is on both new layouts, editable. The products related list is deferred: its API name is in no skill in this library and admin/opportunity-management/references/metadata-examples.md section 4 says related-list names are retrieval aliases that must never be hand-authored, so neither file carries a relatedLists block and deploy-order.md section 0 carries the retrieve-and-copy instruction (assumption A26, risk medium). Q14's 'confirm nothing is added to the SMB layout' is satisfied structurally - no SMB layout file exists in this build's outputs at all.",
+        "source": "clarification answer Q14 + assumption A26 + upstream artefact artefacts/M1-S01/objects/Opportunity/fields/Discount__c.field-meta.xml",
+        "element": "both layouts: Discount Approval section, layoutItems behavior=Edit field=Discount__c; no relatedLists element in either file"
+      },
+      {
+        "question": "Which behavior does Approval_Status__c carry? (the step's own manual acceptance test, bound against gotchas #11)",
+        "answer": "Readonly. The field is written by the M3 approval process, not by a rep - its own field definition says so ('Set by the discount approval process. Blank means nothing has been submitted for this deal yet') and Q22 makes blank a legal state the process itself produces. A field update sets it regardless of the layout item's behavior, so Readonly costs the approval process nothing and stops a rep typing Approved.",
+        "source": "step acceptance_tests (manual, A25 row) + upstream artefact artefacts/M1-S01/objects/Opportunity/fields/Approval_Status__c.field-meta.xml + decision D-M1S01-03",
+        "element": "both layouts: Discount Approval section, layoutItems behavior=Readonly field=Approval_Status__c"
+      },
+      {
+        "question": "record-types-and-page-layouts: 'Which profile does each affected user actually hold?'",
+        "answer": "Reps and managers on the standard Sales User profile with a Sales Cloud permission set; sales-ops admin on System Administrator; the manager distinction is by role, not profile. It determines nothing in this step - a Layout file carries no profile reference - and everything in M2-S02, which is human-gated. Recorded as a deploy-order fact instead: until M2-S02 ships, both layouts are deployed metadata nobody is assigned to.",
+        "source": "clarification answer Q19 (listed in the step's inputs.answers)",
+        "element": "no element in this step; deploy-order.md section 2, the M2-S02 row"
+      },
+      {
+        "question": "record-types-and-page-layouts: 'Is this object Lead, Opportunity, Solution, or Case?'",
+        "answer": "Opportunity. Two consequences here rather than in M1-S01: the object is not Case, so the checker's verified RL-REQ-01/RL-REQ-02 rules do not apply and only the RL-REQ-03 heuristic does (satisfied by the Name item); and the Case-only layout switches showEmailCheckbox, showRunAssignmentRulesCheckbox and showKnowledgeComponent that appear in the skill's worked example are omitted - metadata-examples.md states each is allowed only on specific objects and 'deploying one on the wrong object fails'.",
+        "source": "requirement.md + upstream artefact artefacts/M1-S01/objects/Opportunity/recordTypes/",
+        "element": "both layouts: no showEmailCheckbox, showRunAssignmentRulesCheckbox or showKnowledgeComponent element"
+      },
+      {
+        "question": "Which section structure and style? (bound from the skill's worked example rather than from a question row)",
+        "answer": "Two sections, both TwoColumnsTopToBottom with two layoutColumns each: 'Opportunity Information' carrying Q20's five standard fields (with one emptySpace to keep the columns aligned) and 'Discount Approval' carrying the two new fields. customLabel is true on both because both labels are the author's text rather than a built-in. The two-section shape, the style enum, the emptySpace cell and the columns-must-match-the-style rule are all copied from the Case worked example in metadata-examples.md.",
+        "source": "cited skill worked example (admin/record-types-and-page-layouts/references/metadata-examples.md) - no Questions-to-Ask row governs it",
+        "element": "both layouts: layoutSections x2, style TwoColumnsTopToBottom, layoutColumns x2 per section, one emptySpace"
+      },
+      {
+        "question": "opportunity-management: 'Do team members need Read, Edit, or All on the deals they join?'",
+        "answer": "Not answered and not needed. No opportunity-team related list ships - the step writes no relatedLists block at all (A26) - so the RelatedOpportunityTeamList example in the skill's section 4 was read for its related-list warning and not for its content. Team selling is outside this build's scope; requirement.md names no team requirement.",
+        "source": "requirement.md (the fallback, and the weakest) - no clarification covers it",
+        "element": "no element in this step"
+      },
+      {
+        "question": "Do the two layouts differ from each other?",
+        "answer": "No - they are byte-for-byte identical and differ only in file name. Nothing in the step's inputs, in Q14 or in Q20 gives a Renewal-specific field, and inventing one would assert a requirement nobody stated. D2's own consequences line ('two record types means two layouts') is why there are two files. Surfaced as a merge candidate in Process Observations and as item 4 of deploy-order.md section 3 rather than resolved here.",
+        "source": "step inputs (layouts, required_standard_fields) + decision D2",
+        "element": "both layout files, in full"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "declared_scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: 2 review/info finding(s) detected\n{\n  \"score\": 100,\n  \"findings\": [\n    {\n      \"severity\": \"INFO\",\n      \"location\": \"artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml\",\n      \"message\": \"layout 'Opportunity-Opportunity Enterprise Layout' marks no field behavior=Required\"\n    },\n    {\n      \"severity\": \"INFO\",\n      \"location\": \"artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml\",\n      \"message\": \"layout 'Opportunity-Opportunity Renewal Layout' marks no field behavior=Required\"\n    }\n  ],\n  \"summary\": \"Scanned 6 metadata file(s): 2 record type(s), 2 layout(s); 2 finding(s) detected.\"\n}",
+        "changed": "nothing - exit 0 on the first pass. The two INFO findings were NOT repaired away: marking an Opportunity field behavior=Required to reach the planner's '0 finding(s)' fixture string would assert the platform requirement that gotchas #13 forbids asserting without a dry run, and would contradict Q11's answer. The declared expectation is 'exit 0' and that is met."
+      },
+      {
+        "command": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M1-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": false,
+        "declared_scope": "n/a - cited skill, run per AGENT.md Step 8",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "INFO: [artefacts/M1-S02] No Opportunity stage value set, business process, record type or pathAssistant found. Nothing in this tree is in scope for this checker.\n\n0 error(s), 0 warning(s), 1 info.",
+        "changed": "nothing - passed on the first pass. The INFO is correct: this step writes no type this checker covers."
+      },
+      {
+        "command": "python3 skills/admin/products-and-pricebooks/scripts/check_products_and_pricebooks.py --manifest-dir artefacts/M1-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": false,
+        "declared_scope": "n/a - cited skill, run per AGENT.md Step 8",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "No issues found.",
+        "changed": "nothing - passed on the first pass"
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts/M1-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": false,
+        "declared_scope": "step - run only to confirm the plan's half-view claim, not as a test",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: 2 review/info finding(s) detected\n... same two INFO findings ...\n\"summary\": \"Scanned 2 metadata file(s): 0 record type(s), 2 layout(s); 2 finding(s) detected.\"",
+        "changed": "nothing. Reproduces the plan's test description exactly: '0 record type(s), 2 layout(s)' - correct, and blind to half the pair. This is why the declared test is build-scoped."
+      }
+    ],
+    "xml_parse": "all 3 *.xml / *-meta.xml files under artefacts/M1-S02/ parse with xml.etree.ElementTree (2 layouts + package.xml).",
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "package.xml carries one <name> block - Layout - with two explicit <members> in the object-hyphen-name form the Metadata API uses (Opportunity-Opportunity Enterprise Layout, Opportunity-Opportunity Renewal Layout), matching admin/record-types-and-page-layouts/references/metadata-examples.md's member-format table and admin/opportunity-management section 5's Opportunity-Opportunity New Business Layout example. Both directions hold: every member is backed by a file on disk and every metadata file is covered by a member. Layout does accept the * wildcard, per the same table, but the members are named explicitly so the manifest check can match them one-to-one against the files. <version>62.0</version>.",
+    "workflow_return": {
+      "step_id": "M1-S02",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S02/package.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "BEFORE DEPLOY (A26, risk medium): neither layout carries a relatedLists block, so neither shows Opportunity Products. Run sf project retrieve start --metadata \"Layout:Opportunity-Opportunity Layout\" --target-org <alias> and paste the Opportunity Products relatedLists element verbatim into both files. Requirement item 2 is not satisfied by these artefacts alone.",
+      "BEFORE DEPLOY (A25, risk medium): the platform's layout-required standard-field set for Opportunity is unverified and no field on either layout carries behavior=Required. Iterate python3 scripts/mock_deploy.py .sfskills/builds/northwind-sales/plan.json --org-alias <alias> --step M1-S02; the deploy names one missing field per run.",
+      "AT THE M1 GATE: the two layouts are identical field-for-field. Confirm that is wanted (D2's consequence) rather than an artefact of the record-type split - admin/record-types-and-page-layouts flags an identical layout pair as a merge candidate.",
+      "PLAN TEXT: assumption A25 and the step's second manual acceptance test both name 'scripts/mock_deploy.py --dry-run'; that flag does not exist (the script is dry-run-only by design). deploy-order.md section 3 item 2 carries the runnable form and says so explicitly, so the manual tick can be made truthfully, but the plan text is worth correcting.",
+      "PLAN/LIBRARY: admin/products-and-pricebooks is cited by this step and carries no deployable XML and no Questions-to-Ask table. Either deepen it or drop it from skills[] - see dimensions_skipped.element-grounding for both remedies."
+    ]
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "The Layout element set - layoutSections, customLabel, detailHeading, editHeading, label, layoutColumns, layoutItems, behavior, field, emptySpace, style - the Edit/Required/Readonly and TwoColumnsTopToBottom enums, the layouts/<Object>-<Name>.layout-meta.xml file form, the object-hyphen-name package.xml member format, the 'Layout-required standard fields' section behind A25 and the two discovery procedures, and the Case-only showEmailCheckbox / showRunAssignmentRulesCheckbox / showKnowledgeComponent restriction that kept all three out of both files"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+      "used_for": "#11 (layout Required is a property of the layout, not the field) and #13 (do not generalise Status-must-be-Required to StageName on Opportunity without a dry run) - together the grounding for every layoutItem being Edit or Readonly; #12 for the one-field-per-run discovery budget in deploy-order.md; #5 (a layout is not a security control) behind Approval_Status__c being Readonly for UX rather than for protection"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/llm-anti-patterns.md",
+      "used_for": "Anti-Pattern 6 (do not call a hand-written layout deploy-ready on the strength of a static check; do not state a required-field list for an object other than Case) - the wording rule this step's deploy-order note and this envelope both follow; Anti-Pattern 3 (1:1 layout per record type) behind the identical-layouts observation"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "The Questions to Ask Before Configuring table bound in Step 4 (eight rows), the Recommended Workflow step 4 checker invocation, and the Proactive Triggers entry that flags two record types with an identical page layout as a merge candidate"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/references/metadata-examples.md",
+      "used_for": "Section 4 - the by-name handoff that resolved the Opportunity Products related list: RelatedOpportunityTeamList and its fields aliases are marked UNVERIFIED (2026-09-04), the guide 'documents the element, not the catalogue of related-list names', and the instruction is to retrieve the layout and copy the exact strings. This is the cited-skill source for deploy-order.md section 0 and for assumption A26. Section 5 also supplied the Opportunity-Opportunity New Business Layout package.xml member form"
+    },
+    {
+      "type": "skill",
+      "id": "admin/opportunity-management",
+      "path": "skills/admin/opportunity-management/SKILL.md",
+      "used_for": "The Questions to Ask Before Configuring table bound in Step 4 (seven rows); the two that touch a layout - team access level and IsPrivate - and the five settled in M1-S01 or out of scope here"
+    },
+    {
+      "type": "skill",
+      "id": "admin/products-and-pricebooks",
+      "path": "skills/admin/products-and-pricebooks/SKILL.md",
+      "used_for": "Read in full per AGENT.md Step 3 as a cited skill. It carries no fenced XML anywhere, no Questions to Ask table, and no page-layout or related-list guidance, so it supplied no element to either layout - recorded as the element-grounding gap rather than used"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/reports/mock-deploy-fixes/Case-Case Support Layout.layout-meta.xml",
+      "used_for": "Grounding the DX root element name <Layout> and the layouts/<Object>-<Layout Name>.layout-meta.xml file form on a file that actually cleared sf project deploy start --dry-run (run 5), and confirming that a Layout carrying only layoutSections - no relatedLists, no quickActionList - is accepted by an org, which is what makes shipping without the Opportunity Products block a deferral rather than a broken file"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/reports/MOCK-DEPLOY-M1.md",
+      "used_for": "Runs 1-5: the one-field-per-run shape of the layout-required discovery, and the four message strings quoted in deploy-order.md section 3 item 2"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "Section 4 for the ui step-type row (metadata-builder is the design-only owner; Layout/FlexiPage/PathAssistant/ListView/Report/EmailTemplate are its artefacts) and the status machine; section 5 'Checker scope' for what scope: build means and the rule that the literal command governs; section 8 for the deepen-a-skill signal behind the products-and-pricebooks gap"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "The whole Plan, end to end: Step 3's grep test and gap rule, Step 4's four-source binding order, Step 5's three writing rules, Step 6's package.xml constraints, Step 7's deploy-order contract, Step 8's checker loop and XML parse, Step 9's check-outputs and set-status, Step 10's confidence table"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "The eight-section shape, the Process Observations requirement and its four categories, the Citations schema, and the confidence rubric that AGENT.md Step 10 overrides"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-15T19-21-43Z.md",
+      "used_for": "The upstream step's in-step decisions: D-M1S01-03 (Approval_Status__c ships with no default because blank is a legal state the approval process produces) behind this step's Readonly behavior, and the M1-S01 envelope's own record of which skills supplied which elements"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales",
+      "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md",
+      "used_for": "Section 2's cross-step dependency rows, which this note's section 2 continues from the other side - the M2-S02 profile assignment, the Paths, and the statement that the record types are deployed but unselectable until M2-S02 ships"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S02 is built; the declared build-scoped checker test, the always-on xml and manifest checks and the two manual ticks against deploy-order.md are its to run and record in tests/M1-S02/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once the step is tested, A25, A26 and the identical-layouts question need to reach decisions.md and the traceability matrix, alongside the M1-S01 entries already there."
+    }
+  ]
+}

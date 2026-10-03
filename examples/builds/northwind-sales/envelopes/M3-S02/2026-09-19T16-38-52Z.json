@@ -1,0 +1,503 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T16-38-52Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-38-52Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-38-52Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S02",
+    "api_version": "62.0 (fallback: plan.json carries no api_version key)",
+    "build_mode": "design-only",
+    "invocation": "direct read of agents/metadata-builder/AGENT.md, not under build-step-runner - so this agent set both status transitions itself (AGENT.md Step 9, standalone path)"
+  },
+  "summary": "Built M3-S02 (type automation, declarative): the Opportunity.Discount_Approval approval process plus the Workflow file carrying its two email alerts and four field updates, at API 62.0. One step, approver userHierarchyField Manager with useApproverFieldOfRecordOwner true, allowedSubmitters owner only, recordEditability AdminOnly, allowRecall true with a recallActions field update whose operation is Null, both final-lock booleans false, active true (D9/A36), showApprovalHistory true (O-M3S01-01), entryCriteria as the plan's formula verbatim, and the three M3-S01 template strings copied character for character. The declared build-scope checker exited 0 on the first pass with zero repair passes and check-outputs is ok. The second declared checker, check_email_templates.py at --manifest-dir artefacts/M3-S02, exits 1 because this step writes no email-template artefact and must not; that is a test-declaration defect with a measured remedy, not a defect in the metadata.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "AGENT.md Step 10, MEDIUM row: four Questions-to-Ask rows (Q58-Q61) were answered by the plan's recorded defaults A19-A22 rather than by a human answer, and two more (approvalPageFields, enableMobileDeviceAccess) were answered only from the skill's worked example. Everything in the HIGH row otherwise holds - every element traced to the Step 3 inventory, the declared build-scope checker exited 0 first pass, check-outputs ok, every declared output written and nothing else - but the second declared checker cannot read this step's artefacts at all, which is recorded rather than repaired.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "question-coverage",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "checker-pass",
+      "state": "partial",
+      "reason": "One of the two declared checkers passed (check_approval_design.py, exit 0, zero repair passes). The other, check_email_templates.py at --manifest-dir artefacts/M3-S02, matched zero files and exited 1 - not because a query failed and not because a feature is unlicensed, but because this step's declared outputs contain no *.email, *.email-meta.xml or body file under an email/ directory, and writing one here would duplicate M3-S01's manifest members.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "amend-step the command to --manifest-dir artefacts with scope build (measured: 6 files, 0 findings, exit 0, also under --strict), or drop the test and accept the section 5 warning. amend-step needs the step back at pending or blocked."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "build-orchestration",
+      "observation": "The checker acceptance test added to this step today by amend-step --add-checker points at a tree that holds no artefact of the kind it reads, so it exits 1 on a correct step and no edit to the metadata can change that.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json (steps[M3-S02].acceptance_tests[5]) and skills/admin/email-templates-and-alerts/scripts/check_email_templates.py (is_template_artefact, main)",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "build-orchestration",
+      "observation": "Correcting that command now needs the step reset, because amend-step is refused unless the step's status is pending or blocked and --prose-only may not change a command; the step reached running before the defect was measurable, so the remedy is tested -> failed -> pending -> amend-step -> running rather than a single edit.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md section 2 (amend-step preconditions) and section 4 (step status machine)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "automation-design",
+      "observation": "The process entry criteria carry no StageName filter, unlike the skill's worked example whose process-level criteria exclude Closed Won and Closed Lost, so an already-Closed Won opportunity can be submitted and then recalled - and because a workflow field update re-saves the record without re-running custom validation rules, the recall commits a Closed Won record above 20% discount with a blank Approval Status, which is the state M2-S03 exists to prevent.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/validation-rules/references/gotchas.md ('A Workflow Field Update Re-Saves the Record and Validation Rules Do Not Run Again') read against .sfskills/builds/northwind-sales/artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml and this step's inputs.entry_criteria_formula"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "org-readiness",
+      "observation": "With useApproverFieldOfRecordOwner true the hierarchy field is read on the record owner, so a manager-owned Enterprise or Renewal deal above 20% routes to that manager's own Manager; the requirement names 12 reps and 2 managers and no clarification says whether managers own deals or whether either manager has a Manager set, and a blank one is a run-time submission failure the deploy cannot catch.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/approval-processes/references/gotchas.md ('Blank Approver Fields Fail at Runtime') read against .sfskills/builds/northwind-sales/requirement.md and clarification Q32"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "library-coverage",
+      "observation": "No org-validated ApprovalProcess or Workflow artefact exists anywhere in this repository, so nothing in this step is grounded on metadata an org has accepted; the committed case-onboarding example, which survived real checkOnly deploys, ships neither type.",
+      "evidence": {
+        "source": "repo_scan",
+        "query": "find examples -type d -name approvalProcesses; find examples -name '*.workflow-meta.xml'; grep -ril approvalprocess examples/",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-hygiene",
+      "observation": "The step's fifth manual acceptance test still says check_email_templates.py 'is declared at --manifest-dir artefacts/M3-S01 and never sees this step's workflow file', which the same day's amendment made stale - the checker is now declared at artefacts/M3-S02; the sentence's conclusion (no declared checker reads alert recipients) is still correct.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json steps[M3-S02].acceptance_tests[5] against acceptance_tests[4].description"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "automation-design",
+      "observation": "No cited reference shows an entryCriteria written as a formula - the element name is documented in SKILL.md and the design template, but every fenced example uses criteriaItems, so whether RecordType.DeveloperName resolves inside an approval entry-criteria formula is settled only by an org.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/approval-processes/references/metadata-examples.md (the worked example's entryCriteria) and skills/admin/approval-processes/SKILL.md ('Deployable Metadata Shape', entryCriteria row)"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "automation-design",
+      "observation": "enableMobileDeviceAccess false and the absence of allowDelegate are both unanswered by any clarification; false was copied from the worked example for its stated reason (it keeps adhoc approvers legal later) while allowDelegate was omitted because the skill documents no default and the element is optional.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/approval-processes/references/metadata-examples.md (worked example, step 1 and enableMobileDeviceAccess note) and skills/admin/approval-processes/templates/approval-design-template.md (Overview, Step Design)"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "deploy-risk",
+      "observation": "Nothing in the cited skills states whether an ApprovalProcess deployed active is validated more strictly than an inactive one, so whether shipping active true (D9) survives a real deploy is open until the M3 mock deploy runs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/approval-processes/SKILL.md (Recommended Workflow step 4) against plan.json decisions D9 / assumptions A36"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "The name contract M3-S01 wrote as section 1 of its deploy-order note did its job: all three template strings were copied rather than retyped, and the build-scope approval checker resolved the process's emailTemplate against M3-S01's files on the first run with zero repair passes.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S01/deploy-order.md section 1"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "data-model",
+      "observation": "The three literal values the field updates write are exactly M1-S01's restricted picklist values, so the string the M2-S03 validation rule tests for (Approved) and the string the approval writes are the same by construction rather than by coincidence.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/fields/Approval_Status__c.field-meta.xml"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-orchestration",
+      "observation": "Run the tester on this step once the email checker's declared path is corrected, so the run does not record a failure that is about a test declaration rather than about the metadata.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json steps[M3-S02].acceptance_tests"
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because it owns the acceptance tests this agent only rehearsed, and one of the two declared checkers needs its path corrected before that run is meaningful."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "automation-design",
+      "observation": "The interplay recorded in deploy-order.md section 6 spans a validation rule, an approval process and four workflow field updates on one object, which is the shape a transaction profiler reads better than a per-step note.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S02/deploy-order.md section 6"
+      },
+      "suggested_followup_agent": "automation-transaction-profiler",
+      "followup_reason": "Because the order of execution between the M2-S03 validation rule and this step's workflow field updates is what decides whether the recall path can commit a state the rule exists to prevent."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/SKILL.md",
+      "used_for": "Questions-to-Ask rows, the ApprovalProcess element/enum table, the locking rules, and the deploy-order of actions before the process"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/references/metadata-examples.md",
+      "used_for": "the ApprovalProcess and Workflow element inventory, the worked two-step discount approval whose structure was adapted, the package.xml member forms, and the deploy sequence"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/references/gotchas.md",
+      "used_for": "nextAutomatedApprover dependency, blank-approver runtime failure, activation freezing step structure, process order not carried in metadata, actions living in a different file, and the lock rules"
+    },
+    {
+      "type": "template",
+      "id": "admin/approval-processes/approval-design-template",
+      "path": "skills/admin/approval-processes/templates/approval-design-template.md",
+      "used_for": "the Irreversible Decisions / Overview / Entry Criteria / Step Design / Actions rows bound in the decision record, and the Operational Checks list behind deploy-order.md section 9"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/SKILL.md",
+      "used_for": "the five Questions-to-Ask rows bound for the two alerts, including the sender and duplicate-email rows"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/references/gotchas.md",
+      "used_for": "the WorkflowAlert recipient requirement, the senderAddress/senderType pairing rule, the recipient types that need no companion element, and the alert-before-template retirement order"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md",
+      "used_for": "the org-wide-address facts behind the CurrentUser sender decision and the Folder/Developer_Name reference form"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/SKILL.md",
+      "used_for": "the Questions-to-Ask row asking whether a workflow field update writes this field after save, which is the M2-S03 interplay this step had to record"
+    },
+    {
+      "type": "skill",
+      "id": "admin/validation-rules",
+      "path": "skills/admin/validation-rules/references/gotchas.md",
+      "used_for": "the quoted Apex Developer Guide rule that custom validation rules do not run again after a workflow field update re-saves the record - deploy-order.md section 6"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "the package.xml shape, the object-qualified member form, and the note that manifest membership rather than zip contents decides what deploys"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json as the only shared state, amend-step preconditions), section 4 (automation step type, design-only owner, status machine) and section 5 (acceptance-test types, checker scope, the manifest rule for metadata-builder steps)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement, the citation schema and the confidence rubric this agent's Step 10 overrides"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the Plan this run followed - Step 3's grep test for deployable XML, Step 4's four input sources, Step 5's three writing rules, Steps 6-9 and Step 10's confidence table"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/artefacts",
+      "used_for": "checked for an org-validated ApprovalProcess or Workflow file to ground this step on; it holds neither, which is recorded in deploy-order.md's preamble and as a Process Observation"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S02",
+    "step_type": "automation",
+    "milestone": "M3",
+    "build_id": "northwind-sales",
+    "terminal_status": "built",
+    "status_path_taken": "standalone (AGENT.md Step 9): this agent ran set-status pending->running and running->built itself; it was not invoked by agents/build-step-runner",
+    "blocked_reason": null,
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M3-S02/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M3-S02/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml",
+        "metadata_type": "Workflow (2 WorkflowAlert, 4 WorkflowFieldUpdate)",
+        "element_source": "skills/admin/approval-processes/references/metadata-examples.md 'The workflow actions the process references'; recipient and sender rules from skills/admin/email-templates-and-alerts/references/gotchas.md",
+        "declared_in_outputs": true
+      },
+      {
+        "path": "artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml",
+        "metadata_type": "ApprovalProcess",
+        "element_source": "skills/admin/approval-processes/references/metadata-examples.md worked two-step example (structure adapted to one step) plus SKILL.md 'Deployable Metadata Shape' for the entryCriteria formula element",
+        "declared_in_outputs": true
+      },
+      {
+        "path": "artefacts/M3-S02/package.xml",
+        "metadata_type": "Package manifest",
+        "element_source": "skills/admin/approval-processes/references/metadata-examples.md 'package.xml' and skills/admin/change-management-and-deployment/references/metadata-examples.md section 1",
+        "declared_in_outputs": true
+      },
+      {
+        "path": "artefacts/M3-S02/deploy-order.md",
+        "metadata_type": "deploy-order note (not metadata)",
+        "element_source": "AGENT.md Step 7, sourced from the cited skills' gotchas and change-management-and-deployment",
+        "declared_in_outputs": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "decision_record": [
+      {
+        "question": "How many active approval processes will this object have, and in what order?",
+        "skill": "admin/approval-processes",
+        "answer": "One process for both record types, entered on discount above 20%.",
+        "source": "clarification-default (Q58 open at G1, default recorded as assumption A19)",
+        "element": "one <approvalProcess> file; order is not in the metadata - deploy-order.md section 4 carries it as A34"
+      },
+      {
+        "question": "Who may submit, and does that include portal or partner users?",
+        "skill": "admin/approval-processes",
+        "answer": "The rep only; sales ops submits on a rep's behalf only through the exceptional bypass path.",
+        "source": "clarification (Q27 answered)",
+        "element": "<allowedSubmitters><type>owner</type></allowedSubmitters>, one entry"
+      },
+      {
+        "question": "Who edits the record while it is pending - nobody, or the current approver too?",
+        "skill": "admin/approval-processes",
+        "answer": "Only an admin; the manager approves or rejects, they do not edit.",
+        "source": "clarification (Q31 answered) + step inputs.record_editability",
+        "element": "<recordEditability>AdminOnly</recordEditability>"
+      },
+      {
+        "question": "Where does each step's approver come from, and what happens when that source is empty?",
+        "skill": "admin/approval-processes",
+        "answer": "The rep's direct manager through the user hierarchy (User.Manager). No fallback queue or pre-submission validation rule was specified.",
+        "source": "clarification (Q32 answered) + step inputs.approver",
+        "element": "approver <type>userHierarchyField</type> with no <name>, plus <nextAutomatedApprover> carrying <userHierarchyField>Manager</userHierarchyField> and <useApproverFieldOfRecordOwner>true</useApproverFieldOfRecordOwner>. The empty-value path is unresolved and is recorded as an ambiguity, not as an answer."
+      },
+      {
+        "question": "When an approver rejects at step 2, does the whole request die or go back to step 1?",
+        "skill": "admin/approval-processes",
+        "answer": "A rejection ends the request; with one step there is no prior step to return to.",
+        "source": "clarification-default (Q60 open at G1, default recorded as assumption A21)",
+        "element": "no <rejectBehavior> element - it is not allowed on a first step in any case"
+      },
+      {
+        "question": "Do steps that do not match their criteria approve, reject, or skip?",
+        "skill": "admin/approval-processes",
+        "answer": "Process entry criteria keep sub-cap discounts out of the process entirely, so no ifCriteriaNotMet path is exercised.",
+        "source": "clarification-default (Q61 open at G1, default recorded as assumption A22)",
+        "element": "no step-level <entryCriteria>, therefore no <ifCriteriaNotMet> - the worked example omits it on step 1 for the same reason"
+      },
+      {
+        "question": "Which actions fire on submit, approve, reject, and recall - and do those objects exist in the target org?",
+        "skill": "admin/approval-processes",
+        "answer": "Submit: email to the manager, Approval_Status__c = Pending, record locked. Approve: email to the rep, = Approved, unlocked. Reject: email to the rep, = Rejected, unlocked. Recall: status cleared, unlocked, no email.",
+        "source": "clarification (Q33 answered) + step inputs.field_updates / inputs.alerts",
+        "element": "<initialSubmissionActions> 1 FieldUpdate; <finalApprovalActions> FieldUpdate + Alert; <finalRejectionActions> FieldUpdate + Alert; <recallActions> 1 FieldUpdate (operation Null); the submit email is the process's own <emailTemplate>, not an alert"
+      },
+      {
+        "question": "Will this approval process ever have more than one approver on a single step?",
+        "skill": "admin/approval-process-apex-patterns (via Q59)",
+        "answer": "Exactly one approver per step.",
+        "source": "clarification-default (Q59 open at G1, default recorded as assumption A20)",
+        "element": "one <approver>, no <whenMultipleApprovers>"
+      },
+      {
+        "question": "Who does the email come from, and who answers replies?",
+        "skill": "admin/email-templates-and-alerts",
+        "answer": "Current user. No verified org-wide address exists on any answer for this build.",
+        "source": "upstream artefact + decisions.md D-M3S01-01 (recorded at M3-S01's documentation pass)",
+        "element": "<senderType>CurrentUser</senderType> on both alerts, no <senderAddress> (illegal alongside CurrentUser)"
+      },
+      {
+        "question": "Is this template used by a rule or by Flow?",
+        "skill": "admin/email-templates-and-alerts",
+        "answer": "By two WorkflowAlerts and by the approval process's own emailTemplate element - all three Classic.",
+        "source": "upstream artefact (artefacts/M3-S01/deploy-order.md section 1 name contract)",
+        "element": "<template>Sales_Approvals/Discount_Approved</template>, <template>Sales_Approvals/Discount_Rejected</template>, <emailTemplate>Sales_Approvals/Discount_Approval_Request</emailTemplate>"
+      },
+      {
+        "question": "Which record is the merge context?",
+        "skill": "admin/email-templates-and-alerts",
+        "answer": "Opportunity, for all three templates; settled at M3-S01.",
+        "source": "upstream artefact (artefacts/M3-S01/deploy-order.md section 3)",
+        "element": "recipients <type>owner</type> - the opportunity owner"
+      },
+      {
+        "question": "Could the same event fire twice?",
+        "skill": "admin/email-templates-and-alerts",
+        "answer": "No: submit sends one email, from the process's emailTemplate. No initialSubmissionActions alert was created.",
+        "source": "step inputs.note + upstream artefact (M3-S01 deploy-order.md section 1)",
+        "element": "<emailTemplate> present, <initialSubmissionActions> carries a FieldUpdate only"
+      },
+      {
+        "question": "Is any workflow field update or automation writing this field after save?",
+        "skill": "admin/validation-rules",
+        "answer": "Yes - all four of this step's field updates write Approval_Status__c, and assumption A8 records that nothing else does.",
+        "source": "step inputs.assumptions (A8) + upstream artefact (artefacts/M2-S03)",
+        "element": "no element in this step; it is the reading recorded in deploy-order.md section 6, which quotes the Apex Developer Guide via the skill's gotcha"
+      },
+      {
+        "question": "What does the approver need to see to decide? (design-template Overview row approvalPageFields)",
+        "skill": "admin/approval-processes",
+        "answer": "Not asked on this build. The requirement's clause 2 makes the discount and the amount the decision inputs.",
+        "source": "requirement.md (the weakest of the four sources) + the skill's worked example",
+        "element": "<approvalPageFields> Name, Owner, Amount, Discount__c - the worked example's tokens with Discount_Percent__c substituted by M1-S01's Discount__c and its Discount_Justification__c dropped (no such field exists in this build)"
+      },
+      {
+        "question": "Mobile / external approval page? (design-template Overview row enableMobileDeviceAccess)",
+        "skill": "admin/approval-processes",
+        "answer": "Not asked on this build. Copied from the worked example, which sets false deliberately so that adhoc approvers stay legal later.",
+        "source": "skill worked example (recorded as a copied default, not a decision)",
+        "element": "<enableMobileDeviceAccess>false</enableMobileDeviceAccess> - flagged as ambiguous"
+      },
+      {
+        "question": "Delegation on the step? (design-template Step Design column allowDelegate)",
+        "skill": "admin/approval-processes",
+        "answer": "Not asked, and the skill documents no default. The element is optional, so it was omitted rather than guessed.",
+        "source": "none - recorded as an ambiguity per AGENT.md Step 4",
+        "element": "no <allowDelegate> element on the step"
+      },
+      {
+        "question": "Approval History related list on the approval page?",
+        "skill": "admin/approval-processes",
+        "answer": "Yes - it is the mechanism that delivers Q33's 'with the comments' clause, because no documented merge field carries approval comments (A27).",
+        "source": "upstream artefact + decisions.md O-M3S01-01",
+        "element": "<showApprovalHistory>true</showApprovalHistory>"
+      },
+      {
+        "question": "Which records may enter the process at all?",
+        "skill": "admin/approval-processes",
+        "answer": "Enterprise or Renewal record type, Discount__c populated and above 0.20.",
+        "source": "step inputs.entry_criteria_formula, verbatim (D8, A35)",
+        "element": "<entryCriteria><formula>...</formula></entryCriteria>, the plan's string character for character with > XML-escaped as &gt;"
+      },
+      {
+        "question": "Active on deploy?",
+        "skill": "admin/approval-processes",
+        "answer": "True, overriding the skill's deploy-inactive guidance.",
+        "source": "step inputs.decisions (D9) + inputs.assumptions (A36)",
+        "element": "<active>true</active>"
+      }
+    ],
+    "checker_results": [
+      {
+        "declared": true,
+        "scope": "build",
+        "command": "python3 skills/admin/approval-processes/scripts/check_approval_design.py --manifest-dir artefacts artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "Scanned 1 approval-process metadata file(s); 0 finding(s) detected. score 100.",
+        "changes_per_pass": []
+      },
+      {
+        "declared": true,
+        "scope": "step",
+        "command": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M3-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "stdout_summary": "ERROR artefacts/M3-S02: no email template artefact found - expected `*.email`, `*.email-meta.xml`, or a body file under an `email/` directory. Scanned 0 email template file(s).",
+        "changes_per_pass": [],
+        "not_repairable_by_this_agent": true,
+        "why": "The checker matches *.email, *.email-meta.xml and body files under an email/ directory (is_template_artefact). This step's declared outputs[] contain none of those and must not: the three templates and their folder are M3-S01's outputs, and copying them here would duplicate manifest members. No edit to this step's XML can make the command exit 0, and editing the checker is forbidden (AGENT.md Step 8).",
+        "measured_remedy": {
+          "command": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts",
+          "exit_code": 0,
+          "stdout_summary": "Scanned 6 email template file(s); 0 finding(s) detected. Exits 0 under --strict as well.",
+          "caveat": "Re-lints M3-S01's six files, which M3-S01's own declared test already covers. This checker never opens a .workflow file, so it asserts nothing about this step's two alerts.",
+          "how": "build_plan.py amend-step .sfskills/builds/northwind-sales/plan.json M3-S02 --file <json setting acceptance_tests[5].command to the above and scope to build>, which requires the step at status pending or blocked"
+        }
+      },
+      {
+        "declared": false,
+        "scope": "step",
+        "command": "python3 skills/admin/approval-processes/scripts/check_approval_design.py --manifest-dir artefacts/M3-S02 artefacts/M3-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 1,
+        "repair_passes": 0,
+        "stdout_summary": "score 100, 1 finding: REVIEW emailTemplate 'Sales_Approvals/Discount_Approval_Request' could not be resolved because the tree contains no *.email-meta.xml files.",
+        "why_run": "Evidence run requested alongside the declared build-scope test. The single finding is the cross-step reference showing through, which is exactly why the plan declares this test at build scope; every other assertion passed identically at both scopes."
+      },
+      {
+        "declared": false,
+        "scope": "step",
+        "command": "python3 -c \"...ElementTree parse of every *.xml under artefacts/M3-S02...\"",
+        "cwd": "repo root",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout_summary": "3/3 XML files parse (approvalProcess, workflow, package.xml)."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "name_contract_copied_from": "artefacts/M3-S01/deploy-order.md section 1 - Sales_Approvals/Discount_Approval_Request, Sales_Approvals/Discount_Approved, Sales_Approvals/Discount_Rejected",
+    "alert_names_source": "plan.json steps[M3-S02].inputs.alerts (Notify_Owner_Discount_Approved / Notify_Owner_Discount_Rejected), which differ from the placeholder names in M3-S01's table by that table's own instruction",
+    "unverified_markers": [
+      "deploy-order.md preamble: no org-validated ApprovalProcess or Workflow exists anywhere in examples/",
+      "deploy-order.md section 3: no cited reference shows an entryCriteria written as a <formula>; RecordType.DeveloperName inside an approval entry-criteria formula is unproven",
+      "deploy-order.md section 4: nothing states whether an active ApprovalProcess is validated more strictly at deploy than an inactive one",
+      "deploy-order.md section 7: no verified OrgWideEmailAddress is known to exist for this build"
+    ],
+    "section_5_warnings_left_standing": [
+      "admin/validation-rules ships check_validation_rules.py and no test on this step runs it. Deliberate: this step writes no ValidationRule, so the checker would scan nothing and fail exactly as the email checker does. The skill is cited as context for the M2-S03 interplay recorded in deploy-order.md section 6."
+    ],
+    "never_deployed": "This agent ran no sf command and no deploy. scripts/mock_deploy.py hard-codes --dry-run and was not run; deploy-order.md section 10 is text for a human."
+  }
+}

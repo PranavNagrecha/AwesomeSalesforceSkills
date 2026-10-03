@@ -1,0 +1,23 @@
+{
+  "step_id": "M4-S03",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/configuration-workbook-authoring/scripts/check_workbook.py",
+    "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+    "skills/admin/uat-test-case-design/scripts/check_uat_case.py",
+    "skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given 30 informational clarifications were left unanswered at G1 and eleven org facts nobody supplied, when the workbook's assumptions section is read, then all 43 assumption rows appear with a named owner who can close each one and the step ids each constrains, and the three rows carrying risk high - which are exactly the three pre-deploy prerequisites: A24 the OpportunityStage union, A28 the report column codes and A29 the dashboard runningUser - are called out rather than buried in the list. [expected: ticked at the M4 milestone gate]",
+    "Given M2-S04 ships nothing in this release, when traceability.md is read, then its row for the product-before-Propose requirement names M2-S04 with its blocked_reason verbatim rather than being silently absent, and the workbook's Validation Rules section carries the same row rather than only the rule that did ship. [Amended after G5: M2-S04 was unblocked on 2026-09-15 and shipped Opportunity.Opportunity_Products_Required_At_Propose as an org-validated rule (MOCK-DEPLOY-M2 run 3); read every clause that assumes a blocked or empty M2-S04 as satisfied by that rule's presence - the exclusion it describes does not apply.] [expected: ticked at the M4 milestone gate]"
+  ],
+  "artefact_hashes": {
+    "artefacts/M4-S03/configuration-workbook.md": "3c17cd9d5ddf17c08bc936831c2929b111477812e77342846cb925b4360f4fc9",
+    "artefacts/M4-S03/traceability.md": "3e1bf51be3271e972c734536a11a0e7d2201c93d71fad67ffd52b00348f0fca7",
+    "artefacts/M4-S03/acceptance-criteria.md": "ed31ac9401721e3a5ac4ddf842648a35c47888e8a89d9e15eb00869284b25b89",
+    "artefacts/M4-S03/uat-test-cases.yaml": "8636b82f4cca026d3a78a08fc02fa64732ed919f7127b87c42658e823e28543c"
+  }
+}

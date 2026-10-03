@@ -1,0 +1,262 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-18T15-42-27Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S01/2026-09-18T15-42-27Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S01/2026-09-18T15-42-27Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S01"
+  },
+  "summary": "Documented M2-S01 (access, tested by step-tester at envelopes/M2-S01/2026-09-18T15-29-25Z.json). Re-rendered PLAN.md and CLARIFICATIONS.md from plan.json (both had drifted since the builder, tester and an operator amendment wrote plan.json). Appended four open items to decisions.md (O-M2S01-01, O-M2S01-03, O-M2S01-04 open; O-M2S01-02 recorded CLOSED with the operator's prose-only amendment as the closing evidence) — no D- entries, because nothing in the builder's envelope met Step 3's technology-choice / design-trade-off / skill-gap / deviation bar beyond what the four open items already carry. Minted REQ-011 and REQ-012 and wrote workbook/03-profiles-permission-sets-and-psgs.md (Section 3 — Profiles + Permission Sets + PSGs, per this step's `access` type), two rows (CWB-PERM-001 the CustomPermission, CWB-PERM-002 the PermissionSet), owner named as the Sales Operations lead from Q13/the artefact's own description rather than the generic filler earlier sections used. Added two matching rows to traceability.md plus additive test-id-key and coverage paragraphs (no existing row or paragraph touched). Ran both named checkers and recorded their exit codes honestly: check_rtm.py exits 1 on a pre-existing REQ-010 coverage-gap ERROR unrelated to this step, plus 16 WARNs (14 pre-existing, 2 new from REQ-011/REQ-012's non-build-plan-shape `source` cells, the same class every prior row already carries); check_workbook.py on the per-step Section 3 slice exits 1 on nine structural 'Missing canonical section' ERRORs — a per-step slice necessarily carries one of ten sections, and Section 1's pre-existing slice produces the identical nine-error shape when linted the same way — with zero row-level findings. Moved M2-S01 tested -> documented via build_plan.py set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Both addressable artefacts (the CustomPermission and the PermissionSet) produced a workbook row, each carrying a real source_req_id (REQ-011, REQ-012) minted from the step's own answered clarifications, an exactly-one recommended_agent, and a verification step stated in notes (the declared checker, xml, manifest results, and the one manual test named and deferred to the M2 gate rather than left blank). Both requirements the step serves have a traceability row. This is M2-S01's first documenting pass, so idempotence (no duplicate rows) is not yet exercised, but the row-keying (row_id for the workbook, req_id+step_id for traceability) is in place per Step 8 for the next pass to verify against. No artefact fell through to the Other configuration default; the step's `access` type routed cleanly to Section 3 per AGENT.md Step 4's table.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "plan-rerender",
+    "decisions-append",
+    "workbook-rows",
+    "traceability-rows",
+    "checker-runs"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "envelope-consistency",
+      "observation": "The builder's own extensions.open_items_for_the_human[] array (four entries, envelopes/M2-S01/2026-09-18T15-16-34Z.json) mapped 1:1 onto decisions.md's four new O- entries with no invented content and no gap on either side.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/envelopes/M2-S01/2026-09-18T15-16-34Z.json",
+        "detail": "extensions.open_items_for_the_human, 4 entries"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "row-schema",
+      "observation": "Neither new workbook row nor either new traceability row required a placeholder status, an inferred agent, or a fallback skill citation — every field traces to plan.json, the envelope, or the artefact files themselves.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/workbook/03-profiles-permission-sets-and-psgs.md"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-documentation-drift",
+      "observation": "The builder's own decision_record[11] (\"which licence?\") calls omitting <license> a 'documented skill default', while artefacts/M2-S01/deploy-order.md section 6 calls the same omission 'Recorded as an ambiguity, not a default' for the identical element. Neither text is this step's to edit (deploy-order.md is a read-only artefact per Step 1, and decision_record is the builder's own prior envelope), and the builder's own open_items_for_the_human[] table did not list this as a fifth open item, so this pass did not mint one either -- named here so a human deciding whether the four open items are the complete list has the discrepancy in view.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S01/deploy-order.md",
+        "detail": "section 6 vs envelopes/M2-S01/2026-09-18T15-16-34Z.json extensions.decision_record[11]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "template-conformance",
+      "observation": "Two divergences from templates/admin/validation-rule-patterns.md's bypass contract -- the API name form (Bypass_Opportunity_Sales_Validation vs the template's Bypass_Validation_<Domain>) and the omission of the template's Integration_Bypass__c custom setting half -- are self-described by the builder as 'recorded, not corrected' and 'a deliberate half of a contract' respectively, but neither reached the builder's own numbered open-items table. This pass did not promote either to a decisions.md entry, since Step 3 only appends what the envelope records as one of its four kinds and the task's own brief scoped this pass to the four items the builder did number.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/envelopes/M2-S01/2026-09-18T15-16-34Z.md",
+        "detail": "section 8, Ambiguous bullets 2 and 3"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "documentation-scope",
+      "observation": "Whether the license-description inconsistency and the two template divergences above deserve their own O-M2S01-05/06/07 entries is a judgment call this pass left to a human -- the builder itself did not number them as open items, and inventing new ones this pass was not asked to open would be manufacturing a decision rather than recording one.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/decisions.md",
+        "detail": "the four O-M2S01 entries this pass appended, and no fifth"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "Neither of the two standard follow-ups this agent's contract names applies yet: milestone-verifier needs every M2 step documented, and M2-S02 through M2-S05 are still pending; config-workbook-author's compile equivalent in this build is the M4-S03 docs step, which depends on all of M2 and M3. The natural next action is continuing the build loop on M2's other steps, not a follow-up agent.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "steps[M2-S02..S05].status == pending"
+      },
+      "suggested_followup_agent": "build-step-runner",
+      "followup_reason": "M2-S02 and M2-S05 are the next runnable steps in the milestone once their own gates and dependencies clear; M2-S03 and M2-S04 depend on M2-S01, which is now documented."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the Plan this run followed: Step 1 precondition, Step 2 re-render, Step 3 decisions, Step 4 workbook rows and the access-step routing table, Step 5 deploy order, Step 6 verification step, Step 7 traceability, Step 8 idempotence keying, Step 9 set-status, Step 11 confidence, Step 12 self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and schema, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence and atomic-write rule for this envelope pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (the step's status was tested, not built/failed/blocked)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (which build-directory files are rendered and never hand-edited), section 4 (the access step type and its workbook-section routing), section 6 (this agent's Tier-4 row)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step, acceptance_tests[] and amendments[] shapes read from plan.json for M2-S01"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "the ten canonical sections, the row schema (row_id/target_value/owner/source_req_id/source_story_id/recommended_agent/recommended_skills/status/notes), and the CWB-PERM row-id convention for Section 3"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer traceability.md column set, the REQ-XXX minting rule (seed from clarifications, not the backlog), and the check_rtm.py invocation form"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the org-level design-standards framing decisions.md's own preamble cites for what makes a decision entry reviewable (date, alternative rejected, source)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirming a manual test recorded as deferred, rather than ticked, is the correct way to record acceptance evidence not yet gathered"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "mandatory read per AGENT.md; not exercised on this per-step run because the compiled UAT case pack is the M4-S03 compile run's output, not this step's"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirming the step's one manual test is in valid Given/When/Then shape before recording it in traceability.md's test_result cell"
+    },
+    {
+      "type": "example_build",
+      "id": "examples/builds/case-onboarding",
+      "path": "examples/builds/case-onboarding/decisions.md",
+      "used_for": "the append-only decisions.md precedent this build's own preamble cites, and the CWB-PERM row-id / Section 3 slice-file naming convention (workbook/03-profiles-permission-sets-and-psgs.md) mirrored here"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S01",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/PLAN.md",
+      ".sfskills/builds/northwind-sales/CLARIFICATIONS.md",
+      ".sfskills/builds/northwind-sales/decisions.md",
+      ".sfskills/builds/northwind-sales/workbook/03-profiles-permission-sets-and-psgs.md",
+      ".sfskills/builds/northwind-sales/traceability.md"
+    ],
+    "workbook_rows": [
+      {
+        "row_id": "CWB-PERM-001",
+        "section": "3 - Profiles + Permission Sets + PSGs",
+        "target_value": "CustomPermission:Bypass_Opportunity_Sales_Validation",
+        "source_req_id": "REQ-011",
+        "recommended_agent": "metadata-builder",
+        "status": "executed"
+      },
+      {
+        "row_id": "CWB-PERM-002",
+        "section": "3 - Profiles + Permission Sets + PSGs",
+        "target_value": "PermissionSet:Sales_Ops_Validation_Bypass",
+        "source_req_id": "REQ-012",
+        "recommended_agent": "metadata-builder",
+        "status": "executed"
+      }
+    ],
+    "traceability_rows": [
+      {
+        "req_id": "REQ-011",
+        "step_id": "M2-S01",
+        "artefact": "CustomPermission:Bypass_Opportunity_Sales_Validation",
+        "test_id": "M2-S01-T1",
+        "status": "In UAT"
+      },
+      {
+        "req_id": "REQ-012",
+        "step_id": "M2-S01",
+        "artefact": "PermissionSet:Sales_Ops_Validation_Bypass",
+        "test_id": "M2-S01-T2",
+        "status": "In UAT"
+      }
+    ],
+    "decisions_appended": [
+      {
+        "id": "O-M2S01-01",
+        "kind": "open item",
+        "status": "open",
+        "topic": "nothing in this build assigns Sales_Ops_Validation_Bypass"
+      },
+      {
+        "id": "O-M2S01-02",
+        "kind": "open item",
+        "status": "closed",
+        "topic": "acceptance_tests[0] stale fixture narration, closed by amendments[0] (prose_only)"
+      },
+      {
+        "id": "O-M2S01-03",
+        "kind": "open item",
+        "status": "open",
+        "topic": "no expiry answer on file"
+      },
+      {
+        "id": "O-M2S01-04",
+        "kind": "open item",
+        "status": "open",
+        "topic": "no live-org baseline for a pre-existing profile-borne grant"
+      }
+    ],
+    "rows_replaced": [],
+    "checkers_run": [
+      {
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..",
+        "exit_code": 1,
+        "note": "12 rows, 1 coverage gap (pre-existing: REQ-010, unrelated to M2-S01), 0 orphans, 1 error (the pre-existing REQ-010 gap), 16 warnings (14 pre-existing plus 2 new from REQ-011/REQ-012's source cells using the same Q<n>-list shape every prior row already uses, which the linter reads as not the bare build-plan Q<n> shape)"
+      },
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/03-profiles-permission-sets-and-psgs.md --repo-root ../../..",
+        "exit_code": 1,
+        "note": "9 structural 'Missing canonical section' errors -- a per-step slice contains exactly one of the ten canonical sections by construction; workbook/01-objects-and-fields.md (pre-existing, from the tested M1-S01 pass) produces the identical 9-error shape when linted the same way, confirming this is a property of linting a per-step slice rather than a defect in this pass's row content. Zero row-schema findings (row_id uniqueness, status enum, agent resolution, skill resolution) on either file."
+      }
+    ]
+  },
+  "followups": [
+    {
+      "agent": "build-step-runner",
+      "because": "M2-S02 and M2-S05 are the next runnable steps in the milestone; M2-S03 and M2-S04 depend on M2-S01, which is now documented."
+    }
+  ]
+}

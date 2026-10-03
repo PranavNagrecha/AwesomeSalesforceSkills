@@ -1,0 +1,431 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T14-25-55Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T14-25-55Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T14-25-55Z.json",
+  "outcome": "completed",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S02",
+    "api_version": "62.0 (defaulted \u2014 plan.json carries no api_version)",
+    "permission_set": "Enterprise_Sales_Record_Types",
+    "profile": "Sales User",
+    "record_types": [
+      "Opportunity.Enterprise",
+      "Opportunity.Renewal"
+    ],
+    "layout_assignments": {
+      "Opportunity.Enterprise": "Opportunity-Opportunity Enterprise Layout",
+      "Opportunity.Renewal": "Opportunity-Opportunity Renewal Layout"
+    },
+    "answers": [
+      "Q4",
+      "Q9",
+      "Q14",
+      "Q19",
+      "Q20"
+    ],
+    "assumptions": [
+      "A6",
+      "A33",
+      "A39"
+    ],
+    "decisions": [
+      "D2"
+    ],
+    "secrets_present": false
+  },
+  "summary": "Built M2-S02 (access, design-only, build_mode design-only, API 62.0 defaulted because plan.json carries no api_version). Four files under artefacts/M2-S02/: the PermissionSet Enterprise_Sales_Record_Types carrying two recordTypeVisibilities (Opportunity.Enterprise, Opportunity.Renewal) and nothing else; the Sales User profile overlay carrying exactly two layoutAssignments (to M1-S02's two layouts, in file-name form) and two recordTypeVisibilities at default=false; package.xml (PermissionSet + Profile, member 'Sales User' with its space); and deploy-order.md. The step's open question \u2014 does this set grant field access \u2014 is decided NO and recorded in deploy-order.md section 0: Q19 names the persona's access source as the pre-existing Sales Cloud permission set, the step inputs bind no field, and the set grants no objectPermissions so PSVP-FLS-01's shape is absent. The consequence is recorded as a deploy-time gap: FLS for the two new fields M1-S01 created (Discount__c, Approval_Status__c) is granted by no file in this build. All three declared checkers exit 0 on the first pass, zero repair passes; check-outputs ok.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10 MEDIUM: every emitted element traces to a cited skill's metadata-examples fence, all three checkers exited 0 on the first pass and check-outputs is ok \u2014 but four Questions-to-Ask rows were answered by a documented skill default rather than from the plan (license left empty, hasActivationRequired=false, the post-deploy verification step, and the Person Account row via assumption A6), so question-coverage is partial and the HIGH row's last clause is not met.",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Four deduplicated Questions-to-Ask rows had no answer in step inputs, the answered clarifications, the upstream artefacts or requirement.md, and were filled from the cited skill's own documented default: the permission set's license (left empty, which admin/permission-set-architecture documents as a deliberate choice), hasActivationRequired=false, the post-deploy verification step, and Person Accounts (plan assumption A6, itself a G1 default on unanswered Q41). None of the four changes which components ship; each changes one element or one line of the note.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Ask the requester which user licence the 14 Sales User holders hold before deploy; if it is mixed, the empty <license> is correct and should be recorded as a decision rather than a default."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "planning",
+      "observation": "The plan split this step into two files for the right reason and said so in inputs.note before the builder opened a skill: a permission set can carry recordType + visible only, and layoutAssignments plus the default record type exist solely on Profile. The element split the skill documents and the split the plan declared agree exactly, so nothing had to be re-derived.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "naming",
+      "observation": "Both layout strings and both record-type names were copied character-for-character from M1-S01's and M1-S02's file names rather than retyped, and M1-S02's own deploy-order note had already flagged a mismatch there as INVALID_CROSS_REFERENCE_KEY.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md",
+        "count": 4
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "high",
+      "domain": "fls",
+      "observation": "Field-level security for Opportunity.Discount__c and Opportunity.Approval_Status__c \u2014 the two fields M1-S01 created and M1-S02's layouts place \u2014 is granted by no file in this build. Three access files exist across all sixteen steps and none carries a fieldPermissions block, while MILESTONE-M1-REPORT.md records the same zero from the other side and points at 'M2-S01 / M2-S02'. On the day of the deploy the two fields are invisible to every rep and to the deploying admin, which reads as a layout bug.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MILESTONE-M1-REPORT.md",
+        "query": "outputs[] across plan.json steps matching permissionsets/ or profiles/",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "plan-documentation-drift",
+      "observation": "The step's own acceptance-test description for check_record_type_layouts.py quotes a planning fixture run that printed '0 finding(s) detected'; the same command over the same tree now prints 1 finding (RTL-MERGE-01 REVIEW on M1-S02's two identical layouts). The exit code and the declared 'exit 0' are unaffected because the checker is lenient without --strict, and the finding itself was already adjudicated at the M1 gate as open item O-M1S02-03 \u2014 but the quoted fixture no longer reproduces.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M2-S02].acceptance_tests[1].description"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "access-model",
+      "observation": "PSVP-FLS-02 (WARN, non-blocking) fires on the Sales User overlay because it carries zero object and field permissions and no PermissionSetGroup exists in the tree. The checker's own docstring calls the rule deliberately simplified \u2014 it asserts only that some group exists to be the claimed access source. This build designs no PSG at all and the access source is a pre-existing Sales Cloud permission set outside it, so a human should confirm the WARN is accepted rather than closed by inventing a group.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "naming",
+      "observation": "The Profile member and file stem are written as 'Sales User' with its space, per the step's manifest acceptance test. No cited file shows a space-carrying profile member, so the form follows from the stem-equals-member rule rather than from an example, and Q19's phrase 'the standard Sales User profile' is the only evidence the org's profile is named exactly that. Marked UNVERIFIED (2026-09-19) inline in deploy-order.md.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md",
+        "query": "Where the files live"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "The step is built and has not been tested; three declared checkers plus the always-on xml and manifest checks and two manual rows are waiting.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 7
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "It runs the step's seven acceptance tests as declared and writes tests/M2-S02/results.json, which this agent must not do."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "The FLS gap in deploy-order.md section 0 is a decision a human has to take and a record the build has nowhere else to keep.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/decisions.md"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "It owns decisions.md and traceability.md, which is where the unowned Discount__c / Approval_Status__c field grant needs an open item before the M2 gate."
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "step_type": "access",
+    "build_mode": "design-only",
+    "api_version": "62.0",
+    "api_version_source": "agent default \u2014 plan.json carries no api_version key; matches M1-S01, M1-S02 and M2-S01",
+    "invocation_path": "standalone (direct read of agents/metadata-builder/AGENT.md) \u2014 this agent set the step status itself, per AGENT.md Step 9: pending -> running at claim, running -> built at return",
+    "status": "built",
+    "blocked_reason": null,
+    "org_connected": false,
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S02/profiles/Sales User.profile-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S02/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S02/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml",
+        "metadata_type": "PermissionSet",
+        "element_source": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md (\"Making the record type visible and assigning the page\") for recordTypeVisibilities{recordType,visible}; skills/admin/permission-set-architecture/references/metadata-examples.md example 1 for label, description, hasActivationRequired",
+        "declared_in_outputs": true
+      },
+      {
+        "path": "artefacts/M2-S02/profiles/Sales User.profile-meta.xml",
+        "metadata_type": "Profile",
+        "element_source": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md (same section) for layoutAssignments{layout,recordType} and recordTypeVisibilities{default,recordType,visible}; skills/admin/permission-sets-vs-profiles/references/metadata-examples.md for the overlay rule and the profile-only element table",
+        "declared_in_outputs": true
+      },
+      {
+        "path": "artefacts/M2-S02/package.xml",
+        "metadata_type": "Package manifest",
+        "element_source": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md package.xml section (Profile and PermissionSet member forms, version 62.0)",
+        "declared_in_outputs": true
+      },
+      {
+        "path": "artefacts/M2-S02/deploy-order.md",
+        "metadata_type": "deploy-order note (not metadata)",
+        "element_source": "skills/admin/change-management-and-deployment (component ordering) plus the cited skills' gotchas and Deploy sections",
+        "declared_in_outputs": true
+      }
+    ],
+    "undeclared_artefacts": [],
+    "decision_record": [
+      {
+        "question": "Does this permission set grant field access at all, or only record-type visibility? (admin/permission-sets-vs-profiles: 'For each object this persona can create or edit, which of its standard fields does the persona's layout, compact layout, or intake process actually write?')",
+        "answer": "Record-type visibility only. No objectPermissions, no fieldPermissions.",
+        "source": "step inputs (bind no field) + clarification Q19 (the persona's access source is the pre-existing Sales Cloud permission set, not an artefact of this build)",
+        "element": "the whole PermissionSet file; recorded in deploy-order.md section 0"
+      },
+      {
+        "question": "Which profile does each affected user actually hold? (admin/record-types-and-page-layouts)",
+        "answer": "12 reps + 2 managers on the standard Sales User profile; the sales-ops admin on System Administrator.",
+        "source": "clarification Q19; plan assumption A39",
+        "element": "the single profiles/Sales User.profile-meta.xml file, and the absence of any System Administrator overlay"
+      },
+      {
+        "question": "Which reports, list views and Flow entry criteria filter on this record type today? (admin/record-types-and-page-layouts)",
+        "answer": "Two SMB list views and the SMB pipeline report filter on Record Type = Master; SMB stays on the generic record type. No Flow filters on record type.",
+        "source": "clarification Q9",
+        "element": "<default>false</default> on both recordTypeVisibilities, and the deliberate absence of a recordType-less layoutAssignments entry"
+      },
+      {
+        "question": "Must the SMB team be unable to see Enterprise pipeline? / Are we adding access or taking it away? (admin/sales-process-mapping via Q4; admin/permission-sets-vs-profiles)",
+        "answer": "Process-guidance separation only; no sharing change; the generic process stays untouched. Purely additive.",
+        "source": "clarification Q4",
+        "element": "the overlay shape \u2014 no viewAllRecords, no modifyAllRecords, no element written as false to revoke anything"
+      },
+      {
+        "question": "Is the profile standard (custom=false) or custom? (admin/permission-sets-vs-profiles)",
+        "answer": "Standard \u2014 Q19 calls it 'the standard Sales User profile'.",
+        "source": "clarification Q19",
+        "element": "no <custom> element and no objectPermissions in the overlay (editing standard objects on standard profiles is disabled in API 50.0+)"
+      },
+      {
+        "question": "Are Person Accounts enabled on this org? (admin/record-types-and-page-layouts)",
+        "answer": "No.",
+        "source": "DEFAULT \u2014 plan assumption A6, itself a G1 default applied to unanswered informational Q41",
+        "element": "no <personAccountDefault> element on either recordTypeVisibilities block"
+      },
+      {
+        "question": "Which user or permission set license does every person in this persona hold? (admin/permission-set-architecture)",
+        "answer": "Not stated anywhere in the plan. The skill's own documented alternative is taken: leave <license> empty and record it as a choice.",
+        "source": "DEFAULT \u2014 admin/permission-set-architecture Questions-to-Ask row 1 ('or a deliberate empty license recorded as a choice')",
+        "element": "the absent <license> element on the PermissionSet"
+      },
+      {
+        "question": "Does any permission need step-up activation? (admin/permission-set-architecture)",
+        "answer": "No.",
+        "source": "DEFAULT \u2014 all three PermissionSet examples in the cited skills carry hasActivationRequired=false; no clarification raises session-based activation",
+        "element": "<hasActivationRequired>false</hasActivationRequired>"
+      },
+      {
+        "question": "Does anything here need View All Records or Modify All Records? (admin/permission-set-architecture)",
+        "answer": "No.",
+        "source": "clarification Q4 (no sharing change)",
+        "element": "no objectPermissions block at all, so neither element can appear"
+      },
+      {
+        "question": "Is this bundle for a named person or for a standing role that changes people? (admin/permission-set-architecture)",
+        "answer": "A standing role \u2014 the Enterprise/Renewal sales persona, 14 people today.",
+        "source": "clarification Q19 + the step:M2-S02 gate note ('this set is for the Enterprise/Renewal sales persona')",
+        "element": "the set's label and description name the capability, not a person; no PermissionSetGroup is written because the plan declares none"
+      },
+      {
+        "question": "Should any of this expire? (admin/permission-set-architecture)",
+        "answer": "Not answered; PermissionSetAssignment.ExpirationDate is set at assignment time and has no representation in a .permissionset file, so nothing written here changes either way.",
+        "source": "no source \u2014 recorded as an assignment-time decision for the human",
+        "element": "none"
+      },
+      {
+        "question": "Which objects, fields, tabs, apps, record types, layouts and classes are in scope? (admin/permission-sets-vs-profiles)",
+        "answer": "Two record types (M1-S01) and two layouts (M1-S02); no object, field, tab, app or class.",
+        "source": "step inputs + upstream artefacts artefacts/M1-S01 and artefacts/M1-S02",
+        "element": "package.xml (two members, two types) and the retrieve-manifest caveat in deploy-order.md section 4"
+      },
+      {
+        "question": "What is on the current profile that has no permission-set equivalent? (admin/permission-sets-vs-profiles)",
+        "answer": "layoutAssignments, and the <default> child of recordTypeVisibilities.",
+        "source": "admin/permission-sets-vs-profiles element-split table; restated in the step's own inputs.note",
+        "element": "the two-file split itself"
+      },
+      {
+        "question": "Who verifies afterwards, and against what? (admin/permission-sets-vs-profiles, admin/permission-set-architecture)",
+        "answer": "Not named by any answer. The skill's documented verification is taken: Setup -> Users -> View Summary on one rep and one manager, plus the assignment-count SOQL.",
+        "source": "DEFAULT \u2014 skills/admin/permission-sets-vs-profiles/references/metadata-examples.md 'Setup check' and query 3",
+        "element": "deploy-order.md section 7"
+      },
+      {
+        "question": "Does a managed package require this profile to be assigned? (admin/permission-sets-vs-profiles)",
+        "answer": "No evidence either way; no managed package is named anywhere in plan.json or requirement.md.",
+        "source": "no source \u2014 recorded, affects no element",
+        "element": "none"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "No issues found.",
+        "note": "Cross-referential checker per standards/build-orchestration.md section 5; declared at build scope so the two recordTypeVisibilities resolve against M1-S01's record types. PSA-DESC-01 not triggered: the PermissionSet description is 160 characters, also under the 200-character PSA-DESC-02 headroom line."
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "WARN: 1 review/info finding(s) detected \u2014 score 100; RTL-MERGE-01 REVIEW on artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml: the two Opportunity layouts are identical after normalisation. Summary: 'Scanned 9 metadata file(s): 2 record type(s), 2 layout(s); 1 finding(s) detected.'",
+        "note": "Exit 0 \u2014 the checker is lenient without --strict, which the step's declared test relies on. The finding belongs to M1-S02 and was adjudicated at the M1 gate as O-M1S02-03. RTL-ASSIGN-01 does not fire: this step's two files are what make both record types selectable."
+      },
+      {
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "WARN: 1 finding(s) detected (0 blocking) \u2014 score 97; PSVP-FLS-02 WARN on artefacts/M2-S02/profiles/Sales User.profile-meta.xml: profile carries zero objectPermissions and zero fieldPermissions and no PermissionSetGroup exists anywhere in the scanned tree. Summary: 'Scanned 2 access-model metadata file(s); 1 finding(s) detected.'",
+        "note": "Exit 0, 0 blocking \u2014 WARN findings exit 0 without --strict. Not repaired: the empty overlay is the design (section 3 of deploy-order.md) and PSVP-FLS-01 is silent because the set grants no object permissions. Adding a PermissionSetGroup to quiet the WARN would be inventing a component the plan does not declare."
+      }
+    ],
+    "xml_parse_check": {
+      "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" artefacts/M2-S02",
+      "files_parsed": 3,
+      "exit_code": 0
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "open_items_for_the_m2_gate": [
+      {
+        "id": "O-M2S02-01",
+        "risk": "high",
+        "summary": "FLS for Opportunity.Discount__c and Opportunity.Approval_Status__c is granted by no file in this build; the two remedies are in deploy-order.md section 0 and both are a human's call."
+      },
+      {
+        "id": "O-M2S02-02",
+        "risk": "low",
+        "summary": "PSVP-FLS-02 WARN stands by design on the overlay; accept it at the gate rather than closing it by adding a PermissionSetGroup the plan does not declare."
+      },
+      {
+        "id": "O-M2S02-03",
+        "risk": "low",
+        "summary": "The profile's exact Name in the target org is unconfirmed ('Sales User', with its space, in both the member and the file stem); a mismatch is an INVALID_CROSS_REFERENCE_KEY on the profile half only."
+      },
+      {
+        "id": "O-M2S02-04",
+        "risk": "low",
+        "summary": "The step's check_record_type_layouts.py test description quotes a fixture run printing '0 finding(s)'; the live run prints 1 (RTL-MERGE-01). Prose-only drift \u2014 amend-step --prose-only is the writer, and it is the planner's call."
+      }
+    ],
+    "workflow_return": {
+      "step_id": "M2-S02",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M2-S02/profiles/Sales User.profile-meta.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M2-S02/package.xml",
+        ".sfskills/builds/northwind-sales/artefacts/M2-S02/deploy-order.md"
+      ]
+    }
+  },
+  "citations": [
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the 11-step Plan this run followed, including the Step 3 gap rule, the Step 5 element-grounding rules and the Step 10 confidence table"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the 8-section shape, the Process Observations requirement, the Citations schema, and Gate C's wording for what --dry-run does"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json is the only shared state; set-status is the only writer), section 4 (the access step-type row and the status machine), section 5 (checker scope, exit-policy forms, and who runs the acceptance tests \u2014 not this agent)"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the field-level shape of steps[], inputs{} and outputs[] this agent reads and must leave alone"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "the closed envelope shape \u2014 build payload under extensions, never a top-level artefacts key"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "the Questions-to-Ask rows on licence, CRUD scope, sharing bypass, bundle-vs-person and activation; and references/metadata-examples.md example 1 for the PermissionSet label / description / hasActivationRequired element set"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "the 'Making the record type visible and assigning the page' section of references/metadata-examples.md \u2014 the only source for recordTypeVisibilities{recordType,visible} on PermissionSet and layoutAssignments{layout,recordType} plus the default flag on Profile \u2014 and the profile-x-record-type-x-layout question"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/SKILL.md",
+      "used_for": "the profile-only element split table, the overlay rule ('a deploy that is silent about a permission leaves whatever the target org already had'), the FLS question row, the retrieve-manifest warning, and the post-deploy verification step"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/SKILL.md",
+      "used_for": "the Mandatory Reads entry that deploy-order notes are written from component-ordering rules rather than from intuition"
+    },
+    {
+      "type": "example_build",
+      "id": "examples/builds/case-onboarding",
+      "path": "examples/builds/case-onboarding/README.md",
+      "used_for": "the F-60 org-validated FLS failure the PSVP-FLS-01/02 rules encode, cited in deploy-order.md section 0 as the reason the field-access question was answered explicitly rather than left implicit"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "it runs M2-S02's seven declared acceptance tests and writes tests/M2-S02/results.json, which this agent must not do"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "once the step is tested it owns decisions.md and traceability.md, where the four open items above \u2014 the FLS gap first \u2014 need rows before the M2 gate"
+    }
+  ]
+}

@@ -1,0 +1,389 @@
+{
+  "status": 1,
+  "result": {
+    "checkOnly": true,
+    "completedDate": "2026-09-19T14:56:17.000Z",
+    "createdBy": "005dL00001j3fsD",
+    "createdByName": "Pranav Nagrecha",
+    "createdDate": "2026-09-19T14:56:11.000Z",
+    "details": {
+      "componentFailures": [
+        {
+          "changed": false,
+          "columnNumber": 22,
+          "componentType": "ValidationRule",
+          "created": false,
+          "createdDate": "2026-09-19T14:56:13.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Opportunity_Products_Required_At_Propose",
+          "lineNumber": 130,
+          "problem": "Validation rule description cannot be longer than 255 characters long.",
+          "problemType": "Error",
+          "success": false
+        },
+        {
+          "changed": false,
+          "componentType": "Profile",
+          "created": false,
+          "createdDate": "2026-09-19T14:56:15.000Z",
+          "deleted": false,
+          "fileName": "profiles/Sales User.profile",
+          "fullName": "Sales User",
+          "problem": "No default record type specified for recordTypeVisibility: Opportunity.\n To make the '--master--' record type the default, set visible on all record types to false.",
+          "problemType": "Error",
+          "success": false
+        }
+      ],
+      "componentSuccesses": [
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:13.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Approval_Status__c",
+          "id": "00NdL00002el0ZBUAY",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomField",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:13.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Discount__c",
+          "id": "00NdL00002el0ZCUAY",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "StandardValueSet",
+          "created": false,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "standardValueSets/OpportunityStage.standardValueSet",
+          "fullName": "OpportunityStage",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "CustomPermission",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "customPermissions/Bypass_Opportunity_Sales_Validation.customPermission",
+          "fullName": "Bypass_Opportunity_Sales_Validation",
+          "id": "0CPdL000000e3iLWAQ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "BusinessProcess",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Enterprise_Sales_Process",
+          "id": "019dL000009i521QAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "BusinessProcess",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Renewal_Sales_Process",
+          "id": "019dL000009i522QAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "RecordType",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Enterprise",
+          "id": "012dL00000FUzwfQAD",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "RecordType",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Renewal",
+          "id": "012dL00000FUzwgQAD",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "ValidationRule",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "objects/Opportunity.object",
+          "fullName": "Opportunity.Opportunity_Discount_Requires_Approval",
+          "id": "03ddL00000C6VdJQAV",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Layout",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "layouts/Opportunity-Opportunity Enterprise Layout.layout",
+          "fullName": "Opportunity-Opportunity Enterprise Layout",
+          "id": "00hdL00000i0e2XQAQ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "Layout",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "layouts/Opportunity-Opportunity Renewal Layout.layout",
+          "fullName": "Opportunity-Opportunity Renewal Layout",
+          "id": "00hdL00000i0e2YQAQ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Enterprise_Sales_Record_Types.permissionset",
+          "fullName": "Enterprise_Sales_Record_Types",
+          "id": "0PSdL00000d5nfyWAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PermissionSet",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "permissionsets/Sales_Ops_Validation_Bypass.permissionset",
+          "fullName": "Sales_Ops_Validation_Bypass",
+          "id": "0PSdL00000d5nfzWAA",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PathAssistantSettings",
+          "created": false,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "settings/PathAssistant.settings",
+          "fullName": "PathAssistant",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PathAssistant",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "pathAssistants/Enterprise_Opportunity_Path.pathAssistant",
+          "fullName": "Enterprise_Opportunity_Path",
+          "id": "1CPdL000000e3iMWAQ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "PathAssistant",
+          "created": true,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "pathAssistants/Renewal_Opportunity_Path.pathAssistant",
+          "fullName": "Renewal_Opportunity_Path",
+          "id": "1CPdL000000e3iNWAQ",
+          "success": true
+        },
+        {
+          "changed": true,
+          "componentType": "",
+          "created": false,
+          "createdDate": "2026-09-19T14:56:17.000Z",
+          "deleted": false,
+          "fileName": "package.xml",
+          "fullName": "package.xml",
+          "success": true
+        }
+      ],
+      "runTestResult": {
+        "numFailures": 0,
+        "numTestsRun": 0,
+        "totalTime": 0,
+        "codeCoverage": [],
+        "codeCoverageWarnings": [],
+        "failures": [],
+        "flowCoverage": [],
+        "flowCoverageWarnings": [],
+        "successes": []
+      }
+    },
+    "done": true,
+    "id": "0AfdL00000gZ8IfSAK",
+    "ignoreWarnings": false,
+    "lastModifiedDate": "2026-09-19T14:56:17.000Z",
+    "numberComponentErrors": 2,
+    "numberComponentsDeployed": 16,
+    "numberComponentsTotal": 18,
+    "numberFiles": "20",
+    "numberTestErrors": 0,
+    "numberTestsCompleted": 0,
+    "numberTestsTotal": 0,
+    "rollbackOnError": true,
+    "runTestsEnabled": false,
+    "startDate": "2026-09-19T14:56:12.000Z",
+    "status": "Failed",
+    "success": false,
+    "zipSize": 9054,
+    "files": [
+      {
+        "fullName": "Opportunity.Enterprise_Sales_Process",
+        "type": "BusinessProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Renewal_Sales_Process",
+        "type": "BusinessProcess",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/objects/Opportunity/businessProcesses/Renewal_Sales_Process.businessProcess-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Approval_Status__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/objects/Opportunity/fields/Approval_Status__c.field-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Discount__c",
+        "type": "CustomField",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/objects/Opportunity/fields/Discount__c.field-meta.xml"
+      },
+      {
+        "fullName": "Bypass_Opportunity_Sales_Validation",
+        "type": "CustomPermission",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml"
+      },
+      {
+        "fullName": "Opportunity-Opportunity Enterprise Layout",
+        "type": "Layout",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml"
+      },
+      {
+        "fullName": "Opportunity-Opportunity Renewal Layout",
+        "type": "Layout",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml"
+      },
+      {
+        "fullName": "Enterprise_Opportunity_Path",
+        "type": "PathAssistant",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml"
+      },
+      {
+        "fullName": "Renewal_Opportunity_Path",
+        "type": "PathAssistant",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/pathAssistants/Renewal_Opportunity_Path.pathAssistant-meta.xml"
+      },
+      {
+        "fullName": "Enterprise_Sales_Record_Types",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml"
+      },
+      {
+        "fullName": "Sales_Ops_Validation_Bypass",
+        "type": "PermissionSet",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml"
+      },
+      {
+        "fullName": "Sales User",
+        "type": "Profile",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/profiles/Sales User.profile-meta.xml",
+        "error": "No default record type specified for recordTypeVisibility: Opportunity.\n To make the '--master--' record type the default, set visible on all record types to false."
+      },
+      {
+        "fullName": "Opportunity.Enterprise",
+        "type": "RecordType",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/objects/Opportunity/recordTypes/Enterprise.recordType-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Renewal",
+        "type": "RecordType",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/objects/Opportunity/recordTypes/Renewal.recordType-meta.xml"
+      },
+      {
+        "fullName": "PathAssistant",
+        "type": "Settings",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/settings/PathAssistant.settings-meta.xml"
+      },
+      {
+        "fullName": "OpportunityStage",
+        "type": "StandardValueSet",
+        "state": "Changed",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/standardValueSets/OpportunityStage.standardValueSet-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Opportunity_Discount_Requires_Approval",
+        "type": "ValidationRule",
+        "state": "Created",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml"
+      },
+      {
+        "fullName": "Opportunity.Opportunity_Products_Required_At_Propose",
+        "type": "ValidationRule",
+        "state": "Failed",
+        "problemType": "Error",
+        "filePath": "/Users/pranavnagrecha/VS Code/Personal/SfSkills/.sfskills/builds/northwind-sales/reports/mock-deploy/2026-09-19T14-56-10Z/force-app/main/default/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml",
+        "lineNumber": 130,
+        "columnNumber": 22,
+        "error": "Validation rule description cannot be longer than 255 characters long. (130:22)"
+      }
+    ],
+    "zipFileCount": 12,
+    "deployUrl": "https://orgfarm-76c95d6f7f-dev-ed.develop.my.salesforce.com/lightning/setup/DeployStatus/page?address=%2Fchangemgmt%2FmonitorDeploymentsDetails.apexp%3FasyncId%3D0AfdL00000gZ8IfSAK%26retURL%3D%252Fchangemgmt%252FmonitorDeployment.apexp"
+  },
+  "warnings": [],
+  "api_version": {
+    "value": "62.0",
+    "source": "highest of: M1-S01=62.0, M1-S02=62.0, M2-S01=62.0, M2-S02=62.0, M2-S03=62.0, M2-S04=62.0, M2-S05=62.0"
+  },
+  "tests": {
+    "level": "NoTestRun",
+    "requested_tests": null,
+    "run": 0,
+    "passed": 0,
+    "failed": 0,
+    "coverage_pct": null,
+    "failures": [],
+    "coverage_warnings": [],
+    "per_class": []
+  },
+  "missing_members": []
+}

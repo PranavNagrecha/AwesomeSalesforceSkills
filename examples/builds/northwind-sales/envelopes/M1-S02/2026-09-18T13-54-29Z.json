@@ -1,0 +1,248 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-18T13-54-29Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-54-29Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-54-29Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S02",
+    "api_version": "62.0 (unchanged - plan.json still carries no api_version key)",
+    "invocation_kind": "third iteration of the § 4 repair cycle, using the built -> running edge directly (no tester ran since the run-2 repair, so the tested -> failed -> pending reset path did not apply). Org evidence: reports/MOCK-DEPLOY-M1.md run 3, finding N3-F-04"
+  },
+  "summary": "Third repair iteration on M1-S02. reports/MOCK-DEPLOY-M1.md run 3 (2026-09-18T13:52Z, after the Name repair landed) closed N3-F-03 and returned N3-F-04 (HIGH): 'Field:StageName must be Required' on both layouts. Set both artefacts/M1-S02/layouts/*.layout-meta.xml's StageName layoutItems entry to <behavior>Required</behavior> (was Edit) - org-confirmed by N3-F-04 itself. In the same pass, and one round ahead of org confirmation, also set CloseDate's layoutItems entry to <behavior>Required</behavior> (was Edit): Name, StageName and CloseDate are Opportunity's three field-level-required (nillable=false) standard fields, and the three org findings so far (N3-F-02 Probability, N3-F-03 Name, N3-F-04 StageName) are consistent with every field-level-required field also being layout-required, making CloseDate the probable fourth. deploy-order.md §6 gained a 'Third discovery (run 3)' subsection recording StageName as org-confirmed (run 3) and CloseDate explicitly as 'UNVERIFIED (2026-09-18):' - an inference from the pattern, not a deploy message naming CloseDate for this build - with instructions to downgrade or confirm it once run 4 lands. No other line in either layout file changed; package.xml is unaffected. The declared checker was re-run verbatim and reproduced the same one REVIEW + one INFO, exit 0, as the prior two repairs. check-outputs is ok; all three artefacts parse. Outcome: built.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Unchanged MEDIUM for the same standing reasons (element-grounding: Layout documented by worked example not element table, admin/products-and-pricebooks carries no deployable XML; question-coverage: three Questions-to-Ask rows remain unanswered). This run adds one further wrinkle worth naming in the rationale rather than folding silently into the same two reasons: StageName's Required behavior is org-confirmed (N3-F-04), matching the grounding standard the prior two fixes met, but CloseDate's Required behavior is written from a pattern inference across three findings, not from a deploy message naming CloseDate for this build. That is precisely the extrapolation admin/record-types-and-page-layouts/references/metadata-examples.md warns against in bold and gotchas.md #13 exists to catch - the coordinator's instruction to write it now and mark it UNVERIFIED (2026-09-18) inline is a deliberate, disclosed bet to save a round trip, not a grounding claim this agent is making on its own authority. Recorded here and in deploy-order.md §6 rather than presented as equally confirmed to StageName. checker-pass and manifest-consistency remain HIGH-eligible: the declared checker exited 0 on the first pass, check-outputs is ok, and every declared output still exists with nothing undeclared written.",
+  "dimensions_compared": [
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Unchanged base reason (Layout by worked example not element table; admin/products-and-pricebooks carries no deployable XML), plus a new wrinkle this run introduces: StageName's Required behavior is org-confirmed (N3-F-04), but CloseDate's is written ahead of org confirmation, from a pattern inference across N3-F-02/03/04 rather than a deploy message naming it. deploy-order.md §6 flags this explicitly with an inline UNVERIFIED (2026-09-18) marker rather than presenting it as equally grounded.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Run scripts/mock_deploy.py again (run 4). If it passes without ever independently naming CloseDate, or names a different field, resolve the UNVERIFIED marker per deploy-order.md §6's instructions - confirm it if CloseDate is silently accepted, or revisit it if the pattern breaks."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Unchanged: three Questions-to-Ask rows remain unanswered. A25 is now confirmed for three fields (Probability, Name, StageName) with a fourth (CloseDate) written ahead of confirmation, and is still not closed.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Same as prior runs: keep iterating scripts/mock_deploy.py until a round returns no further layout-required-field message for either layout."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "deploy-order",
+      "observation": "The org's three findings so far (N3-F-02 Probability, N3-F-03 Name, N3-F-04 StageName) line up with a real, checkable Salesforce fact independent of this build: Name, StageName and CloseDate are the three standard fields the platform marks required at the field level (nillable=false) on Opportunity. That correspondence is what makes the CloseDate bet a reasoned inference rather than a guess, and it is exactly the kind of pattern-across-findings signal this build's Process Observations exist to surface.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "The re-run checker output is unchanged for the third consecutive repair: one REVIEW (identical-layout merge candidate), one INFO (no Profile/PermissionSet in scope), exit 0. Three consecutive behavior-only edits applied identically to both files have not disturbed either finding, which is the expected result of edits that only ever add or flip a behavior value inside an already-scanned layoutItems entry.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "element-grounding",
+      "observation": "This is the first repair in this sequence where an artefact edit is not fully backed by a deploy message against this build - CloseDate's Required behavior is inferred, not confirmed. The instruction that produced it is explicit and disclosed (deploy-order.md §6's UNVERIFIED (2026-09-18) marker, this envelope's confidence_rationale), which is the correct way to make a documented bet rather than a silent one, but it is still a departure from every prior fix in this step, each of which followed rather than anticipated an org message.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "deploy-order",
+      "observation": "Run 4's three possible outcomes are all live: (a) it passes cleanly, silently confirming CloseDate was correctly anticipated; (b) it is silent on CloseDate specifically but names a fifth field, meaning CloseDate may or may not have been necessary and the bet is untested either way; (c) it reports CloseDate itself was wrong somehow (unlikely given the field-level-required fact, but not something a dry run against this specific layout/record-type/profile combination has actually exercised). deploy-order.md §6 names outcome (a) and asks for the marker to be resolved either way, but does not fully disambiguate (b) from a true confirmation. Worth a second look once run 4's actual report lands.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "manifest-consistency",
+      "observation": "M1-S02 has now cycled built -> running three times for org-discovered repairs (run-1 fix via documented->running, run-2 fix via tested->failed->pending->running, this run via built->running directly since no tester ran between run-2's built and this instruction). All three are legal edges per standards/build-orchestration.md § 4 and each was named explicitly by the invocation rather than chosen by this agent, but a reader of plan.json's runs[] history should not assume a uniform recovery path across the three - the edge taken depended on which status the step happened to be in when each org finding arrived.",
+      "evidence": {
+        "source": "plan_field",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 10
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "step_type": "ui",
+    "step_scale": "project",
+    "build_mode": "design-only",
+    "status_path_taken": "invoked directly (not under agents/build-step-runner) as the third iteration of a § 4 repair cycle, using the built -> running edge directly (no tester had run since the run-2 repair reached built, so tested -> failed -> pending -> running did not apply). This agent ran the Step 9/11 set-status and validate-envelope itself for this run: M1-S02 running -> built.",
+    "repair_context": {
+      "trigger": "reports/MOCK-DEPLOY-M1.md run 3, finding N3-F-04 (HIGH)",
+      "finding_text": "Field:StageName must be Required (on both Opportunity-Opportunity Enterprise Layout and Opportunity-Opportunity Renewal Layout)",
+      "reset_transition": "M1-S02: built -> running (result: repair run: set StageName + CloseDate behavior=Required per N3-F-04; StageName org-confirmed run 3, CloseDate inferred from the field-level-required pattern, unverified until run 4)",
+      "prior_envelope": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-50-03Z.json",
+      "prior_run_result": "Repair after N3-F-03: set Name behavior=Required (was Edit) on both layouts per gotchas #13; deploy-order.md sec6 Second discovery added; declared checker exit 0 (1 REVIEW + 1 INFO, as expected); check-outputs ok"
+    },
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md"
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "diff_summary": [
+      {
+        "path": "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+        "change": "Changed StageName's layoutItems <behavior> from Edit to Required (first layoutColumns, Opportunity Information section) and CloseDate's layoutItems <behavior> from Edit to Required (second layoutColumns, same section). No other line changed."
+      },
+      {
+        "path": "artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+        "change": "Identical two-line change, same positions. No other line changed."
+      },
+      {
+        "path": "artefacts/M1-S02/package.xml",
+        "change": "Unchanged - no new component type or member introduced."
+      },
+      {
+        "path": "artefacts/M1-S02/deploy-order.md",
+        "change": "Appended a 'Third discovery (run 3)' subsection to §6: the N3-F-04 finding, StageName recorded as org-confirmed, CloseDate recorded inline as 'UNVERIFIED (2026-09-18):' with the pattern-inference reasoning and the instruction to resolve the marker once run 4 lands. No existing text edited."
+      }
+    ],
+    "decision_record": [
+      {
+        "question": "N3-F-04 fix: what behavior does the existing StageName layoutItems entry carry?",
+        "answer": "Required, changed from Edit. Org-confirmed by N3-F-04 itself ('Field:StageName must be Required'), same gotchas.md #13 platform-required-field pattern as Probability and Name.",
+        "source": "org evidence reports/MOCK-DEPLOY-M1.md run 3 (N3-F-04) + skills/admin/record-types-and-page-layouts/references/gotchas.md #13",
+        "element": "both layouts: StageName layoutItems entry, behavior changed Edit -> Required, Opportunity Information section, first layoutColumns"
+      },
+      {
+        "question": "Should CloseDate also be set to Required in this same pass, ahead of its own org finding?",
+        "answer": "Yes, per the coordinator's explicit instruction, on the strength of the field-level-required pattern (Name, StageName, CloseDate are Opportunity's three nillable=false standard fields) matching the first three org findings exactly. Written and marked inline in deploy-order.md as 'UNVERIFIED (2026-09-18):' - an inference, not a deploy message naming CloseDate for this build. Not presented as equally grounded to StageName in this envelope's confidence rationale or dimensions_skipped.",
+        "source": "coordinator instruction + pattern across reports/MOCK-DEPLOY-M1.md runs 1-3 (N3-F-02, N3-F-03, N3-F-04) + general Opportunity field-level-required knowledge (Name/StageName/CloseDate nillable=false)",
+        "element": "both layouts: CloseDate layoutItems entry, behavior changed Edit -> Required, Opportunity Information section, second layoutColumns; artefacts/M1-S02/deploy-order.md §6 'Third discovery (run 3)' subsection"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "declared_scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: 2 review/info finding(s) detected\n{\n  \"score\": 100,\n  \"findings\": [\n    {\n      \"severity\": \"REVIEW\",\n      \"location\": \"artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml\",\n      \"message\": \"layouts Opportunity-Opportunity Enterprise Layout, Opportunity-Opportunity Renewal Layout on Opportunity are identical after normalisation \\u2014 merge candidates (SKILL.md workflow step 2); if two record types must differ, differentiate the layouts or share one.\"\n    },\n    {\n      \"severity\": \"INFO\",\n      \"location\": \"\",\n      \"message\": \"no Profile/PermissionSet in scope \\u2014 assignment coverage not checked\"\n    }\n  ],\n  \"summary\": \"Scanned 6 metadata file(s): 2 record type(s), 2 layout(s); 2 finding(s) detected.\"\n}",
+        "changed": "Nothing about the finding set changed relative to the prior two repairs' re-runs: same one REVIEW (identical-layout merge candidate, still true since the same edits were applied to both files) and one INFO (no Profile/PermissionSet in scope). This is the exact result the invocation named as expected."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "xml_parse": {
+      "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" .sfskills/builds/northwind-sales/artefacts/M1-S02",
+      "result": "all 3 *.xml / *-meta.xml files under artefacts/M1-S02/ parse (package.xml, both layout-meta.xml files)"
+    }
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+      "used_for": "#13 - a field the platform requires on the layout carries behavior=Required as a deploy precondition; applied to StageName on org-confirmed evidence and, per the coordinator's explicit instruction, extended to CloseDate as a disclosed inference rather than a confirmed fact - the exact one-step-too-far this gotcha warns against, made deliberately and transparently rather than silently"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "The bold warning against extrapolating a per-object required set, cited in deploy-order.md §6 as the reason CloseDate is marked UNVERIFIED rather than treated as confirmed"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+      "used_for": "The step's declared build-scoped checker, re-run verbatim after this repair"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4's built -> running edge (used directly for this repair, no tester having run since the prior fix) and § 8's still-pending re-verification path for milestone M1"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "Step 5 (element-grounding rule), Step 7 (deploy-order note), Step 8 (re-run the cited checker, fix the artefact never the checker), Step 9 (check-outputs then set-status), Step 11 (self-validate the envelope)"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Process Observations shape, Citations schema, confidence rubric (overridden by AGENT.md Step 10, itself unchanged by this repair)"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope + markdown pair, atomic-write and persistence rules for this run"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales-M1-S02-prior-repair",
+      "path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-50-03Z.md",
+      "used_for": "The run-2 repair's artefact state, decision record and checker baseline this third iteration extends"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales-M1-S02-deploy-order",
+      "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md",
+      "used_for": "§3 item 2 (the A25 discovery procedure) and §6 (the repair log this run extends with its third subsection)"
+    },
+    {
+      "type": "probe",
+      "id": "mock-deploy-M1-run-3",
+      "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+      "used_for": "The org finding (N3-F-04) that triggered this third repair, and the run-1/run-2 findings that establish the field-level-required pattern behind the CloseDate inference"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S02 is built again after this third repair; the declared build-scoped checker, the always-on xml and manifest checks, and the two manual ticks against the updated deploy-order.md are its to re-run and record in tests/M1-S02/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "N3-F-04, the StageName fix, and the CloseDate inference (with its UNVERIFIED marker) need to reach decisions.md and the traceability matrix alongside the N3-F-02/N3-F-03 entries already there."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M1's re-verification (standards/build-orchestration.md § 8) remains pending after three rounds of org findings; it should run once run 4 either passes cleanly or names a fifth field, and once the CloseDate UNVERIFIED marker is resolved one way or the other."
+    }
+  ]
+}

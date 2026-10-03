@@ -1,0 +1,514 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-10-02T19-15-35Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T19-15-35Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T19-15-35Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S03"
+  },
+  "summary": "M4-S03 incremental compile re-run (build-doc-keeper, compile mode) for build northwind-sales: applied the amended plan to the four compiled files under artefacts/M4-S03/ in place, re-deriving nothing else. Five UAT cases (TC-M4-S04-T7..T11) and five criteria (AC-010.3, AC-004.3, AC-016.3, AC-017.2, AC-018.2) come from the five manual tests plan.json steps[M4-S04].amendments[0] (2026-10-02T18:52:18Z) added. TC-M4-S04-T5 and AC-019.3 follow the reworded test. TC-M4-S02-T6, TC-M4-S03-T6, AC-026.5 and AC-019.2 carry the prose-only corrections. REQ-010's row carries test id M4-S04-T7 (manual) and stays In Build while M4-S04 is pending. REQ-021's test_result and the CWB-AUTO-001/002 notes now carry the exits tests/M3-S02 records. A block comparison against the pre-run copy shows every other case, criterion and row byte-identical. All four declared checkers exit 0, including check_rtm.py (0 coverage gaps, 0 errors) and check_uat_case.py (68 cases, 0 errors). check-outputs is ok.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 11 compile rubric: every depends_on step is documented, every declared output was written, and no requirement lacks a step (the HIGH conditions). But Sections 4, 7, 9 and 10 still compile with no slice rows (MEDIUM, unchanged by this re-run). The four negative cases that clear check_uat_case.py are post-deploy checks declared against a pre-deploy gate, and two of the five new tests are compound.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "uat-test-case-pack",
+    "acceptance-criteria",
+    "traceability-matrix",
+    "configuration-workbook"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "configuration-workbook",
+      "state": "partial",
+      "reason": "incremental by instruction: only the CWB-AUTO-001/002 notes cells, normalization 5 and the Section 6 note were touched; every other row is carried byte-identical from the 2026-10-02T18-48-03Z compile",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "acceptance-criteria",
+      "state": "partial",
+      "reason": "15 milestone-goal criteria still have no UAT case, because no manual test or open item states a check for them (unchanged)",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "a manual test per goal clause on milestone M4"
+    },
+    {
+      "dimension": "uat-test-case-pack",
+      "state": "partial",
+      "reason": "negative-path coverage now passes the checker for REQ-004/016/017/018, but each passing negative is a post-deploy in-org check that cannot be observed at the M4 gate it is declared against",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "build-planner re-times or re-words M4-S04 T8-T11 via amend-step while M4-S04 is pending"
+    },
+    {
+      "dimension": "traceability-matrix",
+      "state": "partial",
+      "reason": "M4-S04 is pending, so REQ-010's covering runbook and the build-level manifest cannot be read; the row stays In Build",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-record",
+      "observation": "The operator's amendment record (who, when, why and prior values in steps[M4-S04].amendments[0]) let each of the five new cases cite the exact plan change it came from, and it closed both checker failures the first compile reported: check_uat_case.py went from 4 errors to 0 and check_rtm.py from 1 error to 0.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M4-S04].amendments[0]",
+        "count": 5
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "test-record",
+      "observation": "The tester's own record (tests/M3-S02/results.json and check_approval_design.exit.txt EXIT_CODE=0) was enough to correct the REQ-021 and CWB-AUTO-001/002 narration without re-running anything, and the builder's repair envelope explains where the narration came from.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-46-52Z.json",
+        "query": "extensions.checker_results",
+        "count": 4
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "checker-fail-open",
+      "observation": "check_rtm.py's coverage check counts REQ-010's artefact cell 'none — deliberately absent from both layouts' as a present artefact, because EMPTY_MARKERS only matches a cell that is exactly 'none'. REQ-010 now clears coverage on its test id alone, while its artefact cell says there is none; the checker reports only two WARNs on it (no metadata type, not found).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/requirements-traceability-matrix/scripts/check_rtm.py",
+        "query": "EMPTY_MARKERS (line 163); setup_only / missing (lines 862-866)"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "uat-coverage",
+      "observation": "The four new negative tests (M4-S04 T8-T11) are in-org, post-deploy checks, but each is declared 'ticked at the M4 milestone gate', which comes before any deploy, and this layer never deploys. So the negative-coverage pass is structural: none of the four can pass before go-live, and at the gate only the runbook's carrying of each check can be ticked.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M4-S04].acceptance_tests[7..10].expected",
+        "count": 4
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "test-design",
+      "observation": "Two of the new tests are compound. T10's second clause has a disjunctive Then ('confirmed ... or accepted as not rendering') that cannot fail. T11's first Then depends on a user preference override whose value the test does not state, and its second half needs a scratch rehearsal that plan.json does not name. Each is compiled as one case and one criterion, with the gap named.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S03/uat-test-cases.yaml",
+        "query": "TC-M4-S04-T10, TC-M4-S04-T11 gap",
+        "count": 2
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "build-record",
+      "observation": "The per-step sources still carry the old narration: traceability.md REQ-021 and workbook/06-automation.md CWB-AUTO-001/002, which scripts/render_step_docs.py wrote before commit 8d15818f3 switched it to the tester's exits. The compiled files now disagree with those sources in exactly these cells, and both normalization lists record it. REQ-025's cell, which narrates a checker tests/M4-S01 never ran, is outside this run's scope and is carried verbatim.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/workbook/06-automation.md",
+        "query": "grep 'exit ?'",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "traceability",
+      "observation": "REQ-010 kept status In Build rather than In UAT. Step 7 gives In UAT only once every step for the requirement is documented, and its only test now sits on M4-S04, which is pending. The cell states the runbook coverage and the In UAT trigger; a human who reads M1-S02 as REQ-010's only delivery step might want In UAT now.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/build-doc-keeper/AGENT.md",
+        "query": "Step 7 status column"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "uat-coverage",
+      "observation": "TC-M4-S04-T5 and AC-019.3 are no longer marked negative: the reworded test asks for a presence 'exactly once' plus a deploy position, which is not an exclusion under the pack's printed negative_path rule. REQ-019 keeps its negative coverage through TC-O-M2S04-05A.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S03/uat-test-cases.yaml",
+        "query": "negative_path_rule; TC-M4-S04-T5"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "personas",
+      "observation": "T9-T11 name no persona, so P-REP is used. T8's persona is P-REP minus Enterprise_Sales_Record_Types, grounded in CWB-PERM-004 (the Sales User overlay has no recordTypeVisibilities). Nothing on file says whether the target org's Sales User profile already sees the new record types after deploy, so the case asks the tester to confirm it in Setup. The new criterion ids are appended (AC-004.3 and so on) rather than placed in source order, so that no existing id moves.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S03/configuration-workbook.md",
+        "query": "CWB-PERM-004"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "domain": "test-design",
+      "observation": "The compound tests T10 and T11, T11's unstated override value, and the gate timing of the four post-deploy negatives are plan text that a compile can only flag.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M4-S04].acceptance_tests[7..10]"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "because splitting a compound test or re-timing a post-deploy check is an amend-step on M4-S04, which is still pending, not a documentation change"
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "milestone",
+      "observation": "Milestone M4 cannot be verified until M4-S03 is tested and documented and M4-S04 is built; seven of the pack's cases read M4-S04's files directly, and TC-M4-S04-T8..T11 are post-deploy checks its runbook is to carry. (The first compile's envelope said eleven; this count is the query beside it.)",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S03/uat-test-cases.yaml",
+        "query": "cases containing 'artefacts/M4-S04/'",
+        "count": 7
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "because it checks the whole M4 milestone, including this pack and M4-S04's runbook, once every M4 step is documented"
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "compile run: Step 10 sources and outputs, Step 7 status rule for REQ-010, Step 11 confidence, Step 12 envelope"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Process Observations, confidence rubric, citations shape"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 amend-step / --prose-only semantics and plan writers; section 4 docs row and the built -> running edge; section 6 doc-keeper role"
+    },
+    {
+      "type": "standard",
+      "id": "DELIVERABLE_CONTRACT",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope minimum fields"
+    },
+    {
+      "type": "standard",
+      "id": "REFUSAL_CODES",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "refusal enum (no refusal needed)"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules: no deploy, no writes outside supplied paths, no invented citation"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope.schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "required fields, dimensions_skipped item shape, build-layer path pattern"
+    },
+    {
+      "type": "standard",
+      "id": "observation.schema",
+      "path": "agents/_shared/schemas/observation.schema.json",
+      "used_for": "observation fields and follow-up requirement"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "case schema, negative-path and deny-case persona rules, per-step expected result; worked-examples section 4 record; check_uat_case.py"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "AC-<req>.<n> id rule, one When per criterion (compound tests flagged), lintable record; check_ac_format.py"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "build-layer columns, status enum, test_type runners; check_rtm.py coverage rule"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "row schema for the two notes cells corrected; check_workbook.py"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "a test result recorded as acceptance evidence (pass_fail Not Run until executed)"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "reviewable-record standard for the normalization notes and source notes"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "build-planner",
+      "because": "the compound tests T10/T11 and the gate timing of the four post-deploy negatives are amend-step changes on pending M4-S04"
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "milestone M4 is verifiable once M4-S03 is tested and documented and M4-S04 is built, tested and documented"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S03",
+    "mode": "compile",
+    "run_kind": "incremental re-run (operator instruction): amended-plan deltas only",
+    "previous_run_envelope": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T18-48-03Z.json",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/artefacts/M4-S03/configuration-workbook.md",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S03/traceability.md",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S03/acceptance-criteria.md",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S03/uat-test-cases.yaml"
+    ],
+    "workbook_rows": [],
+    "traceability_rows": [],
+    "decisions_appended": [],
+    "rows_replaced": [],
+    "compiled_documents": [
+      {
+        "path": "artefacts/M4-S03/configuration-workbook.md",
+        "sources": [
+          "artefacts/M4-S03/configuration-workbook.md (previous compile)",
+          "tests/M3-S02/results.json",
+          "tests/M3-S02/check_approval_design.exit.txt",
+          "envelopes/M3-S02/2026-09-19T16-46-52Z.json"
+        ],
+        "carries": {
+          "rows_edited": [
+            "CWB-AUTO-001",
+            "CWB-AUTO-002"
+          ],
+          "lines_changed": 4
+        },
+        "sha256": "e69e9df4e7952d26b5db96ed9d632765e0b5429bcaff05988f6cf54706b436a5"
+      },
+      {
+        "path": "artefacts/M4-S03/traceability.md",
+        "sources": [
+          "artefacts/M4-S03/traceability.md (previous compile)",
+          "plan.json steps[M4-S04].amendments[0], steps[M4-S03].amendments[1]",
+          "tests/M3-S02/results.json",
+          "tests/M3-S02/check_approval_design.exit.txt",
+          "envelopes/M3-S02/2026-09-19T16-46-52Z.json"
+        ],
+        "carries": {
+          "rows": 26,
+          "rows_edited": [
+            "REQ-010",
+            "REQ-021"
+          ]
+        },
+        "sha256": "1fdfaf0ecc31abac5bd572a1b756f56bb6f03945666c80c15253952ccae2a3fa"
+      },
+      {
+        "path": "artefacts/M4-S03/acceptance-criteria.md",
+        "sources": [
+          "artefacts/M4-S03/acceptance-criteria.md (previous compile)",
+          "plan.json steps[M4-S04].acceptance_tests[4] and [6..10], steps[M4-S03].amendments[1], steps[M4-S02].amendments[0]",
+          "workbook/03-profiles-permission-sets-and-psgs.md (CWB-PERM-004, for the T8 persona)"
+        ],
+        "carries": {
+          "criteria": 82,
+          "in_lintable_record": 81,
+          "added": [
+            "AC-004.3",
+            "AC-010.3",
+            "AC-016.3",
+            "AC-017.2",
+            "AC-018.2"
+          ],
+          "edited": [
+            "AC-019.2",
+            "AC-019.3",
+            "AC-026.5"
+          ],
+          "criteria_without_a_case": 15
+        },
+        "sha256": "bf11cc6ab9db61de64077967150ad0b6e22424c2a1391d0a2079231cade68434"
+      },
+      {
+        "path": "artefacts/M4-S03/uat-test-cases.yaml",
+        "sources": [
+          "artefacts/M4-S03/uat-test-cases.yaml (previous compile)",
+          "plan.json steps[M4-S04].acceptance_tests[4] and [6..10], steps[M4-S03].amendments[1], steps[M4-S02].amendments[0]"
+        ],
+        "carries": {
+          "cases": 68,
+          "manual_test_cases": 46,
+          "open_item_cases": 22,
+          "added": [
+            "TC-M4-S04-T7",
+            "TC-M4-S04-T8",
+            "TC-M4-S04-T9",
+            "TC-M4-S04-T10",
+            "TC-M4-S04-T11"
+          ],
+          "edited": [
+            "TC-M4-S02-T6",
+            "TC-M4-S03-T6",
+            "TC-M4-S04-T5"
+          ],
+          "requirements_without_negative_case": []
+        },
+        "sha256": "6b33b5033fcb9f1c280da90d6a85405d6af75af63f59eb08fa42ede4dd4b9713"
+      }
+    ],
+    "diff_summary": {
+      "uat-test-cases.yaml": {
+        "added": [
+          "TC-M4-S04-T7",
+          "TC-M4-S04-T8",
+          "TC-M4-S04-T9",
+          "TC-M4-S04-T10",
+          "TC-M4-S04-T11"
+        ],
+        "changed": {
+          "TC-M4-S02-T6": "gap replaced by an amended line quoting the prose-only correction plus a residual gap (O-M4S02-08's optional column)",
+          "TC-M4-S03-T6": "premise gap replaced by an amended line; pass_rule no longer waits on the gate",
+          "TC-M4-S04-T5": "rewritten to the reworded test: presence exactly once plus deploy position; negative_path false"
+        },
+        "other": [
+          "header comment: 41 -> 46 manual-test cases, plus a two-line re-run note",
+          "open_items_not_compiled_as_cases O-M4S02-08 reason: the prose amendment it asked for landed"
+        ],
+        "unchanged": "60 of 63 prior cases byte-identical, order preserved"
+      },
+      "acceptance-criteria.md": {
+        "added": [
+          "AC-004.3",
+          "AC-010.3",
+          "AC-016.3",
+          "AC-017.2",
+          "AC-018.2"
+        ],
+        "changed": {
+          "AC-019.2": "Source note line and record amended key (prose-only correction)",
+          "AC-026.5": "Source note line and record amended key (prose-only correction)",
+          "AC-019.3": "Given/When/Then rewritten to the reworded test; negative false; Source note"
+        },
+        "other": [
+          "source-2 count 41 -> 46",
+          "id rule: appended ids take the next free number so no existing id moves",
+          "coverage table: five rows added after AC-001.7"
+        ],
+        "unchanged": "74 of 77 prior prose criteria and 73 of 76 prior records byte-identical (whitespace-only shift where a bullet was inserted after them)"
+      },
+      "traceability.md": {
+        "changed": {
+          "REQ-010": "test_id '—' -> M4-S04-T7; test_type '—' -> manual; test_result states runbook coverage; status In Build kept",
+          "REQ-021": "test_result checker narration -> tests/M3-S02 recorded exits"
+        },
+        "other": [
+          "normalization list: two entries added; 'every test_result verbatim' qualified",
+          "coverage: manual tests outstanding 12 of 41 -> 17 of 46; REQ-010 ERROR line rewritten; M4-S04 note",
+          "notes: REQ-019 note gains the amendment; REQ-021 note grounded (UNVERIFIED marker removed)"
+        ],
+        "unchanged": "24 of 26 matrix rows byte-identical"
+      },
+      "configuration-workbook.md": {
+        "changed": {
+          "CWB-AUTO-001": "Verified by clause -> tests/M3-S02 recorded exits",
+          "CWB-AUTO-002": "Verified by clause -> tests/M3-S02 recorded exits"
+        },
+        "other": [
+          "normalization 5 rewritten",
+          "Section 6 note last sentence rewritten"
+        ],
+        "unchanged": "312 of 316 lines byte-identical"
+      }
+    },
+    "coverage": {
+      "requirements_with_no_step": 0,
+      "steps_with_no_requirement": [
+        "M4-S03",
+        "M4-S04"
+      ],
+      "manual_tests_outstanding": 17,
+      "manual_tests_total": 46,
+      "rtm_error_carried": null
+    },
+    "renderer_defect_corrections": {
+      "REQ-021 test_result": "checker narration (exit 0; exit 1; exit 0; '?' exit ?) -> check_approval_design.py --manifest-dir artefacts artefacts exit 0, xml pass, manifest pass (tests/M3-S02)",
+      "CWB-AUTO-001/002 notes": "same correction in the Verified by clause",
+      "M2-S02": "no M2-S02 cell in the compiled files narrates an exit 1 or '? exit ?'; its rows carry operator-written exit 0 text, so nothing was changed for tests/M2-S02/results.json"
+    },
+    "checker_results": [
+      {
+        "test": "acceptance_tests[0]",
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook artefacts/M4-S03/configuration-workbook.md",
+        "expected": "exit 0",
+        "exit": 0,
+        "result": "OK: workbook ... passes all checks. 14 INFO lines (Section 6 rows read as configuration), unchanged from the first compile"
+      },
+      {
+        "test": "acceptance_tests[1]",
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M4-S03/traceability.md --manifest-dir artefacts",
+        "expected": "exit 0",
+        "exit": 0,
+        "result": "26 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 41 warning(s). Against the pre-run file the only finding that changed is the removed ERROR 'coverage gap: REQ-010 has no test id while status is In Build'; the WARN set is identical, including REQ-010's two artefact WARNs"
+      },
+      {
+        "test": "acceptance_tests[2]",
+        "command": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir artefacts/M4-S03",
+        "expected": "exit 0",
+        "exit": 0,
+        "result": "OK - 68 case(s), 0 run-sheet row(s), 82 criterion id(s) cross-checked; REQ-004, REQ-016, REQ-017 and REQ-018 each now carry a negative case (TC-M4-S04-T8..T11)"
+      },
+      {
+        "test": "acceptance_tests[3]",
+        "command": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --manifest-dir artefacts/M4-S03",
+        "expected": "exit 0",
+        "exit": 0,
+        "result": "1 document(s) checked - 0 error(s), 0 warning(s) (81 criteria in the lintable record)"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "idempotence": "the delta script asserts every anchor once and aborts before writing when one is absent; a second run exited 1 ('anchor count 0 != 1') and left the files byte-identical (sha256 compared)",
+    "plan_writes": [
+      "set-status M4-S03 running (built -> running, 2026-10-02T19:03:09Z, done)",
+      "set-status M4-S03 built (after this envelope validates, by the caller's instruction)"
+    ],
+    "return_object": {
+      "step_id": "M4-S03",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M4-S03/configuration-workbook.md",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S03/traceability.md",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S03/acceptance-criteria.md",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S03/uat-test-cases.yaml"
+      ]
+    },
+    "generator": "one-shot delta script and envelope script held in the session scratchpad; not part of the build"
+  }
+}

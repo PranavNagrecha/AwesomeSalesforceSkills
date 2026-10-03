@@ -1,0 +1,535 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-10-02T20-02-14Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T20-02-14Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T20-02-14Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S03"
+  },
+  "summary": "M4-S03 final incremental compile re-run (build-doc-keeper, compile mode) for build northwind-sales: applied the changes since the 19-15-35Z run to the four compiled files in place. The 13-test M4-S04 set from plan.json steps[M4-S04].amendments[2] (2026-10-02T19:17:05Z) is compiled as TC-M4-S04-T4..T13. AC-017.2 stays on test 10 and AC-018.2 on test 12, and the split-out halves are new: AC-017.3 (T11) and AC-018.3 (T13). Tests 8, 9, 10 and 12 are gated to UAT after the first deploy; 11 and 13 are M4 gate ticks. REQ-010 keeps test id M4-S04-T7, because the split did not move test 7, and it is now In UAT. M4-S04's open items became three cases (TC-O-M4S04-01..03, with criteria AC-024.5, AC-004.4, AC-024.6) plus six dispositions; O-M4S03-01/02 were also dispositioned. REQ-027 and REQ-028, and CWB-OTHER-026..031, are collated, so the coverage line now reads 0 of 16 steps without a requirement. All four declared checkers exit 0, and check-outputs is ok.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 11 compile rubric: every depends_on step is documented, every declared output was written and no requirement lacks a step (the HIGH conditions), but Sections 4, 7, 9 and 10 still compile with no slice rows (MEDIUM, unchanged). Ambiguities that also hold it there: the stale-status corrections beyond the listed items, REQ-010's move to In UAT, and the persona chosen for test 12's 'others'.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "uat-test-case-pack",
+    "acceptance-criteria",
+    "traceability-matrix",
+    "configuration-workbook"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "configuration-workbook",
+      "state": "partial",
+      "reason": "incremental by instruction: six slice rows collated, CWB-DATA-001 and three header/gap lines touched; every other row carried byte-identical from the previous compile; Sections 4, 7, 9 and 10 still have no slice rows",
+      "confidence_impact": "MEDIUM"
+    },
+    {
+      "dimension": "acceptance-criteria",
+      "state": "partial",
+      "reason": "15 milestone-goal criteria still have no UAT case, because no manual test or open item states a check for them (unchanged)",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "a manual test per goal clause on milestone M4"
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "build-record",
+      "observation": "The third amendment's record (who, when, why and the prior test list) and the tester's skipped_manual entries, each quoting its expected timing, were enough to set every split case's gate (four UAT-after-deploy, six M4-gate) without interpretation.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M4-S04].amendments[2]; tests/M4-S04/results.json skipped_manual",
+        "count": 10
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "traceability",
+      "observation": "Each of the six declared M4-S03/M4-S04 outputs has its slice row (CWB-OTHER-026..031), and both docs steps now carry a requirement (REQ-027, REQ-028), so the coverage line reports no step without a requirement for the first time in this build.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/workbook/99-other-configuration.md",
+        "query": "CWB-OTHER-02[6-9]|03[01]",
+        "count": 6
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "build-record",
+      "observation": "decisions.md records three M4-S04 findings twice - O-M4S04-01/02/03 (operator) and O-M4S04-05/06/07 (renderer, from the builder envelope) - so the pack folds each pair into one case; a reader counting open items over-counts by three.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/decisions.md",
+        "query": "O-M4S04-0[1-7]",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "plan-text",
+      "observation": "M4-S04 test 4's Then ('the only org-facing command it offers is scripts/mock_deploy.py') is false against the built runbook by the operator's own record (O-M4S04-04), and the plan text still says it; the pack can only name the gap on TC-M4-S04-T4 for the gate to rule on.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M4-S04].acceptance_tests[3]",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "assumptions",
+      "observation": "Assumption A37 and Q8 still say the 140-deal reassignment needs no field mapping, while O-M4S04-02 records that it does; the workbook's Assumptions Register carries A37 verbatim from plan.json, so the two compiled documents disagree until the assumption is amended.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S03/configuration-workbook.md",
+        "query": "A37",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "renderer",
+      "observation": "render_step_docs.py again wrote renderer-shaped traceability cells (REQ-027's artefact holds four paths, REQ-028's is empty, both artefact_paths are directories) and skipped CWB-OTHER-024/025 in the slice; the compile normalizes ten rows now, each recorded in the matrix's normalization list.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/traceability.md",
+        "query": "REQ-027|REQ-028",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "scope",
+      "observation": "Beyond the listed items, five statements that M4-S04 being documented made false were corrected: the preconditions and gaps of TC-M4-T4, TC-M4-T5 and TC-O-M2S03-03, CWB-DATA-001's '(pending)', and the workbook's M4-S04 header sentence and gap bullet. The operator may prefer them verbatim.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S03/uat-test-cases.yaml",
+        "query": "M4-S04 is pending",
+        "count": 5
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "traceability",
+      "observation": "REQ-010 moved to In UAT under Step 7's mechanical rule (every step documented, manual test outstanding), while M1-S02's own cell says the row stays In Build until a shipped Layout carries the relatedLists block; nothing ships one, and the requirement is covered by a runbook check.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S03/traceability.md",
+        "query": "REQ-010",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "uat",
+      "observation": "M4-S04 test 12 names no persona and no 'other' user; TC-M4-S04-T12 uses P-REP to collapse the Path and P-MGR as the 'others', with a data precondition that P-MGR has not collapsed it before. O-M4S03-01/02 were dispositioned too, though the brief named only M4-S04's open items, so that every open item stays accounted for.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M4-S03/uat-test-cases.yaml",
+        "query": "TC-M4-S04-T12",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "traceability",
+      "observation": "REQ-027 reads In UAT while this run has M4-S03 reopened (documented -> running -> built); the cell is carried verbatim with a note, and it is accurate again once the step is re-tested and re-documented.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/traceability.md",
+        "query": "REQ-027",
+        "count": 1
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "medium",
+      "domain": "lifecycle",
+      "observation": "M4-S03 returns to built with new file hashes; tests/M4-S03/results.json artefact_hashes now describe the previous compile.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M4-S03/results.json",
+        "query": "artefact_hashes",
+        "count": 4
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "because the step must be re-tested (and then re-documented by build-doc-keeper) before milestone M4 can be verified"
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "low",
+      "domain": "plan-text",
+      "observation": "M4-S04 test 4's mock_deploy-only clause (O-M4S04-04), its inputs note calling M2-S04 blocked (O-M4S04-10) and assumption A37's no-mapping wording are plan text a compile can only flag.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "steps[M4-S04].acceptance_tests[3]; inputs.note; assumptions[A37]",
+        "count": 3
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "because a prose-only amendment on M4-S04 and an assumption edit are plan changes, not documentation changes"
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "compile run: Step 10 sources and outputs, Step 7 status rule for REQ-010, Step 11 confidence, Step 12 envelope"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_CONTRACT",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Process Observations, confidence rubric, citations shape"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 plan writers and rendered views; section 4 docs row and the documented -> running edge; section 6 doc-keeper role"
+    },
+    {
+      "type": "standard",
+      "id": "DELIVERABLE_CONTRACT",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope minimum fields, atomic write"
+    },
+    {
+      "type": "standard",
+      "id": "REFUSAL_CODES",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "refusal enum (no refusal needed)"
+    },
+    {
+      "type": "standard",
+      "id": "AGENT_RULES",
+      "path": "AGENT_RULES.md",
+      "used_for": "no deploy, no writes outside supplied paths, no invented citation"
+    },
+    {
+      "type": "standard",
+      "id": "output-envelope-schema",
+      "path": "agents/_shared/schemas/output-envelope.schema.json",
+      "used_for": "required fields, dimensions_skipped shape, build-layer path pattern"
+    },
+    {
+      "type": "standard",
+      "id": "observation-schema",
+      "path": "agents/_shared/schemas/observation.schema.json",
+      "used_for": "observation fields and follow-up requirement"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-test-case-design",
+      "path": "skills/admin/uat-test-case-design/SKILL.md",
+      "used_for": "case schema, negative-path and persona rules, per-step expected result; check_uat_case.py"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "AC-<req>.<n> id rule, one When per criterion, lintable record; check_ac_format.py"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "build-layer columns, status enum, pipe-delimited multi-values; check_rtm.py"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "row schema and RTM linkage block for the six collated rows; check_workbook.py"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "a test result recorded as acceptance evidence (pass_fail Not Run until executed; UAT-after-deploy timing)"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "reviewable-record standard for the normalization and source notes"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M4-S03 is built again with new hashes and must be re-tested, then re-documented, before M4 is verified"
+    },
+    {
+      "agent": "build-planner",
+      "because": "M4-S04 test 4's mock_deploy-only clause, its stale inputs note and assumption A37's wording are plan text"
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "milestone M4 is verifiable once M4-S03 is re-tested and re-documented"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S03",
+    "mode": "compile",
+    "run_kind": "final incremental re-run (operator instruction): M4-S04 amendment 3 and M4-S04 built/tested/documented",
+    "previous_run_envelope": ".sfskills/builds/northwind-sales/envelopes/M4-S03/2026-10-02T19-15-35Z.json",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/artefacts/M4-S03/configuration-workbook.md",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S03/traceability.md",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S03/acceptance-criteria.md",
+      ".sfskills/builds/northwind-sales/artefacts/M4-S03/uat-test-cases.yaml"
+    ],
+    "workbook_rows": [],
+    "traceability_rows": [],
+    "decisions_appended": [],
+    "rows_replaced": [],
+    "compiled_documents": [
+      {
+        "path": "artefacts/M4-S03/configuration-workbook.md",
+        "sources": [
+          "previous compile",
+          "workbook/99-other-configuration.md CWB-OTHER-026..031",
+          "plan.json steps[M4-S04].status"
+        ],
+        "carries": {
+          "rows_added": 6,
+          "rows_edited": [
+            "CWB-DATA-001"
+          ],
+          "prior_lines_identical": "312 of 316"
+        },
+        "sha256": "3c17cd9d5ddf17c08bc936831c2929b111477812e77342846cb925b4360f4fc9"
+      },
+      {
+        "path": "artefacts/M4-S03/traceability.md",
+        "sources": [
+          "previous compile",
+          "traceability.md REQ-027, REQ-028",
+          "plan.json steps[M4-S03|M4-S04].outputs[]",
+          "tests/M4-S04/results.json"
+        ],
+        "carries": {
+          "rows": 28,
+          "rows_added": [
+            "REQ-027",
+            "REQ-028"
+          ],
+          "rows_edited": [
+            "REQ-010"
+          ],
+          "prior_lines_identical": "70 of 77"
+        },
+        "sha256": "3e1bf51be3271e972c734536a11a0e7d2201c93d71fad67ffd52b00348f0fca7"
+      },
+      {
+        "path": "artefacts/M4-S03/acceptance-criteria.md",
+        "sources": [
+          "previous compile",
+          "plan.json steps[M4-S04].acceptance_tests[] and amendments[2]",
+          "decisions.md O-M4S04-01..07"
+        ],
+        "carries": {
+          "criteria_prose": 87,
+          "criteria_in_record": 86,
+          "added": [
+            "AC-017.3",
+            "AC-018.3",
+            "AC-004.4",
+            "AC-024.5",
+            "AC-024.6"
+          ],
+          "rewritten": [
+            "AC-017.2",
+            "AC-018.2"
+          ],
+          "source_note_only": [
+            "AC-004.3",
+            "AC-016.3"
+          ],
+          "prior_lines_identical": "1351 of 1374"
+        },
+        "sha256": "ed31ac9401721e3a5ac4ddf842648a35c47888e8a89d9e15eb00869284b25b89"
+      },
+      {
+        "path": "artefacts/M4-S03/uat-test-cases.yaml",
+        "sources": [
+          "previous compile",
+          "plan.json steps[M4-S04].acceptance_tests[] and amendments[2]",
+          "tests/M4-S04/results.json",
+          "decisions.md O-M4S03-01..02, O-M4S04-01..12"
+        ],
+        "carries": {
+          "cases": 73,
+          "added": [
+            "TC-M4-S04-T12",
+            "TC-M4-S04-T13",
+            "TC-O-M4S04-01",
+            "TC-O-M4S04-02",
+            "TC-O-M4S04-03"
+          ],
+          "dispositions_added": 8,
+          "prior_cases_identical": "57 of 68"
+        },
+        "sha256": "8636b82f4cca026d3a78a08fc02fa64732ed919f7127b87c42658e823e28543c"
+      }
+    ],
+    "diff_summary": {
+      "uat-test-cases.yaml": {
+        "rekeyed": {
+          "TC-M4-S04-T10": "REQ-017 (a) only, UAT after first deploy; keeps AC-017.2",
+          "TC-M4-S04-T11": "was REQ-018 compound/AC-018.2; now REQ-017 (b) pre-deploy runbook check, AC-017.3, M4 gate",
+          "TC-M4-S04-T12": "new id; REQ-018 (a) negative, override true, AC-018.2, UAT after first deploy",
+          "TC-M4-S04-T13": "new; REQ-018 (b) runbook check, AC-018.3, M4 gate"
+        },
+        "changed": {
+          "TC-M4-S04-T4": "precondition (M4-S04 documented); gap -> O-M4S04-04; open_items O-M4S04-04",
+          "TC-M4-S04-T5": "precondition; stale gap removed; pass_rule no longer waits on the gate",
+          "TC-M4-S04-T6": "precondition; gap -> O-M4S04-09; open_items",
+          "TC-M4-S04-T7": "precondition; stale pending clause removed from gap, O-M4S04-09 added",
+          "TC-M4-S04-T8": "source and gate -> UAT after first deploy (amendments[2]); gap shortened",
+          "TC-M4-S04-T9": "same as T8",
+          "TC-M4-T4": "precondition; stale gap -> O-M4S04-09",
+          "TC-M4-T5": "precondition; stale gap removed; pass_rule",
+          "TC-O-M2S03-03": "stale gap line removed"
+        },
+        "added": [
+          "TC-O-M4S04-01 (O-M4S04-01/05, AC-024.5)",
+          "TC-O-M4S04-02 (O-M4S04-02/06, AC-004.4)",
+          "TC-O-M4S04-03 (O-M4S04-03/07, AC-024.6)",
+          "dispositions O-M4S03-01, O-M4S03-02, O-M4S04-04, -08, -09, -10, -11, -12"
+        ],
+        "other": [
+          "header: 46 -> 48 manual-test cases; four-line final re-run note"
+        ],
+        "unchanged": "57 of 68 prior cases byte-identical (TC-O-M4S02-11 differs only in block boundary), and all 43 prior dispositions"
+      },
+      "acceptance-criteria.md": {
+        "changed": [
+          "AC-017.2 and AC-018.2 rewritten to the split tests (prose and record)",
+          "AC-004.3 and AC-016.3 source note and record 'amended' key"
+        ],
+        "added": [
+          "AC-017.3",
+          "AC-018.3",
+          "AC-004.4",
+          "AC-024.5",
+          "AC-024.6",
+          "coverage-table rows for all five; AC-018.2 -> TC-M4-S04-T12"
+        ],
+        "other": [
+          "source counts 46 -> 48 manual-test criteria and 19 -> 22 open-item criteria; id-rule sentence"
+        ],
+        "unchanged": "every other prose criterion and record byte-identical (AC-022.1, AC-024.4, AC-026.8 differ only in block boundary)"
+      },
+      "traceability.md": {
+        "changed": {
+          "REQ-010": "status In Build -> In UAT; test_id M4-S04-T7 unchanged; test_result restated for the documented step"
+        },
+        "added": [
+          "REQ-027 (artefact -> file:M4-S03/configuration-workbook.md; artefact_paths expanded)",
+          "REQ-028 (artefact -> file:M4-S04/package.xml; artefact_paths expanded)"
+        ],
+        "other": [
+          "header REQ-001..REQ-028",
+          "three normalization entries",
+          "coverage: 0 of 28; 0 of 16; 19 of 48",
+          "REQ-027 status note"
+        ],
+        "unchanged": "REQ-001..REQ-009, REQ-011..REQ-026 byte-identical"
+      },
+      "configuration-workbook.md": {
+        "added": [
+          "CWB-OTHER-026..031 verbatim from the slice, under Other configuration and in the RTM Linkage Block"
+        ],
+        "changed": [
+          "CWB-DATA-001: 'M4-S04 (pending)' -> 'M4-S04 (documented 2026-10-02)'",
+          "header sentence on M4-S04",
+          "gap bullet 'Nothing from M4-S04' -> slice skips CWB-OTHER-024/025",
+          "Other configuration count 20 -> 26"
+        ],
+        "unchanged": "every other row byte-identical"
+      }
+    },
+    "coverage": {
+      "requirements_with_no_step": 0,
+      "requirements_total": 28,
+      "steps_with_no_requirement": [],
+      "manual_tests_outstanding": 19,
+      "manual_tests_total": 48,
+      "manual_tests_uat_after_deploy": [
+        "M4-S04-T8",
+        "M4-S04-T9",
+        "M4-S04-T10",
+        "M4-S04-T12"
+      ],
+      "rtm_error_carried": null
+    },
+    "checker_results": [
+      {
+        "test": "acceptance_tests[0]",
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook artefacts/M4-S03/configuration-workbook.md",
+        "expected": "exit 0",
+        "exit": 0,
+        "result": "OK: workbook ... passes all checks. 14 INFO lines, unchanged"
+      },
+      {
+        "test": "acceptance_tests[1]",
+        "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M4-S03/traceability.md --manifest-dir artefacts",
+        "expected": "exit 0",
+        "exit": 0,
+        "result": "28 row(s), build schema, 0 coverage gap(s), 0 orphan(s), 0 error(s), 42 warning(s); against the pre-run file (40 WARNs on today's tree) the only new findings are the decision_ref-shape WARNs on REQ-027 and REQ-028, the build's standing convention"
+      },
+      {
+        "test": "acceptance_tests[2]",
+        "command": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir artefacts/M4-S03",
+        "expected": "exit 0",
+        "exit": 0,
+        "result": "OK - 73 case(s), 0 run-sheet row(s), 87 criterion id(s) cross-checked"
+      },
+      {
+        "test": "acceptance_tests[3]",
+        "command": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --manifest-dir artefacts/M4-S03",
+        "expected": "exit 0",
+        "exit": 0,
+        "result": "1 document(s) checked - 0 error(s), 0 warning(s)"
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "idempotence": "the three delta scripts assert every anchor exactly once and abort before writing when one is absent; a second run of each exited at its first anchor ('anchor count 0 != 1') and the four files stayed byte-identical (sha256 compared)",
+    "plan_writes": [
+      "set-status M4-S03 running (documented -> running, 2026-10-02T19:47:06Z, done)",
+      "set-status M4-S03 built (after this envelope validates, by the caller's instruction)"
+    ],
+    "return_object": {
+      "step_id": "M4-S03",
+      "status": "built",
+      "artefacts": [
+        ".sfskills/builds/northwind-sales/artefacts/M4-S03/configuration-workbook.md",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S03/traceability.md",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S03/acceptance-criteria.md",
+        ".sfskills/builds/northwind-sales/artefacts/M4-S03/uat-test-cases.yaml"
+      ]
+    },
+    "generator": "one-shot delta scripts and this envelope script held in the session scratchpad; not part of the build"
+  }
+}

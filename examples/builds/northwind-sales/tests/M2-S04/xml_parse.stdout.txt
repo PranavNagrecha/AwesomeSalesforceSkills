@@ -1,0 +1,3 @@
+OK	artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml	
+OK	artefacts/M2-S04/package.xml	
+TOTAL: 2

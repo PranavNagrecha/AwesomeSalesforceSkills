@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DashboardFolder xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- M4-S02. Q25: shared to the Enterprise Managers public group with View; reps get no access (A31).
+         Shape from skills/admin/reports-and-dashboards/references/metadata-examples.md section 4.
+         The dashboard in this folder runs as a SpecifiedUser, so this folder share is the only thing
+         limiting who sees the running user's data (deploy-order.md section 6). -->
+    <accessType>Shared</accessType>
+    <name>Enterprise Sales</name>
+    <folderShares>
+        <accessLevel>View</accessLevel>
+        <sharedTo>Enterprise_Managers</sharedTo>
+        <sharedToType>Group</sharedToType>
+    </folderShares>
+</DashboardFolder>

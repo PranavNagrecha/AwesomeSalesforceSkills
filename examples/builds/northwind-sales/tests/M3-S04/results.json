@@ -1,0 +1,71 @@
+{
+  "step_id": "M3-S04",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given Q35, when __tests__/discountApprovalPanel.test.js is read, then four cases stub the getRecord wire and assert the button's disabled property: true at a discount of 20, false at 25 with no approval status, true at 25 with Approval_Status__c Pending, and true at 25 with Approved - so the rule the requester described is pinned in both directions rather than only on the happy path. [expected: ticked at the M3 milestone gate]",
+    "Given D8 and assumption A35, when discountApprovalPanel.js-meta.xml is read, then discountThreshold is a design attribute with default 20 and a description naming the Opportunity_Discount_Requires_Approval validation rule, supportedFormFactors are Large and Small only, and the component targets lightning__RecordPage scoped to the Opportunity object. [expected: ticked at the M3 milestone gate]"
+  ],
+  "manual_shape_check": {
+    "skill": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+    "note": "Both manual lines carry an explicit Given, When and Then naming an observable outcome, so neither is reported as unusable. Both were spot-checked against the artefacts as due diligence (not part of the pass/fail contract, since manual tests are never ticked by this agent): manual line 2 matches discountApprovalPanel.js-meta.xml exactly (default=20, description names Opportunity_Discount_Requires_Approval, supportedFormFactors Large+Small only, targets lightning__RecordPage, objects Opportunity). Manual line 1's four named assertions are all verbatim present in the 'the Submit button state (Q35)' describe block (disabled@20, enabled@25/null, disabled@25/Pending, disabled@25/Approved) - but that describe block actually holds 7 button-state cases, not 4 (it also covers Rejected re-opening the button, the pre-wire-emit closed state, and the discountThreshold design-attribute-as-string case). The line's claim of 'four cases' undercounts the file; the four it names are correct and present, so the line is not reported as unusable, but a human ticking it at the gate should read the whole describe block, not just the four named cases. See summary.md and Process Observations."
+  },
+  "no_jest_test_declared": {
+    "note": "No acceptance_tests[] entry in plan.json for M3-S04 declares a command that runs Jest (sfdx-lwc-jest / npm test / node --experimental-vm-modules jest). The two 'manual' entries ask a human to READ the test file's content, not execute it. So step-tester's rule for 'if a declared test is a Jest run, record it as not runnable' does not trigger here - there is no such declared test to refuse. Verified independently: no package.json, node_modules or sfdx-lwc-jest anywhere from this repo root up to /Users/pranavnagrecha, and `npx --no-install sfdx-lwc-jest --version` fails with 'could not determine executable to run'. Running Jest here would require installing sfdx-lwc-jest, which is out of scope and forbidden regardless."
+  },
+  "manifest": {
+    "status": "skipped-not-applicable",
+    "reason": "Step type is ui, owner is lwc-builder. Standards/build-orchestration.md section 5's manifest rule literally carves out only the apex-builder-owned automation step; it does not name an lwc-builder ui step. This step's own acceptance_tests[2] (type manifest) reasons by direct analogy to that carve-out via section 4's borrowed-agent condition 2: agents/lwc-builder/AGENT.md's Output Contract names bundle files, an optional controller/test, a data-strategy note, an exposure matrix and a coverage summary - no package.xml - so lwc-builder cannot declare one, and the LightningComponentBundle member is deferred to M4-S04's build-level manifest, exactly as the Apex exception defers ApexClass/ApexTrigger members. Per operator instruction, this is treated the same way the M3-S03 tester treated the (literal) Apex exception: skipped-not-applicable, naming M4-S04. Literal note: a package.xml DOES exist under a depends_on step's artefacts (M1-S01's, four types: StandardValueSet, BusinessProcess, RecordType, CustomField - no LightningComponentBundle member and no reason it should have one), so a strict run of the file-to-manifest direction against that file would report the bundle's derived LightningComponentBundle member as uncovered and fail. This agent did not run that direction, per the instruction and the M3-S03 precedent; see Process Observations for the discrepancy between this treatment and this step's literal step type.",
+    "names_step": "M4-S04",
+    "step_declares_package_xml_in_outputs": false,
+    "package_xml_found_via_depends_on": "artefacts/M1-S01/package.xml (types: StandardValueSet, BusinessProcess, RecordType, CustomField - no LightningComponentBundle member)"
+  },
+  "check_outputs": {
+    "ok": true,
+    "step": "M3-S04",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "artefact_hashes": {
+    "artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.html": "0f91db2e7946d40701ec8d689b41ac3cde81429f510ec5cba69455d6cdaea542",
+    "artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js": "3938383d5adc48de10c3d38af17f7109e825cfe01a218d355884be1078c45ba5",
+    "artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml": "e870c8d87f8eecf3cc1391a2f78d27d86da3bb8384bf34c7757d8399bfd322d6",
+    "artefacts/M3-S04/lwc/discountApprovalPanel/__tests__/discountApprovalPanel.test.js": "bbbdd6d6b353204468616496940b25fc48cb136a4258ff47ae1ce35616128a4e"
+  },
+  "results": [
+    {
+      "name": "xml",
+      "type": "xml",
+      "runner": "python3 -c (ElementTree.parse over artefacts/M3-S04/**/*.xml, *-meta.xml)",
+      "exit_code": null,
+      "verdict": "pass - 1 of 1 *-meta.xml files parsed"
+    },
+    {
+      "name": "manifest",
+      "type": "manifest",
+      "runner": "n/a - treated as skipped-not-applicable by analogy to the Apex exception, per operator instruction and M3-S03 precedent",
+      "exit_code": null,
+      "verdict": "skipped-not-applicable - names M4-S04"
+    },
+    {
+      "name": "skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py",
+      "type": "checker",
+      "runner": "python3 skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py --manifest-dir artefacts/M3-S04",
+      "exit_code": 0,
+      "verdict": "pass - 1 bundle(s), 0 loose template(s) scanned - 0 ERROR, 0 WARN"
+    },
+    {
+      "name": "check-outputs",
+      "type": "precondition",
+      "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/northwind-sales/plan.json M3-S04",
+      "exit_code": 0,
+      "verdict": "pass - ok:true, missing/empty/malformed all empty"
+    }
+  ]
+}

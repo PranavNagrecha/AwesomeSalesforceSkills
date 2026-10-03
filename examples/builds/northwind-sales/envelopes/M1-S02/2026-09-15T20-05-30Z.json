@@ -1,0 +1,199 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-15T20-05-30Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T20-05-30Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T20-05-30Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S02"
+  },
+  "summary": "Ran the molecular tests for M1-S02 (ui, scale project). Both always-on checks passed: 3 XML files under artefacts/M1-S02/ all parsed, and the two-way manifest check is consistent (both Layout members named in package.xml, each backed by a file). The step's one declared checker test, skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts (scope: build, run verbatim from the build directory), exited 0 with 2 INFO-severity findings ('marks no field behavior=Required' on each layout) — non-blocking without --strict, and check-outputs confirmed all four declared outputs present, non-empty and well-formed. Both declared manual tests (A26 relatedLists retrieve instruction; A25 layout field set plus mock_deploy discovery) passed the Given/When/Then usability check and are deferred to the M1 milestone gate, never ticked here. passed=true; status set to tested.",
+  "confidence": "HIGH",
+  "outcome": "completed",
+  "confidence_rationale": "Step 7 override, HIGH row: every declared test ran (one checker) or was correctly classified as manual (two), both always-on checks (xml, manifest) completed, and every result came from an exit code this agent observed directly (checker exit 0, check-outputs exit 0). No command-type test was refused, no manifest exclusion was needed, and check-outputs reported no missing/empty/malformed output.",
+  "dimensions_compared": [
+    "xml",
+    "manifest",
+    "checker:check_record_type_layouts.py",
+    "check-outputs"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "manual-acceptance-tests",
+      "state": "not-run",
+      "reason": "manual tests are never runnable by step-tester by design (standards/build-orchestration.md § 5 and agents/step-tester/AGENT.md Step 4) — they are ticked by a human at the M1 milestone gate, not executed here.",
+      "confidence_impact": "NONE",
+      "retry_hint": "n/a — carry both lines to the M1 milestone gate via skipped_manual[] in tests/M1-S02/results.json."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The declared build-scoped checker test reproduced, exit code and finding-for-finding, the same run metadata-builder recorded in this step's own build envelope for the identical command.",
+      "domain": "test-reproducibility",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M1-S02/checker_check_record_type_layouts.stdout.txt (cross-checked against .sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T19-58-38Z.json extensions.checker_results[0])"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "plan.json's own acceptance_tests[0].description for this checker narrates an earlier fixture run printing '0 finding(s) detected'; the actual shipped artefacts print 2 INFO findings under the same file counts, so the description's illustrative output no longer matches what a reader would see running the command today.",
+      "domain": "plan-documentation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json step M1-S02 acceptance_tests[0].description, compared against tests/M1-S02/checker_check_record_type_layouts.stdout.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "No ambiguity beyond what deploy-order.md already tracks: assumptions A25 (Opportunity's platform-required layout field set is unverified) and A26 (the Opportunity Products related-list name must come from a retrieve) remain open until a real org dry-run, and both are correctly carried as manual tests rather than resolved here.",
+      "domain": "open-assumptions",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M1-S02/deploy-order.md §0 and §3"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Step M1-S02 is now tested; the next stage in the loop compiles its documentation.",
+      "domain": "workflow",
+      "evidence": {
+        "source": "input",
+        "path": "standards/build-orchestration.md § 4 step status machine"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because tested is the precondition for the docs stage that folds M1-S02 into the workbook, traceability matrix and deploy-order compilation."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The stale '0 finding(s)' example inside acceptance_tests[0].description is a plan-authoring detail, not an artefact defect.",
+      "domain": "plan-documentation-drift",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json step M1-S02 acceptance_tests[0].description"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "because build-planner owns plan.json's step authoring and is the one that would refresh a stale fixture example in a test description."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the ban on org writes and on auto-chaining into the doc keeper"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, and the confidence rubric this agent's Step 7 overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and the atomic-write rule for the markdown/JSON envelope pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirmed no refusal condition applied (step status was built, no ambiguous or missing input)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4 step status machine and metadata-type manifest-fails-not-skips rule; § 5 acceptance-test types/runners/pass-conditions, checker-scope rule (literal command governs over declared scope), and the deploy deny-list"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "shape of acceptance_tests[] and outputs[] read from plan.json for this step"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar (one <types> block per type, <members>/<name>, wildcard semantics) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "source-format filename-to-member mapping that turns Opportunity-Opportunity Enterprise Layout.layout-meta.xml into the Layout member package.xml must name"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirmed Layout is not a type the Metadata API represents without a standalone file, so no manifest exclusion applied in either direction"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "checked both declared manual tests against the Given/When/Then shape before carrying them into skipped_manual[]; both name an observable outcome"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what a manual test line must state to be tickable by a human at the milestone gate rather than re-interpreted"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "the skill owning the declared checker script; read --help to confirm --manifest-dir/--strict semantics before running the command verbatim"
+    },
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "this agent's own playbook — Steps 1-8, output contract, refusal rules"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M1-S02/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c (xml.etree.ElementTree)",
+        "exit_code": null,
+        "verdict": "pass - 3/3 files parsed"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "step-tester two-way consistency check",
+        "exit_code": null,
+        "verdict": "pass - consistent"
+      },
+      {
+        "name": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "verdict": "pass - exit 0 and check-outputs ok"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given assumption A26, when artefacts/M1-S02/deploy-order.md is read, then it names the exact sf project retrieve start --metadata \"Layout:Opportunity-Opportunity Layout\" command, says to copy the Opportunity Products relatedLists block verbatim from what the retrieve emits, and states that hand-authoring the related-list name is what the instruction exists to prevent.",
+      "Given assumption A25, when both layout files are read, then each carries Name, AccountId, StageName, CloseDate and Amount, plus Discount__c editable and Approval_Status__c read-only, and deploy-order.md records that the platform's layout-required set for Opportunity is unverified and is discovered by iterating scripts/mock_deploy.py --dry-run, one field per run."
+    ],
+    "tests_run": 3
+  }
+}

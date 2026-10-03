@@ -1,0 +1,122 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T17-51-08Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S04/2026-09-19T17-51-08Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S04/2026-09-19T17-51-08Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S04",
+    "step_status_at_start": "built"
+  },
+  "summary": "Ran M3-S04's molecular tests from the build directory. XML: 1 of 1 *-meta.xml file (discountApprovalPanel.js-meta.xml) parsed. Manifest: skipped-not-applicable, naming M4-S04 as the step that carries the LightningComponentBundle member - this step is lwc-builder/ui, not the apex-builder/automation case build-orchestration.md Section 5 literally names, so this is a documented extension by analogy (per operator instruction and the M3-S03 tester's precedent), not a literal instance of the Apex exception; see Process Observations. The one declared checker, check_lwc_base_component_recipes.py --manifest-dir artefacts/M3-S04, ran verbatim from the build directory and exited 0 ('1 bundle(s), 0 loose template(s) scanned - 0 ERROR, 0 WARN'), reproducing lwc-builder's own reported result exactly. check-outputs confirmed ok:true and artefact_hashes were recorded for all 4 declared outputs. No command-type acceptance test is declared, and in particular no declared test runs Jest - confirmed by reading plan.json's acceptance_tests[] directly, all 5 entries are checker/xml/manifest/manual/manual. Independently verified Jest could not run here regardless: no package.json, node_modules or sfdx-lwc-jest anywhere from the repo root up to /Users/pranavnagrecha, and `npx --no-install sfdx-lwc-jest --version` fails ('could not determine executable to run'). node --check was not run and was not substituted as a parse check, since LWC modules use decorators and ESM that node --check cannot evaluate. Two manual acceptance tests are deferred to the M3 milestone gate, never ticked here; both are Given/When/Then-shaped with an observable outcome, so neither is unusable. Both were spot-checked against the artefacts as due diligence: manual line 2 (discountThreshold default 20, description naming Opportunity_Discount_Requires_Approval, supportedFormFactors Large+Small, target lightning__RecordPage scoped to Opportunity) matches discountApprovalPanel.js-meta.xml exactly. Manual line 1's four named button-disabled assertions (20-null-disabled, 25-null-enabled, 25-Pending-disabled, 25-Approved-disabled) are all verbatim present in the test file, but the same describe block actually holds 7 button-state cases, not 4 - the line's count undercounts the file, though the four it names are correct. results.json passed:true (failed[] empty), so the step was moved built -> tested via set-status.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual (Step 7 HIGH row): both always-on checks completed, the one declared checker's exit code was observed directly by this agent, check-outputs reported ok:true with no missing/empty/malformed outputs, and no command-type test was declared to be refused. None of the three literal Step 7 MEDIUM triggers fired: no command test was refused, no metadata-api-coverage-gaps exclusion was applied, and check-outputs was clean. The manifest disposition rests on an analogy the plan's own acceptance_tests[2].description pre-committed to at authoring time and that the operator's instruction and the M3-S03 tester's precedent both confirm, rather than on an incomplete artifact - kept HIGH on that basis, with the literal-text gap flagged under Process Observations rather than folded silently into the pass.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml-wellformedness",
+    "manifest-consistency",
+    "declared-checkers",
+    "check-outputs-precondition",
+    "manual-test-shape",
+    "jest-runnability"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "manual-acceptance-execution",
+      "state": "not-run",
+      "reason": "Manual tests are ticked by a human at the milestone gate, never by this agent (AGENT.md Step 4, manual row). Both lines were shape-checked and spot-verified against the artefacts as due diligence only.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "jest-suite-execution",
+      "state": "not-run",
+      "reason": "No acceptance_tests[] entry declares a Jest run, so nothing was refused - there is no declared test in this category to run or refuse. Independently confirmed the environment could not run one anyway: no package.json / node_modules / sfdx-lwc-jest at or above the repo root.",
+      "confidence_impact": "NONE"
+    },
+    {
+      "dimension": "cited-but-undeclared-checkers (lwc/wire-service-patterns, lwc/lwc-jest-testing-with-accessibility, apex/invocable-methods)",
+      "state": "not-run",
+      "reason": "Cited in the step's skills[] but not declared as acceptance_tests[] entries (flagged by set-status's own preflight WARNs and already noted in lwc-builder's own envelope). Per AGENT.md the tester runs only what the plan declares plus the always-on xml/manifest checks - it does not invent a test for an undeclared but skill-cited checker. Not run this pass; no instruction was given in this invocation to run them for evidence-only, unlike M3-S03's apex-security-patterns treatment.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "findings": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "check_lwc_base_component_recipes.py reproduced lwc-builder's own reported exit code and summary exactly when re-run independently from the build directory ('1 bundle(s), 0 loose template(s) scanned - 0 ERROR, 0 WARN', exit 0), and lwc-builder had already proven the checker live against two deliberately broken scratch copies per its own envelope.",
+      "domain": "checker-coverage",
+      "evidence": {"source": "repo_scan", "path": "tests/M3-S04/checker1_lwc_base_component_recipes.txt"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Manual line 2 (discountThreshold design attribute, supportedFormFactors, target/object scoping) matches discountApprovalPanel.js-meta.xml exactly on every claim checked: default 20, description names Opportunity_Discount_Requires_Approval, Large+Small only, lightning__RecordPage scoped to Opportunity.",
+      "domain": "manual-test-quality",
+      "evidence": {"source": "repo_scan", "path": "artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "observation": "standards/build-orchestration.md Section 5's manifest carve-out ('The Apex exception') literally names only an apex-builder-owned automation step; M3-S04 is lwc-builder/ui, so the always-on manifest rule's plain text would have this step's type-based fail branch apply once a package.xml is confirmed absent from its own artefacts. A package.xml DOES exist under a depends_on step (M1-S01's), which if read literally under AGENT.md Step 3 rule 1 would mean the check does not even reach the type-fail branch - it would instead run file-to-manifest against M1-S01's package.xml (StandardValueSet, BusinessProcess, RecordType, CustomField members only) and fail on the bundle's derived LightningComponentBundle member having no covering entry. Neither literal path was taken; per operator instruction, this step's manifest check was treated identically to M3-S03's Apex exception - skipped-not-applicable, naming M4-S04 - matching this step's own acceptance_tests[2].description, which pre-committed to that reading at plan-authoring time by direct analogy to Section 4's borrowed-agent condition 2 (lwc-builder's Output Contract names no package.xml, so it cannot declare one). Recommend formalizing a second named carve-out in Section 5 - a 'borrowed-agent output-contract exception' generalizing the Apex one to any step whose owning agent's Output Contract produces no manifest - so a future tester does not need an operator instruction or a prior-step precedent to resolve the same gap on M3-S05 or any other non-Apex, no-manifest step type.",
+      "domain": "spec-clarity",
+      "evidence": {"source": "repo_scan", "path": "standards/build-orchestration.md (Section 5, 'The Apex exception'); agents/step-tester/AGENT.md (Step 3); .sfskills/builds/northwind-sales/artefacts/M1-S01/package.xml; plan.json steps[M3-S04].acceptance_tests[2]"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Manual line 1 claims 'four cases stub the getRecord wire and assert the button's disabled property'; the four named states (20/null, 25/null, 25/Pending, 25/Approved) are all verbatim present, but the 'Submit button state (Q35)' describe block actually holds 7 such cases (also Rejected-reopens-the-button, the pre-wire-emit closed state, and the discountThreshold string-coercion case). The line under-counts the file; not reported as unusable since its own four claims are correct, but a human ticking it at the gate should read the whole describe block rather than stop at four.",
+      "domain": "manual-test-quality",
+      "evidence": {"source": "repo_scan", "path": "artefacts/M3-S04/lwc/discountApprovalPanel/__tests__/discountApprovalPanel.test.js (describe 'the Submit button state (Q35)')"}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "set-status's own preflight printed pre-existing WARNs across the plan for undeclared-checker skill citations, three of which are on this step (lwc/wire-service-patterns, lwc/lwc-jest-testing-with-accessibility, apex/invocable-methods) - outside this run's scope to fix and not introduced by it, but visible in this run's own tool output and already flagged once before, in lwc-builder's own build envelope.",
+      "domain": "plan-hygiene",
+      "evidence": {"source": "repo_scan", "path": "scripts/build_plan.py set-status output, this run"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M3-S04 is now tested; the per-step documentation pass has not run yet.",
+      "domain": "build-workflow",
+      "evidence": {"source": "input", "path": ".sfskills/builds/northwind-sales/plan.json steps[M3-S04].status"},
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because a tested step's PLAN.md row, decisions.md entry and traceability row are build-doc-keeper's to write next, per build-orchestration.md Section 1 stage 4."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "run-time rules binding this invocation, including the ban on org writes and auto-chaining"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "8-section shape, Process Observations schema, confidence rubric this agent overrides"},
+    {"type": "standard", "id": "agents/_shared/DELIVERABLE_CONTRACT.md", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence, atomic-write rule for the report/envelope pair"},
+    {"type": "standard", "id": "agents/_shared/REFUSAL_CODES.md", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "refusal enum; not invoked this run since no refusal condition was hit"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "Section 4 step-type table and borrowed-agent condition 2, Section 5 acceptance-test types/runners/pass-conditions and the Apex exception this step's manifest treatment is analogized from"},
+    {"type": "standard", "id": "agents/_shared/schemas/build-plan.schema.json", "path": "agents/_shared/schemas/build-plan.schema.json", "used_for": "shape of acceptance_tests[] and outputs[] read from plan.json"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "package.xml grammar the manifest check would be judged against, had one applied"},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "source-format filename-to-metadata-type mapping used to confirm the bundle derives a LightningComponentBundle member with no covering entry in M1-S01's package.xml"},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "component types with no standalone file/manifest member, checked and found not to apply to this step's LWC bundle files"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "Given/When/Then shape check applied to both of this step's manual acceptance tests, and the basis for the manual-line-1 undercount observation"}
+  ],
+  "extensions": {
+    "step_id": "M3-S04",
+    "results_path": "tests/M3-S04/results.json",
+    "results": [
+      {"name": "xml", "type": "xml", "runner": "ElementTree parse over artefacts/M3-S04/**/*-meta.xml", "exit_code": null, "verdict": "pass - 1 of 1 parsed"},
+      {"name": "manifest", "type": "manifest", "runner": "n/a - treated as skipped-not-applicable by analogy to the Apex exception, per operator instruction and M3-S03 precedent", "exit_code": null, "verdict": "skipped-not-applicable, names M4-S04"},
+      {"name": "skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py", "type": "checker", "runner": "python3 skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py --manifest-dir artefacts/M3-S04", "exit_code": 0, "verdict": "pass"}
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q35, when __tests__/discountApprovalPanel.test.js is read, then four cases stub the getRecord wire and assert the button's disabled property: true at a discount of 20, false at 25 with no approval status, true at 25 with Approval_Status__c Pending, and true at 25 with Approved. [expected: ticked at the M3 milestone gate]",
+      "Given D8 and assumption A35, when discountApprovalPanel.js-meta.xml is read, then discountThreshold is a design attribute with default 20 and a description naming the Opportunity_Discount_Requires_Approval validation rule, supportedFormFactors are Large and Small only, and the component targets lightning__RecordPage scoped to the Opportunity object. [expected: ticked at the M3 milestone gate]"
+    ],
+    "tests_run": 3
+  },
+  "followups": [
+    {"agent": "build-doc-keeper", "because": "the step is now tested and its PLAN.md row, decisions.md entry and traceability row have not been written yet"}
+  ]
+}

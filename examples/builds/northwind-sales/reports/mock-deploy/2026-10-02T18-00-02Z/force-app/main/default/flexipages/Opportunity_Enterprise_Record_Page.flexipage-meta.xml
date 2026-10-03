@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Opportunity_Enterprise_Record_Page.flexipage-meta.xml - build northwind-sales, step M3-S05.
+
+  Structure copied from skills/admin/path-and-guidance/references/metadata-examples.md
+  section 4 (the guide's own FlexiPage sample, api_meta.txt L67766-67779, template at
+  L67993-67996): subheader region holding runtime_sales_pathassistant:pathAssistant with
+  hideUpdateButton and variant, main region holding force:detailPanel, then masterLabel,
+  sobjectType, template, type.
+
+  Extended with <identifier> on every componentInstance, which that fence omits and which
+  skills/admin/lightning-record-page-configuration/references/gotchas.md Gotcha 5 records as
+  REQUIRED from API 53.0, max 120 characters. The identifier naming convention
+  (componentName with ':' replaced by '_') is the one used throughout
+  skills/admin/lightning-record-page-configuration/references/examples.md
+  (force_highlightsPanel) and SKILL.md (flexipage_tabset).
+
+  Element order is alphabetical, as in both source fences: description, flexiPageRegions,
+  masterLabel, sobjectType, template, type; and inside a componentInstance,
+  componentInstanceProperties, componentName, identifier.
+
+  NOT included, deliberately:
+  - <parentFlexiPage> and <mode>. examples.md Example 1 carries both; the path-and-guidance
+    fence carries neither. <mode> selects how a region merges with the region of the same
+    name on the parent page, so it is meaningless without a <parentFlexiPage>, and inheriting
+    flexipage__default_rec_L would pull the platform default page's regions into a page whose
+    three regions the plan states exactly. Recorded in the envelope decision record.
+  - Any <visibilityRule>. Only the Enterprise record type reaches this page (see
+    deploy-order.md section 3), so no component needs a record-type filter.
+-->
+<FlexiPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Enterprise Opportunity record page: the stage Path with its per-stage checklist, the record detail, and the discount/approval panel. Built by northwind-sales step M3-S05 for requirement item 4.</description>
+
+    <!--
+      Subheader. The Path component is runtime_sales_pathassistant:pathAssistant - not
+      flexipage:path, not lightning:path - and it belongs in the region named subheader,
+      which only a template providing one supplies (metadata-examples.md section 4).
+      hideUpdateButton false keeps the stage-advance button that drives the celebration
+      animation; variant linear is the value in the guide's sample.
+
+      The path record this renders is Enterprise_Opportunity_Path, built by M2-S05. The
+      FlexiPage names no path: the component resolves the active path for the record's
+      record type at run time, which is why M2-S05 and this step are two deploys that must
+      both land (M2-S05 deploy-order.md section 3, item 3).
+    -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>hideUpdateButton</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>variant</name>
+                    <value>linear</value>
+                </componentInstanceProperties>
+                <componentName>runtime_sales_pathassistant:pathAssistant</componentName>
+                <identifier>runtime_sales_pathassistant_pathAssistant</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>subheader</name>
+        <type>Region</type>
+    </flexiPageRegions>
+
+    <!-- Main. force:detailPanel, from the same fence. Not Dynamic Forms: no step in this
+         build declares fieldInstance placement, and converting the detail section to
+         fieldInstances is admin/dynamic-forms-migration's project, not this step's. -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>force:detailPanel</componentName>
+                <identifier>force_detailPanel</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>main</name>
+        <type>Region</type>
+    </flexiPageRegions>
+
+    <!--
+      Sidebar. The custom LWC built by M3-S04.
+
+      UNVERIFIED (2026-09-19): that flexipage:recordHomeWithSubheaderTemplateDesktop provides
+      a region named "sidebar". SKILL.md "Regions, Facets, and the 100-Component Cap" names
+      header / main / sidebar as the slots a template defines, and plan.json
+      steps[M3-S05].inputs.components.sidebar declares this placement, but neither cited skill
+      fences this template's region set, and a region name the template does not define is a
+      deploy-time failure the checker cannot see. Confirm against the org before deploy:
+      open the template in Lightning App Builder, or retrieve any page already built on it
+      and read its <flexiPageRegions><name> values. If the region is named something else,
+      only the <name> element below changes.
+
+      UNVERIFIED (2026-09-19): the c: namespace prefix on a custom LWC in a componentInstance.
+      It is documented in this library at
+      skills/admin/service-console-configuration/references/metadata-examples.md
+      (<componentName>c:consoleTelephonyListener</componentName>), which is not one of this
+      step's cited skills; none of the three cited skills fences a custom LWC on a page. The
+      bundle name comes from the upstream artefact - artefacts/M3-S04/lwc/discountApprovalPanel/
+      discountApprovalPanel.js-meta.xml, isExposed true, target lightning__RecordPage,
+      objects Opportunity - so only the prefix is unconfirmed here.
+
+      discountThreshold 20 is the design attribute that bundle declares
+      (type Integer, default 20). It is set explicitly rather than left to the default
+      because plan.json steps[M3-S05].acceptance_tests[4] requires the page to carry it, and
+      because the same number is expressed as 0.20 in the Opportunity_Discount_Requires_Approval
+      validation rule and the Discount_Approval approval process (plan decision D8, assumption
+      A35): an explicit value on the page is what makes the three copies visible together.
+    -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>discountThreshold</name>
+                    <value>20</value>
+                </componentInstanceProperties>
+                <componentName>c:discountApprovalPanel</componentName>
+                <identifier>c_discountApprovalPanel</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>sidebar</name>
+        <type>Region</type>
+    </flexiPageRegions>
+
+    <masterLabel>Opportunity Enterprise Record Page</masterLabel>
+    <sobjectType>Opportunity</sobjectType>
+    <template>
+        <name>flexipage:recordHomeWithSubheaderTemplateDesktop</name>
+    </template>
+    <type>RecordPage</type>
+</FlexiPage>

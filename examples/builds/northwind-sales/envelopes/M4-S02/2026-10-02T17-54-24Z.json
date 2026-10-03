@@ -1,0 +1,166 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-10-02T17-54-24Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S02/2026-10-02T17-54-24Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S02/2026-10-02T17-54-24Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S02",
+    "step_status_at_start": "built"
+  },
+  "summary": "Ran M4-S02's tests from the build directory. xml: 7 files parsed, 0 failures. manifest: consistent in both directions (Group, ReportType, Report folder+report, Dashboard folder+dashboard; folders are bare members under Report/Dashboard per the case-onboarding M5-S01 precedent). Declared checker check_report_inventory.py ran verbatim, exit 0, 6 findings (5 RPT-COL-01 INFO on provisional column codes, by design; 1 MEDIUM SpecifiedUser with no runningUser, A29); test prose predicts 7 and six, live run gives 6 and five, recorded as drift, not rewritten. check-outputs ok:true with hashes. Three manual tests deferred to the M4 gate, all G/W/T shaped, spot-checked against the artefacts but not ticked. results.json passed:true.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Step 7 HIGH row: every declared test ran or was classified manual, both always-on checks completed, and every result came from an exit code observed directly. check-outputs reported no missing, empty or malformed output. The checker's INFO/MEDIUM findings are documented expected state, not an incomplete artefact.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manual-test-quality",
+      "observation": "All three manual lines are Given/When/Then with observable outcomes and every claim is present in the artefacts (two Shared folders with a single View share to Enterprise_Managers, SpecifiedUser with no runningUser, no product column with the rejected join explained).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S02"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "test-prose-drift",
+      "observation": "Test description predicts seven findings and six RPT-COL-01 lines; the live run gives six and five because grouping fields are skipped and a record-type filter (Opportunity$RecordTypeId) was added. The declared expected (exit 0) holds; the prose in plan.json is stale and was not rewritten.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M4-S02].acceptance_tests[0]"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "deploy-readiness",
+      "observation": "Passing does not discharge A28/A29: the five RPT-COL-01 codes stay UNVERIFIED until M4-S01's retrieve harvest and the dashboard has no runningUser, so a deploy would substitute the deploying user's name. Both are recorded pre-deploy prerequisites in deploy-order.md (B1, B2).",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S02/deploy-order.md section 0"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "manifest-grammar",
+      "observation": "Group and Dashboard folder members listed under Report and Dashboard (not ReportFolder/DashboardFolder) is what the test description and the case-onboarding precedent do; judged consistent. The coverage-gaps skill documents no folder-type nuance, so no exclusion was applied.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S02/package.xml"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-workflow",
+      "observation": "M4-S02 is tested; the per-step documentation pass has not run.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M4-S02].status"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because a tested step's PLAN.md row, decisions.md entry and traceability row are build-doc-keeper's to write next."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations, confidence"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "sections 4 and 5: ui step row, checker/manifest rules, check-outputs"
+    },
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "playbook"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar for the manifest check"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "filename to metadata type mapping"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "coverage-gap exclusions (none applied)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "shape check of the three manual lines"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding M5-S01 package.xml",
+      "path": "examples/builds/case-onboarding/artefacts/M5-S01/package.xml",
+      "used_for": "Report folder member precedent"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S02",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M4-S02/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "always-on manifest check",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M4-S02",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "check-outputs",
+        "type": "precondition",
+        "runner": "scripts/build_plan.py check-outputs --hashes",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q25 and assumption A32, when the two folder files are read, then each is accessType Shared with a single folderShares entry granting View to the Enterprise_Managers group, and artefacts/M4-S02/deploy-order.md states that the group ships with no members and that the sales-ops admin adds the two managers and the VP in Setup - because Group metadata carries no membership. Approving this gate is approving who can read deal amounts and discounts. [expected: ticked at the M4 milestone gate]",
+      "Given Q24, assumption A29 and decision D7, when the dashboard file is read, then dashboardType is SpecifiedUser, no runningUser element is present, and deploy-order.md names setting runningUser to the VP's username as a mandatory pre-deploy step, stating that the platform otherwise substitutes the deploying user's and that a SpecifiedUser dashboard shows every viewer the running user's data regardless of their own security settings. [expected: ticked at the M4 milestone gate]",
+      "Given Q23 and M2-S04's block, when the report file is read, then it carries no product-count column and deploy-order.md records why - the same line-item count M2-S04 is blocked on - and states that a join to Opportunity Product was rejected because it returns one row per line item and would double-count Amount. [expected: ticked at the M4 milestone gate]"
+    ],
+    "tests_run": 3
+  }
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Approval request sent by the Opportunity discount approval process itself (its emailTemplate element, M3-S02) to the assigned approver - the opportunity owner's manager. Not driven by a workflow alert, so it has no sender of its own: the approval engine sends it.</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Discount Approval Request</name>
+    <style>none</style>
+    <subject>Discount approval needed: {!Opportunity.Name} at {!Opportunity.Discount__c}</subject>
+    <type>text</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

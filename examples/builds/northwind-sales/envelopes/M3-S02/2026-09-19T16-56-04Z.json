@@ -1,0 +1,140 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-19T16-56-04Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-56-04Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S02/2026-09-19T16-56-04Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales",
+    "step_id": "M3-S02",
+    "builder_envelope": "envelopes/M3-S02/2026-09-19T16-46-52Z.json",
+    "results": "tests/M3-S02/results.json"
+  },
+  "summary": "Documented M3-S02 by the operator-run renderer: 0 workbook rows in 06-automation.md, REQ-021 minted, 0 open items carried from the builder's envelope to decisions.md, operator D- entries appended. Set M3-S02 tested -> documented.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every row carries a real source_req_id, a recommended_agent and a stated verification step, and REQ-020 joins artefact to test result. Held to MEDIUM because the sender question was never asked on this build (the builder's own question-coverage gap) and the pass was operator-run rather than agent-run, on the same evidence the agent would have used.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "decisions-appended",
+    "workbook-rows-written",
+    "traceability-rows-written",
+    "idempotence-keys"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "",
+      "observation": "Renderer pass for M3-S02: deterministic rows from the builder envelope and results.json; the operator supplied only the requirement sentence and any D- entries.",
+      "evidence": {
+        "source": "envelopes/M3-S01/2026-09-19T16-17-00Z.md; tests/M3-S01/results.json",
+        "path": "envelopes/M3-S02/2026-09-19T16-46-52Z.json"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "product decision: replace per-step doc-keeper runs with a renderer plus one model pass per milestone"
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the Plan this run followed: Step 1 precondition, Step 3 decisions, Step 4 workbook rows and the validation-step section-5 map entry, Step 5 deploy position, Step 6 verification step, Step 7 traceability, Step 8 idempotence, Step 9 set-status, Step 11 confidence, Step 12 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, Process Observations schema and requirement, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the envelope/report persistence pair and run_id conventions this run's own envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was tested, not out of scope or ambiguous)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json as sole shared state, rendered views, set-status as the only writer), section 4 (validation step type, status machine tested->documented), section 6 (this agent's role)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concepts 1-3: the ten canonical sections, the row schema (row_id, target_value, owner, source_req_id, source_story_id, recommended_agent, recommended_skills, status, notes) and the validation-step routing to Section 5"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set (req_id, source, requirement, step_id, artefact, agent, decision_ref, test_id, test_type, status) traceability.md already follows, and the REQ-XXX id convention for minting REQ-019"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape (date, decision, alternative rejected, source grounded in) applied to D-M2S04-01 and D-M2S04-02"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "recording the step's one outstanding manual test as acceptance evidence in traceability.md rather than as narrated prose"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirming the manual test quoted from tests/M2-S04/results.json is already in Given/When/Then shape before carrying it verbatim into the traceability row, current wording"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S04",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/decisions.md",
+      ".sfskills/builds/northwind-sales/workbook/05-validation-rules.md",
+      ".sfskills/builds/northwind-sales/workbook/99-other-configuration.md",
+      ".sfskills/builds/northwind-sales/traceability.md"
+    ],
+    "workbook_rows": [
+      "CWB-VR-002",
+      "CWB-OTHER-011",
+      "CWB-OTHER-012"
+    ],
+    "traceability_rows": [
+      "REQ-019"
+    ],
+    "decisions_appended": [
+      "D-M2S04-01",
+      "D-M2S04-02",
+      "O-M2S04-01",
+      "O-M2S04-02",
+      "O-M2S04-03",
+      "O-M2S04-04",
+      "O-M2S04-05",
+      "O-M2S04-06"
+    ],
+    "rows_replaced": [],
+    "checker_runs": {
+      "check_workbook.py --workbook workbook/05-validation-rules.md --allow-empty-section": "exit 1 (9 x 'Missing canonical section' — expected for a per-step slice; 0 row-level findings)",
+      "check_workbook.py --workbook workbook/99-other-configuration.md --allow-empty-section": "exit 1 (10 x 'Missing canonical section' — expected for a per-step slice; 0 row-level findings)",
+      "check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../..": "exit 1, unchanged in kind from before this step's row — the sole ERROR is the pre-existing REQ-010 coverage gap; 27 WARNs, all pre-existing id-shape/source-shape conventions (this row's own Q<n>-list and D<n>-list cells among them); 0 orphans, resolving the pre-existing REVIEW orphan on this rule's ValidationRule artefact"
+    }
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the next step in the chain, once built"
+    }
+  ]
+}

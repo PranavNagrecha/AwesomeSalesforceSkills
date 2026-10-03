@@ -1,0 +1,5 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 2 manifest or metadata file(s); 0 finding(s) detected."
+}

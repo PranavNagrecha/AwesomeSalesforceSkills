@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sorted>false</sorted>
+    <standardValue>
+        <fullName>Qualify</fullName>
+        <label>Qualify</label>
+        <default>false</default>
+        <isActive>true</isActive>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>10</probability>
+        <closed>false</closed>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Discover</fullName>
+        <label>Discover</label>
+        <default>false</default>
+        <isActive>true</isActive>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>25</probability>
+        <closed>false</closed>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Propose</fullName>
+        <label>Propose</label>
+        <default>false</default>
+        <isActive>true</isActive>
+        <forecastCategory>BestCase</forecastCategory>
+        <probability>50</probability>
+        <closed>false</closed>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Negotiate</fullName>
+        <label>Negotiate</label>
+        <default>false</default>
+        <isActive>true</isActive>
+        <forecastCategory>Forecast</forecastCategory>
+        <probability>75</probability>
+        <closed>false</closed>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Renewal Review</fullName>
+        <label>Renewal Review</label>
+        <default>false</default>
+        <isActive>true</isActive>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>60</probability>
+        <closed>false</closed>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Renewal Proposed</fullName>
+        <label>Renewal Proposed</label>
+        <default>false</default>
+        <isActive>true</isActive>
+        <forecastCategory>Forecast</forecastCategory>
+        <probability>85</probability>
+        <closed>false</closed>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Closed Won</fullName>
+        <label>Closed Won</label>
+        <default>false</default>
+        <isActive>true</isActive>
+        <forecastCategory>Closed</forecastCategory>
+        <probability>100</probability>
+        <closed>true</closed>
+        <won>true</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Closed Lost</fullName>
+        <label>Closed Lost</label>
+        <default>false</default>
+        <isActive>true</isActive>
+        <forecastCategory>Omitted</forecastCategory>
+        <probability>0</probability>
+        <closed>true</closed>
+        <won>false</won>
+    </standardValue>
+</StandardValueSet>

@@ -1,0 +1,210 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T15-22-09Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T15-22-09Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T15-22-09Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S02",
+    "mode": "REPAIR pass on a documented step, not a fresh build",
+    "trigger_1": "reports/MOCK-DEPLOY-M2.md run 1 (2026-09-19T14:56:10Z) refused Profile Sales User with N3-F-05: no default recordTypeVisibility named for Opportunity",
+    "trigger_2": "requester decision at this repair to close HIGH open item O-M2S02-01 (no file granted FLS on Opportunity.Discount__c / Opportunity.Approval_Status__c)"
+  },
+  "summary": "Repair pass on documented step M2-S02 (access: Enterprise_Sales_Record_Types permission set + Sales User profile overlay). Two fixes: (1) removed both recordTypeVisibilities blocks from the Sales User profile overlay because the org's validate-only run (N3-F-05) refused a block that names two visible record types with no default, and naming a default would move the SMB team's default in violation of Q4 — visibility now rests solely on the permission set, which carries no default field; (2) added two fieldPermissions blocks to Enterprise_Sales_Record_Types (Discount__c readable/editable, Approval_Status__c readable-only) closing HIGH open item O-M2S02-01 by requester decision, without touching Q19's existing Sales Cloud permission set or adding any objectPermissions. All three declared checkers exited 0 on the first pass with only pre-adjudicated advisories (RTL-MERGE-01 REVIEW, PSVP-FLS-02 WARN); PSVP-FLS-01 stayed silent as required. check-outputs is ok. Step moved documented -> running -> built. A library gap (no cited skill or checker states that a profile's stated recordTypeVisibilities block must name a default or mark every type invisible) is recorded as PSVP-RT-DEFAULT-01 and left to the library, not fixed here.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "check-outputs is ok, all four declared outputs still exist and nothing else was written, and all three cited checkers exited 0 on the first pass, which would clear the HIGH bar on its own. Held to MEDIUM because one of the two fixes (dropping the profile's recordTypeVisibilities block entirely) is grounded only partly in a cited skill (permission-sets-vs-profiles' overlay-silence rule, and record-types-and-page-layouts' fact that PermissionSet recordTypeVisibilities carries no default field) and partly in the org's own validate-only error message (N3-F-05) rather than in an explicit, cited rule that a *stated* profile record-type block must name a default or mark every entry invisible — no cited skill or checker states that rule, which is exactly the gap recorded as PSVP-RT-DEFAULT-01. Per agents/metadata-builder/AGENT.md Step 10, an element inventory this thin on one specific platform rule keeps the run out of HIGH even though every checker passed first-try.",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Both repairs passed all three declared checkers on the first run with zero repair passes, and check-outputs returned ok on the first try, so the fixes did not require iterating against a checker's findings.",
+      "domain": "checker-pass",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/",
+        "query": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts; python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts; python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The org enforced a platform rule at validate-only time (a profile's stated recordTypeVisibilities block for an object must name a default or mark every listed type invisible) that no cited skill or checker states, so a build resting only on this library's checkers would have shipped a profile block the org refuses at deploy.",
+      "domain": "library-gap",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M2.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "Whether the Sales User profile should eventually carry its own recordTypeVisibilities block for Opportunity (with the org's real default record type retrieved and merged in), or rely solely on the permission set for visibility long-term, is a production decision this repair defers to the deployer per deploy-order.md § 6.1 rather than resolving inside this build.",
+      "domain": "access-model",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/deploy-order.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "This step just moved to built and needs its molecular tests re-run against the two changed files before it can reach tested.",
+      "domain": "process",
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "the two changed artefacts (profile overlay, permission set) need tests/M2-S02/results.json refreshed against their new content before doc-keeper re-documents.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Once step-tester re-tests this step, decisions.md's O-M2S02-01 needs marking closed and traceability.md's REQ-013/REQ-014 need re-marking against the new FLS grant.",
+      "domain": "process",
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "decisions.md, traceability.md and the workbook are build-doc-keeper's alone; this repair pass did not touch them per its own scope instruction.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/decisions.md"
+      }
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the playbook this repair followed end to end (Steps 1, 2, 5, 8, 9, 10, 11)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "envelope section shape, Process Observations requirement, Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence and atomic-write rule for the envelope pair"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal code applied to this repair (no missing input, no ambiguity that blocked a required element)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 3 documented->running re-run edge and step:M2-S02 gate precondition; § 4 step-type/status-machine table; § 5 checker scope and check-outputs gating; § 8 set-status as the sole plan-state writer"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-set-architecture",
+      "path": "skills/admin/permission-set-architecture/SKILL.md",
+      "used_for": "fieldPermissions element shape (references/metadata-examples.md lines 36-50: editable/field/readable) grounding the two new blocks in Enterprise_Sales_Record_Types; its checker re-run to confirm PSVP-FLS-01 stayed silent"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "confirming a PermissionSet recordTypeVisibilities element carries no default field at all, which grounds why the permission set alone cannot move anyone's default record type; its checker re-run"
+    },
+    {
+      "type": "skill",
+      "id": "admin/permission-sets-vs-profiles",
+      "path": "skills/admin/permission-sets-vs-profiles/SKILL.md",
+      "used_for": "the overlay-silence rule (a deploy silent about a permission leaves the org's existing value) grounding the decision to drop the profile's recordTypeVisibilities block entirely rather than name a default; its check_access_model.py checker"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "the two changed artefacts need tests/M2-S02/results.json refreshed before this step can reach tested"
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "decisions.md O-M2S02-01 and traceability.md REQ-013/REQ-014 need re-marking once the step is re-tested"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "repair": true,
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M2-S02/profiles/Sales User.profile-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S02/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M2-S02/deploy-order.md"
+    ],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Does the Sales User profile overlay state recordTypeVisibilities for Opportunity.Enterprise / Opportunity.Renewal after the org refused the two-visible-no-default block (N3-F-05)?",
+        "answer": "No. Both recordTypeVisibilities blocks are removed; the file now carries only its two layoutAssignments blocks, byte-identical to the pre-repair version.",
+        "source": "org validate-only finding (reports/MOCK-DEPLOY-M2.md run 1, N3-F-05) interpreted against skills/admin/permission-sets-vs-profiles (overlay silence) and skills/admin/record-types-and-page-layouts (PermissionSet recordTypeVisibilities has no default field)",
+        "element_determined": "Profile: no recordTypeVisibilities element for Opportunity"
+      },
+      {
+        "question": "Does Enterprise_Sales_Record_Types grant field-level security on Opportunity.Discount__c and Opportunity.Approval_Status__c?",
+        "answer": "Yes: Discount__c readable=true/editable=true; Approval_Status__c readable=true/editable=false (read-only to the persona; M3-S02's approval process is the writer).",
+        "source": "requester decision at this repair, closing HIGH open item O-M2S02-01 (decisions.md lines 677-699); element shape from skills/admin/permission-set-architecture/references/metadata-examples.md lines 36-50",
+        "element_determined": "PermissionSet: two fieldPermissions blocks"
+      },
+      {
+        "question": "Does the permission set's description still accurately state its scope after the FLS grant is added?",
+        "answer": "No, the pre-repair description said \"No object, field, tab or system permissions\" — revised to \"Record-type visibility for the Enterprise and Renewal Opportunity record types, plus FLS on Discount__c and Approval_Status__c. No object, tab or system permissions. Owner: Sales Operations lead.\" (195 characters, under the 200-character ceiling this repair's instructions set).",
+        "source": "task instruction for this repair pass (description must stay under 200 characters if it names its scope)",
+        "element_determined": "PermissionSet: description"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output_summary": "No issues found. PSVP-FLS-01 (object CRUD with zero field permissions) did not fire, as expected — Enterprise_Sales_Record_Types still declares no objectPermissions element."
+      },
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output_summary": "Scanned 9 metadata file(s): 2 record type(s), 2 layout(s); 1 finding(s) detected: REVIEW RTL-MERGE-01 (the two M1-S02 layouts are identical after normalisation). Pre-existing, already adjudicated at the M1 gate as O-M1S02-03; unaffected by this repair."
+      },
+      {
+        "command": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output_summary": "1 finding(s): WARN PSVP-FLS-02 on the Sales User profile overlay (zero objectPermissions/fieldPermissions and no PermissionSetGroup in the scanned tree). Pre-existing, already adjudicated as O-M2S02-02; the profile overlay is unchanged in this dimension (it still carries no field/object permissions — the FLS grant landed on the permission set, not the profile)."
+      }
+    ],
+    "xml_parse": {
+      "checked": [
+        "artefacts/M2-S02/package.xml",
+        "artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml",
+        "artefacts/M2-S02/profiles/Sales User.profile-meta.xml"
+      ],
+      "all_parsed": true
+    },
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "set_status_path": "standalone invocation (this agent set status itself, per AGENT.md Step 9's 'invoked directly rather than by build-step-runner' clause)",
+    "status_transitions": [
+      "documented -> running (2026-09-19T15:19:25Z, --run-agent metadata-builder)",
+      "built (pending, to be written immediately after this envelope is validated)"
+    ],
+    "library_gap_recorded": {
+      "id": "PSVP-RT-DEFAULT-01",
+      "statement": "No cited skill or checker states that a profile's stated recordTypeVisibilities block for an object must name exactly one default=true entry or mark every listed type invisible. The org enforced this rule at validate-only time (N3-F-05); the library did not.",
+      "action_taken": "recorded only, per this repair's explicit instruction not to fix the library from inside a build"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+WARN: row 2 (REQ-001): source 'Q5, Q6, Q21' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 3 (REQ-002): source 'Q5, Q6, Q21' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 3 (REQ-002): decision_ref 'D2; D-M1S01-05' is not the build-plan shape D<n>
+WARN: row 4 (REQ-003): source 'Q5, Q6, Q21' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 4 (REQ-003): decision_ref 'D2; D-M1S01-05' is not the build-plan shape D<n>
+WARN: row 9 (REQ-008): source 'Q20, Q14, Q22, D2' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 9 (REQ-008): decision_ref 'D-M1S02-01; D-M1S02-02; D-M1S02-04; D-M1S02-06; D-M1S02-07' is not the build-plan shape D<n>
+WARN: row 10 (REQ-009): source 'Q20, Q14, Q22, D2' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 10 (REQ-009): decision_ref 'D-M1S02-01; D-M1S02-02; D-M1S02-04; D-M1S02-06; D-M1S02-07' is not the build-plan shape D<n>
+WARN: row 11 (REQ-010): source 'Q14 (`requirement.md` item 2)' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 11 (REQ-010): decision_ref 'D-M1S02-03' is not the build-plan shape D<n>
+WARN: row 11 (REQ-010): artefact 'none — deliberately absent from both layouts' has no metadata type — write <MetadataType>:<ApiName>
+WARN: row 11 (REQ-010): artefact 'none — deliberately absent from both layouts' not found under the manifest dir — check the fullName, or mark the row 'setup-only:' if the Metadata API cannot carry it
+WARN: row 12 (REQ-011): source 'Q13, Q17' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 13 (REQ-012): source 'Q13, Q19' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 14 (REQ-013): source 'Q4, Q9, Q14, Q19, Q20' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 14 (REQ-013): decision_ref 'D2; D-M2S02-03' is not the build-plan shape D<n>
+WARN: row 15 (REQ-014): source 'Q4, Q9, Q19, Q20, D2' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 15 (REQ-014): decision_ref 'D2; D-M2S02-02' is not the build-plan shape D<n>
+WARN: row 16 (REQ-015): source 'Q12, Q13, Q15, Q16, Q17, Q22' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 16 (REQ-015): decision_ref 'D3; D8; D-M2S03-01' is not the build-plan shape D<n>
+WARN: row 17 (REQ-016): source 'Q2, Q11, Q21, Q46, Q49' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 18 (REQ-017): source 'Q2, Q11, Q21, Q46, Q49' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 19 (REQ-018): source 'Q46, Q49' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 20 (REQ-019): source 'Q11, Q13, Q15, Q16, Q42' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 20 (REQ-019): decision_ref 'D3; D-M2S04-01; D-M2S04-02' is not the build-plan shape D<n>
+WARN: row 21 (REQ-020): source 'Q33, A27' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 21 (REQ-020): decision_ref 'D-M3S01-01' is not the build-plan shape D<n>
+WARN: row 22 (REQ-021): source 'Q33, Q58-Q61 (open, A19-A22), D4, D9' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 22 (REQ-021): decision_ref 'see decisions.md D-M3S02-*' is not the build-plan shape D<n>
+WARN: row 23 (REQ-022): source 'Q33, D4, D6, D9' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 23 (REQ-022): decision_ref 'see decisions.md D-M3S03-*' is not the build-plan shape D<n>
+WARN: row 24 (REQ-023): source 'Q30, Q35, D5, A35' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 24 (REQ-023): decision_ref 'see decisions.md D-M3S04-*' is not the build-plan shape D<n>
+WARN: row 25 (REQ-024): source 'Q50, Q51 (open, A15/A17), A38, D5' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 25 (REQ-024): decision_ref 'see decisions.md D-M3S05-*' is not the build-plan shape D<n>
+WARN: row 26 (REQ-025): source 'Q54, Q57 (A40, A43), A28' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 26 (REQ-025): decision_ref 'see decisions.md D-M4S01-*' is not the build-plan shape D<n>
+WARN: row 27 (REQ-026): source 'Q23, Q24, Q25, A29, A32, A40–A43, D7' looks like a clarification id but is not the build-plan shape Q<n> (plan.json clarifications[].id)
+WARN: row 27 (REQ-026): decision_ref 'see decisions.md D-M4S02-*' is not the build-plan shape D<n>
+WARN: row 28 (REQ-027): decision_ref 'see decisions.md D-M4S03-*' is not the build-plan shape D<n>
+WARN: row 29 (REQ-028): decision_ref 'see decisions.md D-M4S04-*' is not the build-plan shape D<n>

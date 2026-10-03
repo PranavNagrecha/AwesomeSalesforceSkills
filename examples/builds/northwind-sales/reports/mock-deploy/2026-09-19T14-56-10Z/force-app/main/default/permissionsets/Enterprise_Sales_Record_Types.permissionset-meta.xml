@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Enterprise Sales Record Types</label>
+    <description>Record-type visibility only, for the Enterprise and Renewal Opportunity record types. No object, field, tab or system permissions. Owner: Sales Operations lead.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <recordTypeVisibilities>
+        <recordType>Opportunity.Enterprise</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <recordType>Opportunity.Renewal</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+</PermissionSet>

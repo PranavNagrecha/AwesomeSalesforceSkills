@@ -1,0 +1,1428 @@
+{
+ "agent": "plan-verifier",
+ "mode": "single",
+ "run_id": "2026-09-12T21-40-00Z",
+ "report_path": ".sfskills/builds/northwind-sales/envelopes/verification/2026-09-12T21-40-00Z.md",
+ "envelope_path": ".sfskills/builds/northwind-sales/envelopes/verification/2026-09-12T21-40-00Z.json",
+ "summary": "Verified plan v1 of build northwind-sales (scale: project, build_mode: design-only, 4 milestones / 16 steps) on all three lenses. Executability passed 16/16. Grounding failed on M3-S02, M4-S01 and M4-S02. Testability failed on M2-S04 and M3-S04. Five blockers, ten warnings, thirteen cross-step checks of which one failed. All 19 declared checkers exist and run in their declared form, and every empty-directory and non-existent-directory claim the plan makes about them was reproduced by probe. One prose-only amendment was applied to M4-S03. Status set to plan-rejected; G2 is not offered.",
+ "confidence": "HIGH",
+ "confidence_rationale": "All three lenses ran on every one of the 16 steps. Every verdict carries evidence naming the file read or the command run and its output. No refutation rests on a file being absent: PV-B02 rests on quoted text that contradicts the decision, PV-B04/PV-B05 on a reproducible regex scan of assumptions[].because, and PV-B01/PV-B03 on the declared acceptance_tests[] type lists themselves. build_plan.py validate ran before and after the write with identical output.",
+ "outcome": "completed",
+ "findings": [
+  {
+   "id": "PV-B01",
+   "severity": "P0",
+   "title": "M2-S04 refuted on the testability lens",
+   "detail": "[testability lens] Step type is `validation` — one of the seven metadata types — and acceptance_tests[] carries neither an `xml` test nor a `manifest` test. It declares artefacts/M2-S04/package.xml in outputs[] but nothing in the plan asserts the manifest or the XML parse.  FIX: Add an `xml` test and a `manifest` test, in the shape M2-S03 already uses. Practical impact is low — section 5 runs both checks always-on whether declared or not — but the step's declared test surface is what a reader of plan.json and PLAN.md sees, and at unblock time this one is incomplete.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "acceptance_tests[] types = ['checker','manual']; standards/build-orchestration.md section 5 'The always-on `manifest` check fails — it does not skip — when the step's type is a metadata type ... and no package.xml exists'"
+   }
+  },
+  {
+   "id": "PV-B02",
+   "severity": "P0",
+   "title": "M3-S02 refuted on the grounding lens",
+   "detail": "[grounding lens] Decision D9 ships the approval process `active true` on the stated authority of admin/approval-process-apex-patterns gotcha 14, and records the two approval skills as contradicting each other on deploying inactive. Neither claim holds. Gotcha 14 is titled 'a null `processDefinitionNameOrId` routes by org process order, which deploys don't carry' and says nothing about a named process requiring State Active — its subject is the opposite case. And the skill D9 names as governing says, in its own words, the opposite of D9's conclusion: 'The approval process is deployed <active>true</active> here because it is a fixture. A production process should deploy inactive and be activated after its workflow actions and templates exist.' So the two skills do not disagree; both say deploy inactive for production.  FIX: Re-ground D9. The real tension is intra-skill — that skill's prose (deploy inactive) against its own checker rule at check_approval_process_apex_patterns.py:376-386 (HIGH on <active>false</active> while Apex in the tree names the process), and its actual support for the Active requirement is metadata-examples.md:49-52 ('an inactive process is invisible to a submission that names it') plus templates/approval-process-apex-patterns-template.md:30. Either (a) ship active false, move activation into the cutover runbook beside A34, and correct M3-S03's checker test `expected`, which the plan's own fixture proves exits 1 at active false; or (b) keep active true, cite the two sources that do support it, and record the overridden production guidance as an accepted risk carrying the process-order prerequisite.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "skills/admin/approval-process-apex-patterns/references/gotchas.md:368-402 (gotcha 14, full text read); skills/admin/approval-process-apex-patterns/references/metadata-examples.md:515-517; skills/admin/approval-processes/references/metadata-examples.md:30 '<!-- Deploy inactive; activate only after the workflow actions and the'"
+   }
+  },
+  {
+   "id": "PV-B03",
+   "severity": "P0",
+   "title": "M3-S04 refuted on the testability lens",
+   "detail": "[testability lens] Step type is `ui` — a metadata type — and acceptance_tests[] carries no `xml` test, while the step emits discountApprovalPanel.js-meta.xml, a *-meta.xml file whose parse is exactly what that test asserts.  FIX: Add the one-line `xml` test the other fifteen steps carry. As with M2-S04, section 5 runs the check always-on regardless, so the build is not broken — what is missing is the declaration a reader of plan.json sees.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "acceptance_tests[] types = ['checker','manifest','manual','manual']; outputs[] includes artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml"
+   }
+  },
+  {
+   "id": "PV-B04",
+   "severity": "P0",
+   "title": "M4-S01 refuted on the grounding lens",
+   "detail": "[grounding lens] Two clarifications (Q54, Q57; four across this step and M4-S02) the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.  FIX: Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M4-S01 acceptance_tests[] / inputs{}"
+   }
+  },
+  {
+   "id": "PV-B05",
+   "severity": "P0",
+   "title": "M4-S02 refuted on the grounding lens",
+   "detail": "[grounding lens] Four clarifications the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.  FIX: Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M4-S02 acceptance_tests[] / inputs{}"
+   }
+  },
+  {
+   "id": "PV-W01",
+   "severity": "P2",
+   "title": "M2-S04: The four recorded searches cover skills/, templates/ and standards/ bu",
+   "detail": "[grounding lens] The four recorded searches cover skills/, templates/ and standards/ but not knowledge/, which CLAUDE.md lists as a corpus surface. knowledge/imports/salesforce-channel-revenue-management.md:4696 carries 'The Opportunity HasOpportunityLineItem field is set to true when an OpportunityLineItem is inserted for that Opportunity.'  FIX: Add knowledge/ to the searched_for record. It does not lift the block — the import establishes the field's semantics, not its availability in validation-rule formula context — but the block's evidence is one surface short of what it claims.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M2-S04"
+   }
+  },
+  {
+   "id": "PV-W02",
+   "severity": "P2",
+   "title": "M2-S04: The single checker test's `expected` is 'exit 0 once unblocked' — a co",
+   "detail": "[testability lens] The single checker test's `expected` is 'exit 0 once unblocked' — a conditional, not a pass condition the tester can evaluate. Probed: the identical command exits 0 against the current empty artefacts/ tree.  FIX: State the pass condition unconditionally and let the step's `blocked` status carry the conditionality, as it already does.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M2-S04"
+   }
+  },
+  {
+   "id": "PV-W03",
+   "severity": "P1",
+   "title": "M3-S02: No test on this step asserts that the two WorkflowAlerts carry a non-e",
+   "detail": "[grounding lens] No test on this step asserts that the two WorkflowAlerts carry a non-empty recipient set. The cited skill names that as a silent failure: 'A .workflow file whose alert carries a template, a description and a senderType but an empty recipient set deploys successfully, appears in Setup, is selectable from Flow — and delivers nothing. There is no runtime error.' Neither declared checker reads it: check_approval_design.py resolves workflow actions by name only, and check_email_templates.py greps 0 hits for 'recipient' and is declared at --manifest-dir artefacts/M3-S01, which never sees this step's workflow file.  FIX: Add one `manual` line asserting each alert names the opportunity owner as a recipient, in the shape M3-S01's manual tests already use.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M3-S02"
+   }
+  },
+  {
+   "id": "PV-W04",
+   "severity": "P2",
+   "title": "M4-S01: This is a `custom`-type step that emits no metadata at all — only arte",
+   "detail": "[executability lens] This is a `custom`-type step that emits no metadata at all — only artefacts/M4-S01/deploy-order.md. metadata-builder's 'What This Agent Does' is written around emitting -meta.xml files with a package.xml fragment and a deploy-order note; here only the third survives.  FIX: Legal — section 4's `custom` row admits any roster agent with requires_org: false, and deploy-order.md is deliverable 7 of metadata-builder's Output Contract and is named again under its build-scoped outputs. Worth one line in the step note saying the agent is being used for the note alone.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M4-S01"
+   }
+  },
+  {
+   "id": "PV-W05",
+   "severity": "P1",
+   "title": "M3-S03: templates/apex/tests/TestDataFactory.cls-meta.xml pins <apiVersion>67.",
+   "detail": "[grounding lens] templates/apex/tests/TestDataFactory.cls-meta.xml pins <apiVersion>67.0</apiVersion> while the step declares api_version 62.0 for its four authored classes. Section 4's Apex row note requires the template to ship 'as a verbatim copy (with its meta XML)', so a verbatim ship puts a 67.0 class beside four 62.0 ones. The step's manual test pins only the .cls diff, so the mismatch is undetected.  FIX: Say in the step note which version the shipped meta XML carries, and extend the manual test to cover it. This also matters for the read idiom: AGENT_CONTRACT's Apex security table makes WITH USER_MODE correct at 62.0 and default user mode the 67.0 behaviour.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M3-S03"
+   }
+  },
+  {
+   "id": "PV-W06",
+   "severity": "P1",
+   "title": "M3-S03: agents/apex-builder/AGENT.md Output Contract deliverable 2 says a ship",
+   "detail": "[executability lens] agents/apex-builder/AGENT.md Output Contract deliverable 2 says a shipped template class's 'provenance is recorded in deploy-order.md'. This step declares no deploy-order.md in outputs[], so check-outputs never confirms the file the agent's own contract names.  FIX: Declare artefacts/M3-S03/deploy-order.md, or note that the provenance claim is carried by the step's own manual test plus M4-S04's runbook.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M3-S03"
+   }
+  },
+  {
+   "id": "PV-W07",
+   "severity": "P1",
+   "title": "M3-S03: inputs.process_definition_name is not a key apex-builder's Inputs tabl",
+   "detail": "[executability lens] inputs.process_definition_name is not a key apex-builder's Inputs table defines. It supplies rather than withholds — the exact developer name 'Discount_Approval' that check_approval_process_apex_patterns.py resolves — so this is noted rather than counted as a defect.  FIX: None required. If apex-builder is next revised, a process-name input would make the mapping explicit.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M3-S03"
+   }
+  },
+  {
+   "id": "PV-W08",
+   "severity": "P1",
+   "title": "M3-S05: inputs.answers lists Q51, which is status: open. A17's because names Q",
+   "detail": "[grounding lens] inputs.answers lists Q51, which is status: open. A17's because names Q51, but A17's steps[] is ['M3-S04','M4-S03'] and omits M3-S05 — the second half of the deferred-question row. Weaker than the M4-S01/M4-S02 case because a row does exist and its substance (supportedFormFactors) genuinely constrains M3-S04.  FIX: Add M3-S05 to A17.steps[].",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M3-S05"
+   }
+  },
+  {
+   "id": "PV-W09",
+   "severity": "P2",
+   "title": "M3: The M3 milestone's second manual test requires a reviewer to confirm s",
+   "detail": "[testability lens] The M3 milestone's second manual test requires a reviewer to confirm scripts/mock_deploy.py has been run for M3 and its summary.md attached to the gate. mock_deploy.py requires --org-alias, and this build is build_mode design-only with no `org` key in plan.json, so no alias is on file. Recorded as a warning rather than a refutation because section 5 makes the dry run the layer's own sanctioned human validation and its summary.md the evidence a gate rests on.  FIX: Say in the test, or in M4-S04's runbook, that the human supplies the alias at that point.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M3"
+   }
+  },
+  {
+   "id": "PV-W10",
+   "severity": "P2",
+   "title": "M4-S03: FIXED THIS RUN by amend-step --prose-only. The manual test at index 4 ",
+   "detail": "[testability lens] FIXED THIS RUN by amend-step --prose-only. The manual test at index 4 read 'the six rows carrying risk high'; plan.assumptions[] carries exactly three (A24, A28, A29), and those three are the same three pre-deploy prerequisites the sentence goes on to name. A gate-tickable test cannot state a count the plan contradicts.  FIX: Applied: description now reads 'the three rows carrying risk high - which are exactly the three pre-deploy prerequisites: A24 the OpportunityStage union, A28 the report column codes and A29 the dashboard runningUser'. Structural fields (type/command/expected/scope) unchanged at every index; array length unchanged at 6.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "step M4-S03"
+   }
+  },
+  {
+   "id": "PV-I01",
+   "severity": "INFO",
+   "title": "M2-S04's skill-gap block is upheld, and the platform answer is known",
+   "detail": "The block is correct as a LIBRARY gap: grep -rn HasOpportunityLineItem skills/ templates/ standards/ returns exactly one hit (admin/pipeline-review-design/references/gotchas.md:91, report-column filterability, silent on formula context), and search_knowledge.py reproduces the planner's recorded result. No skill documents how a validation rule counts child rows. The platform answer is nonetheless known: Opportunity carries a standard read-only Boolean HasOpportunityLineItem, and the repo's own corpus states its semantics at knowledge/imports/salesforce-channel-revenue-management.md:4696 — 'The Opportunity HasOpportunityLineItem field is set to true when an OpportunityLineItem is inserted for that Opportunity.' A rule of the shape AND(ISPICKVAL(StageName,'Propose'), NOT(HasOpportunityLineItem)) is the standard mechanism. This verifier does not author that claim: the import establishes the field's existence and when it is set, not its availability in validation-rule formula context, and turning recall into a grounded claim is what the block exists to prevent. AMEND PATH: deepen skills/admin/validation-rules or skills/admin/products-and-pricebooks with the documented line-item-count mechanism and its official source, then `build_plan.py amend-step <plan> M2-S04 --file <inputs>` — M2-S04 is `blocked`, which amend-step's step-status precondition admits — adding the errorConditionFormula to inputs{} and the xml + manifest tests PV-B01 names, and `set-status M2-S04 pending`.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "knowledge/imports/salesforce-channel-revenue-management.md",
+    "detail": "line 4696"
+   }
+  }
+ ],
+ "deliverables": [
+  {
+   "kind": "json",
+   "title": "set-verification body",
+   "target_path": ".sfskills/builds/northwind-sales/inputs/verification/verification.json",
+   "content": "{\"status\": \"plan-rejected\", \"verified_at\": \"2026-09-12T21:40:00Z\", \"by\": \"plan-verifier 1.0.0\", \"plan_version\": 1, \"scale\": \"project\", \"build_mode\": \"design-only\", \"lenses\": [{\"lens\": \"executability\", \"verdict\": \"pass\", \"notes\": \"16/16 steps. Every named agent resolves, is class: runtime, is non-deprecated and declares requires_org: false, so all four are eligible in a design-only plan. Every step type sits in a section 4 row with its owner in the design-only column. Ordering, output collisions and one-unit-of-work all clean.\"}, {\"lens\": \"grounding\", \"verdict\": \"fail\", \"notes\": \"13/16 pass. M3-S02 refuted (D9 cites a gotcha that says something else, and the skill it names as governing says the opposite for a production deploy). M4-S01 and M4-S02 refuted (four open clarifications recorded as answers with no assumptions[] row). All 28 skill ids, 5 template paths and the one decision tree resolve; both branch quotes matched verbatim after glyph normalisation; all 10 decisions carry a tree branch or a source_reference that resolves.\"}, {\"lens\": \"testability\", \"verdict\": \"fail\", \"notes\": \"14/16 pass. M2-S04 refuted (validation step with no xml and no manifest test). M3-S04 refuted (ui step emitting a *-meta.xml with no xml test). Every checker exists and runs in its declared form; every empty-directory and non-existent-directory claim in the plan's own descriptions was reproduced; no manual test defers its tick to a later milestone.\"}], \"steps\": [{\"step_id\": \"M1-S01\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M1-S01\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M1-S01\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M1-S01\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M1-S02\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M1-S02\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M1-S02\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M1-S02\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M2-S01\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M2-S01\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M2-S01\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M2-S01\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M2-S02\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M2-S02\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M2-S02\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M2-S02\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M2-S03\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M2-S03\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M2-S03\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M2-S03\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M2-S04\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M2-S04\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/metadata-builder/AGENT.md 'What This Agent Does' -> 'a step needing an element neither carries ends `blocked` with `skill-gap`, never with a plausible guess' — the block is the contracted exit, not an ownership defect\", \"depends_on M1-S01, M2-S01 both exist and sit in earlier-or-same milestones; no step depends_on M2-S04\"]}, {\"step_id\": \"M2-S04\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [{\"problem\": \"The four recorded searches cover skills/, templates/ and standards/ but not knowledge/, which CLAUDE.md lists as a corpus surface. knowledge/imports/salesforce-channel-revenue-management.md:4696 carries 'The Opportunity HasOpportunityLineItem field is set to true when an OpportunityLineItem is inserted for that Opportunity.'\", \"fix\": \"Add knowledge/ to the searched_for record. It does not lift the block — the import establishes the field's semantics, not its availability in validation-rule formula context — but the block's evidence is one surface short of what it claims.\"}], \"evidence\": [\"grep -rn HasOpportunityLineItem skills/ templates/ standards/ -> exactly one hit, skills/admin/pipeline-review-design/references/gotchas.md:91, which calls the field filterable for a report column and says nothing about formula context. The step's recorded search is reproducible and accurate.\", \"python3 scripts/search_knowledge.py 'validation rule require at least one opportunity product before stage' -> admin/sales-process-mapping (1.505), admin/validation-rules (1.232), data/opportunity-pipeline-migration (0.763); top chunks are a stage-mapping checker and the CloseDate rule, exactly as the step records\", \"BLOCK UPHELD: no skill documents a validation-rule mechanism for counting child rows.\"]}, {\"step_id\": \"M2-S04\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"Step type is `validation` — one of the seven metadata types — and acceptance_tests[] carries neither an `xml` test nor a `manifest` test. It declares artefacts/M2-S04/package.xml in outputs[] but nothing in the plan asserts the manifest or the XML parse.\", \"evidence\": \"acceptance_tests[] types = ['checker','manual']; standards/build-orchestration.md section 5 'The always-on `manifest` check fails — it does not skip — when the step's type is a metadata type ... and no package.xml exists'\", \"fix\": \"Add an `xml` test and a `manifest` test, in the shape M2-S03 already uses. Practical impact is low — section 5 runs both checks always-on whether declared or not — but the step's declared test surface is what a reader of plan.json and PLAN.md sees, and at unblock time this one is incomplete.\"}], \"warnings\": [{\"problem\": \"The single checker test's `expected` is 'exit 0 once unblocked' — a conditional, not a pass condition the tester can evaluate. Probed: the identical command exits 0 against the current empty artefacts/ tree.\", \"fix\": \"State the pass condition unconditionally and let the step's `blocked` status carry the conditionality, as it already does.\"}], \"evidence\": [\"python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts (run from the build directory, artefacts/ empty) -> exit 0, score 100\", \"acceptance_tests[] types = ['checker','manual']\"]}]}, {\"step_id\": \"M2-S05\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M2-S05\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M2-S05\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M2-S05\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M3-S01\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M3-S01\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M3-S01\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M3-S01\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M3-S02\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M3-S02\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\", \"depends_on M3-S01 (email templates) and M1-S01 (Approval_Status__c) — both the field updates' target and the alerts' templates are produced upstream\"]}, {\"step_id\": \"M3-S02\", \"lens\": \"grounding\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"Decision D9 ships the approval process `active true` on the stated authority of admin/approval-process-apex-patterns gotcha 14, and records the two approval skills as contradicting each other on deploying inactive. Neither claim holds. Gotcha 14 is titled 'a null `processDefinitionNameOrId` routes by org process order, which deploys don't carry' and says nothing about a named process requiring State Active — its subject is the opposite case. And the skill D9 names as governing says, in its own words, the opposite of D9's conclusion: 'The approval process is deployed <active>true</active> here because it is a fixture. A production process should deploy inactive and be activated after its workflow actions and templates exist.' So the two skills do not disagree; both say deploy inactive for production.\", \"evidence\": \"skills/admin/approval-process-apex-patterns/references/gotchas.md:368-402 (gotcha 14, full text read); skills/admin/approval-process-apex-patterns/references/metadata-examples.md:515-517; skills/admin/approval-processes/references/metadata-examples.md:30 '<!-- Deploy inactive; activate only after the workflow actions and the'\", \"fix\": \"Re-ground D9. The real tension is intra-skill — that skill's prose (deploy inactive) against its own checker rule at check_approval_process_apex_patterns.py:376-386 (HIGH on <active>false</active> while Apex in the tree names the process), and its actual support for the Active requirement is metadata-examples.md:49-52 ('an inactive process is invisible to a submission that names it') plus templates/approval-process-apex-patterns-template.md:30. Either (a) ship active false, move activation into the cutover runbook beside A34, and correct M3-S03's checker test `expected`, which the plan's own fixture proves exits 1 at active false; or (b) keep active true, cite the two sources that do support it, and record the overridden production guidance as an accepted risk carrying the process-order prerequisite.\"}], \"warnings\": [{\"problem\": \"No test on this step asserts that the two WorkflowAlerts carry a non-empty recipient set. The cited skill names that as a silent failure: 'A .workflow file whose alert carries a template, a description and a senderType but an empty recipient set deploys successfully, appears in Setup, is selectable from Flow — and delivers nothing. There is no runtime error.' Neither declared checker reads it: check_approval_design.py resolves workflow actions by name only, and check_email_templates.py greps 0 hits for 'recipient' and is declared at --manifest-dir artefacts/M3-S01, which never sees this step's workflow file.\", \"fix\": \"Add one `manual` line asserting each alert names the opportunity owner as a recipient, in the shape M3-S01's manual tests already use.\"}], \"evidence\": [\"grep -n -i 'recipient' skills/admin/approval-processes/scripts/check_approval_design.py -> no match\", \"grep -n -i 'recipient' skills/admin/email-templates-and-alerts/scripts/check_email_templates.py -> no match\", \"senderType CurrentUser is correctly grounded: skills/admin/email-templates-and-alerts/references/gotchas.md:94-110 'senderAddress may carry a value only when senderType is OrgWideEmailAddress' and an unverified address sends from the updating user — this is the F-28 prerequisite pattern from examples/builds/case-onboarding, correctly carried here as an optional deploy-order line\"]}, {\"step_id\": \"M3-S02\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 skills/admin/approval-processes/scripts/check_approval_design.py --manifest-dir artefacts artefacts -> parses, exit 1 on the empty tree (HIGH 'no approval-process metadata files found'), so the test can fail\", \"the two-argument-surface claim is verifiable in source: check_approval_design.py:366 appends root_dir/'approvalProcesses' for --manifest-dir (non-recursive) while :107 uses path.rglob for a positional path — the plan's explanation of why neither form alone works is correct\", \"scope 'build' agrees with --manifest-dir artefacts\"]}]}, {\"step_id\": \"M3-S03\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M3-S03\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M3-S03\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M3-S03\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M3-S04\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M3-S04\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"agents/lwc-builder/AGENT.md Inputs table -> component_name, feature_summary, binding_kind, data_shape, target_objects, public_api, a11y_tier, include_tests, emit_controller; the step's inputs{} supply exactly these\", \"agents/lwc-builder/AGENT.md Output Contract deliverable 2 'Bundle files' covers .html/.js/.js-meta.xml/__tests__/*.test.js and names no manifest — the step's claim that section 4 borrowed-agent condition 2 forbids declaring package.xml here is correct\", \"depends_on M3-S03, which declares classes/OpportunityApprovalController.cls — the @AuraEnabled entry point the bundle imports (emit_controller false is therefore right, not an omission)\"]}, {\"step_id\": \"M3-S04\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"D5 branch quote matched verbatim against standards/decision-trees/automation-selection.md after glyph normalisation (-> for ->, straight quotes, collapsed padding): Q8 'Can the action complete in under 10s without custom UI?' with the No leaf 'LWC calling imperative Apex (see templates/lwc/patterns/imperativeApexPattern.js)'\", \"templates/lwc/patterns/imperativeApexPattern.js and templates/lwc/component-skeleton/componentSkeleton.js-meta.xml both exist\", \"the manifest test correctly claims the section 5 depends_on-manifest clause (via M1-S01) rather than the Apex exception, which is apex-builder-only — a distinction the plan got right\"]}, {\"step_id\": \"M3-S04\", \"lens\": \"testability\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"Step type is `ui` — a metadata type — and acceptance_tests[] carries no `xml` test, while the step emits discountApprovalPanel.js-meta.xml, a *-meta.xml file whose parse is exactly what that test asserts.\", \"evidence\": \"acceptance_tests[] types = ['checker','manifest','manual','manual']; outputs[] includes artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml\", \"fix\": \"Add the one-line `xml` test the other fifteen steps carry. As with M2-S04, section 5 runs the check always-on regardless, so the build is not broken — what is missing is the declaration a reader of plan.json sees.\"}], \"warnings\": [], \"evidence\": [\"python3 skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py --manifest-dir artefacts/M3-S04 -> exit 1 'ERROR: --manifest-dir not found', so the checker test can fail; against an existing empty directory it exits 0 with a WARN, exactly as the description states\"]}]}, {\"step_id\": \"M3-S05\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M3-S05\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M3-S05\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M3-S05\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M4-S01\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M4-S01\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [{\"problem\": \"This is a `custom`-type step that emits no metadata at all — only artefacts/M4-S01/deploy-order.md. metadata-builder's 'What This Agent Does' is written around emitting -meta.xml files with a package.xml fragment and a deploy-order note; here only the third survives.\", \"fix\": \"Legal — section 4's `custom` row admits any roster agent with requires_org: false, and deploy-order.md is deliverable 7 of metadata-builder's Output Contract and is named again under its build-scoped outputs. Worth one line in the step note saying the agent is being used for the note alone.\"}], \"evidence\": [\"agents/metadata-builder/AGENT.md Output Contract deliverable 7 'Deploy-order note — reproduced in the report, with the validate-only command the human may run'; and 'the metadata, package.xml and deploy-order.md under <build_dir>/artefacts/<step-id>/'\"]}, {\"step_id\": \"M4-S01\", \"lens\": \"grounding\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"Two clarifications (Q54, Q57; four across this step and M4-S02) the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.\", \"fix\": \"Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist.\"}], \"warnings\": [], \"evidence\": [\"plan.clarifications: Q54 status=open kind=informational; Q57 status=open kind=informational\", \"M4-S01.inputs.answers = ['Q9','Q23','Q26','Q54','Q57'] — Q54 and Q57 are open\", \"regex scan of every assumptions[].because for \\\\bQ5[4-7]\\\\b -> no match on Q54, Q55, Q56 or Q57\", \"A28's because names Q26 (answered), not Q57\", \"agents/plan-verifier/AGENT.md Step 3 'Prose naming assumption ids is not the link: the traceability document is compiled from assumptions[].steps[]' — and M4-S03's own note says it compiles 'from assumptions[].steps[] rather than from step-note prose'\"]}, {\"step_id\": \"M4-S01\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"acceptance_tests[] = two `manual` tests, both stating they are tickable from artefacts/M4-S01/deploy-order.md alone ('no org and no later artefact is needed'); section 5 requires >= 1 test and a `custom` step declares its own surface\", \"neither manual test defers to a later milestone gate\"]}]}, {\"step_id\": \"M4-S02\", \"verdict\": \"refuted\", \"lenses\": [{\"step_id\": \"M4-S02\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\", \"human_gate true and the step:M4-S02 gate record is present and pending in human_gates[]\"]}, {\"step_id\": \"M4-S02\", \"lens\": \"grounding\", \"verdict\": \"refuted\", \"blockers\": [{\"problem\": \"Four clarifications the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.\", \"fix\": \"Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist.\"}], \"warnings\": [], \"evidence\": [\"M4-S02.inputs.answers = ['Q23','Q24','Q25','Q26','Q54','Q55','Q56','Q57','Q63'] — Q54, Q55, Q56, Q57 and Q63 are all status=open; Q63 alone is covered (A31.because names it)\", \"regex scan of every assumptions[].because for \\\\bQ5[4-7]\\\\b -> no match\", \"D7 branch quote matched verbatim against standards/decision-trees/sharing-selection.md Q2 after glyph normalisation — the sharing decision itself is correctly grounded\"]}, {\"step_id\": \"M4-S02\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M4-S02 -> exit 1 on the absent directory, so the test can fail; RPT-COL-01 exists at check_report_inventory.py:32 as an INFO rule, exactly as the description claims\", \"scope 'step' agrees with --manifest-dir artefacts/M4-S02\", \"three manual tests, all ticked at M4 (its own milestone), all readable from files this step writes\"]}]}, {\"step_id\": \"M4-S03\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M4-S03\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M4-S03\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M4-S03\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}, {\"step_id\": \"M4-S04\", \"verdict\": \"pass\", \"lenses\": [{\"step_id\": \"M4-S04\", \"lens\": \"executability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'\", \"agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false\", \"agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false\", \"output-path collision scan over all 16 steps' outputs[] -> 0 collisions\", \"depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04\"]}, {\"step_id\": \"M4-S04\", \"lens\": \"grounding\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)\", \"every templates[] path resolves (5 distinct paths checked)\", \"standards/decision-trees/automation-selection.md resolves\", \"every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)\"]}, {\"step_id\": \"M4-S04\", \"lens\": \"testability\", \"verdict\": \"pass\", \"blockers\": [], \"warnings\": [], \"evidence\": [\"every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)\", \"every declared command run verbatim from the build directory -> no usage error, no unrecognised flag\", \"declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)\", \"deny-list regex over every command string -> 0 hits\", \"no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)\"]}]}], \"blockers\": [{\"step\": \"M2-S04\", \"lens\": \"testability\", \"problem\": \"Step type is `validation` — one of the seven metadata types — and acceptance_tests[] carries neither an `xml` test nor a `manifest` test. It declares artefacts/M2-S04/package.xml in outputs[] but nothing in the plan asserts the manifest or the XML parse.\", \"evidence\": \"acceptance_tests[] types = ['checker','manual']; standards/build-orchestration.md section 5 'The always-on `manifest` check fails — it does not skip — when the step's type is a metadata type ... and no package.xml exists'\", \"fix\": \"Add an `xml` test and a `manifest` test, in the shape M2-S03 already uses. Practical impact is low — section 5 runs both checks always-on whether declared or not — but the step's declared test surface is what a reader of plan.json and PLAN.md sees, and at unblock time this one is incomplete.\"}, {\"step\": \"M3-S02\", \"lens\": \"grounding\", \"problem\": \"Decision D9 ships the approval process `active true` on the stated authority of admin/approval-process-apex-patterns gotcha 14, and records the two approval skills as contradicting each other on deploying inactive. Neither claim holds. Gotcha 14 is titled 'a null `processDefinitionNameOrId` routes by org process order, which deploys don't carry' and says nothing about a named process requiring State Active — its subject is the opposite case. And the skill D9 names as governing says, in its own words, the opposite of D9's conclusion: 'The approval process is deployed <active>true</active> here because it is a fixture. A production process should deploy inactive and be activated after its workflow actions and templates exist.' So the two skills do not disagree; both say deploy inactive for production.\", \"evidence\": \"skills/admin/approval-process-apex-patterns/references/gotchas.md:368-402 (gotcha 14, full text read); skills/admin/approval-process-apex-patterns/references/metadata-examples.md:515-517; skills/admin/approval-processes/references/metadata-examples.md:30 '<!-- Deploy inactive; activate only after the workflow actions and the'\", \"fix\": \"Re-ground D9. The real tension is intra-skill — that skill's prose (deploy inactive) against its own checker rule at check_approval_process_apex_patterns.py:376-386 (HIGH on <active>false</active> while Apex in the tree names the process), and its actual support for the Active requirement is metadata-examples.md:49-52 ('an inactive process is invisible to a submission that names it') plus templates/approval-process-apex-patterns-template.md:30. Either (a) ship active false, move activation into the cutover runbook beside A34, and correct M3-S03's checker test `expected`, which the plan's own fixture proves exits 1 at active false; or (b) keep active true, cite the two sources that do support it, and record the overridden production guidance as an accepted risk carrying the process-order prerequisite.\"}, {\"step\": \"M3-S04\", \"lens\": \"testability\", \"problem\": \"Step type is `ui` — a metadata type — and acceptance_tests[] carries no `xml` test, while the step emits discountApprovalPanel.js-meta.xml, a *-meta.xml file whose parse is exactly what that test asserts.\", \"evidence\": \"acceptance_tests[] types = ['checker','manifest','manual','manual']; outputs[] includes artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml\", \"fix\": \"Add the one-line `xml` test the other fifteen steps carry. As with M2-S04, section 5 runs the check always-on regardless, so the build is not broken — what is missing is the declaration a reader of plan.json sees.\"}, {\"step\": \"M4-S01\", \"lens\": \"grounding\", \"problem\": \"Two clarifications (Q54, Q57; four across this step and M4-S02) the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.\", \"evidence\": \"\", \"fix\": \"Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist.\"}, {\"step\": \"M4-S02\", \"lens\": \"grounding\", \"problem\": \"Four clarifications the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.\", \"evidence\": \"\", \"fix\": \"Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist.\"}], \"warnings\": [{\"step\": \"M2-S04\", \"lens\": \"grounding\", \"problem\": \"The four recorded searches cover skills/, templates/ and standards/ but not knowledge/, which CLAUDE.md lists as a corpus surface. knowledge/imports/salesforce-channel-revenue-management.md:4696 carries 'The Opportunity HasOpportunityLineItem field is set to true when an OpportunityLineItem is inserted for that Opportunity.'\", \"fix\": \"Add knowledge/ to the searched_for record. It does not lift the block — the import establishes the field's semantics, not its availability in validation-rule formula context — but the block's evidence is one surface short of what it claims.\"}, {\"step\": \"M2-S04\", \"lens\": \"testability\", \"problem\": \"The single checker test's `expected` is 'exit 0 once unblocked' — a conditional, not a pass condition the tester can evaluate. Probed: the identical command exits 0 against the current empty artefacts/ tree.\", \"fix\": \"State the pass condition unconditionally and let the step's `blocked` status carry the conditionality, as it already does.\"}, {\"step\": \"M3-S02\", \"lens\": \"grounding\", \"problem\": \"No test on this step asserts that the two WorkflowAlerts carry a non-empty recipient set. The cited skill names that as a silent failure: 'A .workflow file whose alert carries a template, a description and a senderType but an empty recipient set deploys successfully, appears in Setup, is selectable from Flow — and delivers nothing. There is no runtime error.' Neither declared checker reads it: check_approval_design.py resolves workflow actions by name only, and check_email_templates.py greps 0 hits for 'recipient' and is declared at --manifest-dir artefacts/M3-S01, which never sees this step's workflow file.\", \"fix\": \"Add one `manual` line asserting each alert names the opportunity owner as a recipient, in the shape M3-S01's manual tests already use.\"}, {\"step\": \"M4-S01\", \"lens\": \"executability\", \"problem\": \"This is a `custom`-type step that emits no metadata at all — only artefacts/M4-S01/deploy-order.md. metadata-builder's 'What This Agent Does' is written around emitting -meta.xml files with a package.xml fragment and a deploy-order note; here only the third survives.\", \"fix\": \"Legal — section 4's `custom` row admits any roster agent with requires_org: false, and deploy-order.md is deliverable 7 of metadata-builder's Output Contract and is named again under its build-scoped outputs. Worth one line in the step note saying the agent is being used for the note alone.\"}, {\"step\": \"M3-S03\", \"lens\": \"grounding\", \"problem\": \"templates/apex/tests/TestDataFactory.cls-meta.xml pins <apiVersion>67.0</apiVersion> while the step declares api_version 62.0 for its four authored classes. Section 4's Apex row note requires the template to ship 'as a verbatim copy (with its meta XML)', so a verbatim ship puts a 67.0 class beside four 62.0 ones. The step's manual test pins only the .cls diff, so the mismatch is undetected.\", \"fix\": \"Say in the step note which version the shipped meta XML carries, and extend the manual test to cover it. This also matters for the read idiom: AGENT_CONTRACT's Apex security table makes WITH USER_MODE correct at 62.0 and default user mode the 67.0 behaviour.\"}, {\"step\": \"M3-S03\", \"lens\": \"executability\", \"problem\": \"agents/apex-builder/AGENT.md Output Contract deliverable 2 says a shipped template class's 'provenance is recorded in deploy-order.md'. This step declares no deploy-order.md in outputs[], so check-outputs never confirms the file the agent's own contract names.\", \"fix\": \"Declare artefacts/M3-S03/deploy-order.md, or note that the provenance claim is carried by the step's own manual test plus M4-S04's runbook.\"}, {\"step\": \"M3-S03\", \"lens\": \"executability\", \"problem\": \"inputs.process_definition_name is not a key apex-builder's Inputs table defines. It supplies rather than withholds — the exact developer name 'Discount_Approval' that check_approval_process_apex_patterns.py resolves — so this is noted rather than counted as a defect.\", \"fix\": \"None required. If apex-builder is next revised, a process-name input would make the mapping explicit.\"}, {\"step\": \"M3-S05\", \"lens\": \"grounding\", \"problem\": \"inputs.answers lists Q51, which is status: open. A17's because names Q51, but A17's steps[] is ['M3-S04','M4-S03'] and omits M3-S05 — the second half of the deferred-question row. Weaker than the M4-S01/M4-S02 case because a row does exist and its substance (supportedFormFactors) genuinely constrains M3-S04.\", \"fix\": \"Add M3-S05 to A17.steps[].\"}, {\"step\": \"M3\", \"lens\": \"testability\", \"problem\": \"The M3 milestone's second manual test requires a reviewer to confirm scripts/mock_deploy.py has been run for M3 and its summary.md attached to the gate. mock_deploy.py requires --org-alias, and this build is build_mode design-only with no `org` key in plan.json, so no alias is on file. Recorded as a warning rather than a refutation because section 5 makes the dry run the layer's own sanctioned human validation and its summary.md the evidence a gate rests on.\", \"fix\": \"Say in the test, or in M4-S04's runbook, that the human supplies the alias at that point.\"}, {\"step\": \"M4-S03\", \"lens\": \"testability\", \"problem\": \"FIXED THIS RUN by amend-step --prose-only. The manual test at index 4 read 'the six rows carrying risk high'; plan.assumptions[] carries exactly three (A24, A28, A29), and those three are the same three pre-deploy prerequisites the sentence goes on to name. A gate-tickable test cannot state a count the plan contradicts.\", \"fix\": \"Applied: description now reads 'the three rows carrying risk high - which are exactly the three pre-deploy prerequisites: A24 the OpportunityStage union, A28 the report column codes and A29 the dashboard runningUser'. Structural fields (type/command/expected/scope) unchanged at every index; array length unchanged at 6.\"}], \"cross_step_results\": [{\"check\": \"Every fit_gap[] requirement reaches a step, and every such step carries >= 1 acceptance test\", \"result\": \"pass\", \"detail\": \"14 rows, every steps[] non-empty and resolving; no step in the plan is unreached by some fit_gap row; every reached step has >= 1 acceptance test.\"}, {\"check\": \"fit_gap rows carry the fields skills/admin/fit-gap-analysis-against-org makes mandatory\", \"result\": \"pass\", \"detail\": \"All 14 rows carry tier, effort (S/M/L/XL) and a risk_tag array, including empty ones. build-plan.schema.json requires none of the three, so validate is silent — this was checked by hand.\"}, {\"check\": \"No two steps write the same output path\", \"result\": \"pass\", \"detail\": \"Collision scan over all 16 steps' outputs[] -> 0 shared paths.\"}, {\"check\": \"depends_on graph acyclic, every id exists, no later-milestone dependency\", \"result\": \"pass\", \"detail\": \"DFS over 16 steps -> no cycle; no missing id; no dependency on a later milestone. Nothing depends on blocked M2-S04, so no step is made unrunnable by the block.\"}, {\"check\": \"Every milestone has >= 1 acceptance test of its own, >= 1 step, and steps[] lists exactly the steps whose milestone is that id\", \"result\": \"pass\", \"detail\": \"M1 2 steps/4 tests, M2 5/6, M3 5/5, M4 4/5; declared steps[] == actual membership in all four.\"}, {\"check\": \"Every scope-out item names why it is out\", \"result\": \"pass\", \"detail\": \"10 out items, each naming the clarification or requirement line that put it out (Q4/Q9, Q7, Q8, Q16, Q24, Q38/Q65, Q53 via A30, Q3, Q25 via A32, requirement.md item 6).\"}, {\"check\": \"Every human_gate: true step has a step:<id> gate record, and no gate record exists for a step that is not human-gated\", \"result\": \"pass\", \"detail\": \"human_gate true on M2-S01, M2-S02, M4-S02; step:M2-S01, step:M2-S02, step:M4-S02 all present and pending; no orphan step: gates; milestone:M1..M4 all present.\"}, {\"check\": \"REFUSAL_SECURITY_GUARD: no step grants Modify All Data, View All Data or an Author Apex-class permission\", \"result\": \"pass\", \"detail\": \"M2-S01's permission set carries only customPermissions (its own manual test asserts no objectPermissions, fieldPermissions or userPermissions); M2-S02's carries recordTypeVisibilities plus a profile overlay of layoutAssignments. Neither reaches the three rights this code exists for.\"}, {\"check\": \"Deploy deny-list over every declared command\", \"result\": \"pass\", \"detail\": \"Section 5's regex run over all 25 step-level and 8 milestone-level commands -> 0 matches.\"}, {\"check\": \"Every declared checker exists and runs in the declared form\", \"result\": \"pass\", \"detail\": \"19 distinct checkers: all exist, all --help exit 0 accepting the declared flags, and all 33 declared commands run verbatim from the build directory with no usage error. Probed at /nonexistent, at an empty directory, and against the build's own empty artefacts/ tree; every empty-directory and non-existent-directory claim in the plan's test descriptions matched the observed exit code and message.\"}, {\"check\": \"Declared `scope` agrees with the --manifest-dir inside each checker command\", \"result\": \"pass\", \"detail\": \"All step-level pairs agree; the three commands carrying no --manifest-dir (check_workbook --workbook, and check_rtm/--file which also carries --manifest-dir artefacts) are exempt or agree. No milestone test points --manifest-dir inside a step directory.\"}, {\"check\": \"Clarifications: no blocking question left open\", \"result\": \"pass\", \"detail\": \"35 answered, 30 open — all 30 informational. gate clarifications is approved and would have been refused otherwise.\"}, {\"check\": \"Open clarifications reaching a step through inputs.answers have an assumptions[] row naming them\", \"result\": \"FAIL\", \"detail\": \"9 steps list an open question in inputs.answers. Seven (step, Q) pairs have no assumptions row whose because names the Q and whose steps[] carries the step: M4-S01/Q54, M4-S01/Q57, M4-S02/Q54, M4-S02/Q55, M4-S02/Q56, M4-S02/Q57 (no row at all), and M3-S05/Q51 (row A17 exists, steps[] omits M3-S05). Raised as blockers on M4-S01 and M4-S02 and as a warning on M3-S05.\"}], \"amendments_applied\": [{\"step\": \"M4-S03\", \"command\": \"amend-step --prose-only\", \"field\": \"acceptance_tests[4].description\", \"what\": \"'the six rows carrying risk high' -> 'the three rows carrying risk high - which are exactly the three pre-deploy prerequisites: A24 ..., A28 ..., A29 ...'\", \"why\": \"plan.assumptions[] carries exactly three risk: high rows and they are the same three prerequisites the sentence names; a gate-tickable test cannot state a count the plan contradicts. Structural fields unchanged at every index.\"}]}"
+  },
+  {
+   "kind": "markdown",
+   "title": "Verification report — northwind-sales plan v1",
+   "target_path": ".sfskills/builds/northwind-sales/envelopes/verification/2026-09-12T21-40-00Z.md",
+   "content": "See the markdown twin at the same stem: verdict matrix, five blockers with evidence and remedy, ten warnings, thirteen cross-step results, the rejection line and the Process Observations."
+  }
+ ],
+ "process_observations": [
+  {
+   "category": "healthy",
+   "severity": "info",
+   "observation": "Every one of the plan's stated checker behaviours was reproducible: 19 checkers, 33 declared commands, and every empty-directory and non-existent-directory claim matched the observed exit code and message.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "All 33 commands run verbatim from the build directory with the artefacts/ tree empty; plus a /nonexistent and an empty-directory probe per checker. No usage errors, no unrecognised flags."
+   }
+  },
+  {
+   "category": "healthy",
+   "severity": "info",
+   "observation": "The planner's three hardest structural calls are all correct in source, not merely plausible: the two-argument-surface approval commands, the non-recursive opportunity-management checker, and the Apex-exception manifest split.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "skills/admin/approval-processes/scripts/check_approval_design.py",
+    "detail": "line 366 appends root_dir/'approvalProcesses' for --manifest-dir (non-recursive) while line 107 uses path.rglob for a positional path, so neither surface alone works; check_opportunity_management.py uses bp_dir.glob / rt_dir.glob / path_dir.glob (fixed paths, no rglob), so step scope is the only live scope; M3-S03 declares no package.xml and M3-S04 claims the depends_on-manifest clause rather than the Apex exception, which is apex-builder-only."
+   }
+  },
+  {
+   "category": "healthy",
+   "severity": "info",
+   "observation": "Every checker rule id the plan cites by name exists with the severity and threshold the plan states, across seven different checkers.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "skills/admin/custom-permissions/scripts/check_custom_permissions.py",
+    "detail": "CP-DESC-01 ERROR >255 / CP-DESC-02 INFO >200; PSA-DESC-01 ERROR >255 / PSA-DESC-02 INFO >200; RPT-COL-01 INFO; VR-PICK-01; IM001 CRITICAL; RL-REQ-03 ADVISORY — all confirmed at the cited severities."
+   }
+  },
+  {
+   "category": "concerning",
+   "severity": "medium",
+   "observation": "admin/approval-process-apex-patterns contradicts itself: its prose says a production approval process should deploy inactive, while its own checker raises HIGH on exactly that when Apex in the tree names the process.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "skills/admin/approval-process-apex-patterns/references/metadata-examples.md",
+    "detail": "line 515: 'A production process should deploy inactive and be activated after its workflow actions and templates exist' — against check_approval_process_apex_patterns.py:376-386, HIGH on <active>false</active> while Apex in this tree submits to the named process. A plan cannot satisfy both. This is a library defect the plan ran into, not one it created."
+   }
+  },
+  {
+   "category": "concerning",
+   "severity": "medium",
+   "observation": "admin/path-and-guidance's FlexiPage sample omits the <identifier> element that has been required since API 53.0 and that the record-page checker raises as an ERROR.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "skills/admin/path-and-guidance/references/metadata-examples.md",
+    "detail": "section 4, lines 262-281: two componentInstance blocks with no <identifier>, against check_lightning_record_page_configuration.py:256-262 'no <identifier>; required from API 53.0'. M3-S05 caught it and added them; the sample should be fixed at source so the next plan does not have to."
+   }
+  },
+  {
+   "category": "concerning",
+   "severity": "medium",
+   "observation": "A step's inputs.answers[] can list a clarification whose status is open, and nothing in build_plan.py validate flags it — the field's name asserts an answer that does not exist.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "scripts/build_plan.py",
+    "detail": "9 of 16 steps list at least one open question in inputs.answers; validate reports 1 WARN and it is about a checker argument form. Caught only by hand-crossing inputs.answers against clarifications[].status. A validate WARN on the cross-reference would have caught PV-B04 and PV-B05 at plan time."
+   }
+  },
+  {
+   "category": "ambiguous",
+   "severity": "low",
+   "observation": "Two of the five blockers are refutations on the conservative side: the missing xml and manifest declarations on M2-S04 and M3-S04 have low practical impact because section 5 runs both checks always-on whether declared or not.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "standards/build-orchestration.md",
+    "detail": "section 5 'it runs what the plan declares plus the always-on xml and manifest checks' — against the testability lens row that refutes a metadata step carrying neither. The contract couples a fired row to a refuted lens and a refuted lens to a blocker, so both were recorded as blockers with the low impact stated in the blocker text rather than demoted."
+   }
+  },
+  {
+   "category": "ambiguous",
+   "severity": "low",
+   "observation": "M4-S01 is a custom-type step owned by metadata-builder that emits no metadata at all, only a deploy-order note, so the agent-covers-the-job check rests on a single Output Contract deliverable.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "agents/metadata-builder/AGENT.md",
+    "detail": "Output Contract deliverable 7 names the deploy-order note and the build-scoped outputs name deploy-order.md, so the step is legal under section 4's custom row; but the agent's What This Agent Does is written entirely around emitting -meta.xml files."
+   }
+  },
+  {
+   "category": "suggested_followup",
+   "severity": "low",
+   "observation": "The plan should return to the planner: five blockers across five steps, two of which are one-line test additions and three of which need a decision or an assumptions row.",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "detail": "status is now plan-rejected; version stays 1 and the v1 body is archived in history[]; the planner's next set-plan becomes v2."
+   },
+   "suggested_followup_agent": "build-planner",
+   "followup_reason": "The verifier refutes; the planner repairs. All five blockers are plan edits, not artefact edits."
+  }
+ ],
+ "followups": [
+  {
+   "agent": "build-planner",
+   "because": "Five blockers are plan-side edits — a decision to re-ground, four assumptions rows to add, and two acceptance_tests entries to declare."
+  },
+  {
+   "agent": "waf-assessor",
+   "because": "Two blockers and two of the three concerning observations cluster on one architectural decision, whether the approval process ships active."
+  }
+ ],
+ "citations": [
+  {
+   "type": "standard",
+   "id": "build-orchestration",
+   "path": "standards/build-orchestration.md",
+   "used_for": "sections 2-5: build_mode, the G2 gate, the step-type table and design-only owner column, checker scope, the Apex exception, the three validate constraints"
+  },
+  {
+   "type": "standard",
+   "id": "agent-contract",
+   "path": "agents/_shared/AGENT_CONTRACT.md",
+   "used_for": "the 8-section shape, the Process Observations requirement, the Apex security idiom by API version (M3-S03's 62.0 read idiom)"
+  },
+  {
+   "type": "standard",
+   "id": "build-plan-schema",
+   "path": "agents/_shared/schemas/build-plan.schema.json",
+   "used_for": "the verification block's lenses[] and blockers[] shapes"
+  },
+  {
+   "type": "decision_tree",
+   "id": "automation-selection",
+   "path": "standards/decision-trees/automation-selection.md",
+   "branch": "Q8",
+   "used_for": "verifying D5's branch_quote verbatim after glyph normalisation"
+  },
+  {
+   "type": "decision_tree",
+   "id": "sharing-selection",
+   "path": "standards/decision-trees/sharing-selection.md",
+   "branch": "Q2",
+   "used_for": "verifying D7's branch_quote verbatim after glyph normalisation"
+  },
+  {
+   "type": "skill",
+   "id": "admin/acceptance-criteria-given-when-then",
+   "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+   "used_for": "the testability bar for a manual test: a stated precondition and one observable outcome"
+  },
+  {
+   "type": "skill",
+   "id": "admin/uat-test-case-design",
+   "path": "skills/admin/uat-test-case-design/SKILL.md",
+   "used_for": "the rest of that bar — preconditions, data setup, expected result — applied to all 40 manual tests"
+  },
+  {
+   "type": "skill",
+   "id": "admin/fit-gap-analysis-against-org",
+   "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md",
+   "used_for": "re-tiering the 14 fit_gap rows and checking each carries tier, effort and risk_tag"
+  },
+  {
+   "type": "skill",
+   "id": "admin/requirements-traceability-matrix",
+   "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+   "used_for": "the cross-step check that every requirement reaches a step and a test"
+  },
+  {
+   "type": "skill",
+   "id": "admin/approval-process-apex-patterns",
+   "path": "skills/admin/approval-process-apex-patterns/SKILL.md",
+   "used_for": "refuting D9: gotcha 14's actual subject, and metadata-examples.md:49-52 and :515-517"
+  },
+  {
+   "type": "skill",
+   "id": "admin/approval-processes",
+   "path": "skills/admin/approval-processes/SKILL.md",
+   "used_for": "the deploy-inactive guidance D9 records as contradicted"
+  },
+  {
+   "type": "skill",
+   "id": "admin/email-templates-and-alerts",
+   "path": "skills/admin/email-templates-and-alerts/SKILL.md",
+   "used_for": "the senderType/senderAddress rule grounding M3-S02's CurrentUser choice, and the empty-recipient-set gotcha no declared test covers"
+  },
+  {
+   "type": "skill",
+   "id": "admin/path-and-guidance",
+   "path": "skills/admin/path-and-guidance/SKILL.md",
+   "used_for": "the FlexiPage sample that omits <identifier>, which M3-S05 corrects"
+  },
+  {
+   "type": "skill",
+   "id": "admin/validation-rules",
+   "path": "skills/admin/validation-rules/SKILL.md",
+   "used_for": "M2-S03's formula shape and the absence of any line-item-count mechanism that upholds M2-S04's block"
+  },
+  {
+   "type": "skill",
+   "id": "admin/products-and-pricebooks",
+   "path": "skills/admin/products-and-pricebooks/SKILL.md",
+   "used_for": "the second place a line-item-count mechanism would live, and does not"
+  },
+  {
+   "type": "skill",
+   "id": "admin/agent-output-formats",
+   "path": "skills/admin/agent-output-formats/SKILL.md",
+   "used_for": "where a request for this report as a spreadsheet is sent"
+  },
+  {
+   "type": "template",
+   "id": "TestDataFactory",
+   "path": "templates/apex/tests/TestDataFactory.cls",
+   "used_for": "M3-S03's template-closure grep: clean for other template classes and for __c/__mdt tokens; createAccounts/createOpportunities signatures confirmed"
+  },
+  {
+   "type": "template",
+   "id": "TestDataFactory-meta",
+   "path": "templates/apex/tests/TestDataFactory.cls-meta.xml",
+   "used_for": "the apiVersion 67.0 that warns against the step's declared 62.0"
+  }
+ ],
+ "extensions": {
+  "plan_path": ".sfskills/builds/northwind-sales/plan.json",
+  "plan_version": 1,
+  "resulting_status": "plan-rejected",
+  "verification": {
+   "status": "plan-rejected",
+   "verified_at": "2026-09-12T21:40:00Z",
+   "by": "plan-verifier 1.0.0",
+   "plan_version": 1,
+   "scale": "project",
+   "build_mode": "design-only",
+   "lenses": [
+    {
+     "lens": "executability",
+     "verdict": "pass",
+     "notes": "16/16 steps. Every named agent resolves, is class: runtime, is non-deprecated and declares requires_org: false, so all four are eligible in a design-only plan. Every step type sits in a section 4 row with its owner in the design-only column. Ordering, output collisions and one-unit-of-work all clean."
+    },
+    {
+     "lens": "grounding",
+     "verdict": "fail",
+     "notes": "13/16 pass. M3-S02 refuted (D9 cites a gotcha that says something else, and the skill it names as governing says the opposite for a production deploy). M4-S01 and M4-S02 refuted (four open clarifications recorded as answers with no assumptions[] row). All 28 skill ids, 5 template paths and the one decision tree resolve; both branch quotes matched verbatim after glyph normalisation; all 10 decisions carry a tree branch or a source_reference that resolves."
+    },
+    {
+     "lens": "testability",
+     "verdict": "fail",
+     "notes": "14/16 pass. M2-S04 refuted (validation step with no xml and no manifest test). M3-S04 refuted (ui step emitting a *-meta.xml with no xml test). Every checker exists and runs in its declared form; every empty-directory and non-existent-directory claim in the plan's own descriptions was reproduced; no manual test defers its tick to a later milestone."
+    }
+   ],
+   "steps": [
+    {
+     "step_id": "M1-S01",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M1-S01",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M1-S01",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M1-S01",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M1-S02",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M1-S02",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M1-S02",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M1-S02",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M2-S01",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M2-S01",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M2-S01",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M2-S01",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M2-S02",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M2-S02",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M2-S02",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M2-S02",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M2-S03",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M2-S03",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M2-S03",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M2-S03",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M2-S04",
+     "verdict": "refuted",
+     "lenses": [
+      {
+       "step_id": "M2-S04",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "agents/metadata-builder/AGENT.md 'What This Agent Does' -> 'a step needing an element neither carries ends `blocked` with `skill-gap`, never with a plausible guess' — the block is the contracted exit, not an ownership defect",
+        "depends_on M1-S01, M2-S01 both exist and sit in earlier-or-same milestones; no step depends_on M2-S04"
+       ]
+      },
+      {
+       "step_id": "M2-S04",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [
+        {
+         "problem": "The four recorded searches cover skills/, templates/ and standards/ but not knowledge/, which CLAUDE.md lists as a corpus surface. knowledge/imports/salesforce-channel-revenue-management.md:4696 carries 'The Opportunity HasOpportunityLineItem field is set to true when an OpportunityLineItem is inserted for that Opportunity.'",
+         "fix": "Add knowledge/ to the searched_for record. It does not lift the block — the import establishes the field's semantics, not its availability in validation-rule formula context — but the block's evidence is one surface short of what it claims."
+        }
+       ],
+       "evidence": [
+        "grep -rn HasOpportunityLineItem skills/ templates/ standards/ -> exactly one hit, skills/admin/pipeline-review-design/references/gotchas.md:91, which calls the field filterable for a report column and says nothing about formula context. The step's recorded search is reproducible and accurate.",
+        "python3 scripts/search_knowledge.py 'validation rule require at least one opportunity product before stage' -> admin/sales-process-mapping (1.505), admin/validation-rules (1.232), data/opportunity-pipeline-migration (0.763); top chunks are a stage-mapping checker and the CloseDate rule, exactly as the step records",
+        "BLOCK UPHELD: no skill documents a validation-rule mechanism for counting child rows."
+       ]
+      },
+      {
+       "step_id": "M2-S04",
+       "lens": "testability",
+       "verdict": "refuted",
+       "blockers": [
+        {
+         "problem": "Step type is `validation` — one of the seven metadata types — and acceptance_tests[] carries neither an `xml` test nor a `manifest` test. It declares artefacts/M2-S04/package.xml in outputs[] but nothing in the plan asserts the manifest or the XML parse.",
+         "evidence": "acceptance_tests[] types = ['checker','manual']; standards/build-orchestration.md section 5 'The always-on `manifest` check fails — it does not skip — when the step's type is a metadata type ... and no package.xml exists'",
+         "fix": "Add an `xml` test and a `manifest` test, in the shape M2-S03 already uses. Practical impact is low — section 5 runs both checks always-on whether declared or not — but the step's declared test surface is what a reader of plan.json and PLAN.md sees, and at unblock time this one is incomplete."
+        }
+       ],
+       "warnings": [
+        {
+         "problem": "The single checker test's `expected` is 'exit 0 once unblocked' — a conditional, not a pass condition the tester can evaluate. Probed: the identical command exits 0 against the current empty artefacts/ tree.",
+         "fix": "State the pass condition unconditionally and let the step's `blocked` status carry the conditionality, as it already does."
+        }
+       ],
+       "evidence": [
+        "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts (run from the build directory, artefacts/ empty) -> exit 0, score 100",
+        "acceptance_tests[] types = ['checker','manual']"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M2-S05",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M2-S05",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M2-S05",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M2-S05",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M3-S01",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M3-S01",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M3-S01",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M3-S01",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M3-S02",
+     "verdict": "refuted",
+     "lenses": [
+      {
+       "step_id": "M3-S02",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04",
+        "depends_on M3-S01 (email templates) and M1-S01 (Approval_Status__c) — both the field updates' target and the alerts' templates are produced upstream"
+       ]
+      },
+      {
+       "step_id": "M3-S02",
+       "lens": "grounding",
+       "verdict": "refuted",
+       "blockers": [
+        {
+         "problem": "Decision D9 ships the approval process `active true` on the stated authority of admin/approval-process-apex-patterns gotcha 14, and records the two approval skills as contradicting each other on deploying inactive. Neither claim holds. Gotcha 14 is titled 'a null `processDefinitionNameOrId` routes by org process order, which deploys don't carry' and says nothing about a named process requiring State Active — its subject is the opposite case. And the skill D9 names as governing says, in its own words, the opposite of D9's conclusion: 'The approval process is deployed <active>true</active> here because it is a fixture. A production process should deploy inactive and be activated after its workflow actions and templates exist.' So the two skills do not disagree; both say deploy inactive for production.",
+         "evidence": "skills/admin/approval-process-apex-patterns/references/gotchas.md:368-402 (gotcha 14, full text read); skills/admin/approval-process-apex-patterns/references/metadata-examples.md:515-517; skills/admin/approval-processes/references/metadata-examples.md:30 '<!-- Deploy inactive; activate only after the workflow actions and the'",
+         "fix": "Re-ground D9. The real tension is intra-skill — that skill's prose (deploy inactive) against its own checker rule at check_approval_process_apex_patterns.py:376-386 (HIGH on <active>false</active> while Apex in the tree names the process), and its actual support for the Active requirement is metadata-examples.md:49-52 ('an inactive process is invisible to a submission that names it') plus templates/approval-process-apex-patterns-template.md:30. Either (a) ship active false, move activation into the cutover runbook beside A34, and correct M3-S03's checker test `expected`, which the plan's own fixture proves exits 1 at active false; or (b) keep active true, cite the two sources that do support it, and record the overridden production guidance as an accepted risk carrying the process-order prerequisite."
+        }
+       ],
+       "warnings": [
+        {
+         "problem": "No test on this step asserts that the two WorkflowAlerts carry a non-empty recipient set. The cited skill names that as a silent failure: 'A .workflow file whose alert carries a template, a description and a senderType but an empty recipient set deploys successfully, appears in Setup, is selectable from Flow — and delivers nothing. There is no runtime error.' Neither declared checker reads it: check_approval_design.py resolves workflow actions by name only, and check_email_templates.py greps 0 hits for 'recipient' and is declared at --manifest-dir artefacts/M3-S01, which never sees this step's workflow file.",
+         "fix": "Add one `manual` line asserting each alert names the opportunity owner as a recipient, in the shape M3-S01's manual tests already use."
+        }
+       ],
+       "evidence": [
+        "grep -n -i 'recipient' skills/admin/approval-processes/scripts/check_approval_design.py -> no match",
+        "grep -n -i 'recipient' skills/admin/email-templates-and-alerts/scripts/check_email_templates.py -> no match",
+        "senderType CurrentUser is correctly grounded: skills/admin/email-templates-and-alerts/references/gotchas.md:94-110 'senderAddress may carry a value only when senderType is OrgWideEmailAddress' and an unverified address sends from the updating user — this is the F-28 prerequisite pattern from examples/builds/case-onboarding, correctly carried here as an optional deploy-order line"
+       ]
+      },
+      {
+       "step_id": "M3-S02",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 skills/admin/approval-processes/scripts/check_approval_design.py --manifest-dir artefacts artefacts -> parses, exit 1 on the empty tree (HIGH 'no approval-process metadata files found'), so the test can fail",
+        "the two-argument-surface claim is verifiable in source: check_approval_design.py:366 appends root_dir/'approvalProcesses' for --manifest-dir (non-recursive) while :107 uses path.rglob for a positional path — the plan's explanation of why neither form alone works is correct",
+        "scope 'build' agrees with --manifest-dir artefacts"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M3-S03",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M3-S03",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M3-S03",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M3-S03",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M3-S04",
+     "verdict": "refuted",
+     "lenses": [
+      {
+       "step_id": "M3-S04",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "agents/lwc-builder/AGENT.md Inputs table -> component_name, feature_summary, binding_kind, data_shape, target_objects, public_api, a11y_tier, include_tests, emit_controller; the step's inputs{} supply exactly these",
+        "agents/lwc-builder/AGENT.md Output Contract deliverable 2 'Bundle files' covers .html/.js/.js-meta.xml/__tests__/*.test.js and names no manifest — the step's claim that section 4 borrowed-agent condition 2 forbids declaring package.xml here is correct",
+        "depends_on M3-S03, which declares classes/OpportunityApprovalController.cls — the @AuraEnabled entry point the bundle imports (emit_controller false is therefore right, not an omission)"
+       ]
+      },
+      {
+       "step_id": "M3-S04",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "D5 branch quote matched verbatim against standards/decision-trees/automation-selection.md after glyph normalisation (-> for ->, straight quotes, collapsed padding): Q8 'Can the action complete in under 10s without custom UI?' with the No leaf 'LWC calling imperative Apex (see templates/lwc/patterns/imperativeApexPattern.js)'",
+        "templates/lwc/patterns/imperativeApexPattern.js and templates/lwc/component-skeleton/componentSkeleton.js-meta.xml both exist",
+        "the manifest test correctly claims the section 5 depends_on-manifest clause (via M1-S01) rather than the Apex exception, which is apex-builder-only — a distinction the plan got right"
+       ]
+      },
+      {
+       "step_id": "M3-S04",
+       "lens": "testability",
+       "verdict": "refuted",
+       "blockers": [
+        {
+         "problem": "Step type is `ui` — a metadata type — and acceptance_tests[] carries no `xml` test, while the step emits discountApprovalPanel.js-meta.xml, a *-meta.xml file whose parse is exactly what that test asserts.",
+         "evidence": "acceptance_tests[] types = ['checker','manifest','manual','manual']; outputs[] includes artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml",
+         "fix": "Add the one-line `xml` test the other fifteen steps carry. As with M2-S04, section 5 runs the check always-on regardless, so the build is not broken — what is missing is the declaration a reader of plan.json sees."
+        }
+       ],
+       "warnings": [],
+       "evidence": [
+        "python3 skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py --manifest-dir artefacts/M3-S04 -> exit 1 'ERROR: --manifest-dir not found', so the checker test can fail; against an existing empty directory it exits 0 with a WARN, exactly as the description states"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M3-S05",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M3-S05",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M3-S05",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M3-S05",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M4-S01",
+     "verdict": "refuted",
+     "lenses": [
+      {
+       "step_id": "M4-S01",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [
+        {
+         "problem": "This is a `custom`-type step that emits no metadata at all — only artefacts/M4-S01/deploy-order.md. metadata-builder's 'What This Agent Does' is written around emitting -meta.xml files with a package.xml fragment and a deploy-order note; here only the third survives.",
+         "fix": "Legal — section 4's `custom` row admits any roster agent with requires_org: false, and deploy-order.md is deliverable 7 of metadata-builder's Output Contract and is named again under its build-scoped outputs. Worth one line in the step note saying the agent is being used for the note alone."
+        }
+       ],
+       "evidence": [
+        "agents/metadata-builder/AGENT.md Output Contract deliverable 7 'Deploy-order note — reproduced in the report, with the validate-only command the human may run'; and 'the metadata, package.xml and deploy-order.md under <build_dir>/artefacts/<step-id>/'"
+       ]
+      },
+      {
+       "step_id": "M4-S01",
+       "lens": "grounding",
+       "verdict": "refuted",
+       "blockers": [
+        {
+         "problem": "Two clarifications (Q54, Q57; four across this step and M4-S02) the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.",
+         "fix": "Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist."
+        }
+       ],
+       "warnings": [],
+       "evidence": [
+        "plan.clarifications: Q54 status=open kind=informational; Q57 status=open kind=informational",
+        "M4-S01.inputs.answers = ['Q9','Q23','Q26','Q54','Q57'] — Q54 and Q57 are open",
+        "regex scan of every assumptions[].because for \\bQ5[4-7]\\b -> no match on Q54, Q55, Q56 or Q57",
+        "A28's because names Q26 (answered), not Q57",
+        "agents/plan-verifier/AGENT.md Step 3 'Prose naming assumption ids is not the link: the traceability document is compiled from assumptions[].steps[]' — and M4-S03's own note says it compiles 'from assumptions[].steps[] rather than from step-note prose'"
+       ]
+      },
+      {
+       "step_id": "M4-S01",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "acceptance_tests[] = two `manual` tests, both stating they are tickable from artefacts/M4-S01/deploy-order.md alone ('no org and no later artefact is needed'); section 5 requires >= 1 test and a `custom` step declares its own surface",
+        "neither manual test defers to a later milestone gate"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M4-S02",
+     "verdict": "refuted",
+     "lenses": [
+      {
+       "step_id": "M4-S02",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04",
+        "human_gate true and the step:M4-S02 gate record is present and pending in human_gates[]"
+       ]
+      },
+      {
+       "step_id": "M4-S02",
+       "lens": "grounding",
+       "verdict": "refuted",
+       "blockers": [
+        {
+         "problem": "Four clarifications the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.",
+         "fix": "Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist."
+        }
+       ],
+       "warnings": [],
+       "evidence": [
+        "M4-S02.inputs.answers = ['Q23','Q24','Q25','Q26','Q54','Q55','Q56','Q57','Q63'] — Q54, Q55, Q56, Q57 and Q63 are all status=open; Q63 alone is covered (A31.because names it)",
+        "regex scan of every assumptions[].because for \\bQ5[4-7]\\b -> no match",
+        "D7 branch quote matched verbatim against standards/decision-trees/sharing-selection.md Q2 after glyph normalisation — the sharing decision itself is correctly grounded"
+       ]
+      },
+      {
+       "step_id": "M4-S02",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M4-S02 -> exit 1 on the absent directory, so the test can fail; RPT-COL-01 exists at check_report_inventory.py:32 as an INFO rule, exactly as the description claims",
+        "scope 'step' agrees with --manifest-dir artefacts/M4-S02",
+        "three manual tests, all ticked at M4 (its own milestone), all readable from files this step writes"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M4-S03",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M4-S03",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M4-S03",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M4-S03",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    },
+    {
+     "step_id": "M4-S04",
+     "verdict": "pass",
+     "lenses": [
+      {
+       "step_id": "M4-S04",
+       "lens": "executability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "python3 scripts/build_plan.py validate .sfskills/builds/northwind-sales/plan.json -> exit 0, '4 milestone(s), 16 step(s), 1 warning(s)'",
+        "agents/metadata-builder/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "agents/apex-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/lwc-builder/AGENT.md frontmatter -> class: runtime, status: stable, requires_org: false",
+        "agents/build-doc-keeper/AGENT.md frontmatter -> class: runtime, status: beta, requires_org: false",
+        "output-path collision scan over all 16 steps' outputs[] -> 0 collisions",
+        "depends_on graph -> no missing ids, no cycles, no later-milestone dependency; nothing depends on blocked M2-S04"
+       ]
+      },
+      {
+       "step_id": "M4-S04",
+       "lens": "grounding",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every skills[] id resolves to skills/<domain>/<slug>/SKILL.md (28 distinct ids checked with os.path.exists)",
+        "every templates[] path resolves (5 distinct paths checked)",
+        "standards/decision-trees/automation-selection.md resolves",
+        "every decision cited carries decision_tree+branch or a source_reference that resolves on disk (10/10)"
+       ]
+      },
+      {
+       "step_id": "M4-S04",
+       "lens": "testability",
+       "verdict": "pass",
+       "blockers": [],
+       "warnings": [],
+       "evidence": [
+        "every declared checker script exists and `python3 <path> --help` exits 0 accepting the declared flags (19 distinct checkers)",
+        "every declared command run verbatim from the build directory -> no usage error, no unrecognised flag",
+        "declared `scope` agrees with the --manifest-dir inside each command (or the command carries no --manifest-dir and is exempt)",
+        "deny-list regex over every command string -> 0 hits",
+        "no manual test's `expected` defers its tick to a later milestone's gate (32 step manual tests + 8 milestone manual tests checked)"
+       ]
+      }
+     ]
+    }
+   ],
+   "blockers": [
+    {
+     "step": "M2-S04",
+     "lens": "testability",
+     "problem": "Step type is `validation` — one of the seven metadata types — and acceptance_tests[] carries neither an `xml` test nor a `manifest` test. It declares artefacts/M2-S04/package.xml in outputs[] but nothing in the plan asserts the manifest or the XML parse.",
+     "evidence": "acceptance_tests[] types = ['checker','manual']; standards/build-orchestration.md section 5 'The always-on `manifest` check fails — it does not skip — when the step's type is a metadata type ... and no package.xml exists'",
+     "fix": "Add an `xml` test and a `manifest` test, in the shape M2-S03 already uses. Practical impact is low — section 5 runs both checks always-on whether declared or not — but the step's declared test surface is what a reader of plan.json and PLAN.md sees, and at unblock time this one is incomplete."
+    },
+    {
+     "step": "M3-S02",
+     "lens": "grounding",
+     "problem": "Decision D9 ships the approval process `active true` on the stated authority of admin/approval-process-apex-patterns gotcha 14, and records the two approval skills as contradicting each other on deploying inactive. Neither claim holds. Gotcha 14 is titled 'a null `processDefinitionNameOrId` routes by org process order, which deploys don't carry' and says nothing about a named process requiring State Active — its subject is the opposite case. And the skill D9 names as governing says, in its own words, the opposite of D9's conclusion: 'The approval process is deployed <active>true</active> here because it is a fixture. A production process should deploy inactive and be activated after its workflow actions and templates exist.' So the two skills do not disagree; both say deploy inactive for production.",
+     "evidence": "skills/admin/approval-process-apex-patterns/references/gotchas.md:368-402 (gotcha 14, full text read); skills/admin/approval-process-apex-patterns/references/metadata-examples.md:515-517; skills/admin/approval-processes/references/metadata-examples.md:30 '<!-- Deploy inactive; activate only after the workflow actions and the'",
+     "fix": "Re-ground D9. The real tension is intra-skill — that skill's prose (deploy inactive) against its own checker rule at check_approval_process_apex_patterns.py:376-386 (HIGH on <active>false</active> while Apex in the tree names the process), and its actual support for the Active requirement is metadata-examples.md:49-52 ('an inactive process is invisible to a submission that names it') plus templates/approval-process-apex-patterns-template.md:30. Either (a) ship active false, move activation into the cutover runbook beside A34, and correct M3-S03's checker test `expected`, which the plan's own fixture proves exits 1 at active false; or (b) keep active true, cite the two sources that do support it, and record the overridden production guidance as an accepted risk carrying the process-order prerequisite."
+    },
+    {
+     "step": "M3-S04",
+     "lens": "testability",
+     "problem": "Step type is `ui` — a metadata type — and acceptance_tests[] carries no `xml` test, while the step emits discountApprovalPanel.js-meta.xml, a *-meta.xml file whose parse is exactly what that test asserts.",
+     "evidence": "acceptance_tests[] types = ['checker','manifest','manual','manual']; outputs[] includes artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml",
+     "fix": "Add the one-line `xml` test the other fifteen steps carry. As with M2-S04, section 5 runs the check always-on regardless, so the build is not broken — what is missing is the declaration a reader of plan.json sees."
+    },
+    {
+     "step": "M4-S01",
+     "lens": "grounding",
+     "problem": "Two clarifications (Q54, Q57; four across this step and M4-S02) the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.",
+     "evidence": "",
+     "fix": "Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist."
+    },
+    {
+     "step": "M4-S02",
+     "lens": "grounding",
+     "problem": "Four clarifications the plan lists in this step's inputs.answers are `status: open` — the human never answered them; only a proposed_default exists — and no row in assumptions[] has a `because` naming any of them. The defaults were applied silently. Q54's own default text reads 'Unknown — assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is', which is a design decision taken against requirement.md item 6 ('nothing breaks SMB') on a default nobody confirmed.",
+     "evidence": "",
+     "fix": "Add assumptions[] rows whose `because` names Q54, Q55, Q56 and Q57 and whose steps[] carry M4-S01, M4-S02 and M4-S03 — or extend A28/A30/A31 to name them. The field is called `answers`; listing an unanswered question in it asserts an answer that does not exist."
+    }
+   ],
+   "warnings": [
+    {
+     "step": "M2-S04",
+     "lens": "grounding",
+     "problem": "The four recorded searches cover skills/, templates/ and standards/ but not knowledge/, which CLAUDE.md lists as a corpus surface. knowledge/imports/salesforce-channel-revenue-management.md:4696 carries 'The Opportunity HasOpportunityLineItem field is set to true when an OpportunityLineItem is inserted for that Opportunity.'",
+     "fix": "Add knowledge/ to the searched_for record. It does not lift the block — the import establishes the field's semantics, not its availability in validation-rule formula context — but the block's evidence is one surface short of what it claims."
+    },
+    {
+     "step": "M2-S04",
+     "lens": "testability",
+     "problem": "The single checker test's `expected` is 'exit 0 once unblocked' — a conditional, not a pass condition the tester can evaluate. Probed: the identical command exits 0 against the current empty artefacts/ tree.",
+     "fix": "State the pass condition unconditionally and let the step's `blocked` status carry the conditionality, as it already does."
+    },
+    {
+     "step": "M3-S02",
+     "lens": "grounding",
+     "problem": "No test on this step asserts that the two WorkflowAlerts carry a non-empty recipient set. The cited skill names that as a silent failure: 'A .workflow file whose alert carries a template, a description and a senderType but an empty recipient set deploys successfully, appears in Setup, is selectable from Flow — and delivers nothing. There is no runtime error.' Neither declared checker reads it: check_approval_design.py resolves workflow actions by name only, and check_email_templates.py greps 0 hits for 'recipient' and is declared at --manifest-dir artefacts/M3-S01, which never sees this step's workflow file.",
+     "fix": "Add one `manual` line asserting each alert names the opportunity owner as a recipient, in the shape M3-S01's manual tests already use."
+    },
+    {
+     "step": "M4-S01",
+     "lens": "executability",
+     "problem": "This is a `custom`-type step that emits no metadata at all — only artefacts/M4-S01/deploy-order.md. metadata-builder's 'What This Agent Does' is written around emitting -meta.xml files with a package.xml fragment and a deploy-order note; here only the third survives.",
+     "fix": "Legal — section 4's `custom` row admits any roster agent with requires_org: false, and deploy-order.md is deliverable 7 of metadata-builder's Output Contract and is named again under its build-scoped outputs. Worth one line in the step note saying the agent is being used for the note alone."
+    },
+    {
+     "step": "M3-S03",
+     "lens": "grounding",
+     "problem": "templates/apex/tests/TestDataFactory.cls-meta.xml pins <apiVersion>67.0</apiVersion> while the step declares api_version 62.0 for its four authored classes. Section 4's Apex row note requires the template to ship 'as a verbatim copy (with its meta XML)', so a verbatim ship puts a 67.0 class beside four 62.0 ones. The step's manual test pins only the .cls diff, so the mismatch is undetected.",
+     "fix": "Say in the step note which version the shipped meta XML carries, and extend the manual test to cover it. This also matters for the read idiom: AGENT_CONTRACT's Apex security table makes WITH USER_MODE correct at 62.0 and default user mode the 67.0 behaviour."
+    },
+    {
+     "step": "M3-S03",
+     "lens": "executability",
+     "problem": "agents/apex-builder/AGENT.md Output Contract deliverable 2 says a shipped template class's 'provenance is recorded in deploy-order.md'. This step declares no deploy-order.md in outputs[], so check-outputs never confirms the file the agent's own contract names.",
+     "fix": "Declare artefacts/M3-S03/deploy-order.md, or note that the provenance claim is carried by the step's own manual test plus M4-S04's runbook."
+    },
+    {
+     "step": "M3-S03",
+     "lens": "executability",
+     "problem": "inputs.process_definition_name is not a key apex-builder's Inputs table defines. It supplies rather than withholds — the exact developer name 'Discount_Approval' that check_approval_process_apex_patterns.py resolves — so this is noted rather than counted as a defect.",
+     "fix": "None required. If apex-builder is next revised, a process-name input would make the mapping explicit."
+    },
+    {
+     "step": "M3-S05",
+     "lens": "grounding",
+     "problem": "inputs.answers lists Q51, which is status: open. A17's because names Q51, but A17's steps[] is ['M3-S04','M4-S03'] and omits M3-S05 — the second half of the deferred-question row. Weaker than the M4-S01/M4-S02 case because a row does exist and its substance (supportedFormFactors) genuinely constrains M3-S04.",
+     "fix": "Add M3-S05 to A17.steps[]."
+    },
+    {
+     "step": "M3",
+     "lens": "testability",
+     "problem": "The M3 milestone's second manual test requires a reviewer to confirm scripts/mock_deploy.py has been run for M3 and its summary.md attached to the gate. mock_deploy.py requires --org-alias, and this build is build_mode design-only with no `org` key in plan.json, so no alias is on file. Recorded as a warning rather than a refutation because section 5 makes the dry run the layer's own sanctioned human validation and its summary.md the evidence a gate rests on.",
+     "fix": "Say in the test, or in M4-S04's runbook, that the human supplies the alias at that point."
+    },
+    {
+     "step": "M4-S03",
+     "lens": "testability",
+     "problem": "FIXED THIS RUN by amend-step --prose-only. The manual test at index 4 read 'the six rows carrying risk high'; plan.assumptions[] carries exactly three (A24, A28, A29), and those three are the same three pre-deploy prerequisites the sentence goes on to name. A gate-tickable test cannot state a count the plan contradicts.",
+     "fix": "Applied: description now reads 'the three rows carrying risk high - which are exactly the three pre-deploy prerequisites: A24 the OpportunityStage union, A28 the report column codes and A29 the dashboard runningUser'. Structural fields (type/command/expected/scope) unchanged at every index; array length unchanged at 6."
+    }
+   ],
+   "cross_step_results": [
+    {
+     "check": "Every fit_gap[] requirement reaches a step, and every such step carries >= 1 acceptance test",
+     "result": "pass",
+     "detail": "14 rows, every steps[] non-empty and resolving; no step in the plan is unreached by some fit_gap row; every reached step has >= 1 acceptance test."
+    },
+    {
+     "check": "fit_gap rows carry the fields skills/admin/fit-gap-analysis-against-org makes mandatory",
+     "result": "pass",
+     "detail": "All 14 rows carry tier, effort (S/M/L/XL) and a risk_tag array, including empty ones. build-plan.schema.json requires none of the three, so validate is silent — this was checked by hand."
+    },
+    {
+     "check": "No two steps write the same output path",
+     "result": "pass",
+     "detail": "Collision scan over all 16 steps' outputs[] -> 0 shared paths."
+    },
+    {
+     "check": "depends_on graph acyclic, every id exists, no later-milestone dependency",
+     "result": "pass",
+     "detail": "DFS over 16 steps -> no cycle; no missing id; no dependency on a later milestone. Nothing depends on blocked M2-S04, so no step is made unrunnable by the block."
+    },
+    {
+     "check": "Every milestone has >= 1 acceptance test of its own, >= 1 step, and steps[] lists exactly the steps whose milestone is that id",
+     "result": "pass",
+     "detail": "M1 2 steps/4 tests, M2 5/6, M3 5/5, M4 4/5; declared steps[] == actual membership in all four."
+    },
+    {
+     "check": "Every scope-out item names why it is out",
+     "result": "pass",
+     "detail": "10 out items, each naming the clarification or requirement line that put it out (Q4/Q9, Q7, Q8, Q16, Q24, Q38/Q65, Q53 via A30, Q3, Q25 via A32, requirement.md item 6)."
+    },
+    {
+     "check": "Every human_gate: true step has a step:<id> gate record, and no gate record exists for a step that is not human-gated",
+     "result": "pass",
+     "detail": "human_gate true on M2-S01, M2-S02, M4-S02; step:M2-S01, step:M2-S02, step:M4-S02 all present and pending; no orphan step: gates; milestone:M1..M4 all present."
+    },
+    {
+     "check": "REFUSAL_SECURITY_GUARD: no step grants Modify All Data, View All Data or an Author Apex-class permission",
+     "result": "pass",
+     "detail": "M2-S01's permission set carries only customPermissions (its own manual test asserts no objectPermissions, fieldPermissions or userPermissions); M2-S02's carries recordTypeVisibilities plus a profile overlay of layoutAssignments. Neither reaches the three rights this code exists for."
+    },
+    {
+     "check": "Deploy deny-list over every declared command",
+     "result": "pass",
+     "detail": "Section 5's regex run over all 25 step-level and 8 milestone-level commands -> 0 matches."
+    },
+    {
+     "check": "Every declared checker exists and runs in the declared form",
+     "result": "pass",
+     "detail": "19 distinct checkers: all exist, all --help exit 0 accepting the declared flags, and all 33 declared commands run verbatim from the build directory with no usage error. Probed at /nonexistent, at an empty directory, and against the build's own empty artefacts/ tree; every empty-directory and non-existent-directory claim in the plan's test descriptions matched the observed exit code and message."
+    },
+    {
+     "check": "Declared `scope` agrees with the --manifest-dir inside each checker command",
+     "result": "pass",
+     "detail": "All step-level pairs agree; the three commands carrying no --manifest-dir (check_workbook --workbook, and check_rtm/--file which also carries --manifest-dir artefacts) are exempt or agree. No milestone test points --manifest-dir inside a step directory."
+    },
+    {
+     "check": "Clarifications: no blocking question left open",
+     "result": "pass",
+     "detail": "35 answered, 30 open — all 30 informational. gate clarifications is approved and would have been refused otherwise."
+    },
+    {
+     "check": "Open clarifications reaching a step through inputs.answers have an assumptions[] row naming them",
+     "result": "FAIL",
+     "detail": "9 steps list an open question in inputs.answers. Seven (step, Q) pairs have no assumptions row whose because names the Q and whose steps[] carries the step: M4-S01/Q54, M4-S01/Q57, M4-S02/Q54, M4-S02/Q55, M4-S02/Q56, M4-S02/Q57 (no row at all), and M3-S05/Q51 (row A17 exists, steps[] omits M3-S05). Raised as blockers on M4-S01 and M4-S02 and as a warning on M3-S05."
+    }
+   ],
+   "amendments_applied": [
+    {
+     "step": "M4-S03",
+     "command": "amend-step --prose-only",
+     "field": "acceptance_tests[4].description",
+     "what": "'the six rows carrying risk high' -> 'the three rows carrying risk high - which are exactly the three pre-deploy prerequisites: A24 ..., A28 ..., A29 ...'",
+     "why": "plan.assumptions[] carries exactly three risk: high rows and they are the same three prerequisites the sentence names; a gate-tickable test cannot state a count the plan contradicts. Structural fields unchanged at every index."
+    }
+   ]
+  }
+ }
+}

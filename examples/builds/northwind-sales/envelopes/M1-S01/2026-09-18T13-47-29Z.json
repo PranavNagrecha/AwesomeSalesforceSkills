@@ -1,0 +1,199 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-18T13-47-29Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-18T13-47-29Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S01/2026-09-18T13-47-29Z.json",
+  "summary": "Re-ran the molecular tests for M1-S01 (object-model, agent metadata-builder) of build northwind-sales at scale project, after the N3-F-01 repair (reports/MOCK-DEPLOY-M1.md run 1; deploy-order.md section 6) removed <default>true</default> from the opening stage of both BusinessProcess files. Both always-on checks (xml over 8 files, manifest against package.xml) passed, and all three plan-declared checkers (check_opportunity_management.py, check_picklist_and_value_sets.py, check_object_creation_and_design.py) exited 0 against the post-repair artefacts, reproducing the exact messages their step-note fixtures predicted. check-outputs confirmed all 9 declared outputs present, non-empty and parseable, and their hashes were captured fresh into results.json.artefact_hashes. The two declared manual tests are deferred verbatim to the M1 milestone gate. Step moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed directly (agents/step-tester/AGENT.md Step 7).",
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The repair was scoped exactly as deploy-order.md section 6 describes: only the opening-stage <values> block in each BusinessProcess file lost its <default>true</default> element (Qualify in Enterprise_Sales_Process, Renewal Review in Renewal_Sales_Process); the remaining five <values> blocks in each file still carry <default>false</default> unchanged, and the other seven declared outputs were untouched.",
+      "domain": "repair-scope",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "package.xml under artefacts/M1-S01/ still names exactly the 7 members the step's outputs produce post-repair, one <name> block per type, matching the manifest test's description verbatim -- the repair touched only <default> elements inside two already-manifested BusinessProcess files, so no manifest member or file was added or removed.",
+      "domain": "manifest-consistency",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/package.xml"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "All three cited-skill checkers passed clean against the post-repair artefacts and reproduced the exact output strings recorded in the step's acceptance_tests[].description, so none of them were sensitive to the removed <default>true</default> element -- consistent with the finding being an org-side rejection (N3-F-01) rather than a locally-detectable defect.",
+      "domain": "checker-reproducibility",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M1-S01/check_opportunity_management.stdout.txt"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "None of this step's five cited skills document a per-BusinessProcess or per-RecordType default-stage mechanism for Opportunity; deploy-order.md section 6 records this gap as an inference ('UNVERIFIED (2026-09-18)') rather than a grounded claim, and it names a real open question -- which stage a new Enterprise or Renewal Opportunity actually opens on -- that no checker here can test and that the section 4 verification SOQL is the only way to close.",
+      "domain": "deploy-risk",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "set-status printed a plan-wide WARN naming this step specifically: admin/sales-process-mapping (cited in M1-S01.skills[]) ships check_sales_process_mapping.py but no acceptance test on this step or on milestone M1 runs it. Per this agent's scope guardrails a missing declared test is reported, never invented, so it is not run here; whether the checker adds coverage this step's three declared checkers do not already provide is a call for whoever amends the step (--add-checker) or drops the citation, not for this run.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "deploy-order.md section 0 still leads with the sf project retrieve start / merge instruction for StandardValueSet:OpportunityStage and states the deactivation risk in the same paragraph, and the literal string 'Commit' does not appear anywhere in OpportunityStage.standardValueSet-meta.xml -- both manual tests still read consistently with what they claim, though this agent does not tick them.",
+      "domain": "manual-test-support",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S01/deploy-order.md"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M1-S01 is tested again after its repair; the runs[] history shows it had already reached documented once before this repair reset it, so build-doc-keeper's prior workbook/traceability/decisions rows for this step now describe the pre-repair artefacts.",
+      "domain": "build-orchestration",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because the step's documentation rows were written against the run-1 artefacts and need to be refreshed against the repaired business-process files now that the step is tested again."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules binding this invocation, including the ban on org writes and auto-chaining"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, and the confidence rubric this agent overrides"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "persistence, atomic-write rule and the envelope shape for this run"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirmed no refusal condition applied (step status was built, not ambiguous)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "SS4-5: step type table, the five acceptance-test types and runners, checker-scope rule, deny-list, and check-outputs preconditions for built/tested"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "shape of acceptance_tests[] and outputs[] read from plan.json for M1-S01"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar (one <types> block per type, <members> naming components) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "source-format filename-to-metadata-type mapping used to derive manifest members from the artefact files"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "checked whether any of this step's types (StandardValueSet, BusinessProcess, RecordType, CustomField) have no standalone file; none do, so no manifest exclusion applied"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "verified both declared manual tests carry a Given/When/Then shape with a named observable outcome before carrying them into skipped_manual[]"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S01",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M1-S01/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c (xml.etree.ElementTree, always-on)",
+        "exit_code": 0,
+        "verdict": "pass - all 8 *.xml/*-meta.xml files under artefacts/M1-S01/ parsed"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "step-tester (always-on, per standards/build-orchestration.md SS5)",
+        "exit_code": 0,
+        "verdict": "pass - package.xml consistent with all 7 derived members, no exclusions needed"
+      },
+      {
+        "name": "skills/admin/opportunity-management/scripts/check_opportunity_management.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "verdict": "pass - No issues found."
+      },
+      {
+        "name": "skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "verdict": "pass - No findings."
+      },
+      {
+        "name": "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+        "exit_code": 0,
+        "verdict": "pass - No issues found across 0 object file(s) and 2 field file(s)."
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given D1 and assumption A24, when artefacts/M1-S01/deploy-order.md is read, then its first instruction is to run sf project retrieve start --metadata StandardValueSet:OpportunityStage against the target org and merge the retrieved active values into the shipped file, and it states in the same paragraph that a partial file deactivates every value it omits - including the SMB team's stages.",
+      "Given Q5 and Q6, when the eight standardValue blocks are read, then Qualify/Discover/Propose/Negotiate carry 10/25/50/75 and Pipeline/Pipeline/BestCase/Forecast, Renewal Review and Renewal Proposed carry 60/85 and Pipeline/Forecast, Closed Won carries 100 with won and closed true, Closed Lost carries 0 with forecastCategory Omitted - and the word 'Commit' appears nowhere in the file."
+    ],
+    "tests_run": 5
+  }
+}

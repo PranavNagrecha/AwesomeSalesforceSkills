@@ -1,0 +1,2 @@
+PARSED artefacts/M4-S04/package.xml
+files: 1 failed: 0

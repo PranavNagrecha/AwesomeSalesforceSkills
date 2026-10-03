@@ -1,0 +1,155 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-19T15-15-05Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S05/2026-09-19T15-15-05Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S05/2026-09-19T15-15-05Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S05"
+  },
+  "summary": "Documented M2-S05 (ui, tested by step-tester run 2026-09-19T14-45-08Z, \"passed\": true). Read plan.json, the tester's envelope and the builder's own envelope (2026-09-19T14-26-26Z) alongside tests/M2-S05/results.json and artefacts/M2-S05/deploy-order.md. No D- entries minted for this step (none of its items rose to a fresh technology-choice/design-trade-off/deviation the way M2-S02's and M2-S03's did); appended six open items instead, all sourced from the builder's own open_items_for_the_human[] and process_observations: O-M2S05-01 (check_sales_process_mapping.py at step scope asserts nothing), O-M2S05-02 (stale 'M2-S04 blocked' prose in the step's inputs.note), O-M2S05-03 (the Closed Won Finance/CS handoff is carried by no path step), O-M2S05-04 (the Renewal path may render onto no Lightning page yet), O-M2S05-05 (no metadata element for stage-advance celebration), O-M2S05-06 (whether the discount cap applies to Renewal is inferred, not dictated). Minted REQ-016 through REQ-018 (Enterprise Path, Renewal Path, and the shared Settings preference), continuing from REQ-015. Wrote three rows into workbook/02-page-layouts-and-lightning-pages.md (CWB-PATH-001 through 003, following the existing CWB-LAYOUT- rows in the same Section 2 file) and two rows into workbook/99-other-configuration.md (CWB-OTHER-009, CWB-OTHER-010). Wrote three matrix rows into traceability.md (REQ-016/017/018), added the M2-S05 test-id key paragraph (T1=check_path_and_guidance.py, T2=check_opportunity_management.py, T3=check_sales_process_mapping.py) and a coverage paragraph. One judgment call surfaced by the RTM checker: REQ-018 (the Settings file, no checker test of its own) needed a test_id assigned to the always-on manifest result -- M2-S05-T4 -- as a deliberate, disclosed exception to the inlining convention every earlier step's manifest result followed, to avoid manufacturing a fresh coverage-gap ERROR. No pre-existing row anywhere was touched. Set M2-S05 tested -> documented via build_plan.py set-status.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "REQ-018's placement required judgment on two counts the Step 11 MEDIUM row names directly: the Settings file is a supporting artefact for two other requirements rather than an addressable artefact of its own, and its traceability row needed a test_id assigned outside the established xml/manifest-inlining convention to satisfy check_rtm.py's coverage-gap rule. Every other row (REQ-016, REQ-017, CWB-PATH-001/002) met the HIGH bar cleanly: a real source_req_id, a resolvable recommended_agent, and a non-empty verification cell.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "decisions-appended",
+    "workbook-rows-written",
+    "traceability-rows-written",
+    "idempotence-keys"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "check_path_and_guidance.py's build-scope run actually resolved both recordTypeName values and all six picklistValueName values against M1-S01's record types, business processes and value set, matching the plan's own fixture prediction verbatim.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S05/check_path_and_guidance.out"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-coverage",
+      "observation": "check_sales_process_mapping.py's declared step-scope test exits 0 with 'Scanned 0 file(s) -- nothing asserted', a plan defect the step's own deploy-order.md section 7 already names with three remedies, none of which is this agent's to apply. Recorded as O-M2S05-01 rather than let a green test list imply content was checked that was not.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S05/check_sales_process_mapping.out"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "cross-step-dependency",
+      "observation": "Whether Renewal_Opportunity_Path renders to any user depends on whether Northwind's current Opportunity Lightning record page already carries the Path component -- M3-S05 (pending) rebuilds the Enterprise page only. Nothing in this build asserts the Renewal page's state either way; O-M2S05-04 carries the retrieve-and-grep a human needs to run before the M2 gate.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S05/deploy-order.md",
+        "detail": "section 3"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M2-S05 is now documented; M2-S04 (built and tested in parallel) is the last M2 step short of documented before milestone-verifier applies over the whole milestone.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 6 role table"
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Cross-step checks over the whole M2 milestone are only meaningful once every M2 step, including M2-S04, reaches documented."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the Plan this run followed: Step 1 precondition, Step 3 decisions, Step 4 workbook rows and the ui-step section-2 map entry, Step 5 deploy position, Step 6 verification step, Step 7 traceability, Step 8 idempotence, Step 9 set-status, Step 11 confidence, Step 12 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, Process Observations schema and requirement, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the envelope/report persistence pair and run_id conventions this run's own envelope follows"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was tested, not out of scope or ambiguous)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (plan.json as sole shared state), section 4 (ui step type's artefact map naming PathAssistant under Section 2, status machine tested->documented), section 6 (this agent's role)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concepts 1-3: the row schema and the ui-step routing to Section 2"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set, the REQ-XXX id convention for minting REQ-016 through REQ-018, and check_rtm.py's coverage-gap rule that drove the REQ-018 test_id decision"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape applied to this step's O- entries"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "recording the step's two outstanding manual tests as acceptance evidence rather than as narrated prose"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "confirming the two manual tests quoted from tests/M2-S05/results.json are already in Given/When/Then shape before carrying them into the traceability rows"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S05",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/workbook/02-page-layouts-and-lightning-pages.md",
+      ".sfskills/builds/northwind-sales/workbook/99-other-configuration.md",
+      ".sfskills/builds/northwind-sales/traceability.md",
+      ".sfskills/builds/northwind-sales/decisions.md"
+    ],
+    "workbook_rows": ["CWB-PATH-001", "CWB-PATH-002", "CWB-PATH-003", "CWB-OTHER-009", "CWB-OTHER-010"],
+    "traceability_rows": ["REQ-016", "REQ-017", "REQ-018"],
+    "decisions_appended": ["O-M2S05-01", "O-M2S05-02", "O-M2S05-03", "O-M2S05-04", "O-M2S05-05", "O-M2S05-06"],
+    "rows_replaced": [],
+    "checker_runs": {
+      "check_workbook.py --workbook workbook/02-page-layouts-and-lightning-pages.md": "exit 1 (9 x 'Missing canonical section' — expected; 0 row-level findings)",
+      "check_workbook.py --workbook workbook/99-other-configuration.md": "exit 1 (10 x 'Missing canonical section' — expected; 0 row-level findings)",
+      "check_rtm.py --file traceability.md --manifest-dir artefacts": "exit 1, final state for this three-step batch — 1 coverage gap (pre-existing REQ-010), 1 orphan (M2-S04's validation rule, out of this run's scope), 1 error, 24 warnings, all pre-existing id-shape conventions"
+    }
+  },
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Cross-step checks over the whole M2 milestone are only meaningful once every M2 step, including M2-S04, reaches documented."
+    }
+  ]
+}

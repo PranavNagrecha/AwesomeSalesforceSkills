@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Sent to the opportunity owner by the Notify_Submitter_Approved workflow alert (M3-S02) on final approval. Approval_Status__c is merged on a hedged line because the order of the field update and the alert inside finalApprovalActions is not established here - see artefacts/M3-S01/deploy-order.md section 4.</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Discount Approved</name>
+    <style>none</style>
+    <subject>Discount approved: {!Opportunity.Name}</subject>
+    <type>text</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

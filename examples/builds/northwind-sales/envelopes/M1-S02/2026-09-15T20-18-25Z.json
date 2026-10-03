@@ -1,0 +1,277 @@
+{
+  "agent": "build-doc-keeper",
+  "mode": "single",
+  "run_id": "2026-09-15T20-18-25Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T20-18-25Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T20-18-25Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S02",
+    "scale": "project"
+  },
+  "summary": "Documented M1-S02 (ui, scale project, build_mode design-only). Re-rendered PLAN.md and CLARIFICATIONS.md from plan.json. Minted REQ-008..REQ-010, continuing from REQ-001..REQ-007 (M1-S01): REQ-008/REQ-009 are the Enterprise and Renewal page layouts themselves (Q20, Q14, Q22, D2); REQ-010 is the Opportunity Products related-list half of requirement.md item 2, minted specifically to record - honestly, not as covered - that it is NOT satisfied by this step's artefacts (neither layout ships a relatedLists block; assumption A26). Appended 6 decisions (D-M1S02-01..06) and 3 open items (O-M1S02-01..03) to decisions.md, sourced verbatim from the runner's envelope extensions.decision_record entries that named a built element (six of the nine entries; the other three - Q19 profile fit, the Case-vs-Opportunity object note folded into D-M1S02-05, and Q re team-selling access - named no element or were folded in, per AGENT.md Step 3's rule that an entry with nothing built differently produces no separate D- row) and from artefacts/M1-S02/deploy-order.md SS0, SS3 items 2 and 4. O-M1S02-01 carries assumption A26 (the BLOCKING relatedLists retrieve), O-M1S02-02 carries assumption A25 (the unverified platform-required-field set), and O-M1S02-03 is the design question for the M1 gate: the two layouts are byte-identical because nothing in the answers differentiates Enterprise from Renewal, which admin/record-types-and-page-layouts calls a merge candidate - recorded as an open item for a human, not resolved as a decision here. Created workbook/02-page-layouts-and-lightning-pages.md (Section 2 - Page Layouts + Lightning Pages, the section Concept 2 assigns to layouts) with 2 rows (CWB-LAYOUT-001, CWB-LAYOUT-002), and appended 2 rows to workbook/99-other-configuration.md (CWB-OTHER-003 package.xml, CWB-OTHER-004 deploy-order.md - the artefact-level default per Step 4, continuing the numbering M1-S01 started). Wrote 3 rows to traceability.md: REQ-008 and REQ-009 status In UAT (tested, manual tests outstanding at the M1 gate, matching REQ-001..007's pattern); REQ-010 status In Build - explicitly not In UAT, because no artefact and no declared test in this step's acceptance_tests[] can attest to it. check_workbook.py run on both slices exactly as M1-S01's run did: workbook/02-page-layouts-and-lightning-pages.md exits 1 with 9 'Missing canonical section' issues (all other 9 sections absent from a one-section slice) and zero per-row findings; workbook/99-other-configuration.md exits 1 with 10 (the 'Other configuration' heading is not a canonical heading the parser recognises) and zero per-row findings - the same structural, not-a-defect shape M1-S01 measured. Moved M1-S02 tested -> documented via build_plan.py set-status.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 11 MEDIUM on two of the named conditions. First, the same one M1-S01 hit: REQ-008/REQ-009/REQ-010 had to be minted rather than read off an existing register, anchored to the clarification ids the runner's own decision_record already cites (Q20, Q14, Q22) plus decision D2 - not a freehand id. Second, an artefact (the two layout files together) could not be verified without judgment on the six-vs-nine decision_record filter: three of the runner's nine decision_record entries name no built element (Q19 profile fit, Q re team-selling access) or restate a fact D-M1S02-05 already covers, and AGENT.md Step 3 gives no numeric target - the six-decision count in this run's instructions matched exactly what 'named an element the layout actually carries' produced, and that alignment is reported rather than assumed to generalise to a future step with a different split. Two artefacts (package.xml, deploy-order.md) again fell to Step 4's artefact-level Other-configuration default, matching precedent exactly (not a fresh judgment call). Every row carries a real source_req_id and a named verification step or, for REQ-010, an explicit statement of why no verification step exists yet; every requirement the step serves has a traceability row; re-running this step's documentation pass would replace rather than duplicate every keyed row (Step 8). Neither LOW condition applies: no row was written with an empty source_req_id, and the step's test results (tests/M1-S02/results.json) were fully readable.",
+  "dimensions_compared": [
+    "workbook-row-placement",
+    "traceability-coverage",
+    "decision-log-completeness",
+    "requirement-honesty (REQ-010 not marked as covered)"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "rtm-lint",
+      "state": "not-run",
+      "reason": "check_rtm.py is not one of M1-S02's declared acceptance tests and is not named in this agent's own Step 12 self-validation (validate_envelope.py over this agent's own envelope). Flagged as a follow-up in traceability.md's header (carried from M1-S01's run, unchanged) rather than run speculatively.",
+      "confidence_impact": "NONE",
+      "retry_hint": "Run python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file traceability.md --manifest-dir artefacts --repo-root ../../.. from .sfskills/builds/northwind-sales/ before the M1 milestone gate (build scope, now that M1-S01 and M1-S02 are both documented)."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "traceability-coverage",
+      "observation": "REQ-008 and REQ-009 each have exactly one traceability row, tied to the layout file each names, with the same verification evidence (one build-scoped checker run covers both). REQ-010 also has a row - deliberately not omitted - so the matrix's coverage line stays honest: the related-list gap is a documented, tracked requirement, not an artefact nobody wrote a requirement for.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/traceability.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "decision-grounding",
+      "observation": "All six decisions and all three open items this run appended trace to a specific entry in the runner's envelope (extensions.decision_record[n] or extensions.open_items_for_the_human[n]) or a specific section of deploy-order.md, the same sourcing discipline M1-S01's doc-keeper run established and this run continued rather than reinvented.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T19-58-38Z.json",
+        "count": 9
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "requirement-coverage",
+      "observation": "REQ-010 (the Opportunity Products related list) is minted and immediately recorded as unsatisfied - the only row in traceability.md carrying status In Build while its step is documented. A reader who scans traceability.md for 'is M1 done' and stops at row count rather than status column would miss that requirement.md item 2's product-line entry is not yet built by anything in this milestone.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/traceability.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "deploy-risk",
+      "observation": "The two layouts this step produced are byte-for-byte identical (decisions.md O-M1S02-03, carried from the runner's own process_observations). Nothing in this documentation pass resolves that - it is recorded as an open design question for the M1 gate, per this task's own instruction, and it sits alongside O-M1S01-03's 'not yet selectable' gap as a second reason the M1 gate should not be read as 'Enterprise and Renewal are fully differentiated and ready.'",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "decision-record-filtering",
+      "observation": "The runner's envelope carries nine decision_record entries; six were promoted to decisions.md D-entries because each names a built layout element, and the other three (Q19 profile fit and the Q re team-selling access, both explicitly 'no element in this step'; the Case-vs-Opportunity object note, folded into D-M1S02-05 rather than duplicated) were not. AGENT.md Step 3 states the four decision kinds but not a numeric filter for which decision_record entries qualify - this run's element-named/no-element split is a judgment applied consistently across all nine, not a rule AGENT.md states verbatim, and a future step with a decision_record shaped differently should not assume the same 6-of-9 ratio.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T19-58-38Z.json",
+        "count": 9
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "orchestration",
+      "observation": "M1-S02 is now documented; both M1 steps (M1-S01, M1-S02) have reached documented, so M1 is ready for cross-step verification.",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      },
+      "suggested_followup_agent": "milestone-verifier",
+      "followup_reason": "Because every step in M1 is documented and the milestone's acceptance tests (the cross-step record-type/layout checker, the manifest check, and the manual tests including O-M1S02-03's merge-candidate question) are M1-scoped, not step-scoped."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "build-doc-keeper",
+      "path": "agents/build-doc-keeper/AGENT.md",
+      "used_for": "the Plan this run executed (Steps 1-9, 11, 12) - a per-step run, since M1-S02's owning agent is metadata-builder, not build-doc-keeper"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape, Process Observations schema, confidence rubric (overridden by AGENT.md Step 11)"
+    },
+    {
+      "type": "standard",
+      "id": "deliverable-contract",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "envelope shape, run_id convention, atomic-write rule"
+    },
+    {
+      "type": "standard",
+      "id": "refusal-codes",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirmed no refusal condition applied - step status was tested, the precondition for a per-step documenting run"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "SS2 (rendered views vs plan.json as sole state; build directory layout), SS4 (ui step type -> Section 2; the artefact-level package.xml/deploy-order default; the 'commonly-missed artefacts' table naming list views/reports/email templates alongside layouts for Section 2), SS8 (set-status as the only status writer)"
+    },
+    {
+      "type": "standard",
+      "id": "build-plan-schema",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the step, acceptance_tests[] and outputs[] shape read from plan.json for M1-S02"
+    },
+    {
+      "type": "skill",
+      "id": "admin/configuration-workbook-authoring",
+      "path": "skills/admin/configuration-workbook-authoring/SKILL.md",
+      "used_for": "Concept 2's section list (Section 2 = Page Layouts + Lightning Pages) and Concept 1's row schema, and Concept 3's recommended_agent table (metadata-builder overrides the section default per AGENT.md Step 4, design-only build)"
+    },
+    {
+      "type": "skill",
+      "id": "admin/requirements-traceability-matrix",
+      "path": "skills/admin/requirements-traceability-matrix/SKILL.md",
+      "used_for": "the build-layer RTM column set, the REQ-XXX minting rule, the status enum (Draft/In Build/In UAT/Released/Deferred/Dropped) that let REQ-010 be recorded honestly as In Build rather than folded into REQ-008/REQ-009's In UAT, and the pipe/semicolon multi-value convention"
+    },
+    {
+      "type": "skill",
+      "id": "devops/development-documentation-standards",
+      "path": "skills/devops/development-documentation-standards/SKILL.md",
+      "used_for": "the decision-entry shape (date, decision, alternative rejected, source grounded in) applied to all six D-M1S02 entries"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "confirmed both of M1-S02's manual tests carry an observable outcome before recording them as outstanding rather than passed"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/SKILL.md",
+      "used_for": "the merge-candidate framing this run cites verbatim for O-M1S02-03, and the metadata-examples.md / gotchas.md sources six of the six D-M1S02 entries ground in"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/workbook/02-page-layouts-and-lightning-pages.md",
+      "used_for": "the CWB-LAYOUT-nnn row_id convention for Section 2, the file's header-note shape, and the measured check_workbook.py --allow-empty-section behaviour on a Section 2 slice this run reproduced"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales (this build)",
+      "path": ".sfskills/builds/northwind-sales/workbook/01-objects-and-fields.md",
+      "used_for": "the CWB-OTHER-nnn continuation numbering and the owner/source_story_id conventions this run's rows match exactly"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales (this build)",
+      "path": ".sfskills/builds/northwind-sales/decisions.md",
+      "used_for": "the D-/O- entry format and the append-only convention M1-S01 established and this run continued"
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "mode": "per-step",
+    "files_updated": [
+      ".sfskills/builds/northwind-sales/PLAN.md",
+      ".sfskills/builds/northwind-sales/CLARIFICATIONS.md",
+      ".sfskills/builds/northwind-sales/decisions.md",
+      ".sfskills/builds/northwind-sales/workbook/02-page-layouts-and-lightning-pages.md",
+      ".sfskills/builds/northwind-sales/workbook/99-other-configuration.md",
+      ".sfskills/builds/northwind-sales/traceability.md"
+    ],
+    "workbook_rows": [
+      "CWB-LAYOUT-001",
+      "CWB-LAYOUT-002",
+      "CWB-OTHER-003",
+      "CWB-OTHER-004"
+    ],
+    "traceability_rows": [
+      "REQ-008",
+      "REQ-009",
+      "REQ-010"
+    ],
+    "decisions_appended": [
+      "D-M1S02-01",
+      "D-M1S02-02",
+      "D-M1S02-03",
+      "D-M1S02-04",
+      "D-M1S02-05",
+      "D-M1S02-06",
+      "O-M1S02-01",
+      "O-M1S02-02",
+      "O-M1S02-03"
+    ],
+    "rows_replaced": [],
+    "check_workbook_results": [
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/02-page-layouts-and-lightning-pages.md --repo-root ../../.. --allow-empty-section",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 1,
+        "issues": 9,
+        "issue_shape": "every issue is 'Missing canonical section' for one of the nine sections this slice does not carry; zero per-row findings"
+      },
+      {
+        "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook workbook/99-other-configuration.md --repo-root ../../.. --allow-empty-section",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "exit_code": 1,
+        "issues": 10,
+        "issue_shape": "every issue is 'Missing canonical section' for all ten canonical sections - 'Other configuration' is not a canonical heading the parser recognises; zero per-row findings"
+      }
+    ],
+    "render_result": {
+      "command": "python3 scripts/build_plan.py render .sfskills/builds/northwind-sales/plan.json",
+      "exit_code": 0,
+      "output": "wrote .sfskills/builds/northwind-sales/PLAN.md; wrote .sfskills/builds/northwind-sales/CLARIFICATIONS.md"
+    },
+    "set_status_result": {
+      "command": "python3 scripts/build_plan.py set-status .sfskills/builds/northwind-sales/plan.json M1-S02 documented --run-agent build-doc-keeper --envelope envelopes/M1-S02/2026-09-15T20-18-25Z.json --result \"workbook rows 4; traceability rows 3; decisions appended 9\" --started 2026-09-15T20:18:25Z",
+      "exit_code": 0
+    },
+    "req_id_minting": [
+      {
+        "req_id": "REQ-008",
+        "artefact": "Layout:Opportunity-Opportunity Enterprise Layout",
+        "source": "Q20; Q14; Q22; decision D2"
+      },
+      {
+        "req_id": "REQ-009",
+        "artefact": "Layout:Opportunity-Opportunity Renewal Layout",
+        "source": "Q20; Q14; Q22; decision D2"
+      },
+      {
+        "req_id": "REQ-010",
+        "artefact": "none - deliberately absent from both layouts",
+        "source": "Q14; requirement.md item 2",
+        "note": "minted specifically to record honestly that this requirement is NOT satisfied by M1-S02's artefacts, per this run's instruction"
+      }
+    ],
+    "open_design_question_for_m1_gate": {
+      "id": "O-M1S02-03",
+      "question": "The Enterprise and Renewal layouts are byte-identical. admin/record-types-and-page-layouts calls this a merge candidate. Keep both as independently deployed files, or merge into one shared layout referenced by both record types?",
+      "status": "open - not a decision this run made",
+      "evidence": "artefacts/M1-S02/deploy-order.md § 3 item 4; envelopes/M1-S02/2026-09-15T19-58-38Z.json extensions.open_items_for_the_human[2]"
+    }
+  },
+  "followups": [
+    {
+      "agent": "milestone-verifier",
+      "because": "Both M1-S01 and M1-S02 are now documented, so M1's cross-step acceptance tests and the O-M1S02-03 merge-candidate question are ready to be carried to the M1 gate."
+    }
+  ]
+}

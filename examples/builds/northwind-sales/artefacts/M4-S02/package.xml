@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Enterprise_Managers</members>
+        <name>Group</name>
+    </types>
+    <types>
+        <members>Enterprise_Opportunity_Pipeline</members>
+        <name>ReportType</name>
+    </types>
+    <types>
+        <members>Enterprise_Sales</members>
+        <members>Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage</members>
+        <name>Report</name>
+    </types>
+    <types>
+        <members>Enterprise_Sales</members>
+        <members>Enterprise_Sales/Enterprise_Pipeline</members>
+        <name>Dashboard</name>
+    </types>
+    <version>62.0</version>
+</Package>

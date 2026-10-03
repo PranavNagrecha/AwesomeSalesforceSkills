@@ -1,0 +1,101 @@
+<!--
+  discountApprovalPanel.html - build northwind-sales, step M3-S04.
+
+  Copy-renamed from the `accountSummaryPanel` bundle in
+  skills/lwc/lwc-base-component-recipes/references/code-examples.md, per the repo template
+  rule (copy and rename; never re-invent the idiom). The card + read-only
+  lightning-record-view-form shape is that example's; the discount rule is this step's.
+
+  Conditionals use lwc:if / lwc:else only - never legacy if:true / if:false - and every
+  condition is a single getter-backed boolean, not a template expression
+  (skills/lwc/lwc-conditional-rendering, "The Directive Trio" and "Complex logic belongs
+  in a getter").
+
+  UNVERIFIED (2026-09-19): the LWC Developer Guide does not publish per-component attribute
+  tables, so `icon-name` on lightning-card, `alternative-text` / `size` on lightning-spinner,
+  `record-id` / `object-api-name` on lightning-record-view-form, `field-name` on
+  lightning-output-field and `label` / `disabled` / `onclick` on lightning-button carry the
+  same marker the source example carries (code-examples.md, "UNVERIFIED (2026-09-05)").
+  `density` on the form and `variant` on the button ARE printed by the guide
+  (L6329-L6331; L1620, L1683). Confirm the rest on the Component Library Specification tab.
+-->
+<template>
+    <lightning-card title="Discount Approval" icon-name="standard:approval">
+        <div class="slds-var-p-horizontal_medium slds-var-p-bottom_medium slds-is-relative">
+
+            <template lwc:if={isSubmitting}>
+                <lightning-spinner
+                    alternative-text="Submitting for approval"
+                    size="small"
+                ></lightning-spinner>
+            </template>
+
+            <!--
+              The platform reads the record; this component never asks Apex for it.
+              lightning-record-view-form goes through Lightning Data Service, so the labels,
+              the Percent formatting and the running user's field-level security all come
+              from the platform, and a field the user cannot read is simply absent
+              (lwc-base-component-recipes, "Read-only summaries with lightning-record-view-form").
+              The output fields are DIRECT children of the form: nested inside any other
+              element they render nothing at all (lwc_guide L11727).
+            -->
+            <lightning-record-view-form
+                record-id={recordId}
+                object-api-name="Opportunity"
+                density="compact"
+            >
+                <lightning-output-field field-name="Discount__c"></lightning-output-field>
+                <lightning-output-field field-name="Approval_Status__c"></lightning-output-field>
+            </lightning-record-view-form>
+
+            <template lwc:if={recordError}>
+                <p
+                    data-id="record-error"
+                    role="alert"
+                    class="slds-text-color_error slds-text-body_small slds-var-m-top_x-small"
+                >Submit is unavailable because the discount could not be read: {recordError}</p>
+            </template>
+
+            <div class="slds-var-m-top_small">
+                <lightning-button
+                    data-id="submit"
+                    label="Submit for approval"
+                    variant="brand"
+                    disabled={isSubmitDisabled}
+                    onclick={handleSubmit}
+                ></lightning-button>
+            </div>
+
+            <!--
+              The hint is ordinary visible text and is deliberately NOT wired to the button
+              with aria-describedby. A disabled button is not focusable, so a description
+              attached to it is never reached; and an aria-describedby written on the
+              <lightning-button> host would land outside that base component's own shadow
+              root rather than on the <button> assistive technology reads
+              (skills/lwc/lwc-accessibility, "Id-Based ARIA Association Stops At The Shadow
+              Boundary"). Text beside the control is read by everyone, keyboard or not.
+            -->
+            <p
+                data-id="hint"
+                class="slds-text-body_small slds-text-color_weak slds-var-m-top_xx-small"
+            >{submitHint}</p>
+
+            <!--
+              Always rendered, never wrapped in lwc:if. Two reasons, both from
+              skills/lwc/lwc-accessibility: a live region has to be in the DOM before its
+              text changes for the change to be announced, and "Elements not rendered to the
+              DOM aren't returned in the querySelector result" - keeping it mounted is what
+              makes this.refs.outcome a valid focus target in the same tick as the state flip,
+              with no microtask dance.
+            -->
+            <div
+                data-id="outcome"
+                lwc:ref="outcome"
+                tabindex="-1"
+                role="status"
+                aria-live="polite"
+                class={outcomeClass}
+            >{outcomeMessage}</div>
+        </div>
+    </lightning-card>
+</template>

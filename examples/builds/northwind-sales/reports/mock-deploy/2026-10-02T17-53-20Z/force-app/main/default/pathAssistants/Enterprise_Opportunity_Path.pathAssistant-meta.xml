@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <entityName>Opportunity</entityName>
+    <fieldName>StageName</fieldName>
+    <masterLabel>Enterprise Opportunity Path</masterLabel>
+    <pathAssistantSteps>
+        <fieldNames>Amount</fieldNames>
+        <fieldNames>CloseDate</fieldNames>
+        <info>Exit criteria before Discover: Amount and Close Date are filled with figures you would defend in a forecast call. Owner: the rep who owns the deal.</info>
+        <picklistValueName>Qualify</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>NextStep</fieldNames>
+        <fieldNames>Amount</fieldNames>
+        <fieldNames>CloseDate</fieldNames>
+        <info>Exit criteria before Propose: at least one product line added from the price book, and a booked Next Step naming the date and who is attending. Keep Amount and Close Date in step with the product lines as they change. Owner: the rep who owns the deal.</info>
+        <picklistValueName>Discover</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Discount__c</fieldNames>
+        <fieldNames>Amount</fieldNames>
+        <fieldNames>CloseDate</fieldNames>
+        <info>Exit criteria before Negotiate: the proposal is sent, a primary contact with the Decision Maker contact role is on the deal, and the discount is either within policy or already submitted for approval. Only the rep who owns the deal moves it to Negotiate, and only once the manager has seen the proposal. Set the contact role on the Contacts related list - it is a related record, so it cannot appear as a key field here.</info>
+        <picklistValueName>Propose</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Discount__c</fieldNames>
+        <fieldNames>Approval_Status__c</fieldNames>
+        <fieldNames>CloseDate</fieldNames>
+        <info>Exit criteria before Closed Won: a discount above 20% is approved, not merely submitted - read Approval Status below rather than the email thread. Redlines and the signed order form belong on the record. Owner: the rep who owns the deal.</info>
+        <picklistValueName>Negotiate</picklistValueName>
+    </pathAssistantSteps>
+    <recordTypeName>Enterprise</recordTypeName>
+</PathAssistant>

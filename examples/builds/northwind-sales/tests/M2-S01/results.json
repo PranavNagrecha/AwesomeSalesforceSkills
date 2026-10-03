@@ -1,0 +1,76 @@
+{
+  "step_id": "M2-S01",
+  "ran": [
+    "xml",
+    "manifest",
+    "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts",
+    "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+    "check-outputs"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given Q13 and Q17, when artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml is read, then it grants exactly one custom permission, carries no objectPermissions, no fieldPermissions and no userPermissions, and its description names the sales-ops admin as the only intended holder - so approving this gate is approving one bypass and nothing else. (expected: ticked at the M2 milestone gate; deferred to that gate, not ticked by step-tester)"
+  ],
+  "test_detail": [
+    {
+      "name": "xml",
+      "type": "xml",
+      "runner": "xml.etree.ElementTree, one parse per *.xml / *-meta.xml under artefacts/M2-S01/",
+      "files_checked": [
+        "artefacts/M2-S01/customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml",
+        "artefacts/M2-S01/package.xml",
+        "artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml"
+      ],
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "all 3 files parse"
+    },
+    {
+      "name": "manifest",
+      "type": "manifest",
+      "runner": "two-way consistency check between artefacts/M2-S01/package.xml and the files under artefacts/M2-S01/, per skills/devops/salesforce-dx-project-structure filename-to-type mapping",
+      "exit_code": null,
+      "verdict": "pass",
+      "detail": "package.xml carries two <types> blocks: CustomPermission (member Bypass_Opportunity_Sales_Validation, matching customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml's file-name stem) and PermissionSet (member Sales_Ops_Validation_Bypass, matching permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml's file-name stem). Both members are named explicitly (no wildcard). File-to-manifest: both files covered. Manifest-to-file: both members have a file. Neither CustomPermission nor PermissionSet is on the skills/devops/metadata-api-coverage-gaps no-standalone-file list, so no exclusion applies."
+    },
+    {
+      "name": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts",
+      "type": "checker",
+      "runner": "declared command, run verbatim from the build directory",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "Summary: 0 error(s), 0 warning(s), 0 info. Coverage: Bypass_Opportunity_Sales_Validation, Consumers 0, Granted by permission set 'Sales_Ops_Validation_Bypass'. check-outputs also ok, so both pass conditions are met. Raw capture: tests/M2-S01/check_custom_permissions.stdout.txt.",
+      "divergence_from_plan_description": "The test's own description narrates a fixture run that saw 'Summary: 0 error(s), 0 warning(s), 1 info' at step scope and 'Consumers 1' at build scope. This run printed 0 info (the shipped description is 197 characters, under the CP-DESC-02 INFO threshold of 200, per inputs.note) and Consumers 0 (M2-S03, the validation rule that would reference this permission, does not exist yet). The declared 'expected: exit 0' is met regardless; this is prose drift in the plan's test description, already recorded by metadata-builder as O-M2S01-02, not a defect in the artefacts or the test itself. Judged by the declared expected and command, per the task's instruction, not by the narrated fixture numbers."
+    },
+    {
+      "name": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+      "type": "checker",
+      "runner": "declared command, run verbatim from the build directory",
+      "exit_code": 0,
+      "verdict": "pass",
+      "detail": "No issues found. Matches the plan's own fixture description exactly. Raw capture: tests/M2-S01/check_permission_set_architecture.stdout.txt."
+    },
+    {
+      "name": "manual",
+      "type": "manual",
+      "runner": "not runnable by step-tester",
+      "exit_code": null,
+      "verdict": "deferred",
+      "detail": "Given/When/Then shape checked: Given names Q13 and Q17, When names one observable action (reading the permission-set file), Then names four checkable facts (exactly one custom permission, no objectPermissions, no fieldPermissions, no userPermissions, description names the sales-ops admin). All three clauses present and the Then is inspectable directly against the shipped XML, so this line is usable at the gate rather than unusable. Carried into skipped_manual[] for milestone-verifier; not ticked here."
+    }
+  ],
+  "check_outputs": {
+    "ok": true,
+    "step": "M2-S01",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "artefact_hashes": {
+    "artefacts/M2-S01/customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml": "fe5d599b2304f18669970d62f15120f41b79282c787d2cdba5fe3549e2e5cb4d",
+    "artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml": "7d25e9f1d4545df9bad1f157124421b95ea521c5e25671d48e3a3782fa877aab",
+    "artefacts/M2-S01/package.xml": "7f0911ff0fca3ef81355ea81b33a0b1e224995bcb974966754e13273bb98a974",
+    "artefacts/M2-S01/deploy-order.md": "8c653c18b9006fff2ebeb96d4426f3df2fbf55d9fed40a4ba25abdd729420d21"
+  }
+}

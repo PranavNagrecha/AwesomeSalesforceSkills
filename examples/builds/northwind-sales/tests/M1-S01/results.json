@@ -1,0 +1,27 @@
+{
+  "step_id": "M1-S01",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/opportunity-management/scripts/check_opportunity_management.py",
+    "skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py",
+    "skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given D1 and assumption A24, when artefacts/M1-S01/deploy-order.md is read, then its first instruction is to run sf project retrieve start --metadata StandardValueSet:OpportunityStage against the target org and merge the retrieved active values into the shipped file, and it states in the same paragraph that a partial file deactivates every value it omits - including the SMB team's stages.",
+    "Given Q5 and Q6, when the eight standardValue blocks are read, then Qualify/Discover/Propose/Negotiate carry 10/25/50/75 and Pipeline/Pipeline/BestCase/Forecast, Renewal Review and Renewal Proposed carry 60/85 and Pipeline/Forecast, Closed Won carries 100 with won and closed true, Closed Lost carries 0 with forecastCategory Omitted - and the word 'Commit' appears nowhere in the file."
+  ],
+  "artefact_hashes": {
+    "artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml": "5c4619f2e44b99e41627bc58d555a4b807a2c06c2973f0b82c0b24ca29603f5c",
+    "artefacts/M1-S01/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml": "7ffded00f50a09d49477806c1f9c5e4f7ae30a7e8c321e1a8276b739f8dd4aa4",
+    "artefacts/M1-S01/objects/Opportunity/businessProcesses/Renewal_Sales_Process.businessProcess-meta.xml": "5769bb3c5235adff2b8eb170abe1055408f791950403c4d0a7b835f93c9ac77e",
+    "artefacts/M1-S01/objects/Opportunity/recordTypes/Enterprise.recordType-meta.xml": "8eb188915ae8db620ddd4fb6b08a1d1045e11c09b15b1b4ca89cc106e6735243",
+    "artefacts/M1-S01/objects/Opportunity/recordTypes/Renewal.recordType-meta.xml": "e610fd1cd0d94b79463042b73646f4d2b150b100943b605fcd804f6c4e3f8641",
+    "artefacts/M1-S01/objects/Opportunity/fields/Discount__c.field-meta.xml": "2b0f5c265f8257be19c4072d93c656b6a34a9f18e32869846165668582059585",
+    "artefacts/M1-S01/objects/Opportunity/fields/Approval_Status__c.field-meta.xml": "d2ae01f95940cda92bee813f8911261941945b86928708caf12e6ec0b790cdcb",
+    "artefacts/M1-S01/package.xml": "17494d0864585698f81c7efcf332685540bbb765eb6cfeecbc0733cbaf02d942",
+    "artefacts/M1-S01/deploy-order.md": "6c7c71c930c6cd78370cbec3d250863cad702e07935fa72014f04c8710820262"
+  }
+}

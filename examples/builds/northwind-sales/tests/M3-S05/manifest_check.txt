@@ -1,0 +1,27 @@
+Manifest consistency check — step M3-S05
+Rule: standards/build-orchestration.md § 5 / agents/step-tester/AGENT.md Step 3.
+Mapping reference: skills/devops/salesforce-dx-project-structure (source-format filename -> metadata type/member).
+Exclusion reference: skills/devops/metadata-api-coverage-gaps (not needed here — both types below have standalone source files).
+
+package.xml declares (artefacts/M3-S05/package.xml):
+  - FlexiPage: Opportunity_Enterprise_Record_Page
+  - CustomObject: Opportunity
+
+Files under artefacts/M3-S05/ derived to members:
+  - flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml -> FlexiPage "Opportunity_Enterprise_Record_Page"
+  - objects/Opportunity/Opportunity.object-meta.xml -> CustomObject "Opportunity"
+  (deploy-order.md is not metadata and derives no member)
+
+Direction 1 — file to manifest: every derived member appears in package.xml.
+  FlexiPage Opportunity_Enterprise_Record_Page -> present. MATCH.
+  CustomObject Opportunity -> present. MATCH.
+
+Direction 2 — manifest to file: every named (non-wildcard) <members> entry is backed by a file.
+  FlexiPage Opportunity_Enterprise_Record_Page -> file exists. MATCH.
+  CustomObject Opportunity -> file exists. MATCH.
+
+No wildcard members declared. No exclusions needed (neither type is on the
+metadata-api-coverage-gaps no-standalone-file list; both ship as ordinary
+source-format files here).
+
+Verdict: consistent.

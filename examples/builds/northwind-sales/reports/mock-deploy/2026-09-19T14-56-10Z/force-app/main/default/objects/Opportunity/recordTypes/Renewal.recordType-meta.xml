@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Renewal</fullName>
+    <active>true</active>
+    <businessProcess>Renewal_Sales_Process</businessProcess>
+    <description>Renewal deals worked by the Enterprise sales team on the shorter renewal ladder.</description>
+    <label>Renewal</label>
+</RecordType>

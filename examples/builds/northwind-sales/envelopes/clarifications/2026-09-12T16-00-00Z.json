@@ -1,0 +1,166 @@
+{
+  "agent": "requirements-clarifier",
+  "mode": "single",
+  "run_id": "2026-09-12T16-00-00Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/clarifications/2026-09-12T16-00-00Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/clarifications/2026-09-12T16-00-00Z.json",
+  "inputs_received": {
+    "requirement_path": ".sfskills/builds/northwind-sales/requirement.md",
+    "build_dir": ".sfskills/builds/northwind-sales",
+    "build_mode": "design-only",
+    "scale": null
+  },
+  "summary": "Clarified 'Northwind Enterprise sales process' (build northwind-sales, design-only). Build was at intake with no scale set; computed and recorded scale: project (D=8 metadata types, S=9 skills with question tables, O=3 objects, integration=no) via set-scale, since D and S both cross the project threshold even though O alone would only read feature. 21 searches run against search_knowledge.py (20 capability-phrase searches plus one control search on 'permission set' to confirm the retrieval index is healthy); 9 topic skills carried a '## Questions to Ask Before Configuring' table and were harvested in full, plus the generic admin/requirements-gathering-for-sf set. 66 raw table rows plus 7 generic rows harvested; one skill (admin/products-and-pricebooks) matched the 'opportunity products / price book' capability but carries no question table, so that capability is recorded not-covered. 65 clarifications written after dedupe by meaning (35 blocking, 30 informational; 40 carry a proposed default, 25 do not). plan.json is at status clarifying and CLARIFICATIONS.md is rendered; the agent answered nothing, deferred nothing, and approved no gate.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "MEDIUM per the agent's own rubric on two independent triggers: (a) the 'opportunity products / price book' capability phrase returned a matching skill (admin/products-and-pricebooks) that carries no Questions-to-Ask table, a recorded coverage gap; and (b) 25 of 65 clarifications (38.5%) carry default_source 'none', above the one-quarter threshold. A third, self-disclosed factor: one clarification (Q7, the exact per-stage probability values) does not trace to a single harvested table cell as cleanly as the rest — it is grounded in the requirement's own text ('Each stage should have a probability') plus the adjacent admin/opportunity-management forecast-bucket row, rather than a verbatim row match. Not LOW: the retrieval index is present and healthy (control search returned results), every other clarification traces to a harvested table row or the generic set, and no skill gave contradictory guidance requiring REFUSAL_NEEDS_HUMAN_REVIEW.",
+  "outcome": "completed",
+  "deliverables": [
+    {
+      "kind": "json",
+      "title": "Clarification set (65 rows), capability coverage, dedupe log",
+      "target_path": ".sfskills/builds/northwind-sales/plan.json",
+      "content": "See plan.json clarifications[] (65 rows, scale: project) and this envelope's extensions block for capability_coverage[] and deduped_pairs[]."
+    },
+    {
+      "kind": "markdown",
+      "title": "Rendered clarifications for the human to answer",
+      "target_path": ".sfskills/builds/northwind-sales/CLARIFICATIONS.md",
+      "content": "Rendered by scripts/build_plan.py render from plan.json; grouped ## Blocking (35) then ## Informational (30), each in object-model / validation / ui / automation / testing-and-environments / access / integration order."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The requirement text pre-answers a meaningful fraction of its own generic-interview questions (licence = employees only, integration = none, data origin = Salesforce only, today's state = one generic pipeline), so those rows land as informational with a requirement-text default rather than open blocking questions.",
+      "domain": "requirements-quality",
+      "evidence": {"source": "input", "path": ".sfskills/builds/northwind-sales/requirement.md"}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "admin/validation-rules, admin/approval-processes and admin/approval-process-apex-patterns agree on the approval/record-lock mechanics with no contradiction found across their three question tables, so no source-hierarchy escalation was needed.",
+      "domain": "skill-consistency",
+      "evidence": {"source": "repo_scan", "path": "skills/admin/validation-rules/SKILL.md, skills/admin/approval-processes/SKILL.md, skills/admin/approval-process-apex-patterns/SKILL.md"}
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "observation": "The 'opportunity products from the price book' capability, explicit in the requirement's item 2, has no skill in the local library carrying a Questions-to-Ask table — admin/products-and-pricebooks exists and matched the search but has no such section, so this build proceeds with zero harvested questions on price book entry setup, active-price-book confirmation, or currency handling.",
+      "domain": "library-depth",
+      "evidence": {"source": "repo_scan", "path": "skills/admin/products-and-pricebooks/SKILL.md", "query": "grep -c '^## Questions to Ask Before Configuring'", "count": 0}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "observation": "standards/decision-trees/automation-selection.md, cited to ground the Approval Process choice for the discount sign-off, has no numbered Q-branch that reaches Approval Process at all — 'Approval Process' appears only in the tree's unnumbered cheat sheet row, and the tree's own Q1 trigger list has no option for 'a business decision needing one person's sign-off.' Validation Rule as an enforcement mechanism does not appear anywhere in the tree, numbered or not, because the tree's stated scope is Flow vs Apex vs four other engines and does not include Validation Rule at all.",
+      "domain": "decision-tree-coverage",
+      "evidence": {"source": "repo_scan", "path": "standards/decision-trees/automation-selection.md", "query": "grep -n Approval standards/decision-trees/automation-selection.md"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The D/S/O/X sizing counts required judgment calls the AGENT.md and standards/build-orchestration.md § 3.1 do not fully mechanize: whether a build-level package.xml aggregator step (required only because an Apex step exists) counts toward D, whether OpportunityLineItem counts as a distinct O object when the requirement never names it explicitly (only 'opportunity products'), and whether Product2/Pricebook2 setup constitutes its own metadata-deployable step at all given the org already has Sales Cloud Enterprise provisioned. All three read the same way under the 'round up, never down' rule and did not change the final tier (project), but a differently-reasoned agent could plausibly land on D=6-8 or O=2-4 from the same requirement text.",
+      "domain": "sizing-rule-determinism",
+      "evidence": {"source": "heuristic"}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "admin/custom-permissions and admin/approval-process-apex-patterns both surfaced from exploratory searches ('custom permission bypass', 'record lock pending approval') that were not literal capability phrases lifted from the requirement text, but from the agent's own anticipation of validation-rule bypass and Apex-approval mechanics. admin/approval-process-apex-patterns was judged genuinely additive (the invocable Apex action calling Approval.process is squarely its topic) and harvested as a 9th skill; admin/custom-permissions was judged redundant with admin/validation-rules' own bypass row and deliberately not harvested, to avoid asking the same decision twice under two different skill citations.",
+      "domain": "harvest-judgment",
+      "evidence": {"source": "heuristic"}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "Once G1 is approved, /plan-build should read this plan at scale: project and produce 2-6 milestones (not the single-milestone shape of ask/feature), since D=8 distinct metadata-type steps do not collapse into one milestone.",
+      "domain": "handoff",
+      "evidence": {"source": "input", "path": ".sfskills/builds/northwind-sales/plan.json"},
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "because scope + fit-gap + decisions + milestones + steps is the planner's output, never the clarifier's, per AGENT.md's non-goals."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "The discount-cap validation rule and the approval-process entry criteria both read the same 'discount' concept from two different formula contexts (a hard block vs an entry-criteria comparison); the planner should decide whether the discount value is a formula field or a stored field before the validation rule and approval process are both built against it.",
+      "domain": "handoff",
+      "evidence": {"source": "heuristic"},
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "because the field-storage decision (formula vs stored, and on which object) changes both the ValidationRule and ApprovalProcess steps and belongs in the planner's decisions[] with a cited branch, not in a clarification answer."
+    }
+  ],
+  "citations": [
+    {"type": "skill", "id": "admin/sales-process-mapping", "path": "skills/admin/sales-process-mapping/SKILL.md", "used_for": "harvested all 7 Questions-to-Ask rows for the Enterprise vs Renewal process/record-type split"},
+    {"type": "skill", "id": "admin/opportunity-management", "path": "skills/admin/opportunity-management/SKILL.md", "used_for": "harvested all 7 Questions-to-Ask rows for stage/probability/forecast-category design"},
+    {"type": "skill", "id": "admin/path-and-guidance", "path": "skills/admin/path-and-guidance/SKILL.md", "used_for": "harvested all 7 Questions-to-Ask rows for the Path + exit-checklist requirement"},
+    {"type": "skill", "id": "admin/products-and-pricebooks", "path": "skills/admin/products-and-pricebooks/SKILL.md", "used_for": "matched the 'opportunity products / price book' capability but carries no Questions-to-Ask table; recorded not-covered rather than harvested"},
+    {"type": "skill", "id": "admin/validation-rules", "path": "skills/admin/validation-rules/SKILL.md", "used_for": "harvested all 8 Questions-to-Ask rows for the products-before-Propose and 20% discount-cap rules"},
+    {"type": "skill", "id": "admin/approval-processes", "path": "skills/admin/approval-processes/SKILL.md", "used_for": "harvested all 7 Questions-to-Ask rows for the manager discount approval + record lock"},
+    {"type": "skill", "id": "admin/approval-process-apex-patterns", "path": "skills/admin/approval-process-apex-patterns/SKILL.md", "used_for": "harvested 4 net-new rows (recall, single- vs bulk-record submission, failure handling, multi-approver) governing the invocable Apex action the LWC's Submit button calls"},
+    {"type": "skill", "id": "admin/record-types-and-page-layouts", "path": "skills/admin/record-types-and-page-layouts/SKILL.md", "used_for": "harvested all 8 Questions-to-Ask rows for the two record types the two Sales Processes require"},
+    {"type": "skill", "id": "lwc/lwc-base-component-recipes", "path": "skills/lwc/lwc-base-component-recipes/SKILL.md", "used_for": "harvested all 7 Questions-to-Ask rows for the record-page discount/approval-status/Submit-for-approval component"},
+    {"type": "skill", "id": "admin/reports-and-dashboards", "path": "skills/admin/reports-and-dashboards/SKILL.md", "used_for": "harvested all 8 Questions-to-Ask rows for the open-pipeline report and the close-month dashboard tile"},
+    {"type": "skill", "id": "admin/requirements-gathering-for-sf", "path": "skills/admin/requirements-gathering-for-sf/SKILL.md", "used_for": "generic set — all 7 rows added regardless of topic, per AGENT.md Step 4"},
+    {"type": "standard", "id": "standards/build-orchestration.md", "path": "standards/build-orchestration.md", "used_for": "§ 1 stage-1 contract, § 2 directory layout, § 3 gate rules and 'questions never capped', § 3.1 sizing rule and tier table, § 8 set-clarifications writer"},
+    {"type": "standard", "id": "agents/_shared/AGENT_CONTRACT.md", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "8-section AGENT.md shape, Process Observations schema, confidence rubric, citation rules"},
+    {"type": "standard", "id": "AGENT_RULES.md", "path": "AGENT_RULES.md", "used_for": "retrieval rules (search before claiming no coverage), skill-first rule"},
+    {"type": "standard", "id": "agents/requirements-clarifier/AGENT.md", "path": "agents/requirements-clarifier/AGENT.md", "used_for": "the agent's own procedure, followed exactly including its scale:ask/feature branches (both inapplicable at project) and Step 1-7"},
+    {"type": "decision_tree", "id": "standards/decision-trees/automation-selection.md", "path": "standards/decision-trees/automation-selection.md", "branch": "cheat sheet row 'Approval chain: Approval Process -> Flow post-approval' (no numbered Q-branch reaches Approval Process; Validation Rule is outside this tree's scope entirely)", "used_for": "grounding the choice of a declarative Approval Process (not Flow, not Apex custom approval) for the manager discount sign-off"}
+  ],
+  "extensions": {
+    "build_dir": ".sfskills/builds/northwind-sales",
+    "sizing_line": "scale: project (D=8 metadata types, S=9 skills with question tables, O=3 objects, integration=no; no override)",
+    "sizing_detail": {
+      "D": ["RecordType/BusinessProcess (2 Sales Processes + 2 record types + layout assignment)", "PathAssistant (Enterprise + Renewal Paths)", "ValidationRule (product-before-Propose + 20% discount cap)", "ApprovalProcess (discount sign-off + record lock)", "LightningComponentBundle (record-page discount/approval/Submit component)", "ApexClass (invocable action wrapping Approval.process)", "Report/Dashboard (open-pipeline report + close-month tile)", "docs/package.xml aggregator (required by the Apex-exception rule in standards/build-orchestration.md § 5)"],
+      "S": ["admin/sales-process-mapping", "admin/opportunity-management", "admin/path-and-guidance", "admin/validation-rules", "admin/approval-processes", "admin/approval-process-apex-patterns", "admin/record-types-and-page-layouts", "lwc/lwc-base-component-recipes", "admin/reports-and-dashboards"],
+      "O": ["Opportunity", "Product2", "Pricebook2"],
+      "X": "no — requirement explicitly states no integrations and no data migration"
+    },
+    "searches_run": [
+      "opportunity sales stages", "sales path stage checklist", "opportunity products price book",
+      "validation rule discount cap", "approval process discount approval", "record lock pending approval",
+      "lwc record page component submit button", "reports and dashboards pipeline", "record types page layouts",
+      "custom permission bypass", "opportunity path guidance", "validation rules on opportunity stage",
+      "lwc call apex imperative vs wire", "invocable apex from lwc button", "sales process two record types",
+      "renewal opportunity process", "price book setup configuration", "product2 setup admin",
+      "opportunity line items configuration", "products and pricebooks opportunity", "permission set (control search)"
+    ],
+    "capability_coverage": [
+      {"phrase": "Enterprise sales stages with probabilities", "skills_returned": ["admin/opportunity-management", "agentforce/sales-coach-agent-rollout", "data/opportunity-pipeline-migration"], "kept": ["admin/opportunity-management"], "state": "covered"},
+      {"phrase": "Renewal process (shorter, separate stages)", "skills_returned": ["admin/opportunity-management", "admin/sales-process-mapping", "admin/subscription-lifecycle-requirements"], "kept": ["admin/opportunity-management", "admin/sales-process-mapping"], "state": "covered"},
+      {"phrase": "Path + exit checklist per stage", "skills_returned": ["admin/opportunity-management", "admin/sales-process-mapping", "admin/path-and-guidance"], "kept": ["admin/path-and-guidance"], "state": "covered"},
+      {"phrase": "opportunity products from a price book", "skills_returned": ["data/opportunity-pipeline-migration", "admin/products-and-pricebooks", "data/product-catalog-data-model"], "kept": [], "state": "not-covered", "reason": "the one on-topic skill (admin/products-and-pricebooks) carries no Questions-to-Ask Before Configuring section; the rest are migration/CPQ-specific and out of scope for a design-only, no-migration build"},
+      {"phrase": "validation rule: no product line before Propose", "skills_returned": ["admin/record-types-and-page-layouts", "admin/validation-rules"], "kept": ["admin/validation-rules", "admin/record-types-and-page-layouts"], "state": "covered"},
+      {"phrase": "validation rule: 20% discount cap", "skills_returned": ["data/product-catalog-migration-cpq", "admin/quotes-and-quote-templates", "flow/flow-screen-input-validation-patterns", "admin/validation-rules"], "kept": ["admin/validation-rules"], "state": "covered"},
+      {"phrase": "formal manager approval process with record lock", "skills_returned": ["admin/cpq-approval-workflows", "admin/approval-processes", "admin/quote-to-cash-requirements", "admin/approval-process-apex-patterns"], "kept": ["admin/approval-processes", "admin/approval-process-apex-patterns"], "state": "covered", "note": "admin/cpq-approval-workflows and admin/quote-to-cash-requirements dropped as CPQ/Quote-specific — this build has no CPQ"},
+      {"phrase": "record-page LWC: discount, approval status, Submit for approval button", "skills_returned": ["lwc/lwc-base-component-recipes", "lwc/lwc-imperative-apex", "lwc/lwc-async-patterns", "admin/custom-button-to-action-migration"], "kept": ["lwc/lwc-base-component-recipes"], "state": "covered"},
+      {"phrase": "report + dashboard tile", "skills_returned": ["admin/reports-and-dashboards", "admin/reports-and-dashboards-fundamentals", "admin/marketing-reporting-requirements", "admin/einstein-analytics-basics"], "kept": ["admin/reports-and-dashboards"], "state": "covered"},
+      {"phrase": "two record types (Enterprise, Renewal)", "skills_returned": ["admin/record-types-and-page-layouts", "admin/sales-process-mapping"], "kept": ["admin/record-types-and-page-layouts", "admin/sales-process-mapping"], "state": "covered"},
+      {"phrase": "don't break the existing SMB process", "skills_returned": ["admin/sales-process-mapping", "admin/record-types-and-page-layouts"], "kept": ["admin/sales-process-mapping", "admin/record-types-and-page-layouts"], "state": "covered", "note": "no dedicated search run; folded into the blast-radius rows already harvested from these two skills rather than treated as a separate capability"}
+    ],
+    "skills_without_question_table": ["admin/products-and-pricebooks", "admin/reports-and-dashboards-fundamentals", "lwc/lwc-imperative-apex"],
+    "skills_found_not_harvested_off_topic": ["agentforce/sales-coach-agent-rollout", "data/opportunity-pipeline-migration", "data/product-catalog-migration-cpq", "admin/quotes-and-quote-templates", "flow/flow-screen-input-validation-patterns", "architect/cpq-architecture-patterns", "admin/cpq-approval-workflows", "admin/quote-to-cash-requirements", "architect/analytics-embedded-components", "lwc/lwc-styling-hooks", "admin/custom-button-to-action-migration", "admin/marketing-reporting-requirements", "admin/einstein-analytics-basics", "apex/apex-trigger-bypass-and-killswitch-patterns", "data/data-quality-and-governance", "admin/billing-schedule-setup", "admin/commerce-product-catalog", "data/product-catalog-data-model", "admin/cpq-product-catalog-setup", "lwc/lwc-async-patterns", "lwc/aura-to-lwc-migration", "architect/cpq-integration-with-erp", "data/financial-data-quality", "admin/subscription-lifecycle-requirements"],
+    "skill_with_table_deliberately_not_harvested": [
+      {"skill": "admin/custom-permissions", "reason": "surfaced from an exploratory (non-requirement) search; its bypass-pattern content is already covered by admin/validation-rules' own harvested row on the same decision"}
+    ],
+    "deduped_pairs": [
+      {"kept": "Q10", "kept_skill": "admin/sales-process-mapping", "merged_from": ["admin/validation-rules"], "meaning": "close-path assumptions decide whether a validation rule is sufficient enforcement"},
+      {"kept": "Q11", "kept_skill": "admin/path-and-guidance", "merged_from": ["admin/validation-rules"], "meaning": "which key fields must be filled before advancing feeds the validation-rule backlog"},
+      {"kept": "Q14", "kept_skill": "admin/validation-rules", "merged_from": ["admin/record-types-and-page-layouts"], "meaning": "field must be on every layout/record-type for the error to display correctly"},
+      {"kept": "Q22", "kept_skill": "lwc/lwc-base-component-recipes", "merged_from": ["admin/approval-processes"], "meaning": "which object/field the LWC reads for discount and approval status"},
+      {"kept": "Q27", "kept_skill": "admin/approval-processes", "merged_from": ["admin/approval-process-apex-patterns"], "meaning": "allowedSubmitters must include whoever the Apex action submits as"},
+      {"kept": "Q30", "kept_skill": "admin/approval-process-apex-patterns", "merged_from": ["lwc/lwc-base-component-recipes"], "meaning": "Apex invocable mechanism vs standard-action navigation for the Submit button"},
+      {"kept": "Q32", "kept_skill": "admin/approval-processes", "merged_from": ["admin/approval-process-apex-patterns"], "meaning": "approver source (hierarchy field) must resolve for both declarative and Apex-driven submission"},
+      {"kept": "Q33", "kept_skill": "admin/approval-processes", "merged_from": ["lwc/lwc-base-component-recipes"], "meaning": "the action inventory must name the field the LWC reads for approval status"},
+      {"kept": "Q34", "kept_skill": "lwc/lwc-base-component-recipes", "merged_from": ["admin/approval-processes"], "meaning": "Jest/Apex test plan for the Submit button spans both the component and the approval action"},
+      {"kept": "Q36", "kept_skill": "admin/sales-process-mapping", "merged_from": ["admin/opportunity-management", "admin/record-types-and-page-layouts"], "meaning": "two stage sequences means two Sales Processes and two record types — the same underlying decision asked three ways"},
+      {"kept": "Q42", "kept_skill": "admin/record-types-and-page-layouts", "merged_from": ["admin/validation-rules"], "meaning": "product-before-Propose enforcement is a validation-rule decision, not a layout-Required decision"},
+      {"kept": "Q50", "kept_skill": "admin/path-and-guidance", "merged_from": ["lwc/lwc-base-component-recipes"], "meaning": "the same Lightning record page must carry both the Path and the new LWC"},
+      {"kept": "Q58", "kept_skill": "admin/approval-processes", "merged_from": ["admin/approval-process-apex-patterns"], "meaning": "process order / single-active-process decision applies to both the declarative process and any Apex-driven submission"}
+    ]
+  },
+  "followups": [
+    {"agent": "build-planner", "because": "next stage of the loop once G1 (clarifications gate) is approved; scope + fit-gap + decisions + milestones + steps is the planner's output, never the clarifier's"}
+  ]
+}

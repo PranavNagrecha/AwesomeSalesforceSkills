@@ -1,0 +1,271 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T15-29-15Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T15-29-15Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S02/2026-09-19T15-29-15Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S02"
+  },
+  "summary": "Re-tested M2-S02 (access) after its repair pass (metadata-builder, envelope 2026-09-19T15-22-09Z): the org refused the Sales User profile overlay on mock-deploy dry run 1 (N3-F-05, reports/MOCK-DEPLOY-M2.md), so both recordTypeVisibilities blocks were removed from profiles/Sales User.profile-meta.xml (its two layoutAssignments blocks are byte-identical to before), and two fieldPermissions blocks (Discount__c editable, Approval_Status__c read-only) were added to permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml, closing HIGH open item O-M2S02-01. The prior tests/M2-S02/results.json (run 2026-09-19T14-39-24Z) was stale because both metadata files' hashes changed; it is overwritten by this run. Ran all three declared checkers verbatim from the build directory at their plan-declared scopes -- check_permission_set_architecture.py and check_record_type_layouts.py at build scope (--manifest-dir artefacts), check_access_model.py at step scope (--manifest-dir artefacts/M2-S02) -- plus the always-on xml parse (3/3 files) and manifest consistency check (package.xml unchanged and still consistent both directions), plus check-outputs --hashes. All five runnable tests passed with the same findings as the pre-repair run: permission-set-architecture 'No issues found.' (PSVP-FLS-01 stays silent -- the set still grants no objectPermissions, so adding fieldPermissions did not create the shape that rule fires on); record-type-layouts at build scope 1 REVIEW RTL-MERGE-01 (pre-adjudicated O-M1S02-03, unaffected by this repair); permission-sets-vs-profiles at step scope 1 WARN PSVP-FLS-02 (accepted by design O-M2S02-02, unaffected -- the profile still carries zero objectPermissions/fieldPermissions after the repair). Both manual acceptance tests remain deferred to the M2 milestone gate, never ticked here; manual test 1's wording is now stale against the repaired artefact (it asserts the profile carries 'two recordTypeVisibilities blocks... every recordTypeVisibilities carries default=false', which the repair removed entirely) and is flagged as unusable-as-worded without being rewritten. results.json rewritten with \"passed\": true and fresh artefact_hashes from check-outputs --hashes; M2-S02 moved built -> tested via build_plan.py set-status (exit 0; 19 pre-existing WARNs on unrelated steps M1/M3/M4 printed on the full-plan validate pass, none naming M2-S02 or its cited skills).",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Every declared test ran (or was correctly classified as manual), both always-on checks completed, and every result came from an exit code this agent observed directly -- which would clear the Step 7 HIGH bar on its own. Held to MEDIUM instead because manual test 1's own wording no longer describes the artefact it is checked against (it asserts a recordTypeVisibilities shape the repair deliberately removed), which is a defect in the acceptance-test text this agent can report but not fix -- per agents/step-tester/AGENT.md Step 7's MEDIUM row, this is the same class of finding as a manifest exclusion or a refused command: the artefacts under test are fully covered, but what the test asserts is now incomplete relative to reality.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml-well-formedness",
+    "manifest-consistency",
+    "checker-pass:permission-set-architecture",
+    "checker-pass:record-type-layouts",
+    "checker-pass:permission-sets-vs-profiles",
+    "check-outputs",
+    "manual-test-tickability"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "All three declared checkers exited 0 on the repaired artefacts, reproducing the exact same findings as the pre-repair run (permission-set-architecture: 'No issues found.'; record-type-layouts: 1 REVIEW RTL-MERGE-01; permission-sets-vs-profiles: 1 WARN PSVP-FLS-02) -- the repair changed only recordTypeVisibilities in the profile and fieldPermissions in the permission set, and neither checker's finding set moved as a result, which is the expected outcome given what each checker actually inspects.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S02/check_access_model.stdout.txt",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "PSVP-FLS-01 (a permission set granting object CRUD with zero field permissions) stayed silent after the repair added two fieldPermissions blocks to Enterprise_Sales_Record_Types, confirming deploy-order.md section 6.2's own claim that the set still declares no objectPermissions element and so does not create the shape that rule fires on.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S02/check_access_model.stdout.txt",
+        "detail": "raw JSON output names only PSVP-FLS-02, not PSVP-FLS-01"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-consistency",
+      "observation": "package.xml is byte-identical to the pre-repair run (hash 82dfb95a...606bff unchanged) and remains consistent in both directions after the repair, because the repair changed metadata file content, not file identity or location.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/package.xml"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "manual-test-tickability",
+      "observation": "Manual acceptance test 1 (Q4/Q9, on profiles/Sales User.profile-meta.xml) is now stale as worded: its Then clause asserts the profile contains 'two recordTypeVisibilities blocks, every recordTypeVisibilities carries default=false', but the repair removed both recordTypeVisibilities blocks entirely (deploy-order.md section 6.1) to resolve the org's N3-F-05 refusal. The remainder of the Then (no userPermissions/objectPermissions/fieldPermissions/applicationVisibilities/classAccesses in the profile) is still true, and the underlying intent (overlay adds access, revokes nothing) still holds functionally -- visibility now lives solely in the permission set -- but the test's literal wording would fail a human trying to tick it as written. Not rewritten by this agent; carried into skipped_manual[] verbatim with this flag for the M2 gate reviewer and for whoever next amends the step's acceptance-test text.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/profiles/Sales User.profile-meta.xml",
+        "detail": "plan.json steps[M2-S02].acceptance_tests[4].description vs the current file content (zero recordTypeVisibilities elements)"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manual-test-tickability",
+      "observation": "Manual acceptance test 2 (Q19, persona access source) was re-checked against the repaired files and remains usable as worded: it never asserted the permission set carries no field permissions, so the two new fieldPermissions blocks do not contradict it -- reps/managers still reach both record types through the permission set, the sales-ops admin still needs no row in either file, and the manager-versus-rep distinction still appears in neither.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "set-status's own full-plan validate pass printed the same 19 pre-existing WARNs about other steps (M1, M3, M4) shipping a cited skill's checker with no declared acceptance test for it, unchanged from the pre-repair run. None name M2-S02 or its cited skills (admin/permission-set-architecture, admin/record-types-and-page-layouts, admin/permission-sets-vs-profiles); they predate this run and are outside this invocation's one-step scope.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "stderr of `build_plan.py set-status ... M2-S02 tested`, 19 WARN lines naming M1-S01, M1-S02, M3-S02, M3-S03, M3-S04, M3-S05, M4-S01, M4-S02, M4-S03, M4-S04"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M2-S02 is tested again; build-doc-keeper is next to re-mark REQ-013/REQ-014 in traceability.md, record O-M2S02-01 as closed with this run's evidence, and carry the manual-test-1 staleness flag into the workbook or an amend-step follow-up so the M2 gate reviewer sees it before ticking.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 6 role table"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Once a step is tested, build-doc-keeper is the agent that updates PLAN.md, workbook rows, decisions.md and traceability.md from it -- including closing O-M2S02-01 and recording the manual-test staleness this run found."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "acceptance-test-maintenance",
+      "observation": "Manual test 1's text should be corrected (via build-planner / amend-step, human-gated since the step is human_gate:true) before the M2 milestone gate, so the reviewer ticks a Then clause that matches the shipped artefact rather than one describing the pre-repair design.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "steps[M2-S02].acceptance_tests[4].description"
+      },
+      "suggested_followup_agent": "build-planner",
+      "followup_reason": "build-planner (via amend-step) is the agent that edits a step's declared acceptance-test text; step-tester reports the staleness but does not rewrite it."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "the Plan this run followed end to end: Step 1 precondition, Step 2 xml, Step 3 manifest, Step 4 checker/manifest/manual dispatch and the never-rewrite-a-command rule, Step 5 results.json shape, Step 6 set-status transitions, Step 7 confidence table (MEDIUM applied for the stale manual-test wording), Step 8 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and schema, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence and atomic-write rule for the tests/ and envelopes/ artefacts this run wrote"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was built, inputs unambiguous, no security-guard command declared)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 (access step type, status machine, built->tested transition and its check-outputs/results.json preconditions, including that the built->running/tested->failed recovery edges are what a future repair would use) and section 5 (acceptance-test types, checker-scope rule that the literal command governs, the cross-referential-checker list including check_permission_set_architecture.py and check_record_type_layouts.py, and the deny-list/never-rewrite rule)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the acceptanceTest and step outputs[] shape read directly from plan.json for M2-S02"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar (one <types> block per metadata type, <members> naming components, <name> naming the type) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format filename-to-metadata-type mapping used to derive PermissionSet/Enterprise_Sales_Record_Types and Profile/'Sales User' as the member names the manifest was checked against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirming neither PermissionSet nor Profile is a type with no standalone source file, so no manifest-check exclusion applied to either"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what makes a manual test line tickable by a human at the milestone gate rather than re-interpreted by them -- the standard manual test 1 no longer meets as worded"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then anatomy used to check both manual acceptance tests against the repaired artefacts before carrying them into skipped_manual[]"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "reading the repair-pass envelope (envelopes/M2-S02/2026-09-19T15-22-09Z.json) and the revised deploy-order.md section 6 to corroborate what changed and why before re-testing"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S02",
+    "step_status_before": "built",
+    "step_status_after": "tested",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M2-S02/results.json",
+    "tests_run": 5,
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way package.xml <-> artefact-file consistency check",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+        "type": "checker",
+        "runner": "skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "type": "checker",
+        "runner": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py --manifest-dir artefacts/M2-S02",
+        "type": "checker",
+        "runner": "skills/admin/permission-sets-vs-profiles/scripts/check_access_model.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q4 and Q9, when artefacts/M2-S02/profiles/Sales User.profile-meta.xml is read, then it contains exactly two layoutAssignments blocks and two recordTypeVisibilities blocks, every recordTypeVisibilities carries <default>false</default>, and the file contains no userPermissions, objectPermissions, fieldPermissions, applicationVisibilities or classAccesses element - so the overlay adds access and revokes nothing the SMB team holds. (STALE as worded: the repair removed both recordTypeVisibilities blocks -- see process_observations)",
+      "Given Q19, when the two files are read together, then reps and managers reach both record types through the permission set while the sales-ops admin (System Administrator) needs no row in either file, and the manager-versus-rep distinction appears nowhere in this step - it is a role-hierarchy fact, which is what decision D7 records."
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "artefact_hashes": {
+      "artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml": "19b33c2d6064ff78e6829da6b3edda257d3d4895b92deb54a268d7252f4078ff",
+      "artefacts/M2-S02/profiles/Sales User.profile-meta.xml": "16711dc6f59f1dd38c2ffa734b4b8d55d8421874c0b2a1e7e7ba60c35812790b",
+      "artefacts/M2-S02/package.xml": "82dfb95a41d8a7841c0e21333c558608eb122f404ac8808ce7aade5dc3606bff",
+      "artefacts/M2-S02/deploy-order.md": "2db0ea2f90600a1ea567377ecf8150dc26e74e8f3f6526fb28d2ac22b1486710"
+    },
+    "workflow_return": {
+      "step_id": "M2-S02",
+      "status": "tested",
+      "passed": true,
+      "failed": [],
+      "results_path": ".sfskills/builds/northwind-sales/tests/M2-S02/results.json",
+      "tests_run": 5
+    }
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S02 is tested again; build-doc-keeper carries the closed O-M2S02-01, the unaffected O-M2S02-02, and the manual-test-1 staleness flag into decisions.md, the workbook and traceability.md."
+    },
+    {
+      "agent": "build-planner",
+      "because": "manual acceptance test 1's wording no longer matches the shipped artefact and should be corrected via amend-step before the M2 gate reviewer is asked to tick it."
+    }
+  ]
+}

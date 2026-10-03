@@ -1,0 +1,1 @@
+OK — 73 case(s), 0 run-sheet row(s), 87 criterion id(s) cross-checked. Files read: acceptance-criteria.md [criteria], configuration-workbook.md [other], traceability.md [other], uat-test-cases.yaml [cases]

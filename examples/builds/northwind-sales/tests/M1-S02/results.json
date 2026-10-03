@@ -1,0 +1,85 @@
+{
+  "step_id": "M1-S02",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given assumption A26, when artefacts/M1-S02/deploy-order.md is read, then it names the exact sf project retrieve start --metadata \"Layout:Opportunity-Opportunity Layout\" command, says to copy the Opportunity Products relatedLists block verbatim from what the retrieve emits, and states that hand-authoring the related-list name is what the instruction exists to prevent.",
+    "Given assumption A25, when both layout files are read, then each carries Name, AccountId, StageName, CloseDate and Amount, plus Discount__c editable and Approval_Status__c read-only, and deploy-order.md records that the platform's layout-required set for Opportunity is unverified and is discovered by iterating scripts/mock_deploy.py --dry-run, one field per run."
+  ],
+  "details": {
+    "xml": {
+      "type": "xml",
+      "files_scanned": 3,
+      "files": [
+        "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+        "artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+        "artefacts/M1-S02/package.xml"
+      ],
+      "verdict": "all parse"
+    },
+    "manifest": {
+      "type": "manifest",
+      "package_xml": "artefacts/M1-S02/package.xml",
+      "members_declared": [
+        "Layout: Opportunity-Opportunity Enterprise Layout",
+        "Layout: Opportunity-Opportunity Renewal Layout"
+      ],
+      "files_present": [
+        "layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+        "layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml"
+      ],
+      "file_to_manifest": "every derived Layout member covered by a matching <members> entry",
+      "manifest_to_file": "every <members> entry backed by a file",
+      "excluded_types": [],
+      "verdict": "consistent"
+    },
+    "checker_record_type_layouts": {
+      "type": "checker",
+      "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+      "declared_scope": "build",
+      "run_from": "build directory (.sfskills/builds/northwind-sales)",
+      "exit_code": 0,
+      "stdout_path": "tests/M1-S02/checker_check_record_type_layouts.stdout.txt",
+      "stderr_path": "tests/M1-S02/checker_check_record_type_layouts.stderr.txt",
+      "stdout_summary": "Scanned 6 metadata file(s): 2 record type(s), 2 layout(s); 2 finding(s) detected.",
+      "findings": [
+        {
+          "severity": "REVIEW",
+          "location": "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+          "message": "layouts Opportunity-Opportunity Enterprise Layout, Opportunity-Opportunity Renewal Layout on Opportunity are identical after normalisation — merge candidates (SKILL.md workflow step 2); if two record types must differ, differentiate the layouts or share one."
+        },
+        {
+          "severity": "INFO",
+          "location": "",
+          "message": "no Profile/PermissionSet in scope — assignment coverage not checked"
+        }
+      ],
+      "strict_flag_passed": false,
+      "exit_policy_note": "checker is lenient by default (no --strict); REVIEW and INFO findings do not fail the run. The REVIEW finding is the known open item O-M1S02-03 (deploy-order.md §3 item 4: the two layouts are byte-for-byte identical by design, following decision D2 — unchanged by the N3-F-02/03/04 repairs, which touched both files identically). The INFO finding is unchanged from every prior test run (no Profile/PermissionSet artefacts exist yet — those are M2-S02).",
+      "check_outputs": {
+        "command": "python3 scripts/build_plan.py check-outputs plan.json M1-S02",
+        "exit_code": 0,
+        "result": {
+          "ok": true,
+          "step": "M1-S02",
+          "missing": [],
+          "empty": [],
+          "malformed": []
+        }
+      },
+      "verdict": "pass (exit 0 and check-outputs ok)"
+    }
+  },
+  "notes": "Re-run after three org-driven layout repairs (N3-F-02/03/04; reports/MOCK-DEPLOY-M1.md runs 1-4, run 4 Succeeded 9/9; repair records in artefacts/M1-S02/deploy-order.md § 6). This results.json and its artefact_hashes supersede the 2026-09-18T13:44:30Z run recorded in plan.json — the prior hashes were taken before the StageName/CloseDate repair (N3-F-04) and are stale.",
+  "artefact_hashes": {
+    "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml": "91b17142da9bad663b5b29d5d13e1fffe5128be9ceecc126a6cd86a5f4e9fc19",
+    "artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml": "91b17142da9bad663b5b29d5d13e1fffe5128be9ceecc126a6cd86a5f4e9fc19",
+    "artefacts/M1-S02/package.xml": "32d9a4ecc9332634dabd5aebfe8572446e8dbd8e1413256953cfd409380e8943",
+    "artefacts/M1-S02/deploy-order.md": "e45025006d7b48ccefe150e22fb370d6ced75bde3b0da1b5c63303bc6b7eb9d6"
+  }
+}

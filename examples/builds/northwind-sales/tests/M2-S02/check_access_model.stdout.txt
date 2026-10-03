@@ -1,0 +1,12 @@
+{
+  "score": 97,
+  "findings": [
+    {
+      "severity": "WARN",
+      "location": "artefacts/M2-S02/profiles/Sales User.profile-meta.xml",
+      "message": "PSVP-FLS-02 profile carries zero objectPermissions and zero fieldPermissions, and no PermissionSetGroup exists anywhere in the scanned tree \u2014 if access is meant to come from a group, the group is missing from this manifest"
+    }
+  ],
+  "summary": "Scanned 2 access-model metadata file(s); 1 finding(s) detected.",
+  "blocking": 0
+}

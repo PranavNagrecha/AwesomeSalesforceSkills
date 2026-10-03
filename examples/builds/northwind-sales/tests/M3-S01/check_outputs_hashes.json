@@ -1,0 +1,11 @@
+{
+  "artefacts/M3-S01/email/Sales_Approvals.emailFolder-meta.xml": "9d1b49b719e4fb04407031391e70d4bcb0ec64fb5d9c3b07c45c329454cfe49c",
+  "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email": "01fd2122f71ed05cb1d6bfdf115155536a92ab85c50a560a46e40d9e5e4b1ffa",
+  "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml": "a4fec9dcd719d98c090ccc7f642157210b76622d2b3a877795de107033494433",
+  "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email": "99d9cf97017aa117602aa48ea518caca8bd8e32091abe940ceaf1409a5347822",
+  "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email-meta.xml": "286bfe7629754f889a3116db774dd65729aaac9aaf0504d48b50af3fd8df5389",
+  "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email": "5b3609914fff47f759edc7c5050e41e70d9e61f264e5b9808150b058259aba3f",
+  "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email-meta.xml": "a488d0df693199d5b4368897e984531f231916ebc48502ae988e870b0d7a67f4",
+  "artefacts/M3-S01/package.xml": "e504f01fcc0ffff3f8741a424b210db219ad81e19970bb8de05ff8ca23991ef1",
+  "artefacts/M3-S01/deploy-order.md": "851a9cd5a43d24d4c4d24a883e4f594bcb6d60ea43b6ad3daf633d15e1a2c4fe"
+}

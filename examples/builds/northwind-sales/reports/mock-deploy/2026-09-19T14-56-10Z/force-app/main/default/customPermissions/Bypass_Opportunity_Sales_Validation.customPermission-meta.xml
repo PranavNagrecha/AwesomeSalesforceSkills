@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Suppresses the Opportunity sales validation rules. Consumers: Opportunity_Discount_Requires_Approval (M2-S03), Opportunity_Products_Required_At_Propose (M2-S04). Grant: Sales_Ops_Validation_Bypass.</description>
+    <label>Bypass Opportunity Sales Validation</label>
+</CustomPermission>

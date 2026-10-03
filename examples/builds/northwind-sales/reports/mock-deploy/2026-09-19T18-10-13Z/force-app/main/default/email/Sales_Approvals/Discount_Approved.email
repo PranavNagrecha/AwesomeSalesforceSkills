@@ -1,0 +1,15 @@
+Your discount request was approved.
+
+Opportunity: {!Opportunity.Name}
+Amount:      {!Opportunity.Amount}
+Discount:    {!Opportunity.Discount__c}
+
+Approval status now on the record: {!Opportunity.Approval_Status__c}
+
+The opportunity is unlocked again, so you can carry on and close it won at this
+discount.
+
+Anything your manager wrote when approving is in the Comments column of the
+Approval History related list on the opportunity.
+
+Northwind Sales Operations

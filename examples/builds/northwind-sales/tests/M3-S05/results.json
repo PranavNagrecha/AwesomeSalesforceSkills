@@ -1,0 +1,67 @@
+{
+  "step_id": "M3-S05",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/lightning-record-page-configuration/scripts/check_lightning_record_page_configuration.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given D10 and assumption A38, when the object file is read, then it carries exactly two actionOverrides blocks - actionName View, type Flexipage, content Opportunity_Enterprise_Record_Page, formFactor Large and Small - and nothing else, and artefacts/M3-S05/deploy-order.md states that an app with its own Opportunity record page wins over this org default and must be re-pointed in Setup if Northwind runs one. [expected: ticked at the M3 milestone gate]",
+    "Given requirement.md item 4, when the flexipage file is read, then the Path component sits in the subheader region with hideUpdateButton false, the discountApprovalPanel sits in the sidebar region with its discountThreshold property set to 20, and every componentInstance carries an identifier of 120 characters or fewer. [expected: ticked at the M3 milestone gate]"
+  ],
+  "manual_shape_check": {
+    "skill": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+    "note": "Both manual lines carry an explicit Given, When and Then naming an observable outcome, so neither is reported as unusable. Both were spot-checked against the artefacts as due diligence (not part of the pass/fail contract, since manual tests are never ticked by this agent): manual line 1's object file has exactly two actionOverrides blocks, both actionName View / type Flexipage / content Opportunity_Enterprise_Record_Page, formFactor Large and Small, and nothing else present in the CustomObject element - matches. deploy-order.md section 3.1 does state the app-override-wins-and-must-be-re-pointed claim in those terms - matches. Manual line 2's flexipage file has the pathAssistant componentInstance in the region named subheader with hideUpdateButton false, the discountApprovalPanel componentInstance in the region named sidebar with a discountThreshold property value of 20, and all three componentInstance blocks carry an <identifier> (runtime_sales_pathassistant_pathAssistant, force_detailPanel, c_discountApprovalPanel), each well under 120 characters - matches. Neither line is reported as unusable."
+  },
+  "manifest": {
+    "status": "checked",
+    "reason": "Step type is ui, a metadata step type per standards/build-orchestration.md section 4, and package.xml exists under artefacts/M3-S05/ (declared in the step's own outputs[]). Two-way consistency verified: FlexiPage member Opportunity_Enterprise_Record_Page and CustomObject member Opportunity each derive from a file under artefacts/M3-S05/ (skills/devops/salesforce-dx-project-structure mapping) and each appears explicitly (no wildcard) in package.xml; both named members are backed by a file. No skills/devops/metadata-api-coverage-gaps exclusion needed - neither type lacks a standalone source file here.",
+    "verdict": "consistent"
+  },
+  "check_outputs": {
+    "ok": true,
+    "step": "M3-S05",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "artefact_hashes": {
+    "artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml": "3f9508b7722c7b41fb5b5beca5c5ce2d04a6e533920003ee77a8ac0db5b42e5d",
+    "artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml": "123441ecc9c2eb4eca4b295ad7998519dd2c6cbaf3b4b2cde1db5ee60e2f2f81",
+    "artefacts/M3-S05/package.xml": "ffeea05bf67ee853287ac05fc87dda845bcd9eaf5c6b93faa852aa79be26cb26",
+    "artefacts/M3-S05/deploy-order.md": "ac0ee4101bb3c503c46a97b2484197f93de1aacbad06fcdd098e5d5e72564c5b"
+  },
+  "results": [
+    {
+      "name": "xml",
+      "type": "xml",
+      "runner": "python3 -c (ElementTree.parse over artefacts/M3-S05/**/*.xml, *-meta.xml)",
+      "exit_code": null,
+      "verdict": "pass - 3 of 3 XML files parsed"
+    },
+    {
+      "name": "manifest",
+      "type": "manifest",
+      "runner": "n/a - always-on structural check, not a subprocess",
+      "exit_code": null,
+      "verdict": "consistent - FlexiPage and CustomObject members both file-backed, both directions"
+    },
+    {
+      "name": "skills/admin/lightning-record-page-configuration/scripts/check_lightning_record_page_configuration.py",
+      "type": "checker",
+      "runner": "python3 skills/admin/lightning-record-page-configuration/scripts/check_lightning_record_page_configuration.py --manifest-dir artefacts/M3-S05",
+      "exit_code": 0,
+      "verdict": "pass - No errors found (0 warning(s))."
+    },
+    {
+      "name": "check-outputs",
+      "type": "precondition",
+      "runner": "python3 scripts/build_plan.py check-outputs .sfskills/builds/northwind-sales/plan.json M3-S05",
+      "exit_code": 0,
+      "verdict": "pass - ok:true, missing/empty/malformed all empty"
+    }
+  ],
+  "tests_run": 4
+}

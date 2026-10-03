@@ -1,0 +1,134 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T16-22-43Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S01/2026-09-19T16-22-43Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S01/2026-09-19T16-22-43Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S01"
+  },
+  "summary": "Tested M3-S01 (ui, built by metadata-builder): ran the one declared checker (check_email_templates.py --manifest-dir artefacts/M3-S01) plus the always-on xml and manifest checks. Checker exited 0 on a real scan (score 100, 6 files, 0 findings) and check-outputs reported ok:true against all 9 declared outputs. All 5 XML/*-meta.xml files parsed. The manifest is consistent in both directions: EmailFolder member Sales_Approvals and the three explicit EmailTemplate members (Folder/Stem form, no wildcard) each resolve to a file, and every file resolves to a member, matching the org-validated member forms in examples/builds/case-onboarding/artefacts/M3-S02/email/. Both declared manual tests pass the Given/When/Then shape check and name an observable outcome, so both are carried to the M3 milestone gate rather than ticked here. Status moved built -> tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual (Step 7 HIGH row): the checker exited 0 and check-outputs passed, both always-on checks completed with a real (non-empty) file set, and every result came from an exit code or parse this agent observed directly rather than inferred. No command test was refused, no manifest exclusion was needed, and no declared checker was missing.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "checker-exit",
+    "check-outputs",
+    "xml-well-formedness",
+    "manifest-consistency",
+    "manual-test-shape"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "manual-acceptance-content",
+      "state": "not-run",
+      "reason": "The two manual acceptance tests assert facts about email content and metadata field values (Approval History wording, uiType/type/available/encodingKey, subject length) that this agent is not permitted to tick — manual tests are ticked only by a human at the milestone gate, per agents/step-tester/AGENT.md Step 4's manual row. This agent inspected the files as a peripheral check (Process Observations) but that inspection does not count as passing the test.",
+      "confidence_impact": "NONE",
+      "retry_hint": "A human ticks both lines at the M3 milestone gate; no re-run of this agent unblocks them."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-coverage",
+      "observation": "check_email_templates.py --manifest-dir artefacts/M3-S01 is a real scan, not an empty-directory pass: it read three template bodies and three meta XML files and reported 'Scanned 6 email template file(s); 0 finding(s) detected', matching the exit-policy and empty-directory behaviour the step's own acceptance-test description predicted (bare exit 1 / 'ERROR: 1 blocking finding(s)' had the directory been empty).",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/northwind-sales/tests/M3-S01/checker_check_email_templates.stdout.txt", "count": 6}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-consistency",
+      "observation": "package.xml's EmailFolder member (Sales_Approvals) and its three explicit EmailTemplate members (Folder/Stem form, e.g. Sales_Approvals/Discount_Approved) match the member shape in the org-validated examples/builds/case-onboarding/artefacts/M3-S02/package.xml (case_intake, case_intake/Case_Acknowledgement) exactly, with no wildcard used for EmailTemplate in either build.",
+      "evidence": {"source": "repo_scan", "path": "examples/builds/case-onboarding/artefacts/M3-S02/package.xml", "count": 2}
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manual-test-content",
+      "observation": "Both deferred manual tests' asserted facts held up on direct inspection, ahead of the human tick: all three *.email-meta.xml files carry uiType Aloha, type text, available true, encodingKey UTF-8, and subjects of 75/38/74 characters (all under the 230-character ceiling); Discount_Rejected.email and Discount_Approved.email both address the opportunity owner and point at the 'Comments column of the Approval History related list' rather than merging the manager's comments into the body.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/northwind-sales/artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email", "count": 3}
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-coverage",
+      "observation": "The set-status transition's own validate pass surfaced a plan-wide WARN naming M3-S02 — the very next step in this milestone — as citing admin/email-templates-and-alerts (which ships check_email_templates.py) with no checker test declared at its own step or at milestone M3 scope. Not a defect of M3-S01, which does declare and pass that checker, but worth flagging before M3-S02 is tested since the same checker family is adjacent.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/northwind-sales/plan.json", "query": "python3 scripts/build_plan.py set-status plan.json M3-S01 tested ... (validate WARNs on stderr)", "count": 1}
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "manual-test-scope",
+      "observation": "Both manual tests name facts this agent could mechanically verify (field values, literal text in the bodies) but the AGENT.md scope reserves ticking any manual test for a human at the milestone gate, so neither is counted toward passed even though the underlying facts check out today; a later edit to either template would silently invalidate that informal check without failing anything until the gate.",
+      "evidence": {"source": "input", "path": ".sfskills/builds/northwind-sales/plan.json#steps[M3-S01].acceptance_tests", "count": 2}
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M3-S01 is now tested with results.json passed:true; the next agent in the loop compiles it into the milestone's documentation and traceability record.",
+      "evidence": {"source": "repo_scan", "path": ".sfskills/builds/northwind-sales/tests/M3-S01/results.json", "count": 1},
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the step is tested and its two deferred manual tests need to reach the M3 milestone UAT checklist, which build-doc-keeper compiles."
+    }
+  ],
+  "citations": [
+    {"type": "standard", "id": "build-orchestration", "path": "standards/build-orchestration.md", "used_for": "§4 (ui step type, metadata-builder ownership, status machine) and §5 (checker/xml/manifest/manual test types, pass conditions, checker-scope discipline, the deny-list, and the check-outputs precondition for built/tested transitions)"},
+    {"type": "agent", "id": "step-tester", "path": "agents/step-tester/AGENT.md", "used_for": "the full Plan executed here: Step 1 precondition, Steps 2-4 the always-on and declared tests, Step 5 results.json/summary.md shape, Step 6 set-status transition, Step 7 confidence override table, Step 8 envelope self-validation"},
+    {"type": "standard", "id": "agent-contract", "path": "agents/_shared/AGENT_CONTRACT.md", "used_for": "section shape, the mandatory Process Observations block, and the confidence rubric this agent's Step 7 overrides"},
+    {"type": "standard", "id": "deliverable-contract", "path": "agents/_shared/DELIVERABLE_CONTRACT.md", "used_for": "persistence paths, the atomic-write rule, and the dimensions_compared/dimensions_skipped shape used above"},
+    {"type": "standard", "id": "refusal-codes", "path": "agents/_shared/REFUSAL_CODES.md", "used_for": "confirming REFUSAL_OUT_OF_SCOPE did not apply (step status was built) and that no REFUSAL_SECURITY_GUARD condition was present (no command test declared on this step)"},
+    {"type": "skill", "id": "devops/metadata-api-retrieve-deploy", "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md", "used_for": "package.xml grammar - one <types> block per metadata type, explicit members vs wildcard, and the rule that EmailTemplate is not legitimately wildcarded, judged against this step's no-wildcard, explicit-member manifest"},
+    {"type": "skill", "id": "devops/salesforce-dx-project-structure", "path": "skills/devops/salesforce-dx-project-structure/SKILL.md", "used_for": "confirming the filename-to-member derivation this agent applied: the .emailFolder-meta.xml stem is the EmailFolder member, and a sibling .email/.email-meta.xml pair under a folder directory is one EmailTemplate member in Folder/Stem form"},
+    {"type": "skill", "id": "devops/metadata-api-coverage-gaps", "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md", "used_for": "checking whether EmailFolder or EmailTemplate is a type with no standalone source file requiring exclusion from the manifest check - neither is, so no exclusion was applied and both directions of the check ran over all 4 members"},
+    {"type": "skill", "id": "admin/uat-and-acceptance-criteria", "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md", "used_for": "what a manual test line must contain to be tickable by a human at the milestone gate rather than re-interpreted by them, applied to both deferred manual tests before carrying them into skipped_manual[]"},
+    {"type": "skill", "id": "admin/acceptance-criteria-given-when-then", "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md", "used_for": "the Given/When/Then testability rule ('a criterion is testable only if all three are present') used to confirm both manual tests name a reproducible precondition, a trigger and an observable Then before being carried into skipped_manual[]"},
+    {"type": "example_build", "id": "case-onboarding", "path": "examples/builds/case-onboarding/artefacts/M3-S02/package.xml", "used_for": "the org-validated EmailFolder/EmailTemplate member forms (folder developer name; Folder/Stem for templates, explicit, no wildcard) this step's manifest was checked against"}
+  ],
+  "extensions": {
+    "step_id": "M3-S01",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M3-S01/results.json",
+    "results": [
+      {
+        "name": "skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M3-S01",
+        "type": "checker",
+        "runner": "python3 (declared command, run verbatim from build directory)",
+        "exit_code": 0,
+        "verdict": "pass",
+        "note": "check-outputs also ok:true (required alongside exit 0 per §5)."
+      },
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "python3 -c (xml.etree.ElementTree), stdlib",
+        "exit_code": null,
+        "verdict": "pass",
+        "note": "5/5 *.xml / *-meta.xml files under artefacts/M3-S01/ parsed."
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "in-process two-way check against package.xml",
+        "exit_code": null,
+        "verdict": "pass",
+        "note": "EmailFolder + 3 EmailTemplate members, all explicit, all backed by a file; every file covered by a member."
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q33 and assumption A27, when Discount_Rejected.email is read, then it names the Approval History related list as where the manager's comments are, rather than attempting to merge them into the body, and Discount_Approved.email and Discount_Rejected.email each address the opportunity owner rather than the manager. (ticked at the M3 milestone gate)",
+      "Given that a Lightning email template is not packageable and the rule engine cannot reference one, when the three .email-meta.xml files are read, then each carries uiType Aloha, type text, available true and encodingKey UTF-8, and each subject is 230 characters or fewer. (ticked at the M3 milestone gate)"
+    ],
+    "tests_run": 3,
+    "status_transition": "built -> tested",
+    "artefact_hashes_recorded": true
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "The step is tested; the two deferred manual tests need to reach the M3 milestone UAT checklist and traceability record."
+    }
+  ]
+}

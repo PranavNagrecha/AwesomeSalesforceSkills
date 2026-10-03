@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <entityName>Opportunity</entityName>
+    <fieldName>StageName</fieldName>
+    <masterLabel>Renewal Opportunity Path</masterLabel>
+    <pathAssistantSteps>
+        <fieldNames>Amount</fieldNames>
+        <fieldNames>CloseDate</fieldNames>
+        <info>Exit criteria before Renewal Proposed: Amount and Close Date match the contract being renewed and its renewal date, and the customer has confirmed they intend to renew. Owner: the rep who owns the deal.</info>
+        <picklistValueName>Renewal Review</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Discount__c</fieldNames>
+        <fieldNames>Approval_Status__c</fieldNames>
+        <fieldNames>CloseDate</fieldNames>
+        <info>Exit criteria before Closed Won: the renewal quote is with the customer, and a discount above 20% is approved, not merely submitted - read Approval Status below rather than the email thread. Owner: the rep who owns the deal.</info>
+        <picklistValueName>Renewal Proposed</picklistValueName>
+    </pathAssistantSteps>
+    <recordTypeName>Renewal</recordTypeName>
+</PathAssistant>

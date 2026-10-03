@@ -1,0 +1,21 @@
+{
+  "step_id": "M3-S02",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/approval-processes/scripts/check_approval_design.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given Q31 and Q33, when the approval process file is read, then recordEditability is AdminOnly, allowRecall is true, finalApprovalRecordLock and finalRejectionRecordLock are both false, allowedSubmitters carries exactly one entry of type owner, and recallActions fires a field update whose operation is Null so a recalled record shows a blank Approval Status rather than Rejected.",
+    "Given D9 and assumption A34, when artefacts/M3-S02/deploy-order.md is read, then it states that the process ships active true, that approval process ORDER is not in the metadata and must be set in Setup after deploy, and that the Apex in M3-S03 names the process explicitly so order affects only the standard Submit for Approval button.",
+    "Given admin/email-templates-and-alerts/references/gotchas.md:70 records an empty recipient set as a silent failure - 'A .workflow file whose alert carries a template, a description and a senderType but an empty recipient set deploys successfully, appears in Setup, is selectable from Flow - and delivers nothing. There is no runtime error and no entry in the debug log to look for.' - when artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml is read, then each of Notify_Owner_Discount_Approved and Notify_Owner_Discount_Rejected carries a non-empty recipients block of <type>owner</type>, which is the opportunity owner and therefore the rep Q32 named. This is a manual line because neither declared checker reads recipients: check_approval_design.py resolves workflow actions by name only, and check_email_templates.py is declared at --manifest-dir artefacts/M3-S01 and never sees this step's workflow file."
+  ],
+  "artefact_hashes": {
+    "artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml": "8fc7ee41508e512c954028132478d013ae4a281d07a5ec19b67d011ebf4c4d85",
+    "artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml": "c6dd843289e6950431e025e46b0578fca467a673e2a1fcac2f4c80a86c3ddbe8",
+    "artefacts/M3-S02/package.xml": "82615f3e20723539cc11528049e2b6d79c739d919f020a9a8d5cb1c0c74b4309",
+    "artefacts/M3-S02/deploy-order.md": "fe0392fcfa9cae1b7fabcbff4be86373782045b2795a876a9624b8b9b9e5f741"
+  }
+}

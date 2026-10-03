@@ -1,0 +1,26 @@
+{
+  "count": 5,
+  "results": [
+    {
+      "path": "artefacts/M3-S01/package.xml",
+      "parsed": true
+    },
+    {
+      "path": "artefacts/M3-S01/email/Sales_Approvals.emailFolder-meta.xml",
+      "parsed": true
+    },
+    {
+      "path": "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email-meta.xml",
+      "parsed": true
+    },
+    {
+      "path": "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email-meta.xml",
+      "parsed": true
+    },
+    {
+      "path": "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml",
+      "parsed": true
+    }
+  ],
+  "all_parsed": true
+}

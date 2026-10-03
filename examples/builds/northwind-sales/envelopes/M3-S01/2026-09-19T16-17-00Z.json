@@ -1,0 +1,407 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-19T16-17-00Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M3-S01/2026-09-19T16-17-00Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M3-S01/2026-09-19T16-17-00Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M3-S01",
+    "api_version": "62.0 (not supplied; plan.json carries no api_version, so the AGENT.md Inputs fallback applied)"
+  },
+  "summary": "Built M3-S01 (ui): the Sales_Approvals Classic email folder and the three Classic text templates the M3-S02 approval process and its two workflow alerts will send - Discount_Approval_Request (sent by the process's own emailTemplate element on submit), Discount_Approved and Discount_Rejected (sent by alerts to the opportunity owner). Seven declared metadata files plus package.xml and deploy-order.md, all nine declared in outputs[] and all nine written; nothing outside artefacts/M3-S01/. The one declared checker exited 0 on the first pass with zero repair passes (score 100, 6 files scanned, 0 findings) and also exits 0 under --strict; all 5 XML files parse; check-outputs ok. Element set copied from skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md and cross-checked against the org-validated pair in examples/builds/case-onboarding/artefacts/M3-S02/email/. deploy-order.md section 1 states the folder and template names as an explicit contract table for M3-S02 to copy rather than retype.",
+  "confidence": "MEDIUM",
+  "confidence_rationale": "Step 10's HIGH row requires all five of: every element traced to the Step 3 inventory (true - all eight EmailTemplate elements and all three EmailFolder elements come from the fenced examples in metadata-and-sender-identity.md, and the uiType/type/style/letterhead combination is row 1 of the two-shapes-only table in that skill's gotchas.md); every cited checker exiting 0 on the first or second pass (true - first pass, zero repairs, and confirmed under --strict so the 0 is not resting on suppressed REVIEW findings); check-outputs ok (true); every declared output written and nothing else (true - 9 of 9, no undeclared artefact); and every Questions-to-Ask row answered from the plan rather than defaulted. The last one is false. admin/email-templates-and-alerts opens its table with 'Who does the email come from, and who answers replies?' and that question was never asked on this build - a search of the answered clarifications, requirement.md and decisions.md for org-wide / sender / from address / no-reply / reply-to returns only unrelated hits. It did not block and it changed no element here, because the EmailTemplate element set contains no sender at all, but it is a live gap that M3-S02 inherits in a form where it does change an element (WorkflowAlert.senderType / senderAddress), and the committed case-onboarding build's F-28 is the same question answered too late. Calling this HIGH would claim a completeness the build does not have. No MEDIUM-row trigger fired either (no documented default stood in for an element, no third-pass checker, no output documented by worked example alone) - the score is MEDIUM on the unanswered mandatory question and nothing else.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "element-grounding",
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Twelve Questions-to-Ask rows across the two cited skills, deduplicated. Five of the five admin/email-templates-and-alerts rows and one of the seven admin/approval-processes rows are in this step's scope; of those six, five were answered from the plan (Q33 verbatim, decision D4, the step's inputs.note, M1-S01's field files, and requirement.md item 6 for the Email-to-Case threading row - that last one from the weakest of the four Step 4 sources). The sixth, 'Who does the email come from, and who answers replies?', has no answer anywhere on file and the skill states no default for it; it changed no element in this step because EmailTemplate carries no sender, so it did not block, and it is carried forward in deploy-order.md section 4 with an explicit recommendation for M3-S02. The remaining six admin/approval-processes rows (process order, allowedSubmitters, recordEditability, approver source, rejectBehavior, ifCriteriaNotMet) determine elements in the ApprovalProcess file, which is M3-S02's artefact, not this step's - they were read, not answered here."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "element-grounding",
+      "observation": "Both cited skills independently name this exact folder and these exact three template developer names, so the step's inputs needed no interpretation: approval-processes/references/metadata-examples.md ships a worked Opportunity discount approval whose emailTemplate element reads Sales_Approvals/Discount_Approval_Request and whose two alerts reference Sales_Approvals/Discount_Approved and Sales_Approvals/Discount_Rejected, and its package.xml lists all three as explicit EmailTemplate members at version 62.0 - which is the same version every one of this build's seven prior package.xml files already declares.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/approval-processes/references/metadata-examples.md",
+        "count": 3
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-consistency",
+      "observation": "The file layout this step's outputs[] declared is byte-for-byte the shape the M3 milestone's own cross-step checker reconstructs template names from - check_approval_design.py's load_email_templates() builds 'Folder/DeveloperName' from the parent directory name plus the .email-meta.xml file stem - so email/Sales_Approvals/Discount_Approved.email-meta.xml resolves to Sales_Approvals/Discount_Approved with no naming judgement left for M3-S02 to make.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/approval-processes/scripts/check_approval_design.py",
+        "count": 3
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "medium",
+      "domain": "sender-identity",
+      "observation": "The sender question that both this skill's Questions-to-Ask table and its Proactive Triggers list ('No Org-Wide Email Address decision documented - raise it before go-live') treat as mandatory was never asked on this build, and the step where it first changes an element is the next one: M3-S02's two WorkflowAlert files each need a senderType, and senderAddress is legal only alongside OrgWideEmailAddress - an address that has no metadata type, must be verified from the mailbox in the target org, and is exactly what rejected a component in the committed case-onboarding build as finding F-28.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "grep -niE 'org-wide|sender|from address|no-reply|reply.to' over clarifications, requirement.md, decisions.md",
+        "count": 0
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "assumption-provenance",
+      "observation": "Assumption A27's stated premise - 'no {!ApprovalRequest.*} merge field is documented anywhere in this library' - is one word too absolute: a grep returns skills/admin/quote-to-cash-process/references/gotchas.md line 49, which names {!ApprovalRequest.ApproverName} in passing, and skills/flow/pause-elements-and-wait-events/SKILL.md lines 117-118, which use {!ApprovalRequest.CreatedDate} as a Flow resource rather than an email merge field; A27's conclusion is unaffected because neither documents a merge field for the approval comments, neither sits in a fenced email-template example, and neither is in a skill this step cites, but the premise as written would not survive the grep a reviewer runs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/quote-to-cash-process/references/gotchas.md",
+        "query": "grep -rn '{!ApprovalRequest' skills/ templates/ examples/ standards/",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "action-ordering",
+      "observation": "Both outcome bodies merge {!Opportunity.Approval_Status__c}, and Q33 puts the field update and the email in the same approval event - which in M3-S02 means a FieldUpdate and an Alert inside one finalApprovalActions or finalRejectionActions block - but the only ordering rule either cited skill states is about approvalStep[] ('document order is execution order'), not about actions inside a block, so whether the merged value is the new status or the prior one is not established from the files at hand; the line is worded as an observation of the record rather than as an assertion of the outcome so that a stale merge reads as redundant rather than as a contradiction of the subject line.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/approval-processes/SKILL.md",
+        "query": "grep -i 'execution order' over the two cited skills",
+        "count": 3
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "cross-step-dependency",
+      "observation": "Discount_Rejected.email delivers Q33's 'with the comments' clause by pointing the rep at the Approval History related list, which exists only because M3-S02 is expected to set showApprovalHistory true on the approval process - an element in another step's file that nothing in this step's acceptance tests can check, so if M3-S02 omits it or sets it false, A27 stops being a documented gap and becomes an email that points at a related list the rep cannot see.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-coverage",
+      "observation": "build_plan.py validate raises the 'skill ships a checker that nothing runs' WARN for eleven other steps in this plan but not for M3-S01, and the reason is worth recording rather than reading as a clean bill: M3-S01 cites admin/approval-processes, which ships check_approval_design.py, and the WARN is suppressed because the M3 milestone's first acceptance test runs that checker at build scope - which means the approval-process half of this step's citation is verified only once M3-S02 exists, and never at step scope.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "query": "python3 scripts/build_plan.py validate ... | grep M3-S01",
+        "count": 0
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "The step is built and its artefacts are on disk; the tester is the next agent in the loop and this agent does not invoke it.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S01",
+        "count": 9
+      },
+      "suggested_followup_agent": "step-tester",
+      "followup_reason": "Because the five declared acceptance tests - the checker, the always-on xml and manifest checks, and the two manual ticks - are the tester's to execute and record in tests/M3-S01/results.json, not this agent's."
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "deploy-order.md section 4 carries a sender decision and an org prerequisite that belong in decisions.md rather than only in a step-local note.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M3-S01/deploy-order.md",
+        "count": 1
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Because the unanswered sender question, the A27 premise correction and the Approval_Status__c ordering caveat are decisions and open items the M3 gate should see in decisions.md, and this agent does not write that file."
+    }
+  ],
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/SKILL.md",
+      "used_for": "the Questions-to-Ask table (5 rows, all bound in Step 4), Recommended Workflow steps 2, 3, 4 and 6 (Classic-before-XML, confirm the sender in the target org, author folder and template together, test the send not the save), and the Proactive Trigger that says an undocumented org-wide address decision is raised before go-live"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md",
+      "used_for": "the whole element inventory for this step: the EmailFolder fence (accessType, name, publicFolderAccess), the .email body and EmailTemplate -meta.xml fence (available, description, encodingKey, name, style, subject, type, uiType), the Folder/Developer_Name reference form, the no-wildcard package.xml fence at version 62.0, and the statement that org-wide addresses have no metadata type"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/references/gotchas.md",
+      "used_for": "the uiType/type/style/letterhead two-shapes-only table (row 1 is what all three templates use), the 230-character Classic subject ceiling via the metadata reference, the senderAddress-only-with-OrgWideEmailAddress rule and the IsVerified trap behind it, the EmailFolder-vs-EmailTemplateFolder directory split, and the delete-the-alert-before-the-template ordering that deploy-order.md section 2 reverses for retirement"
+    },
+    {
+      "type": "skill",
+      "id": "admin/email-templates-and-alerts",
+      "path": "skills/admin/email-templates-and-alerts/references/examples.md",
+      "used_for": "the Approval Reminder body structure (what needs review, why, key values, next action) that the three bodies follow, and the checker's argument-form and exit-policy note quoted in deploy-order.md section 6"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/SKILL.md",
+      "used_for": "Questions-to-Ask row 7 (which actions fire on submit/approve/reject/recall, and the deploy order 'workflow actions and email template first, process second'), the Deployable Metadata Shape table's emailTemplate row, and the 'document order is execution order' rule that is about steps and not about actions inside a block"
+    },
+    {
+      "type": "skill",
+      "id": "admin/approval-processes",
+      "path": "skills/admin/approval-processes/references/metadata-examples.md",
+      "used_for": "the worked Opportunity discount approval that names Sales_Approvals/Discount_Approval_Request, Sales_Approvals/Discount_Approved and Sales_Approvals/Discount_Rejected; the emailTemplate element and the 'omit it to use the default approval-request template' rule that makes the submit email need no alert; the two WorkflowAlert shapes with CurrentUser and OrgWideEmailAddress senders; showApprovalHistory; and the package.xml listing all three templates explicitly at version 62.0"
+    },
+    {
+      "type": "skill",
+      "id": "admin/change-management-and-deployment",
+      "path": "skills/admin/change-management-and-deployment/references/metadata-examples.md",
+      "used_for": "section 1's package.xml anatomy (types/members/name/version, members carry the component fullName, the wildcard caveat) and the validate-then-quick-deploy sequence quoted for a production target in deploy-order.md section 8, including its own UNVERIFIED caveat on sf CLI flag spellings"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/artefacts/M3-S02/email/case_intake.emailFolder-meta.xml",
+      "used_for": "the org-validated EmailFolder shape and the developer-name-vs-label split (file stem case_intake, <name>Case Intake</name>, manifest member case_intake) that Sales_Approvals copies; the sibling Case_Acknowledgement .email / .email-meta.xml pair and the M3-S02 package.xml confirm the same eight EmailTemplate elements and the explicit-members form survived repeated sf project deploy start --dry-run runs"
+    },
+    {
+      "type": "example_build",
+      "id": "case-onboarding",
+      "path": "examples/builds/case-onboarding/decisions.md",
+      "used_for": "D-M3S04-03, the F-28 record - an org rejecting a component with 'is an invalid From email address' because no verified OrgWideEmailAddress existed - which is the precedent deploy-order.md section 4 cites for treating the sender as a gate prerequisite rather than a metadata defect"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 2 (the build directory layout, the rule that no agent hand-edits plan.json and that set-status is the writer), section 4 (the ui row - EmailTemplate is a metadata-builder artefact in a design-only build - and the step status machine), and section 5 (the checker/xml/manifest/manual test types, the rule that every metadata-builder-owned metadata step declares its own package.xml, and the checker-scope and exit-policy discipline quoted in deploy-order.md section 6)"
+    },
+    {
+      "type": "standard",
+      "id": "agent-contract",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the mandatory Process Observations block and its healthy/concerning/ambiguous/follow-up structure, the citation schema used here, and the rule that a run-time agent never deploys and never writes outside the paths it was given"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "the eleven-step Plan executed here - Step 3's grep-for-a-fence test for finding a skill's deployable XML, Step 5's rule that every element name comes from the inventory, Step 6's package.xml (including the EmailTemplate no-wildcard constraint it names explicitly), Step 7's deploy-order note, Step 8's checker loop, Step 9's check-outputs gate, and Step 10's confidence table"
+    }
+  ],
+  "extensions": {
+    "step_id": "M3-S01",
+    "step_type": "ui",
+    "build_mode": "design-only",
+    "status_path_taken": "Invoked directly (not under agents/build-step-runner), so this agent moved the step itself, exactly twice: pending -> running at 2026-09-19T16:09:51Z and running -> built at the end of the run. No other write to plan.json was made - no amend-step, no gate, no hand edit. build_plan.py next named M3-S01 as the only runnable step before the claim.",
+    "human_gate": "false on this step; no step:M3-S01 gate exists. Milestones M1 and M2 are gate-approved, which is what makes M3 the current runnable milestone.",
+    "artefacts": [
+      "artefacts/M3-S01/email/Sales_Approvals.emailFolder-meta.xml",
+      "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email",
+      "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml",
+      "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email",
+      "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email-meta.xml",
+      "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email",
+      "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email-meta.xml",
+      "artefacts/M3-S01/package.xml",
+      "artefacts/M3-S01/deploy-order.md"
+    ],
+    "artefact_inventory": [
+      {
+        "path": "artefacts/M3-S01/email/Sales_Approvals.emailFolder-meta.xml",
+        "metadata_type": "EmailFolder",
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md, '## Folder' fence (accessType, name, publicFolderAccess); shape confirmed against examples/builds/case-onboarding/artefacts/M3-S02/email/case_intake.emailFolder-meta.xml",
+        "declared_in_outputs": true,
+        "note": "accessType Public + publicFolderAccess ReadOnly per the step's inputs.note and the skill's rule that a template in a private folder is invisible to other users. Developer name Sales_Approvals (file stem, manifest member, first half of every template reference); label 'Sales Approvals' (the <name> element only)."
+      },
+      {
+        "path": "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email",
+        "metadata_type": "EmailTemplate (body)",
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md, '## Classic text template used by an auto-response rule' body fence; body structure from references/examples.md 'Approval Reminder Template'",
+        "declared_in_outputs": true,
+        "note": "Merge fields: Opportunity.Name, StageName, CloseDate, Amount, Discount__c. No parent traversal. Points the approver at the Comments box on the approval screen, which is where the rejection email tells the rep to read it."
+      },
+      {
+        "path": "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml",
+        "metadata_type": "EmailTemplate",
+        "element_source": "same reference, the EmailTemplate -meta.xml fence (available, description, encodingKey, name, style, subject, type, uiType); the element combination is row 1 of the gotchas.md two-shapes-only table",
+        "declared_in_outputs": true,
+        "note": "uiType Aloha, type text, style none, no letterhead, available true, encodingKey UTF-8. Subject 75 characters (Classic ceiling 230). Sent by the approval process's own emailTemplate element, so no WorkflowAlert and no sender of its own."
+      },
+      {
+        "path": "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email",
+        "metadata_type": "EmailTemplate (body)",
+        "element_source": "as Discount_Approval_Request.email",
+        "declared_in_outputs": true,
+        "note": "Addresses the opportunity owner ('Your discount request was approved'). Merge fields: Opportunity.Name, Amount, Discount__c, Approval_Status__c - the last on a hedged line, see the action-ordering observation."
+      },
+      {
+        "path": "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email-meta.xml",
+        "metadata_type": "EmailTemplate",
+        "element_source": "as Discount_Approval_Request.email-meta.xml",
+        "declared_in_outputs": true,
+        "note": "Subject 38 characters. Consumer is M3-S02's Notify_Submitter_Approved alert."
+      },
+      {
+        "path": "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email",
+        "metadata_type": "EmailTemplate (body)",
+        "element_source": "as Discount_Approval_Request.email",
+        "declared_in_outputs": true,
+        "note": "Addresses the opportunity owner. Delivers Q33's 'with the comments' clause through the Approval History related list per assumption A27, and says outright that the email cannot carry the comments."
+      },
+      {
+        "path": "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email-meta.xml",
+        "metadata_type": "EmailTemplate",
+        "element_source": "as Discount_Approval_Request.email-meta.xml",
+        "declared_in_outputs": true,
+        "note": "Subject 74 characters, and it names Approval History so the pointer survives even if the body is skimmed. Consumer is M3-S02's Notify_Submitter_Rejected alert."
+      },
+      {
+        "path": "artefacts/M3-S01/package.xml",
+        "metadata_type": "Package",
+        "element_source": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md '## package.xml and CLI' fence and skills/admin/approval-processes/references/metadata-examples.md '## package.xml'; anatomy from skills/admin/change-management-and-deployment/references/metadata-examples.md section 1",
+        "declared_in_outputs": true,
+        "note": "EmailFolder member Sales_Approvals; three EmailTemplate members listed explicitly as Folder/Developer_Name because EmailTemplate takes no * wildcard. version 62.0."
+      },
+      {
+        "path": "artefacts/M3-S01/deploy-order.md",
+        "metadata_type": "note (not metadata)",
+        "element_source": "agents/metadata-builder/AGENT.md Step 7; content sourced from the two cited skills' gotchas and from skills/admin/change-management-and-deployment",
+        "declared_in_outputs": true,
+        "note": "Nine sections. Section 1 is the name-contract table M3-S02 copies from; section 4 records the sender decision and the org prerequisite; section 8 is the validate-only command, written as text and not run."
+      }
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "decision_record": [
+      {
+        "question": "Is this template used by a rule (assignment, auto-response, escalation) or by Flow?",
+        "skill": "admin/email-templates-and-alerts",
+        "answer": "By neither: by an approval process (its emailTemplate element) for the submit email, and by two WorkflowAlerts for the approve and reject emails. All three consumers are metadata-deployed, none is Flow.",
+        "source": "step inputs (inputs.note) + clarification Q33 + decision D4",
+        "determined": "uiType Aloha, type text, style none, no letterhead, on all three templates - row 1 of the gotchas.md two-shapes-only table. A Lightning template is not packageable and the approval process could not reference one."
+      },
+      {
+        "question": "Which record is the merge context: Case, Lead, Contact?",
+        "skill": "admin/email-templates-and-alerts",
+        "answer": "Opportunity, in all three templates.",
+        "source": "decision D4 (approval on the Opportunity) + upstream artefacts (M1-S01's two Opportunity fields) + requirement.md items 2 and 3",
+        "determined": "Every merge field is {!Opportunity.<field>} with no parent traversal: Name, StageName, CloseDate, Amount, Discount__c, Approval_Status__c."
+      },
+      {
+        "question": "Which actions fire on submit, approve, reject, and recall - and do those objects exist in the target org?",
+        "skill": "admin/approval-processes",
+        "answer": "Q33 verbatim: submit = email to the manager + Approval_Status__c Pending + lock; approve = email to the rep + Approved + unlock; reject = email to the rep with the comments + Rejected + unlock; recall = field cleared + unlock + no email.",
+        "source": "clarification Q33 (answered, blocking, asked_by metadata-builder)",
+        "determined": "Exactly three templates, not four. The submit email is the approval process's own emailTemplate (no alert), and recall sends nothing. The 'with the comments' clause is delivered through Approval History per assumption A27."
+      },
+      {
+        "question": "Could the same event fire twice?",
+        "skill": "admin/email-templates-and-alerts",
+        "answer": "No. Q33's four events are distinct approval outcomes, and no two of them send the same template.",
+        "source": "clarification Q33 + step inputs (inputs.note)",
+        "determined": "One template per sending event, and no alert on the submit event - an alert there would send the manager a second copy of the approval request."
+      },
+      {
+        "question": "Does Email-to-Case threading depend on a token in this email?",
+        "skill": "admin/email-templates-and-alerts",
+        "answer": "No. These are internal emails between a rep and their manager on an Opportunity; requirement.md item 6 puts integrations and data migration out of scope, and no Email-to-Case exists in this build.",
+        "source": "requirement.md (the weakest of the four Step 4 sources - nothing more specific was on file)",
+        "determined": "No thread token in any subject or body, unlike the case-onboarding acknowledgement this step's folder shape was cross-checked against."
+      },
+      {
+        "question": "Who does the email come from, and who answers replies?",
+        "skill": "admin/email-templates-and-alerts",
+        "answer": "UNANSWERED. No clarification asked it, and the skill states no default. It is recorded as an ambiguity, not defaulted.",
+        "source": "none - searched the answered clarifications, requirement.md and decisions.md",
+        "determined": "No element in this step, because the EmailTemplate element set contains no sender. Carried forward in deploy-order.md section 4 with a recommendation for M3-S02 (senderType CurrentUser on both alerts, because it needs nothing provisioned and these are internal emails) and an explicit UNVERIFIED (2026-09-19) marker that no verified OrgWideEmailAddress is known to exist in any target org for this build."
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M3-S01",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared": true,
+        "scope": "step",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "stdout": "{\"score\": 100, \"findings\": [], \"summary\": \"Scanned 6 email template file(s); 0 finding(s) detected.\"}",
+        "reading": "Six files, not seven: Sales_Approvals.emailFolder-meta.xml is not a template artefact by the checker's own is_template_artefact() test, so the folder is unlinted here and the manifest acceptance test plus deploy-order.md section 1 are what cover it. The 0 stands for something real - it read three bodies and three meta XMLs and asserted that every body carries at least one {! merge field, every meta XML parses and carries a non-empty <subject>, and no file carries a hardcoded email address. This is not a 'Scanned 0 file(s) - nothing asserted' run.",
+        "strict_rerun": "The same command with --strict also printed score 100 / 0 findings and exited 0, run once as a confirmation rather than as a declared test. The step declares the lenient form deliberately so a future REVIEW about sender identity surfaces as a reported finding rather than a blocked step; the --strict run establishes that today's 0 is not resting on suppressed REVIEW findings."
+      },
+      {
+        "command": "python3 skills/admin/approval-processes/scripts/check_approval_design.py",
+        "cwd": "n/a",
+        "declared": false,
+        "scope": "build (milestone M3)",
+        "exit_code": null,
+        "repair_passes": 0,
+        "stdout": "not run",
+        "reading": "Not run, deliberately. The step cites admin/approval-processes, which ships this checker, but the step declares no test for it and build_plan.py validate raises no WARN because the M3 milestone's first acceptance test runs it at build scope ('--manifest-dir artefacts artefacts'). At step scope it would find no approvalProcesses/ directory and its exit code would stand for nothing. It becomes meaningful once M3-S02 exists, and it is the test that will confirm this step's three template names resolve."
+      }
+    ],
+    "xml_parse": "All 5 *.xml / *-meta.xml files under artefacts/M3-S01/ parse with xml.etree.ElementTree: the three EmailTemplate meta files, the EmailFolder file and package.xml. The three .email bodies are plain text and carry no XML. No entity escaping was needed - the merge-field braces, the '20%' in the request body and the hyphens in the two subjects are all literal text in an XML text node.",
+    "check_outputs": {
+      "ok": true,
+      "step": "M3-S01",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "manifest_consistency": "Two <name> blocks, checked in both directions. EmailFolder: member Sales_Approvals, backed by email/Sales_Approvals.emailFolder-meta.xml. EmailTemplate: members Sales_Approvals/Discount_Approval_Request, Sales_Approvals/Discount_Approved and Sales_Approvals/Discount_Rejected, each backed by a .email body and a .email-meta.xml under email/Sales_Approvals/. Every file on disk except package.xml and deploy-order.md is covered by a member, and every member has files behind it. All three template members are named explicitly rather than wildcarded, because the cited skill states EmailTemplate takes no * (the same constraint agents/metadata-builder/AGENT.md Step 6 names as its standing example). No nested folder is used, so the trailing-slash trap in gotchas.md does not apply here.",
+    "api_version_note": "62.0, kept deliberately. plan.json carries no api_version key, so agents/metadata-builder/AGENT.md's Inputs fallback applies; all seven prior package.xml files in this build already declare 62.0, so mock_deploy.py's highest-version scan still sees one version for the whole build. Nothing in this step has a version floor above 62.0 - EmailFolder and EmailTemplate are both long-standing types and no element written here carries a version note in any cited reference. Recorded in deploy-order.md section 0 along with the fact that the three cited skills disagree (the two email/approval references show 62.0; change-management-and-deployment quotes the guide's 'Currently the valid value is 66.0'), which is a plan-level open item and not this step's to settle.",
+    "org_interaction": "None. requires_org: false, build_mode design-only, and plan.json carries no org key. No sf command was run. scripts/mock_deploy.py was not run and is named only as copyable text in deploy-order.md section 8, where its hard-coded --dry-run is described as a property of the script rather than as a flag a human passes.",
+    "workflow_return": {
+      "step_id": "M3-S01",
+      "status": "built",
+      "artefacts": [
+        "artefacts/M3-S01/email/Sales_Approvals.emailFolder-meta.xml",
+        "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email",
+        "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml",
+        "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email",
+        "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email-meta.xml",
+        "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email",
+        "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email-meta.xml",
+        "artefacts/M3-S01/package.xml",
+        "artefacts/M3-S01/deploy-order.md"
+      ]
+    },
+    "open_items_for_the_human": [
+      "Decide the sender before M3-S02 is built, not after. The recommendation in deploy-order.md section 4 is senderType CurrentUser on both alerts (nothing to provision, internal audience). If the answer is a shared sales-ops mailbox instead, the OrgWideEmailAddress must exist and be verified in the target org before the alert deploys - IsVerified defaults to false and only the mailbox owner can clear it - and it becomes an M3 gate prerequisite in the shape case-onboarding recorded as F-28.",
+      "M3-S02 must set showApprovalHistory true on the approval process. Discount_Rejected.email points the rep at that related list to deliver Q33's 'with the comments' clause; if the element is omitted or false, assumption A27's mitigation does not exist and the email points at nothing.",
+      "Check the {!Opportunity.Approval_Status__c} line in the two outcome emails during the M3 mock deploy or UAT. Nothing in the cited skills establishes whether the FieldUpdate runs before the Alert inside one approval action block, so the merged value may be the prior status; if it reads stale, delete that one line from both bodies.",
+      "Correct assumption A27's premise wording. 'No {!ApprovalRequest.*} merge field is documented anywhere in this library' is refuted by two greppable hits (quote-to-cash gotchas line 49; flow/pause-elements-and-wait-events SKILL.md lines 117-118). A27's conclusion is unaffected - neither documents a merge field for approval comments and neither is in a cited skill - but the premise as written will not survive review.",
+      "The API-version disagreement between the cited skills (62.0 vs the guide's 'currently 66.0') is a plan-level decision. M1-S02 and M2-S05 recorded the same item; three steps have now deferred it."
+    ]
+  },
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "The five declared acceptance tests are the tester's to execute and record in tests/M3-S01/results.json; this agent ran only the one declared checker as its own Step 8 self-check and does not tick a manual test."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "Once the step is tested, the sender gap, the A27 premise correction and the action-ordering caveat belong in decisions.md and the traceability rows rather than only in this step's deploy-order note."
+    }
+  ]
+}

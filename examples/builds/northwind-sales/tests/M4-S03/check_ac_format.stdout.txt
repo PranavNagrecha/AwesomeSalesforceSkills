@@ -1,0 +1,3 @@
+Checking: artefacts/M4-S03/acceptance-criteria.md
+
+1 document(s) checked — 0 error(s), 0 warning(s).

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Opportunity_Products_Required_At_Propose</fullName>
+    <active>true</active>
+    <description>Enterprise deals must carry at least one price-book line before the stage moves into Propose, Negotiate or Closed Won (Q11, Q15). Reads the platform-maintained read-only boolean HasOpportunityLineItem rather than a roll-up, formula field or trigger (admin/products-and-pricebooks Gotcha 8). NOT(ISNEW()) and ISCHANGED(StageName) are load-bearing, not boilerplate: the field is false during the Opportunity's own insert, and without the transition guard every later save of a product-less deal already at Propose is rejected (Gotcha 15, Q16). Closed Lost deliberately out of scope. Bypass: Bypass_Opportunity_Sales_Validation, granted by Sales_Ops_Validation_Bypass (Q13, D3). Forward gate only - it does not catch deletion of the last line item; see deploy-order.md.</description>
+    <errorConditionFormula>AND(
+  NOT($Permission.Bypass_Opportunity_Sales_Validation),
+  RecordType.DeveloperName = "Enterprise",
+  NOT(ISNEW()),
+  ISCHANGED(StageName),
+  OR(
+    ISPICKVAL(StageName, "Propose"),
+    ISPICKVAL(StageName, "Negotiate"),
+    ISPICKVAL(StageName, "Closed Won")
+  ),
+  NOT(HasOpportunityLineItem)
+)</errorConditionFormula>
+    <errorDisplayField>StageName</errorDisplayField>
+    <errorMessage>Add at least one product before moving this opportunity to Propose.</errorMessage>
+</ValidationRule>

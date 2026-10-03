@@ -1,0 +1,247 @@
+{
+  "agent": "metadata-builder",
+  "mode": "single",
+  "run_id": "2026-09-18T13-39-55Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-39-55Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-18T13-39-55Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M1-S02",
+    "api_version": "62.0 (unchanged from the prior run - plan.json still carries no api_version key)",
+    "invocation_kind": "§ 4 repair of a documented step after an org finding (operator moved M1-S02 documented -> running before this run started); org evidence: reports/MOCK-DEPLOY-M1.md run 1, finding N3-F-02"
+  },
+  "summary": "Repair run on M1-S02 (ui, scale project, build_mode design-only) after reports/MOCK-DEPLOY-M1.md run 1 returned N3-F-02 (HIGH): 'Layout must contain an item for required layout field: Probability' on both layouts. Added one layoutItems entry to the Opportunity Information section of both artefacts/M1-S02/layouts/*.layout-meta.xml, immediately after Amount: field Probability, behavior Required - Required because gotchas.md #13 treats a platform-required layout field the same way it treats Status on Case, as a deploy precondition rather than an analyst's design choice, and the deploy message itself is now the evidence for Probability specifically. Nothing else in either file was changed; package.xml is unaffected (no new component, same two Layout members). deploy-order.md gained §6 'Repair after run 1', discharging A25 partially (Probability confirmed layout-required for Opportunity) while explicitly keeping the iterate-the-dry-run note standing, since the org reports one missing field per run and a further field may still surface. The step's declared checker was re-run verbatim from the build directory and exited 0 with two findings (one REVIEW, one INFO - see §5 for the exact severities against the operator's 'two INFO' framing); check-outputs is ok; all three artefacts still parse. Outcome: built.",
+  "confidence": "MEDIUM",
+  "outcome": "completed",
+  "confidence_rationale": "Step 10 MEDIUM, unchanged from the prior run's own MEDIUM and not raised or lowered by this repair. HIGH is not reached because element-grounding was already MEDIUM before this run (Layout is documented by worked example, not an element table, and admin/products-and-pricebooks carries no deployable XML) and question-coverage was already MEDIUM (three Questions-to-Ask rows remain unanswered; A25 and A26 remain assumptions, not answers). This run does not touch either condition: the one element added (Probability, behavior Required) is grounded in the same worked-example family (admin/record-types-and-page-layouts/references/metadata-examples.md's behavior table) plus the gotchas.md #13 platform-required-field pattern, and confirmed - not merely asserted - by the org's own deploy message (reports/MOCK-DEPLOY-M1.md run 1, N3-F-02), which is stronger grounding than the rest of the file carries, not weaker. checker-pass and manifest-consistency stay HIGH-eligible: the declared checker exited 0 on the first pass (no repair pass needed), check-outputs is ok, and every declared output still exists and nothing undeclared was written.",
+  "dimensions_compared": [
+    "checker-pass",
+    "manifest-consistency",
+    "deploy-order"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "element-grounding",
+      "state": "partial",
+      "reason": "Unchanged from the prior run's own skipped entry: Layout is documented by worked example and a how-to-read-it list rather than an element table, and admin/products-and-pricebooks still carries no deployable XML. This run's one new element (Probability, behavior Required) does not change that reason - it is grounded in the same metadata-examples.md behavior table plus gotchas.md #13, and additionally confirmed by the org's own deploy message this time, which is the strongest grounding this dimension gets in this build.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Unchanged: add deployable XML to admin/products-and-pricebooks, or drop it from M1-S02's skills[] via amend-step."
+    },
+    {
+      "dimension": "question-coverage",
+      "state": "partial",
+      "reason": "Unchanged from the prior run: three Questions-to-Ask rows (Person Accounts, IsPrivate, report/list-view filters) remain unanswered and undetermined by anything this repair touched. A25 moves from fully open to partially discharged - Probability is now confirmed layout-required for Opportunity - but is not closed, because the org reports one missing field per run and this run's evidence covers only the first one named.",
+      "confidence_impact": "MEDIUM",
+      "retry_hint": "Run scripts/mock_deploy.py again over M1 after this repair to see whether a second required-field message surfaces for either layout; deploy-order.md §6 names this explicitly."
+    }
+  ],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "deploy-order",
+      "observation": "The repair needed no guesswork: the org's own deploy message named the exact missing field (Probability) and the exact required behavior (the message is 'Layout must contain an item for required layout field', which the skill's table maps to 'add a layoutItems entry, any behavior' - but gotchas.md #13's Case precedent, and the fact this is the platform-required case rather than a design choice, argues for writing Required directly rather than waiting for a second dry-run round to report 'Field:Probability must be Required'). Writing Required now is consistent with A25's own discovery procedure in deploy-order.md §3 item 2 and avoids a foreseeable second round trip.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "manifest-consistency",
+      "observation": "No new component type was introduced by this repair (Probability is a layout item inside an existing Layout component, not a new metadata type), so package.xml needed no edit. The manifest still names exactly the two Layout members the files provide, in both directions.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/package.xml",
+        "count": 1
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-pass",
+      "observation": "The invocation asked for 'two INFO findings and exit 0' as the expected re-run result. The actual re-run is two findings and exit 0, but the severities are one REVIEW (the identical-Enterprise/Renewal-layout merge candidate, RTL-MERGE-01 - unaffected by this repair since both files still received the identical edit) and one INFO ('no Profile/PermissionSet in scope'), not two INFO. The checker itself has changed since the step's original 2026-09-15 run: that run's declared-test output carried exactly two INFO findings ('layout marks no field behavior=Required', once per layout) and no REVIEW or Profile/PermissionSet-scope finding at all - this build's copy of check_record_type_layouts.py has grown RTL-MERGE-01 and RTL-ASSIGN-01 since that run, independent of anything this step wrote. Adding Probability with behavior=Required did remove both original 'marks no field behavior=Required' INFOs, exactly as expected; what it could not do is make the now-different checker's remaining findings match a two-INFO description written against the old checker. Reported verbatim below rather than reworded to fit.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+        "count": 2
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "medium",
+      "domain": "deploy-order",
+      "observation": "A25 is now partially discharged rather than closed: the org confirmed Probability is layout-required for Opportunity, but the dry run reports one missing field per run (gotchas.md #12), so a layout still short of a second or third required field would not have surfaced yet. deploy-order.md §6 says this explicitly and keeps §3 item 2's iterate-the-dry-run instruction standing rather than marking A25 resolved. A human reading only N3-F-02 and this repair could reasonably - and wrongly - conclude the Opportunity layout-required set is now fully known.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md",
+        "count": 1
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "element-grounding",
+      "observation": "A parallel repair of M1-S01 is running concurrently per the invocation. This run touched only artefacts/M1-S02/, envelopes/M1-S02/ and this step's own plan.json status field; it did not read or write anything under artefacts/M1-S01/ beyond the read-only citation of M1-S01's deploy-order.md already on file from the prior run. No file conflict is expected, but the two repairs share the same M1 milestone and the same mock-deploy run 1 report, so the milestone will need re-verification (build-orchestration.md §8's re-verification path) once both land, not just this step's.",
+      "evidence": {
+        "source": "plan_field",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "count": 1
+      }
+    }
+  ],
+  "extensions": {
+    "step_id": "M1-S02",
+    "step_type": "ui",
+    "step_scale": "project",
+    "build_mode": "design-only",
+    "status_path_taken": "invoked directly (not under agents/build-step-runner) as a § 4 repair of a documented step moved to running by the operator; this agent ran the Step 9/11 set-status and validate-envelope itself: M1-S02 running -> built.",
+    "repair_context": {
+      "trigger": "reports/MOCK-DEPLOY-M1.md run 1, finding N3-F-02 (HIGH)",
+      "finding_text": "Layout must contain an item for required layout field: Probability (on both Opportunity-Opportunity Enterprise Layout and Opportunity-Opportunity Renewal Layout)",
+      "prior_envelope": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T19-58-38Z.json",
+      "prior_run_result": "Built 2 Layout components (Opportunity Enterprise, Opportunity Renewal) + package.xml + deploy-order.md; declared build-scoped record-type/layout cross-check exit 0 over artefacts/ (2 record types, 2 layouts); no relatedLists block (A26) and no behavior=Required (A25), both carried in deploy-order.md"
+    },
+    "artefacts": [
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/package.xml",
+      ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md"
+    ],
+    "undeclared_artefacts": [],
+    "blocked_reason": null,
+    "diff_summary": [
+      {
+        "path": "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+        "change": "Added one <layoutItems> entry (field Probability, behavior Required) to the second <layoutColumns> of the 'Opportunity Information' <layoutSections>, immediately after the Amount item and before the existing emptySpace item. No other line changed."
+      },
+      {
+        "path": "artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+        "change": "Identical addition, same position. No other line changed."
+      },
+      {
+        "path": "artefacts/M1-S02/package.xml",
+        "change": "Unchanged - no new component type or member introduced."
+      },
+      {
+        "path": "artefacts/M1-S02/deploy-order.md",
+        "change": "Appended §6 'Repair after run 1': the N3-F-02 finding, the fix applied and why Required rather than Edit, the A25-partially-discharged status, and the standing instruction to keep iterating the dry run. No existing section edited."
+      }
+    ],
+    "decision_record": [
+      {
+        "question": "N3-F-02 fix: what behavior does the new Probability layoutItems entry carry?",
+        "answer": "Required, not Edit. The deploy message ('Layout must contain an item for required layout field: Probability') only strictly requires an entry with 'any behavior' per the skill's layout-required-fields table, but admin/record-types-and-page-layouts/references/gotchas.md #13 establishes that a field the platform requires on the layout is not the analyst's Edit/Required choice - it is a deploy precondition, exactly as Status is on Case. Writing Required now, on the strength of the org's own finding that Probability is platform-required here, avoids a foreseeable second dry-run round reporting 'Field:Probability must be Required'.",
+        "source": "org evidence reports/MOCK-DEPLOY-M1.md run 1 (N3-F-02) + skills/admin/record-types-and-page-layouts/references/gotchas.md #13 + references/metadata-examples.md's behavior table",
+        "element": "both layouts: new layoutItems entry, field=Probability, behavior=Required, in the Opportunity Information section, second layoutColumns, immediately after Amount"
+      },
+      {
+        "question": "Does confirming Probability closes assumption A25?",
+        "answer": "No - partially discharged only. The org's dry run reports one missing-layoutItems field per run (gotchas.md #12), so this run's finding (Probability) does not rule out a further required field surfacing on the next dry run against either file. deploy-order.md §6 records this explicitly and keeps §3 item 2's iterate-the-dry-run instruction standing.",
+        "source": "org evidence reports/MOCK-DEPLOY-M1.md run 1 + skills/admin/record-types-and-page-layouts/references/gotchas.md #12",
+        "element": "artefacts/M1-S02/deploy-order.md §6 (new)"
+      }
+    ],
+    "checker_results": [
+      {
+        "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+        "cwd": ".sfskills/builds/northwind-sales",
+        "declared_as_acceptance_test": true,
+        "declared_scope": "build",
+        "exit_code": 0,
+        "repair_passes": 0,
+        "output": "WARN: 2 review/info finding(s) detected\n{\n  \"score\": 100,\n  \"findings\": [\n    {\n      \"severity\": \"REVIEW\",\n      \"location\": \"artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml\",\n      \"message\": \"layouts Opportunity-Opportunity Enterprise Layout, Opportunity-Opportunity Renewal Layout on Opportunity are identical after normalisation \\u2014 merge candidates (SKILL.md workflow step 2); if two record types must differ, differentiate the layouts or share one.\"\n    },\n    {\n      \"severity\": \"INFO\",\n      \"location\": \"\",\n      \"message\": \"no Profile/PermissionSet in scope \\u2014 assignment coverage not checked\"\n    }\n  ],\n  \"summary\": \"Scanned 6 metadata file(s): 2 record type(s), 2 layout(s); 2 finding(s) detected.\"\n}",
+        "changed": "Both original INFO findings ('layout ... marks no field behavior=Required', one per layout) are gone - Probability now carries behavior=Required on both files, so the check-4 zero-Required condition no longer holds for either. Exit remains 0. The two findings now printed (one REVIEW for the still-identical layout pair, one INFO for no-Profile/PermissionSet-in-scope) were already latent in this build's current checker version and are unrelated to this repair; see the checker-pass process observation above for why this differs from the operator's 'two INFO' framing."
+      }
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M1-S02",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "xml_parse": {
+      "command": "python3 -c \"import sys,xml.etree.ElementTree as ET,pathlib; [ET.parse(p) for p in pathlib.Path(sys.argv[1]).rglob('*.xml')]\" .sfskills/builds/northwind-sales/artefacts/M1-S02",
+      "result": "all 3 *.xml / *-meta.xml files under artefacts/M1-S02/ parse (package.xml, both layout-meta.xml files)"
+    }
+  },
+  "citations": [
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/gotchas.md",
+      "used_for": "#13 - a field the platform requires on the layout carries behavior=Required as a deploy precondition, the same shape as Status on Case, which is why the new Probability item was written Required rather than Edit; #12 - the dry run reports one missing-layoutItems field per run, which is why A25 is recorded as partially discharged rather than closed"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md",
+      "used_for": "The behavior enum table (Edit/Required/Readonly) and the layout-required-standard-fields section's two deploy-message-to-fix mappings, used to place the new layoutItems entry and set its behavior"
+    },
+    {
+      "type": "skill",
+      "id": "admin/record-types-and-page-layouts",
+      "path": "skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py",
+      "used_for": "The step's declared build-scoped checker, re-run verbatim after the repair"
+    },
+    {
+      "type": "standard",
+      "id": "build-orchestration",
+      "path": "standards/build-orchestration.md",
+      "used_for": "§ 4 step status machine (documented -> running as a repair after a late-arriving finding) and § 8's re-verification path, which the milestone will need once both M1 repairs land"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "Step 5 (write the metadata, element-grounding rule), Step 7 (deploy-order note), Step 8 (re-run the cited skill's checker, fix the artefact never the checker), Step 9 (check-outputs then set-status), Step 11 (self-validate the envelope)"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "Process Observations shape, Citations schema, confidence rubric (overridden by AGENT.md Step 10, itself unchanged by this repair)"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "Envelope + markdown pair, atomic-write and persistence rules for this run"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales-M1-S02-prior-run",
+      "path": ".sfskills/builds/northwind-sales/envelopes/M1-S02/2026-09-15T19-58-38Z.md",
+      "used_for": "The prior run's artefact inventory, decision record and checker baseline this repair extends rather than repeats"
+    },
+    {
+      "type": "example_build",
+      "id": "northwind-sales-M1-S02-deploy-order",
+      "path": ".sfskills/builds/northwind-sales/artefacts/M1-S02/deploy-order.md",
+      "used_for": "§3 item 2 (the A25 discovery procedure this run executes) and the new §6 this run appends"
+    },
+    {
+      "type": "probe",
+      "id": "mock-deploy-M1-run-1",
+      "path": ".sfskills/builds/northwind-sales/reports/MOCK-DEPLOY-M1.md",
+      "used_for": "The org finding (N3-F-02) that triggered this repair and the field name it named"
+    }
+  ],
+  "followups": [
+    {
+      "agent": "step-tester",
+      "because": "M1-S02 is built again after this repair; the declared build-scoped checker, the always-on xml and manifest checks, and the two manual ticks against the updated deploy-order.md are its to re-run and record in tests/M1-S02/results.json."
+    },
+    {
+      "agent": "build-doc-keeper",
+      "because": "The N3-F-02 finding, the Probability fix, and A25's partial-discharge status need to reach decisions.md and the traceability matrix alongside the M1-S01 entries already there."
+    },
+    {
+      "agent": "milestone-verifier",
+      "because": "M1 was previously verified/accepted before this org finding surfaced; standards/build-orchestration.md §8's re-verification path applies once both M1-S01 and M1-S02's parallel repairs land, so the milestone report and merged manifest are stale until it re-runs."
+    }
+  ]
+}

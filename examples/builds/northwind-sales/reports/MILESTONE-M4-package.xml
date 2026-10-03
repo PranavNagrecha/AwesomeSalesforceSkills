@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Build-level manifest, northwind-sales, step M4-S04 (type docs, owner metadata-builder).
+
+  WHAT IT CARRIES. Every component produced anywhere in this build: 23 types, 38 members, explicit
+  members only, no wildcard anywhere. It is the union of the eleven step manifests under
+  artefacts/*/package.xml (M1-S01, M1-S02, M2-S01, M2-S02, M2-S03, M2-S04, M2-S05, M3-S01, M3-S02,
+  M3-S05, M4-S02) plus the members of the two steps that declare no manifest of their own:
+    - M3-S03 (apex-builder): five ApexClass members, standards/build-orchestration.md section 5,
+      "The Apex exception".
+    - M3-S04 (lwc-builder): one LightningComponentBundle member, section 4 borrowed-agent
+      condition 2 (the owning agent's Output Contract names no package.xml).
+  The same 38 members, as their 44 deploy components (Workflow expands to two WorkflowAlert and
+  four WorkflowFieldUpdate), are the set the org validated in reports/mock-deploy/2026-10-02T18-04-04Z
+  (MOCK-DEPLOY-M4 run 3: 43 ok, 2 expected errors, see N4-F-06 below).
+
+  M2-S04 IS A MEMBER. plan.json steps[M4-S04].inputs still lists "M2-S04 (excluded, blocked)".
+  That prose predates the 2026-09-15 unblock; acceptance test 5, amended 2026-10-02T18:52:18Z, says
+  the rule ships exactly once, M2-S04 is documented, and MOCK-DEPLOY-M2 run 3 validated it. The
+  amended test and the step's real status win over the stale input note.
+
+  ONE FILE, TWO REQUESTS. This file names every member, but it cannot be validated or deployed as
+  one request: a Report cannot be validated in the same deployment as the new ReportType it names
+  (N4-F-06, MOCK-DEPLOY-M4 run 3). deploy-order.md section 4 lists the two requests member by member:
+  request 1 is this file without Report Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage and
+  Dashboard Enterprise_Sales/Enterprise_Pipeline; request 2 is those two members.
+
+  A DEPLOY MANIFEST, NEVER A RETRIEVE MANIFEST. It names Profile and PermissionSet beside
+  CustomObject. Retrieved together, the object rewrites the profile files
+  (admin/object-creation-and-design gotchas.md Gotcha 10; artefacts/M2-S02/deploy-order.md section 4).
+
+  FOUR FILES MUST BE CHANGED IN THE DEPLOY COPY BEFORE A REAL DEPLOY, and none of those changes is
+  made here: the OpportunityStage merge, the Opportunity Products related list on both layouts, the
+  dashboard runningUser, and the Opportunity object-file merge. deploy-order.md section 2.
+
+  Member forms: object-qualified for CustomField, BusinessProcess, RecordType, ValidationRule and
+  ApprovalProcess; Layout is object, hyphen, layout name with literal spaces; EmailTemplate is
+  Folder/Name with the EmailFolder as its own member; Report and Dashboard folders are bare members
+  of the Report and Dashboard types; Settings is named PathAssistant because feature settings take
+  no wildcard. Sources: admin/change-management-and-deployment references/metadata-examples.md
+  section 1; admin/opportunity-management references/metadata-examples.md section 5;
+  admin/approval-processes references/metadata-examples.md "package.xml"; admin/reports-and-dashboards
+  references/metadata-examples.md section 5; admin/email-templates-and-alerts
+  references/metadata-and-sender-identity.md.
+
+  Version 62.0: every step manifest declares 62.0, plan.json carries no api_version, and the
+  metadata-builder Inputs default is 62.0. M3-S03's TestDataFactory.cls-meta.xml carries 67.0 by plan
+  decision D-M3S03-01; a class's own apiVersion governs its compile, and MOCK-DEPLOY-M3 run 5
+  validated the set at 62.0.
+
+  Type blocks are listed in the deploy order of deploy-order.md section 3. The platform resolves
+  references inside one request whatever the block order; the order is there for a reader and for
+  anyone who splits request 1 further.
+-->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>OpportunityStage</members>
+        <name>StandardValueSet</name>
+    </types>
+    <types>
+        <members>Opportunity.Approval_Status__c</members>
+        <members>Opportunity.Discount__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Opportunity.Enterprise_Sales_Process</members>
+        <members>Opportunity.Renewal_Sales_Process</members>
+        <name>BusinessProcess</name>
+    </types>
+    <types>
+        <members>Opportunity.Enterprise</members>
+        <members>Opportunity.Renewal</members>
+        <name>RecordType</name>
+    </types>
+    <types>
+        <members>Bypass_Opportunity_Sales_Validation</members>
+        <name>CustomPermission</name>
+    </types>
+    <types>
+        <members>Enterprise_Sales_Record_Types</members>
+        <members>Sales_Ops_Validation_Bypass</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>Opportunity-Opportunity Enterprise Layout</members>
+        <members>Opportunity-Opportunity Renewal Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>Sales User</members>
+        <name>Profile</name>
+    </types>
+    <types>
+        <members>Opportunity.Opportunity_Discount_Requires_Approval</members>
+        <members>Opportunity.Opportunity_Products_Required_At_Propose</members>
+        <name>ValidationRule</name>
+    </types>
+    <types>
+        <members>Enterprise_Opportunity_Path</members>
+        <members>Renewal_Opportunity_Path</members>
+        <name>PathAssistant</name>
+    </types>
+    <types>
+        <members>PathAssistant</members>
+        <name>Settings</name>
+    </types>
+    <types>
+        <members>Sales_Approvals</members>
+        <name>EmailFolder</name>
+    </types>
+    <types>
+        <members>Sales_Approvals/Discount_Approval_Request</members>
+        <members>Sales_Approvals/Discount_Approved</members>
+        <members>Sales_Approvals/Discount_Rejected</members>
+        <name>EmailTemplate</name>
+    </types>
+    <types>
+        <members>Opportunity</members>
+        <name>Workflow</name>
+    </types>
+    <types>
+        <members>Opportunity.Discount_Approval</members>
+        <name>ApprovalProcess</name>
+    </types>
+    <types>
+        <members>OpportunityApprovalController</members>
+        <members>OpportunityApprovalService</members>
+        <members>OpportunityApprovalServiceTest</members>
+        <members>OpportunityApprovalSubmitAction</members>
+        <members>TestDataFactory</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>discountApprovalPanel</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>Opportunity_Enterprise_Record_Page</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>Opportunity</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Enterprise_Managers</members>
+        <name>Group</name>
+    </types>
+    <types>
+        <members>Enterprise_Opportunity_Pipeline</members>
+        <name>ReportType</name>
+    </types>
+    <types>
+        <members>Enterprise_Sales</members>
+        <members>Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage</members>
+        <name>Report</name>
+    </types>
+    <types>
+        <members>Enterprise_Sales</members>
+        <members>Enterprise_Sales/Enterprise_Pipeline</members>
+        <name>Dashboard</name>
+    </types>
+    <version>62.0</version>
+</Package>

@@ -1,0 +1,3 @@
+INFO: [artefacts/M2-S03] No Opportunity stage value set, business process, record type or pathAssistant found. Nothing in this tree is in scope for this checker.
+
+0 error(s), 0 warning(s), 1 info.

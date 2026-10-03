@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Sent to the opportunity owner by the Notify_Submitter_Rejected workflow alert (M3-S02) on final rejection. Assumption A27: the manager's comments are pointed at on the Approval History related list rather than merged into the body, because no approval-comment merge field is grounded in this library.</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Discount Rejected</name>
+    <style>none</style>
+    <subject>Discount rejected: {!Opportunity.Name} - the reason is on Approval History</subject>
+    <type>text</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

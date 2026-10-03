@@ -1,0 +1,77 @@
+{
+  "step_id": "M4-S02",
+  "ran": [
+    "xml",
+    "manifest",
+    "skills/admin/reports-and-dashboards/scripts/check_report_inventory.py"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given Q25 and assumption A32, when the two folder files are read, then each is accessType Shared with a single folderShares entry granting View to the Enterprise_Managers group, and artefacts/M4-S02/deploy-order.md states that the group ships with no members and that the sales-ops admin adds the two managers and the VP in Setup - because Group metadata carries no membership. Approving this gate is approving who can read deal amounts and discounts. [expected: ticked at the M4 milestone gate]",
+    "Given Q24, assumption A29 and decision D7, when the dashboard file is read, then dashboardType is SpecifiedUser, no runningUser element is present, and deploy-order.md names setting runningUser to the VP's username as a mandatory pre-deploy step, stating that the platform otherwise substitutes the deploying user's and that a SpecifiedUser dashboard shows every viewer the running user's data regardless of their own security settings. [expected: ticked at the M4 milestone gate]",
+    "Given Q23 and M2-S04's block, when the report file is read, then it carries no product-count column and deploy-order.md records why - the same line-item count M2-S04 is blocked on - and states that a join to Opportunity Product was rejected because it returns one row per line item and would double-count Amount. [expected: ticked at the M4 milestone gate]"
+  ],
+  "xml": {
+    "files": 7,
+    "parsed": 7,
+    "failed": []
+  },
+  "manifest": {
+    "status": "consistent",
+    "members": {
+      "Group": [
+        "Enterprise_Managers"
+      ],
+      "ReportType": [
+        "Enterprise_Opportunity_Pipeline"
+      ],
+      "Report": [
+        "Enterprise_Sales",
+        "Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage"
+      ],
+      "Dashboard": [
+        "Enterprise_Sales",
+        "Enterprise_Sales/Enterprise_Pipeline"
+      ]
+    },
+    "file_to_manifest_missing": [],
+    "manifest_to_file_missing": [],
+    "excluded_coverage_gap_types": [],
+    "note": "Folders are bare members under Report/Dashboard (case-onboarding M5-S01 precedent); ReportFolder/DashboardFolder are file suffixes, not manifest type names."
+  },
+  "checker": {
+    "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M4-S02",
+    "exit_code": 0,
+    "findings": 6,
+    "by_severity": {
+      "INFO": 5,
+      "MEDIUM": 1
+    },
+    "stdout": "tests/M4-S02/check_report_inventory.stdout.txt",
+    "stderr": "tests/M4-S02/check_report_inventory.stderr.txt",
+    "note": "Run 2026-10-02T18-05-36Z after repair 2 (RecordType column, Opportunity$RecordType filter, dashboard sortBy + chartAxisRange). stderr WARN is the documented lenient-exit notice; --strict deliberately not passed. Test prose predicts 7/six; live run gives 6/five (known drift)."
+  },
+  "manual_shape_check": {
+    "skill": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+    "note": "All three lines are Given/When/Then with observable outcomes; none unusable. Deferred to the M4 gate, not ticked."
+  },
+  "check_outputs": {
+    "ok": true,
+    "step": "M4-S02",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "artefact_hashes": {
+    "artefacts/M4-S02/groups/Enterprise_Managers.group-meta.xml": "5a17148a575c041719ae9b12c9413cc16dd33b77b3809c7694543f8619bc8cf8",
+    "artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml": "8a033282469dd4c6bd7df0d9c4576025e9e9a2b657d5899424dd288356e83b37",
+    "artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml": "9ec460b43a8f26a230693ca0ac19ea1d0e0ae341eab9927c060766cee8bf70f7",
+    "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml": "ce043f23ec3817a4a42528e1459f4082936aa2ee8122578ec90d0bac2cb104f6",
+    "artefacts/M4-S02/dashboards/Enterprise_Sales.dashboardFolder-meta.xml": "3a123dff9a7ad95997184c884e70af1f18054ff7386338377e5c8e296728ee91",
+    "artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml": "1c10c0b0692a1d2ae42e508a2b9014dbe7f2a5e7ede74531c182bd797ea8478e",
+    "artefacts/M4-S02/package.xml": "bfb92fc6145c9d838a474d90e2c94a8673a1e5058f9692eb7064e492753844df",
+    "artefacts/M4-S02/deploy-order.md": "e16df102a07576d54f6608024f2e14a115093d64be6dd8cb2340dbd9573c56e7"
+  },
+  "run_id": "2026-10-02T18-05-36Z"
+}

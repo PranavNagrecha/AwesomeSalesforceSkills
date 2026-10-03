@@ -1,0 +1,2547 @@
+{
+ "agent": "build-planner",
+ "mode": "single",
+ "run_id": "2026-09-12T22-20-00Z",
+ "report_path": ".sfskills/builds/northwind-sales/envelopes/plan/2026-09-12T22-20-00Z.md",
+ "envelope_path": ".sfskills/builds/northwind-sales/envelopes/plan/2026-09-12T22-20-00Z.json",
+ "inputs_received": {
+  "build_dir": ".sfskills/builds/northwind-sales"
+ },
+ "summary": "Re-planned the Northwind Enterprise sales build after plan-verifier run 2026-09-12T21-40-00Z rejected v1 on five blockers. Plan v2: scale project unchanged, build_mode design-only, 4 milestones and 16 steps unchanged in count and in ownership, 14 fit-gap rows unchanged, 10 decisions with D9 re-grounded, and 43 assumptions (four new rows, A40-A43, for the Q54-Q57 defaults the verifier found applied silently). All five blockers resolved, nine of ten warnings addressed and one declined as already-answered. M2-S04 stays blocked on the same library gap with the same blocked_reason and no validation-rule formula authored. Written through set-plan, validate exits 0 with the one structural WARN, rendered.",
+ "confidence": "MEDIUM",
+ "confidence_rationale": "MEDIUM on the same three rubric triggers as v1, none of which this round could clear and none of which is a defect: M2-S04 is still blocked on a skill gap (deliberately - the operator instructed that the formula is not to be authored and the step is to be amended after the skill is deepened); eight of the ten decisions are resolved from a source_reference rather than a tree branch and carry adr_required true, which now includes the re-grounded D9; and thirty informational clarifications were left unanswered at G1, four of them (Q54-Q57) newly carrying assumption rows rather than answers. Not HIGH for those reasons. Not LOW: one of sixteen steps is blocked, no two answers contradict each other, and validate exits 0.",
+ "outcome": "completed",
+ "process_observations": [
+  {
+   "category": "healthy",
+   "severity": "info",
+   "observation": "Every blocker the verifier raised was actionable from sources already in the repo - no blocker needed a fact the library does not hold, and the one that did (M2-S04) was correctly filed as a block rather than as a fix.",
+   "domain": "build-loop",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/envelopes/verification/2026-09-12T21-40-00Z.md",
+    "count": 5
+   }
+  },
+  {
+   "category": "healthy",
+   "severity": "info",
+   "observation": "The verifier's grounding refutation of D9 named the exact lines that do support the decision, so re-grounding was a citation swap rather than a re-argument: metadata-examples.md:49-53 and templates/approval-process-apex-patterns-template.md:30 were read and both say what D9 needs.",
+   "domain": "grounding",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "skills/admin/approval-process-apex-patterns/references/metadata-examples.md",
+    "count": 2
+   }
+  },
+  {
+   "category": "concerning",
+   "severity": "medium",
+   "observation": "admin/approval-process-apex-patterns contradicts itself and its checker mis-cites its own gotcha: the prose at metadata-examples.md:515-517 says a production process deploys inactive, while check_approval_process_apex_patterns.py:376-386 raises HIGH on <active>false</active> when Apex names the process and attributes that rule to gotcha 14, whose subject is a NULL processDefinitionNameOrId. Plan v1 inherited the mis-citation from the checker's own message. This is filed for the library and is not this build's to resolve.",
+   "domain": "library-defect",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "skills/admin/approval-process-apex-patterns/scripts/check_approval_process_apex_patterns.py",
+    "count": 1
+   }
+  },
+  {
+   "category": "concerning",
+   "severity": "medium",
+   "observation": "A step's inputs.answers can list a clarification whose status is open and nothing in build_plan.py validate flags it - the field name asserts an answer that does not exist. Nine of sixteen steps do this; v1's two blockers were the two where no assumption row backed the default. v2 adds an inputs.defaults_applied map (Qn -> An) on all nine rather than only on the two that fired, but the underlying field-name problem is a CLI gap, not a plan one.",
+   "domain": "build-loop",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "scripts/build_plan.py",
+    "count": 9
+   }
+  },
+  {
+   "category": "concerning",
+   "severity": "low",
+   "observation": "Two contract clauses disagree about whether an apex-builder step may declare deploy-order.md: agents/apex-builder/AGENT.md Output Contract deliverable 2 names the file as where a shipped template class's provenance is recorded, while agents/build-planner/AGENT.md Step 6 rule 3 says the step declares its .cls / .trigger files and their meta XML and nothing else. M3-S03 follows rule 3 and carries the provenance claim in a manual test instead.",
+   "domain": "contract",
+   "evidence": {
+    "source": "repo_scan",
+    "path": "agents/apex-builder/AGENT.md",
+    "count": 1
+   }
+  },
+  {
+   "category": "ambiguous",
+   "severity": "medium",
+   "observation": "Q54-Q57 were judged assumptions rather than blocking questions, and a reasonable planner could have blocked M4-S02 on Q54 instead. The call rests on all four defaults tracing to a sentence in requirement.md and on M4-S01's retrieve runbook closing three of them pre-deploy - but Q54's own default text begins 'Unknown', which is an admission rather than a default, and only the human can say whether a possibly-redundant second report type is acceptable.",
+   "domain": "scope",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "count": 4
+   }
+  },
+  {
+   "category": "ambiguous",
+   "severity": "low",
+   "observation": "Q56 (historical trending) is the one deferred default whose cost is not recoverable by a later additive change - a reporting snapshot collects forward only, so every month it stays unanswered is a month of pipeline history that cannot be reconstructed. A42 states that in its own text and the capability is now in scope-out, but the planner cannot itself re-open a clarification: only set-clarifications writes that field.",
+   "domain": "scope",
+   "evidence": {
+    "source": "repo_scan",
+    "path": ".sfskills/builds/northwind-sales/plan.json",
+    "count": 1
+   }
+  },
+  {
+   "category": "suggested_followup",
+   "severity": "info",
+   "observation": "plan-verifier next, on v2, before any gate. Five blockers were closed, nine warnings addressed and one declined; the re-grounded D9 and the four new assumption rows are the substance to attack.",
+   "domain": "next-step",
+   "evidence": {
+    "source": "input",
+    "path": "commands/verify-plan.md"
+   },
+   "suggested_followup_agent": "plan-verifier",
+   "followup_reason": "the next stage of the loop and the only thing standing between plan v2 and G2; the re-grounded D9, the two restored test surfaces and the four new assumption rows are what changed and what it should attack"
+  },
+  {
+   "category": "suggested_followup",
+   "severity": "info",
+   "observation": "Two library depth items fall out of this round and neither belongs in a plan: the line-item-count mechanism for a validation-rule formula (which unblocks M2-S04) and the approval-process prose-versus-checker contradiction.",
+   "domain": "library-depth",
+   "evidence": {
+    "source": "input",
+    "path": "commands/request-skill.md"
+   },
+   "suggested_followup_agent": "waf-assessor",
+   "followup_reason": "the approval-process prose-versus-checker contradiction and the eight adr_required decisions are architecture-record material; the line-item-count gap that keeps M2-S04 blocked is a skill-depth request rather than an agent run"
+  }
+ ],
+ "citations": [
+  {
+   "type": "standard",
+   "id": "build-orchestration",
+   "used_for": "Sections 2-5 and 8: build_mode, the step-type table and its design-only owner column, the five acceptance-test types with their three validate constraints, checker scope, and the Apex exception that settles which step declares a manifest",
+   "path": "standards/build-orchestration.md"
+  },
+  {
+   "type": "standard",
+   "id": "agent-contract",
+   "used_for": "The eight-section shape, the Process Observations block, the confidence rubric and the Apex security idiom by API version that chose WITH USER_MODE for the 62.0 service class",
+   "path": "agents/_shared/AGENT_CONTRACT.md"
+  },
+  {
+   "type": "standard",
+   "id": "deliverable-contract",
+   "used_for": "Persistence, atomic write and the scope guardrails this run obeyed - nothing was written outside the build directory",
+   "path": "agents/_shared/DELIVERABLE_CONTRACT.md"
+  },
+  {
+   "type": "standard",
+   "id": "refusal-codes",
+   "used_for": "Checked before proceeding: none of the seven refusal conditions applied, because G1 is approved and all 35 blocking clarifications are answered",
+   "path": "agents/_shared/REFUSAL_CODES.md"
+  },
+  {
+   "type": "standard",
+   "id": "agent-rules",
+   "used_for": "Repo-wide workflow rules",
+   "path": "AGENT_RULES.md"
+  },
+  {
+   "type": "standard",
+   "id": "build-plan-schema",
+   "used_for": "The fifteen required step fields, the additionalProperties:false milestone and step objects, and the three-value fit_gap verdict enum",
+   "path": "agents/_shared/schemas/build-plan.schema.json"
+  },
+  {
+   "type": "standard",
+   "id": "agent-frontmatter-schema",
+   "used_for": "The class/status/requires_org enums used to check every step owner on disk rather than trusting the roster prose",
+   "path": "agents/_shared/schemas/agent-frontmatter.schema.json"
+  },
+  {
+   "type": "standard",
+   "id": "runtime-vs-build",
+   "used_for": "The active roster the four step owners were picked from",
+   "path": "agents/_shared/RUNTIME_VS_BUILD.md"
+  },
+  {
+   "type": "standard",
+   "id": "skill-map",
+   "used_for": "Matching each step's skills[] to what its owning agent already reads",
+   "path": "agents/_shared/SKILL_MAP.md"
+  },
+  {
+   "type": "standard",
+   "id": "agent-disambiguation",
+   "used_for": "Checked that no deprecated Wave-3b agent name reached a step; none did",
+   "path": "agents/_shared/AGENT_DISAMBIGUATION.md"
+  },
+  {
+   "type": "standard",
+   "id": "decision-trees-readme",
+   "used_for": "The authoritative table used to confirm no tree routes a picklist deploy, a validation rule or an approval process",
+   "path": "standards/decision-trees/README.md"
+  },
+  {
+   "type": "standard",
+   "id": "metadata-builder",
+   "used_for": "Inputs table and Output Contract for the twelve metadata-builder steps - package.xml and deploy-order.md are the two non-XML outputs its contract names",
+   "path": "agents/metadata-builder/AGENT.md"
+  },
+  {
+   "type": "standard",
+   "id": "apex-builder",
+   "used_for": "Inputs table, Escalation rules and Output Contract for M3-S03, including the template-class provenance check and the fact that no manifest appears among its nine deliverables",
+   "path": "agents/apex-builder/AGENT.md"
+  },
+  {
+   "type": "standard",
+   "id": "lwc-builder",
+   "used_for": "Inputs table, Escalation rules and Output Contract for M3-S04 - component_name, feature_summary, binding_kind, data_shape and target_objects are all mapped into inputs{}",
+   "path": "agents/lwc-builder/AGENT.md"
+  },
+  {
+   "type": "standard",
+   "id": "build-doc-keeper",
+   "used_for": "Output Contract for M4-S03: the workbook, matrix, UAT pack and acceptance criteria are its compile-run outputs, not story-drafter's",
+   "path": "agents/build-doc-keeper/AGENT.md"
+  },
+  {
+   "type": "standard",
+   "id": "story-drafter",
+   "used_for": "Read to confirm it owns no case pack and no standalone criteria file, which is why no story-drafter step is in this plan",
+   "path": "agents/story-drafter/AGENT.md"
+  },
+  {
+   "type": "decision_tree",
+   "id": "automation-selection",
+   "used_for": "D5: Q1 button -> Q7 record page -> Q8 'No' leaf, LWC calling imperative Apex. Also read end to end to confirm its numbered tree reaches neither Validation Rule nor Approval Process, which is why D3 and D4 cite skills instead",
+   "path": "standards/decision-trees/automation-selection.md",
+   "branch": "Q8 - LWC calling imperative Apex"
+  },
+  {
+   "type": "decision_tree",
+   "id": "sharing-selection",
+   "used_for": "D7: Q2's first leaf - the manager is above the rep in the hierarchy and hierarchy access is on, so no sharing layer is added",
+   "path": "standards/decision-trees/sharing-selection.md",
+   "branch": "Q2 - access already granted by the role hierarchy"
+  },
+  {
+   "type": "decision_tree",
+   "id": "flow-pattern-selector",
+   "used_for": "Read to confirm no Flow is needed anywhere in this build, so no branch of it resolves a decision here",
+   "path": "standards/decision-trees/flow-pattern-selector.md",
+   "branch": "no branch - read end to end; no Flow is planned, so nothing in the tree resolves a choice here"
+  },
+  {
+   "type": "decision_tree",
+   "id": "async-selection",
+   "used_for": "Read and found not to apply: the Apex submits one record synchronously from a button click",
+   "path": "standards/decision-trees/async-selection.md",
+   "branch": "no branch - read end to end; the Apex submits one record synchronously from a button click"
+  },
+  {
+   "type": "decision_tree",
+   "id": "integration-pattern-selection",
+   "used_for": "Read and found not to apply: requirement.md item 6 rules out integrations",
+   "path": "standards/decision-trees/integration-pattern-selection.md",
+   "branch": "no branch - read end to end; requirement.md item 6 rules out integrations"
+  },
+  {
+   "type": "decision_tree",
+   "id": "performance-tuning",
+   "used_for": "Read against Q62's volume answer; at 12 reps and single-record entry no step's approach is a performance decision",
+   "path": "standards/decision-trees/performance-tuning.md",
+   "branch": "no branch - read against Q62's volume answer; at 12 reps and single-record entry no step's approach is a performance decision"
+  },
+  {
+   "type": "decision_tree",
+   "id": "agentforce-capability-selector",
+   "used_for": "Read and found not to apply: nothing in the requirement is phrased as AI",
+   "path": "standards/decision-trees/agentforce-capability-selector.md",
+   "branch": "no branch - read end to end; nothing in the requirement is phrased as AI"
+  },
+  {
+   "type": "skill",
+   "id": "admin/fit-gap-analysis-against-org",
+   "used_for": "The five-tier rubric, the effort formula base(tier)+scope_multiplier+risk_multiplier and the risk-tag taxonomy behind all 14 fit_gap rows",
+   "path": "skills/admin/fit-gap-analysis-against-org/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/requirements-gathering-for-sf",
+   "used_for": "The catalogue facts read off each answer - objects, automation tier, sharing layer, volume, licence - that chose each step type",
+   "path": "skills/admin/requirements-gathering-for-sf/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/configuration-workbook-authoring",
+   "used_for": "The ten canonical sections and their deployment order, which is the skeleton of the four-milestone cut and of every depends_on edge",
+   "path": "skills/admin/configuration-workbook-authoring/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/requirements-traceability-matrix",
+   "used_for": "Every requirement reaches a step through scope.fit_gap[].steps[]; the build-schema column set the M4-S03 matrix must carry",
+   "path": "skills/admin/requirements-traceability-matrix/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/acceptance-criteria-given-when-then",
+   "used_for": "Every milestone goal and every manual test is written Given/When/Then so a human ticks an observable outcome",
+   "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "architect/architecture-decision-records",
+   "used_for": "The context/options/choice/consequences shape of decisions[] and the bar for adr_required",
+   "path": "skills/architect/architecture-decision-records/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/agent-output-formats",
+   "used_for": "Where a stakeholder asking for this plan as a spreadsheet is sent",
+   "path": "skills/admin/agent-output-formats/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/picklist-and-value-sets",
+   "used_for": "Section 3: the OpportunityStage StandardValueSet shape with probability/forecastCategory/won/closed, the five-member ForecastCategories enum, and the deactivate-by-omission rule behind D1 and assumption A24",
+   "path": "skills/admin/picklist-and-value-sets/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/opportunity-management",
+   "used_for": "The BusinessProcess bare-vs-qualified fullName rule, the PathAssistant field table, the one-path-per-record-type limit, and the gotcha that metadata Forecast is UI Commit",
+   "path": "skills/admin/opportunity-management/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/record-types-and-page-layouts",
+   "used_for": "businessProcess required on the four objects, picklistValues blocks, and the statement that layoutAssignments and the default record type exist only on Profile - which is why M2-S02 ships a profile overlay",
+   "path": "skills/admin/record-types-and-page-layouts/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/path-and-guidance",
+   "used_for": "PathAssistant element set, the deploy order, the FlexiPage component name runtime_sales_pathassistant:pathAssistant, and PathAssistantSettings",
+   "path": "skills/admin/path-and-guidance/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/sales-process-mapping",
+   "used_for": "Stage transition rules: which movements require field completion, which become validation-rule intent and which become Path guidance",
+   "path": "skills/admin/sales-process-mapping/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/products-and-pricebooks",
+   "used_for": "The Product2 / Pricebook2 / PricebookEntry junction and the Standard-Pricebook-first dependency chain. Cited for the price-book shape only: this package carries no Questions-to-Ask table and no metadata-examples.md, and the fit-gap row for products records that gap",
+   "path": "skills/admin/products-and-pricebooks/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/validation-rules",
+   "used_for": "The ValidationRule element table, the 255-character errorMessage limit, and the bypass-clause-first formula shape M2-S03 ships",
+   "path": "skills/admin/validation-rules/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/custom-permissions",
+   "used_for": "CustomPermission and the PermissionSet customPermissions grant, the 255-character description limit and the $Permission consumer form",
+   "path": "skills/admin/custom-permissions/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/permission-set-architecture",
+   "used_for": "recordTypeVisibilities on a permission set, the objectPermissions dependency chain, and PSA-DESC-01",
+   "path": "skills/admin/permission-set-architecture/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/permission-sets-vs-profiles",
+   "used_for": "The grounded statement that a profile deploy OVERLAYS rather than replaces, which is what makes M2-S02's partial Sales User file safe for the SMB team",
+   "path": "skills/admin/permission-sets-vs-profiles/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/approval-processes",
+   "used_for": "The ApprovalProcess element set, the workflow action file it resolves against, recordEditability, nextAutomatedApprover, and the rule that process order is set by hand after deploy",
+   "path": "skills/admin/approval-processes/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/approval-process-apex-patterns",
+   "used_for": "Approval.ProcessSubmitRequest, Approval.process(req, false), getInstanceStatus and the Database.Error describe loop - every Apex identifier in M3-S03 is quoted from here. metadata-examples.md:49-53 is D9's re-grounded source; its gotcha 14, cited in v1, is NOT and was withdrawn this round",
+   "path": "skills/admin/approval-process-apex-patterns/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/email-templates-and-alerts",
+   "used_for": "EmailFolder and the Classic EmailTemplate pair, uiType Aloha, the 230-character subject limit, and the org-wide-address prerequisite that made senderType CurrentUser the honest choice",
+   "path": "skills/admin/email-templates-and-alerts/references/metadata-and-sender-identity.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/queues-and-public-groups",
+   "used_for": "The Group element set and the fact that membership is not deployable, which is assumption A32",
+   "path": "skills/admin/queues-and-public-groups/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/reports-and-dashboards",
+   "used_for": "ReportType, Report, Dashboard and folder shapes, the dashboardType/runningUser semantics behind assumption A29, and the UNVERIFIED marker on column codes behind M4-S01 and assumption A28",
+   "path": "skills/admin/reports-and-dashboards/references/metadata-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/lightning-record-page-configuration",
+   "used_for": "The actionOverrides block that assigns a record page, one per formFactor - D10's source",
+   "path": "skills/admin/lightning-record-page-configuration/references/examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/change-management-and-deployment",
+   "used_for": "The build-level manifest and deploy-order note M4-S04 produces",
+   "path": "skills/admin/change-management-and-deployment/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/uat-test-case-design",
+   "used_for": "The case-pack schema M4-S03 must satisfy: eight required fields per case and a negative case per requirement",
+   "path": "skills/admin/uat-test-case-design/references/worked-examples.md"
+  },
+  {
+   "type": "skill",
+   "id": "apex/invocable-methods",
+   "used_for": "One @InvocableMethod per class and the guide's statement that Deprecated is the only annotation that may accompany it - D6's source",
+   "path": "skills/apex/invocable-methods/references/gotchas.md"
+  },
+  {
+   "type": "skill",
+   "id": "apex/test-class-standards",
+   "used_for": "The assertion style and coverage bar M3-S03's test class must meet",
+   "path": "skills/apex/test-class-standards/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "apex/apex-security-patterns",
+   "used_for": "The enforcement baseline behind the service class's WITH USER_MODE SOQL",
+   "path": "skills/apex/apex-security-patterns/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "lwc/lwc-base-component-recipes",
+   "used_for": "Base-component-first, the lightning-output-field nesting rule, the Jest-stub caveat that a test must assert properties rather than attributes, and the container rule that keeps platformShowToastEvent legal here",
+   "path": "skills/lwc/lwc-base-component-recipes/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "lwc/wire-service-patterns",
+   "used_for": "The getRecord wire shape and refresh behaviour M3-S04 uses",
+   "path": "skills/lwc/wire-service-patterns/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "lwc/lwc-jest-testing-with-accessibility",
+   "used_for": "The Jest suite shape for the four button states Q35 asked for",
+   "path": "skills/lwc/lwc-jest-testing-with-accessibility/SKILL.md"
+  },
+  {
+   "type": "skill",
+   "id": "flow/flow-formula-and-expression-patterns",
+   "used_for": "Gotcha 9: a Percent field is expressed divided by 100 in formula context - D8's source and the reason the discount threshold is 0.20 in two files and 20 in a third",
+   "path": "skills/flow/flow-formula-and-expression-patterns/references/gotchas.md"
+  },
+  {
+   "type": "skill",
+   "id": "admin/pipeline-review-design",
+   "used_for": "Searched for a line-item-count mechanism; its line 91 is the library's only HasOpportunityLineItem mention and it is about a report column, which is what makes M2-S04 a skill gap",
+   "path": "skills/admin/pipeline-review-design/references/gotchas.md"
+  },
+  {
+   "type": "template",
+   "id": "validation-rule-patterns",
+   "used_for": "The bypass contract the M2-S03 and M2-S04 formulas reference rather than restate",
+   "path": "templates/admin/validation-rule-patterns.md"
+  },
+  {
+   "type": "template",
+   "id": "TestDataFactory",
+   "used_for": "Shipped verbatim by M3-S03; grepped for other template classes and __c/__mdt tokens and found self-contained, which is why no Apex-foundations step is needed",
+   "path": "templates/apex/tests/TestDataFactory.cls"
+  },
+  {
+   "type": "template",
+   "id": "imperativeApexPattern",
+   "used_for": "The canonical imperative-Apex call shape automation-selection Q8's No leaf names by path",
+   "path": "templates/lwc/patterns/imperativeApexPattern.js"
+  },
+  {
+   "type": "template",
+   "id": "componentSkeleton-meta",
+   "used_for": "The targetConfig and supportedFormFactors shape of the LWC's meta XML",
+   "path": "templates/lwc/component-skeleton/componentSkeleton.js-meta.xml"
+  },
+  {
+   "type": "template",
+   "id": "approval-process-apex-patterns-template",
+   "path": "skills/admin/approval-process-apex-patterns/templates/approval-process-apex-patterns-template.md",
+   "used_for": "Line 30's preflight row - 'Is the process State = Active? | | A named submission to an inactive process fails' - the second of D9's two re-grounded sources"
+  },
+  {
+   "type": "standard",
+   "id": "knowledge/salesforce-channel-revenue-management",
+   "path": "knowledge/imports/salesforce-channel-revenue-management.md",
+   "used_for": "The knowledge/ surface PV-W01 said M2-S04's searched_for was missing: line 4696 establishes when the platform sets HasOpportunityLineItem and says nothing about formula context, so the block stands and its evidence is now one surface wider"
+  }
+ ],
+ "followups": [
+  {
+   "agent": "plan-verifier",
+   "because": "the next stage of the loop and the only thing standing between plan v2 and G2; it re-runs all three lenses over a body whose D9 citation, M2-S04 and M3-S04 test surfaces and Q54-Q57 assumption rows all changed this round"
+  },
+  {
+   "agent": "waf-assessor",
+   "because": "eight of ten decisions carry adr_required true, including the re-grounded D9 whose choice knowingly overrides published production guidance"
+  }
+ ],
+ "extensions": {
+  "plan_path": ".sfskills/builds/northwind-sales/plan.json",
+  "plan_version": 2,
+  "build_mode": "design-only",
+  "scale": "project",
+  "replan_of": {
+   "previous_version": 1,
+   "verification_run": "2026-09-12T21-40-00Z",
+   "blockers_resolved": [
+    "PV-B01",
+    "PV-B02",
+    "PV-B03",
+    "PV-B04",
+    "PV-B05"
+   ],
+   "warnings_addressed": [
+    "PV-W01",
+    "PV-W02",
+    "PV-W03",
+    "PV-W04",
+    "PV-W05",
+    "PV-W06",
+    "PV-W08",
+    "PV-W09"
+   ],
+   "warnings_declined": [
+    "PV-W07"
+   ],
+   "warnings_already_fixed": [
+    "PV-W10"
+   ]
+  },
+  "scope": {
+   "in_count": 14,
+   "out_count": 11,
+   "in": [
+    "Two Opportunity sales processes for the Enterprise team - Enterprise (Qualify, Discover, Propose, Negotiate, Closed Won, Closed Lost) and Renewal (Renewal Review, Renewal Proposed, Closed Won, Closed Lost) - each with the probabilities and forecast buckets the requester signed off (requirement.md item 1; Q5, Q6, Q21, Q36).",
+    "Two Opportunity record types (Enterprise, Renewal) bound to those two Sales Processes, plus the eight stage values they need added to the OpportunityStage standard value set (requirement.md item 1; Q8, Q36, Q40).",
+    "Two header fields on Opportunity: Discount__c (Percent) typed by the rep, and Approval_Status__c (restricted picklist Pending/Approved/Rejected) written only by the approval process (requirement.md items 2-4; Q12, Q22).",
+    "One page layout per new record type carrying the platform-required standard fields, Discount__c and Approval_Status__c (requirement.md item 4; Q14, Q20).",
+    "A Path per record type with per-stage key fields and the exit checklist wording the requester dictated (requirement.md item 1; Q2, Q11, Q46, Q48, Q49).",
+    "A validation rule blocking Closed Won above a 20% discount unless the approval is Approved, with a Custom Permission bypass granted by permission set to the sales-ops admin only (requirement.md item 2; Q13, Q15, Q17).",
+    "A validation rule requiring at least one product line before Propose - planned, and BLOCKED on a library coverage gap rather than guessed (requirement.md item 2; Q11, Q42).",
+    "A declarative Approval Process on Opportunity: entry above a 20% discount, approver = the rep's manager through the user hierarchy, record locked while pending with AdminOnly editability, recall allowed, and the four action sets the requester specified (requirement.md item 3; Q27, Q28, Q31, Q32, Q33, Q58, Q59, Q60, Q61).",
+    "Three Classic email templates in a public folder plus the two workflow alerts and four field updates the approval process fires (requirement.md item 3; Q33).",
+    "An Apex service, an @AuraEnabled controller and an @InvocableMethod action that submit exactly one Opportunity into that process, with the test class the requester asked for (requirement.md item 4; Q29, Q30, Q34, Q35).",
+    "A record-page LWC showing the discount and the approval status with a Submit-for-approval button enabled only when the rule requires it, plus its Jest suite (requirement.md item 4; Q22, Q34, Q35, Q51, Q52).",
+    "A Lightning record page carrying the Path and that component, with the org-default record-page assignment (requirement.md item 4; Q50).",
+    "A custom report type, a summary report of open Enterprise pipeline by stage with amount and discount, a pipeline-by-close-month dashboard, and the two folders shared to the Enterprise Managers public group (requirement.md item 5; Q23, Q24, Q25, Q54, Q55, Q56, Q57, Q63).",
+    "A configuration workbook, traceability matrix, acceptance criteria, UAT case pack, build-level package.xml and a go-live runbook covering the 140-deal record-type reassignment, folder sharing, approval process order and the record-page activation (Q8, Q25, Q26)."
+   ],
+   "out": [
+    "Any change to the SMB generic sales process, its record type, its two list views or its pipeline report - explicitly descoped by Q4 and Q9; the build adds stage values and record types beside it and touches none of its metadata.",
+    "Any sharing change: no org-wide default change, no sharing rule, no role-hierarchy edit. Q4 answered that the separation is process guidance only and Q24 answered that manager visibility already comes from the role hierarchy.",
+    "Opportunity splits, opportunity teams and the Private flag - Q7 answered no to all three.",
+    "Any integration, inbound or outbound - requirement.md item 6, confirmed by Q38 and Q65.",
+    "Any data migration. The 140 open Enterprise deals are reassigned by the sales-ops admin as a post-go-live runbook step, not by a build step - Q8.",
+    "Cleaning up the ~20 open Enterprise deals with no products and the 6 with discounts above 20%: Q16 answered that the rules apply on the next save only and no clean-up is in scope.",
+    "Creating Product2, Pricebook2 or PricebookEntry records. requirement.md states the org already has Sales Cloud Enterprise, Product2 and a Standard Price Book; this build uses the catalogue rather than building it.",
+    "Notifying Finance or Customer Success when a deal closes - Q3 answered that both read the record and the report covers it, with no notification build in scope.",
+    "Subscriptions, scheduled emails and exports of the report or dashboard - Q53 was informational and was left unanswered with no documented default, so nothing is built for it (assumption A30).",
+    "Creating the Enterprise Managers public group membership. Group metadata carries no members (admin/queues-and-public-groups); the group ships empty and the sales-ops admin adds the two managers and the VP in Setup (assumption A32).",
+    "Historical trending of the Enterprise pipeline (a reporting snapshot): Q56 was informational and left unanswered at G1, the current-snapshot default is applied per assumption A42, and trending would need its own step and a forward-only data start - so it is named here rather than absorbed silently into the dashboard step."
+   ]
+  },
+  "fit_gap": [
+   {
+    "requirement": "A header Discount field and an Approval Status field on Opportunity that the validation rule, the approval process, the panel and the report all read",
+    "verdict": "fit",
+    "tier": "Configuration",
+    "effort": "S",
+    "risk_tag": [],
+    "skills": [
+     "admin/object-creation-and-design",
+     "admin/opportunity-management"
+    ],
+    "steps": [
+     "M1-S01"
+    ],
+    "note": "Two custom fields in Setup - a Percent and a restricted picklist. No formula, no Flow, so the tier stays Configuration per skills/admin/fit-gap-analysis-against-org's rubric. Effort S: Configuration base S, no scope multiplier (one object, two fields, one persona class), risk_tag empty. Shapes from admin/object-creation-and-design; the restricted value set follows admin/picklist-and-value-sets."
+   },
+   {
+    "requirement": "Enterprise sales process: six ordered stages with probabilities, forecast buckets and an exit checklist reps see on the record",
+    "verdict": "fit",
+    "tier": "Configuration",
+    "effort": "L",
+    "risk_tag": [
+     "governance"
+    ],
+    "skills": [
+     "admin/opportunity-management",
+     "admin/picklist-and-value-sets",
+     "admin/sales-process-mapping",
+     "admin/path-and-guidance"
+    ],
+    "steps": [
+     "M1-S01",
+     "M2-S05"
+    ],
+    "note": "A BusinessProcess subsetting the OpportunityStage standard value set, plus a PathAssistant. Point-and-click all the way down - no formula and no Flow in either step, so Configuration. Effort L: base S, +1 scope (two persona classes, reps and managers, plus two record types and two Paths), +1 risk. The governance tag is the StandardValueSet deactivate-by-omission rule (admin/picklist-and-value-sets/references/metadata-examples.md section 3): a partial file silently deactivates every value it omits, which is the one way this row could break the SMB pipeline it is supposed to leave alone."
+   },
+   {
+    "requirement": "Renewal process: a separate, shorter stage sequence for renewals on the same object",
+    "verdict": "fit",
+    "tier": "Configuration",
+    "effort": "M",
+    "risk_tag": [
+     "governance"
+    ],
+    "skills": [
+     "admin/opportunity-management",
+     "admin/record-types-and-page-layouts",
+     "admin/path-and-guidance"
+    ],
+    "steps": [
+     "M1-S01",
+     "M2-S05"
+    ],
+    "note": "A second BusinessProcess and record type over the same value set, with its own Path. Same mechanism and the same two steps as the Enterprise row, so the same Configuration tier. Effort M: base S, no scope multiplier of its own (it rides the Enterprise row's record-type work), +1 risk for the same value-set governance tag. Q36 confirmed two genuinely different stage sequences, which is what makes two processes correct rather than one wide one."
+   },
+   {
+    "requirement": "Reps add products from the price book to every Enterprise opportunity",
+    "verdict": "partial",
+    "tier": "Configuration",
+    "effort": "M",
+    "risk_tag": [],
+    "skills": [
+     "admin/products-and-pricebooks",
+     "admin/record-types-and-page-layouts"
+    ],
+    "steps": [
+     "M1-S02"
+    ],
+    "note": "The catalogue itself is Standard and already in the org (requirement.md: assume Product2 and a Standard Price Book); admin/products-and-pricebooks is cited for the Product2 / Pricebook2 / PricebookEntry junction shape that makes the related list work, and the artefacts are grounded in its references/examples.md rather than in a Questions-to-Ask table, which that package does not carry. Partial for one reason: the layout's Opportunity Products related-list API name is not in this library anywhere - grep over skills/ returns only RelatedOpportunityTeamList, RelatedNoteList and RelatedActivityList - and admin/opportunity-management/references/metadata-examples.md says outright to copy the string from a retrieve rather than hand-author it. M1-S02 therefore ships the layout without the block and its deploy-order.md carries the retrieve instruction (assumption A26)."
+   },
+   {
+    "requirement": "An opportunity cannot move to Propose without at least one product line",
+    "verdict": "fit",
+    "tier": "Low-Code",
+    "effort": "M",
+    "risk_tag": [],
+    "skills": [
+     "admin/validation-rules",
+     "admin/products-and-pricebooks"
+    ],
+    "steps": [
+     "M2-S04"
+    ],
+    "note": "The platform covers this - a validation rule reading a line-item count is ordinary Low-Code work - so the verdict is fit on the platform. The build cannot produce it: no skill in this library documents how a validation rule counts OpportunityLineItem rows. Searched: grep for HasOpportunityLineItem across skills/ templates/ standards/ returns one hit, a reporting note in admin/pipeline-review-design/references/gotchas.md:91 that calls the field filterable and says nothing about formula context; search_knowledge.py 'validation rule require at least one opportunity product before stage' returns admin/sales-process-mapping and admin/validation-rules, whose every worked rule tests a field on the Opportunity itself; admin/products-and-pricebooks/references/ never mentions a rollup or a count. M2-S04 is therefore written blocked with blocked_reason skill-gap. This is the depth-wave signal, and the enum note is deliberate: verdict fit describes the platform, the blocked step describes the library."
+   },
+   {
+    "requirement": "An opportunity cannot close won with a discount above 20% unless a manager has approved it",
+    "verdict": "fit",
+    "tier": "Low-Code",
+    "effort": "M",
+    "risk_tag": [],
+    "skills": [
+     "admin/validation-rules",
+     "admin/custom-permissions"
+    ],
+    "steps": [
+     "M2-S03"
+    ],
+    "note": "One ValidationRule whose formula reads Discount__c, StageName, RecordType.DeveloperName and Approval_Status__c, with NOT($Permission.Bypass_Opportunity_Sales_Validation) first inside the AND per templates/admin/validation-rule-patterns.md. Low-Code because a formula is the mechanism. Effort M: Low-Code base M, no scope multiplier, no risk tag. The bypass permission and its permission set are M2-S01's work and are traced by the access row; the field is M1-S01's and is traced by the fields row."
+   },
+   {
+    "requirement": "A formal manager approval: the rep submits, the manager approves or rejects, the outcome and comments stay on the record, and the opportunity is locked while pending",
+    "verdict": "partial",
+    "tier": "Low-Code",
+    "effort": "L",
+    "risk_tag": [],
+    "skills": [
+     "admin/approval-processes",
+     "admin/email-templates-and-alerts"
+    ],
+    "steps": [
+     "M3-S01",
+     "M3-S02"
+    ],
+    "note": "One ApprovalProcess with a single userHierarchyField step, recordEditability AdminOnly, allowRecall true, and the four action sets Q33 named. Low-Code because entryCriteria is a formula (Discount__c > 0.20) rather than a criteriaItems row - see decision D8 for why a formula was chosen there. Effort L: base M, +1 scope for two persona classes (rep and manager). Partial on one clause of the requirement: 'comments stay on the record' is delivered by showApprovalHistory true and the ProcessInstanceStep.Comments the Approval History related list renders, but the rejection EMAIL cannot quote them - no {!ApprovalRequest.*} merge field appears anywhere in this library (grep over skills/ and templates/ returns only Chatter's enableApprovalRequest), so the rejection template points the rep at the record instead of reproducing the text (assumption A27)."
+   },
+   {
+    "requirement": "A record-page component showing the discount and the approval status with a Submit for approval button that is only enabled when the discount rule requires it",
+    "verdict": "fit",
+    "tier": "Custom",
+    "effort": "L",
+    "risk_tag": [],
+    "skills": [
+     "lwc/lwc-base-component-recipes",
+     "apex/invocable-methods",
+     "apex/test-class-standards"
+    ],
+    "steps": [
+     "M3-S03",
+     "M3-S04",
+     "M3-S05"
+    ],
+    "note": "An LWC on a getRecord wire over Discount__c and Approval_Status__c, calling an @AuraEnabled controller over a service that wraps Approval.process, with the Flow-invocable action beside it. Custom because Apex and an LWC are both in the delivery path. Effort L: Custom base L, no scope multiplier. D5 records the decision-tree branch that chose the component over a screen flow and D6 records why the @AuraEnabled entry point and the @InvocableMethod are different classes."
+   },
+   {
+    "requirement": "Each stage shows an exit checklist and the key fields for that stage on the record",
+    "verdict": "fit",
+    "tier": "Configuration",
+    "effort": "M",
+    "risk_tag": [],
+    "skills": [
+     "admin/path-and-guidance"
+    ],
+    "steps": [
+     "M2-S05"
+    ],
+    "note": "Two PathAssistants, one per record type - only one path per record type per object is allowed (admin/path-and-guidance/references/metadata-examples.md section 2), which is the second reason two record types were needed. Configuration; shares M2-S05 with the two process rows and agrees with them on tier. Effort M: base S, +1 scope for reps and managers. Q11's 'Primary Contact with the Decision Maker contact role' cannot be a fieldNames entry, because PathAssistantStep.fieldNames takes fields on entityName and a contact role is a related record; it is carried in the step's info text instead (assumption A16)."
+   },
+   {
+    "requirement": "Managers need a report of open Enterprise opportunities by stage with amount and discount",
+    "verdict": "partial",
+    "tier": "Configuration",
+    "effort": "L",
+    "risk_tag": [
+     "governance"
+    ],
+    "skills": [
+     "admin/reports-and-dashboards"
+    ],
+    "steps": [
+     "M4-S01",
+     "M4-S02"
+    ],
+    "note": "A new Enterprise-scoped ReportType plus a Summary report grouped by StageName. Configuration - a report is point-and-click. Effort L: base S, +1 scope (managers, the VP and the sales-ops admin are three persona classes with different folder rights), +1 risk. Partial twice over, and both are recorded rather than papered over. (1) Report column codes are report-type-specific and cannot be verified offline: admin/reports-and-dashboards/references/metadata-examples.md marks its own sample codes UNVERIFIED and says to harvest them from a retrieve; Q26 says the same in the requester's own words. M4-S01 is the probe runbook and the codes ship provisional (assumption A28). (2) Q23's product-count column needs the same line-item count M2-S04 is blocked on, so the report ships without it. The governance tag is folder sharing plus a SpecifiedUser dashboard, which is what the same milestone's human gate exists for."
+   },
+   {
+    "requirement": "A dashboard tile of the Enterprise pipeline by close month",
+    "verdict": "partial",
+    "tier": "Configuration",
+    "effort": "M",
+    "risk_tag": [],
+    "skills": [
+     "admin/reports-and-dashboards"
+    ],
+    "steps": [
+     "M4-S02"
+    ],
+    "note": "One Dashboard with a Column component over the pipeline report, dashboardType SpecifiedUser so every viewer sees the whole Enterprise pipeline as Q24 asked. Configuration, agreeing with the report row it shares M4-S02 with. Partial because runningUser takes a username nobody supplied: the guide's documented behaviour is that an absent or unmatched username is replaced with the deploying user's, which for a sales-ops-admin deploy is the wrong answer silently. The element is omitted, the deploy-order note makes setting it a pre-deploy step, and assumption A29 carries the risk at high."
+   },
+   {
+    "requirement": "The 12 reps, 2 managers and the sales-ops admin can select the new record types and get the right layout, and only the sales-ops admin can bypass the rules",
+    "verdict": "fit",
+    "tier": "Configuration",
+    "effort": "M",
+    "risk_tag": [],
+    "skills": [
+     "admin/permission-set-architecture",
+     "admin/custom-permissions",
+     "admin/record-types-and-page-layouts"
+    ],
+    "steps": [
+     "M2-S01",
+     "M2-S02"
+    ],
+    "note": "A CustomPermission and a permission set that grants it, a second permission set carrying recordTypeVisibilities, and a partial Sales User profile carrying the layoutAssignments - because admin/record-types-and-page-layouts/references/metadata-examples.md states that the default record type and the page layout assignment exist only on Profile, and a permission set has recordTypeVisibilities with no layoutAssignments at all. Configuration. Effort M: base S, +1 scope for three persona classes. Both steps carry human_gate true."
+   },
+   {
+    "requirement": "Nothing breaks the existing generic process the SMB team uses",
+    "verdict": "partial",
+    "tier": "Configuration",
+    "effort": "L",
+    "risk_tag": [
+     "governance"
+    ],
+    "skills": [
+     "admin/picklist-and-value-sets",
+     "admin/record-types-and-page-layouts",
+     "admin/permission-sets-vs-profiles"
+    ],
+    "steps": [
+     "M1-S01",
+     "M1-S02",
+     "M2-S02"
+    ],
+    "note": "Three mechanisms keep SMB whole and two of them are proven offline. The new record types and layouts are additive and SMB stays on the generic record type (Q9). The Sales User profile file carries only layoutAssignments and recordTypeVisibilities, and admin/permission-sets-vs-profiles/references/metadata-examples.md states that a profile deploy OVERLAYS rather than replaces, so a silent permission is left as the org had it. What cannot be proven offline is the OpportunityStage value set: the file must be the union of the org's currently active values and the eight new ones, and a partial file mass-deactivates. That is why the verdict is partial, why the tag is governance and why M1-S01's deploy-order.md leads with the retrieve-and-merge instruction (assumption A24, risk high)."
+   },
+   {
+    "requirement": "A handover pack the sales-ops admin can execute and audit, including the go-live reassignment of about 140 open Enterprise deals",
+    "verdict": "fit",
+    "tier": "Configuration",
+    "effort": "M",
+    "risk_tag": [],
+    "skills": [
+     "admin/configuration-workbook-authoring",
+     "admin/requirements-traceability-matrix",
+     "admin/uat-test-case-design",
+     "admin/acceptance-criteria-given-when-then"
+    ],
+    "steps": [
+     "M4-S03",
+     "M4-S04"
+    ],
+    "note": "The ten-section workbook, the traceability matrix, the compiled acceptance criteria and the UAT case pack from build-doc-keeper, plus the build-level package.xml and the cutover runbook from metadata-builder. Configuration. Effort M: base S, +1 scope for three persona classes named as owners. Q8's 140-deal record-type reassignment is a runbook line here rather than a data step, because the requester said so and requirement.md item 6 rules out a migration build."
+   }
+  ],
+  "assumptions": [
+   {
+    "id": "A1",
+    "text": "Enterprise and Renewal run genuinely different stage sequences, so two Sales Processes and two Record Types are required rather than one wide process.",
+    "because": "Q36 informational, left unanswered at G1; the proposed default is applied and requirement.md item 1 names the two lists.",
+    "risk": "low",
+    "steps": [
+     "M1-S01",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A2",
+    "text": "The board pack uses the standard forecast-category vocabulary, and Q5's UI word 'Commit' is written as the metadata token 'Forecast' - the ForecastCategories enum has exactly Omitted, Pipeline, BestCase, Forecast, Closed.",
+    "because": "Q37 informational, left unanswered at G1; default applied, and the UI-to-metadata mapping is grounded in admin/opportunity-management/references/gotchas.md.",
+    "risk": "low",
+    "steps": [
+     "M1-S01",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A3",
+    "text": "No integration or Apex writes Probability or ForecastCategoryName on an Enterprise or Renewal opportunity, so the stage-to-category mapping is the only source of those values.",
+    "because": "Q38 informational, left unanswered at G1; default applied, consistent with requirement.md item 6.",
+    "risk": "low",
+    "steps": [
+     "M1-S01",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A4",
+    "text": "Stage field history relies on the platform default (OpportunitySettings.enableOpportunityFieldHistoryTracking defaults to true); no settings file is shipped to turn it on, and history cannot be backfilled if it turns out to be off.",
+    "because": "Q39 informational, left unanswered at G1; its default asks for history from day one but no step ships OpportunitySettings, so the default is recorded as relied-upon rather than delivered.",
+    "risk": "medium",
+    "steps": [
+     "M1-S01",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A5",
+    "text": "StageName is the only picklist that differs between the two record types; no other field needs a per-record-type picklistValues block beyond Approval_Status__c, which is identical on both.",
+    "because": "Q40 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M1-S01",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A6",
+    "text": "Person Accounts are not enabled, so no personAccountDefault element is needed on any record-type visibility block.",
+    "because": "Q41 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M1-S01",
+     "M2-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A7",
+    "text": "Both rules are enforced everywhere - API, every layout, Flow - because they are validation rules rather than layout-Required settings.",
+    "because": "Q42 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M2-S03",
+     "M2-S04",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A8",
+    "text": "No legacy workflow field update or other existing automation writes StageName, Amount, Discount__c or Approval_Status__c after save, so the approval process's field updates are the only writer of Approval_Status__c.",
+    "because": "Q43 informational, left unanswered at G1; default applied. If a legacy rule exists it would overwrite the approval status silently.",
+    "risk": "medium",
+    "steps": [
+     "M2-S03",
+     "M3-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A9",
+    "text": "Neither formula reads a compound field, a person name or a dependent picklist, so the API-20.0 compound-field prohibition on validation rules is not in play.",
+    "because": "Q44 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M2-S03",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A10",
+    "text": "Picklist tests in the discount formula use ISPICKVAL rather than ISBLANK/ISNULL applied directly to the picklist, which is what VR-PICK-01 in check_validation_rules.py exists to catch.",
+    "because": "Q45 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M2-S03",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A11",
+    "text": "Each record type gets its own Path, because only one path may exist per record type per object.",
+    "because": "Q46 informational, left unanswered at G1; default applied and reinforced by admin/path-and-guidance/references/metadata-examples.md section 2.",
+    "risk": "low",
+    "steps": [
+     "M2-S05",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A12",
+    "text": "The target org is Sales Cloud Enterprise, where pathAssistantEnabled defaults true - the settings file still ships so the preference is explicit and survives a scratch-org or Developer-Edition build environment where it defaults false.",
+    "because": "Q47 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M2-S05",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A13",
+    "text": "Path guidance is shipped with canOverrideAutoPathCollapseWithUserPref true so a rep's expanded path persists across records; nobody asked for guidance that cannot be collapsed at all.",
+    "because": "Q48 informational, left unanswered at G1 and carrying NO proposed default; the value is taken from admin/path-and-guidance/references/metadata-examples.md section 3, which says to ship it true unless there is a reason not to.",
+    "risk": "low",
+    "steps": [
+     "M2-S05",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A14",
+    "text": "The rep advances the stage in the UI; no automation moves StageName, which Q17's answer also forbids.",
+    "because": "Q49 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M2-S05",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A15",
+    "text": "A new Lightning record page is built rather than editing whatever page the org has today, and it uses a template that provides the subheader region the Path component needs.",
+    "because": "Q50 informational, left unanswered at G1; the default allowed either, and building new is the option that cannot damage an existing page.",
+    "risk": "medium",
+    "steps": [
+     "M3-S05",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A16",
+    "text": "Q11's 'Primary Contact with the Decision Maker contact role' is guidance text on the Propose Path step, not a key field: PathAssistantStep.fieldNames takes fields on entityName and an OpportunityContactRole is a related record.",
+    "because": "Q11 was answered, but the answer names a related record the metadata type cannot hold; recorded here rather than silently dropped.",
+    "risk": "medium",
+    "steps": [
+     "M2-S05",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A17",
+    "text": "The panel runs on Lightning Experience desktop and the Salesforce mobile app only - supportedFormFactors Large and Small - with no Experience Cloud target, so lightning/platformShowToastEvent is the correct toast import.",
+    "because": "Q51 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M3-S04",
+     "M3-S05",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A18",
+    "text": "The discount is displayed, never edited, in the panel; editing stays on the layout field.",
+    "because": "Q52 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M3-S04",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A19",
+    "text": "One approval process serves both record types, entered on discount above 20%.",
+    "because": "Q58 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M3-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A20",
+    "text": "Exactly one approver per step, so whenMultipleApprovers is not set.",
+    "because": "Q59 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M3-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A21",
+    "text": "A rejection ends the request - there is one step, so there is no prior step to return to and no rejectBehavior element on it.",
+    "because": "Q60 informational, left unanswered at G1; default applied, and rejectBehavior is not allowed on a first step in any case.",
+    "risk": "low",
+    "steps": [
+     "M3-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A22",
+    "text": "Process entry criteria keep sub-cap discounts out of the process entirely, so no ifCriteriaNotMet path is exercised.",
+    "because": "Q61 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M3-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A23",
+    "text": "Volume is very low - 12 reps, single-record entry, no data load - so the Apex submits one record per invocation and needs no chunking.",
+    "because": "Q62 informational, left unanswered at G1; default applied and consistent with Q29's answer.",
+    "risk": "low",
+    "steps": [
+     "M3-S03",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A24",
+    "text": "The OpportunityStage standardValueSet file this build deploys must be the UNION of the org's currently active stage values and the eight new ones. A partial file deactivates every value it omits, which would strip the SMB pipeline of its stages.",
+    "because": "No retrieve is possible in a design-only build and no clarification asked for the org's current stage list; the deactivate-by-omission rule is stated in admin/picklist-and-value-sets/references/metadata-examples.md section 3.",
+    "risk": "high",
+    "steps": [
+     "M1-S01",
+     "M4-S03",
+     "M4-S04"
+    ]
+   },
+   {
+    "id": "A25",
+    "text": "The set of standard fields the platform requires on an Opportunity page layout is unknown. Only the Case set is verified in this library, and admin/record-types-and-page-layouts/references/metadata-examples.md says outright not to extrapolate it. The two layouts carry Q20's five fields and the set is discovered by iterating scripts/mock_deploy.py --dry-run.",
+    "because": "Q20 named the fields the requester wants; the platform's own required-item set is an org fact no answer supplies.",
+    "risk": "medium",
+    "steps": [
+     "M1-S02",
+     "M4-S03",
+     "M4-S04"
+    ]
+   },
+   {
+    "id": "A26",
+    "text": "The Opportunity Products related-list API name must be copied from a retrieve of an existing Opportunity layout. The layouts ship without a relatedLists block and the deploy-order note carries the instruction.",
+    "because": "The string is in no skill in this library; admin/opportunity-management/references/metadata-examples.md says related-list names are retrieval aliases and must never be hand-authored.",
+    "risk": "medium",
+    "steps": [
+     "M1-S02",
+     "M4-S03",
+     "M4-S04"
+    ]
+   },
+   {
+    "id": "A27",
+    "text": "The rejection email points the rep at the Approval History related list rather than quoting the manager's comments, because no {!ApprovalRequest.*} merge field is documented anywhere in this library.",
+    "because": "Q33 asked for the comments in the email; the mechanism is not in the corpus, so the answer is delivered through showApprovalHistory instead and the difference is recorded.",
+    "risk": "medium",
+    "steps": [
+     "M3-S01",
+     "M3-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A28",
+    "text": "The report's column codes are provisional Object$Field strings. They are report-type-specific, cannot be verified offline, and must be diffed against a retrieve of a working report on the same report type before deploy.",
+    "because": "Q26 answered that they must be confirmed by retrieve and never guessed; M4-S01 is the probe runbook that says exactly which retrieve to run.",
+    "risk": "high",
+    "steps": [
+     "M4-S01",
+     "M4-S02",
+     "M4-S03",
+     "M4-S04"
+    ]
+   },
+   {
+    "id": "A29",
+    "text": "Nobody supplied the VP's username, so the dashboard ships with dashboardType SpecifiedUser and no runningUser element. On deploy the platform fills it with the DEPLOYING user's username, which is wrong; setting it is a mandatory pre-deploy step in the deploy-order note.",
+    "because": "Q24 answered that the tile runs as the VP; the username itself is an org fact no answer supplies, and inventing one would silently re-point the dashboard.",
+    "risk": "high",
+    "steps": [
+     "M4-S02",
+     "M4-S03",
+     "M4-S04"
+    ]
+   },
+   {
+    "id": "A30",
+    "text": "No report or dashboard subscription, scheduled email or export is built.",
+    "because": "Q53 informational, left unanswered at G1 and carrying NO proposed default; nothing is built rather than guessing a schedule, and the capability is listed in scope-out.",
+    "risk": "low",
+    "steps": [
+     "M4-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A31",
+    "text": "Reps cannot open the Enterprise Sales report and dashboard folders at all; no field-level hiding of Amount or Discount is applied.",
+    "because": "Q63 informational, left unanswered at G1; default applied, consistent with Q25's answer naming the folder's audience.",
+    "risk": "low",
+    "steps": [
+     "M4-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A32",
+    "text": "The Enterprise Managers public group ships empty. Group metadata carries no membership (admin/queues-and-public-groups/references/metadata-examples.md), so the sales-ops admin adds the two managers and the VP in Setup after deploy.",
+    "because": "Q25 named the group; membership is not a deployable fact.",
+    "risk": "medium",
+    "steps": [
+     "M4-S02",
+     "M4-S03",
+     "M4-S04"
+    ]
+   },
+   {
+    "id": "A33",
+    "text": "Only Northwind employees touch these opportunities; no partner or customer portal user is in scope, so no Experience Cloud or guest-user access is designed.",
+    "because": "Q64 informational, left unanswered at G1; default applied.",
+    "risk": "low",
+    "steps": [
+     "M2-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A34",
+    "text": "Approval process ORDER is set by hand in Setup after deploy. The metadata carries no order, and the Apex names the process explicitly so its own submissions are unaffected - what order decides is which process the standard Submit for Approval button enters.",
+    "because": "No clarification covers the org's existing Opportunity approval processes; admin/approval-processes/references/metadata-examples.md states the order must be set in the destination org.",
+    "risk": "medium",
+    "steps": [
+     "M3-S02",
+     "M4-S04",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A35",
+    "text": "A Percent field carries the fraction in formula context (0.20 for 20%) and the plain number outside it (20). Only the formula half is grounded in this library, so the validation rule and the approval entry criteria use 0.20 and the component's design attribute uses 20; the Jest suite pins the component's reading and the deploy-order note says to confirm the Apex and UI-API reading against a retrieved record.",
+    "because": "No clarification covers the representation; flow/flow-formula-and-expression-patterns/references/gotchas.md gotcha 9 grounds the formula half only.",
+    "risk": "medium",
+    "steps": [
+     "M2-S03",
+     "M3-S02",
+     "M3-S03",
+     "M3-S04",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A36",
+    "text": "The approval process ships active true rather than the deploy-inactive default admin/approval-processes recommends. Every workflow action and email template it references ships in the same package, so the split-deploy condition that guidance waits for is met at deploy time - but overriding published production guidance is an accepted risk rather than a neutral choice, and it carries the process-order prerequisite recorded in A34.",
+    "because": "Q34 and Q58. Decision D9 records the two sources that state the Active requirement (admin/approval-process-apex-patterns/references/metadata-examples.md:49-53 and its templates/approval-process-apex-patterns-template.md:30) and names the production guidance being overridden; the intra-skill prose-versus-checker contradiction behind it is filed for the library, not for this build.",
+    "risk": "medium",
+    "steps": [
+     "M3-S02",
+     "M3-S03",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A37",
+    "text": "About 140 open Enterprise deals are reassigned from the generic record type to Enterprise by the sales-ops admin after go-live, as a runbook step with no field mapping change.",
+    "because": "Q8 answered this explicitly and requirement.md item 6 rules out a data-migration build.",
+    "risk": "medium",
+    "steps": [
+     "M4-S04",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A38",
+    "text": "The Lightning record page is assigned as the org default for Opportunity through actionOverrides on the object file. If the org runs a console app with its own Opportunity page, that app default wins and must be re-pointed in Setup.",
+    "because": "No clarification asked which apps expose Opportunity; admin/lightning-record-page-configuration/references/examples.md documents the app-default rung above the org default.",
+    "risk": "medium",
+    "steps": [
+     "M3-S05",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A39",
+    "text": "The Sales User profile is the one profile carrying the layout assignments. Q19 named it for reps and managers; the sales-ops admin is a System Administrator and falls through to the assignment with no record type.",
+    "because": "Q19 was answered; that System Administrator needs no layoutAssignments row of its own is the plan's inference from the same answer.",
+    "risk": "low",
+    "steps": [
+     "M2-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A40",
+    "text": "No existing custom report type is edited. This build ships a NEW Enterprise-scoped report type, Enterprise_Opportunity_Pipeline on baseObject Opportunity, and leaves whatever report type the SMB pipeline report uses untouched. Whether that SMB report type could have been reused is unknown, so the org may end up with two report types where one would have done.",
+    "because": "Q54 informational, left open at G1; its proposed default - 'Unknown - assume a new, Enterprise-scoped report type is built rather than editing whatever the SMB report type is' - is applied because building new is the only branch that cannot reach SMB, which is requirement.md item 6. M4-S01's retrieve runbook confirms the SMB report's report type before deploy, so the assumption closes rather than persisting.",
+    "risk": "medium",
+    "steps": [
+     "M4-S01",
+     "M4-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A41",
+    "text": "The dashboard carries no dashboard-level filter, so no component declares dashboardFilterColumns. Adding one later is additive and needs no rebuild of the report.",
+    "because": "Q55 informational, left open at G1; its proposed default (no additional filter) is applied, and it is what requirement.md item 5 asks for in its own words - 'a dashboard tile of the pipeline by close month'.",
+    "risk": "low",
+    "steps": [
+     "M4-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A42",
+    "text": "The tile is a current-snapshot view only: no historical trending and no reporting snapshot is built. This default carries a cost the other three do not - trending collects forward from the day it is enabled and there is no retroactive data - so every month the question stays unanswered is a month of pipeline history that cannot be recovered later.",
+    "because": "Q56 informational, left open at G1; its proposed default (current snapshot only) is applied because requirement.md item 5 asks for a tile of the pipeline by close month and not a trend over time. Reporting snapshots are a separate capability needing their own step, so a later 'yes' is a new build rather than a change to this one - which is why it is listed in scope-out too.",
+    "risk": "medium",
+    "steps": [
+     "M4-S02",
+     "M4-S03"
+    ]
+   },
+   {
+    "id": "A43",
+    "text": "The report's row is Opportunity Name, Stage, Amount, Discount, Close Date and Approval Status - one row per opportunity, base object Opportunity with no join - and every open Enterprise opportunity appears whether or not it carries a product line. Q57's 'rows with no product line' half is settled by the same decision that descoped the product-count column: with no OpportunityLineItem join there is nothing to filter on.",
+    "because": "Q57 informational, left open at G1; its proposed default is applied and it restates requirement.md item 5 verbatim - 'a report of open Enterprise opportunities by stage with amount and discount'. The column CODES for those fields stay provisional under A28 and are confirmed by M4-S01's retrieve before deploy.",
+    "risk": "medium",
+    "steps": [
+     "M4-S01",
+     "M4-S02",
+     "M4-S03"
+    ]
+   }
+  ],
+  "decisions": [
+   {
+    "id": "D1",
+    "decision": "Add the six Enterprise stages and the two Renewal-only stages to the OpportunityStage StandardValueSet as a full merge of the org's currently active values, not as a partial file listing only the new ones.",
+    "source_reference": "skills/admin/picklist-and-value-sets/references/metadata-examples.md",
+    "rationale": "automation-selection.md, flow-pattern-selector.md and sharing-selection.md were each read end to end; none of them routes a picklist-value deploy, and standards/decision-trees/README.md lists no tree that does. The skill reference is the source: section 3 states that the deactivate-by-omission rule of api_meta.txt:47482-47483 applies to StandardValueSet too, 'so a partial file is a mass deactivation'. That single sentence is what turns an obvious-looking file into a decision.",
+    "alternatives_rejected": [
+     "Ship only the eight new values and let the platform merge them",
+     "Create the stages in Setup by hand and deploy nothing",
+     "Use a GlobalValueSet instead of the standard value set"
+    ],
+    "consequences": "The build cannot produce the deployable file offline: the union needs the org's current list. M1-S01's deploy-order.md leads with the retrieve, assumption A24 carries the risk at high, and the M1 gate has a manual tick on the diff.",
+    "adr_required": true,
+    "answers": [
+     "Q6",
+     "Q9",
+     "Q21"
+    ],
+    "steps": [
+     "M1-S01"
+    ]
+   },
+   {
+    "id": "D2",
+    "decision": "Two Sales Processes bound to two Record Types, rather than one wide process exposing all ten stages to both motions.",
+    "source_reference": "skills/admin/opportunity-management/references/well-architected.md",
+    "rationale": "No decision tree routes between one process and many; the trade is documented in the skill, which names the single-catch-all process as anti-pattern 1 - it 'forces every record type to expose all stages, including irrelevant ones for that motion' and makes forecast rollups unreliable. Q36's default said the same. The Path constraint settles what was left: only one PathAssistant may exist per record type per object, so two guidance sets require two record types whatever the stage lists did.",
+    "alternatives_rejected": [
+     "One Sales Process with all ten stages",
+     "Two processes on one record type",
+     "A picklist filter instead of a BusinessProcess"
+    ],
+    "consequences": "Two record types means two layouts, two Paths, two recordTypeVisibilities rows and a layout assignment that only a Profile can carry - which is why M2-S02 exists and why it is human-gated.",
+    "adr_required": true,
+    "answers": [
+     "Q21",
+     "Q36",
+     "Q40",
+     "Q46"
+    ],
+    "steps": [
+     "M1-S01",
+     "M1-S02",
+     "M2-S02",
+     "M2-S05"
+    ]
+   },
+   {
+    "id": "D3",
+    "decision": "Enforce the 20% discount cap with a Validation Rule carrying a $Permission bypass, not with a record-triggered Flow or Apex.",
+    "source_reference": "skills/admin/validation-rules/references/metadata-examples.md",
+    "rationale": "automation-selection.md was read end to end and the requirements-clarifier had already filed the same finding: the tree's scope is six automation engines and Validation Rule is not one of them, so its Q-tree has no branch that reaches this choice and citing Q2 or Q3 would be a fabricated ground. The skill reference carries it instead: its Example 1 is a discount-shaped Opportunity rule with the bypass clause first inside the AND, which is the exact shape M2-S03 ships.",
+    "alternatives_rejected": [
+     "Before-save record-triggered Flow raising a fault",
+     "Apex before-update trigger",
+     "Layout-level Required on Discount__c"
+    ],
+    "consequences": "The rule fires on every save path including the API, which Q42's default asked for. It also means the only escape is the Custom Permission, so the bypass permission set becomes a human-gated access step and every use has to be recorded by hand (Q17).",
+    "adr_required": true,
+    "answers": [
+     "Q13",
+     "Q15",
+     "Q17",
+     "Q42"
+    ],
+    "steps": [
+     "M2-S03",
+     "M2-S04"
+    ]
+   },
+   {
+    "id": "D4",
+    "decision": "Manager sign-off is a declarative Approval Process with a record lock and an approval history, not a Flow approval or a custom Apex approval object.",
+    "source_reference": "skills/admin/approval-processes/SKILL.md",
+    "rationale": "automation-selection.md's numbered tree does not reach Approval Process at all - Q1's trigger list has no option for 'a business decision needing one person's sign-off' - and its only mention is an unnumbered cheat-sheet row, 'Approval chain | Approval Process -> Flow post-approval | Flow with branching | Apex custom approval'. A row is not a branch, so no branch id is cited and the skill carries the decision. Q3's requirement clauses - outcome and comments on the record, locked while pending - are what the native engine gives and a Flow would have to re-implement.",
+    "alternatives_rejected": [
+     "Screen Flow approval with a custom status field",
+     "Apex custom approval records",
+     "Chatter approval post"
+    ],
+    "consequences": "Record locking, approval history and the approver hierarchy come free, but process ORDER is not in the metadata and has to be set in Setup after deploy (assumption A34), and the rejection comments cannot be quoted in the email (assumption A27).",
+    "adr_required": true,
+    "answers": [
+     "Q27",
+     "Q28",
+     "Q31",
+     "Q32",
+     "Q33"
+    ],
+    "steps": [
+     "M3-S01",
+     "M3-S02"
+    ]
+   },
+   {
+    "id": "D5",
+    "decision": "The Submit-for-approval control is an LWC calling imperative Apex, not a Screen Flow quick action.",
+    "decision_tree": "standards/decision-trees/automation-selection.md",
+    "branch": "Q8",
+    "branch_quote": "Q8. Can the action complete in under 10s without custom UI?\n    \u251c\u2500\u2500 Yes  \u2192 Screen Flow with Quick Action OR simple Headless Quick Action (Flow)\n    \u2514\u2500\u2500 No   \u2192 LWC calling imperative Apex (see templates/lwc/patterns/imperativeApexPattern.js)",
+    "rationale": "Q1's 'a user clicking a button or filling a form' reaches Q7; Q7's 'Yes (record page)' reaches Q8. Q8's condition is a conjunction - under 10s AND without custom UI - and requirement.md item 4 asks for custom UI in so many words: a component that shows the discount and the approval status alongside a button whose enabled state is a rule. The submit itself would finish well inside 10s, so it is the custom-UI half that makes the answer No, and the No leaf names the component and the template it should be built from.",
+    "alternatives_rejected": [
+     "Screen Flow with a Quick Action",
+     "Headless Quick Action (Flow)",
+     "The standard Submit for Approval action on the layout"
+    ],
+    "consequences": "An LWC and an Apex controller put this build under a 75% Apex coverage gate it would not otherwise have, which is why M3-S03 ships a test class and why M3-S04 ships a Jest suite.",
+    "adr_required": false,
+    "answers": [
+     "Q34",
+     "Q35",
+     "Q52"
+    ],
+    "steps": [
+     "M3-S03",
+     "M3-S04"
+    ]
+   },
+   {
+    "id": "D6",
+    "decision": "The LWC entry point (@AuraEnabled) and the Flow-invocable action (@InvocableMethod) are separate classes over one service class, rather than one class carrying both annotations.",
+    "source_reference": "skills/apex/invocable-methods/references/gotchas.md",
+    "rationale": "Q34's answer calls for an invocable Apex action, and an LWC can only import an @AuraEnabled method - so the obvious shape is one method carrying both. The gotcha forbids it in the guide's own words: 'The only annotation that can be used with the InvocableMethod annotation is Deprecated' (apexdev L5430), and 'Only one method in a class can have the InvocableMethod annotation' (L5422), with the remedy stated as 'One action per outer class; share the body through a service.' No decision tree routes an annotation choice.",
+    "alternatives_rejected": [
+     "One class with @AuraEnabled and @InvocableMethod on the same method",
+     "One class with both annotations on different methods",
+     "Drop the invocable and expose only @AuraEnabled"
+    ],
+    "consequences": "Three classes plus a test rather than one. check_invocable_methods.py's IM001 is the regression guard - it was run against a deliberately broken copy of this step's own output and fired CRITICAL at exit 1, so the test on M3-S03 is known to be live rather than vacuous.",
+    "adr_required": true,
+    "answers": [
+     "Q29",
+     "Q34"
+    ],
+    "steps": [
+     "M3-S03"
+    ]
+   },
+   {
+    "id": "D7",
+    "decision": "Manager visibility of their own reps' Enterprise pipeline is left to the existing role hierarchy: no org-wide default change, no sharing rule, no Apex managed sharing.",
+    "decision_tree": "standards/decision-trees/sharing-selection.md",
+    "branch": "Q2",
+    "branch_quote": "Q2. Is U in the same role or above the record owner's role in the hierarchy?\n    \u251c\u2500\u2500 Yes, and \"Grant access using hierarchies\" is ON  \u2192 Access already granted; done\n    \u251c\u2500\u2500 Yes, but hierarchy is disabled on T              \u2192 Q3\n    \u2514\u2500\u2500 No                                               \u2192 Q3",
+    "rationale": "Q24's answer states the mechanism outright - 'Each manager sees only their own reps' pipeline on the report (role hierarchy does that)' - and Q4 ruled out any sharing change. Reading the tree from START with U = an Enterprise manager and the record owner = one of their reps, Q2's first leaf is the terminal answer: the manager is above the owner in the hierarchy and hierarchy access is on, so the access already exists and no later layer is needed. Q1 was read first and is not the branch that resolves this - it only routes on the current OWD, which this build does not change.",
+    "alternatives_rejected": [
+     "Criteria-based sharing rule on RecordTypeId",
+     "Opportunity teams",
+     "Tightening the Opportunity OWD"
+    ],
+    "consequences": "The dashboard is the one place this does not hold: Q24 asked for the full pipeline on the tile, so it runs as a SpecifiedUser and every viewer sees the VP's access level regardless of their own - which is why M4-S02 is human-gated and why assumption A29 exists.",
+    "adr_required": false,
+    "answers": [
+     "Q4",
+     "Q24",
+     "Q25"
+    ],
+    "steps": [
+     "M4-S02"
+    ]
+   },
+   {
+    "id": "D8",
+    "decision": "The approval process's entry criteria is a formula (Discount__c > 0.20), not a criteriaItems row comparing to 20.",
+    "source_reference": "skills/flow/flow-formula-and-expression-patterns/references/gotchas.md",
+    "rationale": "A Percent field carries the fraction in formula context and the plain number outside it: 'percent fields are expressed divided by 100 in formulas (100% is expressed as 1; 50% is expressed as 0.5)', and the same gotcha spells out that a Decision comparing the field directly is on the other path and must be bounded with > 50 rather than > 0.5. Only the formula half is grounded in this library. entryCriteria takes criteriaItems OR formula and never both, so choosing the formula puts the threshold in the one representation the corpus settles - and makes it identical to the validation rule's, which is what a reader of both files will expect.",
+    "alternatives_rejected": [
+     "criteriaItems on Opportunity.Discount__c greaterThan 20",
+     "criteriaItems greaterThan 0.20",
+     "A formula field holding the boolean"
+    ],
+    "consequences": "The component's design attribute stays 20 because it reads the UI API rather than a formula, so the two representations coexist in one build. The Jest suite pins the component's reading, and assumption A35 makes the divergence a deploy-order check rather than a surprise.",
+    "adr_required": true,
+    "answers": [
+     "Q12",
+     "Q15",
+     "Q34"
+    ],
+    "steps": [
+     "M2-S03",
+     "M3-S02",
+     "M3-S04"
+    ]
+   },
+   {
+    "id": "D9",
+    "decision": "The approval process ships active true, overriding the deploy-inactive guidance its own skill gives for a production deploy.",
+    "source_reference": "skills/admin/approval-process-apex-patterns/references/metadata-examples.md",
+    "rationale": "Grounded on the two places in this library that state the Active requirement itself. admin/approval-process-apex-patterns/references/metadata-examples.md lines 49-53: '<active>true</active> - required field. The ProcessDefinition preflight query below asserts State = Active; an inactive process is invisible to a submission that names it.' And the same skill's templates/approval-process-apex-patterns-template.md line 30, the preflight row: 'Is the process State = Active? | | A named submission to an inactive process fails'. M3-S03's Apex passes the bare developer name Discount_Approval to setProcessDefinitionNameOrId, so what this build ships is exactly the named submission both lines describe. The deploy-inactive guidance in the same file at lines 515-517 - 'A production process should deploy inactive and be activated after its workflow actions and templates exist' - is written for a SPLIT deploy; this build ships the two workflow alerts, the four field updates, the three email templates and the process in one package, so the condition that guidance waits for is already met at deploy time. Overriding published production guidance is still an accepted risk rather than a neutral choice: assumption A36 records it and it carries the process-order prerequisite A34. Correction to plan v1, which cited gotcha 14 for this: that citation was wrong. Gotcha 14's subject is a NULL processDefinitionNameOrId routing by org process order, which is the opposite case, and it says nothing about a named process requiring State Active. The citation is replaced here rather than the conclusion re-argued.",
+    "alternatives_rejected": [
+     "Ship active false and activate by hand",
+     "Ship active false and have the Apex omit setProcessDefinitionNameOrId",
+     "Ship two packages"
+    ],
+    "consequences": "Process order still has to be set in Setup - the metadata carries no order - which is assumption A34 and a line in M3-S02's deploy-order.md. The Apex is unaffected either way because it names the process explicitly. Filed for the library and NOT for this build to resolve: admin/approval-process-apex-patterns contradicts itself on this point. Its prose at references/metadata-examples.md:515-517 says a production process should deploy inactive, while its own checker at scripts/check_approval_process_apex_patterns.py:376-386 raises HIGH on <active>false</active> whenever Apex in the same tree names the process - and cites gotcha 14 for a rule gotcha 14 does not state. No plan can satisfy both halves of one skill. This build follows the checker and the two sources above that do state the Active requirement, and records the disagreement as a library defect for the depth-wave worklist rather than resolving it in a build plan.",
+    "adr_required": true,
+    "answers": [
+     "Q34",
+     "Q58"
+    ],
+    "steps": [
+     "M3-S02",
+     "M3-S03"
+    ]
+   },
+   {
+    "id": "D10",
+    "decision": "The record page's org-default assignment ships as actionOverrides on objects/Opportunity/Opportunity.object-meta.xml inside the same step as the FlexiPage, rather than on the object-model step.",
+    "source_reference": "skills/admin/lightning-record-page-configuration/references/examples.md",
+    "rationale": "A FlexiPage carries no assignment of its own; the org default lives in an actionOverrides block on the object file, one per formFactor. check_lightning_record_page_configuration.py reads object files with objects/*/*.object-meta.xml relative to --manifest-dir and does not recurse, so the override and the page have to sit in one step directory or the assignment check cannot run at all. Run against this plan's M3-S05 fixture it went from four ERRORs and exit 1 to 'No errors found' and exit 0 once the override and the three component identifiers were added.",
+    "alternatives_rejected": [
+     "Put actionOverrides on the object-model step",
+     "Assign the page by hand in Lightning App Builder",
+     "Assign it through an application file"
+    ],
+    "consequences": "It bends build-planner Step 6 rule 6, which says object-level children belong to the object-model step. Nothing collides - M1-S01 writes the decomposed recordTypes, businessProcesses and fields files and no Opportunity.object-meta.xml at all - but the tension between that rule and a non-recursive checker is real and is filed as driver's-log material. An app with its own Opportunity record page still wins over the org default (assumption A38).",
+    "adr_required": true,
+    "answers": [
+     "Q50"
+    ],
+    "steps": [
+     "M3-S05"
+    ]
+   }
+  ],
+  "milestones": [
+   {
+    "id": "M1",
+    "title": "Enterprise and Renewal data model",
+    "goal": "Given an org where every Opportunity sits on one generic pipeline, when the M1 artefacts are deployed, then two record types exist with their own Sales Processes and stage sets, the eight new stage values carry the probabilities and forecast buckets the VP signed off, Discount__c and Approval_Status__c exist on Opportunity, and each record type has a layout carrying both - and the SMB team's record type, stages, list views and report are untouched.",
+    "steps": [
+     "M1-S01",
+     "M1-S02"
+    ],
+    "acceptance_test_count": 4
+   },
+   {
+    "id": "M2",
+    "title": "Guidance, guardrails and who may bypass them",
+    "goal": "Given the M1 data model is accepted, when the M2 artefacts are deployed, then reps see a stage path carrying the exit criteria and key fields for each stage, an Enterprise or Renewal deal above a 20% discount cannot be set to Closed Won without an approved approval, the sales-ops admin is the only person who can save past that rule, and the 12 reps and 2 managers can select both new record types and get the right layout.",
+    "steps": [
+     "M2-S01",
+     "M2-S02",
+     "M2-S03",
+     "M2-S04",
+     "M2-S05"
+    ],
+    "acceptance_test_count": 6
+   },
+   {
+    "id": "M3",
+    "title": "The discount approval and the rep's panel",
+    "goal": "Given the guardrails are accepted, when the M3 artefacts are deployed, then a rep on an Enterprise or Renewal opportunity with a discount above 20% sees a panel showing the discount and the approval status with an enabled Submit button, submitting routes the request to their manager and locks the record, approving or rejecting writes the status back and emails the rep, recalling clears it, and all of it renders on one record page alongside the stage path.",
+    "steps": [
+     "M3-S01",
+     "M3-S02",
+     "M3-S03",
+     "M3-S04",
+     "M3-S05"
+    ],
+    "acceptance_test_count": 5
+   },
+   {
+    "id": "M4",
+    "title": "Pipeline visibility, the handover pack and the cutover",
+    "goal": "Given the build works, when the M4 artefacts are deployed, then each Enterprise manager can open a report of their own reps' open pipeline by stage with amount and discount, the VP's dashboard shows the whole Enterprise pipeline by close month, and the sales-ops admin holds one workbook, one traceability matrix, one UAT pack, one manifest and one runbook that together name every prerequisite, every assumption and every step that shipped nothing.",
+    "steps": [
+     "M4-S01",
+     "M4-S02",
+     "M4-S03",
+     "M4-S04"
+    ],
+    "acceptance_test_count": 5
+   }
+  ],
+  "steps": [
+   {
+    "id": "M1-S01",
+    "milestone": "M1",
+    "type": "object-model",
+    "agent": "metadata-builder",
+    "title": "OpportunityStage value set, the Enterprise and Renewal Sales Processes and record types, and the Discount__c / Approval_Status__c fields",
+    "skills": [
+     "admin/picklist-and-value-sets",
+     "admin/opportunity-management",
+     "admin/record-types-and-page-layouts",
+     "admin/object-creation-and-design",
+     "admin/sales-process-mapping"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M1-S01/standardValueSets/OpportunityStage.standardValueSet-meta.xml",
+     "artefacts/M1-S01/objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml",
+     "artefacts/M1-S01/objects/Opportunity/businessProcesses/Renewal_Sales_Process.businessProcess-meta.xml",
+     "artefacts/M1-S01/objects/Opportunity/recordTypes/Enterprise.recordType-meta.xml",
+     "artefacts/M1-S01/objects/Opportunity/recordTypes/Renewal.recordType-meta.xml",
+     "artefacts/M1-S01/objects/Opportunity/fields/Discount__c.field-meta.xml",
+     "artefacts/M1-S01/objects/Opportunity/fields/Approval_Status__c.field-meta.xml",
+     "artefacts/M1-S01/package.xml",
+     "artefacts/M1-S01/deploy-order.md"
+    ],
+    "depends_on": [],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M1-S01",
+      "scope": "step",
+      "description": "Fixture run over exactly this step's nine outputs printed 'No issues found.' and exited 0 - the value set, both business processes and both record types were read together, so the won/closed coverage and the stage-to-process subset were actually checked rather than skipped. Step scope is the only scope at which that is true (see the step note). Exit policy: lenient by default, --strict would additionally fail on INFO; --strict is deliberately not passed because the same fixture split across directories produces INFO scope notes that are true statements about scope, not defects. Empty-directory behaviour: prints 'No Opportunity stage value set, business process, record type or pathAssistant found' and exits 0, so this exit code only carries an assertion because check-outputs confirms the nine files first.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/picklist-and-value-sets/scripts/check_picklist_and_value_sets.py --manifest-dir artefacts/M1-S01",
+      "scope": "step",
+      "description": "Fixture run printed 'No findings.' and exited 0: every standardValue carries probability and forecastCategory, and every forecastCategory is one of the five enum members. Exit policy is --min-severity, defaulting to INFO, so ANY finding at any severity fails the run - the flag is deliberately left at its default because the strictest reading is the one this step wants. Empty-directory behaviour: prints 'INFO: No picklist metadata found ... Expected globalValueSets/, standardValueSets/, or objects/*/fields/' and exits 1, so an empty step directory fails this test rather than passing quietly.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/object-creation-and-design/scripts/check_object_creation_and_design.py --manifest-dir artefacts/M1-S01",
+      "scope": "step",
+      "description": "Fixture run printed 'No issues found across 0 object file(s) and 2 field file(s).' and exited 0: both custom fields carry a description, a legal type and no reserved name. Exit policy: bare - any finding fails, there is no severity flag. Empty-directory behaviour: prints 'No .object-meta.xml or .field-meta.xml files found' and exits 0, so this exit code proves the fields are clean only because check-outputs has already confirmed the two field files exist.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M1-S01/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "Every type and member this step produces appears in artefacts/M1-S01/package.xml with a file behind it: StandardValueSet (OpportunityStage), BusinessProcess (object-qualified, Opportunity.Enterprise_Sales_Process and Opportunity.Renewal_Sales_Process), RecordType (Opportunity.Enterprise, Opportunity.Renewal) and CustomField (Opportunity.Discount__c, Opportunity.Approval_Status__c), each as its own <name> block.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given D1 and assumption A24, when artefacts/M1-S01/deploy-order.md is read, then its first instruction is to run sf project retrieve start --metadata StandardValueSet:OpportunityStage against the target org and merge the retrieved active values into the shipped file, and it states in the same paragraph that a partial file deactivates every value it omits - including the SMB team's stages.",
+      "expected": "ticked at the M1 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q5 and Q6, when the eight standardValue blocks are read, then Qualify/Discover/Propose/Negotiate carry 10/25/50/75 and Pipeline/Pipeline/BestCase/Forecast, Renewal Review and Renewal Proposed carry 60/85 and Pipeline/Forecast, Closed Won carries 100 with won and closed true, Closed Lost carries 0 with forecastCategory Omitted - and the word 'Commit' appears nowhere in the file.",
+      "expected": "ticked at the M1 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M1-S02",
+    "milestone": "M1",
+    "type": "ui",
+    "agent": "metadata-builder",
+    "title": "One page layout per new record type, carrying Discount__c and Approval_Status__c",
+    "skills": [
+     "admin/record-types-and-page-layouts",
+     "admin/opportunity-management",
+     "admin/products-and-pricebooks"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+     "artefacts/M1-S02/layouts/Opportunity-Opportunity Renewal Layout.layout-meta.xml",
+     "artefacts/M1-S02/package.xml",
+     "artefacts/M1-S02/deploy-order.md"
+    ],
+    "depends_on": [
+     "M1-S01"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+      "scope": "build",
+      "description": "Declared at build scope because the assertion is cross-step: the record types are M1-S01's and the layouts are this step's, and the checker resolves record-type-to-layout references across whatever tree it is given. Fixture run over both step directories printed 'Scanned 6 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.' and exited 0; the same command at --manifest-dir artefacts/M1-S02 printed '0 record type(s), 2 layout(s)' - correct, and blind to half the pair. Exit policy: lenient, with --strict promoting MEDIUM/LOW/INFO/ADVISORY to failures; --strict is not passed because RL-REQ-03 is advisory by design. Empty-directory behaviour: exits 1 on a deploy-breaking finding, so an empty tree does not pass.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M1-S02/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "Both Layout members appear in artefacts/M1-S02/package.xml in the object-hyphen-name form (Opportunity-Opportunity Enterprise Layout) with a file behind each.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given assumption A26, when artefacts/M1-S02/deploy-order.md is read, then it names the exact sf project retrieve start --metadata \"Layout:Opportunity-Opportunity Layout\" command, says to copy the Opportunity Products relatedLists block verbatim from what the retrieve emits, and states that hand-authoring the related-list name is what the instruction exists to prevent.",
+      "expected": "ticked at the M1 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given assumption A25, when both layout files are read, then each carries Name, AccountId, StageName, CloseDate and Amount, plus Discount__c editable and Approval_Status__c read-only, and deploy-order.md records that the platform's layout-required set for Opportunity is unverified and is discovered by iterating scripts/mock_deploy.py --dry-run, one field per run.",
+      "expected": "ticked at the M1 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M2-S01",
+    "milestone": "M2",
+    "type": "access",
+    "agent": "metadata-builder",
+    "title": "Bypass_Opportunity_Sales_Validation custom permission and the permission set that grants it to the sales-ops admin",
+    "skills": [
+     "admin/custom-permissions",
+     "admin/permission-set-architecture",
+     "admin/validation-rules"
+    ],
+    "templates": [
+     "templates/admin/validation-rule-patterns.md"
+    ],
+    "outputs": [
+     "artefacts/M2-S01/customPermissions/Bypass_Opportunity_Sales_Validation.customPermission-meta.xml",
+     "artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml",
+     "artefacts/M2-S01/package.xml",
+     "artefacts/M2-S01/deploy-order.md"
+    ],
+    "depends_on": [],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/custom-permissions/scripts/check_custom_permissions.py --manifest-dir artefacts",
+      "scope": "build",
+      "description": "Build scope, and the difference is the point: at --manifest-dir artefacts/M2-S01 the coverage table printed 'Consumers 0' for this permission, because the validation rule that names it lives in M2-S03; over the whole tree the same command printed 'Consumers 1' and resolved the $Permission token. Fixture runs: step scope 'Summary: 0 error(s), 0 warning(s), 1 info.' exit 0; build scope the same plus the resolved consumer, exit 0. Exit policy: lenient, with --strict promoting warnings to failures; --strict is not passed because CP-DESC-02 is INFO-tier headroom that never affects the exit code with or without it. Empty-directory behaviour: prints a zero-count summary and exits 0, so check-outputs is what proves the files exist.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+      "scope": "build",
+      "description": "One of the four checkers standards/build-orchestration.md section 5 names as cross-referential - it resolves a permission set's object and field permissions against the object metadata another step wrote - so build scope is declared rather than leaving validate to WARN about it. This set carries no objectPermissions or fieldPermissions at all, only customPermissions, so at either scope the live assertions are PSA-DESC-01 (description under 255 characters) and the composition rules. Fixture runs: exit 0 and 'No issues found.' at both scopes. Exit policy: bare - any ERROR fails, there is no severity flag, and --max-objects only moves the slicing threshold. Empty-directory behaviour: prints 'WARN: no PermissionSet ... files found ... Nothing was checked.' and exits 0.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M2-S01/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "CustomPermission (Bypass_Opportunity_Sales_Validation) and PermissionSet (Sales_Ops_Validation_Bypass) each appear as their own <name> block in artefacts/M2-S01/package.xml with a file behind each.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q13 and Q17, when artefacts/M2-S01/permissionsets/Sales_Ops_Validation_Bypass.permissionset-meta.xml is read, then it grants exactly one custom permission, carries no objectPermissions, no fieldPermissions and no userPermissions, and its description names the sales-ops admin as the only intended holder - so approving this gate is approving one bypass and nothing else.",
+      "expected": "ticked at the M2 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": true
+   },
+   {
+    "id": "M2-S02",
+    "milestone": "M2",
+    "type": "access",
+    "agent": "metadata-builder",
+    "title": "Record-type visibility permission set and the Sales User profile overlay carrying the two layout assignments",
+    "skills": [
+     "admin/permission-set-architecture",
+     "admin/record-types-and-page-layouts",
+     "admin/permission-sets-vs-profiles"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M2-S02/permissionsets/Enterprise_Sales_Record_Types.permissionset-meta.xml",
+     "artefacts/M2-S02/profiles/Sales User.profile-meta.xml",
+     "artefacts/M2-S02/package.xml",
+     "artefacts/M2-S02/deploy-order.md"
+    ],
+    "depends_on": [
+     "M1-S01",
+     "M1-S02"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/permission-set-architecture/scripts/check_permission_set_architecture.py --manifest-dir artefacts",
+      "scope": "build",
+      "description": "Build scope for the cross-referential reason section 5 documents: recordTypeVisibilities name Opportunity.Enterprise and Opportunity.Renewal, which M1-S01 wrote. Fixture run over the whole tree printed 'No issues found.' and exited 0, and the same command at step scope also exited 0 but with nothing to resolve the record types against. Exit policy: bare - any ERROR fails and there is no severity flag; PSA-DESC-01 at 255+ characters on either file is the ERROR most likely to fire here, PSA-DESC-02 at 200+ is INFO and never affects the exit code. Empty-directory behaviour: 'WARN: no PermissionSet ... found', exit 0.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/record-types-and-page-layouts/scripts/check_record_type_layouts.py --manifest-dir artefacts",
+      "scope": "build",
+      "description": "The only scope at which the profile's layoutAssignments can be resolved: the layouts are M1-S02's, the record types are M1-S01's and the assignments are this step's. Fixture run over all three step directories printed 'Scanned 9 metadata file(s): 2 record type(s), 2 layout(s); 0 finding(s) detected.' and exited 0. Exit policy: lenient, --strict would add MEDIUM/LOW/INFO/ADVISORY; not passed, because the advisory tier here is RL-REQ-03 rather than a defect. Empty-directory behaviour: exit 1.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M2-S02/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "PermissionSet (Enterprise_Sales_Record_Types) and Profile (Sales User) appear in artefacts/M2-S02/package.xml with a file behind each; the Profile member is the profile's name with its space, matching the file stem.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q4 and Q9, when artefacts/M2-S02/profiles/Sales User.profile-meta.xml is read, then it contains exactly two layoutAssignments blocks and two recordTypeVisibilities blocks, every recordTypeVisibilities carries <default>false</default>, and the file contains no userPermissions, objectPermissions, fieldPermissions, applicationVisibilities or classAccesses element - so the overlay adds access and revokes nothing the SMB team holds.",
+      "expected": "ticked at the M2 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q19, when the two files are read together, then reps and managers reach both record types through the permission set while the sales-ops admin (System Administrator) needs no row in either file, and the manager-versus-rep distinction appears nowhere in this step - it is a role-hierarchy fact, which is what decision D7 records.",
+      "expected": "ticked at the M2 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": true
+   },
+   {
+    "id": "M2-S03",
+    "milestone": "M2",
+    "type": "validation",
+    "agent": "metadata-builder",
+    "title": "Opportunity_Discount_Requires_Approval - the 20% discount cap with its custom-permission bypass",
+    "skills": [
+     "admin/validation-rules",
+     "admin/custom-permissions",
+     "admin/opportunity-management"
+    ],
+    "templates": [
+     "templates/admin/validation-rule-patterns.md"
+    ],
+    "outputs": [
+     "artefacts/M2-S03/objects/Opportunity/validationRules/Opportunity_Discount_Requires_Approval.validationRule-meta.xml",
+     "artefacts/M2-S03/package.xml",
+     "artefacts/M2-S03/deploy-order.md"
+    ],
+    "depends_on": [
+     "M1-S01",
+     "M2-S01"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+      "scope": "build",
+      "description": "Build scope because the checker's own docstring says so: 'Run over the whole build/package tree, not one step's directory, or those references come back as an advisory INFO instead of a real answer.' Proven on a fixture - at --manifest-dir artefacts/M2-S03 it printed one INFO, 'field inventory absent at this scope, references unresolvable', and exited 0; at --manifest-dir artefacts over the same tree plus M1-S01's fields and M2-S01's custom permission it printed 'Scanned 1 validation rule(s) across 1 file(s); 0 finding(s) detected.' and exited 0, having actually resolved Discount__c, Approval_Status__c, errorDisplayField and the $Permission token. Exit policy: lenient, with --strict promoting the REVIEW advisory to exit 1; not passed. Empty-directory behaviour: a non-existent --manifest-dir is a HIGH finding at exit 1, while an existing directory with no rules is a REVIEW advisory at exit 0.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M2-S03/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "ValidationRule appears in artefacts/M2-S03/package.xml with the object-qualified member Opportunity.Opportunity_Discount_Requires_Approval and a file behind it.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given D8 and assumption A35, when the errorConditionFormula is read, then the discount comparison is 'Discount__c > 0.20' and not '> 20', the bypass clause NOT($Permission.Bypass_Opportunity_Sales_Validation) is the first argument of the outer AND, and the record-type gate compares RecordType.DeveloperName with = rather than ISPICKVAL.",
+      "expected": "ticked at the M2 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q15, when errorMessage is read, then it is Q15's sentence verbatim, is 255 characters or fewer, and errorDisplayField is Discount__c so the error lands on the field the rep has to change rather than at the top of the page.",
+      "expected": "ticked at the M2 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M2-S04",
+    "milestone": "M2",
+    "type": "validation",
+    "agent": "metadata-builder",
+    "title": "Opportunity_Products_Required_At_Propose - at least one product line before Propose (BLOCKED: no skill documents how a validation rule counts line items)",
+    "skills": [
+     "admin/validation-rules",
+     "admin/products-and-pricebooks"
+    ],
+    "templates": [
+     "templates/admin/validation-rule-patterns.md"
+    ],
+    "outputs": [
+     "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml",
+     "artefacts/M2-S04/package.xml",
+     "artefacts/M2-S04/deploy-order.md"
+    ],
+    "depends_on": [
+     "M1-S01",
+     "M2-S01"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/validation-rules/scripts/check_validation_rules.py --manifest-dir artefacts",
+      "scope": "build",
+      "description": "The test this step will run once it is unblocked, declared now so the artefact list means something when it is. The pass condition is exit 0, unconditionally; the conditionality belongs to the step's blocked status and is carried there, not folded into the expectation a tester has to evaluate. Build scope for the same reason as M2-S03: only over the whole tree does the checker resolve the rule's field tokens and its $Permission reference against M1-S01's fields and M2-S01's custom permission - at step scope it prints 'field inventory absent at this scope, references unresolvable' as an INFO and exits 0. Exit policy: lenient, --strict not passed. Empty-directory behaviour: an existing but ruleless directory is a REVIEW advisory at exit 0, which is precisely the state this step is in while blocked.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M2-S04/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "ValidationRule appears in artefacts/M2-S04/package.xml with the object-qualified member Opportunity.Opportunity_Products_Required_At_Propose and a file behind it. Declared now for the same reason as the checker above: standards/build-orchestration.md section 5 runs the xml and manifest checks always-on for a metadata step whether or not the plan declares them, so what declaring them changes is what a reader of plan.json and PLAN.md sees - and at unblock time this step's declared test surface is then already complete. While the step is blocked it writes no artefacts and both assertions have nothing to read.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given this step is blocked on a library gap rather than on an answer, when the M2 gate is reached, then a named owner has accepted that Q11's Discover-to-Propose product gate ships as Path guidance text only for this release, and has recorded who will deepen admin/validation-rules or admin/products-and-pricebooks with a documented line-item-count mechanism and by when. Tickable from artefacts/M2-S05 and this step's blocked_reason alone.",
+      "expected": "ticked at the M2 milestone gate"
+     }
+    ],
+    "status": "blocked",
+    "human_gate": false,
+    "blocked_reason": "skill-gap"
+   },
+   {
+    "id": "M2-S05",
+    "milestone": "M2",
+    "type": "ui",
+    "agent": "metadata-builder",
+    "title": "Enterprise and Renewal Paths with per-stage key fields and exit-criteria guidance, plus the org Path preference",
+    "skills": [
+     "admin/path-and-guidance",
+     "admin/opportunity-management",
+     "admin/sales-process-mapping"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml",
+     "artefacts/M2-S05/pathAssistants/Renewal_Opportunity_Path.pathAssistant-meta.xml",
+     "artefacts/M2-S05/settings/PathAssistant.settings-meta.xml",
+     "artefacts/M2-S05/package.xml",
+     "artefacts/M2-S05/deploy-order.md"
+    ],
+    "depends_on": [
+     "M1-S01"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/path-and-guidance/scripts/check_path_and_guidance.py --manifest-dir artefacts",
+      "scope": "build",
+      "description": "Build scope, and the fixture shows exactly what it buys: at --manifest-dir artefacts/M2-S05 the checker printed four NOTE lines - 'object Opportunity is not in this manifest, so recordTypeName could not be resolved' and 'step names not verified: no record type picklistValues, business process, StandardValueSet ... is present' - and exited 0, a pass that proved nothing. At --manifest-dir artefacts over M1-S01 and this step together it printed 'Checked 2 path(s): no issues found.' with zero notes, having resolved both recordTypeName values and matched every picklistValueName against the business processes and the value set. Exit policy: lenient, with --strict making NOTE lines fail too; --strict is not passed because at build scope there are no notes to fail on. Empty-directory behaviour: 'No PathAssistant metadata found ... nothing to check', exit 0.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M2-S05",
+      "scope": "step",
+      "description": "Step scope deliberately, because this checker reads fixed paths under --manifest-dir rather than recursing: pathAssistants/ is directly under this step's directory, so it sees both paths, while at --manifest-dir artefacts it would find nothing at all and print 'Nothing in this tree is in scope for this checker.' Fixture run over exactly this step's five outputs printed 'No issues found.' and exited 0. What it asserts here is path-internal shape; the path-to-record-type cross-reference is carried by the build-scoped check_path_and_guidance.py test above. Exit policy: lenient, --strict would add INFO; not passed. Empty-directory behaviour: an INFO scope note at exit 0.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M2-S05/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "PathAssistant (both developer names) and Settings (member PathAssistant, the type name without its Settings suffix) appear in artefacts/M2-S05/package.xml with a file behind each.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q2 and Q11, when the Enterprise path's four pathAssistantSteps are read, then the Discover step's info text names 'at least one product line added from the price book' and a booked Next Step, the Propose step's info text names a primary contact with the Decision Maker contact role, and the Negotiate step's key fields are Discount__c, Approval_Status__c and CloseDate - so every exit criterion the requester dictated is visible to a rep even though M2-S04 cannot enforce the product one.",
+      "expected": "ticked at the M2 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given admin/path-and-guidance's rule that a path is not evidence the feature is on, when artefacts/M2-S05/deploy-order.md is read, then it states that a green PathAssistant deploy proves neither that Path is enabled nor that the component is on the record page, and points at M3-S05 as the step that puts it there.",
+      "expected": "ticked at the M2 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M3-S01",
+    "milestone": "M3",
+    "type": "ui",
+    "agent": "metadata-builder",
+    "title": "Sales Approvals email folder and the three Classic templates the approval process and its alerts send",
+    "skills": [
+     "admin/email-templates-and-alerts",
+     "admin/approval-processes"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M3-S01/email/Sales_Approvals.emailFolder-meta.xml",
+     "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email",
+     "artefacts/M3-S01/email/Sales_Approvals/Discount_Approval_Request.email-meta.xml",
+     "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email",
+     "artefacts/M3-S01/email/Sales_Approvals/Discount_Approved.email-meta.xml",
+     "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email",
+     "artefacts/M3-S01/email/Sales_Approvals/Discount_Rejected.email-meta.xml",
+     "artefacts/M3-S01/package.xml",
+     "artefacts/M3-S01/deploy-order.md"
+    ],
+    "depends_on": [
+     "M1-S01"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/email-templates-and-alerts/scripts/check_email_templates.py --manifest-dir artefacts/M3-S01",
+      "scope": "step",
+      "description": "Step scope: the checker reads template files and needs nothing another step wrote. Fixture run over exactly this step's seven template files printed 'Scanned 6 email template file(s); 0 finding(s) detected.' and exited 0 - every body carries merge fields and no file carries a hardcoded email address. --manifest-dir is accepted here as an alias of the positional paths argument, so this line does not raise validate's non-standard-argument-form WARN. Exit policy: lenient, with --strict promoting REVIEW findings to failures; the same fixture also exits 0 under --strict, and --strict is not passed so that a future REVIEW about sender identity surfaces as a reported finding rather than a blocked step. Empty-directory behaviour: 'ERROR: 1 blocking finding(s) detected' and exit 1, so an empty step directory fails.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M3-S01/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "EmailFolder (Sales_Approvals) and EmailTemplate (three Folder/Developer_Name members) appear in artefacts/M3-S01/package.xml with a file behind each; EmailTemplate accepts no wildcard so all three are listed explicitly.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q33 and assumption A27, when Discount_Rejected.email is read, then it names the Approval History related list as where the manager's comments are, rather than attempting to merge them into the body, and Discount_Approved.email and Discount_Rejected.email each address the opportunity owner rather than the manager.",
+      "expected": "ticked at the M3 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given that a Lightning email template is not packageable and the rule engine cannot reference one, when the three .email-meta.xml files are read, then each carries uiType Aloha, type text, available true and encodingKey UTF-8, and each subject is 230 characters or fewer.",
+      "expected": "ticked at the M3 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M3-S02",
+    "milestone": "M3",
+    "type": "automation",
+    "agent": "metadata-builder",
+    "title": "Opportunity.Discount_Approval process plus the two workflow alerts and four field updates it fires",
+    "skills": [
+     "admin/approval-processes",
+     "admin/email-templates-and-alerts",
+     "admin/validation-rules"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml",
+     "artefacts/M3-S02/approvalProcesses/Opportunity.Discount_Approval.approvalProcess-meta.xml",
+     "artefacts/M3-S02/package.xml",
+     "artefacts/M3-S02/deploy-order.md"
+    ],
+    "depends_on": [
+     "M1-S01",
+     "M3-S01"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/approval-processes/scripts/check_approval_design.py --manifest-dir artefacts artefacts",
+      "scope": "build",
+      "description": "Both argument surfaces are declared together, and the fixture runs show why neither alone works. With --manifest-dir only, the checker looks for approvalProcesses/ DIRECTLY under the given directory, so at --manifest-dir artefacts it printed 'no approval-process metadata files found' as a HIGH finding and exited 1. With the positional path only, it recurses and finds the process but reports 'workflow-action and email-template resolution skipped (no --manifest-dir)' and exited 1 on an unresolved emailTemplate. With both - the form declared here - it printed 'Scanned 1 approval-process metadata file(s); 0 finding(s) detected.' and exited 0, having resolved all six workflow actions in M3-S02 and the three email templates in M3-S01. Exit policy: bare - any finding at any severity, REVIEW included, exits 1; there is no severity flag. Empty-directory behaviour: a HIGH 'no approval-process metadata files found' at exit 1.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M3-S02/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "ApprovalProcess (object-qualified member Opportunity.Discount_Approval) and Workflow (member Opportunity) appear in artefacts/M3-S02/package.xml with a file behind each. The email templates are M3-S01's manifest members, not this step's.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q31 and Q33, when the approval process file is read, then recordEditability is AdminOnly, allowRecall is true, finalApprovalRecordLock and finalRejectionRecordLock are both false, allowedSubmitters carries exactly one entry of type owner, and recallActions fires a field update whose operation is Null so a recalled record shows a blank Approval Status rather than Rejected.",
+      "expected": "ticked at the M3 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given D9 and assumption A34, when artefacts/M3-S02/deploy-order.md is read, then it states that the process ships active true, that approval process ORDER is not in the metadata and must be set in Setup after deploy, and that the Apex in M3-S03 names the process explicitly so order affects only the standard Submit for Approval button.",
+      "expected": "ticked at the M3 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given admin/email-templates-and-alerts/references/gotchas.md:70 records an empty recipient set as a silent failure - 'A .workflow file whose alert carries a template, a description and a senderType but an empty recipient set deploys successfully, appears in Setup, is selectable from Flow - and delivers nothing. There is no runtime error and no entry in the debug log to look for.' - when artefacts/M3-S02/workflows/Opportunity.workflow-meta.xml is read, then each of Notify_Owner_Discount_Approved and Notify_Owner_Discount_Rejected carries a non-empty recipients block of <type>owner</type>, which is the opportunity owner and therefore the rep Q32 named. This is a manual line because neither declared checker reads recipients: check_approval_design.py resolves workflow actions by name only, and check_email_templates.py is declared at --manifest-dir artefacts/M3-S01 and never sees this step's workflow file.",
+      "expected": "ticked at the M3 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M3-S03",
+    "milestone": "M3",
+    "type": "automation",
+    "agent": "apex-builder",
+    "title": "Apex service, @AuraEnabled controller and @InvocableMethod action that submit one Opportunity into Discount_Approval, plus the test class",
+    "skills": [
+     "apex/invocable-methods",
+     "apex/test-class-standards",
+     "admin/approval-process-apex-patterns",
+     "apex/apex-security-patterns"
+    ],
+    "templates": [
+     "templates/apex/tests/TestDataFactory.cls",
+     "templates/apex/tests/TestDataFactory.cls-meta.xml"
+    ],
+    "outputs": [
+     "artefacts/M3-S03/classes/OpportunityApprovalService.cls",
+     "artefacts/M3-S03/classes/OpportunityApprovalService.cls-meta.xml",
+     "artefacts/M3-S03/classes/OpportunityApprovalController.cls",
+     "artefacts/M3-S03/classes/OpportunityApprovalController.cls-meta.xml",
+     "artefacts/M3-S03/classes/OpportunityApprovalSubmitAction.cls",
+     "artefacts/M3-S03/classes/OpportunityApprovalSubmitAction.cls-meta.xml",
+     "artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls",
+     "artefacts/M3-S03/classes/OpportunityApprovalServiceTest.cls-meta.xml",
+     "artefacts/M3-S03/classes/TestDataFactory.cls",
+     "artefacts/M3-S03/classes/TestDataFactory.cls-meta.xml"
+    ],
+    "depends_on": [
+     "M3-S02"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/approval-process-apex-patterns/scripts/check_approval_process_apex_patterns.py --manifest-dir artefacts artefacts",
+      "scope": "build",
+      "description": "Both argument surfaces, same reason as M3-S02: --manifest-dir alone looks for approvalProcesses/ directly beneath it and finds nothing at artefacts/, while the positional path recurses. Together they gave 'Scanned 1 approval-process file(s) and 5 Apex file(s); 0 finding(s) detected.' at exit 0 on a fixture holding this step's ten outputs beside M3-S02's process. This test is live rather than vacuous and that was proven: with M3-S02's process at active false the same fixture raised 'HIGH: <active>false</active> while Apex in this tree submits to Discount_Approval. ProcessDefinition.State must be Active for the submission to resolve' and exited 1 - which is the finding that produced decision D9. Exit policy: bare, any finding exits 1. Empty-directory behaviour: a WARN finding at exit 1.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/apex/invocable-methods/scripts/check_invocable_methods.py --manifest-dir artefacts/M3-S03",
+      "scope": "step",
+      "description": "Step scope: the invocable contract is entirely inside this step's classes. Fixture run over the ten outputs printed 'Scanned 5 Apex class file(s) ...; 0 invocable-contract finding(s) in 0 file(s).' and exited 0. Because a zero-finding line is exactly what a checker that saw nothing would also print, the test was proven live on a deliberately broken copy: a second @InvocableMethod added to OpportunityApprovalSubmitAction produced 'CRITICAL IM001 2 @InvocableMethod annotations in one class' at exit 1. Exit policy: --fail-on, defaulting to MEDIUM, so CRITICAL/HIGH/MEDIUM fail and LOW/REVIEW do not; the default is kept deliberately. Empty-directory behaviour: 'WARN: no Apex classes found' at exit 0.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/apex/test-class-standards/scripts/check_test_class_standards.py --manifest-dir artefacts/M3-S03",
+      "scope": "step",
+      "description": "Step scope. Fixture run printed 'Scanned 5 Apex class file(s); audited 2 @IsTest artifact(s); 0 finding(s). ERROR=0 WARN=0' and exited 0 - both @IsTest artifacts (the test class and the shipped TestDataFactory) carry assertions with messages and no SeeAllData. Exit policy: lenient on WARN by default, with --strict failing on any finding; --strict is not passed because a WARN here is a style note rather than a deploy risk. Empty-directory behaviour: 'no Apex classes found ... ERROR=0 WARN=1' at exit 0, so check-outputs is what proves the ten files exist.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M3-S03/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "This step declares no package.xml, deliberately. standards/build-orchestration.md section 4 borrowed-agent condition 2 forbids declaring an output the owning agent's Output Contract does not name, and agents/apex-builder/AGENT.md's nine deliverables are summary, class inventory, class bodies, meta XML bodies, integration notes, governor-limit budget, test plan summary, Process Observations and citations - no manifest anywhere. Section 5's Apex exception settles it: the ApexClass members are aggregated by M4-S04, which depends_on this step. The always-on manifest check therefore records skipped-not-applicable and names M4-S04 rather than failing for the absence of a local file.",
+      "expected": "skipped-not-applicable, naming M4-S04 as the step that carries the ApexClass members"
+     },
+     {
+      "type": "manual",
+      "description": "Given no offline Apex compiler exists in the sf CLI, when this step is reviewed, then every non-platform identifier in the emitted code is quoted from admin/approval-process-apex-patterns/references/metadata-examples.md or from templates/apex/tests/TestDataFactory.cls - Approval.ProcessSubmitRequest, setObjectId, setProcessDefinitionNameOrId, setSubmitterId, setSkipEntryCriteria, setComments, Approval.process(req, false), isSuccess, getInstanceStatus, getErrors, Database.Error.getStatusCode/getMessage, and TestDataFactory.createAccounts / createOpportunities with their documented signatures - and TestDataFactory.cls in this step diffs empty against templates/apex/tests/TestDataFactory.cls, and TestDataFactory.cls-meta.xml diffs empty against templates/apex/tests/TestDataFactory.cls-meta.xml and therefore carries <apiVersion>67.0</apiVersion> while OpportunityApprovalService, OpportunityApprovalController, OpportunityApprovalSubmitAction and OpportunityApprovalServiceTest carry 62.0 - a deliberate split recorded in this step's note, not a slip. Ticking this line is also what records the template's provenance, because this step declares no deploy-order.md.",
+      "expected": "ticked at the M3 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q35, when OpportunityApprovalServiceTest.cls is read, then one method asserts that a ProcessInstance with Status Pending exists for the opportunity after a submit, and a second asserts that a second submit while pending returns success false with a non-null failure message and creates no second pending instance.",
+      "expected": "ticked at the M3 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M3-S04",
+    "milestone": "M3",
+    "type": "ui",
+    "agent": "lwc-builder",
+    "title": "discountApprovalPanel LWC - discount, approval status and a Submit button enabled only above the threshold - with its Jest suite",
+    "skills": [
+     "lwc/lwc-base-component-recipes",
+     "lwc/wire-service-patterns",
+     "lwc/lwc-jest-testing-with-accessibility",
+     "apex/invocable-methods"
+    ],
+    "templates": [
+     "templates/lwc/patterns/imperativeApexPattern.js",
+     "templates/lwc/component-skeleton/componentSkeleton.js-meta.xml"
+    ],
+    "outputs": [
+     "artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.html",
+     "artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js",
+     "artefacts/M3-S04/lwc/discountApprovalPanel/discountApprovalPanel.js-meta.xml",
+     "artefacts/M3-S04/lwc/discountApprovalPanel/__tests__/discountApprovalPanel.test.js"
+    ],
+    "depends_on": [
+     "M1-S01",
+     "M3-S03"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/lwc/lwc-base-component-recipes/scripts/check_lwc_base_component_recipes.py --manifest-dir artefacts/M3-S04",
+      "scope": "step",
+      "description": "Step scope: the bundle is self-contained. Fixture run over exactly this step's four outputs printed '1 bundle(s), 0 loose template(s) scanned - 0 ERROR, 0 WARN' and exited 0 - no lightning-output-field nested inside lightning-layout, no raw SLDS blueprint markup, no LWR-illegal toast import, and the Jest suite asserts on properties rather than on getAttribute. Exit policy: lenient, with --strict promoting every WARN to an ERROR; the same fixture also exits 0 under --strict, and --strict is left off so a future WARN is reported rather than blocking the step. Empty-directory behaviour: 'WARN: no LWC bundles and no HTML templates found - nothing to check' at exit 0, so check-outputs is what proves the bundle exists.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M3-S04/ parses with ElementTree - which here means discountApprovalPanel.js-meta.xml, the one XML file the bundle carries and the file whose targets, targetConfigs and the discountThreshold design attribute the two manual tests below read. The other three outputs are HTML and JavaScript and are not XML.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "This step declares no package.xml. agents/lwc-builder/AGENT.md's Output Contract names bundle files, an optional controller and test, a data-strategy note, an exposure matrix and a coverage summary - no manifest - so standards/build-orchestration.md section 4 borrowed-agent condition 2 forbids declaring one, exactly as it does for the apex-builder step. The LightningComponentBundle member is carried by M4-S04. The always-on check resolves against a depends_on step's manifest (M1-S01's) rather than failing, and the assertion that matters for this bundle is M4-S04's build-level manifest test.",
+      "expected": "consistent via the depends_on manifest; the LightningComponentBundle member is asserted at M4-S04"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q35, when __tests__/discountApprovalPanel.test.js is read, then four cases stub the getRecord wire and assert the button's disabled property: true at a discount of 20, false at 25 with no approval status, true at 25 with Approval_Status__c Pending, and true at 25 with Approved - so the rule the requester described is pinned in both directions rather than only on the happy path.",
+      "expected": "ticked at the M3 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given D8 and assumption A35, when discountApprovalPanel.js-meta.xml is read, then discountThreshold is a design attribute with default 20 and a description naming the Opportunity_Discount_Requires_Approval validation rule, supportedFormFactors are Large and Small only, and the component targets lightning__RecordPage scoped to the Opportunity object.",
+      "expected": "ticked at the M3 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M3-S05",
+    "milestone": "M3",
+    "type": "ui",
+    "agent": "metadata-builder",
+    "title": "Opportunity Enterprise Lightning record page carrying the Path and the discount panel, with its org-default assignment",
+    "skills": [
+     "admin/lightning-record-page-configuration",
+     "admin/path-and-guidance",
+     "lwc/lwc-base-component-recipes"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml",
+     "artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml",
+     "artefacts/M3-S05/package.xml",
+     "artefacts/M3-S05/deploy-order.md"
+    ],
+    "depends_on": [
+     "M2-S05",
+     "M3-S04"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/lightning-record-page-configuration/scripts/check_lightning_record_page_configuration.py --manifest-dir artefacts/M3-S05",
+      "scope": "step",
+      "description": "Step scope is the only scope that works: the checker globs flexipages/*.flexipage-meta.xml and objects/*/*.object-meta.xml directly under --manifest-dir and does not recurse, so at artefacts/ it finds no pages at all. Fixture evidence on exactly this step's four outputs: without the identifiers and the override it printed four ERRORs - three 'no <identifier>; required from API 53.0' and one 'record page has no override pointing at it in this tree' - and exited 1; with both added it printed 'No errors found (0 warning(s)).' and exited 0. That is what makes this test live. Exit policy: bare on ERROR lines, with --strict additionally failing overrides that point outside the tree; --strict is not passed because only the Enterprise page is in this build. Empty-directory behaviour: exit 1 on 'no flexipages/*.flexipage-meta.xml found'.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M3-S05/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "FlexiPage (Opportunity_Enterprise_Record_Page) and CustomObject (Opportunity, for the actionOverrides block) appear in artefacts/M3-S05/package.xml with a file behind each.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given D10 and assumption A38, when the object file is read, then it carries exactly two actionOverrides blocks - actionName View, type Flexipage, content Opportunity_Enterprise_Record_Page, formFactor Large and Small - and nothing else, and artefacts/M3-S05/deploy-order.md states that an app with its own Opportunity record page wins over this org default and must be re-pointed in Setup if Northwind runs one.",
+      "expected": "ticked at the M3 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given requirement.md item 4, when the flexipage file is read, then the Path component sits in the subheader region with hideUpdateButton false, the discountApprovalPanel sits in the sidebar region with its discountThreshold property set to 20, and every componentInstance carries an identifier of 120 characters or fewer.",
+      "expected": "ticked at the M3 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M4-S01",
+    "milestone": "M4",
+    "type": "custom",
+    "agent": "metadata-builder",
+    "title": "Report-type and column-code probe runbook: the retrieves that must be run before the report is deployed",
+    "skills": [
+     "admin/reports-and-dashboards"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M4-S01/deploy-order.md"
+    ],
+    "depends_on": [],
+    "acceptance_tests": [
+     {
+      "type": "manual",
+      "description": "Given Q26 and assumption A28, when artefacts/M4-S01/deploy-order.md is read, then it names the three sf commands verbatim, lists each of the six column codes M4-S02 uses (Opportunity$Name, Opportunity$StageName, Opportunity$Amount, Opportunity$Discount__c, Opportunity$CloseDate, Opportunity$Approval_Status__c) as provisional, states that RPT-COL-01 in check_report_inventory.py reports every one of them as unverifiable offline by design, and says that the retrieve is a pre-deploy prerequisite rather than a build step. Tickable from this file alone - no org and no later artefact is needed.",
+      "expected": "ticked at the M4 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q54's default, when the same file is read, then it also states that a NEW Enterprise-scoped report type is built rather than editing whatever report type the SMB pipeline report uses, and names checking the SMB report's report type as part of the same retrieve so the decision can be confirmed rather than assumed.",
+      "expected": "ticked at the M4 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M4-S02",
+    "milestone": "M4",
+    "type": "ui",
+    "agent": "metadata-builder",
+    "title": "Enterprise pipeline report type, report, dashboard, their two folders and the Enterprise Managers public group",
+    "skills": [
+     "admin/reports-and-dashboards",
+     "admin/queues-and-public-groups"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M4-S02/groups/Enterprise_Managers.group-meta.xml",
+     "artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml",
+     "artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml",
+     "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml",
+     "artefacts/M4-S02/dashboards/Enterprise_Sales.dashboardFolder-meta.xml",
+     "artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml",
+     "artefacts/M4-S02/package.xml",
+     "artefacts/M4-S02/deploy-order.md"
+    ],
+    "depends_on": [
+     "M1-S01",
+     "M4-S01"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/reports-and-dashboards/scripts/check_report_inventory.py --manifest-dir artefacts/M4-S02",
+      "scope": "step",
+      "description": "Step scope: every file this checker reads is this step's. Fixture run over exactly these six metadata outputs printed 'Scanned 5 report/dashboard file(s); 7 finding(s) detected.' at score 95 and exited 0, and both groups of findings are the DOCUMENTED expected state rather than defects to fix. Six are RPT-COL-01 at INFO, one per provisional column code, saying the codes 'cannot be verified offline; harvest it from a retrieve of a working report on the same reportType before deploying' - which is Q26's answer restated by the tool and is what M4-S01's runbook exists to close. The seventh is MEDIUM, 'dashboardType is SpecifiedUser with no runningUser - on deploy the field is populated with the deploying user's username', which is assumption A29. Exit policy: --strict fails on WARN-tier findings while INFO never affects the exit code either way; the same fixture exits 1 under --strict, and --strict is deliberately NOT passed because passing it would block a step whose two open items are both recorded pre-deploy prerequisites. Empty-directory behaviour: 'Scanned 0 report/dashboard file(s)' at exit 0, so check-outputs is what proves the files exist.",
+      "expected": "exit 0, with the six RPT-COL-01 INFO lines and the one runningUser MEDIUM as the documented outcome"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml / *-meta.xml under artefacts/M4-S02/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "Group, ReportType, Report (the folder as a bare member plus Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage) and Dashboard (the folder plus Enterprise_Sales/Enterprise_Pipeline) appear in artefacts/M4-S02/package.xml with a file behind each. Neither Report nor Dashboard accepts a wildcard, and the folders are listed under the Report and Dashboard type names rather than under ReportFolder or DashboardFolder, which describeMetadata does not expose.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q25 and assumption A32, when the two folder files are read, then each is accessType Shared with a single folderShares entry granting View to the Enterprise_Managers group, and artefacts/M4-S02/deploy-order.md states that the group ships with no members and that the sales-ops admin adds the two managers and the VP in Setup - because Group metadata carries no membership. Approving this gate is approving who can read deal amounts and discounts.",
+      "expected": "ticked at the M4 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q24, assumption A29 and decision D7, when the dashboard file is read, then dashboardType is SpecifiedUser, no runningUser element is present, and deploy-order.md names setting runningUser to the VP's username as a mandatory pre-deploy step, stating that the platform otherwise substitutes the deploying user's and that a SpecifiedUser dashboard shows every viewer the running user's data regardless of their own security settings.",
+      "expected": "ticked at the M4 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q23 and M2-S04's block, when the report file is read, then it carries no product-count column and deploy-order.md records why - the same line-item count M2-S04 is blocked on - and states that a join to Opportunity Product was rejected because it returns one row per line item and would double-count Amount.",
+      "expected": "ticked at the M4 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": true
+   },
+   {
+    "id": "M4-S03",
+    "milestone": "M4",
+    "type": "docs",
+    "agent": "build-doc-keeper",
+    "title": "Compile the ten-section configuration workbook, the traceability matrix, the acceptance criteria and the UAT case pack",
+    "skills": [
+     "admin/configuration-workbook-authoring",
+     "admin/requirements-traceability-matrix",
+     "admin/uat-test-case-design",
+     "admin/acceptance-criteria-given-when-then"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M4-S03/configuration-workbook.md",
+     "artefacts/M4-S03/traceability.md",
+     "artefacts/M4-S03/acceptance-criteria.md",
+     "artefacts/M4-S03/uat-test-cases.yaml"
+    ],
+    "depends_on": [
+     "M1-S01",
+     "M1-S02",
+     "M2-S01",
+     "M2-S02",
+     "M2-S03",
+     "M2-S05",
+     "M3-S01",
+     "M3-S02",
+     "M3-S03",
+     "M3-S04",
+     "M3-S05",
+     "M4-S02"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/configuration-workbook-authoring/scripts/check_workbook.py --workbook artefacts/M4-S03/configuration-workbook.md",
+      "description": "This checker takes --workbook (with --file as its alias) rather than --manifest-dir, so validate's non-standard-argument-form WARN on this line is correct and unavoidable per standards/build-orchestration.md section 5's follow-up note. Fixture run over a ten-section workbook in exactly this shape ended 'OK: workbook ... passes all checks.' at exit 0, after three iterations that establish what it enforces: section headings must be '## Section <n> - <Name>' and not '## <n>. <Name>'; every recommended_skills entry must resolve to a real SKILL.md; and every Sharing Settings row must cite sharing-selection.md. One INFO remains on the Automation row ('no automation choice to cite - artefact is configuration') and never affects the exit code. Exit policy: bare - any ERROR fails and there is no severity flag. Empty/missing file: 'file not found' at exit 1.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/requirements-traceability-matrix/scripts/check_rtm.py --file artefacts/M4-S03/traceability.md --manifest-dir artefacts",
+      "scope": "build",
+      "description": "scope build is declared because the command's --manifest-dir already reads the whole artefacts tree: the matrix is checked against every step's components, not against this step's own directory. Both flags are declared together and each does a different job - under --manifest-dir discovery alone a missing matrix is an INFO at exit 0, while under --file a missing path prints 'does not exist (or is not a file). Nothing was validated.' and exits 1, so the --file half is what makes an absent document a failure. Fixture run over a two-row build-schema matrix printed '0 coverage gap(s), 0 orphan(s), 0 error(s)' at exit 0; the same matrix with untyped artefact names raised two WARNs, 'artefact has no metadata type - write <MetadataType>:<ApiName>', which is why every row here carries the type prefix. Exit policy: lenient, with --strict promoting WARNs; not passed, because the orphan WARN is how an incomplete matrix reports itself rather than how it fails. A row whose status is In Build with no artefact and no test id is an ERROR at exit 1.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/uat-test-case-design/scripts/check_uat_case.py --manifest-dir artefacts/M4-S03",
+      "description": "--manifest-dir rather than --file, deliberately: the flag makes the checker read the case pack and the criteria document together, so every ac_id is resolved. Fixture evidence - a three-case pack alone printed 'OK - 3 case(s), 0 run-sheet row(s), no criteria file present so ac_id resolution was skipped'; the same pack beside acceptance-criteria.md printed 'OK - 3 case(s), 0 run-sheet row(s), 3 criterion id(s) cross-checked'. Both exit 0, and only the second is a real check. Required per case: case_id, ac_id, req_id, persona, sandbox, steps, evidence and pass_rule, with no persona naming System Administrator, and at least one negative_path case per req_id - a two-case fixture missing the negative for REQ-001 failed with 'no case is marked negative - every requirement needs at least one case that proves the feature blocks the wrong action' at exit 1. Exit policy: lenient, --strict promotes warnings; not passed.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/acceptance-criteria-given-when-then/scripts/check_ac_format.py --manifest-dir artefacts/M4-S03",
+      "description": "--manifest-dir rather than --file, which is the standard form this checker does accept and which keeps this line clear of validate's non-standard-argument-form WARN. It scans recursively and lints only what looks like a criteria document: over a fixture directory holding all four of this step's outputs it printed 'Checking: .../acceptance-criteria.md' then '1 document(s) checked - 0 error(s), 0 warning(s).' and exited 0, ignoring the workbook, the matrix and the YAML pack. What it enforces was learned the hard way on that fixture: a Then clause describing a blocked save without quoting the message failed with 'Then-fails clause has no exact error message in quotes and no # TBD marker' at exit 1, so every negative criterion here quotes the validation rule's errorMessage verbatim. Note the file must carry a 'Scenario:' header, an acceptance_criteria: YAML record or a criteria table - a folder with none of those exits 2 on nothing to lint, so this exit code is only meaningful because check-outputs confirms acceptance-criteria.md exists and is non-empty first. Exit policy: bare on ERROR; warnings never fail the run.",
+      "expected": "exit 0",
+      "scope": "step"
+     },
+     {
+      "type": "manual",
+      "description": "Given 30 informational clarifications were left unanswered at G1 and eleven org facts nobody supplied, when the workbook's assumptions section is read, then all 43 assumption rows appear with a named owner who can close each one and the step ids each constrains, and the three rows carrying risk high - which are exactly the three pre-deploy prerequisites: A24 the OpportunityStage union, A28 the report column codes and A29 the dashboard runningUser - are called out rather than buried in the list.",
+      "expected": "ticked at the M4 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given M2-S04 ships nothing in this release, when traceability.md is read, then its row for the product-before-Propose requirement names M2-S04 with its blocked_reason verbatim rather than being silently absent, and the workbook's Validation Rules section carries the same row rather than only the rule that did ship.",
+      "expected": "ticked at the M4 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   },
+   {
+    "id": "M4-S04",
+    "milestone": "M4",
+    "type": "docs",
+    "agent": "metadata-builder",
+    "title": "Build-level package.xml and the deploy-order plus go-live cutover runbook across all four milestones",
+    "skills": [
+     "admin/change-management-and-deployment",
+     "admin/opportunity-management",
+     "admin/approval-processes"
+    ],
+    "templates": [],
+    "outputs": [
+     "artefacts/M4-S04/package.xml",
+     "artefacts/M4-S04/deploy-order.md"
+    ],
+    "depends_on": [
+     "M1-S01",
+     "M1-S02",
+     "M2-S01",
+     "M2-S02",
+     "M2-S03",
+     "M2-S05",
+     "M3-S01",
+     "M3-S02",
+     "M3-S03",
+     "M3-S04",
+     "M3-S05",
+     "M4-S02",
+     "M4-S03"
+    ],
+    "acceptance_tests": [
+     {
+      "type": "checker",
+      "command": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M4-S04",
+      "scope": "step",
+      "description": "Step scope: the checker reads package.xml and any destructiveChanges file in the directory it is given. Fixture run over a manifest naming StandardValueSet, CustomObject, BusinessProcess, RecordType, CustomField, Layout, CustomPermission, PermissionSet, Profile, ValidationRule, PathAssistant, EmailFolder, EmailTemplate, Workflow, ApprovalProcess, ApexClass, LightningComponentBundle, FlexiPage, Group, ReportType, Report, Dashboard and Settings printed 'Scanned 2 manifest or metadata file(s); 0 finding(s) detected.' at score 100 and exited 0 - and the same fixture also exits 0 under --strict, so no risky-type WARN is being tolerated here. What this checker does NOT do: it does not confirm that every member has a file somewhere under artefacts/. The always-on manifest check does that. Exit policy: lenient, with --strict failing on HIGH/WARN/MEDIUM/LOW review findings; not passed. Empty-directory behaviour: one blocking finding at exit 1.",
+      "expected": "exit 0"
+     },
+     {
+      "type": "xml",
+      "description": "Every *.xml under artefacts/M4-S04/ parses with ElementTree.",
+      "expected": "all parse"
+     },
+     {
+      "type": "manifest",
+      "description": "Every type and member produced anywhere in the build appears in artefacts/M4-S04/package.xml with a file behind it, including the five ApexClass members from M3-S03 and the LightningComponentBundle member from M3-S04, neither of which declares a manifest of its own. Settings is named explicitly as PathAssistant because feature settings do not accept the wildcard, and Report and Dashboard carry their folders as bare members because neither type accepts one either.",
+      "expected": "consistent"
+     },
+     {
+      "type": "manual",
+      "description": "Given section 5's deploy deny-list and this layer's rule that it never deploys, when artefacts/M4-S04/deploy-order.md is read, then it contains no sf project deploy start without --dry-run anywhere, and the only org-facing command it offers is scripts/mock_deploy.py <plan.json> --org-alias <alias> --milestone <id>, which a release owner may choose to run.",
+      "expected": "ticked at the M4 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given M2-S04 ships nothing, when package.xml and deploy-order.md are read together, then Opportunity.Opportunity_Products_Required_At_Propose appears as a manifest member nowhere, and deploy-order.md lists M2-S04 as excluded with its blocked reason verbatim rather than leaving a reader to notice the absence.",
+      "expected": "ticked at the M4 milestone gate"
+     },
+     {
+      "type": "manual",
+      "description": "Given Q8, Q17, Q25, Q26 and the eight assumptions this step carries, when the cutover runbook section is read, then each of the nine post-deploy or pre-deploy prerequisites has a named owner and an ordered position - retrieve and merge OpportunityStage, discover the layout-required fields, retrieve the products related-list name, confirm the report column codes, set the dashboard runningUser, populate the Enterprise Managers group, set approval process order, reassign the 140 open Enterprise deals, and record every bypass use in Chatter.",
+      "expected": "ticked at the M4 milestone gate"
+     }
+    ],
+    "status": "pending",
+    "human_gate": false
+   }
+  ],
+  "blocked_steps": [
+   {
+    "id": "M2-S04",
+    "blocked_reason": "skill-gap",
+    "searched": [
+     "HasOpportunityLineItem in a validation-rule formula",
+     "roll-up summary of OpportunityLineItem onto Opportunity",
+     "validation rule require at least one opportunity product before stage",
+     "product line count field on Opportunity",
+     "HasOpportunityLineItem across knowledge/ (grep -rn) - four hits, none of them formula-context: knowledge/imports/salesforce-channel-revenue-management.md:3911 (a field list) and :4696, and knowledge/imports/salesforce-change-data-capture.md:1078 and :4196 (CDC payload fields). :4696 states 'The Opportunity HasOpportunityLineItem field is set to true when an OpportunityLineItem is inserted for that Opportunity' - the field's semantics and when the platform sets it, NOT its availability to a validation-rule formula, which is the claim this step would have to make.",
+     "a line-item count or roll-up mechanism usable in a validation-rule formula, across knowledge/ - nothing. The corpus's other OpportunityLineItem hits are SOQL, Bulk API, Data Loader and CDC material."
+    ],
+    "what_it_would_have_shipped": [
+     "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml",
+     "artefacts/M2-S04/package.xml",
+     "artefacts/M2-S04/deploy-order.md"
+    ]
+   }
+  ],
+  "validate_result": {
+   "exit_code": 0,
+   "errors": 0,
+   "warnings": 1,
+   "warning_detail": "WARN step M4-S03 acceptance_tests[0]: checker declares a non-standard argument form; step-tester will run it verbatim. Structural and unclearable: skills/admin/configuration-workbook-authoring/scripts/check_workbook.py accepts only --workbook (with --file as its alias) and is one of the three checkers standards/build-orchestration.md section 5's follow-up note names as predating the --manifest-dir convention.",
+   "summary": "OK .sfskills/builds/northwind-sales/plan.json: 4 milestone(s), 16 step(s), 1 warning(s)."
+  },
+  "human_gates_created": [],
+  "counts_vs_v1": {
+   "milestones": {
+    "v1": 4,
+    "v2": 4
+   },
+   "steps": {
+    "v1": 16,
+    "v2": 16
+   },
+   "blocked_steps": {
+    "v1": 1,
+    "v2": 1
+   },
+   "assumptions": {
+    "v1": 39,
+    "v2": 43
+   },
+   "decisions": {
+    "v1": 10,
+    "v2": 10
+   },
+   "fit_gap_rows": {
+    "v1": 14,
+    "v2": 14
+   },
+   "scope_out_items": {
+    "v1": 10,
+    "v2": 11
+   },
+   "step_acceptance_tests": {
+    "v1": 82,
+    "v2": 86
+   },
+   "milestone_acceptance_tests": {
+    "v1": 20,
+    "v2": 20
+   }
+  }
+ }
+}

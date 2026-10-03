@@ -1,0 +1,193 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-10-02T19-44-59Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M4-S04/2026-10-02T19-44-59Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M4-S04/2026-10-02T19-44-59Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M4-S04",
+    "step_status_at_start": "built"
+  },
+  "summary": "Ran M4-S04's tests from the build directory. XML: 1 of 1 file (package.xml) parsed. Manifest: judged whole-tree, because package.xml is the build-level manifest and every member's file lives under another step's artefacts/ folder; 23 types and 38 explicit members matched the files derived from all steps' artefacts in both directions, with no wildcard, no unclassified file, and the union of the eleven step manifests fully covered. The one declared checker (check_deployment_manifest.py --manifest-dir artefacts/M4-S04) ran verbatim and exited 0 (score 100, 0 findings), reproducing the builder's result. check-outputs ok, 2 of 2 outputs, hashes recorded. Ten manual tests are deferred, none ticked: six to the M4 milestone gate and four post-deploy UAT (tests 8, 9, 10, 12); each is Given/When/Then-shaped with an observable outcome. passed true, so the step moves built to tested.",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran or was correctly classified as manual, both always-on checks completed, and every result came from an exit code this agent observed. No command test was refused, no coverage-gap exclusion was applied, and check-outputs was clean. The whole-tree manifest reading follows the declared test's own description and the case-onboarding M5-S05 tester precedent.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml-wellformedness",
+    "manifest-consistency-wholetree",
+    "declared-checkers",
+    "check-outputs-precondition",
+    "manual-test-shape"
+  ],
+  "dimensions_skipped": [
+    {
+      "dimension": "manual-acceptance-execution",
+      "state": "not-run",
+      "reason": "Manual tests are ticked by a human at the milestone gate or in UAT, never by this agent.",
+      "confidence_impact": "NONE"
+    }
+  ],
+  "findings": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "The declared checker's exit code and output matched the builder's run (score 100, 0 findings), and the whole-tree manifest check agrees with the builder's claim of 23 types and 38 members including M2-S04's rule exactly once.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M4-S04/manifest_check_wholetree.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The always-on manifest rule as written in agents/step-tester/AGENT.md Step 3 compares a manifest with files under the step's own artefacts/ folder. For this build-level docs step that reading would fail every member, so the check was run whole-tree (every member's file under some step's artefacts/), as the declared manifest test's description states. The playbook has no named carve-out for a build-level manifest step; the case-onboarding M5-S05 precedent is the only authority.",
+      "domain": "spec-clarity",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "agents/step-tester/AGENT.md (Step 3); tests/M4-S04/manifest_check_wholetree.txt"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "plan.json steps[M4-S04].inputs still lists 'M2-S04 (excluded, blocked)'. That prose predates the 2026-09-15 unblock; the amended test 5 and package.xml (rule once) govern. The builder flagged this too.",
+      "domain": "plan-hygiene",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "plan.json steps[M4-S04].inputs.aggregates"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "observation": "The checker's description says it does not confirm that members have files; the tester ran that separately. The checker also reported 'Scanned 2 manifest or metadata file(s)' for a directory holding one XML file, so it appears to count deploy-order.md too. Not a defect for this run.",
+      "domain": "checker-coverage",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "tests/M4-S04/checker_stdout.txt"
+      }
+    },
+    {
+      "category": "healthy",
+      "severity": "info",
+      "observation": "Spot-check only, not a tick: deploy-order.md names an owner and an ordered position for all nine prerequisites (section 5 table), carries the A-4 related-list retrieval before the Layout row, the A-7 grep for runtime_sales_pathassistant:pathAssistant with its decision, lists the M2-S04 rule in package.xml once, and its only deploy-related command is scripts/mock_deploy.py (sf project deploy start appears only inside a --dry-run description). The gate reader still owns the tick.",
+      "domain": "manual-test-quality",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "artefacts/M4-S04/deploy-order.md (sections 5, 7, 10)"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "observation": "M4-S04 is tested; its documentation pass has not run.",
+      "domain": "build-workflow",
+      "evidence": {
+        "source": "input",
+        "path": ".sfskills/builds/northwind-sales/plan.json steps[M4-S04].status"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "because a tested step's PLAN.md row, decisions.md entry and traceability row are build-doc-keeper's to write next."
+    }
+  ],
+  "citations": [
+    {
+      "type": "standard",
+      "id": "AGENT_RULES.md",
+      "path": "AGENT_RULES.md",
+      "used_for": "run-time rules for this invocation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "section shape and Process Observations"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 docs step row and section 5 test types, runners and the verbatim-command rule"
+    },
+    {
+      "type": "standard",
+      "id": "agents/step-tester/AGENT.md",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "playbook: always-on checks, test dispatch, results and envelope contract"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "package.xml grammar: no wildcard for Settings, folder members for Report and Dashboard"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "filename-to-type mapping used to derive members from files"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "Given/When/Then shape check on the ten manual tests"
+    },
+    {
+      "type": "skill",
+      "id": "change-management-and-deployment/check_deployment_manifest.py",
+      "path": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+      "used_for": "the one declared checker, run verbatim"
+    }
+  ],
+  "extensions": {
+    "step_id": "M4-S04",
+    "results_path": "tests/M4-S04/results.json",
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "ElementTree parse over artefacts/M4-S04/**/*.xml",
+        "exit_code": 0,
+        "verdict": "pass - 1 of 1 parsed"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "tests/M4-S04/manifest_check_wholetree.py (whole tree, build-level manifest)",
+        "exit_code": 0,
+        "verdict": "pass - 23 types, 38 members, consistent both directions"
+      },
+      {
+        "name": "skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py",
+        "type": "checker",
+        "runner": "python3 skills/admin/change-management-and-deployment/scripts/check_deployment_manifest.py --manifest-dir artefacts/M4-S04",
+        "exit_code": 0,
+        "verdict": "pass"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given section 5's deploy deny-list and this layer's rule that it never deploys, when artefacts/M4-S04/deploy-order.md is read, then it contains no sf project deploy start without --dry-run anywhere, and the only org-facing command it offers is scripts/mock_deploy.py <plan.json> --org-alias <alias> --milestone <id>, which a release owner may choose to run. [expected: ticked at the M4 milestone gate]",
+      "Given M2-S04 was unblocked on 2026-09-15 and shipped Opportunity.Opportunity_Products_Required_At_Propose as an org-validated rule (MOCK-DEPLOY-M2 run 3), when package.xml and deploy-order.md are read together, then that rule appears exactly once as a ValidationRule member with its file behind it, and deploy-order.md lists it in the validation-rule position after M2-S01's custom permission - amended after G5: the original text assumed a blocked step and would have dropped a shipped rule from the manifest. [expected: ticked at the M4 milestone gate]",
+      "Given Q8, Q17, Q25, Q26 and the eight assumptions this step carries, when the cutover runbook section is read, then each of the nine post-deploy or pre-deploy prerequisites has a named owner and an ordered position - retrieve and merge OpportunityStage, discover the layout-required fields, retrieve the products related-list name, confirm the report column codes, set the dashboard runningUser, populate the Enterprise Managers group, set approval process order, reassign the 140 open Enterprise deals, and record every bypass use in Chatter. [expected: ticked at the M4 milestone gate]",
+      "Given assumption A26 (REQ-010: the Opportunity Products related list is retrieved from the org's current Opportunity layout and copied into both Enterprise and Renewal layouts, never hand-authored), when deploy-order.md's cutover runbook is read, then it carries that retrieve-and-copy as a pre-deploy step with a named owner before the Layout deploy, and the M4 gate records REQ-010 as covered by this runbook step rather than by metadata - the related list has had no artefact and no test since M1. [expected: ticked at the M4 milestone gate]",
+      "Negative case for REQ-004 (Enterprise and Renewal record types): given a user holding neither Enterprise_Sales_Record_Types nor a profile grant for the new types, when they create an Opportunity after deploy, then neither Enterprise nor Renewal is offered on the New dialog and the SMB default is unchanged - a UAT step, recorded in the runbook's post-deploy checks. [expected: ticked in UAT after the first deploy, not at the M4 gate]",
+      "Negative case for REQ-016 (Enterprise Path): given an Opportunity of the SMB record type, when its record page is opened after deploy, then the Enterprise Path's stages and key fields do not render for it - the Path is bound to the Enterprise record type only. [expected: ticked in UAT after the first deploy, not at the M4 gate]",
+      "Negative case for REQ-017 (Renewal Path, a): given an Opportunity of the Enterprise record type, when its record page is opened after deploy, then the Renewal Path's two stages do not render for it - the Renewal Path is bound to the Renewal record type only. [expected: ticked in UAT after the first deploy, not at the M4 gate]",
+      "Pre-deploy check for REQ-017 (Renewal Path, b): given the Renewal record type falls through to the org's existing Opportunity record page (O-M2S05-04), when the cutover runbook is read, then it carries the retrieve-and-grep of that page for runtime_sales_pathassistant:pathAssistant as a pre-deploy step with a named owner, and names the decision if the component is absent (add it to that page, or accept that the Renewal Path does not render). [expected: ticked at the M4 milestone gate]",
+      "Negative case for REQ-018 (Path setting, a): given the PathAssistant org setting is deployed with the user-preference override enabled (artefacts/M2-S05/settings/PathAssistant.settings-meta.xml, canOverrideAutoPathCollapseWithUserPref true), when a user collapses the Path and reopens the record, then it stays collapsed for that user and expanded for others. [expected: ticked in UAT after the first deploy, not at the M4 gate]",
+      "Pre-deploy check for REQ-018 (Path setting, b): given a scratch-org or sandbox rehearsal is part of the cutover runbook, when the runbook is read, then it states that the PathAssistant setting member deploys with M2-S05 and that a rehearsal without it shows neither Path - the setting is load-bearing, not a default. [expected: ticked at the M4 milestone gate]"
+    ],
+    "tests_run": 3
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "the step is now tested and its PLAN.md row, decisions.md entry and traceability row have not been written yet"
+    }
+  ]
+}

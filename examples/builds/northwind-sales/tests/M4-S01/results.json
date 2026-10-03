@@ -1,0 +1,35 @@
+{
+  "step_id": "M4-S01",
+  "ran": [
+    "xml",
+    "manifest"
+  ],
+  "passed": true,
+  "failed": [],
+  "skipped_manual": [
+    "Given Q26 and assumption A28, when artefacts/M4-S01/deploy-order.md is read, then it names the three sf commands verbatim, lists each of the six column codes M4-S02 uses (Opportunity$Name, Opportunity$StageName, Opportunity$Amount, Opportunity$Discount__c, Opportunity$CloseDate, Opportunity$Approval_Status__c) as provisional, states that RPT-COL-01 in check_report_inventory.py reports every one of them as unverifiable offline by design, and says that the retrieve is a pre-deploy prerequisite rather than a build step. Tickable from this file alone - no org and no later artefact is needed. [expected: ticked at the M4 milestone gate]",
+    "Given Q54's default, when the same file is read, then it also states that a NEW Enterprise-scoped report type is built rather than editing whatever report type the SMB pipeline report uses, and names checking the SMB report's report type as part of the same retrieve so the decision can be confirmed rather than assumed. [expected: ticked at the M4 milestone gate]"
+  ],
+  "xml": {
+    "files": 0,
+    "note": "zero XML files under artefacts/M4-S01/; recorded as ran with zero files, not a pass of anything"
+  },
+  "manifest": {
+    "status": "skipped-not-applicable",
+    "reason": "step type custom; no package.xml declared in outputs[] and none in own or dependency artefacts (depends_on is empty). A runbook has no manifest members. M4-S01 deploys nothing; the members of the report type and report it probes are declared by M4-S02 and the build-level manifest is a docs-step concern."
+  },
+  "manual_shape_check": {
+    "skill": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+    "note": "Both lines carry Given/When/Then with observable outcomes; neither reported unusable. Spot-checked against deploy-order.md as due diligence, not ticked: line 1 - three sf commands present (lines 49-50 verbatim, runnable forms 57-63), six codes listed as provisional/UNVERIFIED in section 4, RPT-COL-01 unverifiable-offline-by-design stated, retrieve called a pre-deploy prerequisite not a build step; line 2 - NEW Enterprise-scoped report type stated and SMB report's reportType check named in Phase A (A3/A4). All match."
+  },
+  "check_outputs": {
+    "ok": true,
+    "step": "M4-S01",
+    "missing": [],
+    "empty": [],
+    "malformed": []
+  },
+  "artefact_hashes": {
+    "artefacts/M4-S01/deploy-order.md": "4f90c5750f57b8350b47afaaf904330646cbc61bc19c691aff00ca3ac7a4c101"
+  }
+}

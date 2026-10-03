@@ -1,0 +1,233 @@
+{
+  "agent": "step-tester",
+  "mode": "single",
+  "run_id": "2026-09-19T14-45-08Z",
+  "report_path": ".sfskills/builds/northwind-sales/envelopes/M2-S05/2026-09-19T14-45-08Z.md",
+  "envelope_path": ".sfskills/builds/northwind-sales/envelopes/M2-S05/2026-09-19T14-45-08Z.json",
+  "inputs_received": {
+    "build_dir": ".sfskills/builds/northwind-sales/",
+    "step_id": "M2-S05"
+  },
+  "summary": "Tested M2-S05 (ui, built by metadata-builder): two Opportunity PathAssistants (Enterprise_Opportunity_Path, Renewal_Opportunity_Path) plus the org PathAssistant.settings-meta.xml. Ran all three declared checkers verbatim from the build directory exactly as the plan wrote them: check_path_and_guidance.py at the plan's declared build scope (--manifest-dir artefacts), which printed 'Checked 2 path(s): no issues found.' and exited 0, matching the plan's own fixture description -- it resolved both recordTypeName values against M1-S01's record types and matched all six picklistValueName values against the business processes and the OpportunityStage value set; check_opportunity_management.py at step scope (--manifest-dir artefacts/M2-S05), which exited 0 with 'No issues found.' on path-internal shape; and check_sales_process_mapping.py at step scope (--manifest-dir artefacts/M2-S05), which exited 0 but printed 'Scanned 0 file(s) -- nothing asserted; check --manifest-dir' -- recorded honestly as an exit-0 pass on the declared 'expected: exit 0' condition and NOT as a pass on the paths' content, per this step's own deploy-order.md section 7, which already names this as a plan defect (the checker's assertions -- *.yaml/*.yml/*.csv sales-process maps and a retrieved OpportunityStage value set -- are not satisfiable inside this step's artefacts, which are PathAssistant/Settings XML only). Also ran the always-on xml parse (4/4 files: package.xml, settings/PathAssistant.settings-meta.xml, both pathAssistant files), the always-on manifest consistency check (PathAssistant members Enterprise_Opportunity_Path and Renewal_Opportunity_Path, and Settings member PathAssistant using the type-name-without-Settings-suffix form, each with a file behind it, both directions consistent, no wildcard, no coverage-gap exclusion needed), and check-outputs --hashes (ok, nothing missing/empty/malformed, hashes captured into results.json). All five runnable tests passed. The step's two manual acceptance tests were checked against the Given/When/Then shape (both have all three clauses and a directly-inspectable Then) and deferred verbatim to the M2 milestone gate rather than ticked; as a courtesy this run also read the shipped XML and deploy-order.md against both Then clauses without ticking them, and both hold exactly as written. results.json written with \"passed\": true and artefact_hashes from check-outputs --hashes; M2-S05 moved built -> tested via build_plan.py set-status (exit 0; 19 pre-existing WARNs printed by the full-plan validate pass, none naming M2-S05 or its cited skills).",
+  "confidence": "HIGH",
+  "confidence_rationale": "Every declared test ran (or was correctly classified as manual), both always-on checks completed, and every result came from an exit code this agent observed directly -- the Step 7 HIGH row in agents/step-tester/AGENT.md. No command test was refused, no manifest exclusion had to be applied, and check-outputs reported ok with nothing missing, empty or malformed. check_sales_process_mapping.py's 'nothing asserted' result does not itself trigger the MEDIUM row (that row is keyed to a refused command test, a coverage-gap manifest exclusion, or a check-outputs problem, none of which occurred here) -- it is reported as a Process Observation instead of a confidence downgrade, per this run's instruction to record it honestly as exit 0 with nothing asserted rather than as a pass on the paths.",
+  "outcome": "completed",
+  "dimensions_compared": [
+    "xml-well-formedness",
+    "manifest-consistency",
+    "checker-pass:path-and-guidance",
+    "checker-pass:opportunity-management",
+    "checker-pass:sales-process-mapping",
+    "check-outputs",
+    "manual-test-tickability"
+  ],
+  "dimensions_skipped": [],
+  "process_observations": [
+    {
+      "category": "healthy",
+      "severity": "info",
+      "domain": "checker-pass",
+      "observation": "check_path_and_guidance.py exited 0 at the plan's declared build scope and actually resolved both recordTypeName values (Enterprise, Renewal) against M1-S01's RecordType metadata and all six picklistValueName values against the two BusinessProcess definitions and the OpportunityStage standard value set -- a checker that proved a real cross-reference, not merely a green exit. Its own fixture description in plan.json predicted this exact output ('Checked 2 path(s): no issues found.') and the live run matched it verbatim.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S05/check_path_and_guidance.out"
+      }
+    },
+    {
+      "category": "concerning",
+      "severity": "low",
+      "domain": "checker-coverage",
+      "observation": "check_sales_process_mapping.py's declared test on this step exits 0 but its own stdout says it scanned 0 files and asserted nothing -- the checker was added to this step by amend-step --add-checker on 2026-09-18 to close a section-5 coverage warning (the step cites admin/sales-process-mapping in skills[]), but this step's artefacts are PathAssistant/Settings XML, not the *.yaml/*.yml/*.csv sales-process maps or retrieved OpportunityStage value set that checker inspects. The step's own deploy-order.md section 7 already documents this as a plan defect and proposes three remedies (re-declare at build scope over artefacts, move it to an M2 milestone acceptance test, or drop the citation to reflect that the skill is used only for its Questions-to-Ask table). None of the three remedies is this tester's to apply. The exit 0 satisfies the declared 'expected: exit 0' and is recorded as a pass, but a reader of a green test list should not infer any sales-process-mapping content was validated here.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/tests/M2-S05/check_sales_process_mapping.out"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "cross-step-dependency",
+      "observation": "deploy-order.md section 3 records that Renewal_Opportunity_Path renders only if Northwind's existing (pre-build) Opportunity Lightning record page already carries the runtime_sales_pathassistant:pathAssistant component -- M3-S05 (pending) only rebuilds the Enterprise page. Nothing in this build asserts whether the current Renewal-facing page already carries that component; the deploy-order note gives a human an sf project retrieve + grep command to check it before the M2 gate. This is a real open question the artefacts themselves surface, not a defect in this step's outputs.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/artefacts/M2-S05/deploy-order.md",
+        "detail": "section 3, paragraph beginning 'And M3-S05 covers only the Enterprise record type.'"
+      }
+    },
+    {
+      "category": "ambiguous",
+      "severity": "low",
+      "domain": "build-loop",
+      "observation": "set-status's own full-plan validate pass printed 19 pre-existing WARNs about other steps (M1, M3, M4) shipping a cited skill's checker with no declared acceptance test for it. None of the 19 name M2-S05 or its cited skills (admin/path-and-guidance, admin/opportunity-management, admin/sales-process-mapping); they predate this run and are outside this invocation's one-step scope, so nothing was changed on their account.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": ".sfskills/builds/northwind-sales/plan.json",
+        "detail": "stderr of `build_plan.py set-status ... M2-S05 tested`, 19 WARN lines naming M1-S01, M1-S02, M3-S02, M3-S03, M3-S04, M3-S05, M4-S01, M4-S02, M4-S03, M4-S04"
+      }
+    },
+    {
+      "category": "suggested_followup",
+      "severity": "info",
+      "domain": "build-loop",
+      "observation": "M2-S05 is now tested; build-doc-keeper is next to carry the deploy-order.md dependency notes (the M1-S01 record-type/picklist dependency, the M3-S05 FlexiPage gap, the section-7 checker-coverage note) and the two manual acceptance lines into decisions.md, the workbook's UI/path section and traceability.md.",
+      "evidence": {
+        "source": "repo_scan",
+        "path": "standards/build-orchestration.md",
+        "detail": "section 6 role table"
+      },
+      "suggested_followup_agent": "build-doc-keeper",
+      "followup_reason": "Once a step is tested, build-doc-keeper is the agent that updates PLAN.md, workbook rows, decisions.md and traceability.md from it."
+    }
+  ],
+  "citations": [
+    {
+      "type": "agent",
+      "id": "step-tester",
+      "path": "agents/step-tester/AGENT.md",
+      "used_for": "the Plan this run followed end to end: Step 1 precondition, Step 2 xml, Step 3 manifest, Step 4 checker/manifest/manual dispatch and the never-rewrite-a-command rule, Step 5 results.json shape, Step 6 set-status transitions, Step 7 confidence table, Step 8 envelope self-validation"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/AGENT_CONTRACT.md",
+      "path": "agents/_shared/AGENT_CONTRACT.md",
+      "used_for": "the eight-section shape, the Process Observations requirement and schema, and the Citations schema"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "path": "agents/_shared/DELIVERABLE_CONTRACT.md",
+      "used_for": "the persistence and atomic-write rule for the tests/ and envelopes/ artefacts this run wrote"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/REFUSAL_CODES.md",
+      "path": "agents/_shared/REFUSAL_CODES.md",
+      "used_for": "confirming no refusal condition applied (step status was built, not ambiguous, no security-guard command declared)"
+    },
+    {
+      "type": "standard",
+      "id": "standards/build-orchestration.md",
+      "path": "standards/build-orchestration.md",
+      "used_for": "section 4 (ui step type, status machine, built->tested transition and its check-outputs/results.json preconditions) and section 5 (acceptance-test types, the checker-scope rule that the literal command governs regardless of declared scope, the deny-list/never-rewrite rule, and the exit-policy-forms-differ note that documents a lenient checker exiting 0 on an empty-of-its-own-subject-matter tree)"
+    },
+    {
+      "type": "standard",
+      "id": "agents/_shared/schemas/build-plan.schema.json",
+      "path": "agents/_shared/schemas/build-plan.schema.json",
+      "used_for": "the acceptanceTest and step outputs[] shape read directly from plan.json for M2-S05"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-retrieve-deploy",
+      "path": "skills/devops/metadata-api-retrieve-deploy/SKILL.md",
+      "used_for": "the package.xml grammar (one <types> block per metadata type, <members> naming components, <name> naming the type) the manifest check was judged against"
+    },
+    {
+      "type": "skill",
+      "id": "devops/salesforce-dx-project-structure",
+      "path": "skills/devops/salesforce-dx-project-structure/SKILL.md",
+      "used_for": "the source-format filename-to-metadata-type mapping used to derive the PathAssistant member names from the pathAssistants/ filenames"
+    },
+    {
+      "type": "skill",
+      "id": "devops/metadata-api-coverage-gaps",
+      "path": "skills/devops/metadata-api-coverage-gaps/SKILL.md",
+      "used_for": "confirming PathAssistant and Settings are not types with no standalone source file, and grounding the Settings file-to-member naming form (member name is the type name without the Settings suffix) so it was not mistaken for a manifest inconsistency"
+    },
+    {
+      "type": "skill",
+      "id": "admin/uat-and-acceptance-criteria",
+      "path": "skills/admin/uat-and-acceptance-criteria/SKILL.md",
+      "used_for": "what makes a manual test line tickable by a human at the milestone gate rather than re-interpreted by them"
+    },
+    {
+      "type": "skill",
+      "id": "admin/acceptance-criteria-given-when-then",
+      "path": "skills/admin/acceptance-criteria-given-when-then/SKILL.md",
+      "used_for": "the Given/When/Then anatomy used to check both of the step's manual acceptance tests before carrying them into skipped_manual[] rather than reporting them unusable"
+    },
+    {
+      "type": "agent",
+      "id": "metadata-builder",
+      "path": "agents/metadata-builder/AGENT.md",
+      "used_for": "reading the prior run's envelope (envelopes/M2-S05/2026-09-19T14-26-26Z.json) to corroborate the declared-checker exit codes and the deploy-order.md section 7 characterisation of check_sales_process_mapping.py this run's task explicitly named"
+    }
+  ],
+  "extensions": {
+    "step_id": "M2-S05",
+    "step_status_before": "built",
+    "step_status_after": "tested",
+    "results_path": ".sfskills/builds/northwind-sales/tests/M2-S05/results.json",
+    "tests_run": 5,
+    "results": [
+      {
+        "name": "xml",
+        "type": "xml",
+        "runner": "xml.etree.ElementTree",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "manifest",
+        "type": "manifest",
+        "runner": "two-way package.xml <-> artefact-file consistency check",
+        "exit_code": null,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/path-and-guidance/scripts/check_path_and_guidance.py --manifest-dir artefacts",
+        "type": "checker",
+        "runner": "skills/admin/path-and-guidance/scripts/check_path_and_guidance.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/opportunity-management/scripts/check_opportunity_management.py --manifest-dir artefacts/M2-S05",
+        "type": "checker",
+        "runner": "skills/admin/opportunity-management/scripts/check_opportunity_management.py",
+        "exit_code": 0,
+        "verdict": "pass"
+      },
+      {
+        "name": "python3 skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py --manifest-dir artefacts/M2-S05",
+        "type": "checker",
+        "runner": "skills/admin/sales-process-mapping/scripts/check_sales_process_mapping.py",
+        "exit_code": 0,
+        "verdict": "pass (exit 0 per declared expected; nothing asserted -- see process_observations)"
+      }
+    ],
+    "failed": [],
+    "skipped_manual": [
+      "Given Q2 and Q11, when the Enterprise path's four pathAssistantSteps are read, then the Discover step's info text names 'at least one product line added from the price book' and a booked Next Step, the Propose step's info text names a primary contact with the Decision Maker contact role, and the Negotiate step's key fields are Discount__c, Approval_Status__c and CloseDate - so every exit criterion the requester dictated is visible to a rep even though M2-S04 cannot enforce the product one.",
+      "Given admin/path-and-guidance's rule that a path is not evidence the feature is on, when artefacts/M2-S05/deploy-order.md is read, then it states that a green PathAssistant deploy proves neither that Path is enabled nor that the component is on the record page, and points at M3-S05 as the step that puts it there."
+    ],
+    "check_outputs": {
+      "ok": true,
+      "step": "M2-S05",
+      "missing": [],
+      "empty": [],
+      "malformed": []
+    },
+    "artefact_hashes": {
+      "artefacts/M2-S05/pathAssistants/Enterprise_Opportunity_Path.pathAssistant-meta.xml": "a44df92cc3cab8ce9c3dbf7581ed3d69865ddcceecae141e25df0456436178d0",
+      "artefacts/M2-S05/pathAssistants/Renewal_Opportunity_Path.pathAssistant-meta.xml": "a0cabb37eed9bd6ee1f5f30c58150d16df67d7647ab1870ebfb37bf165a42614",
+      "artefacts/M2-S05/settings/PathAssistant.settings-meta.xml": "51447628e76f4cbd0b340172fb4e1408f2d7d2f04e0744884dcfcbbb7cb58206",
+      "artefacts/M2-S05/package.xml": "e19fe6de65f579e29df48fb3a0dca3e0f6c21c972c5ef7c3776e29e5e029c678",
+      "artefacts/M2-S05/deploy-order.md": "343d5eb47e929be48166af8f46b8e881c97e8125529d91c91aba342cbbde1292"
+    },
+    "workflow_return": {
+      "step_id": "M2-S05",
+      "status": "tested",
+      "passed": true,
+      "failed": [],
+      "results_path": ".sfskills/builds/northwind-sales/tests/M2-S05/results.json",
+      "tests_run": 5
+    }
+  },
+  "followups": [
+    {
+      "agent": "build-doc-keeper",
+      "because": "M2-S05 is tested; build-doc-keeper carries the deploy-order dependency notes and the two manual acceptance lines into decisions.md, the workbook and traceability.md."
+    }
+  ]
+}

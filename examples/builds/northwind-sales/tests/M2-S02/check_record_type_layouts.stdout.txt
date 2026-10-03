@@ -1,0 +1,11 @@
+{
+  "score": 100,
+  "findings": [
+    {
+      "severity": "REVIEW",
+      "location": "artefacts/M1-S02/layouts/Opportunity-Opportunity Enterprise Layout.layout-meta.xml",
+      "message": "layouts Opportunity-Opportunity Enterprise Layout, Opportunity-Opportunity Renewal Layout on Opportunity are identical after normalisation \u2014 merge candidates (SKILL.md workflow step 2); if two record types must differ, differentiate the layouts or share one."
+    }
+  ],
+  "summary": "Scanned 9 metadata file(s): 2 record type(s), 2 layout(s); 1 finding(s) detected."
+}

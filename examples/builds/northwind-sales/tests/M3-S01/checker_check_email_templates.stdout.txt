@@ -1,0 +1,5 @@
+{
+  "score": 100,
+  "findings": [],
+  "summary": "Scanned 6 email template file(s); 0 finding(s) detected."
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Enterprise Sales Record Types</label>
+    <description>Record-type visibility for the Enterprise and Renewal Opportunity record types, plus FLS on Discount__c and Approval_Status__c. No object, tab or system permissions. Owner: Sales Operations lead.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.Discount__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Opportunity.Approval_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <recordTypeVisibilities>
+        <recordType>Opportunity.Enterprise</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <recordType>Opportunity.Renewal</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+</PermissionSet>

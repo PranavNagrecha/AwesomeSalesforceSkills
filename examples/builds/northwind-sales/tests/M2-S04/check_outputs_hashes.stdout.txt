@@ -1,0 +1,5 @@
+{
+  "artefacts/M2-S04/objects/Opportunity/validationRules/Opportunity_Products_Required_At_Propose.validationRule-meta.xml": "f45857d52d53d410e4fd1f64541a26bbeb25f31a989a540db4b86a98590d6d92",
+  "artefacts/M2-S04/package.xml": "aa61dafca5b2b10753d739c8a31c22da4df787da9365382372509ea98d94a433",
+  "artefacts/M2-S04/deploy-order.md": "e4c3a4729ba16c1158d8e80c6493ec79376b2ed533c1423f5d578a46f5bcff78"
+}

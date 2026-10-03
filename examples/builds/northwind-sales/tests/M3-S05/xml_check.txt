@@ -1,0 +1,8 @@
+XML well-formedness check — step M3-S05
+Runner: python3 -c (xml.etree.ElementTree.parse over every *.xml / *-meta.xml under artefacts/M3-S05/, recursive)
+
+PARSE_OK artefacts/M3-S05/flexipages/Opportunity_Enterprise_Record_Page.flexipage-meta.xml
+PARSE_OK artefacts/M3-S05/objects/Opportunity/Opportunity.object-meta.xml
+PARSE_OK artefacts/M3-S05/package.xml
+
+3 of 3 XML files parsed. artefacts/M3-S05/deploy-order.md is not XML and was not parsed (out of scope for this check).

@@ -1,0 +1,10 @@
+{
+  "artefacts/M4-S02/groups/Enterprise_Managers.group-meta.xml": "5a17148a575c041719ae9b12c9413cc16dd33b77b3809c7694543f8619bc8cf8",
+  "artefacts/M4-S02/reportTypes/Enterprise_Opportunity_Pipeline.reportType-meta.xml": "8a033282469dd4c6bd7df0d9c4576025e9e9a2b657d5899424dd288356e83b37",
+  "artefacts/M4-S02/reports/Enterprise_Sales.reportFolder-meta.xml": "9ec460b43a8f26a230693ca0ac19ea1d0e0ae341eab9927c060766cee8bf70f7",
+  "artefacts/M4-S02/reports/Enterprise_Sales/Open_Enterprise_Pipeline_By_Stage.report-meta.xml": "ce043f23ec3817a4a42528e1459f4082936aa2ee8122578ec90d0bac2cb104f6",
+  "artefacts/M4-S02/dashboards/Enterprise_Sales.dashboardFolder-meta.xml": "3a123dff9a7ad95997184c884e70af1f18054ff7386338377e5c8e296728ee91",
+  "artefacts/M4-S02/dashboards/Enterprise_Sales/Enterprise_Pipeline.dashboard-meta.xml": "1c10c0b0692a1d2ae42e508a2b9014dbe7f2a5e7ede74531c182bd797ea8478e",
+  "artefacts/M4-S02/package.xml": "bfb92fc6145c9d838a474d90e2c94a8673a1e5058f9692eb7064e492753844df",
+  "artefacts/M4-S02/deploy-order.md": "e16df102a07576d54f6608024f2e14a115093d64be6dd8cb2340dbd9573c56e7"
+}
