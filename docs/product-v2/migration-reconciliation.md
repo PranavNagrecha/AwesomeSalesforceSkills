@@ -1,17 +1,17 @@
 # Migration ledger reconciliation
 
-- Repository: `/Users/pranavnagrecha/VS Code/Personal/SfSkills`
-- Ledger directory: `/Users/pranavnagrecha/VS Code/Personal/SfSkills/framework/specification/migration/catalogs`
+- Repository: `/Users/pranavnagrecha/VS Code/Personal/SfSkills-merge`
+- Ledger directory: `/Users/pranavnagrecha/VS Code/Personal/SfSkills-merge/framework/specification/migration/catalogs`
 - Status: PASS
 
 ## Counts
 
 | Artifact class | Live | Ledger |
 | --- | ---: | ---: |
-| agents | 88 | 88 |
-| commands | 80 | 80 |
+| agents | 98 | 98 |
+| commands | 92 | 92 |
 | mcp_tools | 50 | 50 |
-| skills | 1034 | 1034 |
+| skills | 1040 | 1040 |
 
 ## Deltas
 

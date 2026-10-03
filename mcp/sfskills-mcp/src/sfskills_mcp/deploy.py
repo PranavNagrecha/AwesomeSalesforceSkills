@@ -12,6 +12,34 @@ from . import sf_cli
 _EMPTY_SF_PROJECT = (
     Path(__file__).resolve().parents[2] / "resources" / "empty-sfdx-project"
 )
+_EMPTY_SF_PROJECT_FALLBACK: Path | None = None
+
+
+def _ensure_empty_sf_project() -> Path:
+    """Return a directory holding a minimal sfdx-project.json to run `sf` from.
+
+    In a checkout that is `resources/empty-sfdx-project`. In a pip install the
+    repo-relative path does not exist (the wheel ships only the package), so a
+    minimal project is written once per process to a temp directory - the
+    report-only commands only need some project root to run from. Found while
+    inspecting the 0.5.0 wheel on 2026-10-03.
+    """
+    global _EMPTY_SF_PROJECT_FALLBACK
+    if (_EMPTY_SF_PROJECT / "sfdx-project.json").is_file():
+        return _EMPTY_SF_PROJECT
+    fb = _EMPTY_SF_PROJECT_FALLBACK
+    if fb is None or not (fb / "sfdx-project.json").is_file():
+        import json
+        import tempfile
+        root = Path(tempfile.mkdtemp(prefix="sfskills-empty-sfdx-"))
+        (root / "force-app").mkdir()
+        (root / "sfdx-project.json").write_text(json.dumps({
+            "packageDirectories": [{"path": "force-app", "default": True}],
+            "name": "sfskills-report-cwd", "namespace": "",
+            "sfdcLoginUrl": "https://login.salesforce.com", "sourceApiVersion": "67.0",
+        }, indent=2) + "\n", encoding="utf-8")
+        _EMPTY_SF_PROJECT_FALLBACK = root
+    return _EMPTY_SF_PROJECT_FALLBACK
 
 
 def resolve_report_cwd(project_dir: str | None = None) -> Path:
@@ -40,7 +68,7 @@ def resolve_report_cwd(project_dir: str | None = None) -> Path:
                 return current
             parent = current.parent
             current = None if parent == current else parent
-    return _EMPTY_SF_PROJECT
+    return _ensure_empty_sf_project()
 
 
 def get_deployment_result(

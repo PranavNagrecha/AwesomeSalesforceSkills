@@ -27,6 +27,8 @@ dependencies:
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
+  decision_trees:
+    - automation-selection.md
 ---
 # Metadata Builder Agent
 
@@ -158,7 +160,7 @@ Write source-format files under `<build_dir>/artefacts/<step_id>/` and nowhere e
 Three rules govern what goes in them:
 
 1. **Every element name and enum value comes from the Step 3 inventory.** Not from memory, not from a similar type, not from what the element "obviously" ought to be called. An element the step needs that the inventory does not carry sends the step to the Step 3 gap rule — a real element this agent could not confirm is worth more as a recorded gap than as a guess that deploys wrong.
-2. **The step's declared `outputs[]` is the metadata file list.** Write each declared path; write no other metadata. A metadata file the step did not declare is a planning mismatch — record it and let the human see it, rather than quietly widening the step. The two files Steps 6 and 7 write, `package.xml` and `deploy-order.md`, are outside this rule: they are produced on every run whether or not the plan named them, because the tester's manifest check reads the first and the human's deploy reads the second.
+2. **The step's declared `outputs[]` is the metadata file list.** Write each declared path; write no other metadata. A metadata file the step did not declare is a planning mismatch — record it and let the human see it, rather than quietly widening the step. The two files Steps 6 and 7 write, `package.xml` and `deploy-order.md`, are outside this rule: they are produced on every run whether or not the plan named them, because the tester's manifest check reads the first and the human's deploy reads the second — except a prose-only step, which writes no `package.xml` (Step 6).
 3. **Copy the skill's template, then substitute.** Where the skill ships a template for the type, fill it; where it ships only a worked example, adapt that example's structure and say in the decision record which example was adapted.
 
 Order matters inside several of these files (rule entries, escalation actions, milestone triggers), and the order is a decision the Step 4 answers drive, not the order the questions happened to be read in.
@@ -167,7 +169,9 @@ Order matters inside several of these files (rule entries, escalation actions, m
 
 Write `<build_dir>/artefacts/<step_id>/package.xml`: one `<types>` block per metadata type present in the step, `<members>` naming each component by the name the Metadata API uses for it, `<name>` naming the type, and a `<version>` matching `api_version`.
 
-**This file is written on every run of this agent, without exception**, and the plan is expected to say so: `agents/build-planner/AGENT.md` Step 6 requires every metadata-type step to list `artefacts/<step-id>/package.xml` in its `outputs[]`, which is what lets `check-outputs` and the § 5 manifest check confirm the file rather than trust an agent-side habit no reader of `plan.json` can see. A step that omits it is still built and the manifest is still written; record the omission as an undeclared artefact in Process Observations so the plan gets the line added.
+**This file is written on every run of this agent that emits metadata**, and the plan is expected to say so: `agents/build-planner/AGENT.md` Step 6 requires every metadata-type step to list `artefacts/<step-id>/package.xml` in its `outputs[]`, which is what lets `check-outputs` and the § 5 manifest check confirm the file rather than trust an agent-side habit no reader of `plan.json` can see. A step that omits it is still built and the manifest is still written; record the omission as an undeclared artefact in Process Observations so the plan gets the line added.
+
+**The carve-out is a `custom` or `docs` step whose declared outputs are prose only** — a probe runbook, or a deploy-order note with no metadata file beside it. There is no member to list, and a `package.xml` the plan did not declare is a file `check-outputs` never confirms, so the plan wins: write no manifest, say so in the envelope summary, and leave the tester's manifest check to record not-applicable for the type. `examples/builds/northwind-sales` M4-S01 (a `custom` step whose one output is `deploy-order.md`) is the precedent. The rule above is unchanged for every step that emits even one metadata file.
 
 Two constraints that are easy to get wrong and that the tester's always-on manifest check will catch either way: name members explicitly rather than with `*` when the type's skill documents that the type takes no wildcard (`EmailTemplate` is the standing example, per Mandatory Reads entry 7), and make the manifest agree with the files on disk in both directions — every file covered by a member, every explicit member backed by a file.
 
@@ -261,7 +265,7 @@ Conforms to `agents/_shared/DELIVERABLE_CONTRACT.md` and `agents/_shared/schemas
 
 ### Envelope shape and location
 
-The build payload goes under **`extensions`**: `step_id`, `artefacts[]`, `blocked_reason`, `decision_record[]`, `checker_results[]` and the verbatim `check_outputs` JSON. The envelope schema is closed — `additionalProperties: false` — so a top-level `artefacts` key is a validation failure rather than a harmless variation, and the workflow return object above is a separate shape that does not license one.
+The build payload goes under **`extensions`**: `step_id`, `artefacts[]`, `blocked_reason`, `decision_record[]`, `checker_results[]`, `open_items[]` in the one shape `agents/_shared/AGENT_CONTRACT.md` fixes for builder envelopes, and the verbatim `check_outputs` JSON. The envelope schema is closed — `additionalProperties: false` — so a top-level `artefacts` key is a validation failure rather than a harmless variation, and the workflow return object above is a separate shape that does not license one.
 
 The runner stores this agent's envelope under the step it built: `.sfskills/builds/<build-id>/envelopes/M1-S03/<run_id>.json`, with `<run_id>.md` on the same stem. Whether the pair is written here or handed back for `build-step-runner` to store, `envelope_path` and `report_path` must already carry those strings when the envelope leaves this agent — nothing downstream rewrites them, and the schema's build-layer pattern accepts no other shape.
 

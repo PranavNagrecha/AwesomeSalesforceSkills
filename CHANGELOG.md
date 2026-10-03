@@ -4,6 +4,355 @@ All notable changes to SfSkills are documented here. Format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [Plugin 1.3.0] — 2026-10-03 — build orchestration layer, renderer, org-taught checker rules
+
+The release takes one client requirement to a verified, tested Salesforce build
+that is design-only and human-gated, and never deploys it. Five end-to-end
+scenarios exercised the loop. Four of them were validated against a developer
+org with `sf project deploy start --dry-run`, and the org's refusals were fed
+back into the library as checker rules, gotchas or corrected examples.
+Inventory: 1,039 → 1,040 skills; 78 → 98 `AGENT.md` (active runtime 50 → 70,
+of which 62 stable and 8 beta; 14 build and 14 deprecated unchanged); 69 → 92
+commands/MCP prompts; 38 → 50 MCP tools.
+
+### Added — the build orchestration layer
+
+- **Contract: `standards/build-orchestration.md` (§ 1–9).** `plan.json`
+  (`agents/_shared/schemas/build-plan.schema.json`) is the only shared state.
+  `PLAN.md`, `CLARIFICATIONS.md` and `RUN.md` are rendered from it and never
+  hand-edited. Builds live under gitignored `.sfskills/builds/<id>/`.
+  `build_mode` is `design-only` or `org-connected`. An agent is eligible for a
+  step only if it is `class: runtime` and `status` stable|beta, with
+  `requires_org: false` unless the build is org-connected. No agent in the
+  layer deploys or approves a gate.
+- **§ 3.1 "Ceremony scales to the ask".** Optional `scale: ask | feature |
+  project`; absent means `project`, so earlier builds are unchanged. The tier
+  comes from a deterministic sizing rule over four counts: D (metadata types
+  needing their own step), S (skills with a question table), O (objects named)
+  and X (integration or migration). The tier is the highest any one signal
+  reaches. Counts that cannot be taken round up, and the tier is re-checked
+  once after the answers land. `ask` = 1 milestone, 1 step, two gates (`go`,
+  `accept`) and a `RUN.md`. `feature` = 1 milestone, ≤ 5 steps, ≤ 2
+  verification rounds, blocking questions uncapped.
+- **Eight Tier-4 run-time agents (`status: beta`), each with
+  `inputs.schema.json` and a command:** `requirements-clarifier`
+  (`/clarify-requirements`), `build-planner` (`/plan-build`), `plan-verifier`
+  (`/verify-plan`), `build-step-runner` (`/run-build-step`), `step-tester`
+  (`/test-build-step`), `build-doc-keeper` (`/keep-build-docs`),
+  `milestone-verifier` (`/verify-milestone`) and the org-free
+  `metadata-builder` (`/build-metadata`). `metadata-builder` builds
+  deploy-ready XML from the cited skills' metadata examples and runs their
+  checkers. Wrappers: `/build-from-requirements` (the whole loop) and
+  `/run-build` (one milestone). Workflows: `.claude/workflows/plan-verify.js`
+  (three adversarial lenses per step) and
+  `.claude/workflows/build-from-requirements.js`.
+- **`scripts/build_plan.py`.** A stdlib CLI. It is the only writer of plan
+  state and human gates, and every write is atomic. Subcommands: `init`
+  (`--scale`, `--org-alias`), `set-scale`, `set-clarifications`, `render`,
+  `ingest-answers`, `set-plan`, `validate`, `set-verification`, `gate`,
+  `next`, `set-status`, `check-outputs`, `set-milestone`, `ensure-gates`,
+  `amend-step`, `amend-milestone`, `status`, `brief`, `export`.
+  `tests/test_build_plan.py`: 237 tests.
+  - `gate` refuses three approvals: milestones out of order, the plan before
+    verification, and clarifications while a blocking question is open. At
+    `scale: ask`, the `go`/`accept` aliases check every precondition on one
+    snapshot and then write both records together. An overwrite first appends
+    the prior record to `history[]`. `gate … resign` records new evidence for
+    a standing approval and moves no status.
+  - `set-status built` refuses declared outputs that are missing, empty or
+    malformed (`check-outputs`). `tested` requires `tests/<step>/results.json`
+    with `passed: true`, and it refuses a pass recorded against different
+    `artefact_hashes` (`check-outputs --hashes`). Repair edges: `failed →
+    pending`, `built → running` and `documented → running`.
+  - `validate` WARNs on six conditions:
+    - a plan whose shape does not fit its tier
+    - a cited skill whose `check_*.py` is declared neither on the step nor on
+      its milestone
+    - an open clarification listed under `inputs.answers` with no
+      `assumptions[]` row that applies a default
+    - a scaffold-stub checker (a TODO, or under 60 lines)
+    - a cross-referential checker declared step-scoped
+    - a decision that cites neither a real decision-tree branch nor a
+      `source_reference`
+
+    Acceptance-test commands must also pass a deny-list (`sf`/`sfdx deploy`,
+    `curl`/`wget`, pipes to `sh`, `rm -rf`, `git push`).
+  - `next` prints the cited checkers each offered step has not declared, on
+    stderr, with the exact `amend-step --add-checker <skill-id>` command to
+    add them.
+  - Both rejection routes (`gate plan reject` and `set-verification --outcome
+    plan-rejected`) archive the rejected plan body, with its verdict, into
+    `history[]`. `set-plan` bumps `version` only on a re-plan.
+    `set-milestone` never moves an accepted milestone. A re-verification
+    appends to `reverifications[]` instead.
+  - `amend-step` corrects a pending or blocked step without a re-plan and
+    records `{at, by, reason, fields, before}`. `--prose-only` rewords test
+    descriptions on any step that is not running. `amend-milestone` does the
+    same for milestone tests.
+  - `brief <plan> <Mk>` prints a read-only, one-page gate brief: steps,
+    warnings, open items, deferred manuals, the latest org evidence, the
+    verifier's verdict and the next command. `status` shows a warn column
+    for each milestone, and `--warnings` lists them by step. `export` keeps a
+    hand-written `README.md` under `--force` and writes a generated stub when
+    none exists.
+- **`scripts/mock_deploy.py`: validation only.** It assembles the selected
+  steps into a source-format project and runs `sf project deploy start
+  --dry-run`. There is no deploy flag. Options:
+  - `--mode manifest` merges the steps' `package.xml` files and warns on drift
+    from the milestone report's manifest.
+  - `--plan-only` assembles the project without calling `sf`.
+  - The API version is the highest `<version>` across the selected steps;
+    `--api-version` overrides it.
+  - `--test-level` and `--tests` make Apex execute inside the dry run.
+  - The summary prints coverage per class and flags any class under 75%.
+  - The standard `.forceignore` is written into every assembled project.
+  - `--probe` (`--without TYPE:Member`, `--patch path=file`) validates an
+    altered scratch copy. A probe summary is never gate evidence.
+
+  `tests/test_mock_deploy.py`: 90 tests.
+- **`scripts/render_step_docs.py`.** The deterministic half of the per-step
+  documentation pass. It writes the workbook rows (with the tester's recorded
+  checker exits), the traceability row, the open items, the envelope pair and
+  the `tested → documented` transition. It refuses that transition when its
+  own envelope fails validation. `--backfill` re-documents a step. On
+  northwind-sales, the agent pass it replaces cost 255k–449k tokens per step.
+- **`scripts/validate_envelope.py`.** Checks envelopes against
+  `output-envelope.schema.json` with URN sub-schemas resolved. It refuses a
+  `run_id` more than five minutes ahead of the clock, and a file name that
+  does not match its `run_id`.
+- **`standards/decision-trees/automation-selection.md` Q13–Q15.** A branch for
+  Case/Lead assignment, auto-response, Web-to-Case/Email-to-Case, escalation
+  and entitlement milestones. Each leaf names its owning skill and its
+  order-of-execution position. Without this branch the case dry run could not
+  cite a tree for four of its nine decisions.
+
+### Added — five end-to-end scenarios (`examples/builds/`)
+
+Each scenario is an `export` of a real build directory, except cold-start run
+1, which never reached the loop. None was deployed. Every gate was signed by
+proxy: the dry-run operator on the owner's standing instruction, or, in
+cold-start run 2, the session answering as the client.
+
+- **`case-onboarding`** (scenario 1, project tier).
+  - Plan: 97 clarifications (25 deferred). Plan v5 came after five
+    planner/verifier rounds (blockers 19 → 11 → 13 → 1 → 0).
+  - Shape: 5 milestones, 22 steps, 130 acceptance tests, 13 gates.
+  - Org: 18 distinct org refusals were fed back into the library. The final
+    manifest run validated 60/60 components at API 67.0, apart from one org
+    prerequisite (F-28).
+  - Reopened once tests executed: re-signed at 4/4 tests, 84.4% coverage.
+- **`tier2-webhook`** (scenario 2, feature tier): credentials, a Case
+  trigger, a webhook Queueable with a finalizer, a platform event and a
+  Schedulable.
+  - Plan: 45 clarifications, 5 steps, two verification rounds.
+  - Org: run 6 was the first with tests executing, and it failed all 28 test
+    methods. Six findings followed. The build was re-signed on run 13: 41/41
+    components, 37/37 tests, 89.9% coverage.
+  - Driver's log: 47 same-day product fixes.
+- **`northwind-sales`** (scenario 3, project tier).
+  - Plan: 65 clarifications, 43 assumptions.
+  - Shape: 16 steps, 4 milestones, 9 gates.
+  - Org: 17 recorded `mock_deploy.py` runs (two of them `--plan-only`); 14
+    org-taught facts (`N3-F-01..08`, `N4-F-01..06`).
+  - Deliverables: a 73-case UAT pack and a two-request cutover runbook.
+  - Driver's log: 72 friction items.
+- **`opp-amount-lock`** (scenario 4, ask tier). A one-line ask became 13
+  clarifications, 1 step, 4 tests, a `RUN.md` and two gates. The skill's own
+  GOOD formula block did not compile; that became `VR-PICK-01`. The run
+  surfaced 22 same-day product defects.
+- **`cold-start-lead-source`** and **`cold-start-case-escalation-email`**
+  (scenario 5). Each gave a fresh session one client sentence and no operator
+  context.
+  - Run 1 (~7 min, 177k tokens) produced a correct design but never found the
+    loop: three self-chosen questions, no checker run, no record.
+  - Run 2 came after the "Two Ways In" change below. It found the loop and
+    drove it to `done` unaided, at the feature tier with 19 questions and
+    three gates (~31 min, 390k tokens).
+
+### Added — V2.0 product surfaces (P01–P12) and a local Cursor plugin
+
+These were committed on 2026-08-19/20 on this branch, were not on `main`, and
+are released here for the first time.
+
+- **P01 `deployment-failure-triager` (`/triage-deployment`) and P02
+  `apex-test-failure-triager` (`/triage-apex-tests`).** They read through
+  `get_deployment_result` and `get_apex_test_run`, which report on an existing
+  job or test run by id and never start, cancel, retry or quick-deploy.
+- **P03–P12: ten agents, each with a command and a repo-only evidence tool:**
+  - `access-path-explainer` (`/why-cant-user`)
+  - `change-impact-planner` (`/plan-metadata-change`)
+  - `automation-transaction-profiler` (`/profile-automation`)
+  - `release-readiness-reviewer` (`/review-release-readiness`)
+  - `security-posture-reviewer` (`/review-security-posture`)
+  - `integration-incident-triager` (`/triage-integration`)
+  - `data-migration-reconciler` (`/reconcile-data-load`)
+  - `org-health-assessor-v2` (`/assess-org-health`)
+  - `agentforce-quality-engineer` (`/review-agentforce-agent`)
+  - `multi-org-drift-analyzer` (`/compare-orgs`)
+
+  Normalizers are under `pipelines/product/`. `docs/product-v2/current-state.md`
+  records P01/P02 as fixture-qualified and P03–P12 as fixture-beta, with Cursor
+  host smoke and scratch-org QA `not_run`.
+- **Local Cursor plugin.** The plugin lives in `integrations/cursor/`. Build it
+  with `scripts/build_cursor_plugin.py` and install it with
+  `scripts/install_cursor_plugin.py`. `scripts/sfskills_doctor.py` backs
+  `/sfskills-doctor`. The plugin is not submitted to the Cursor Marketplace.
+- **SFAEF 0.9.0-draft.** The specification is imported under
+  `framework/specification/`, with its deterministic core in
+  `pipelines/framework/core/`. Related scripts: `scripts/validate_framework.py`
+  and `scripts/refresh_migration_ledgers.py`, plus RC packaging
+  (`scripts/pack_v2_review.py`, `scripts/capture_v2_rc_evidence.py`).
+
+### Changed
+
+- **`CLAUDE.md` opens with "Two Ways In".** A Salesforce change request starts
+  the loop at the tier § 3.1 prints; work on the library follows the authoring
+  workflow. Added because cold-start run 1 never found the loop.
+- **Questions to Ask Before Configuring.** Every skill created or updated on
+  or after 2026-09-04 must carry a `## Questions to Ask Before Configuring`
+  section: style guide § 3.7, the scaffold, and a validator WARN. The
+  clarifier harvests these tables.
+- **Envelope and citation contract.** `AGENT_CONTRACT.md` and
+  `citation.schema.json` add citation types `agent` and `example_build`. The
+  output envelope accepts an `extensions` object and paths under
+  `.sfskills/builds/<id>/envelopes/`.
+- **Playbook changes:**
+  - `apex-builder` Step 6 refuses Apex that references a template class the
+    build does not ship.
+  - `build-planner` adds an Apex foundations step.
+  - `build-step-runner`: when a launch instruction disagrees with `plan.json`,
+    the plan wins.
+  - `step-tester` leaves milestone-scoped manual tests to the milestone
+    verifier.
+  - `milestone-verifier` gains a re-verification branch and scale-aware
+    report steps.
+- **Depth programme: 163 packages to the 12-signal bar.** Each gained a
+  Questions table, deployable examples, grounded gotchas and a real checker.
+  Each was written from the official guides, then independently checked:
+  every cited line range re-read, every XML fence parsed, every checker run on
+  broken fixtures.
+  - Coverage: 100 admin packages (clusters 1–18c), plus
+    `admin/permission-set-group-composition`,
+    `admin/user-story-writing-for-salesforce` and the new
+    `admin/business-hours-and-holidays`; 60 developer packages (24 apex, 18
+    flow, 18 lwc).
+  - Sources forced corrections. Examples: there is no `getJobId()` on
+    `FinalizerContext`; there is no `CaseMilestone.SlaExitDate`;
+    `LightningModal` is a default export.
+  - Checkers keyed on element names that do not exist were rewritten.
+- **`templates/apex/tests/TestDataFactory.cls`** populates lookups only when
+  they are given (API 67.0 user-mode DML checks FLS on fields assigned null).
+  It also gains `insertAsSystem` for seeding outside the persona.
+- **Two skill-reviewer scripts:** `scripts/score_skill_depth.py` (baseline:
+  1,035 skills, mean 8.0/12) and `scripts/verify_skill_package.py`.
+
+### Fixed — org-taught checker rules and gotchas
+
+Each rule below was paid for by an org refusal in a validate-only run, or by
+a checker that passed broken input. Where the org gave a message, the skill
+quotes it.
+
+- **`apex/test-class-standards` (1.1.0 → 1.3.5).**
+  - Checker rewritten. New rules `user-mode-test-without-runas` (ERROR) and
+    `fixture-seeded-as-persona` (WARN).
+  - New Gotchas 13–17: run as a permissioned user, null lookups count, seed
+    in system mode, the runAs scan reads code, seed the object grant.
+  - The runAs scan strips comments before literals. A `System.runAs` in a
+    comment no longer passes, and stray apostrophes no longer hide real
+    calls.
+- **`apex/apex-security-patterns`.** It raised a blocking CRITICAL on a
+  comment in two org-validated steps. It is now comment/literal-aware, with
+  new REVIEW rules `elevation-without-reason` and `stale-system-mode-claim`.
+  Thirteen more Apex checkers got the same treatment, each with comment-only
+  fixtures.
+- **Apex rules:**
+  - `apex/platform-events-apex` `R9`: a publish needs Create.
+  - `apex/entitlement-apex-hooks` `EAH009`: template classes must ship.
+  - `apex/entitlement-apex-hooks` `EAH010`: a test must select `SlaProcess`
+    by Name.
+  - `apex/apex-named-credentials-patterns` `NC-AUTH-01`/`02` and `NC-PS-01`.
+- **Admin access and Opportunity rules:**
+  - `admin/opportunity-management` `OM-BP-DEFAULT-01`: no default on an
+    Opportunity business process.
+  - `admin/record-types-and-page-layouts` `RTL-REQ-01`/`02`: Probability is
+    required, and Name/StageName must be Required. `RL-REQ-01`/`02` check
+    the required fields on Case layouts. Also `RTL-MERGE-01` and
+    `RTL-ASSIGN-01`.
+  - `admin/permission-sets-vs-profiles` `PSVP-FLS-01`/`02` and
+    `PSVP-RT-DEFAULT-01`.
+  - `PSA-`, `PSVP-`, `PSGC-` and `CP-DESC-01`: descriptions over 255
+    characters.
+- **`admin/validation-rules`:** `VR-DESC-01`, `VR-OPP-01`
+  (`HasOpportunityLineItem`), `VR-PICK-01` (no ISBLANK on a picklist) and
+  `VR-REF-01`/`02`.
+- **`admin/reports-and-dashboards`:** `RPT-DASH-SORT-01`/`RPT-DASH-AXIS-01`
+  (chart components need `sortBy` and `chartAxisRange`), `RPT-TYPE-01`,
+  `RPT-GRP-01`, `RPT-COL-01` and `RPT-DESC-01`/`02`.
+- **Case, routing and flow rules:**
+  - `admin/case-management-setup` `CMS-STEM-01`/`02` and `CMS-SYSUSER-01`.
+  - `admin/email-to-case-configuration` `E2C-RT-01`/`02` and `E2C-PRI-01`.
+  - `admin/list-views-and-compact-layouts` `CL-MEM-01`/`02`.
+  - `admin/assignment-rules` `AR-LOOP-01`/`02` and `AR-SENDER-01`.
+  - `admin/escalation-rules` `E10`.
+  - `flow/record-triggered-flow-patterns` rule 9.
+- **Empty scans are no longer reported clean.** `admin/sales-process-mapping`
+  now walks `--manifest-dir` at any depth; before, it shipped an injected
+  error clean. It and `admin/products-and-pricebooks`,
+  `admin/custom-permissions`, `admin/permission-set-architecture` and
+  `admin/path-and-guidance` now print "Scanned 0 file(s)" instead of "No
+  issues found."
+- **`scripts/bootstrap.py --verify-only`** exits 2 (`RETRIEVAL OK`) when only
+  the slash-command install is stale.
+
+### Docs
+
+- `admin/case-management-setup` `references/worked-example-case-intake.md`:
+  a case intake solution built from the skills, and the five gaps it exposed.
+- `flow/flow-resource-patterns` 1.1.1: choosing between Choice, Picklist
+  Choice Set and Record Choice Set. The retrieval fixture `flow record choice
+  set dynamic picklist choice collection` was left failing for an owner
+  decision.
+
+## [0.5.0] — 2026-10-03 — sfskills-mcp (data bundle: org-taught rules)
+
+**This is not a data-only release: the server's tools grow from 38 to 50.**
+The P01–P12 product commits on this branch changed `mcp/sfskills-mcp/src/`.
+The build-orchestration work did not.
+
+### Server
+
+- **`get_deployment_result` and `get_apex_test_run` (org read).** Both report
+  on an existing job or test run by id. A deploy report runs from a DX project
+  directory, and it refuses a CLI-cached job whose username does not match the
+  requested org.
+- **Ten repo-only evidence tools** read local JSON results and return
+  cacheable output: `get_user_access_evidence`,
+  `get_component_dependency_evidence`, `get_automation_inventory`,
+  `get_flow_test_result`, `get_code_analysis_result`,
+  `get_integration_config_summary`, `get_data_load_result`,
+  `get_org_snapshot_manifest`, `get_agentforce_test_result` and
+  `compare_org_snapshots`.
+- **`search_skill` fails closed without `vector_index/lexical.sqlite`.** It
+  returns `error: "index_missing"` rather than an empty result.
+
+### Data bundle
+
+The bundle carries the Plugin 1.3.0 corpus:
+
+- the org-taught checker rules (skill-local `scripts/` ship inside `skills/`)
+- 163 deepened packages
+- 1,040 skills
+- 98 `AGENT.md` and 92 commands as prompts
+- `standards/build-orchestration.md`
+- `pipelines/product/`
+
+The orchestration CLI (`scripts/build_plan.py`, `scripts/mock_deploy.py`)
+is not in the bundle; the loop runs from a checkout.
+
+### Licence
+
+Unchanged from 0.4.8: PolyForm Small Business 1.0.0 (`PolyForm-Small-Business-1.0.0`).
+
 ## [0.4.10] — 2026-09-03 — sfskills-mcp (data-bundle search hotfix)
 
 **Server tool/API surface is unchanged.** Hotfix for PyPI installs:

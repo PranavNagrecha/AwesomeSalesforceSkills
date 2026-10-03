@@ -17,16 +17,26 @@ dependencies:
   skills:
     - admin/acceptance-criteria-given-when-then
     - admin/agent-output-formats
+    - admin/business-hours-and-holidays
+    - admin/case-management-setup
     - admin/configuration-workbook-authoring
+    - admin/email-to-case-configuration
     - admin/fit-gap-analysis-against-org
+    - admin/record-types-and-page-layouts
     - admin/requirements-gathering-for-sf
     - admin/requirements-traceability-matrix
+    - admin/uat-test-case-design
     - architect/architecture-decision-records
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_DISAMBIGUATION.md
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
+    - RUNTIME_VS_BUILD.md
+    - SKILL_MAP.md
+  templates:
+    - apex/TriggerHandler.cls
   decision_trees:
     - agentforce-capability-selector.md
     - async-selection.md

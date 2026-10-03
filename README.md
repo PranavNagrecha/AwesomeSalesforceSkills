@@ -310,10 +310,10 @@ run it yourself.
 
 ## What's in it
 
-**1,035 skills · 96 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
+**1,040 skills · 98 agents · shared Apex/LWC/Flow templates · golden evals · live-org MCP server.**
 
-- **Skills** (`skills/`) — 1,035 structured guides across 11 domains: admin 253,
-  apex 158, architect 104, data 101, lwc 82, devops 70, flow 63, integration
+- **Skills** (`skills/`) — 1,040 structured guides across 11 domains: admin 254,
+  apex 159, architect 106, data 101, lwc 83, devops 70, flow 63, integration
   61, agentforce 53, security 48, omnistudio 34. Each carries SKILL.md
   instructions, worked examples, gotchas, Well-Architected mapping, and the
   anti-pattern list shown above. Full catalog:
@@ -326,13 +326,13 @@ run it yourself.
   pattern, Agentforce capability, async tier, integration pattern, sharing
   mechanism, performance tuning — consulted before any code gets written.
 - **Agents** (`agents/`) — instruction files any agentic AI can follow.
-  **Build-time (14)** maintain the library; **Run-time (68)** do real
+  **Build-time (14)** maintain the library; **Run-time (70)** do real
   Salesforce work in your codebase or org, across five tiers —
   Developer + architecture tier (28), Admin accelerators — Tier 1 (14),
-  Strategic — Tier 2 (7), Vertical + governance — Tier 3 (11), Orchestration
+  Strategic — Tier 2 (9), Vertical + governance — Tier 3 (11), Orchestration
   — Tier 4 (8, `status: beta` — the requirement-to-build loop in
   `standards/build-orchestration.md`). Fourteen more are deprecated redirect
-  stubs, for 96 `AGENT.md` files in total. Contract:
+  stubs, for 98 `AGENT.md` files in total. Contract:
   [`agents/_shared/AGENT_CONTRACT.md`](./agents/_shared/AGENT_CONTRACT.md);
   roster: [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md);
   skill map: [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
@@ -343,7 +343,7 @@ run it yourself.
 
 Shipped in v1:
 
-- [x] 1,035 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
+- [x] 1,040 skills across Admin, Apex, LWC, Flow, OmniStudio, Agentforce, Security, Integration, Data, Architect, DevOps
 - [x] Shared Apex / LWC / Flow / Agentforce templates and seven decision trees
 - [x] Golden evals for 10 flagship skills (3 P0 cases each)
 - [x] MCP server on PyPI exposing the library plus live-org lookups
@@ -357,7 +357,7 @@ Queue for what comes next: [`BACKLOG.yaml`](./BACKLOG.yaml) ·
 
 50 tools, all read-only except `emit_envelope`, which writes a report file — the fifteen named here cover the usual paths:
 `search_skill` (lexical search
-over the 1,035-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
+over the 1,040-skill SfSkills corpus), `get_skill`, `get_agent`, `list_agents`,
 `describe_org`, `list_custom_objects`, `list_flows_on_object`,
 `list_validation_rules`, `list_permission_sets`, `describe_permission_set`,
 `list_record_types`, `list_named_credentials`, `list_approval_processes`,
@@ -373,7 +373,7 @@ under any tool. And "no secrets in output" is enforced rather than assumed —
 both the success and the error path, with 20 tests behind it
 (`tests/test_sf_cli_redaction.py`).
 
-The server reports version **0.4.8** (`meta.health()` on this checkout).
+The server reports version **0.5.0** (`meta.health()` on this checkout).
 The latest release on PyPI is 0.4.7 as of 2026-08-17, so a `pip install`
 may trail the repo; `python3 -m pip show sfskills-mcp` tells you what you got.
 

@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/test-build-step` (`commands/test-build-step.md`)
 - Domain router skill: `salesforce-devops`
-

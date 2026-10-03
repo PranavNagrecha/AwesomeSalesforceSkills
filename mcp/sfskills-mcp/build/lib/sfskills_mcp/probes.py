@@ -1,0 +1,922 @@
+"""Wave-2 probe promotion: the four SOQL recipes from
+``agents/_shared/probes/`` surfaced as first-class MCP tools.
+
+Every probe follows the same shape as the tools in ``admin.py``: validate
+inputs, run one or more Tooling-API SOQL queries, post-process, return a
+JSON-serializable dict. Errors surface as ``{"error": ...}`` on the dict,
+never raised — the MCP server stays up even when probes fail.
+
+Why promote: these four recipes were being pasted into agents as SOQL
+snippets. That caused subtle drift (one agent's paste used ``Active = true``,
+another used ``IsActive``). Centralizing the logic here makes every consumer
+use the same implementation — including post-processing like overlap
+detection for matching rules. The markdown recipes in
+``agents/_shared/probes/*.md`` stay as documentation.
+
+Four probes are exposed:
+
+- ``probe_apex_references`` — Apex classes/triggers referencing an
+  ``<object>.<field>``. Word-boundary regex on fetched bodies filters
+  substring false positives.
+- ``probe_flow_references`` — Active Flows whose metadata XML references a
+  field. Classifies each hit as read/write based on the enclosing element.
+- ``probe_matching_rules`` — Matching + Duplicate rules on an sObject.
+  Computes ``overlaps[]`` where two active matching rules share at least
+  one field (P0 duplicate-management smell).
+- ``probe_permset_shape`` — Permission Set or PSG composition + assignment
+  concentration + risk flags (``Modify All Data`` detection, "super" PSG
+  smell when a single PSG covers > 1/3 of active users).
+"""
+
+from __future__ import annotations
+
+import re
+from typing import Any
+
+from . import sf_cli
+from .admin import _run_soql, _validate_api_name, _strip_attributes
+
+
+MAX_ROWS = 2000
+
+
+# --------------------------------------------------------------------------- #
+# probe_apex_references                                                       #
+# --------------------------------------------------------------------------- #
+
+def probe_apex_references(
+    object_name: str,
+    field: str,
+    target_org: str | None = None,
+    include_managed: bool = False,
+    limit_per_query: int = 2000,
+) -> dict[str, Any]:
+    """Enumerate ``ApexClass`` and ``ApexTrigger`` records whose body
+    references ``<object>.<field>``.
+
+    Tooling API constraint: ``ApexClass.Body`` (and ``ApexTrigger.Body``)
+    can be SELECTed but NOT filtered in a SOQL ``WHERE`` clause — the
+    server rejects ``WHERE Body LIKE '%X%'`` with
+    ``field 'Body' can not be filtered in a query call``. So this probe
+    fetches Body rows in bulk (limited to non-managed by default) and
+    runs the field-reference regex client-side.
+
+    The post-fetch word-boundary regex distinguishes real references
+    from substring false positives (``Industry_Code__c`` won't match
+    ``Industry``). Classifies each hit as ``read`` (query/condition
+    context) or ``write`` (assignment / DML payload); emits ``unknown``
+    when the probe can't disambiguate without AST parsing.
+
+    ``limit_per_query`` defaults to 2000 (Tooling API max) so the probe
+    finds references in the entire custom-Apex set in one round trip on
+    typical orgs. For orgs with > 2000 custom Apex classes, raise the
+    limit or page externally; ``truncated`` flags the cap was hit.
+    """
+    err = _validate_api_name(object_name, kind="object_name")
+    if err:
+        return {"error": err}
+    err = _validate_api_name(field, kind="field")
+    if err:
+        return {"error": err}
+
+    bounded = max(1, min(int(limit_per_query or 2000), MAX_ROWS))
+    managed_clause = "" if include_managed else " AND NamespacePrefix = null"
+
+    # Step 1 — ApexClass. Body is fetched but NOT filtered (Tooling API
+    # forbids WHERE on Body). Pre-filter by NamespacePrefix and Status to
+    # bound the result set; client-side regex does the real reference
+    # detection.
+    class_soql = (
+        "SELECT Id, Name, NamespacePrefix, Body "
+        "FROM ApexClass "
+        f"WHERE Status = 'Active'{managed_clause} "
+        f"LIMIT {bounded}"
+    )
+    classes = _run_soql(class_soql, target_org=target_org, tooling=True)
+    if "error" in classes:
+        return classes
+
+    # Step 2 — ApexTrigger. Same Body-filter restriction; rely on
+    # TableEnumOrId (which IS filterable) plus the client-side regex.
+    trigger_soql = (
+        "SELECT Id, Name, NamespacePrefix, TableEnumOrId, Body "
+        "FROM ApexTrigger "
+        f"WHERE TableEnumOrId = '{object_name}'{managed_clause} "
+        f"LIMIT {bounded}"
+    )
+    triggers = _run_soql(trigger_soql, target_org=target_org, tooling=True)
+    if "error" in triggers:
+        return triggers
+
+    rows: list[dict[str, Any]] = []
+    # Word-boundary patterns that recognize real references vs substring hits.
+    ref_pattern = re.compile(rf"\b{re.escape(object_name)}\.{re.escape(field)}\b")
+    type_pattern = re.compile(
+        rf"\bSObjectType\.{re.escape(object_name)}\.fields\.{re.escape(field)}\b"
+    )
+    # Write-classification heuristic: assignment or DML-payload construction.
+    write_pattern = re.compile(
+        rf"(?:{re.escape(field)}\s*=\s*|new\s+{re.escape(object_name)}\s*\([^)]*{re.escape(field)}\s*=)"
+    )
+
+    def _classify(body: str, kind: str, record: dict[str, Any]) -> None:
+        # Match on the unfiltered body first — either bare ref or SObjectType.
+        if not (ref_pattern.search(body) or type_pattern.search(body)):
+            return
+        access = "write" if write_pattern.search(body) else "read"
+        snippet_match = ref_pattern.search(body) or type_pattern.search(body)
+        evidence = ""
+        if snippet_match:
+            start = max(0, snippet_match.start() - 20)
+            end = min(len(body), snippet_match.end() + 40)
+            evidence = body[start:end].replace("\n", " ").strip()
+        rows.append(
+            {
+                "kind": kind,
+                "id": record.get("Id"),
+                "name": record.get("Name"),
+                "namespace": record.get("NamespacePrefix"),
+                "access_type": access,
+                "evidence_snippet": evidence[:200],
+            }
+        )
+
+    for record in classes["records"]:
+        _classify(record.get("Body") or "", "ApexClass", record)
+    for record in triggers["records"]:
+        _classify(record.get("Body") or "", "ApexTrigger", record)
+
+    # Confidence drops if we hit the page cap — caller may need to re-run
+    # with a higher limit or paginate itself.
+    truncated = (
+        len(classes["records"]) == bounded
+        or len(triggers["records"]) == bounded
+    )
+
+    return {
+        "object": object_name,
+        "field": field,
+        "reference_count": len(rows),
+        "references": rows,
+        "truncated": truncated,
+        "include_managed": include_managed,
+    }
+
+
+# --------------------------------------------------------------------------- #
+# probe_flow_references                                                       #
+# --------------------------------------------------------------------------- #
+
+def probe_flow_references(
+    object_name: str,
+    field: str,
+    target_org: str | None = None,
+    active_only: bool = True,
+    limit: int = 200,
+) -> dict[str, Any]:
+    """Enumerate active Flow versions whose metadata references
+    ``<object>.<field>``, classifying each hit as read or write.
+
+    Tooling API constraint: when a SOQL query selects ``Metadata`` (or
+    ``FullName``) from ``Flow``, the response must contain exactly one
+    row. The server rejects bulk queries with
+    ``query qualifications must specify no more than one row for retrieval``.
+
+    Two-pass implementation:
+      1. List Flow IDs / metadata-cheap columns in one bulk query, with
+         priority for flows likely to touch the target object
+         (``TriggerObjectOrEvent = object_name`` first, then everything
+         else up to ``limit``).
+      2. For each ID, fetch ``Metadata`` in its own one-row query.
+         Threaded fan-out keeps wall-clock manageable on orgs with
+         hundreds of active flows.
+    """
+    err = _validate_api_name(object_name, kind="object_name")
+    if err:
+        return {"error": err}
+    err = _validate_api_name(field, kind="field")
+    if err:
+        return {"error": err}
+
+    bounded = max(1, min(int(limit or 200), MAX_ROWS))
+    status_clause = (
+        "AND (Status = 'Active' OR Status = 'Obsolete')"
+        if not active_only
+        else "AND Status = 'Active'"
+    )
+
+    # Pass 1 — list Flows without Metadata (Metadata can't be batched).
+    # Ordered by most-recently-modified so a low `limit` still covers the
+    # flows users care about most.
+    list_soql = (
+        "SELECT Id, DefinitionId, Status, ProcessType, MasterLabel, "
+        "LastModifiedDate "
+        "FROM Flow "
+        f"WHERE (ProcessType = 'AutoLaunchedFlow' OR ProcessType = 'Flow' "
+        f"OR ProcessType = 'Workflow') "
+        f"{status_clause} "
+        "ORDER BY LastModifiedDate DESC "
+        f"LIMIT {bounded}"
+    )
+    flow_list = _run_soql(list_soql, target_org=target_org, tooling=True)
+    if "error" in flow_list:
+        return flow_list
+
+    flow_records = list(flow_list.get("records", []) or [])
+
+    # Pass 2 — fetch Metadata one Flow at a time. Threaded fan-out so
+    # 200 flows complete in ~10-30s instead of ~3-5 minutes.
+    import concurrent.futures as _cf
+
+    def _fetch_metadata(flow_id: str) -> tuple[str, dict[str, Any]]:
+        one = _run_soql(
+            f"SELECT Metadata FROM Flow WHERE Id = '{flow_id}' LIMIT 1",
+            target_org=target_org,
+            tooling=True,
+        )
+        return flow_id, one
+
+    metadata_by_id: dict[str, str] = {}
+    fetch_errors: list[str] = []
+    if flow_records:
+        with _cf.ThreadPoolExecutor(max_workers=8) as pool:
+            futures = {
+                pool.submit(_fetch_metadata, str(f.get("Id"))): str(f.get("Id"))
+                for f in flow_records
+                if f.get("Id")
+            }
+            for fut in _cf.as_completed(futures):
+                fid, one = fut.result()
+                if "error" in one:
+                    fetch_errors.append(f"{fid}: {str(one.get('error', ''))[:80]}")
+                    continue
+                rec = (one.get("records") or [None])[0]
+                if rec and rec.get("Metadata") is not None:
+                    metadata_by_id[fid] = str(rec.get("Metadata"))
+
+    # Synthesize the bulk-query shape the rest of the function expects.
+    for flow in flow_records:
+        fid = str(flow.get("Id"))
+        flow["Metadata"] = metadata_by_id.get(fid)
+    flows: dict[str, Any] = {"records": flow_records, "record_count": len(flow_records)}
+
+    rows: list[dict[str, Any]] = []
+    # Elements in the Metadata XML that indicate a WRITE to the field.
+    write_anchors = (
+        re.compile(
+            rf"<recordUpdates[^>]*>.*?<field>{re.escape(field)}</field>",
+            re.DOTALL,
+        ),
+        re.compile(
+            rf"<recordCreates[^>]*>.*?<field>{re.escape(field)}</field>",
+            re.DOTALL,
+        ),
+        re.compile(
+            rf"<assignToReference>[^<]*\b{re.escape(field)}\b[^<]*</assignToReference>"
+        ),
+    )
+    # Read-context anchors.
+    read_anchors = (
+        re.compile(rf"<recordLookups[^>]*>.*?<field>{re.escape(field)}</field>", re.DOTALL),
+        re.compile(rf"<leftValueReference>[^<]*\b{re.escape(field)}\b[^<]*</leftValueReference>"),
+        re.compile(rf"<rightValueReference>[^<]*\b{re.escape(field)}\b[^<]*</rightValueReference>"),
+    )
+    # Strip <description> and <label> — human-written text mentioning a
+    # field name without referencing it programmatically.
+    strip_pattern = re.compile(r"<(?:description|label)>.*?</(?:description|label)>", re.DOTALL)
+    bare_ref = re.compile(rf"\b{re.escape(field)}\b")
+
+    for flow in flows["records"]:
+        meta_xml = str(flow.get("Metadata") or "")
+        if not meta_xml:
+            continue
+        cleaned = strip_pattern.sub("", meta_xml)
+        if not bare_ref.search(cleaned):
+            continue
+        access = "unknown"
+        if any(p.search(cleaned) for p in write_anchors):
+            access = "write"
+        elif any(p.search(cleaned) for p in read_anchors):
+            access = "read"
+        else:
+            # The field name appears but not in any of the structural anchors
+            # we can classify — might be a formula or dynamic reference.
+            access = "unknown"
+        # Pull a short snippet around the first hit for evidence.
+        snippet_match = bare_ref.search(cleaned)
+        evidence = ""
+        if snippet_match:
+            start = max(0, snippet_match.start() - 40)
+            end = min(len(cleaned), snippet_match.end() + 80)
+            evidence = cleaned[start:end].replace("\n", " ").strip()
+        rows.append(
+            {
+                "flow_id": flow.get("Id"),
+                "definition_id": flow.get("DefinitionId"),
+                "label": flow.get("MasterLabel"),
+                "process_type": flow.get("ProcessType"),
+                "status": flow.get("Status"),
+                "access_type": access,
+                "evidence_snippet": evidence[:240],
+            }
+        )
+
+    return {
+        "object": object_name,
+        "field": field,
+        "reference_count": len(rows),
+        "references": rows,
+        "active_only": active_only,
+    }
+
+
+# --------------------------------------------------------------------------- #
+# probe_matching_rules                                                        #
+# --------------------------------------------------------------------------- #
+
+def probe_matching_rules(
+    object_name: str,
+    target_org: str | None = None,
+    active_only: bool = False,
+) -> dict[str, Any]:
+    """Enumerate Matching Rules + Duplicate Rules on an sObject, plus
+    ``overlaps[]`` (two active matching rules sharing at least one field —
+    a P0 duplicate-management smell)."""
+    err = _validate_api_name(object_name, kind="object_name")
+    if err:
+        return {"error": err}
+
+    # MatchingRule uses RuleStatus (picklist), NOT IsActive. The old
+    # "IsActive = true" SOQL was rejected by Salesforce post-Spring '23
+    # with "No such column 'IsActive' on entity 'MatchingRule'". The
+    # picklist values are: 'Active', 'Activating', 'Deactivating',
+    # 'Inactive', 'RebuildIndex'. We treat anything other than 'Active'
+    # as inactive for our purposes.
+    mr_active_clause = " AND RuleStatus = 'Active'" if active_only else ""
+    # DuplicateRule still uses IsActive (boolean) — different table.
+    dr_active_clause = " AND IsActive = true" if active_only else ""
+
+    mr_soql = (
+        "SELECT Id, DeveloperName, MasterLabel, RuleStatus, SobjectType "
+        "FROM MatchingRule "
+        f"WHERE SobjectType = '{object_name}'{mr_active_clause} "
+        "LIMIT 200"
+    )
+    matching_rules = _run_soql(mr_soql, target_org=target_org, tooling=True)
+    if "error" in matching_rules:
+        return matching_rules
+
+    mr_ids = [r.get("Id") for r in matching_rules["records"] if r.get("Id")]
+    mr_items_by_rule: dict[str, list[dict[str, Any]]] = {}
+    if mr_ids:
+        ids_clause = ", ".join(f"'{rid}'" for rid in mr_ids)
+        # MatchingRuleItem's column name is `Field`, NOT `FieldName`. The
+        # original SOQL used the wrong identifier — Salesforce returns
+        # "No such column 'FieldName' on entity 'MatchingRuleItem'".
+        items_soql = (
+            "SELECT MatchingRuleId, Field, MatchingMethod, "
+            "BlankValueBehavior, SortOrder "
+            "FROM MatchingRuleItem "
+            f"WHERE MatchingRuleId IN ({ids_clause}) "
+            "ORDER BY MatchingRuleId, SortOrder "
+            "LIMIT 2000"
+        )
+        # MatchingRuleItem is exposed via the Standard SOQL API, NOT the
+        # Tooling API. Using tooling=True on this query returns
+        # "sObject type 'MatchingRuleItem' is not supported".
+        items = _run_soql(items_soql, target_org=target_org, tooling=False)
+        if "error" in items:
+            return items
+        for item in items["records"]:
+            rule_id = item.get("MatchingRuleId")
+            if rule_id:
+                mr_items_by_rule.setdefault(rule_id, []).append(item)
+
+    # DuplicateRule, like MatchingRuleItem, is exposed via Standard SOQL,
+    # not the Tooling API. tooling=True returns
+    # "sObject type 'DuplicateRule' is not supported".
+    # Note: ParentId is NOT a real column on DuplicateRule (Salesforce
+    # never exposed a parent link here). The MCP previously SELECTed it
+    # and the query failed with "No such column 'ParentId'".
+    dr_soql = (
+        "SELECT Id, DeveloperName, MasterLabel, IsActive, SobjectType, "
+        "SobjectSubtype "
+        "FROM DuplicateRule "
+        f"WHERE SobjectType = '{object_name}'{dr_active_clause} "
+        "LIMIT 200"
+    )
+    duplicate_rules = _run_soql(dr_soql, target_org=target_org, tooling=False)
+    if "error" in duplicate_rules:
+        return duplicate_rules
+
+    matching_out: list[dict[str, Any]] = []
+    for rule in matching_rules["records"]:
+        rule_id = rule.get("Id")
+        items = mr_items_by_rule.get(rule_id, [])
+        rule_status = rule.get("RuleStatus")
+        matching_out.append(
+            {
+                "id": rule_id,
+                "developer_name": rule.get("DeveloperName"),
+                "label": rule.get("MasterLabel"),
+                "active": rule_status == "Active",
+                "rule_status": rule_status,
+                "fields": [
+                    {
+                        "field": item.get("Field"),
+                        "method": item.get("MatchingMethod"),
+                        "blank_behavior": item.get("BlankValueBehavior"),
+                        "sort_order": item.get("SortOrder"),
+                    }
+                    for item in sorted(items, key=lambda x: x.get("SortOrder") or 0)
+                ],
+            }
+        )
+
+    duplicate_out = [
+        {
+            "id": rule.get("Id"),
+            "developer_name": rule.get("DeveloperName"),
+            "label": rule.get("MasterLabel"),
+            "active": rule.get("IsActive"),
+            "subtype": rule.get("SobjectSubtype"),
+        }
+        for rule in duplicate_rules["records"]
+    ]
+
+    # Overlap detection: two active matching rules sharing >= 1 field.
+    overlaps: list[dict[str, Any]] = []
+    active_rules = [r for r in matching_out if r["active"]]
+    for i, left in enumerate(active_rules):
+        for right in active_rules[i + 1 :]:
+            left_fields = {f["field"] for f in left["fields"] if f["field"]}
+            right_fields = {f["field"] for f in right["fields"] if f["field"]}
+            shared = sorted(left_fields & right_fields)
+            if shared:
+                overlaps.append(
+                    {
+                        "left": left["developer_name"],
+                        "right": right["developer_name"],
+                        "shared_fields": shared,
+                        "severity": "P0" if left_fields == right_fields else "P1",
+                    }
+                )
+
+    return {
+        "object": object_name,
+        "active_only": active_only,
+        "matching_rule_count": len(matching_out),
+        "matching_rules": matching_out,
+        "duplicate_rule_count": len(duplicate_out),
+        "duplicate_rules": duplicate_out,
+        "overlaps": overlaps,
+    }
+
+
+# --------------------------------------------------------------------------- #
+# probe_permset_shape                                                         #
+# --------------------------------------------------------------------------- #
+
+_MAD_PATTERN = re.compile(r"\bModifyAllData\b|\bModify\s+All\s+Data\b")
+
+
+def probe_permset_shape(
+    scope: str,
+    target_org: str | None = None,
+) -> dict[str, Any]:
+    """Summarize a Permission Set / PSG / user scope in the live org.
+
+    Accepts:
+        ``psg:<DeveloperName>``  — Permission Set Group composition + concentration
+        ``ps:<Name>``            — Permission Set assignment shape
+        ``user:<username>``      — All PSes + PSGs assigned to one user
+
+    Post-processing includes concentration-ratio flags ("super" PSG smell
+    when a single PSG covers > 1/3 of active standard users) and a hard
+    ``Modify All Data`` detection.
+    """
+    if not scope or ":" not in scope:
+        return {"error": f"scope must be `psg:<name>` / `ps:<name>` / `user:<name>`, got: {scope!r}"}
+    kind, _, identifier = scope.partition(":")
+    kind = kind.strip().lower()
+    identifier = identifier.strip()
+    if not identifier:
+        return {"error": f"scope missing identifier after ':': {scope!r}"}
+
+    # Active standard-user count — used as denominator for concentration ratios.
+    users_soql = (
+        "SELECT COUNT() total FROM User WHERE IsActive = true AND UserType = 'Standard'"
+    )
+    # aggregate query: use count() without alias for simplicity
+    users_soql = "SELECT COUNT() FROM User WHERE IsActive = true AND UserType = 'Standard'"
+    user_count_probe = sf_cli.run_sf_json(
+        ["data", "query", "--query", users_soql], target_org=target_org
+    )
+    if "error" in user_count_probe and "result" not in user_count_probe:
+        return user_count_probe
+    active_user_count = (user_count_probe.get("result", {}) or {}).get("totalSize") or 0
+
+    if kind == "psg":
+        return _permset_shape_psg(identifier, active_user_count, target_org)
+    if kind == "ps":
+        return _permset_shape_ps(identifier, active_user_count, target_org)
+    if kind == "user":
+        return _permset_shape_user(identifier, active_user_count, target_org)
+    return {"error": f"unknown scope kind {kind!r}; expected psg / ps / user"}
+
+
+def _permset_shape_psg(
+    name: str,
+    active_user_count: int,
+    target_org: str | None,
+) -> dict[str, Any]:
+    err = _validate_api_name(name, kind="psg_name")
+    if err:
+        return {"error": err}
+
+    # PSG components
+    components_soql = (
+        "SELECT PermissionSetGroupId, PermissionSetId, PermissionSet.Name, "
+        "PermissionSet.Label "
+        "FROM PermissionSetGroupComponent "
+        f"WHERE PermissionSetGroup.DeveloperName = '{name}' "
+        "LIMIT 200"
+    )
+    components = _run_soql(components_soql, target_org=target_org, tooling=False)
+    if "error" in components:
+        return components
+
+    # Assignment count for this PSG
+    assignment_soql = (
+        "SELECT COUNT() FROM PermissionSetAssignment "
+        f"WHERE PermissionSetGroup.DeveloperName = '{name}'"
+    )
+    assignment_probe = sf_cli.run_sf_json(
+        ["data", "query", "--query", assignment_soql], target_org=target_org
+    )
+    assignees = (assignment_probe.get("result", {}) or {}).get("totalSize") or 0
+
+    concentration = (
+        round(assignees / active_user_count, 3) if active_user_count else None
+    )
+
+    component_rows = []
+    has_mad = False
+    for c in components["records"]:
+        ps = c.get("PermissionSet") or {}
+        ps_name = ps.get("Name") if isinstance(ps, dict) else None
+        component_rows.append(
+            {
+                "permission_set": ps_name,
+                "label": ps.get("Label") if isinstance(ps, dict) else None,
+            }
+        )
+        if ps_name and _MAD_PATTERN.search(ps_name):
+            has_mad = True
+
+    risk_flags: list[dict[str, Any]] = []
+    if concentration is not None and concentration > 0.33:
+        risk_flags.append(
+            {
+                "severity": "P2",
+                "reason": (
+                    f"concentration_ratio={concentration} > 0.33 — "
+                    "'super' PSG smell; narrow scope or split"
+                ),
+            }
+        )
+    if has_mad:
+        risk_flags.append(
+            {
+                "severity": "P0",
+                "reason": "component permission set name contains ModifyAllData",
+            }
+        )
+
+    return {
+        "scope": f"psg:{name}",
+        "active_user_count": active_user_count,
+        "component_count": len(component_rows),
+        "components": component_rows,
+        "assignees": assignees,
+        "concentration_ratio": concentration,
+        "risk_flags": risk_flags,
+    }
+
+
+def _permset_shape_ps(
+    name: str,
+    active_user_count: int,
+    target_org: str | None,
+) -> dict[str, Any]:
+    err = _validate_api_name(name, kind="ps_name")
+    if err:
+        return {"error": err}
+
+    assignment_soql = (
+        "SELECT COUNT() FROM PermissionSetAssignment "
+        f"WHERE PermissionSet.Name = '{name}' AND PermissionSetGroupId = null"
+    )
+    assignment_probe = sf_cli.run_sf_json(
+        ["data", "query", "--query", assignment_soql], target_org=target_org
+    )
+    assignees = (assignment_probe.get("result", {}) or {}).get("totalSize") or 0
+
+    risk_flags: list[dict[str, Any]] = []
+    if assignees == 1:
+        risk_flags.append(
+            {
+                "severity": "P1",
+                "reason": "permission set assigned to exactly one user — "
+                "candidate for removal or promotion to PSG",
+            }
+        )
+    if _MAD_PATTERN.search(name):
+        risk_flags.append(
+            {
+                "severity": "P0",
+                "reason": "permission set name contains ModifyAllData",
+            }
+        )
+
+    concentration = (
+        round(assignees / active_user_count, 3) if active_user_count else None
+    )
+
+    return {
+        "scope": f"ps:{name}",
+        "active_user_count": active_user_count,
+        "direct_assignees": assignees,
+        "concentration_ratio": concentration,
+        "risk_flags": risk_flags,
+    }
+
+
+def _permset_shape_user(
+    username: str,
+    active_user_count: int,
+    target_org: str | None,
+) -> dict[str, Any]:
+    # username CAN contain '.' and '@' — regex needs to allow that.
+    if not re.match(r"^[A-Za-z0-9._@+-]+$", username or ""):
+        return {"error": f"username must match /^[A-Za-z0-9._@+-]+$/, got: {username!r}"}
+
+    shape_soql = (
+        "SELECT PermissionSet.Name, PermissionSet.Label, "
+        "PermissionSetGroup.DeveloperName "
+        "FROM PermissionSetAssignment "
+        f"WHERE Assignee.Username = '{username}' "
+        "LIMIT 200"
+    )
+    shape = _run_soql(shape_soql, target_org=target_org, tooling=False)
+    if "error" in shape:
+        return shape
+
+    rows = []
+    for record in shape["records"]:
+        ps = record.get("PermissionSet") or {}
+        psg = record.get("PermissionSetGroup") or {}
+        rows.append(
+            {
+                "permission_set": ps.get("Name") if isinstance(ps, dict) else None,
+                "permission_set_label": ps.get("Label") if isinstance(ps, dict) else None,
+                "permission_set_group": (
+                    psg.get("DeveloperName") if isinstance(psg, dict) else None
+                ),
+            }
+        )
+
+    return {
+        "scope": f"user:{username}",
+        "active_user_count": active_user_count,
+        "assignment_count": len(rows),
+        "assignments": rows,
+    }
+
+
+# --------------------------------------------------------------------------- #
+# probe_automation_graph                                                       #
+# --------------------------------------------------------------------------- #
+#
+# Recipe source: agents/_shared/probes/automation-graph-for-sobject.md (added
+# to the repo 2026-04-19 as part of the Cursor flow-builder review triage).
+# This lifts the recipe into an executable tool so flow-builder, apex-builder,
+# and automation-migration-router can call it directly instead of pasting SOQL.
+
+
+def probe_automation_graph(
+    object_name: str,
+    target_org: str | None = None,
+    include_managed: bool = False,
+) -> dict[str, Any]:
+    """Enumerate every active piece of automation on an sObject.
+
+    Returns a structured ``automation_graph`` with six sub-lists:
+    ``record_triggered_flows``, ``process_builders`` (legacy Workflow-type
+    FlowDefinitionView rows), ``triggers``, ``validation_rules``,
+    ``workflow_rules``, ``approval_processes``. Plus a ``flags[]`` block
+    identifying classic real-life pitfalls: multiple overlapping RT flows,
+    PB present (should be migrated), trigger+flow coexistence on the same
+    context, active approval processes.
+
+    Consumers: ``flow-builder`` (Step 0 preflight before choosing a flow
+    type), ``apex-builder`` (trigger recursion risk check),
+    ``automation-migration-router`` (inventory dispatch).
+
+    The probe is read-only — no DML, no deployment. Six Tooling-API SOQL
+    calls; surfaces errors on the result dict rather than raising.
+    """
+    err = _validate_api_name(object_name, kind="object_name")
+    if err:
+        return {"error": err}
+
+    managed_clause = "" if include_managed else " AND NamespacePrefix = null"
+
+    # 1. Active FlowDefinitionView on the object.
+    flow_soql = (
+        "SELECT DurableId, ApiName, Label, ProcessType, TriggerType, "
+        "TriggerObjectOrEventLabel, IsActive, IsOutOfDate, VersionNumber "
+        "FROM FlowDefinitionView "
+        f"WHERE TriggerObjectOrEventLabel = '{object_name}' AND IsActive = true "
+        "ORDER BY ProcessType, ApiName "
+        "LIMIT 200"
+    )
+    # FlowDefinitionView is a standard sObject (not Tooling API).
+    flows = _run_soql(flow_soql, target_org=target_org, tooling=False)
+    if "error" in flows:
+        return {"error": f"FlowDefinitionView query failed: {flows['error']}"}
+
+    record_triggered: list[dict[str, Any]] = []
+    process_builders: list[dict[str, Any]] = []
+    for rec in flows["records"]:
+        pt = rec.get("ProcessType") or ""
+        tt = rec.get("TriggerType") or ""
+        entry = {
+            "api_name": rec.get("ApiName"),
+            "label": rec.get("Label"),
+            "process_type": pt,
+            "trigger_type": tt,
+            "version": rec.get("VersionNumber"),
+            "is_out_of_date": rec.get("IsOutOfDate"),
+        }
+        if pt == "Workflow":
+            process_builders.append(entry)
+        elif pt in ("AutoLaunchedFlow",) and tt in (
+            "RecordAfterSave", "RecordBeforeSave", "RecordBeforeDelete",
+        ):
+            record_triggered.append(entry)
+
+    # 2. Active Apex triggers on the object.
+    trg_soql = (
+        "SELECT Id, Name, TableEnumOrId, Status, "
+        "UsageBeforeInsert, UsageBeforeUpdate, UsageBeforeDelete, "
+        "UsageAfterInsert, UsageAfterUpdate, UsageAfterDelete, UsageAfterUndelete, "
+        "NamespacePrefix, ApiVersion "
+        "FROM ApexTrigger "
+        f"WHERE TableEnumOrId = '{object_name}' AND Status = 'Active'{managed_clause} "
+        "LIMIT 100"
+    )
+    triggers = _run_soql(trg_soql, target_org=target_org, tooling=True)
+    if "error" in triggers:
+        return {"error": f"ApexTrigger query failed: {triggers['error']}"}
+
+    trigger_rows: list[dict[str, Any]] = []
+    for rec in triggers["records"]:
+        events: list[str] = []
+        for flag, label in (
+            ("UsageBeforeInsert", "BeforeInsert"),
+            ("UsageBeforeUpdate", "BeforeUpdate"),
+            ("UsageBeforeDelete", "BeforeDelete"),
+            ("UsageAfterInsert",  "AfterInsert"),
+            ("UsageAfterUpdate",  "AfterUpdate"),
+            ("UsageAfterDelete",  "AfterDelete"),
+            ("UsageAfterUndelete","AfterUndelete"),
+        ):
+            if rec.get(flag):
+                events.append(label)
+        trigger_rows.append(
+            {
+                "id": rec.get("Id"),
+                "name": rec.get("Name"),
+                "events": events,
+                "api_version": rec.get("ApiVersion"),
+                "namespace": rec.get("NamespacePrefix"),
+            }
+        )
+
+    # 3. Active validation rules.
+    vr_soql = (
+        "SELECT Id, ValidationName, Active "
+        "FROM ValidationRule "
+        f"WHERE EntityDefinition.QualifiedApiName = '{object_name}' AND Active = true "
+        "LIMIT 200"
+    )
+    vrs = _run_soql(vr_soql, target_org=target_org, tooling=True)
+    if "error" in vrs:
+        return {"error": f"ValidationRule query failed: {vrs['error']}"}
+    vr_rows = [
+        {"id": r.get("Id"), "name": r.get("ValidationName")}
+        for r in vrs["records"]
+    ]
+
+    # 4. Active workflow rules (still returned; may be deprecated in target org).
+    wf_soql = (
+        "SELECT Id, Name, TableEnumOrId "
+        "FROM WorkflowRule "
+        f"WHERE TableEnumOrId = '{object_name}' "
+        "LIMIT 100"
+    )
+    wfs = _run_soql(wf_soql, target_org=target_org, tooling=True)
+    # WorkflowRule may be unavailable on some editions; return empty on error
+    # rather than failing the whole probe.
+    wf_rows = (
+        [{"id": r.get("Id"), "name": r.get("Name")} for r in wfs.get("records", [])]
+        if "error" not in wfs else []
+    )
+
+    # 5. Active approval processes.
+    ap_soql = (
+        "SELECT Id, DeveloperName, TableEnumOrId "
+        "FROM ProcessDefinition "
+        f"WHERE TableEnumOrId = '{object_name}' "
+        "LIMIT 100"
+    )
+    aps = _run_soql(ap_soql, target_org=target_org, tooling=True)
+    ap_rows = (
+        [{"id": r.get("Id"), "developer_name": r.get("DeveloperName")}
+         for r in aps.get("records", [])]
+        if "error" not in aps else []
+    )
+
+    # Flag logic.
+    flags: list[dict[str, Any]] = []
+
+    # Bucket RT flows by trigger_type to detect overlap on the same context.
+    by_trigger: dict[str, int] = {}
+    for entry in record_triggered:
+        by_trigger[entry["trigger_type"]] = by_trigger.get(entry["trigger_type"], 0) + 1
+    for trigger_type, count in by_trigger.items():
+        if count >= 3:
+            flags.append({
+                "code": "MULTIPLE_RECORD_TRIGGERED_FLOWS",
+                "severity": "P1",
+                "count": count,
+                "context": trigger_type,
+                "message": (
+                    f"{object_name} has {count} active record-triggered flows "
+                    f"on {trigger_type}. Consolidate before adding another."
+                ),
+            })
+
+    if process_builders:
+        flags.append({
+            "code": "PROCESS_BUILDER_PRESENT",
+            "severity": "P1",
+            "count": len(process_builders),
+            "message": (
+                "Process Builder is deprecated; migrate via "
+                "/migrate-workflow-pb before adding new Flow automation."
+            ),
+        })
+
+    if wf_rows:
+        flags.append({
+            "code": "WORKFLOW_RULE_PRESENT",
+            "severity": "P2",
+            "count": len(wf_rows),
+            "message": "Workflow Rules are deprecated; consider migration.",
+        })
+
+    if trigger_rows and record_triggered:
+        flags.append({
+            "code": "TRIGGER_AND_FLOW_COEXIST",
+            "severity": "P2",
+            "message": (
+                f"{object_name} has active Apex triggers AND record-triggered "
+                "flows. Review order of execution for interference."
+            ),
+        })
+
+    if ap_rows:
+        flags.append({
+            "code": "APPROVAL_PROCESS_ACTIVE",
+            "severity": "P2",
+            "count": len(ap_rows),
+            "message": (
+                "Active approval process(es) on this object; be careful "
+                "with before-save automation that might conflict."
+            ),
+        })
+
+    return {
+        "object": object_name,
+        "active": {
+            "record_triggered_flows": record_triggered,
+            "process_builders": process_builders,
+            "triggers": trigger_rows,
+            "validation_rules": vr_rows,
+            "workflow_rules": wf_rows,
+            "approval_processes": ap_rows,
+        },
+        "flags": flags,
+    }

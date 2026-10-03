@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/verify-plan` (`commands/verify-plan.md`)
 - Domain router skill: `salesforce-admin`
-

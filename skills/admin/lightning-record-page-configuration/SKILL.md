@@ -41,9 +41,9 @@ outputs:
   - "Assignment precedence audit naming which rung wins for each user population"
   - "Checker script report listing unassigned pages, over-capacity regions, and legacy metadata shapes"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-08-15
+updated: 2026-10-03
 ---
 
 # Lightning Record Page Configuration
@@ -65,6 +65,18 @@ Gather this context before touching the App Builder:
 - **What is the deployment path?** The `.flexipage` file carries zero assignment information. If the plan is "retrieve the flexipages folder and deploy it", the plan ships an inert page. See `references/gotchas.md` Gotcha 1 before writing the manifest.
 
 ---
+
+## Questions to Ask Before Configuring
+
+Ask these before you configure a Lightning record page; each one changes the page you build or where it is assigned.
+
+| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
+|---|---|---|---|
+| Which objects and record types get this record page, and which keep the page they have today? | Activation is a ladder: org default, app default, app + record type + profile. The lowest rung has no record-type dimension, so an org-default record page shows for every record type of the object unless a higher rung outranks it. | The exact record types in scope and the ones that must be left alone, by developer name. | A page assigned at the rung that matches the scope, instead of an org default that silently reaches teams it was not meant for. |
+| Which Lightning apps expose this object, and does any of them already assign its own record page? | An app-level assignment outranks the org default. Nothing offline can enumerate the org's `CustomApplication` metadata. | The list of apps from a retrieve, and a decision per app: re-point or leave. | A runbook step that retrieves the apps before deploy rather than a surprise at go-live. |
+| Which components must be on the page, and which of them are custom? | A custom Lightning web component is referenced as `c:<bundleName>`; the Path is `runtime_sales_pathassistant:pathAssistant`; the template decides which regions exist (`subheader`, `main`, `sidebar` on the record-home-with-subheader template). | Component names copied from their bundles' `js-meta.xml`, not retyped, and the template's region names. | A FlexiPage whose component references and regions the org accepts on first contact (both were org-verified on 2026-09-19). |
+| Who activates the page after deploy, and on which rung? | Org-default activation ships as two `actionOverrides` (View, Flexipage, Large and Small) on the object file; a partial object file on a real deploy may replace the whole object definition. | A named owner and a decision between org default and app assignment. | A retrieve-and-merge of the org's object file before the deploy, as a blocking runbook step. |
+| Does the page need a different shape per form factor or per profile? | Large and Small are separate activations; profile-scoped assignment needs the app rung. | The form factors in scope and whether any profile needs a different page. | Fewer pages to maintain, each assigned where it is needed. |
 
 ## Core Concepts
 

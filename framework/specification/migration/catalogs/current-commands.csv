@@ -30,6 +30,7 @@ compare-orgs,commands/compare-orgs.md,multi-org-drift-analyzer,P12,promote-nativ
 configure-business-hours,commands/configure-business-hours.md,business-hours-and-holidays-configurator,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
 consolidate-triggers,commands/consolidate-triggers.md,trigger-consolidator,P05,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 debug-lwc,commands/debug-lwc.md,lwc-debugger,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
+decide-salesforce,commands/decide-salesforce.md,,,preserve-legacy-command,false,Ledger row added during live reconciliation; assess disposition.
 design-assignment-rules,commands/design-assignment-rules.md,assignment-and-auto-response-rules-designer,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
 design-custom-metadata,commands/design-custom-metadata.md,custom-metadata-and-settings-designer,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
 design-duplicate-rule,commands/design-duplicate-rule.md,duplicate-rule-designer,,preserve-legacy-command,false,Do not remove; assess from usage evidence before migration or deprecation.
@@ -51,6 +52,7 @@ gen-tests,commands/gen-tests.md,test-class-generator,,preserve-legacy-command,fa
 govern-picklists,commands/govern-picklists.md,audit-router,P04,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 govern-prompt-library,commands/govern-prompt-library.md,audit-router,P11,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 keep-build-docs,commands/keep-build-docs.md,,,preserve-legacy-command,false,Ledger row added during live reconciliation; assess disposition.
+learn-salesforce,commands/learn-salesforce.md,,,preserve-legacy-command,false,Ledger row added during live reconciliation; assess disposition.
 map-csv-to-object,commands/map-csv-to-object.md,csv-to-object-mapper,P09,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 map-process-flow,commands/map-process-flow.md,process-flow-mapper,P05,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 migrate-profile-to-permset,commands/migrate-profile-to-permset.md,profile-to-permset-migrator,P03;P07,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.

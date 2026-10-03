@@ -1,13 +1,13 @@
 # Worked example — Northwind Enterprise sales process (project tier, status `done`)
 
-The largest of the five scenarios: one requirement in plain English — give the Enterprise team its own way of selling without touching the SMB team's pipeline — taken through sixteen steps, four milestones and nine human gates, validated against a real org without deploying, from first clarification on 12 September 2026 to acceptance on 3 October 2026. It crosses every technology the library covers: configuration (record types, stages, layouts), access (permission sets, a profile overlay), guardrails (validation rules with a custom-permission bypass), an approval process with workflow actions, Apex, a Lightning web component, a record page, reporting, and the compiled deliverables a client signs.
+The broadest of the five scenarios in technology, and the second-largest in size: one requirement in plain English — give the Enterprise team its own way of selling without touching the SMB team's pipeline — taken through sixteen steps, four milestones and nine human gates, validated against a real org without deploying, from first clarification on 12 September 2026 to acceptance on 3 October 2026. It crosses every technology the library covers: configuration (record types, stages, layouts), access (permission sets, a profile overlay), guardrails (validation rules with a custom-permission bypass), an approval process with workflow actions, Apex, a Lightning web component, a record page, reporting, and the compiled deliverables a client signs.
 
 ## Read in this order
 
 1. `requirement.md` — the ask, seven items long.
 2. `reports/drivers-log.md` — what it felt like to drive: every sprint, every decision, every friction item (72 of them, each one a tooling or contract fix that landed or is queued).
 3. `PLAN.md` — the plan the clarifications produced (65 questions, 43 assumptions, 16 steps).
-4. `reports/MOCK-DEPLOY-M1.md` … `MOCK-DEPLOY-M4.md` — the org's verdicts, 17 recorded runs, and the fourteen facts it taught (`N3-F-01..08`, `N4-F-01..06`).
+4. `reports/MOCK-DEPLOY-M1.md` … `MOCK-DEPLOY-M4.md` — the org's verdicts, 16 runs that reached the org (17 folders, two of them plan-only), and the fourteen facts it taught (`N3-F-01..08`, `N4-F-01..06`).
 5. `reports/MILESTONE-M1-REPORT.md` … `M4` — the four verifications; M1 by the agent, M2–M4 by the operator (fourteen minutes each).
 6. `artefacts/M4-S03/` — the compiled workbook, traceability matrix, acceptance criteria and 73-case UAT pack.
 7. `artefacts/M4-S04/deploy-order.md` — the two-request cutover runbook with every owned pre- and post-deploy step.

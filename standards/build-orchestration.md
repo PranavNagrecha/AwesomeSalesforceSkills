@@ -429,7 +429,7 @@ The UAT test-case pack (`uat-test-cases.yaml`) and the compiled acceptance-crite
 **Borrowing a roster agent from outside Tier 4.** `story-drafter` is a Tier-2 agent with no build-layer clause in its contract: it takes `discovery_artifact_path`, `discovery_artifact_kind` and `feature_scope`, and it persists to its own `default_output_dir`. That does not make it ineligible. The planner maps those inputs from the build directory into the step's `inputs{}` and declares the step's outputs under `artefacts/<step-id>/`; `build-step-runner` relocates what the agent wrote onto those declared paths and records the move. The same accommodation applies to any roster agent a plan borrows for a step, on two conditions:
 
 1. **Read the Inputs table *and* the Escalation / Refusal Rules section, not either alone.** The table states what the agent needs; the refusal section states what it does when it does not get it, and the two are authored separately — an input the table marks "yes for design" is often the same one a single refusal line turns into a stop before the agent reads the plan. `sandbox-strategy-designer` is the standing case: five inputs are mandatory for a design run (`mode`, `team_size`, `concurrent_workstreams`, `release_cadence`, `data_sensitivity`) and its Escalation section reads, in full, "No team size / cadence → refuse." Every input either section makes mandatory is mapped into `inputs{}` from an answered clarification, from `requirement.md`, or from a `depends_on` step's outputs. When one exists nowhere on file the step is `blocked` with `blocked_reason: "borrowed agent requires <inputs>"`, naming them.
-2. **Declare only outputs the agent's Output Contract names.** A borrowed agent produces what its contract says it produces; a path in `outputs[]` with no counterpart there is an artefact nobody writes, `check-outputs` never confirms it, and the step cannot reach `built`. Re-own the step, or move the output to the agent that does declare it. This condition wins over § 5's declare-a-manifest rule wherever the two meet, and the one place they meet — `apex-builder`, whose Output Contract names no `package.xml` — is settled in § 5 under **The Apex exception**: the Apex step declares its classes and their meta XML, and the build-level manifest step aggregates the members.
+2. **Declare only outputs the agent's Output Contract names.** A borrowed agent produces what its contract says it produces; a path in `outputs[]` with no counterpart there is an artefact nobody writes, `check-outputs` never confirms it, and the step cannot reach `built`. Re-own the step, or move the output to the agent that does declare it. This condition wins over § 5's declare-a-manifest rule wherever the two meet, and they meet on every step whose owning agent's Output Contract names no `package.xml` — `apex-builder`, `lwc-builder`, and `build-doc-keeper` on a compile step — not on the Apex step alone. § 5 settles it under **The manifest check's two carve-outs**, with **The Apex exception** as the worked case: the step declares its own files and their meta XML, and the build-level manifest step aggregates the members.
 
 **Adding a step type is not one edit.** It touches, in this order: this table
 and the artefact map above it; `STEP_TYPES` in `scripts/build_plan.py`; the
@@ -462,7 +462,19 @@ the tester and doc-keeper run again, and leave the milestone above it stale
 until `/verify-milestone` is re-run; neither reaches around a pending
 `step:<id>` gate. There is deliberately no `tested → running` edge — a repair
 found after testing goes `tested → failed → pending → running` with a real
-failure reason, not a fabricated one used to route around this table. `next`
+failure reason, not a fabricated one used to route around this table. The
+commonest such repair is the org refusing a step that already passed its
+tests. A `mock_deploy.py` run is a human's, so the reset is an operator's, and
+it is the legal repair path rather than a workaround: `set-status <step>
+failed --run-agent dry-run-operator --result "<the org's message, verbatim,
+and the run it came from>; operator <name>"`, then `set-status <step> pending`
+with the same `--run-agent` and a one-line reason. `--run-agent` takes a slug:
+`runs[].agent` is checked for shape, not resolved against the roster, and a
+reset sent without the flag is either not recorded or filed under the step's
+owning agent, which did not make it. So the slug names the role, and
+`--result` carries the human-readable operator. Precedent: northwind-sales
+M2-S04, reset after `MOCK-DEPLOY-M2.md` run 1 refused its description
+(N3-F-06). `next`
 still offers `pending` steps only — steps whose `depends_on` are all
 `documented`, in the current (approved) milestone, excluding any step whose
 `step:<id>` human gate is not approved. `next` also prints, on stderr, which
@@ -591,16 +603,51 @@ not left inferring it from the exit code. The list is hard-coded rather than
 detected, so a checker that becomes cross-referential is added here and in
 `agents/build-planner/AGENT.md` Step 6 in the same change.
 
+**Declaring a cited checker.** A checker belongs on a step only when it reads
+some of that step's declared outputs. `validate`'s cited-but-undeclared WARN
+(§ 3.1 CLI deltas) and `next`'s `--add-checker` advice (§ 4) name every checker
+a cited skill ships, and neither looks at what the step writes. Before
+declaring one — by `amend-step --add-checker` or by hand — match the step's
+`outputs[]` against the files the checker reads (its `--help`, its source, or
+a run over the step's tree that reports what it scanned). A checker that would
+scan none of them is not declared there: at step scope it either exits 0
+having asserted nothing, which clears the WARN without buying a test, or fails
+a correct step on a tree it was never written for. Carry it where its files
+are — on the step that writes them, or in a milestone test across
+`artefacts/` — or leave the WARN standing and record why. northwind-sales
+declared three such checkers in one week (driver's log frictions 39, 52 and
+54); making `--add-checker` refuse the mismatch is a separate tool fix.
+
 The tester never invents a test; it runs what the plan declares plus the
 always-on `xml` and `manifest` checks. If a declared checker does not exist,
 the step is `blocked`, not silently passed. The always-on `manifest` check
 **fails** — it does not skip — when the step's type is a metadata type
 (`object-model`, `access`, `validation`, `automation`, `routing`, `sla`, `ui`)
 and no `package.xml` exists under the step's artefacts or those of a step it
-depends on. The one carve-out is the `apex-builder`-owned `automation` step
-described under **The Apex exception** below: its members live in the
-build-level manifest, so the check records skipped-not-applicable and names
-that step rather than failing.
+depends on. **The manifest check's two carve-outs** are named here so a tester
+applies them from the contract rather than from a precedent file:
+
+1. **The build-level manifest step.** The `docs` step that writes the build's
+   `package.xml` (owned by `metadata-builder`) holds no component file of its
+   own: every member's file lives under another step's `artefacts/`. Its
+   always-on `manifest` check runs whole-tree — every explicit member backed
+   by a file somewhere under `artefacts/`, every component file under
+   `artefacts/` covered by a member — because read against the step's own
+   directory it fails every member of a correct manifest. Precedents:
+   `examples/builds/case-onboarding/tests/M5-S05/` and
+   `examples/builds/northwind-sales/tests/M4-S04/`.
+2. **A borrowed-agent step whose Output Contract names no manifest.**
+   `apex-builder` (classes and triggers), `lwc-builder` (a bundle) and
+   `build-doc-keeper` on a compile step (prose) produce what their contracts
+   name, and none names a `package.xml` (§ 4 condition 2). The check records
+   skipped-not-applicable and names the step that declares the members — the
+   build-level manifest step, for Apex and LWC; a compile has no members to
+   name. A `package.xml` under a `depends_on` step does not change the
+   reading: it is that step's manifest, and comparing this step's files with
+   it fails a correct step for members it was never meant to carry
+   (northwind-sales M3-S04's tester found that reading open:
+   `envelopes/M3-S04/2026-09-19T17-51-08Z.md`). **The Apex exception** below
+   is the first case of this carve-out, and says why it is not an exemption.
 
 **Every `metadata-builder`-owned metadata step declares
 `artefacts/<step-id>/package.xml` in its `outputs[]`.** `metadata-builder`
@@ -625,6 +672,22 @@ skipped-not-applicable, naming the build-level manifest step that carries its
 members, rather than failing for the absence of a local file. The rule is
 unchanged for every `metadata-builder`-owned step of any of the seven metadata
 types.
+
+**A static `tested` on an Apex step is not test evidence.** Apex runs only in
+an org, and every checker an Apex step can declare reads source, so `tested` on
+an `apex-builder` step says the classes passed static checks and nothing more:
+northwind-sales M3-S03 reached `tested` twice on its checkers alone, and its
+six test methods first ran, and first failed, in the org (N3-F-08). The
+evidence that Apex tests pass is an org run — `mock_deploy.py` at
+`--test-level RunSpecifiedTests` or `RunLocalTests`, whose `summary.md`
+records the tests run and the coverage per class. The rule going forward:
+every Apex step declares that run as one of its own acceptance tests, a
+`manual` line naming the test classes, the test level and the 75% per-class
+floor, ticked at the milestone gate against that run's `summary.md`. It is
+`manual` because the org-facing check is the human's to run (constraint 1
+below), so the tester defers it and never ticks it. A reader then finds the
+org evidence on the step, and not only in a mock-deploy report beside it.
+`validate` does not check for the line yet.
 
 `validate` enforces three constraints on declared tests, all ERRORs:
 

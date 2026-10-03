@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/triage-deployment` (`commands/triage-deployment.md`)
 - Domain router skill: `salesforce-devops`
-

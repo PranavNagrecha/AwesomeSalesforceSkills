@@ -1,9 +1,10 @@
-# Worked example — Acme case intake (design-only build, status `done`)
+# Worked example — Acme case intake (project tier, status `done`)
 
 This directory is a verbatim export of a `.sfskills/builds/<id>/` build directory produced by the
-orchestration layer described in `standards/build-orchestration.md`. Nothing here was deployed. It is
-scenario 1 of the definition of done: the largest of the worked examples (project tier, 5 milestones,
-22 steps, 13 gates), run before the ask/feature tiers existed — which is why it has 97 clarifications.
+orchestration layer described in `standards/build-orchestration.md`. Nothing here was deployed (a
+design-only build). It is scenario 1 of the definition of done: the largest of the worked examples
+(project tier, 5 milestones, 22 steps, 13 gates), run before the ask/feature tiers existed — which is
+why it has 97 clarifications.
 
 ## Read in this order
 
@@ -25,16 +26,6 @@ scenario 1 of the definition of done: the largest of the worked examples (projec
    a checker rule, gotcha or example in the library — this is the loop finding its own gaps.
 10. `reports/drivers-log.md` — the operator's retrospective: cost, gates, what hurt, graded in five lines at the end.
 
-## Gates
-
-Thirteen gates — clarifications, plan, six step gates, five milestone gates — were approved by the dry-run
-operator on the owner's standing instruction so the loop could be exercised end to end; each gate's notes
-name the report it rests on and the findings it accepts knowingly. In a real build each is a human signature.
-
-## Regenerate
-
-`python3 scripts/build_plan.py export .sfskills/builds/case-onboarding/plan.json examples/builds/case-onboarding --force`
-
 ## Reopened and re-signed the same day (tests executing)
 
 G4 and G5 were first signed on compile-only Apex evidence. The first dry runs with tests executing
@@ -46,3 +37,13 @@ the persona's user context and swallowed. After the repairs (`artefacts/M2-S02`,
 §§ 8–11, `artefacts/M5-S05` § 0) the build's Apex validates in the org as the persona — 4/4 tests,
 84.4% coverage — behind the one named org prerequisite (F-28, the verified sender address). Both gates
 were re-signed on that evidence; `reports/drivers-log.md` carries the addendum.
+
+## Gates
+
+Thirteen gates — clarifications, plan, six step gates, five milestone gates — were approved by the dry-run
+operator on the owner's standing instruction so the loop could be exercised end to end; each gate's notes
+name the report it rests on and the findings it accepts knowingly. In a real build each is a human signature.
+
+## Regenerate
+
+`python3 scripts/build_plan.py export .sfskills/builds/case-onboarding/plan.json examples/builds/case-onboarding --force`

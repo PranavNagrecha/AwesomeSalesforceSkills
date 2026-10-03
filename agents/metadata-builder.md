@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/build-metadata` (`commands/build-metadata.md`)
 - Domain router skill: `salesforce-admin`
-

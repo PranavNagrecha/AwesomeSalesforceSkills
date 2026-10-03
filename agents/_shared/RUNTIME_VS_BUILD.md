@@ -25,7 +25,7 @@ Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
 
 ---
 
-## Run-time agents (68)
+## Run-time agents (70)
 
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
@@ -79,7 +79,7 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `path-designer` | Admin | Path + guidance + key fields design per object / stage | `/design-path` |
 | `process-flow-mapper` | Admin | Business process → Salesforce automation map | `/map-process-flow` |
 
-### Strategic — Tier 2 (7)
+### Strategic — Tier 2 (9)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|

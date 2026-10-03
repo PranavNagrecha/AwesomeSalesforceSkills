@@ -1,4 +1,6 @@
-# Cold-start scenario, run 2 — "email the Account Owner when a Case is escalated"
+# Worked example — Case Escalation Email Alert to Account Owner, cold start run 2 (feature tier, status `done`)
+
+Cold-start scenario, run 2: "email the Account Owner when a Case is escalated".
 
 **What was tested.** The same experiment as `examples/builds/cold-start-lead-source/` (a fresh Sonnet
 session, no operator context, no org, one client sentence, told only to read `CLAUDE.md` and do what

@@ -5,7 +5,7 @@ These generated ledgers give every artifact in the uploaded SfSkills snapshot an
 ## Snapshot
 
 - Uploaded archive SHA-256: `not supplied`
-- Skills: 1035
+- Skills: 1040
 - Canonical agents: 76
 - Commands: 67
 - MCP tools: 38

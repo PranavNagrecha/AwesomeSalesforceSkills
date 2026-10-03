@@ -1,8 +1,8 @@
-# Worked example — lock Opportunity Amount after Closed Won (`scale: ask`, design-only)
+# Worked example — Lock Opportunity Amount after Closed Won (ask tier, status `done`)
 
 A verbatim export of a `.sfskills/builds/<id>/` directory produced by the orchestration layer at its smallest
-ceremony tier (`standards/build-orchestration.md` § 3.1). One-line requirement in, one deploy-ready step out,
-three human decisions, four files read. Nothing here was deployed. Scenario 4 of the five-scenario definition of done;
+ceremony tier, `scale: ask` (`standards/build-orchestration.md` § 3.1). One-line requirement in, one deploy-ready step out,
+three human decisions, four files read. Nothing here was deployed (design-only). Scenario 4 of the five-scenario definition of done;
 `examples/builds/case-onboarding/` is the same loop at `scale: project`.
 
 ## Read in this order

@@ -125,6 +125,10 @@ Citations are data, not prose. Every output ends with a `citations[]` block wher
 
 `type` is one of `skill`, `template`, `standard`, `decision_tree`, `mcp_tool`, `probe`, `agent`, `example_build`. Every citation must resolve to a real path (or a real MCP tool name) at validation time.
 
+### Open items in a builder's envelope
+
+A build-layer builder — `metadata-builder`, `apex-builder`, `lwc-builder`, or any roster agent a plan borrows to build a step — lists what it leaves for a human under one key and one shape: `extensions.open_items[]`, each entry an object with `id` (the `O-<step>-NN` form `decisions.md` uses, e.g. `O-M2S04-01`), `topic` (one line) and `what_to_do` (the decision or action, with the evidence). `scripts/render_step_docs.py` carries those entries into `decisions.md` by reading that shape. The northwind-sales envelopes used two shapes for the same thing — that one, and bare strings under `extensions.open_items_for_the_human` — so the renderer accepts both for the envelopes already on disk; a new envelope writes only `open_items[]`.
+
 ---
 
 ## Rules every agent follows

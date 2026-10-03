@@ -43,4 +43,3 @@ not resolve, say so instead of substituting a guess.
 
 - Slash command: `/build-from-requirements` (`commands/build-from-requirements.md`)
 - Domain router skill: `salesforce-admin`
-

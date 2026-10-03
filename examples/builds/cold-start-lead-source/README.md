@@ -1,4 +1,7 @@
-# Cold-start scenario — "Original Lead Source" (scenario 5 of the definition of done)
+# Worked example — Original Lead Source, cold start run 1 (no tier, status none)
+
+Cold-start scenario, run 1: scenario 5 of the definition of done. The loop was never found, so there is no
+`plan.json`, no tier and no build status.
 
 **What was tested.** A fresh Sonnet session with no operator context, no prior conversation and no
 org was given the repository path, its `CLAUDE.md`, and one client sentence: *"When a Lead is

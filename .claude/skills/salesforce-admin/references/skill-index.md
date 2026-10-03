@@ -1,4 +1,4 @@
-# SfSkills — `admin` skill roster (260 packages)
+# SfSkills — `admin` skill roster (261 packages)
 
 The zero-setup lookup path: this file ships with the plugin and needs
 no search index. Scan it, pick a package by name, then read that
@@ -260,7 +260,7 @@ If your question is X, stop and open Y instead of this package.
 - `skills/admin/scheduled-path-patterns/SKILL.md` — Scheduled Paths in record-triggered Flow: delayed execution, time-offset …. NOT for picking between Scheduled Path, Wait and Scheduled Flow, or migrating time-based workflow rules — use flow/flow-time-based-patterns.
 - `skills/admin/scoping-rules/SKILL.md` — Triggers: scoping rule, Filter by scope, default record scope, RestrictionRule enforcementType Scoping, Object Manager scoping rule, recordFilter. NOT for the SOQL USING SCOPE clause - use apex/soql-using-scope-clause.
 - `skills/admin/self-service-design/SKILL.md` — Triggers: design self-service portal, case deflection strategy, help center UX design, reduce support volume with self-service, knowledge base search experience. NOT for … use architect/case-deflection-strategy
-- `skills/admin/service-cloud-voice-setup/SKILL.md` — setting up Service Cloud Voice with Amazon Connect — provisioning the contact center, configuring phone numbers, enabling real-time …. NOT for Omni-Channel routing setup — use admin/omni-channel-routing-setup.
+- `skills/admin/service-cloud-voice-setup/SKILL.md` — Triggers: Service Cloud Voice, Amazon Connect, contact center, softphone, call transcription, After Conversation Work, ACW, wrap-up time, VoiceCall, …. NOT for Omni-Channel … use admin/omni-channel-routing-setup
 - `skills/admin/service-console-configuration/SKILL.md` — Triggers: Service Console, console app, workspace tabs, subtabs, utility bar macros, Omni-Channel utility, split view, Quick Text, console navigation rules, …. NOT for opening or … use lwc/lwc-console-workspace-api
 - `skills/admin/sharing-and-visibility/SKILL.md` — Triggers: OWD, org-wide defaults, sharingModel, externalSharingModel, record access model, sharing architecture, which sharing mechanism, UserRecordAccess, …. NOT for sharing rules - use admin/sharing-rules.
 - `skills/admin/sharing-rules/SKILL.md` — Triggers: sharing rule, criteria-based sharing rule, owner-based sharing rule, sharing rule recalculation, guest user sharing rule, share with a public group, …. NOT for org-wide … use admin/sharing-and-visibility

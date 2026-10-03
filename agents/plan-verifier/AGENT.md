@@ -22,9 +22,12 @@ dependencies:
     - admin/uat-test-case-design
   shared:
     - AGENT_CONTRACT.md
+    - AGENT_DISAMBIGUATION.md
     - AGENT_RULES.md
     - DELIVERABLE_CONTRACT.md
     - REFUSAL_CODES.md
+    - RUNTIME_VS_BUILD.md
+    - SKILL_MAP.md
   decision_trees:
     - agentforce-capability-selector.md
     - async-selection.md

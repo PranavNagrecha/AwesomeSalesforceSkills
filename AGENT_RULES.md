@@ -407,7 +407,7 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
    > still name it as an entry point — that is wrong. Invoke build agents by
    > reading their `AGENT.md` directly, or via `/new-skill` and `/add-skill`.
 
-2. **Run-time (68)** — four tiers:
+2. **Run-time (70)** — four tiers:
    - **Developer + architecture (28):** `apex-refactorer`,
      `trigger-consolidator`, `test-class-generator`, `soql-optimizer`,
      `security-scanner`, `flow-analyzer`, `bulk-migration-planner`,
@@ -428,7 +428,7 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
      `custom-metadata-and-settings-designer`,
      `entitlement-and-milestone-designer`, `experience-cloud-admin-designer`,
      `path-designer`, `process-flow-mapper`.
-   - **Strategic — Tier 2 (7):** `data-model-reviewer`,
+   - **Strategic — Tier 2 (9):** `data-model-reviewer`,
      `integration-catalog-builder`, `csv-to-object-mapper`,
      `email-template-modernizer`, `audit-router`, `fit-gap-analyzer`,
      `story-drafter`.

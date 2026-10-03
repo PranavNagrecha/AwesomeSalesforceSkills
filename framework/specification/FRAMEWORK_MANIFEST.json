@@ -1,15 +1,15 @@
 {
   "counts": {
     "agents": 20,
-    "bytes": 3693993,
+    "bytes": 3699925,
     "commands": 18,
     "context_packs": 12,
     "evidence_tools": 18,
     "files": 529,
-    "legacy_agents_covered": 96,
-    "legacy_commands_covered": 90,
+    "legacy_agents_covered": 98,
+    "legacy_commands_covered": 92,
     "legacy_mcp_tools_covered": 50,
-    "legacy_skills_covered": 1035,
+    "legacy_skills_covered": 1040,
     "products": 12,
     "qa_scenarios": 74,
     "requirements": 266,
@@ -890,7 +890,7 @@
     {
       "bytes": 1474,
       "path": "migration/catalogs/V2_DISPOSITION_LEDGER.md",
-      "sha256": "f4e1cf7a8c27e9ca650654dd1064803aa42e247b1b1cd6caeea5e2f3dcde7676"
+      "sha256": "2d87807a31bd26bdb48e973ceb6a2756c376c453adad2456e4b7fe2910f34f42"
     },
     {
       "bytes": 9083,
@@ -1283,14 +1283,14 @@
       "sha256": "ea1597f8ed1ea15fa01c3cf4ba1d9ca2d740e8831a4b4ae8e58cd68cf746eb6d"
     },
     {
-      "bytes": 19681,
+      "bytes": 20059,
       "path": "migration/catalogs/current-agents.csv",
-      "sha256": "ebd3cd9e11dc3e89e382125b216227e35103edda88b089a7e8dc66929faeb829"
+      "sha256": "eadfbba8f78c03fdd98f599112b114cef50c382ccdc491dfc01085b5ac760437"
     },
     {
-      "bytes": 16746,
+      "bytes": 17034,
       "path": "migration/catalogs/current-commands.csv",
-      "sha256": "c0c520074cf49e5786d392c200f7d2fe5377fb74f61a71615f844396c3a9dbbe"
+      "sha256": "d3ba6e4082c6e68827e36c6569970364d30441e0379bb470db629f2b82b1017d"
     },
     {
       "bytes": 8840,
@@ -1303,9 +1303,9 @@
       "sha256": "ba229ba0c19c4ffe7ac9d3f6353513f027d6180ebf1c8298e01d3f85b547a074"
     },
     {
-      "bytes": 984579,
+      "bytes": 989845,
       "path": "migration/catalogs/current-skills.csv",
-      "sha256": "cfcfc9a204ed5fac5de4d2a08d6c1ec52fd382a24e83915b48c9ed5abb3dd3c9"
+      "sha256": "3a1d453e91162a344e65508c376cb439780703239adce5272288e60e0862b49d"
     },
     {
       "bytes": 13166,

@@ -80,6 +80,8 @@ report-and-dashboard-auditor,runtime,deprecated,agents/report-and-dashboard-audi
 reports-and-dashboards-folder-sharing-auditor,runtime,deprecated,agents/reports-and-dashboards-folder-sharing-auditor/AGENT.md,1.1.0,,preserve-deprecation-redirect,false,Retain redirect until replacement parity and migration tests pass.
 requirements-clarifier,runtime,stable,agents/requirements-clarifier/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 sales-stage-designer,runtime,stable,agents/sales-stage-designer/AGENT.md,1.1.0,P04,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
+salesforce-decision-facilitator,runtime,stable,agents/salesforce-decision-facilitator/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
+salesforce-learning-guide,runtime,stable,agents/salesforce-learning-guide/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 sandbox-strategy-designer,runtime,stable,agents/sandbox-strategy-designer/AGENT.md,1.1.0,P06,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 security-posture-reviewer,runtime,stable,agents/security-posture-reviewer/AGENT.md,,P07,promote-native-product-agent,true,Export as focused Cursor subagent for P07.
 security-scanner,runtime,stable,agents/security-scanner/AGENT.md,1.1.0,P03;P07,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
