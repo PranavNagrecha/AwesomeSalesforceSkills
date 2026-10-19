@@ -161,7 +161,7 @@ releases:
     title: 'Top-up wave: Questions table + version on at-bar skills lacking a table (85 today), data/devops first'
     size: M
     owner_model: opus
-    status: running
+    status: done
     target: 20
     domains:
     - data
@@ -177,6 +177,15 @@ releases:
     - devops/environment-specific-value-injection
     - devops/experience-cloud-deployment-admin
     - devops/experience-cloud-deployment-dev
+    - devops/flow-deployment-activation-ordering
+    - devops/fsc-deployment-patterns
+    - devops/isv-license-management-and-trialforce
+    - devops/metadata-api-coverage-gaps
+    - devops/metadata-api-retrieve-deploy
+    - devops/migration-from-change-sets-to-sfdx
+    evidence: 16 at-bar data/devops skills got the exact Questions table (domains exhausted; 85-skill corpus list continues
+      in R2-02 for other domains); writer+reviewer corrected 16+12+12 claims, 3 fabrications; merges f8972bacb + this; validate
+      --domain devops 0 errors
   - id: R1-12
     title: 'Knowledge-lift test: run the 30 golden eval cases WITH and WITHOUT the skill loaded through scripts/eval_grader.sh;
       record pass rate and mean rubric per arm'
@@ -234,7 +243,7 @@ releases:
       licensing)
     size: M
     owner_model: opus
-    status: todo
+    status: running
   - id: R1-10
     title: 'Release: CHANGELOG [Plugin 1.4.0] + [0.5.1], versions, gate, merge main, push, ls-remote verify, tag mcp-v0.5.1,
       watch publish, fresh-clone bootstrap --verify-only'
