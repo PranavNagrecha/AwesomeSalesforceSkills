@@ -58,13 +58,12 @@
 **Solution:**
 
 ```xml
-<!-- force-app/main/default/featureParameters/Forecast_Used_In_Last_30_Days.featureParameterBoolean-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/featureParameters/Forecast_Used_In_Last_30_Days.featureParameterBoolean-meta.xml -->
 <FeatureParameterBoolean xmlns="http://soap.sforce.com/2006/04/metadata">
-  <description>True if the subscriber org has invoked Generate Forecast in the last 30 days.</description>
   <masterLabel>Forecast Used In Last 30 Days</masterLabel>
   <dataflowDirection>SubscriberToLmo</dataflowDirection>
-  <defaultValue>false</defaultValue>
+  <value>false</value>
 </FeatureParameterBoolean>
 ```
 

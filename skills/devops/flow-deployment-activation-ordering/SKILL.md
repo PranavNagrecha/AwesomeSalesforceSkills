@@ -56,7 +56,7 @@ verification to make Flow deploys boring.
 | Is any `FlowDefinition` file in the package or its source directory? | Its `activeVersionNumber` overrides every `status` in the same deploy (Gotcha 2) | Either an empty `flowDefinitions/` or a deliberate, standalone rollback component |
 | Is **Deploy processes and flows as active** enabled in production, and at what coverage? | The preference does not exist in sandboxes, so a green sandbox run proves nothing about production (Gotcha 7) | A release-readiness line item checked in the real target |
 | Does a changed flow call a subflow, or is it called as one? | Subflows resolve at interview time, and a child with no active version drops callers onto its latest version (Gotchas 4, 5) | The child-then-caller activation order written into the runbook |
-| How many paused or waiting interviews reference the versions in play? | Interviews resume on the version they started on and break when that version is deleted (Gotchas 8, 9) | A `FlowInterview` count that gates any version cleanup |
+| How many paused or waiting interviews reference the versions in play? | A version with paused interviews can't be deleted until they finish or are deleted, and deleting the interviews discards them (Gotchas 8, 9) | A `FlowInterview` count that gates any version cleanup |
 | Does Apex start the flow, and is deactivation the planned off switch? | With no active version, the latest version runs for a flow user, and a flow admin always gets the latest (Gotcha 13) | A tested kill switch in the caller instead of deactivation |
 | Is a changed flow schedule-triggered, or does a managed package ship flows into this org? | Scheduled runs pick the active version at run time, and package upgrades move active versions outside your release (Gotchas 10, 12) | An activation time chosen against the next run and a post-deploy `FlowDefinitionView` diff |
 
@@ -156,10 +156,10 @@ active at interview time, and the *latest* version if the child has none active.
   number is the thing `status` cannot express. To take a flow *off* rather than
   move the pointer, deactivate on the flow's detail page or deploy the version
   with `<status>Draft</status>` — both are documented behaviours.
-  <!-- UNVERIFIED: `activeVersionNumber` = 0 is widely reported to deactivate a
-  flow, but meta_flowdefinition.htm documents the field only as "The version
-  number of the active flow" and states no behaviour for 0. Nothing in this
-  runbook depends on it; if you want to use it, confirm in a sandbox first. -->
+  UNVERIFIED (2026-10-19): `activeVersionNumber` = 0 is widely reported to
+  deactivate a flow, but the Summer '26 Metadata API guide documents the field
+  only as "The version number of the active flow" and states no behaviour for 0.
+  Nothing in this runbook depends on it; confirm in a sandbox before using it.
 - Do **not** delete the bad version. It is the evidence and it preserves the
   forward-fix path.
 - Rollback stops future damage and repairs nothing past. Records already written

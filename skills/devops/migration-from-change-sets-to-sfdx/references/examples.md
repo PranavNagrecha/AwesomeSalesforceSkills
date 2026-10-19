@@ -9,8 +9,8 @@
 **Solution:**
 
 ```xml
-<!-- package.xml — targeted Apex retrieval -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- package.xml — targeted Apex retrieval -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>AccountService</members>
@@ -31,16 +31,13 @@
 ```
 
 ```bash
-# Retrieve in mdapi format
+# Retrieve — writes source format straight into force-app
 sf project retrieve start \
   --manifest package.xml \
-  --target-org prod \
-  --output-dir mdapi-output/
+  --target-org prod
 
-# Convert to source format
-sf project convert mdapi \
-  --root-dir mdapi-output/ \
-  --output-dir force-app/
+# Only for files you already hold in metadata format (an Ant or Metadata API repo):
+# sf project convert mdapi --root-dir legacy-mdapi/ --output-dir force-app/
 
 # Verify file count matches expectations
 find force-app/main/default/classes -name "*.cls" | wc -l
@@ -66,16 +63,10 @@ sf project deploy start \
 **Solution:**
 
 ```bash
-# Retrieve the objects in mdapi format
+# Retrieve the objects — source format decomposes each object on retrieve
 sf project retrieve start \
   --manifest object-package.xml \
-  --target-org prod \
-  --output-dir mdapi-objects/
-
-# Convert — source format decomposes each object
-sf project convert mdapi \
-  --root-dir mdapi-objects/ \
-  --output-dir force-app/
+  --target-org prod
 
 # Resulting structure (decomposed):
 # force-app/main/default/objects/Account_Review__c/

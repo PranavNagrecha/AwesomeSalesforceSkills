@@ -12,8 +12,8 @@ Common mistakes AI coding assistants make when generating or advising on migrati
 
 ```bash
 # Modern SF CLI equivalents
-sf project convert mdapi --root-dir mdapi-output/ --output-dir force-app/
-sf project retrieve start --manifest package.xml --target-org prod --output-dir mdapi-output/
+sf project retrieve start --manifest package.xml --target-org prod   # writes source format into force-app
+sf project convert mdapi --root-dir legacy-mdapi/ --output-dir force-app/   # only for files already in metadata format
 sf project deploy start --source-dir force-app/ --target-org sandbox
 ```
 
@@ -99,8 +99,8 @@ sf project deploy start --manifest package.xml --target-org <org>
 **Correct pattern:**
 
 ```xml
-<!-- destructiveChangesPost.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- destructiveChangesPost.xml -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>Account.Old_Field__c</members>

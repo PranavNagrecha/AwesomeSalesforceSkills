@@ -99,9 +99,9 @@ always fail loudly on an unrecognised element.
 "The version number of the active flow." `FlowDefinition`'s complete field set is
 `activeVersionNumber`, `apiVersion` (reserved for internal use), `description`,
 and `masterLabel`.
-<!-- UNVERIFIED: `activeVersionNumber` = 0 is widely reported to deactivate a
-flow, but the field's documentation states no behaviour for 0. Do not assert it
-as fact when reviewing; if it matters to the change, confirm it in a sandbox. -->
+UNVERIFIED (2026-10-19): `activeVersionNumber` = 0 is widely reported to
+deactivate a flow, but the field's documentation states no behaviour for 0. Do
+not assert it as fact when reviewing; if it matters, confirm it in a sandbox.
 
 **Detection hint:** any `FlowDefinition` child element other than those four.
 

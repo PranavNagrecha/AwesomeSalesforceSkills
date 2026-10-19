@@ -24,9 +24,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 3: A Retrieved Profile Is a Partial Snapshot That Deploys as Truth
 
-**What happens:** A retrieved `.profile` file includes "security settings for the other metadata types referenced in the retrieve request" — plus user permissions, IP address ranges, and login hours, which are always retrieved. Which settings land in the file therefore depends on the manifest, the org type, and the tracking state. Deploying that file to another org pushes whatever partial snapshot it holds. UNVERIFIED (2026-10-19): how a deploy treats permissions absent from the file is not stated in the Summer '26 guides.
+**What happens:** A retrieved `.profile` file includes "security settings for the other metadata types referenced in the retrieve request" — plus user permissions, IP address ranges, and login hours, which are always retrieved. Which settings land in the file therefore depends on the manifest, the org type, and the tracking state. Deploying that file to another org pushes whatever partial snapshot it holds: the settings it contains overwrite the target's, and settings it omits are left alone — the Metadata API guide's own example is that standard-object profile and field-level security "aren't overwritten" unless explicitly included.
 
-**When it occurs:** The team includes profiles in the migration retrieval because change sets included profiles. They assume the deploy is additive (like change sets' "Add to profile" behavior) when it is actually a full overwrite.
+**When it occurs:** The team includes profiles in the migration retrieval because change sets included profiles. They assume the file is a complete picture of the profile, when it is shaped by the retrieve manifest — so the same profile, retrieved twice with different manifests, deploys two different sets of permissions.
 
 **How to avoid:** Exclude profiles from the migration entirely — the DX guide recommends permission sets and adding profiles to `.forceignore`. Add `**/profiles/**` to `.forceignore`. Use permission sets and permission set groups as the access-control mechanism in the source-driven workflow. If profiles must be managed, use a dedicated profile-management tool or maintain profiles as a separate, carefully reviewed deployment step.
 

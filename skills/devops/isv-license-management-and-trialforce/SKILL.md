@@ -114,7 +114,7 @@ AppExchange Checkout adds e-commerce (credit-card billing, subscription renewals
 **How it works:**
 1. Install the LMA managed package in a fresh **License Management Org** (recommended: the Partner Business Org or a dedicated production org — never a sandbox).
 2. In the partner-side packaging org (1GP) or DX project (2GP), upload the package version and capture the `04t...` package version ID.
-3. In the AppExchange Publishing Console, open the listing's package record and set the License Management Org to the LMO from step 1. The LMO must be in a Salesforce edition that supports the LMA (Enterprise+).
+3. In the Partner Console, connect the packaging org (1GP) or Dev Hub (2GP) under **Technologies > Orgs**, then on the **Solutions** tab click **Register Package** for the version and log in to the LMO from step 1. The LMA installs only in Enterprise, Unlimited, or Performance Edition production orgs.
 4. Verify by installing the package into a throwaway sandbox and confirming a `sfLma__License__c` record is auto-created in the LMO within 2–3 minutes.
 5. At registration, set the default license behavior — trial length and number of seats. Every new license is created from these values until changed on the license's **Modify License** page.
 6. Build a scheduled job in the LMO that watches `sfLma__License__c` for `Status='Suspended'` and notifies the customer-success team — the LMA does not include outbound notifications.
@@ -141,7 +141,7 @@ AppExchange Checkout adds e-commerce (credit-card billing, subscription renewals
 **When to use:** A specific subscriber needs a feature enabled for them only — without shipping a new package version.
 
 **How it works:**
-1. In the package source, define a `FeatureParameterBoolean` (e.g. `Enable_Beta_Reports`) with a `defaultValue` of `false` and direction `LmoToSubscriber`.
+1. In the package source, define a `FeatureParameterBoolean` (e.g. `Enable_Beta_Reports`) with a `value` (the default) of `false` and `dataflowDirection` `LmoToSubscriber`.
 2. In subscriber-side Apex that gates the feature, call `System.FeatureManagement.checkPackageBooleanValue('Enable_Beta_Reports')` (one argument, the API name) and branch on the result.
 3. Release the package version. Existing subscribers receive `false` (the default).
 4. To flip for one customer: in the LMO, open their `sfLma__License__c` record, find the related Feature Parameter record (created automatically when the FP was added to a registered version), and set `Value__c = true`.

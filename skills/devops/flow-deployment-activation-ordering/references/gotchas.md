@@ -129,14 +129,19 @@ have screens**.
 
 ---
 
-## Gotcha 8: Paused Interviews Break at Resume, Not at Delete
+## Gotcha 8: Paused Interviews Block Version Deletes, and Clearing Them Loses Work
 
-**What happens:** A cleanup deletes old versions. Weeks later, users resuming
-long-paused screen flows get errors nobody connects to the cleanup.
+**What happens:** A cleanup deletes old versions, clearing the paused interviews
+that blocked it. Weeks later, users find the screen flows they paused are gone,
+and nobody connects it to the cleanup.
 
 **When it occurs:** A paused interview resumes on the version it started on.
-Deleting that version breaks it — silently at delete time, visibly at resume
-time, with a long gap in between. Since Spring '24 there is no platform cap on
+The Metadata API guide is explicit that the platform blocks the version delete
+itself: "You can delete a flow version if it isn't active and doesn't have any
+paused interviews. If the flow version has paused interviews, wait for those
+interviews to resume and finish, or delete them." The damage comes from the
+cleanup that clears the way — deleting the interviews to unblock the version
+delete throws away work users expected to resume. Since Spring '24 there is no platform cap on
 how many paused and waiting interviews an org accumulates, so the population
 grows quietly.
 

@@ -56,7 +56,7 @@ Activate when retrieving or deploying Salesforce metadata via `sf` CLI (Metadata
 | What `<version>` does each manifest declare, and when was each listed type introduced? | A type newer than the manifest version is outside what the request can address (Gotcha 2) | A version policy and a check of each new type's "available in API version" line |
 | Does the release delete anything that another component still references? | Deletions run before additions unless you use `destructiveChangesPost.xml` (Gotcha 7) | Each deletion placed in the Pre or Post manifest on purpose |
 | Are `Layout`, `Profile`, or `PermissionSet` files re-retrieved and diffed in CI? | Re-retrieves reorder XML and bury real changes in noise (Gotcha 3) | A normalisation step before commit |
-| Do any components reference each other across types? | Cross-type cycles can pass `validate` and fail the real deploy (Gotcha 4) | A split deploy order or a full rehearsal deploy before production |
+| Do any components reference each other across types? | A cycle needs a deliberate deploy order, and the report that such cycles pass `validate` and fail the real deploy is unconfirmed (Gotcha 4) | A split deploy order or a full rehearsal deploy before production |
 | How long between validation and the production quick deploy? | Quick deploy needs a successful validation within the last 10 days (Gotcha 4) | A release calendar that keeps the validated job usable |
 
 Settling these before the first deploy gives a manifest and option set production accepts on the first try; "just deploying" finds the test-level, ordering, and version problems one failed release at a time.
@@ -214,6 +214,6 @@ sf org login jwt \
 
 ## Related Skills
 
-- `devops/salesforce-dx-source-tracking` — source-format projects and track commands
-- `devops/unlocked-packages` — modular packaged metadata
-- `devops/apex-test-coverage-strategy` — test level tuning
+- `devops/source-tracking-and-conflict-resolution` — source-format projects and track commands
+- `devops/unlocked-package-development` — modular packaged metadata
+- `devops/continuous-integration-testing` — test level tuning

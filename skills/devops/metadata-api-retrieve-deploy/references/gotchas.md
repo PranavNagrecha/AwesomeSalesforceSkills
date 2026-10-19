@@ -49,7 +49,7 @@ to enumerate the namespace prefixes that need to appear.
 
 **What happens:** A team copies a 2-year-old `package.xml` to
 bootstrap a new repo. The manifest declares `<version>50.0</version>`
-(Spring '20). They add a `<types>` entry for `ExternalCredential`
+(Winter '21). They add a `<types>` entry for `ExternalCredential`
 — available only in API 56.0 and later. The retrieve quietly returns no
 results for that type; the deploy validates but doesn't actually
 create the component. No error. UNVERIFIED (2026-10-19): the guide gives each type's minimum API
@@ -111,7 +111,11 @@ the canonical form is what your sort script emits.
 (`AccountTierValues`), which is curated by a `CustomMetadata`
 type (`Account_Tier_Mapping__mdt`) whose records reference back
 to `Account.Tier__c`. `sf project deploy validate` succeeds —
-the validation phase checks each type's XML schema independently
+UNVERIFIED (2026-10-19): the Metadata API guide describes a validation
+as "a test deployment … of components without saving the components
+in the target org" and documents no per-type-only checking; the
+mechanism below is field report, not documented behaviour.
+The validation phase checks each type's XML schema independently
 and resolves dependencies *within* each type, but doesn't fully
 resolve cross-type references. Validation reports "green" with
 100% tests passing. The `sf project deploy quick` execution

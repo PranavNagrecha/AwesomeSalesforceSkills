@@ -118,10 +118,10 @@ as *Draft*, and `UnderReview` displays as *Under Review*.
 
 The value is the version number you want live. `meta_flowdefinition.htm` documents
 the field as, in full, "The version number of the active flow."
-<!-- UNVERIFIED: `activeVersionNumber` = 0 is widely reported to deactivate a
-flow, and it may well work, but the field's documentation states no behaviour for
-0. Nothing on this page depends on it. To take a flow off, deactivate on the
-flow's detail page or deploy the version with <status>Draft</status>. -->
+UNVERIFIED (2026-10-19): `activeVersionNumber` = 0 is widely reported to
+deactivate a flow, but the field's documentation states no behaviour for 0.
+Nothing on this page depends on it. To take a flow off, deactivate on the flow's
+detail page or deploy the version with `<status>Draft</status>`.
 
 In Salesforce's own words — quoted exactly, because this one is routinely
 paraphrased into something it does not say: "In API version 44.0, we recommend

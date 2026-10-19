@@ -116,7 +116,7 @@ def check_metadata_api_coverage_gaps(manifest_dir: Path) -> list[str]:
     issues: list[str] = []
 
     if not manifest_dir.exists():
-        issues.append(f"Project directory not found: {manifest_dir}")
+        issues.append(f"WARN: Project directory not found: {manifest_dir}")
         return issues
 
     # 1. Check sourceApiVersion
