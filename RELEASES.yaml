@@ -142,6 +142,17 @@ releases:
     domains:
     - data
     - devops
+    done_skills:
+    - data/duplicate-rule-person-account-edge-cases
+    - data/external-id-strategy
+    - devops/api-version-management
+    - devops/code-coverage-orphan-class-cleanup
+    - devops/cross-cloud-deployment-patterns
+    - devops/deployment-error-diagnosis
+    - devops/destructive-changes-deployment
+    - devops/environment-specific-value-injection
+    - devops/experience-cloud-deployment-admin
+    - devops/experience-cloud-deployment-dev
   - id: R1-12
     title: 'Knowledge-lift test: run the 30 golden eval cases WITH and WITHOUT the skill loaded through scripts/eval_grader.sh;
       record pass rate and mean rubric per arm'
@@ -162,6 +173,12 @@ releases:
       watch publish, fresh-clone bootstrap --verify-only'
     size: S
     owner_model: fable
+    status: todo
+  - id: R1-13
+    title: Fix fail-open folder name (siteDotCom -> siteDotComSites) in cross-cloud + experience-cloud-admin checkers; add
+      bad-fixture tests
+    size: S
+    owner_model: sonnet
     status: todo
   measured: {}
 - version: 1.5.0
@@ -253,3 +270,8 @@ inbox:
     lists, plugin marketplaces, community posts) so the repo gets more stars and contributors'
   size: L
   slotted_into: 1.5.0 (R2-03)
+- date: 2026-10-19
+  ask: 'Two checkers fail open on a wrong folder name: devops/cross-cloud-deployment-patterns and devops/experience-cloud-deployment-admin
+    look for siteDotCom/ but the Metadata API directory is siteDotComSites/ (api_meta L130579), so they never fire'
+  size: S
+  slotted_into: 1.4.0
