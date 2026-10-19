@@ -49,10 +49,10 @@ AND CreatedDate = LAST_N_DAYS:30
 
 ## Example 3: Skinny Table for an Executive Dashboard
 
-**Scenario:** 3,800,000 Opportunity rows. A dashboard's reports filter `CloseDate = THIS_QUARTER` (about 300,000 rows, under the standard-index threshold) and read the same seven fields, a mix of standard and custom.
+**Scenario:** 3,800,000 Opportunity rows. A dashboard's reports filter `CreatedDate = THIS_QUARTER` (about 300,000 rows, under the standard-index threshold of 300,000 + 15% × 2,800,000 = 720,000) and read the same eight fields, a mix of standard and custom. CreatedDate is indexed by default; CloseDate is not among the default indexed fields (LDV guide L399-407), so a CloseDate filter would need its own custom index and would face the tighter 240,000 custom threshold.
 
 **Problem:** The filter is selective and indexed, but every read joins the standard-field and custom-field tables.
 
-**Solution:** Ask Support for a skinny table on Opportunity with exactly the fields the reports use (`Id`, `OwnerId`, `CloseDate`, `StageName`, `Amount`, `AccountId`, `Forecast_Region__c`). Test it in a Full sandbox, the only sandbox type it is copied to. When a report adds a field, file a follow-up request, because a query that needs a field outside the skinny table does not use it.
+**Solution:** Ask Support for a skinny table on Opportunity with exactly the fields the reports use (`Id`, `OwnerId`, `CreatedDate`, `CloseDate`, `StageName`, `Amount`, `AccountId`, `Forecast_Region__c`). Test it in a Full sandbox, the only sandbox type it is copied to. When a report adds a field, file a follow-up request, because a query that needs a field outside the skinny table does not use it.
 
 **Why it works:** The reports are read-only and use only fields in the skinny table, which is the case the LDV guide describes. The request is narrow so the maintenance overhead the guide warns about stays small.

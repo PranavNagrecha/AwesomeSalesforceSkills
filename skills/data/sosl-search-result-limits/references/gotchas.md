@@ -10,13 +10,15 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **How to avoid:** Put WHERE or ORDER BY inside the parentheses after a field list: `RETURNING Account(Id, Name ORDER BY Name)`.
 
+UNVERIFIED (2026-10-19): the 250 default, the quoted raise to 2,000, and the field-list syntax rule come from SOQL and SOSL Reference pages that are not in the local PDF corpus.
+
 ---
 
 ## Gotcha 2: More Objects Means Fewer Results per Object
 
 **What happens:** Widening a search to more objects returns fewer rows for each of them.
 
-**When it occurs:** Each object returns up to min(2,000/n, 250). The reference's examples: 2 objects → 250 each; 10 objects → 200 each. Past eight objects every addition lowers every object's cap (16 objects → 125). The 2,000 statement total includes results from child objects.
+**When it occurs:** Each object returns up to min(2,000/n, 250). The reference's examples: 2 objects → 250 each; 10 objects → 200 each. Past eight objects every addition lowers every object's cap (16 objects → 125). UNVERIFIED (2026-10-19): the min(2,000/n, 250) formula comes from the SOSL reference page, which is not in the local corpus. The 2,000 statement total includes results from child objects (Limits Quick Reference L1126-1129).
 
 **How to avoid:** Keep the RETURNING list as short as the requirement allows. To protect one object's results, search it alone.
 
@@ -66,7 +68,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A developer adds `LIMIT 2000` to a statement or object clause expecting more rows, and nothing changes.
 
-**When it occurs:** The LIMIT reference: "The LIMIT clause can't increase the maximum number of records returned." A statement-level LIMIT also distributes results evenly across objects, so `LIMIT 20` over Account and Contact returns 10 of each even when one object had more matches.
+**When it occurs:** The LIMIT reference: "The LIMIT clause can't increase the maximum number of records returned." (UNVERIFIED (2026-10-19): quoted from the SOSL reference LIMIT page, not in the local corpus.) A statement-level LIMIT also distributes results evenly across objects, so `LIMIT 20` over Account and Contact returns 10 of each even when one object had more matches.
 
 **How to avoid:** Use LIMIT only to lower or apportion results; use a per-object LIMIT to stop one object from consuming the statement's budget. To lift a single-object cap, use WHERE or ORDER BY.
 

@@ -15,7 +15,9 @@ Severity:
          DataUsePurposeId; Apex that filters through
          AuthorizationFormText.AuthorizationFormDataUses (data uses hang off the
          form, not the text).
+         A JSON file that cannot be read or parsed is also an ERROR.
   WARN   ConsentGiver.Type different from --giver-type (default Individual);
+         a consent export missing one of the required columns;
          consent export without ConsentGiver.Type (giver type can't be checked);
          Apex that sets ConsentCapturedSource but never ConsentCapturedSourceType.
 
@@ -88,8 +90,9 @@ def check_json(path: Path, expected_giver: str) -> list[tuple[str, str]]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        return [("WARN", f"{path}: cannot read JSON ({exc})")]
+        return [("ERROR", f"{path}: cannot read JSON ({exc}); export not checked")]
     missing_type_noted = False
+    missing_cols_noted: set[str] = set()
     for i, row in enumerate(records_from(data), start=1):
         rid = row.get("Id", f"row {i}")
         k = kind(row)
@@ -98,7 +101,11 @@ def check_json(path: Path, expected_giver: str) -> list[tuple[str, str]]:
             if status not in STATUS_VALUES:
                 out.append(("ERROR", f"{path}: {rid}: Status '{status}' is not Rejected, Seen, or Signed"))
             for field in CONSENT_REQUIRED:
-                if field in row and row.get(field) in (None, ""):
+                if field not in row:
+                    if field not in missing_cols_noted:
+                        out.append(("WARN", f"{path}: export has no {field} column; add it to the SOQL so the required-field check can run"))
+                        missing_cols_noted.add(field)
+                elif row.get(field) in (None, ""):
                     out.append(("ERROR", f"{path}: {rid}: required field {field} is empty"))
             st = row.get("ConsentCapturedSourceType")
             if st not in (None, "") and st not in SOURCE_TYPES:

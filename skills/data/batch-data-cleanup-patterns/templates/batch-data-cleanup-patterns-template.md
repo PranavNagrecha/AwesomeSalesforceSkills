@@ -11,7 +11,7 @@ Use this template when implementing a scheduled batch job to delete aged or temp
 | Target object | `<OBJECT_API_NAME>` |
 | Retention filter field | `CreatedDate` / `<CUSTOM_DATE_FIELD__c>` |
 | Retention period | `<N>` days / years |
-| Hard delete required? | Yes (emptyRecycleBin / HARD_DELETE) / No (soft delete only) |
+| Hard delete required? | Yes (emptyRecycleBin / Bulk API `hardDelete`) / No (soft delete only) |
 | Estimated record volume per run | `<VOLUME>` |
 | Cascade child objects | `<LIST_CHILD_OBJECTS_OR_NONE>` |
 | Average children per parent | `<AVG_CHILDREN>` |
@@ -127,7 +127,8 @@ public class <ObjectName>CleanupBatch
  */
 public class <ObjectName>CleanupScheduler implements Schedulable {
     public void execute(SchedulableContext ctx) {
-        // Adjust batch size: floor(10000 / avg_cascade_children_per_parent), max 200
+        // Batch size: measure DML rows for one heavy parent with Limits.getDmlRows() in a sandbox
+        // (whether cascaded children count is not stated in the guides; Gotcha 2), then keep a chunk under 10,000.
         Database.executeBatch(new <ObjectName>CleanupBatch(<N>), <BATCH_SIZE>);
     }
 }

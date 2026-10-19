@@ -48,14 +48,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 4: Lookup Filters Do Not Create an Index on the Filtered Field
 
-**What happens:** Adding a lookup filter to a relationship field (to restrict which parent records appear in the lookup search) does not create a database index on the filtered field. If the filter references a non-indexed field on the parent object, the lookup search dialog may perform slowly when the parent object has large record volumes.
+**What happens:** Adding a lookup filter to a relationship field (to restrict which parent records appear in the lookup search) does not create a database index on the filtered field. If the filter references a non-indexed field on the parent object, the lookup search dialog may perform slowly when the parent object has large record volumes. UNVERIFIED (2026-10-19): lookup-filter query behaviour is not described in the local PDF corpus; treat the slowdown as a hypothesis to confirm with a query plan.
 
 **When it occurs:** Lookup filters that reference custom non-indexed fields on large parent objects (typically 100k+ records). The filter logic is evaluated at query time without index support, causing visible lag in the lookup search modal.
 
 **How to avoid:**
 - Prefer lookup filters that reference indexed fields on the parent (Id, Name, RecordTypeId, OwnerId, or fields with custom indexes).
 - If filtering on a custom non-indexed field is a business requirement and the parent object is large, file a Salesforce Support case to request a custom index on that field.
-- Consider filtering on a formula field alternative that combines indexed fields to achieve the same restriction without introducing a non-indexed filter.
 
 ---
 

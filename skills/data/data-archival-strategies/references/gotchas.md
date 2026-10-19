@@ -8,7 +8,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Archive jobs ported from a custom-object prototype, or "fix-up" scripts written after a bad load.
 
-**How to avoid:** Write with `Database.insertImmediate()`; to change a row, reinsert it with the same index values (the reinsert overwrites). Delete with `Database.deleteImmediate()` or SOAP `deleteByExample()`, specifying every index field; partial indexes, non-indexed fields, and wildcards aren't allowed, and the limit is 50,000 records per call. After deleting everything for capacity reasons, the guide says to insert one or two blank records and wait 24 hours for the new capacity to be recognized.
+**How to avoid:** Write with `Database.insertImmediate()`; to change a row, reinsert it with the same index values (the reinsert overwrites). Delete with `Database.deleteImmediate()` or SOAP `deleteByExample()`, specifying every index field; partial indexes, non-indexed fields, and wildcards aren't allowed, and the limit is 50,000 records per call. After deleting everything for capacity reasons, the guide says to insert one or two blank records and wait 24 hours for the new capacity to be recognized. UNVERIFIED (2026-10-19): `deleteByExample()`, the no-partial-index/no-wildcard rule, and the 24-hour capacity note come from a Big Objects guide page outside the local corpus; the 50,000 figure is confirmed (Apex Reference L206805).
 
 ---
 
@@ -46,7 +46,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** An archive batch calls `Database.insertImmediate(rows)`, sees no exception, deletes the source rows, and some rows never reached the archive.
 
-**When it occurs:** The Big Objects guide: "If a record insert fails, the Database.insertImmediate() method doesn't throw an exception. Instead, it returns a SaveResult object." It also says partial batch failures are expected in this distributed store and advises: "Don't try to figure out which records succeeded and which failed. Retry the entire batch."
+**When it occurs:** The Big Objects guide: "If a record insert fails, the Database.insertImmediate() method doesn't throw an exception. Instead, it returns a SaveResult object." It also says partial batch failures are expected in this distributed store and advises: "Don't try to figure out which records succeeded and which failed. Retry the entire batch." The no-exception behaviour is confirmed in the Apex Reference (L208300-208303); UNVERIFIED (2026-10-19): the retry-the-whole-batch quote is from a Big Objects guide page outside the local corpus.
 
 **How to avoid:** Inspect every `SaveResult`. If any failed, retry the whole batch (writes are idempotent), and delete the source only after a fully successful write.
 
@@ -56,7 +56,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** An execute method deletes or updates source records first and then writes the archive, and the write fails.
 
-**When it occurs:** The Big Objects guide says DML operations on big objects "are considered callouts, so Apex execution governors and limits for callouts apply," and the Apex Developer Guide says callouts aren't allowed after DML operations in the same transaction by default. The guide also recommends asynchronous Apex for big object writes from a trigger, process, or flow on an sObject. Big object DML does not count toward the DML statement limit.
+**When it occurs:** The Big Objects guide says DML operations on big objects "are considered callouts, so Apex execution governors and limits for callouts apply," and the Apex Developer Guide says callouts aren't allowed after DML operations in the same transaction by default. The guide also recommends asynchronous Apex for big object writes from a trigger, process, or flow on an sObject. Big object DML does not count toward the DML statement limit. UNVERIFIED (2026-10-19): the callout classification, the async recommendation, and the DML-limit exemption come from a Big Objects guide page outside the local corpus; only the callout-after-DML rule is confirmed (Apex Developer Guide L35136).
 
 **How to avoid:** In each `execute`, write to the big object first, then do sObject DML. Run archive writes from Batch or Queueable Apex, never from a trigger.
 
@@ -76,7 +76,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** Fields encrypted with Shield Platform Encryption on the source object are archived unencrypted.
 
-**When it occurs:** The Big Objects guide: "Big objects don't support encryption. If you archive encrypted data from a standard or custom object, it's stored as clear text on the big object." Field history archived through Field Audit Trail is handled by the Shield field history archive instead, but the Security guide notes that history already archived before Platform Encryption was turned on stays unencrypted until Salesforce re-archives it.
+**When it occurs:** The Big Objects guide: "Big objects don't support encryption. If you archive encrypted data from a standard or custom object, it's stored as clear text on the big object." (UNVERIFIED (2026-10-19): quoted from a Big Objects guide page outside the local corpus.) Field history archived through Field Audit Trail is handled by the Shield field history archive instead, but the Security guide notes that history already archived before Platform Encryption was turned on stays unencrypted until Salesforce re-archives it.
 
 **How to avoid:** List encrypted fields before designing the archive, and get explicit sign-off before writing any of them to a custom big object, or leave them out.
 
@@ -86,7 +86,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A row written with a trailing space in an index field can never be matched or deleted; a reinsert intended to clear a value leaves the old value in place.
 
-**When it occurs:** SOQL trims leading and trailing white space from WHERE values on index fields, so stored values with white space are never matched, and the Index metadata notes such rows can't be deleted. Setting a value to NULL on an upsert into a custom big object does not update a field that already has a value.
+**When it occurs:** SOQL trims leading and trailing white space from WHERE values on index fields, so stored values with white space are never matched, and the Index metadata notes such rows can't be deleted. Setting a value to NULL on an upsert into a custom big object does not update a field that already has a value. UNVERIFIED (2026-10-19): the trimming and NULL-upsert behaviour come from a Big Objects guide page outside the local corpus; the cannot-delete rule is confirmed (Metadata API IndexField, api_meta L44174-44176).
 
 **How to avoid:** Call `.trim()` on every index value before `insertImmediate`. Treat archived values as write-once; if a value must be cleared, the guide's remedy is to delete and recreate the field.
 
@@ -96,6 +96,6 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** Running the archive job's tests leaves rows in the production big object, or tests fail with mixed DML.
 
-**When it occurs:** The Big Objects guide: tests may do DML on big objects, but "real data is manipulated without any automatic rollback or cleanup," and tests that mix big object and sObject DML in one transaction aren't allowed and fail.
+**When it occurs:** The Big Objects guide: tests may do DML on big objects, but "real data is manipulated without any automatic rollback or cleanup," and tests that mix big object and sObject DML in one transaction aren't allowed and fail. UNVERIFIED (2026-10-19): quoted from a Big Objects guide page outside the local corpus.
 
 **How to avoid:** Mock the write layer with the Apex Stub API, so tests exercise the batch logic without calling `insertImmediate` for real.

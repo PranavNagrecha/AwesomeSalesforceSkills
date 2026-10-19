@@ -94,6 +94,8 @@ Soft-deleted rows still affect query performance: they remain resident and have 
 | APIs | SOQL, Bulk API and Bulk API 2.0, Chatter, and SOAP only; the REST API isn't supported |
 | Not supported | Triggers, flows, processes, the mobile app, sharing rules (object and field permissions only), standard list views and detail pages, encryption for custom big objects |
 
+UNVERIFIED (2026-10-19): the 100-big-objects-per-org cap, DML treated as a callout and not counted toward the DML statement limit, SOAP `deleteByExample()`, and the list-view, detail-page, and encryption entries come from Big Objects Implementation Guide pages that are not in the Summer '26 PDF corpus. The corpus confirms the editions and Developer 1M cap, idempotent writes, the API list with REST unsupported, the index rules, and the unsupported triggers, flows, processes, mobile app, and sharing rules (Object Reference L3530-3700); `insertImmediate` partial success without an exception (Apex Reference L208300-208303); and the 50,000-record `deleteImmediate` batch limit (Apex Reference L206805).
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- objects/Case_Archive__b.object (Metadata API format). Index fields must be required. -->

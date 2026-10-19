@@ -14,7 +14,8 @@ Rules (Bulk API 2.0 guide "Relationship Fields in a Header Row"; LDV guide):
          header that chains past one level (A.B.C), which Bulk API relationship
          headers don't allow; a relationship column whose parent field is a
          custom field in the scanned metadata without externalId=true (only
-         indexed parent fields can be referenced).
+         indexed parent fields can be referenced); a metadata file that does
+         not parse.
   WARN   sequence row with bypass_documented not yes; a load CSV with no column
          that looks like an external ID key; an active validation rule whose
          formula has no $Permission bypass.
@@ -51,11 +52,14 @@ def text(elem: ET.Element, tag: str) -> str:
     return node.text.strip() if node is not None and node.text is not None else ""
 
 
+PARSE_ERRORS: list[tuple[str, str]] = []
+
+
 def parse_xml(path: Path) -> ET.Element | None:
     try:
         return ET.parse(path).getroot()
     except ET.ParseError as exc:
-        print(f"WARN: {path}: cannot parse ({exc})")
+        PARSE_ERRORS.append(("ERROR", f"{path}: cannot parse ({exc}); not checked"))
         return None
 
 
@@ -167,7 +171,7 @@ def main() -> int:
 
     csvs = sorted(root.rglob("*.csv"))
     fields, rules = load_metadata(root)
-    if not csvs and not fields and not rules:
+    if not csvs and not fields and not rules and not PARSE_ERRORS:
         print(f"WARN: no sequence file, load CSVs, or metadata under {root}; nothing to check")
         return 0
 
@@ -180,6 +184,7 @@ def main() -> int:
     for path, rule in rules:
         findings.extend(check_rule(path, rule))
 
+    findings = PARSE_ERRORS + findings
     errors = sum(1 for s, _ in findings if s == "ERROR")
     warns = len(findings) - errors
     for sev, msg in findings:

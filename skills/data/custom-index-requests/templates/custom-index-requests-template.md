@@ -63,7 +63,7 @@ Cost: ___________
 
 **Confirm selectivity is below threshold:**
 - [ ] Under the custom-index threshold: 10% of the first million rows plus 5% of rows beyond (state the computed number)
-- [ ] Filter produces ≤ 200,000 records (recommended target for large orgs)
+- [ ] Filter count recorded next to the computed threshold (no flat row target applies; the threshold scales with the object's row count)
 
 ---
 

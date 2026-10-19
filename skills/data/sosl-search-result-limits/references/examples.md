@@ -26,7 +26,7 @@ List<List<SObject>> capped = [
 // AFTER — a WHERE (or ORDER BY) inside the parentheses raises the cap to 2,000
 List<List<SObject>> raised = [
     FIND :fragment IN NAME FIELDS
-    RETURNING Account(Id, Name WHERE RecordType.DeveloperName = 'Customer' ORDER BY Name)
+    RETURNING Account(Id, Name WHERE Type = 'Customer' ORDER BY Name)
 ];
 List<Account> accounts = (List<Account>) raised[0];
 ```

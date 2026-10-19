@@ -64,7 +64,7 @@ Before adding a redundant field, check native alternatives:
    Flow/DLRS/Apex (lookup relationships)
 
 Redundant trigger-populated fields should only be used when:
-- Cross-object formula fields exceed the compiled formula size limit (5,000 chars)
+- Cross-object formula fields exceed the formula limits (formula text is capped at 3,900 characters, Apex Developer Guide L28143-28144; the separate compile size limit, UNVERIFIED (2026-10-19): 5,000 bytes, is not in the local corpus)
 - The value is needed in a report filter or list view filter (formula fields
   have filtering limitations)
 - Performance: frequently queried fields on large-volume objects where

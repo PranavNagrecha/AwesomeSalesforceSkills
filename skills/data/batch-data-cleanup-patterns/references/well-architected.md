@@ -13,7 +13,7 @@
 
 **Per-chunk emptyRecycleBin vs. in finish():** `emptyRecycleBin()` accepts at most 10,000 records per call and counts as a DML statement. Calling it per chunk keeps every call small; collecting Ids for `finish()` fails once a run deletes more than 10,000 records and grows heap the whole time.
 
-**Batch Apex vs. Bulk API HARD_DELETE:** Batch Apex offers full Apex control (conditional logic, error handling, notifications) but is slower than Bulk API (200 records per chunk vs. millions per API job). Use Batch Apex for moderate volumes and complex logic; use Bulk API HARD_DELETE for large-volume compliance runs where simplicity and speed matter more than Apex expressiveness.
+**Batch Apex vs. Bulk API `hardDelete`:** Batch Apex offers full Apex control (conditional logic, error handling, notifications) but is slower than Bulk API (200 records per chunk vs. millions per API job). Use Batch Apex for moderate volumes and complex logic; use a Bulk API `hardDelete` job for large-volume compliance runs where simplicity and speed matter more than Apex expressiveness.
 
 ## Anti-Patterns
 

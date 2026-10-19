@@ -7,7 +7,8 @@ Metadata API *.object files) and CustomIndex components (*.indx-meta*).
 Severity:
   ERROR  externalId=true on a type other than AutoNumber, Email, Number, or Text
          (the LDV guide allows External IDs only on those types); a CustomIndex
-         component whose allowNullValues is not true or false.
+         component whose allowNullValues is not true or false; a field, object,
+         or CustomIndex file that does not parse.
   WARN   externalId=true on a formula field; externalId=true without
          unique=true on a field whose name looks
          categorical (status, type, region, ...): External ID makes it an upsert
@@ -46,11 +47,14 @@ def text(elem: ET.Element, tag: str) -> str:
     return node.text.strip() if node is not None and node.text is not None else ""
 
 
+PARSE_ERRORS: list[tuple[str, str]] = []
+
+
 def parse(path: Path) -> ET.Element | None:
     try:
         return ET.parse(path).getroot()
     except ET.ParseError as exc:
-        print(f"WARN: {path}: cannot parse ({exc})")
+        PARSE_ERRORS.append(("ERROR", f"{path}: cannot parse ({exc}); not checked"))
         return None
 
 
@@ -110,6 +114,7 @@ def main() -> int:
         if value not in {"", "true", "false"}:
             findings.append(("ERROR", f"{path}: allowNullValues must be true or false, found '{value}'"))
 
+    findings = PARSE_ERRORS + findings
     errors = sum(1 for s, _ in findings if s == "ERROR")
     warns = len(findings) - errors
     for sev, msg in findings:

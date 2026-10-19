@@ -77,7 +77,7 @@ For each object being migrated, document the external ID field that links source
 - [ ] All external ID fields are marked as External ID AND Unique
 - [ ] No external ID fields are formula fields
 - [ ] External ID values in all load CSVs use consistent casing
-- [ ] External ID limit (25 per object) not exceeded on any object
+- [ ] External ID limit (25 per object) not exceeded on any object (UNVERIFIED (2026-10-19): the 25-per-object figure is not in the local Summer '26 PDF corpus; confirm in Salesforce Help)
 
 **Migration Batch ID field:**
 - [ ] `Migration_Batch_Id__c` field (Text) exists on every migrated object
@@ -91,7 +91,7 @@ For each object being migrated, document the external ID field that links source
 
 **Rationale for tool selection:** _______________________________________________
 
-**Bulk API batch size:** _______________ records per batch (max 10,000; default 10,000)
+**Bulk API batch size:** _______________ records per batch (Data Loader with Bulk API v1: max 10,000 per the Data Loader guide; not used with Bulk API 2.0, which sizes batches automatically)
 
 **Expected throughput:** _______________ records/hour (estimate based on object complexity)
 

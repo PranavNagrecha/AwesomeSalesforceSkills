@@ -125,7 +125,7 @@ Choosing the wrong field type loses platform-enforced validation, formatting, an
 | Email address | Email | Text(255) | Click-to-email, email validation |
 | Percentage | Percent | Number | Automatic % display, decimal semantics |
 | Currency amounts | Currency | Number | Multi-currency support, locale formatting |
-| Long unformatted text | Long Text Area | Text(255) | Storage — Text truncates at 255 chars |
+| Long unformatted text | Long Text Area | Text(255) | Capacity — Text holds at most 255 chars, and a longer value fails the save unless truncation is requested (Apex Developer Guide L8519-8521) |
 | Structured rich content | Rich Text Area | Long Text Area | Formatting, inline images |
 | Unique record key | External ID (+ Unique) | Text | Indexed by default, available for upsert |
 | True/False | Checkbox | Picklist | Compact storage, formula compatibility |
@@ -198,7 +198,7 @@ Salesforce automatically indexes a small set of standard fields on every object:
 | Integration upsert with a source-system natural key | External ID field (Unique) | Automatically indexed; supported by upsert API endpoints |
 | Large object with slow non-indexed filter queries | Custom index (via Support case) | Selective index on the filter field reduces full-table scans |
 | Very large object, small set of repeatedly queried fields | Skinny table (via Support) | Denormalized projection eliminates wide-row scans |
-| Need to store more than 255 characters | Long Text Area | Text field hard-truncates at 255 characters |
+| Need to store more than 255 characters | Long Text Area | A Text field holds at most 255 characters; longer values fail the save |
 
 ---
 
@@ -236,7 +236,7 @@ Use this mode when a production issue traces back to the data model.
 | SOQL timeout or governor limit on large object | Check query execution plan. If full table scan, identify filter field and request a custom index if eligible. |
 | Upsert matching not working | Confirm the target field is marked External ID. Upsert won't match on non-External-ID fields. |
 | Orphaned children after a lookup parent delete | Lookup delete behaviour is `SetNull` (clears the field) by default. Use `Restrict`, master-detail, or before-delete automation; check `Cascade` availability in the org before relying on it. |
-| Text field values getting truncated | Field is likely Text(255). Migrate to Long Text Area. |
+| Saves fail on long text values, or values arrive cut off (a client using `allowFieldTruncation`) | Field is likely Text(255). Migrate to Long Text Area. |
 
 ---
 

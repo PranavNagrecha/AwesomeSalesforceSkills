@@ -21,7 +21,7 @@
 
 1. **Treating LIMIT as the first performance fix** — LIMIT on its own does not give the optimizer an index to drive from. The LDV guide lists it as the last step after tuning filters, and the one documented exception is ORDER BY on an indexed field with a LIMIT under 100,000 for Last_N_Days queries (see Gotcha 3).
 2. **Building OR conditions across non-indexed fields** — A query that ORs two non-indexed custom fields always results in a full-table scan regardless of the individual selectivity of each filter. The optimizer cannot use partial index coverage for OR conditions.
-3. **Using formula fields as primary WHERE clause filters on large objects** — Non-deterministic formula fields cannot receive indexes. Any WHERE clause filter on a non-deterministic formula field will always be a full-table scan. This is a permanent structural constraint, not a configuration gap that can be resolved with an index request.
+3. **Using formula fields as primary WHERE clause filters on large objects** — Non-deterministic formula fields cannot receive indexes, so such a filter can never drive the query from an index; unless another indexed filter in the WHERE clause is selective on its own (LDV guide L472-473), the query scans. This is a permanent structural constraint, not a configuration gap that can be resolved with an index request.
 
 ## Official Sources Used
 

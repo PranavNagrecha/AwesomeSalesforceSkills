@@ -9,7 +9,8 @@ Rules (Big Objects Implementation Guide; Security guide, Field History Tracking)
          type LongTextArea or URL, or without ASC/DESC sortDirection; text
          fields in an index totalling over 100 characters (Email counts 80,
          Phone 40); Database.insertImmediate(...) called as a bare statement,
-         because failures come back in SaveResults instead of an exception.
+         because failures come back in SaveResults instead of an exception;
+         a metadata file that does not parse.
   WARN   more than 20 fields with trackHistory=true on one object (the limit
          without Field Audit Trail); Apex that calls the async-queries
          endpoint (not among the APIs the guide lists for big objects).
@@ -54,11 +55,14 @@ def text(elem: ET.Element, tag: str) -> str:
     return node.text.strip() if node is not None and node.text is not None else ""
 
 
+PARSE_ERRORS: list[tuple[str, str]] = []
+
+
 def parse(path: Path) -> ET.Element | None:
     try:
         return ET.parse(path).getroot()
     except ET.ParseError as exc:
-        print(f"WARN: {path}: cannot parse ({exc})")
+        PARSE_ERRORS.append(("ERROR", f"{path}: cannot parse ({exc}); not checked"))
         return None
 
 
@@ -153,6 +157,7 @@ def main() -> int:
             line = src.count("\n", 0, m.start()) + 1
             findings.append(("WARN", f"{path}:{line}: calls async-queries; the Big Objects guide lists SOQL, Bulk, Chatter, and SOAP APIs as the supported ones"))
 
+    findings = PARSE_ERRORS + findings
     errors = sum(1 for s, _ in findings if s == "ERROR")
     warns = len(findings) - errors
     for sev, msg in findings:

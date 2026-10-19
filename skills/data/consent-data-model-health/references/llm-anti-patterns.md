@@ -15,7 +15,7 @@ These patterns help the consuming agent self-check its own output.
 // WRONG — ContactPointConsent is for marketing communication preferences
 List<ContactPointConsent> cpc = [
     SELECT Id FROM ContactPointConsent WHERE DataUsePurposeId = :purposeId
-    AND ConsentGiverId = :individualId
+    AND PartyId = :individualId
 ];
 
 // CORRECT — AuthorizationFormConsent is the HIPAA authorization trail

@@ -31,7 +31,7 @@ inputs:
 outputs:
   - "Batch Apex class implementing Database.Batchable<SObject> with retention filter"
   - "Schedulable wrapper class with System.schedule() cron expression"
-  - "Optional emptyRecycleBin() call in finish() for immediate storage reclaim"
+  - "Optional per-chunk emptyRecycleBin() call in execute() so deleted rows cannot be restored (Recycle Bin rows do not count against storage)"
   - "Error log or custom object record capturing partial-delete failures"
 dependencies: []
 version: 1.1.0

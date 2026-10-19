@@ -88,7 +88,7 @@ Change events are retained for 3 days. The Streaming API guide notes that purgin
 | `EARLIEST` | `-2` | Everything retained, then new events; use sparingly |
 | `CUSTOM` + `replay_id` | the replay ID | Events after the given event |
 
-Replay IDs are opaque: store them as bytes, don't compute new ones from a stored one, and don't assume they are contiguous. With Pub/Sub API, an empty `FetchResponse` (keepalive) carries the latest `replay_id`; saving it keeps the stored position recent.
+Replay IDs are opaque: store them as bytes, don't compute new ones from a stored one, and don't assume they are contiguous (Streaming API guide L349-353). With Pub/Sub API, an empty `FetchResponse` (keepalive) carries the latest `replay_id`; saving it keeps the stored position recent. UNVERIFIED (2026-10-19): the Pub/Sub API column, the keepalive `replay_id`, and `ManagedSubscribe` come from the Pub/Sub API reference, which is not in the local PDF corpus; the CometD options and 72-hour retention are confirmed (Streaming API guide L324-334, L460-480).
 
 ### Event types in the stream
 
@@ -98,7 +98,7 @@ Replay IDs are opaque: store them as bytes, don't compute new ones from a stored
 | `GAP_CREATE`, `GAP_UPDATE`, `GAP_DELETE`, `GAP_UNDELETE` | Header with `recordIds`, no field data | Mark the records dirty, retrieve them, clear the flag |
 | `GAP_OVERFLOW` | Header only; dummy record ID `000000000000000AAA` | Re-sync the whole entity named in `entityName` |
 
-Gap events come from: events over the 1 MB message size, some custom field type conversions, internal errors, and changes applied directly in the database outside an application-server transaction (for example, archiving of activities). Overflow events follow the first 100,000 changes in a single transaction, one per entity type.
+Gap events come from: events over the 1 MB message size, some custom field type conversions, internal errors, and changes applied directly in the database outside an application-server transaction (for example, archiving of activities). Overflow events follow the first 100,000 changes in a single transaction, one per entity type. UNVERIFIED (2026-10-19): the gap causes, the four `GAP_` types, the 100,000-change overflow threshold, the dummy record ID, and record-ID merging come from Change Data Capture Developer Guide pages that are not in the local PDF corpus; the header fields `transactionKey`, `sequenceNumber`, `commitTimestamp`, and `recordIds` appear in the Streaming API guide's change event sample (L398-410).
 
 ### Header fields that drive ordering
 

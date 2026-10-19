@@ -10,7 +10,8 @@ Severity:
   ERROR  a RETURNING object clause with WHERE/ORDER BY/LIMIT/OFFSET but no field
          list (the reference calls this improper syntax); OFFSET in a multi-object
          RETURNING (OFFSET is single-object only); a SOSL search that returns a
-         custom object whose metadata in the scanned tree has enableSearch=false.
+         custom object whose metadata in the scanned tree has enableSearch=false;
+         an object-meta.xml file that does not parse.
   WARN   single-object RETURNING with no WHERE and no ORDER BY (capped at 250;
          a LIMIT alone cannot raise it); nine or more objects (each capped below
          250 by min(2000/n, 250)); a LIMIT above 2,000; Search.query() in a file
@@ -87,7 +88,7 @@ def child_text(elem: ET.Element, tag: str) -> str | None:
     return node.text.strip() if node is not None and node.text is not None else None
 
 
-def unsearchable_objects(root: Path) -> dict[str, Path]:
+def unsearchable_objects(root: Path, errors: list[tuple[str, str]]) -> dict[str, Path]:
     found: dict[str, Path] = {}
     for f in root.rglob("*.object-meta.xml"):
         name = f.name[: -len(".object-meta.xml")]
@@ -96,7 +97,7 @@ def unsearchable_objects(root: Path) -> dict[str, Path]:
         try:
             tree = ET.parse(f)
         except ET.ParseError as exc:
-            print(f"WARN: {f}: cannot parse ({exc})")
+            errors.append(("ERROR", f"{f}: cannot parse ({exc}); enableSearch not checked"))
             continue
         if child_text(tree.getroot(), "enableSearch") == "false":
             found[name.lower()] = f
@@ -192,8 +193,8 @@ def main() -> int:
         print(f"WARN: no Apex or object metadata under {root}; nothing to check")
         return 0
 
-    hidden = unsearchable_objects(root)
     findings: list[tuple[str, str]] = []
+    hidden = unsearchable_objects(root, findings)
     for name, path in sorted(hidden.items()):
         findings.append(("WARN", f"{path}: {name} has enableSearch=false; its records cannot be found by SOSL or search"))
     for f in apex:

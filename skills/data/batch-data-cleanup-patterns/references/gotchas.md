@@ -36,7 +36,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** `WHERE CreatedDate < LAST_N_YEARS:7` is written as "older than seven years," but it keeps up to almost a year of extra data, and the boundary jumps on 1 January.
 
-**When it occurs:** The SOQL reference defines `LAST_N_YEARS:n` as starting on January 1 and ending on December 31 of the year before the current year, so `<` compares against a January 1 boundary rather than today minus seven years. `LAST_N_DAYS:n` starts at 12:00 AM n days before today and includes today, so `< LAST_N_DAYS:30` excludes everything from that midnight onward.
+**When it occurs:** The SOQL reference defines `LAST_N_YEARS:n` as starting on January 1 and ending on December 31 of the year before the current year, so `<` compares against a January 1 boundary rather than today minus seven years. `LAST_N_DAYS:n` starts at 12:00 AM n days before today and includes today, so `< LAST_N_DAYS:30` excludes everything from that midnight onward. UNVERIFIED (2026-10-19): both literal definitions come from the SOQL and SOSL Reference date-literals page, which is not in the local PDF corpus; the bound-Date fix below does not depend on them.
 
 **How to avoid:** For rolling retention, compute the cutoff in Apex (`Date.today().addYears(-7)` or `addDays(-n)`) and bind it. Use the literals only when the policy really is calendar-based, and write that rule into the runbook.
 

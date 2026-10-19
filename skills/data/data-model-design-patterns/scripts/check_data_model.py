@@ -10,7 +10,7 @@ Limits Quick Reference):
          OrderItem, Pricebook2, Product2, QuoteLineItem, or User (these can't be
          the primary object); a MasterDetail field on a standard object that
          points at a custom object (a standard object can't be the detail of a
-         custom object).
+         custom object); an object or field file that does not parse.
   WARN   a custom object whose only relationship fields are two lookups (a
          lookup-only junction: no native roll-ups, rows survive parent deletes);
          a master-detail chain deeper than two levels; 35 or more relationship
@@ -46,11 +46,14 @@ def text(elem: ET.Element, tag: str) -> str:
     return node.text.strip() if node is not None and node.text is not None else ""
 
 
+PARSE_ERRORS: list[tuple[str, str]] = []
+
+
 def parse(path: Path) -> ET.Element | None:
     try:
         return ET.parse(path).getroot()
     except ET.ParseError as exc:
-        print(f"WARN: {path}: cannot parse ({exc})")
+        PARSE_ERRORS.append(("ERROR", f"{path}: cannot parse ({exc}); not checked"))
         return None
 
 
@@ -128,11 +131,11 @@ def main() -> int:
         sys.exit(1)
 
     objects = load(root)
-    if not objects:
+    if not objects and not PARSE_ERRORS:
         print(f"WARN: no object or field metadata under {root}; nothing to check")
         return 0
 
-    findings = check(objects)
+    findings = PARSE_ERRORS + check(objects)
     errors = sum(1 for s, _ in findings if s == "ERROR")
     warns = len(findings) - errors
     for sev, msg in findings:

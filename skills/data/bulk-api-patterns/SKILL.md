@@ -50,7 +50,7 @@ This skill activates when a practitioner needs to implement the actual REST API 
 
 Gather this context before working on anything in this domain:
 
-- **Which API version are you targeting?** Bulk API 2.0 is REST-based, uses OAuth 2.0 bearer tokens, and requires no WSDL. Legacy Bulk API v1 uses SOAP-based session tokens and requires WSDL knowledge. Prefer v2.0 for all new implementations unless a specific v1 capability is required (e.g., serial concurrency mode, XML/JSON content types, binary attachments for Document/ContentVersion).
+- **Which API version are you targeting?** Bulk API 2.0 is REST-based, uses OAuth 2.0 bearer tokens, and requires no WSDL. Legacy Bulk API v1 uses SOAP-based session tokens and requires WSDL knowledge. Prefer v2.0 for all new implementations unless a specific v1 capability is required (e.g., serial concurrency mode, XML/JSON content types, binary attachments, which the Bulk API guide limits to Attachment objects or Salesforce CRM Content).
 - **Most common wrong assumption.** Developers assume `concurrencyMode: Parallel` in Bulk API 2.0 is a meaningful configuration choice. It is not — Bulk API 2.0 only supports parallel mode, and the `concurrencyMode` field is reserved for future use. Serial mode is exclusively a Bulk API v1 feature.
 - **Key constraints in play.** A Bulk API 2.0 ingest job accepts up to 150 MB of data after base64 encoding, so upload no more than about 100 MB of raw CSV per job and split larger files across jobs. Salesforce creates one internal batch per 10,000 records, up to 150,000,000 records per rolling 24 hours, and ingest batches count toward the 15,000-batch allocation shared with Bulk API v1. A multipart job creation request handles up to 100,000 characters of CSV and completes the upload for you.
 
@@ -89,7 +89,7 @@ Bulk API 2.0 (released in API version 41.0 / Winter '18) is the current recommen
 | Result endpoints | Job-level: successfulResults, failedResults, unprocessedrecords | Per-batch result retrieval |
 | Multipart create | Supported (single-call create + upload) | Not supported |
 
-Use Bulk API v1 only when: (1) serial concurrency mode is required to prevent lock contention and Bulk API 2.0 batching cannot be reorganized to avoid it, or (2) the data format is XML/JSON or includes binary attachment fields (Document, ContentVersion Attachment).
+Use Bulk API v1 only when: (1) serial concurrency mode is required to prevent lock contention and Bulk API 2.0 batching cannot be reorganized to avoid it, or (2) the data format is XML/JSON or includes binary attachments (Attachment objects or Salesforce CRM Content, per the Bulk API guide L4948).
 
 ### Ingest Job Lifecycle
 
