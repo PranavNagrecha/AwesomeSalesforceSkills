@@ -101,9 +101,14 @@ Never merge two writers in the same pass. Writers do not commit, so their work s
 git -C <worktree-path> add skills/
 git -C <worktree-path> commit --no-verify -m "wip(<job>): <writer> — <n> skills (<item id> batch <k>, unreviewed)"
 # … reviewer runs on <worktree-path>, then the same add + commit with "reviewed" …
-git merge --no-ff worktree-agent-<id>
-git worktree remove <worktree-path>
+# Integrate by COPYING the touched skill directories, not by git merge: the Agent tool's
+# worktree may branch from the repo's default base rather than the release branch, and a
+# merge then conflicts on every line both sides changed (seen on R1-17, 2026-10-19).
+for s in <domain>/<slug> …; do rsync -a --delete --exclude __pycache__ "<worktree-path>/skills/$s/" "skills/$s/"; done
+git worktree remove --force <worktree-path> && git branch -D worktree-agent-<id>
 ```
+
+Before launching a writer, tell it to run `git merge --no-edit <release-branch>` inside its worktree first (or to copy the skill directories from the main checkout), so it starts from the release branch's content, not the default base.
 
 Then, for each touched skill `<domain>/<slug>`:
 
