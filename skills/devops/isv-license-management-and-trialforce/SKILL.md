@@ -29,7 +29,7 @@ outputs:
   - "Trialforce architecture diagram (TMO vs TSO vs Template) and trial-method decision"
   - "Feature Parameter inventory with direction (LmoToSubscriber / SubscriberToLmo), default values, and Apex consumption pattern"
 dependencies: []
-version: 1.0.2
+version: 1.1.0
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -76,7 +76,7 @@ The LMA is a free Salesforce-published managed package that the ISV installs in 
 - **`sfLma__Package__c`** — one record per registered managed package (the version number and the Salesforce-issued package ID).
 - **`sfLma__License__c`** — one record per subscriber org that installs the package. The license record carries seat count, status (`Active` / `Suspended` / `Trial` / `Uninstalled`), expiration date, and the subscriber org's 18-character Org ID.
 
-Salesforce updates the License record automatically when a subscriber installs, upgrades, or uninstalls. The ISV adjusts seat counts and expiration dates as part of their billing process. Subscriber orgs query their license state through the platform — if a license is expired or suspended, the package's components stop being usable in that org. The LMA is the only supported way to enforce subscription billing on a 1GP managed package, and is required for AppExchange Checkout.
+Salesforce updates the License record automatically when a subscriber installs, upgrades, or uninstalls. The ISV adjusts seat counts and expiration dates as part of their billing process. Subscriber orgs query their license state through the platform — if a license is expired or suspended, the package's components stop being usable in that org. The LMA is the only supported way to enforce subscription billing on a 1GP managed package.
 
 A package is registered from the Partner Console: connect the packaging org (1GP) or Dev Hub (2GP), then on the **Solutions** tab click **Register Package** for a version, log in to the LMO, and set the default license behavior. Package versions created after linking inherit the association, and a package can be associated with only one LMO.
 
@@ -99,9 +99,9 @@ Feature Parameters (FP) are package-scoped key/value records that flow between t
 
 Feature Parameters are **not** real-time. Propagation runs on a Salesforce-managed schedule (typically minutes, not seconds) in both directions. Critical decisions — whether a transaction is allowed — must not depend on a Feature Parameter that was flipped seconds ago. They are configuration, not authorization.
 
-### Concept 4 — AppExchange Checkout sits on top of the LMA, not next to it
+### Concept 4 — Checkout-provisioned licenses are changed through Checkout, not the LMA
 
-AppExchange Checkout adds e-commerce (credit-card billing, subscription renewals, self-service signup) to AppExchange listings. It does **not replace** the LMA — every Checkout purchase still creates a License record in the partner's LMA. Checkout adds a `Subscription` record (in the partner's billing system) and pushes lifecycle events (renewal, cancellation, upgrade) into the LMA. If the LMA is misconfigured, Checkout signups appear to succeed but the partner can't actually enforce or track the subscription.
+The 2GP guide's Modify a License Record topic carries one hard rule for AppExchange Checkout: "You can't use the LMA to modify licenses provisioned through AppExchange Checkout." To change seats on those licenses, the customer follows Add or Remove Licenses from an AppExchange Checkout Subscription instead (pkg2_dev.txt L22966–22968). For partners who sell some licenses through Checkout and some directly, a runbook step that says "click Modify License in the LMA" has to branch on how the license was provisioned. UNVERIFIED (2026-10-19): how Checkout creates and renews licenses (which org it writes to, what events it sends, and any infrastructure prerequisites) is documented only in AppExchange Checkout pages outside the corpus. Confirm it with Partner Support before you design around it.
 
 ---
 
@@ -119,7 +119,7 @@ AppExchange Checkout adds e-commerce (credit-card billing, subscription renewals
 5. At registration, set the default license behavior — trial length and number of seats. Every new license is created from these values until changed on the license's **Modify License** page.
 6. Build a scheduled job in the LMO that watches `sfLma__License__c` for `Status='Suspended'` and notifies the customer-success team — the LMA does not include outbound notifications.
 
-**Why not skip the LMA:** Without LMA registration, the partner has no view of installs, no way to enforce expiration, and no path to AppExchange Checkout. Adding the LMA later requires a Salesforce-side reconciliation case for existing installs.
+**Why not skip the LMA:** Without LMA registration, the partner has no view of installs and no way to enforce expiration. Adding the LMA later requires a Salesforce-side reconciliation case for existing installs.
 
 ### Pattern 2 — Trialforce template lifecycle for a CRM solution
 
@@ -156,7 +156,7 @@ AppExchange Checkout adds e-commerce (credit-card billing, subscription renewals
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Partner is shipping a free, non-paid 2GP managed package and never plans to monetize | Skip the LMA; use the standard 2GP install flow | LMA registration is recommended but not required for free packages, and adds operational overhead |
-| Partner is selling licenses and wants to enforce subscription expiration | Register with the LMA in a dedicated production LMO; rely on Salesforce's automatic License-status enforcement | Subscription enforcement without the LMA requires custom Apex license checks and breaks AppExchange Checkout |
+| Partner is selling licenses and wants to enforce subscription expiration | Register with the LMA in a dedicated production LMO; rely on Salesforce's automatic License-status enforcement | Subscription enforcement without the LMA means hand-rolled license checks whose state sits in Custom Settings or objects the subscriber admin can edit |
 | Partner needs branded login screens during trial | TMO with custom branding; TSO + Template; CRM-trial requires TMO | Environment-Hub-only TSOs cannot do custom branding; TMO is the only supported branded path |
 | Partner needs to flip a feature for one customer without a release | `LmoToSubscriber` Feature Parameter | Custom Settings can't be written cross-org; new package version is too heavy for a single-customer flip |
 | Partner wants telemetry on how many subscribers are using a feature | `SubscriberToLmo` Feature Parameter (Boolean for usage flag, Integer for counter) | LMA telemetry without FPs requires hand-rolled callouts; FPs use the platform-native channel |
@@ -173,7 +173,7 @@ When a request lands that involves any of: LMA setup, Trialforce setup, Feature 
 1. **Identify which org is which.** Get the partner to label PBO, LMO, TMO, TSO, packaging org, and DX-hub explicitly. Half of all ISV-licensing tickets resolve once the org map is correct.
 2. **Confirm package generation and trial method.** 1GP vs 2GP and trial-method choice gate every downstream decision; capture both before recommending anything.
 3. **Audit current LMA state.** If an LMA exists, query `sfLma__Package__c` and `sfLma__License__c` counts and statuses; if not, plan the registration sequence per Pattern 1.
-4. **Map Feature Parameters to direction and consumer.** For every requested feature flag, decide direction (`LmoToSubscriber` or `SubscriberToLmo`) and where in the subscriber Apex it's read. Don't add an FP without a confirmed reader.
+4. **Map Feature Parameters to direction and consumer.** For every requested feature flag, decide direction (`LmoToSubscriber` or `SubscriberToLmo`) and where in the subscriber Apex it's read. Don't add an FP without a confirmed reader. Then run `python3 scripts/check_isv_license_management_and_trialforce.py --manifest-dir force-app --strict`: it errors on a Feature Parameter file without `<value>`, `masterLabel` or a valid direction, and on a `checkPackage*Value` call with a namespace argument. `references/feature-parameter-metadata.md` walks through two parameters from their files to a per-customer override.
 5. **Validate the change in a sandbox-installed test subscriber org.** Install the package into a throwaway test org, confirm License record creation, exercise the FP propagation, and only then ship.
 6. **Document the per-customer override path.** Write down (in the partner's runbook) exactly which LMA fields a CSM edits to flip an FP, set seats, or extend an expiration — operational handoff is where most LMA setups go wrong months later.
 
@@ -188,7 +188,7 @@ When a request lands that involves any of: LMA setup, Trialforce setup, Feature 
 - [ ] Beta package versions are not relied on for `SubscriberToLmo` FP testing
 - [ ] Trialforce templates are re-snapshotted and re-approved after every release that changes the trial UX
 - [ ] License-suspension monitoring is wired (custom job or alert in the LMO) — Salesforce does not notify
-- [ ] AppExchange Checkout (if used) has its renewal-event handler verified end-to-end against the LMA
+- [ ] AppExchange Checkout (if used): the CSM runbook routes seat changes on Checkout-provisioned licenses to the customer's Checkout subscription, not Modify License
 - [ ] FP propagation latency is documented; no transactional code paths gate on a just-flipped FP
 
 ---

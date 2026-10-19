@@ -5,7 +5,7 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Recommending a Single-Wave FSC Deployment Without Prerequisite Checks
 
-**What the LLM generates:** A deployment command or script that deploys all FSC metadata components in a single batch — record types, IndustriesSettings, Participant Role custom metadata, and sharing rules — without any pre-flight checks for Person Account enablement or OWD settings.
+**What the LLM generates:** A deployment command or script that deploys all FSC metadata components in a single batch — record types, `IndustriesSettings`, `ParticipantRole` components, and sharing rules — without any pre-flight checks for Person Account enablement or OWD settings.
 
 ```bash
 # LLM-generated (wrong)
@@ -20,9 +20,10 @@ sf project deploy start \
 **Correct pattern:**
 
 ```bash
-# Step 0: pre-flight — confirm Person Accounts enabled
+# Step 0: pre-flight — confirm Person Accounts enabled.
+# RecordType.IsPersonType is visible only when the person account feature is enabled.
 sf data query \
-  --query "SELECT Id FROM RecordType WHERE SObjectType='Account' AND DeveloperName='PersonAccount'" \
+  --query "SELECT Id, DeveloperName FROM RecordType WHERE SobjectType='Account' AND IsPersonType=true" \
   --target-org production
 
 # Step 1: deploy record types only
@@ -31,12 +32,12 @@ sf project deploy start \
   --target-org production \
   --test-level RunSpecifiedTests --tests FSCRecordTypeTests
 
-# Step 2: deploy IndustriesSettings only after record types confirmed
+# Step 2: deploy IndustriesSettings (settings/Industries.settings) after record types are confirmed
 sf project deploy start \
-  --metadata "IndustriesSettings" \
+  --metadata "Settings:Industries" \
   --target-org production
 
-# Step 3: deploy Participant Role custom metadata
+# Step 3: deploy ParticipantRole components (participantRoles/*.participantRole)
 sf project deploy start \
   --metadata "ParticipantRole" \
   --target-org production
@@ -90,34 +91,37 @@ List<FinancialAccount> accounts = [
 
 ## Anti-Pattern 3: Treating CDS Activation as Sufficient Without OWD and Recalculation Steps
 
-**What the LLM generates:** Advice that deploying `IndustriesSettings` to activate CDS is the complete solution, without mentioning OWD requirements or the post-deploy sharing recalculation step.
+**What the LLM generates:** Advice that deploying `IndustriesSettings` with "the CDS flag" is the complete solution, without naming the per-object flags, the OWD requirement, or the post-deploy sharing recalculation step.
 
 ```
 # LLM-generated (incomplete)
-"To enable Compliant Data Sharing, deploy IndustriesSettings metadata 
-with the CDS flag set to true. After deployment, Participant Roles will 
+"To enable Compliant Data Sharing, deploy IndustriesSettings metadata
+with the CDS flag set to true. After deployment, Participant Roles will
 control access to Financial Accounts."
 ```
 
-**Why it happens:** LLMs compress multi-step processes into single-step answers when the intermediate steps are in different documentation areas. The OWD requirement is documented under Sharing Settings, and the recalculation requirement is in admin documentation — neither is prominently linked from the IndustriesSettings metadata reference that LLMs are more likely to surface.
+**Why it happens:** LLMs compress multi-step processes into single-step answers when the intermediate steps are in different documentation areas. The OWD requirement is documented under Sharing Settings and the recalculation requirement in admin documentation — neither is linked from the `IndustriesSettings` reference. There is also no single CDS flag: the Metadata API guide lists one boolean per object (`enableCompliantDataSharingForAccount`, `...ForOpportunity`, `...ForInteraction`, `...ForInteractionSummary`, `...ForCustomObjects`), each defaulting to false.
 
 **Correct pattern:**
 
 ```
 CDS activation requires four steps in sequence:
-1. Set OWDs for Account, Opportunity, and Financial Deal to Private 
-   or Public Read-Only (Setup > Sharing Settings)
-2. Deploy IndustriesSettings with CDS flags enabled
-3. Deploy Participant Role custom metadata records
-4. Trigger sharing recalculation batch for existing records
-   (FinServ.FinancialAccountShareRecalcBatch in managed-package FSC)
+1. Set OWDs for the CDS objects to Private or Public Read-Only
+   (Setup > Sharing Settings) and wait for that recalculation to finish
+2. Deploy IndustriesSettings with the enableCompliantDataSharingFor<Object>
+   flag set to true for each object that needs CDS
+3. Deploy ParticipantRole components whose parentObject is one of those objects
+4. Run the CDS share recalculation for records that already existed
+   (managed-package FSC: FinServ.FinancialAccountShareRecalcBatch —
+   UNVERIFIED (2026-10-19): the class is not in the Summer '26 Apex Reference;
+   confirm it exists in the org before scripting it)
 
-Skipping step 1 means CDS entries are written but have no access 
-control effect. Skipping step 4 means pre-existing records are 
+Skipping step 1 means CDS entries are written but have no access
+control effect. Skipping step 4 means pre-existing records are
 invisible to users who should have access.
 ```
 
-**Detection hint:** Any advice that mentions CDS activation without also mentioning OWD settings and sharing recalculation is incomplete. Flag answers that jump directly from "deploy IndustriesSettings" to "CDS is now active."
+**Detection hint:** Any advice that mentions CDS activation without naming the per-object `enableCompliantDataSharingFor*` flag, the OWD setting, and the recalculation is incomplete. Flag answers that jump directly from "deploy IndustriesSettings" to "CDS is now active."
 
 ---
 
@@ -126,7 +130,7 @@ invisible to users who should have access.
 **What the LLM generates:** A script, Metadata API call, or sf CLI command that attempts to enable Person Accounts programmatically as part of a deployment pipeline.
 
 ```bash
-# LLM-generated (wrong — Person Accounts cannot be enabled via Metadata API)
+# LLM-generated (wrong — AccountSettings has no field that enables person accounts)
 sf project deploy start \
   --metadata "AccountSettings" \
   --target-org sandbox \
@@ -135,100 +139,95 @@ sf project deploy start \
 
 Or advice that a scratch org feature flag is sufficient for all org types:
 ```json
-// LLM-generated (incomplete — only works for scratch orgs)
 {
   "features": ["PersonAccounts"]
 }
 ```
 
-**Why it happens:** LLMs know that many Salesforce features can be enabled via Settings metadata types and assume Person Accounts follows the same pattern. The scratch org definition file does support Person Accounts as a feature flag, which LLMs correctly apply — but incorrectly generalize to non-scratch orgs.
+**Why it happens:** LLMs know that many Salesforce features can be enabled via Settings metadata types and assume Person Accounts follows the same pattern. The scratch org definition file does support `PersonAccounts` as a feature, which LLMs correctly apply — but incorrectly generalize to sandboxes and production.
 
 **Correct pattern:**
 
 ```
 Person Account enablement:
-- Scratch orgs: add "features": ["PersonAccounts"] to scratch org definition JSON
-- Sandboxes: Enable via Setup > Account Settings (requires admin access; 
-  cannot be scripted via Metadata API)
-- Production: May require a Salesforce support case depending on org age 
-  and configuration
+- Scratch orgs: add "PersonAccounts" to the features array of the
+  scratch org definition file
+- Sandboxes and production: "Person accounts aren't enabled by default
+  in Salesforce. To request person accounts, contact Salesforce."
+  No Settings type turns it on; AccountSettings covers account teams,
+  history tracking, the owner report, and similar options only.
 
-This change is IRREVERSIBLE. It cannot be undone once applied. 
-Plan org provisioning accordingly — enable it once during initial setup, 
-not as part of recurring pipeline runs.
+Plan as if the change cannot be undone (UNVERIFIED (2026-10-19):
+irreversibility is stated only in Salesforce Help, which could not be
+fetched). Enable it once during org provisioning, not in pipeline runs.
 ```
 
-**Detection hint:** Any pipeline or script that includes PersonAccount or AccountSettings in a Metadata API deployment targeting a non-scratch org should be flagged. Person Account enablement is a one-time manual step.
+**Detection hint:** Any pipeline step that deploys `AccountSettings` "to enable person accounts", or any non-scratch provisioning script that assumes person accounts appear without a request to Salesforce, should be flagged.
 
 ---
 
-## Anti-Pattern 5: Not Validating Participant Role Custom Metadata Cross-References After Deploy
+## Anti-Pattern 5: Treating ParticipantRole as Custom Metadata With Record Type References
 
-**What the LLM generates:** A deployment plan that includes Participant Role custom metadata but has no post-deploy validation step to confirm the custom metadata's record type references resolve correctly in the target org.
+**What the LLM generates:** A `ParticipantRole__mdt` custom metadata record under `customMetadata/`, or a post-deploy step that "validates the Participant Role record type references".
 
+```xml
+<!-- LLM-generated (wrong) — customMetadata/ParticipantRole.Advisor.md-meta.xml -->
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata">
+  <label>Advisor</label>
+  <values>
+    <field>RecordTypeDeveloperName__c</field>
+    <value>Household</value>
+  </values>
+</CustomMetadata>
 ```
-# LLM-generated deployment plan (incomplete)
-1. Deploy record types
-2. Deploy IndustriesSettings  
-3. Deploy Participant Role custom metadata
-4. Done — CDS is now configured
-```
 
-**Why it happens:** LLMs follow a "deploy succeeds = configuration is correct" assumption that is generally valid for most metadata types. Custom metadata is an exception — it deploys successfully even when its cross-reference fields contain values that do not match any record in the target org. The LLM has no training signal that Participant Role custom metadata requires a runtime validation step separate from the deploy success signal.
+**Why it happens:** Many FSC configuration objects really are custom metadata types, and "role" sounds like reference data, so the model pattern-matches to `__mdt`. The Summer '26 Metadata API guide documents `ParticipantRole` as its own type (API 50.0+), stored as `.participantRole` files in the `participantRoles` folder, with exactly four fields: `defaultAccessLevel` (required; `Edit`, `None`, or `Read`), `isActive`, `masterLabel` (required), and `parentObject` (required; Account, Opportunity, FinancialDeal, Interaction, InteractionSummary, Budget, IndividualApplication, FundingAward, FundingOpportunity, Team, or a custom object). There is no record type field to validate.
 
 **Correct pattern:**
 
-```
-After deploying Participant Role custom metadata:
-
-1. Query the target org for Account record type developer names:
-   SELECT DeveloperName FROM RecordType WHERE SObjectType = 'Account'
-   
-2. Compare against the record type names referenced in the deployed 
-   Participant Role custom metadata records.
-   
-3. Assign a Participant Role to a test Financial Account record:
-   - Confirm a FinancialAccountShare row is created
-   - Confirm RowCause = 'ParticipantRole'
-   - Confirm the user/group listed has the expected access level
-   
-4. Log in as the test user and confirm Financial Account record visibility.
-
-If step 3 produces no share-table rows, the Participant Role record type 
-reference is broken — fix the custom metadata and redeploy.
+```xml
+<!-- participantRoles/Advisor.participantRole -->
+<ParticipantRole xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultAccessLevel>Read</defaultAccessLevel>
+    <isActive>true</isActive>
+    <masterLabel>Advisor</masterLabel>
+    <parentObject>Account</parentObject>
+</ParticipantRole>
 ```
 
-**Detection hint:** Any FSC deployment plan that ends at "deploy Participant Role custom metadata" without a share-table verification step is incomplete. The deploy success signal alone is not sufficient validation for this metadata type.
+After deploying, check that each role's `parentObject` has its `enableCompliantDataSharingFor*` flag set in `IndustriesSettings`, assign the role on a test record, confirm a share row is written for the expected user or group, and log in as that user.
+
+**Detection hint:** `ParticipantRole` under `customMetadata/`, a `ParticipantRole__mdt` or `.md-meta.xml` file name, or any mention of a ParticipantRole "record type reference" is this anti-pattern. The skill's checker reports it as an ERROR.
 
 ---
 
 ## Anti-Pattern 6: Ignoring the OWD Recalculation Window When Sequencing CDS Deployment Steps
 
-**What the LLM generates:** A deployment runbook that changes OWD settings and immediately proceeds to deploy IndustriesSettings and Participant Role metadata, without accounting for the time required for the platform to complete the OWD-triggered sharing recalculation.
+**What the LLM generates:** A deployment runbook that changes OWD settings and immediately proceeds to deploy `IndustriesSettings` and `ParticipantRole` metadata, or that "waits" by polling an object that does not track sharing recalculation.
 
 ```
-# LLM-generated runbook (wrong — no recalculation gate)
+# LLM-generated runbook (wrong — no recalculation gate, invented query)
 Step 1: Set Account OWD to Private
-Step 2: Deploy IndustriesSettings (immediate)
-Step 3: Deploy Participant Role custom metadata (immediate)
-Step 4: Validate CDS
+Step 2: SELECT Id, Status FROM BackgroundOperation
+        WHERE Type = 'SharingRecalculation' AND Status != 'Completed'
+Step 3: Deploy IndustriesSettings (immediate)
+Step 4: Deploy ParticipantRole components (immediate)
 ```
 
-**Why it happens:** LLMs model OWD changes as instantaneous configuration toggles. The platform-level sharing recalculation job that an OWD change triggers is an asynchronous background process that can take hours in large orgs — this operational behavior is not prominent in conceptual documentation that LLMs are trained on.
+**Why it happens:** LLMs model OWD changes as instantaneous toggles and then invent a plausible polling query. `BackgroundOperation` is a real object, but its `Type` picklist (ApiCatalogPoller, ExternalObjectSync, MetadataChangesetOperation, Sweeper, and others) has no sharing-recalculation value, and its `Status` value is `Complete`, not `Completed` — so the query above returns nothing and the gate passes immediately.
 
 **Correct pattern:**
 
 ```
-Step 1: Set Account, Opportunity, and Financial Deal OWDs to Private
-Step 2: WAIT — monitor sharing recalculation completion:
-   - Setup > Sharing Settings > check for active background jobs
-   - Or query: SELECT Id, Status FROM BackgroundOperation 
-     WHERE Type = 'SharingRecalculation' AND Status != 'Completed'
-   - Do NOT proceed until all recalculation jobs are Completed
-Step 3: Deploy IndustriesSettings
-Step 4: Deploy Participant Role custom metadata
-Step 5: Trigger FSC-specific CDS recalculation batch
-Step 6: Validate share-table rows and user access
+Step 1: Set the CDS objects' OWDs to Private (or Public Read-Only)
+Step 2: WAIT — the Security Implementation Guide says OWD recalculation
+        runs asynchronously, sends a notification email when it completes,
+        and can be monitored on Setup > Background Jobs.
+        Do NOT proceed until that job shows complete.
+Step 3: Deploy IndustriesSettings with the per-object CDS flags
+Step 4: Deploy ParticipantRole components
+Step 5: Run the CDS share recalculation for existing records
+Step 6: Validate share rows and log in as a test user
 ```
 
-**Detection hint:** Any FSC CDS deployment runbook that does not include an explicit wait-and-check step after OWD changes should be flagged as potentially unsafe for large production orgs.
+**Detection hint:** Any CDS runbook with no explicit wait after an OWD change, or one that gates on a `BackgroundOperation` query, should be flagged.

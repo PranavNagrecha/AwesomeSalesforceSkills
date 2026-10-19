@@ -37,7 +37,7 @@ outputs:
   - "Namespace compatibility audit: FinServ__ vs standard-object API names across metadata artifacts"
   - "Post-deploy CDS validation checklist"
 dependencies: []
-version: 1.0.2
+version: 1.1.0
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -147,7 +147,7 @@ sf project deploy start --metadata "RecordType:Account.Household,RecordType:Acco
 
 Phase 2 — Deploy Industries settings:
 ```
-sf project deploy start --metadata "IndustriesSettings" --target-org <alias>
+sf project deploy start --metadata "Settings:Industries" --target-org <alias>
 ```
 
 Phase 3 — Deploy `ParticipantRole` components:
@@ -212,9 +212,13 @@ Step-by-step instructions for an AI agent or practitioner deploying FSC metadata
 2. **Confirm Person Accounts are enabled in the target org.** Query `SELECT Id, DeveloperName FROM RecordType WHERE SobjectType = 'Account' AND IsPersonType = true` — `IsPersonType` is visible only when the person account feature is enabled. If not enabled, stop and request it from Salesforce; no metadata deploy turns it on.
 3. **Verify OWD settings for Account, Opportunity, and Financial Deal.** Navigate to Setup > Sharing Settings and confirm each object is set to Private or Public Read-Only. If OWDs are Public Read/Write, update them before deploying CDS configuration.
 4. **Deploy structural metadata in sequence:** first Account record types, then other FSC object record types. Validate each wave before proceeding: `sf project deploy validate --metadata "RecordType" --target-org <alias>`.
-5. **Deploy IndustriesSettings** to activate CDS and other FSC feature flags: `sf project deploy start --metadata "IndustriesSettings" --target-org <alias>`. Confirm the deploy succeeds without errors.
-6. **Deploy `ParticipantRole` components** after the CDS flags and OWDs are confirmed in the target: `sf project deploy start --metadata "ParticipantRole" --target-org <alias>`.
+5. **Deploy IndustriesSettings** to activate CDS and other FSC feature flags: `sf project deploy start --metadata "Settings:Industries" --target-org <alias>` (package.xml lists it as member `Industries` of type `Settings`). Confirm the deploy succeeds without errors.
+6. **Deploy `ParticipantRole` components** after `python3 scripts/check_fsc_deployment_patterns.py --manifest-dir <source dir> --strict` exits 0 (it errors on roles modelled as custom metadata, bad `defaultAccessLevel` or `parentObject`, and warns on inactive roles or a `parentObject` without its CDS flag) and the CDS flags and OWDs are confirmed in the target: `sf project deploy start --metadata "ParticipantRole" --target-org <alias>`.
 7. **Run CDS post-deploy validation:** confirm OWDs, trigger sharing recalculation if needed, and verify share-table rows are populated for test records. Log in as a test user to confirm row-level access is functioning correctly.
+
+---
+
+A full three-wave release with its manifests and gates is in `references/worked-example.md`.
 
 ---
 

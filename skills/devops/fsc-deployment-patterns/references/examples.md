@@ -34,7 +34,7 @@ Step 2 — Rewrite namespace-qualified names to platform-native equivalents. Exa
 |---|---|
 | `FinServ__FinancialAccount__c` | `FinancialAccount` |
 | `FinServ__Financial_Account__c.FinServ__Balance__c` | `FinancialAccount.Balance` |
-| `FinServ__ParticipantRole__mdt` | `ParticipantRole` |
+| `FinServ__ParticipantRole__mdt` (UNVERIFIED (2026-10-19): managed-package name not in the Summer '26 Metadata API guide) | `ParticipantRole` (Metadata API type, `participantRoles/*.participantRole`) |
 | `FinServ__Household__c` | `Account` (with Household record type) |
 
 Step 3 — Validate rewritten package against the target org before deploying:

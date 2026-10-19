@@ -1,17 +1,38 @@
 #!/usr/bin/env python3
-"""Checker script for FSC Deployment Patterns skill.
+"""Checker for the FSC Deployment Patterns skill.
 
-Scans a Salesforce metadata directory for FSC deployment anti-patterns:
-  - FinServ__ namespace presence (flags for namespace model audit)
-  - Participant Role custom metadata lacking FinancialAccountRole references
-  - package.xml including IndustriesSettings without RecordType (ordering risk)
-  - FSC metadata components combined in a single manifest without phase separation
+Scans a Salesforce metadata directory (source format or Metadata API format)
+for FSC deployment defects. Grounded in the Summer '26 Metadata API Developer
+Guide: ParticipantRole (api_meta.txt L94367-94455) and IndustriesSettings
+(L119187, L119332-119364).
 
-Uses stdlib only — no pip dependencies.
+ERROR (exit 1):
+  - a ParticipantRole file that does not parse, has the wrong root element,
+    or is missing a required field (defaultAccessLevel, masterLabel, parentObject)
+  - defaultAccessLevel not one of Edit / None / Read
+  - parentObject not a documented value and not a custom object (__c)
+  - ParticipantRole modelled as custom metadata (customMetadata/ParticipantRole.*
+    or a ParticipantRole__mdt object) -- it is its own Metadata API type
+  - package.xml lists ParticipantRole records under CustomMetadata
+WARN (exit 0, or 1 with --strict):
+  - empty directory, or no FSC components found (nothing was checked)
+  - ParticipantRole with isActive missing or false
+  - ParticipantRole whose parentObject has no enableCompliantDataSharingFor*
+    flag set to true in the Industries.settings file in the same tree
+  - FinServ__ namespace present (only portable to managed-package FSC orgs)
+  - RecordType, IndustriesSettings and ParticipantRole in one package.xml
+  - package.xml naming IndustriesSettings as a type -- the manifest lists it as
+    member Industries of type Settings (api_meta.txt L119183, L120234-120236)
+NOTE (never affects exit code):
+  - household Account record types present -> verify person accounts first
+  - ParticipantRole files but no Industries.settings in the tree -> CDS flag
+    cross-check skipped
+
+Stdlib only.
 
 Usage:
-    python3 check_fsc_deployment_patterns.py --manifest-dir path/to/metadata
-    python3 check_fsc_deployment_patterns.py --manifest-dir . --package-xml package.xml
+    python3 check_fsc_deployment_patterns.py --manifest-dir force-app/main/default
+    python3 check_fsc_deployment_patterns.py --manifest-dir mdapi_out --strict
 """
 
 from __future__ import annotations
@@ -22,266 +43,200 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+FINSERV_RE = re.compile(r"FinServ__\w+")
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-FINSVC_PATTERN = re.compile(r'FinServ__\w+')
-
-# FSC component types that must be deployed in a specific order
-PHASE_ORDER = [
-    "RecordType",
-    "IndustriesSettings",
-    "ParticipantRole",
-]
-
-# Metadata types that are safe to deploy in any order relative to FSC sequencing
-NEUTRAL_TYPES = {
-    "ApexClass", "ApexTrigger", "ApexPage", "ApexComponent",
-    "LightningComponentBundle", "AuraDefinitionBundle",
-    "CustomLabel", "CustomMetadata", "Workflow", "Flow",
-    "Profile", "PermissionSet", "PermissionSetGroup",
+ACCESS_LEVELS = {"Edit", "None", "Read"}
+# api_meta.txt L94414-94452
+PARENT_OBJECTS = {
+    "Account", "Budget", "IndividualApplication", "Interaction", "InteractionSummary",
+    "FinancialDeal", "FundingAward", "FundingOpportunity", "Opportunity", "Team",
 }
+# parentObject -> IndustriesSettings flag (api_meta.txt L119332-119364)
+CDS_FLAGS = {
+    "Account": "enableCompliantDataSharingForAccount",
+    "Opportunity": "enableCompliantDataSharingForOpportunity",
+    "Interaction": "enableCompliantDataSharingForInteraction",
+    "InteractionSummary": "enableCompliantDataSharingForInteractionSummary",
+}
+CUSTOM_OBJECT_FLAG = "enableCompliantDataSharingForCustomObjects"
+SEQUENCED_TYPES = ["RecordType", "IndustriesSettings", "ParticipantRole"]
 
 
-# ---------------------------------------------------------------------------
-# Checks
-# ---------------------------------------------------------------------------
+def _local(tag: str) -> str:
+    return tag.split("}", 1)[-1]
 
-def check_namespace_contamination(manifest_dir: Path) -> list[str]:
-    """Detect FinServ__-prefixed API names in metadata XML files."""
-    issues: list[str] = []
-    xml_files = list(manifest_dir.rglob("*.xml"))
 
-    if not xml_files:
-        return issues
+def _child_text(elem: ET.Element, name: str) -> str | None:
+    """Text of the first direct child with this local name, or None. Uses an
+    explicit `is not None` test -- an Element with no children is falsy."""
+    for child in elem:
+        if _local(child.tag) == name:
+            return (child.text or "").strip()
+    return None
 
-    contaminated: dict[str, list[str]] = {}
-    for xml_file in xml_files:
+
+def _files(root: Path, *suffixes: str) -> list[Path]:
+    return sorted(p for p in root.rglob("*") if p.is_file() and p.name.endswith(suffixes))
+
+
+def load_cds_flags(root: Path, warns: list[str]) -> dict[str, bool] | None:
+    """Return {flag: bool} from Industries.settings, or None when no file exists."""
+    files = _files(root, "Industries.settings", "Industries.settings-meta.xml")
+    if not files:
+        return None
+    flags: dict[str, bool] = {}
+    for f in files:
         try:
-            text = xml_file.read_text(encoding="utf-8", errors="ignore")
+            tree = ET.parse(f)
+        except ET.ParseError as exc:
+            warns.append(f"{f}: Industries settings file does not parse ({exc}); CDS flag cross-check skipped")
+            continue
+        for child in tree.getroot():
+            name = _local(child.tag)
+            if name.startswith("enableCompliantDataSharingFor"):
+                flags[name] = (child.text or "").strip().lower() == "true"
+    return flags
+
+
+def check_participant_roles(root: Path, errors: list[str], warns: list[str]) -> int:
+    files = _files(root, ".participantRole", ".participantRole-meta.xml")
+    flags = load_cds_flags(root, warns)
+    if files and flags is None:
+        print(f"NOTE: {len(files)} ParticipantRole file(s) but no Industries.settings in {root} -- "
+              "the enableCompliantDataSharingFor* cross-check was skipped; confirm the flags in the target org")
+    for f in files:
+        try:
+            elem = ET.parse(f).getroot()
+        except ET.ParseError as exc:
+            errors.append(f"{f}: ParticipantRole does not parse: {exc}")
+            continue
+        if _local(elem.tag) != "ParticipantRole":
+            errors.append(f"{f}: root element is <{_local(elem.tag)}>, expected <ParticipantRole>")
+            continue
+        missing = [n for n in ("defaultAccessLevel", "masterLabel", "parentObject") if not _child_text(elem, n)]
+        if missing:
+            errors.append(f"{f}: ParticipantRole missing required field(s): {', '.join(missing)}")
+        level = _child_text(elem, "defaultAccessLevel")
+        if level and level not in ACCESS_LEVELS:
+            errors.append(f"{f}: defaultAccessLevel '{level}' is not one of Edit, None, Read")
+        parent = _child_text(elem, "parentObject")
+        if parent and parent not in PARENT_OBJECTS and not parent.endswith("__c"):
+            errors.append(f"{f}: parentObject '{parent}' is not a documented ParticipantRole parent (or a custom object)")
+        active = _child_text(elem, "isActive")
+        if (active or "").lower() != "true":
+            warns.append(f"{f}: isActive is {'missing' if active is None else active}; the role grants no access until activated")
+        if parent and flags is not None:
+            flag = CUSTOM_OBJECT_FLAG if parent.endswith("__c") else CDS_FLAGS.get(parent)
+            if flag and not flags.get(flag, False):
+                warns.append(f"{f}: parentObject {parent} but {flag} is not true in Industries.settings; the role has no CDS effect on that object")
+    return len(files)
+
+
+def check_cmdt_misuse(root: Path, errors: list[str], warns: list[str]) -> int:
+    hits = 0
+    for f in _files(root, ".md", ".md-meta.xml", ".object", ".object-meta.xml"):
+        base = f.name
+        if "ParticipantRole" not in base and "ParticipantRole" not in str(f.parent):
+            continue
+        if not (f.parent.name == "customMetadata" or "__mdt" in str(f)):
+            continue
+        hits += 1
+        if "FinServ__" in str(f):
+            warns.append(f"{f}: FinServ__ ParticipantRole custom metadata -- the Summer '26 Metadata API guide documents only the ParticipantRole type; confirm this record exists in the managed package")
+        else:
+            errors.append(f"{f}: ParticipantRole modelled as custom metadata; it is a Metadata API type stored as participantRoles/<Name>.participantRole")
+    return hits
+
+
+def check_namespace(root: Path, warns: list[str]) -> None:
+    contaminated: dict[str, set[str]] = {}
+    for f in _files(root, ".xml", ".participantRole", ".settings", ".object", ".layout", ".cls", ".trigger"):
+        try:
+            names = set(FINSERV_RE.findall(f.read_text(encoding="utf-8", errors="ignore")))
         except OSError:
             continue
-        matches = FINSVC_PATTERN.findall(text)
-        if matches:
-            contaminated[str(xml_file.relative_to(manifest_dir))] = list(set(matches))
-
+        if names:
+            contaminated[str(f.relative_to(root))] = names
     if contaminated:
-        issues.append(
-            "FinServ__ namespace detected in metadata artifacts. "
-            "This package is only compatible with managed-package FSC orgs. "
-            "If the target org uses platform-native Core FSC (Winter '23+), "
-            "all FinServ__-prefixed API names must be rewritten before deployment. "
-            f"Affected files ({len(contaminated)}): "
-            + "; ".join(
-                f"{path}: {names[:3]}{'...' if len(names) > 3 else ''}"
-                for path, names in list(contaminated.items())[:5]
-            )
-        )
-
-    return issues
+        sample = "; ".join(f"{p}: {sorted(n)[:3]}" for p, n in list(contaminated.items())[:5])
+        warns.append(f"FinServ__ namespace in {len(contaminated)} file(s) -- portable only to managed-package FSC orgs; rewrite API names before deploying to platform-native FSC. {sample}")
 
 
-def check_package_xml_ordering(package_xml_path: Path) -> list[str]:
-    """Check package.xml for FSC component ordering risks.
-
-    Flags if IndustriesSettings is present alongside RecordType or ParticipantRole
-    in a single manifest (indicating a single-wave deploy that may fail due to
-    FSC dependency ordering requirements).
-    """
-    issues: list[str] = []
-
-    if not package_xml_path.exists():
-        return issues
-
-    try:
-        tree = ET.parse(package_xml_path)
-    except ET.ParseError as exc:
-        issues.append(f"package.xml parse error: {exc}")
-        return issues
-
-    root = tree.getroot()
-    ns = ""
-    if root.tag.startswith("{"):
-        ns = root.tag.split("}")[0] + "}"
-
-    types_present: set[str] = set()
-    for types_elem in root.findall(f"{ns}types"):
-        name_elem = types_elem.find(f"{ns}name")
-        if name_elem is not None and name_elem.text:
-            types_present.add(name_elem.text.strip())
-
-    # Check for single-wave deploy with sequencing risk
-    fsc_types_in_package = [t for t in PHASE_ORDER if t in types_present]
-
-    if len(fsc_types_in_package) > 1:
-        issues.append(
-            f"package.xml contains multiple FSC sequencing-sensitive metadata types "
-            f"in a single manifest: {fsc_types_in_package}. "
-            f"FSC deployment requires these types to land in strict sequence: "
-            f"RecordType → IndustriesSettings → ParticipantRole. "
-            f"Split into separate deployment waves to avoid dependency errors. "
-            f"See SKILL.md § Recommended Workflow for the phased deployment pattern."
-        )
-
-    # Check for IndustriesSettings without RecordType (missing pre-condition)
-    if "IndustriesSettings" in types_present and "RecordType" not in types_present:
-        issues.append(
-            "package.xml includes IndustriesSettings but not RecordType. "
-            "Ensure Account record types (Household, Person_Account) were deployed "
-            "in a prior wave before this manifest is applied. "
-            "Deploying IndustriesSettings before record types exist may leave "
-            "Participant Role custom metadata with unresolvable references."
-        )
-
-    return issues
-
-
-def check_participant_role_metadata(manifest_dir: Path) -> list[str]:
-    """Check ParticipantRole custom metadata files for common issues."""
-    issues: list[str] = []
-
-    # Custom metadata files can live under customMetadata/ directory
-    cmdt_dirs = list(manifest_dir.rglob("customMetadata"))
-    participant_role_files: list[Path] = []
-
-    for cmdt_dir in cmdt_dirs:
-        if cmdt_dir.is_dir():
-            participant_role_files.extend(cmdt_dir.glob("ParticipantRole*.md-meta.xml"))
-            participant_role_files.extend(cmdt_dir.glob("FinServ__ParticipantRole*.md-meta.xml"))
-
-    if not participant_role_files:
-        return issues
-
-    for prf in participant_role_files:
+def check_package_xml(root: Path, errors: list[str], warns: list[str]) -> int:
+    files = [p for p in root.rglob("package.xml") if p.is_file()]
+    for f in files:
         try:
-            text = prf.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
+            pkg = ET.parse(f).getroot()
+        except ET.ParseError as exc:
+            errors.append(f"{f}: package.xml does not parse: {exc}")
             continue
-
-        # Check for empty or placeholder record type references
-        if "RecordType" in text and ("TODO" in text or "PLACEHOLDER" in text):
-            issues.append(
-                f"{prf.name}: ParticipantRole custom metadata contains a TODO or "
-                f"PLACEHOLDER in a RecordType reference field. This will deploy "
-                f"successfully but the CDS engine will silently ignore this role "
-                f"at runtime, resulting in no share-table rows being written."
-            )
-
-        # Check for namespace consistency — FinServ__ParticipantRole in a non-namespaced dir
-        if "FinServ__ParticipantRole" in prf.name:
-            # Check if the enclosing metadata also uses bare (non-namespaced) object refs
-            if "FinancialAccount" in text and "FinServ__FinancialAccount" not in text:
-                issues.append(
-                    f"{prf.name}: ParticipantRole custom metadata file uses FinServ__ "
-                    f"namespace in filename but references bare FinancialAccount API names "
-                    f"in its XML. This may indicate a namespace mismatch between the file "
-                    f"naming convention and the target object model."
-                )
-
-    return issues
-
-
-def check_person_account_sentinel(manifest_dir: Path) -> list[str]:
-    """Warn if household-related record types are present without a Person Account sentinel.
-
-    This check cannot verify Person Account enablement (requires org access),
-    but it can flag that household record types are present and remind the deployer
-    to verify Person Account status before deploying.
-    """
-    issues: list[str] = []
-
-    # Look for record type metadata files with Household in the name
-    household_rt_files = (
-        list(manifest_dir.rglob("Account.Household-meta.xml"))
-        + list(manifest_dir.rglob("Account.Household.*-meta.xml"))
-        + list(manifest_dir.rglob("*Household*.recordType-meta.xml"))
-    )
-
-    if household_rt_files:
-        issues.append(
-            f"Household Account record type metadata detected "
-            f"({len(household_rt_files)} file(s)). "
-            f"Person Accounts must be enabled in the target org before this metadata "
-            f"can be deployed. Verify with: "
-            f"`sf data query --query \"SELECT Id FROM RecordType WHERE "
-            f"SObjectType='Account' AND DeveloperName='PersonAccount'\" "
-            f"--target-org <alias>`. "
-            f"If the query returns 0 rows, enable Person Accounts in Setup first."
-        )
-
-    return issues
+        present: set[str] = set()
+        for types in pkg:
+            if _local(types.tag) != "types":
+                continue
+            name = _child_text(types, "name")
+            if not name:
+                continue
+            present.add(name)
+            if name == "IndustriesSettings":
+                warns.append(f"{f}: <name>IndustriesSettings</name> -- a manifest lists it as "
+                             f"<members>Industries</members> under <name>Settings</name>")
+            members = [(m.text or "").strip() for m in types if _local(m.tag) == "members"]
+            if name == "Settings" and ("Industries" in members or "*" in members):
+                present.add("IndustriesSettings")  # package.xml lists it as Settings/Industries
+            if name == "CustomMetadata":
+                for m in types:
+                    if _local(m.tag) == "members" and (m.text or "").strip().startswith("ParticipantRole."):
+                        errors.append(f"{f}: CustomMetadata member {(m.text or '').strip()} -- list ParticipantRole under <name>ParticipantRole</name>")
+        seq = [t for t in SEQUENCED_TYPES if t in present]
+        if len(seq) > 1:
+            warns.append(f"{f}: {seq} in one manifest -- deploy RecordType, then IndustriesSettings, then ParticipantRole as separate waves")
+    return len(files)
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Check FSC metadata artifacts for deployment anti-patterns. "
-            "Detects namespace contamination, single-wave ordering risks, "
-            "Participant Role reference issues, and household metadata without "
-            "a Person Account pre-flight reminder."
-        ),
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce metadata (default: current directory).",
-    )
-    parser.add_argument(
-        "--package-xml",
-        default=None,
-        help="Path to package.xml manifest file to check for ordering risks.",
-    )
-    return parser.parse_args()
-
-
-def check_fsc_deployment_patterns(
-    manifest_dir: Path,
-    package_xml_path: Path | None = None,
-) -> list[str]:
-    """Return a list of issue strings found in the manifest directory."""
-    issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    # Run all checks
-    issues.extend(check_namespace_contamination(manifest_dir))
-    issues.extend(check_participant_role_metadata(manifest_dir))
-    issues.extend(check_person_account_sentinel(manifest_dir))
-
-    if package_xml_path is not None:
-        issues.extend(check_package_xml_ordering(package_xml_path))
-    else:
-        # Auto-detect package.xml in the manifest dir
-        default_package_xml = manifest_dir / "package.xml"
-        if default_package_xml.exists():
-            issues.extend(check_package_xml_ordering(default_package_xml))
-
-    return issues
+def note_household(root: Path) -> int:
+    rts = [p for p in root.rglob("*") if p.is_file() and "Household" in p.name and "recordType" in p.name]
+    if rts:
+        print(f"NOTE: {len(rts)} household record type file(s) -- confirm person accounts are enabled in the target "
+              "(SELECT Id FROM RecordType WHERE SobjectType='Account' AND IsPersonType=true) before deploying them")
+    return len(rts)
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    package_xml_path = Path(args.package_xml) if args.package_xml else None
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--manifest-dir", required=True, help="Metadata root (source or MDAPI format).")
+    ap.add_argument("--strict", action="store_true", help="Treat WARN findings as errors (exit 1).")
+    args = ap.parse_args()
 
-    issues = check_fsc_deployment_patterns(manifest_dir, package_xml_path)
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    if not any(p.is_file() for p in root.rglob("*")):
+        print(f"WARN: {root} is empty -- nothing to check")
+        return 1 if args.strict else 0
 
-    if not issues:
-        print("No FSC deployment issues found.")
-        return 0
+    errors: list[str] = []
+    warns: list[str] = []
+    found = check_participant_roles(root, errors, warns)
+    found += check_cmdt_misuse(root, errors, warns)
+    found += check_package_xml(root, errors, warns)
+    found += len(_files(root, "Industries.settings", "Industries.settings-meta.xml"))
+    found += note_household(root)
+    check_namespace(root, warns)
+    if not found and not warns:
+        warns.append(f"{root}: no ParticipantRole, Industries settings, package.xml or household record type found -- nothing FSC-specific was checked")
 
-    for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
-
-    return 1
+    for e in errors:
+        print(f"ERROR: {e}")
+    for w in warns:
+        print(f"WARN: {w}")
+    if errors:
+        sys.exit(1)
+    if warns:
+        return 1 if args.strict else 0
+    print("OK: no FSC deployment issues found.")
+    return 0
 
 
 if __name__ == "__main__":

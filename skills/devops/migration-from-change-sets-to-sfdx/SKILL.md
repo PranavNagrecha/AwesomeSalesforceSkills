@@ -33,7 +33,7 @@ outputs:
   - "pre- and post-migration validation checklist"
   - "decision guidance on target deployment model (manifest vs. packages vs. DevOps Center)"
 dependencies: []
-version: 1.0.1
+version: 1.1.0
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -163,6 +163,8 @@ Step-by-step instructions for an AI agent or practitioner executing this migrati
 5. **Validate round-trip** — Deploy the converted source to a sandbox: `sf project deploy start --source-dir force-app/ --target-org dev-sandbox`. Confirm zero errors. This proves the conversion is lossless.
 6. **Commit and iterate** — Commit the converted source to git. Repeat steps 3-5 for each remaining metadata type group. Resolve conflicts between batches as they arise.
 7. **Cut over** — Once all actively-maintained metadata is in the SFDX project, perform the next production release via `sf project deploy start` instead of a change set. Retire the change set process.
+
+Before each batch and before cut-over, run `python3 scripts/check_migration_from_change_sets_to_sfdx.py --manifest-dir <project root> --expected-api-version <org API version> --strict`. It errors on a missing or invalid `sfdx-project.json`, missing `packageDirectories`, an absolute path, or a missing or duplicated default directory. It warns on an unpinned `sourceApiVersion`, profiles that `.forceignore` doesn't exclude, `InstalledPackage` files, and leftover metadata-format files. `references/project-config-worked-example.md` shows the project file and the gate for a second batch.
 
 ---
 

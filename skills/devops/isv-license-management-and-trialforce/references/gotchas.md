@@ -64,15 +64,13 @@ UNVERIFIED (2026-10-19): Trialforce template lifecycle is documented only in the
 
 ---
 
-## Gotcha 7: AppExchange Checkout requires the LMA to be on the same Trust pod as the listing PBO
+## Gotcha 7: A Feature Parameter's default lives in `<value>`, and overrides live on the License record
 
-UNVERIFIED (2026-10-19): no pod-alignment requirement appears in the Summer '26 2GP guide's LMA chapters; treat this gotcha as unconfirmed until Salesforce Partner Support confirms it.
+**What happens:** A partner writes `<defaultValue>` (or leaves the default out) in a `.featureParameterBoolean` file and expects subscribers to start from that value. The Metadata API guide defines exactly three fields on each Feature Parameter type — `dataFlowDirection`, `masterLabel`, and `value` — and `value` is "the default value for this feature parameter". An unknown element is not a default. Then a CSM looking for a per-customer override searches the package or Setup instead of the LMO, where the 2GP guide puts it: open the subscriber's license record and edit the parameter in its Feature Parameter Booleans, Integers, or Dates related list.
 
-**What happens:** When a partner enables AppExchange Checkout for a paid listing, Checkout requires the LMA to be reachable for license-record creation at signup time. If the LMA is in a different Salesforce instance (pod) than the PBO that owns the listing, Checkout signups can experience cross-pod latency or, in edge cases, fail outright with non-actionable errors.
+**When it occurs:** Hand-written Feature Parameter files, and the first time a CSM has to flip an `LmoToSubscriber` parameter for one customer.
 
-**When it occurs:** Partners with large LMAs that have been migrated to org pods optimized for data volume, where the listing-owning PBO has stayed on its original pod. Detection is hard because signups succeed in development testing (small data volume hides the latency tail).
-
-**How to avoid:** Before enabling Checkout, file a partner case asking Salesforce to verify the LMA and PBO pod alignment. If misaligned, request a pod-migration plan rather than assuming Checkout will route across pods reliably. Document the pod assignment of every partner org as part of the partner ops runbook.
+**How to avoid:** Set `<value>` in every Feature Parameter file, and run the skill checker, which errors on a missing `value` or `masterLabel` and on any direction other than `LmoToSubscriber` or `SubscriberToLmo`. Put the License-record override steps in the CSM runbook. The direction can't be changed after the package version is released (pkg2_dev.txt L23620).
 
 ---
 

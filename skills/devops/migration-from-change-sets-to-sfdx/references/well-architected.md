@@ -26,6 +26,8 @@
 
 ## Official Sources Used
 
+- Salesforce DX Developer Guide, Project Configuration (sfdx_dev.txt L2291–2300 sample sfdx-project.json; L2335–2344 packageDirectories required, relative paths, exactly one default when several; L2410–2418 sourceApiVersion decides retrieved fields), Convert Files in Metadata Format (L2074–2085), profiles recommendation (L11884–11887); Metadata API Developer Guide, InstalledPackage (api_meta.txt L81389–81395). Supports references/project-config-worked-example.md and the checker.
+
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce CLI Reference — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm

@@ -25,9 +25,7 @@ public class LicenseGuard {
 // Right — query the FP value, which the LMA controls cross-org
 public class FeatureGate {
     public static Boolean betaReportsEnabled() {
-        return System.FeatureManagement.checkPackageBooleanValue(
-            'YourNamespace', 'Enable_Beta_Reports'
-        );
+        return System.FeatureManagement.checkPackageBooleanValue('Enable_Beta_Reports');
     }
 }
 ```
@@ -65,41 +63,39 @@ A TSO is created from a TMO, not from a template. A template is created from a T
 
 ---
 
-## Anti-Pattern 3: Calling FeatureManagement methods without the namespace argument from a 1GP package
+## Anti-Pattern 3: Inventing a namespace argument for FeatureManagement.checkPackage*Value
 
 **What the LLM generates:**
 
 ```apex
-// In a 1GP package's class invoked by subscriber code:
-System.FeatureManagement.checkPackageBooleanValue('Enable_Beta_Reports');
-```
-
-**Why it happens:** The two-argument `checkPackage*Value(namespace, name)` and one-argument `checkPackage*Value(name)` overloads coexist. LLMs default to the simpler signature, which works only when the calling Apex is *inside* the package namespace. A 1GP package's `global` class invoked from subscriber Apex runs in the subscriber namespace context — the one-argument call returns the subscriber's value (almost always `null`).
-
-**Correct pattern:** From any class consumed by subscriber Apex (typically `global` classes in 1GP), pass the namespace explicitly:
-
-```apex
-// Right — explicit namespace ensures the FP lookup hits the package's FP, not
-// a subscriber-namespace coincidence
-System.FeatureManagement.checkPackageBooleanValue(
+// Wrong — no such overload; this does not compile
+Boolean on = System.FeatureManagement.checkPackageBooleanValue(
     'YourPackageNamespace',
     'Enable_Beta_Reports'
 );
 ```
 
-**Detection hint:** Grep for `FeatureManagement.checkPackage*Value\s*\(\s*['"]\w+['"]\s*\)` (one-string-arg form) inside any class with `global` modifier or any class in a managed-package namespace directory. Flag every one-argument call for review.
+**Why it happens:** Many namespace-aware Apex APIs take a namespace and a name (`Type.forName(namespace, name)` is the familiar one), so the model assumes a cross-namespace call needs the same shape. The Apex Reference documents one signature per type and nothing else: `checkPackageBooleanValue(String apiName)`, `checkPackageDateValue(String apiName)`, `checkPackageIntegerValue(String apiName)`. The setters take `(String apiName, <value>)`.
+
+**Correct pattern:** Pass the feature parameter's API name only — "the fullName__c value of the feature parameter whose value you want to check":
+
+```apex
+Boolean on = System.FeatureManagement.checkPackageBooleanValue('Enable_Beta_Reports');
+```
+
+**Detection hint:** Any `checkPackage(Boolean|Date|Integer)Value(` call with two string arguments, or any `setPackage*Value(` call with three arguments. The skill checker reports both as ERROR.
 
 ---
 
-## Anti-Pattern 4: Asserting that AppExchange Checkout replaces the LMA
+## Anti-Pattern 4: Telling a CSM to change a Checkout customer's seats in the LMA
 
-**What the LLM generates:** "Once you enable AppExchange Checkout, you don't need to maintain the LMA — Checkout handles licensing." Or: "Checkout writes to a separate Subscription object and the LMA becomes optional."
+**What the LLM generates:** "To add seats, open the customer's license in the LMA and click Modify License" — applied to every customer, including those who bought through AppExchange Checkout. A worse variant says "Checkout handles licensing, so the LMA is optional."
 
-**Why it happens:** Training data (including older partner-program marketing) sometimes describes Checkout as a "modernization" of partner billing, which LLMs over-generalize into "Checkout supersedes the LMA."
+**Why it happens:** Modify License is the documented way to change seats and expiry, so the model applies it everywhere. The Checkout exception is a single warning box in the 2GP guide.
 
-**Correct pattern:** AppExchange Checkout sits *on top of* the LMA. Every Checkout signup creates an `sfLma__License__c` record in the partner's LMA. Checkout adds subscription-management fields (renewal date, payment status, plan) but does not replace license enforcement, seat tracking, or the package-side license-status enforcement. If the LMA is misconfigured, Checkout signups still appear to work but enforcement and tracking are broken.
+**Correct pattern:** The 2GP guide says: "You can't use the LMA to modify licenses provisioned through AppExchange Checkout." Those customers follow Add or Remove Licenses from an AppExchange Checkout Subscription. The CSM runbook branches on how each license was provisioned. Directly sold licenses still use Modify License, so the LMA stays in place.
 
-**Detection hint:** Any phrase like "Checkout replaces", "Checkout supersedes", "you don't need the LMA when using Checkout", or "Checkout handles licensing on its own" is wrong.
+**Detection hint:** A seat-change procedure that never asks how the license was provisioned, or any claim that Checkout makes the LMA optional, is this anti-pattern. UNVERIFIED (2026-10-19): Checkout's own provisioning mechanics are not in the corpus. Don't elaborate on them beyond the warning quoted above.
 
 ---
 

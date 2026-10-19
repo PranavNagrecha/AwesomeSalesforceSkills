@@ -36,13 +36,13 @@ Complete before any metadata deployment:
 - [ ] **Person Accounts verified** — query returned PersonAccount record type in target org
   ```bash
   sf data query \
-    --query "SELECT Id, DeveloperName FROM RecordType WHERE SObjectType='Account' AND DeveloperName='PersonAccount'" \
+    --query "SELECT Id, DeveloperName FROM RecordType WHERE SobjectType='Account' AND IsPersonType=true" \
     --target-org <alias>
   ```
   Result: ___________________
 
 - [ ] **OWDs verified** — Account, Opportunity, Financial Deal are Private or Public Read-Only
-- [ ] **OWD recalculation complete** — no active SharingRecalculation background jobs in target org
+- [ ] **OWD recalculation complete** — the OWD change shows complete on Setup > Background Jobs (or the completion email arrived)
 - [ ] **FSC package version** — managed-package version confirmed (if managed-package model): ___________________
 
 ---
@@ -79,15 +79,18 @@ Gate: [ ] Deploy succeeded  [ ] Record types confirmed in target org
 
 ### Phase 2 — Industries Settings (CDS Activation)
 
-Components:
-```
-IndustriesSettings
+Components (`settings/Industries.settings`; one `enableCompliantDataSharingFor<Object>` boolean per CDS object, each false by default):
+```xml
+<IndustriesSettings xmlns="http://soap.sforce.com/2006/04/metadata">
+    <enableCompliantDataSharingForAccount>true</enableCompliantDataSharingForAccount>
+    <enableCompliantDataSharingForOpportunity>true</enableCompliantDataSharingForOpportunity>
+</IndustriesSettings>
 ```
 
 Deploy:
 ```bash
 sf project deploy start \
-  --metadata "IndustriesSettings" \
+  --metadata "Settings:Industries" \
   --target-org <alias>
 ```
 
@@ -95,13 +98,21 @@ Gate: [ ] Deploy succeeded  [ ] CDS flag confirmed active in Setup
 
 ---
 
-### Phase 3 — Participant Role Custom Metadata
+### Phase 3 — ParticipantRole Components
 
-Components:
+`ParticipantRole` is a Metadata API type (API 50.0+), not custom metadata. One file per role in `participantRoles/<Name>.participantRole`:
+```xml
+<ParticipantRole xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultAccessLevel>Read</defaultAccessLevel>   <!-- required: Edit | None | Read -->
+    <isActive>true</isActive>
+    <masterLabel>Advisor</masterLabel>               <!-- required -->
+    <parentObject>Account</parentObject>             <!-- required; must have its CDS flag set in Phase 2 -->
+</ParticipantRole>
 ```
-ParticipantRole
-# list specific records if applicable
-```
+
+| Role (masterLabel) | parentObject | defaultAccessLevel | isActive | CDS flag for parentObject set? |
+|---|---|---|---|---|
+| | | | | [ ] |
 
 Deploy:
 ```bash
@@ -110,13 +121,13 @@ sf project deploy start \
   --target-org <alias>
 ```
 
-Gate: [ ] Deploy succeeded
+Gate: [ ] Deploy succeeded  [ ] Checker run clean: `python3 skills/devops/fsc-deployment-patterns/scripts/check_fsc_deployment_patterns.py --manifest-dir force-app/main/default`
 
 ---
 
 ### Phase 4 — CDS Post-Deploy Activation
 
-Trigger sharing recalculation (managed-package FSC):
+Trigger sharing recalculation (managed-package FSC — UNVERIFIED (2026-10-19): this class is not in the Summer '26 Apex Reference; confirm it exists in the org first):
 ```apex
 Database.executeBatch(
     new FinServ.FinancialAccountShareRecalcBatch(),
@@ -131,15 +142,15 @@ Gate: [ ] Recalculation batch completed  [ ] Share-table rows confirmed
 ## Post-Deploy Validation
 
 - [ ] OWD settings confirmed correct in target org
-- [ ] Share-table query returns rows for test Financial Account:
+- [ ] Share-table query on the role's `parentObject` share object (for `Account`, `AccountShare`) returns a row for the test record and the expected user or group:
   ```sql
-  SELECT Id, UserOrGroupId, RowCause, FinancialAccountAccessLevel
-  FROM FinancialAccountShare
-  WHERE ParentId = '<test_id>' AND RowCause = 'ParticipantRole'
+  SELECT Id, UserOrGroupId, RowCause
+  FROM AccountShare
+  WHERE AccountId = '<test_id>'
   ```
   Result: ___________________
 
-- [ ] Participant Role record type references validated against target org record types
+- [ ] Each deployed `ParticipantRole` checked: `isActive` true, `defaultAccessLevel` as intended, `parentObject` has its CDS flag set
 - [ ] Test user logged in and confirmed record visibility via CDS
 - [ ] Pre-existing records confirmed visible (recalculation covered historical data)
 

@@ -1,20 +1,35 @@
 #!/usr/bin/env python3
-"""Checker script for ISV License Management and Trialforce skill.
+"""Checker for the ISV License Management and Trialforce skill.
 
-Audits a Salesforce DX source tree (force-app/) for common ISV-licensing issues:
-- Custom Settings / Custom Objects whose name suggests hand-rolled license enforcement
-  (LicenseConfig, Subscription, Trial_Settings, etc.) — should use the LMA instead.
-- Apex calls to FeatureManagement.checkPackage*Value with only a name argument
-  (missing the namespace argument), which silently mis-resolves in subscriber context.
-- FeatureParameter*-meta.xml files missing dataflowDirection or defaultValue.
-- Apex code that calls setPackage*Value followed by checkPackage*Value of the same FP
-  in the same class (treating FP propagation as synchronous).
+Audits a Salesforce DX source tree (or MDAPI tree) for ISV-licensing defects.
+Grounded in the Summer '26 docs: FeatureParameterBoolean/Date/Integer
+(api_meta.txt L66289-66600: fields dataFlowDirection, masterLabel, value;
+directions LmoToSubscriber / SubscriberToLmo) and System.FeatureManagement
+(Apex Reference L215378-215527: checkPackage*Value(String apiName),
+setPackage*Value(String apiName, value) -- no namespace overload).
 
-Uses stdlib only — no pip dependencies.
+ERROR (exit 1):
+  - Feature Parameter file that does not parse, has the wrong root element,
+    lacks masterLabel / value / direction, has a direction other than
+    LmoToSubscriber or SubscriberToLmo, or a value of the wrong type (an
+    integer longer than nine digits included -- pkg2_dev.txt L23616)
+  - checkPackage*Value called with other than one argument, or setPackage*Value
+    with other than two (no such overload; the class does not compile)
+WARN (exit 0, or 1 with --strict):
+  - empty directory, or nothing ISV-licensing related found
+  - unknown element in a Feature Parameter file (e.g. <defaultValue>; the
+    default is <value>). Element names are case-sensitive: the direction is
+    accepted as dataFlowDirection (field table, api_meta.txt L66321) or
+    dataflowDirection (every sample, L66352; pkg2_dev.txt L23607), nothing else
+  - setPackage*Value and checkPackage*Value on the same parameter in one class
+    (propagation is not synchronous)
+  - custom object / setting named like a hand-rolled license store
+
+Stdlib only.
 
 Usage:
-    python3 check_isv_license_management_and_trialforce.py [--manifest-dir force-app]
-    python3 check_isv_license_management_and_trialforce.py --help
+    python3 check_isv_license_management_and_trialforce.py --manifest-dir force-app
+    python3 check_isv_license_management_and_trialforce.py --manifest-dir force-app --strict
 """
 
 from __future__ import annotations
@@ -25,183 +40,172 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-# Custom Setting / Custom Object names that suggest hand-rolled license enforcement.
-SUSPICIOUS_LICENSE_OBJECT_NAMES = re.compile(
+FP_TYPES = ("FeatureParameterBoolean", "FeatureParameterDate", "FeatureParameterInteger")
+# Case-sensitive. The Metadata API field table spells the direction
+# dataFlowDirection; every sample in both guides spells it dataflowDirection.
+DIRECTION_TAGS = ("dataFlowDirection", "dataflowDirection")
+FP_FIELDS = {*DIRECTION_TAGS, "masterLabel", "value", "fullName"}
+DIRECTIONS = {"LmoToSubscriber", "SubscriberToLmo"}
+LICENSE_STORE_RE = re.compile(
     r"^(license[_-]?(config|settings?|state|enforcement|guard|info)?"
     r"|subscription[_-]?(config|state|info)?"
     r"|trial[_-]?(config|settings?|state|info)?"
-    r"|app[_-]?license)\.object(-meta\.xml)?$",
+    r"|app[_-]?license)(__c)?$",
     re.IGNORECASE,
 )
-
-# Apex one-arg checkPackage*Value: the namespace argument is missing.
-ONE_ARG_CHECK_PACKAGE = re.compile(
-    r"FeatureManagement\.checkPackage(Boolean|Date|Integer)Value\s*\(\s*"
-    r"(?:'[^']*'|\"[^\"]*\")\s*\)",
-    re.IGNORECASE,
-)
-
-# Apex set/check pair on the same FP key in the same file (synchronous-FP assumption).
-SET_PACKAGE_RE = re.compile(
-    r"FeatureManagement\.setPackage(Boolean|Date|Integer)Value\s*\(\s*"
-    r"(?:'([^']+)'|\"([^\"]+)\")",
-    re.IGNORECASE,
-)
-CHECK_PACKAGE_RE = re.compile(
-    r"FeatureManagement\.checkPackage(Boolean|Date|Integer)Value\s*\([^)]*"
-    r"(?:'([^']+)'|\"([^\"]+)\")",
-    re.IGNORECASE,
-)
-
-NAMESPACE_PREFIX = "{http://soap.sforce.com/2006/04/metadata}"
-
-FEATURE_PARAM_FILE_RE = re.compile(
-    r"\.featureParameter(Boolean|Date|Integer)-meta\.xml$",
-    re.IGNORECASE,
-)
+CALL_RE = re.compile(r"FeatureManagement\s*\.\s*(check|set)Package(Boolean|Date|Integer)Value\s*\(", re.IGNORECASE)
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Audit Salesforce metadata for ISV License Management and Trialforce issues.",
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default="force-app",
-        help="Root directory of the Salesforce metadata (default: force-app).",
-    )
-    return parser.parse_args()
+def _local(tag: str) -> str:
+    return tag.split("}", 1)[-1]
 
 
-def find_files(root: Path, suffixes: tuple[str, ...]) -> list[Path]:
-    if not root.exists():
-        return []
-    out: list[Path] = []
-    for path in root.rglob("*"):
-        if path.is_file() and any(str(path).endswith(s) for s in suffixes):
-            out.append(path)
+def _strip_comments(src: str) -> str:
+    src = re.sub(r"/\*.*?\*/", lambda m: "\n" * m.group(0).count("\n"), src, flags=re.S)
+    return re.sub(r"//[^\n]*", "", src)
+
+
+def _args(src: str, start: int) -> list[str]:
+    """Split the argument list that begins after the '(' at src[start-1]."""
+    depth, cur, out, i, quote = 0, [], [], start, None
+    while i < len(src):
+        ch = src[i]
+        if quote:
+            cur.append(ch)
+            if ch == "\\":
+                cur.append(src[i + 1:i + 2]); i += 2; continue
+            if ch == quote:
+                quote = None
+        elif ch == "'":
+            quote = ch; cur.append(ch)
+        elif ch in "([{":
+            depth += 1; cur.append(ch)
+        elif ch in ")]}":
+            if depth == 0:
+                break
+            depth -= 1; cur.append(ch)
+        elif ch == "," and depth == 0:
+            out.append("".join(cur).strip()); cur = []
+        else:
+            cur.append(ch)
+        i += 1
+    last = "".join(cur).strip()
+    if last or out:
+        out.append(last)
     return out
 
 
-def check_suspicious_license_objects(root: Path) -> list[str]:
-    issues: list[str] = []
-    for path in root.rglob("*.object-meta.xml"):
-        if SUSPICIOUS_LICENSE_OBJECT_NAMES.search(path.name):
-            issues.append(
-                f"WARN {path}: object name suggests hand-rolled license enforcement; "
-                "the LMA (sfLma__License__c) is the only enforceable surface — see "
-                "references/llm-anti-patterns.md anti-pattern #1."
-            )
-    for path in root.rglob("*.objectSettings-meta.xml"):
-        if SUSPICIOUS_LICENSE_OBJECT_NAMES.search(path.name):
-            issues.append(
-                f"WARN {path}: settings name suggests hand-rolled license enforcement."
-            )
-    return issues
-
-
-def check_apex_namespace_omission(root: Path) -> list[str]:
-    issues: list[str] = []
-    for path in root.rglob("*.cls"):
+def check_feature_parameters(root: Path, errors: list[str], warns: list[str]) -> int:
+    files = [p for p in root.rglob("*") if p.is_file()
+             and re.search(r"\.featureParameter(Boolean|Date|Integer)(-meta\.xml)?$", p.name)]
+    for f in files:
+        kind = "FeatureParameter" + re.search(r"featureParameter(Boolean|Date|Integer)", f.name).group(1)
         try:
-            text = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            continue
-        if "global" not in text and "managed" not in str(path).lower():
-            continue
-        for match in ONE_ARG_CHECK_PACKAGE.finditer(text):
-            line_num = text[: match.start()].count("\n") + 1
-            issues.append(
-                f"HIGH {path}:{line_num}: FeatureManagement.checkPackage*Value called "
-                "with only one string argument; pass the package namespace explicitly "
-                "as the first argument when this class can be invoked from subscriber "
-                "Apex (see anti-pattern #3)."
-            )
-    return issues
-
-
-def check_synchronous_fp_assumption(root: Path) -> list[str]:
-    issues: list[str] = []
-    for path in root.rglob("*.cls"):
-        try:
-            text = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            continue
-        set_keys: set[str] = set()
-        for m in SET_PACKAGE_RE.finditer(text):
-            key = m.group(2) or m.group(3)
-            if key:
-                set_keys.add(key)
-        if not set_keys:
-            continue
-        for m in CHECK_PACKAGE_RE.finditer(text):
-            key = m.group(2) or m.group(3)
-            if key and key in set_keys:
-                line_num = text[: m.start()].count("\n") + 1
-                issues.append(
-                    f"HIGH {path}:{line_num}: setPackage*Value and checkPackage*Value "
-                    f"on FP '{key}' in the same class — propagation is asynchronous; "
-                    "the read will return the pre-write value (see anti-pattern #5)."
-                )
-    return issues
-
-
-def check_feature_parameter_metadata(root: Path) -> list[str]:
-    issues: list[str] = []
-    for path in root.rglob("*.featureParameter*-meta.xml"):
-        if not FEATURE_PARAM_FILE_RE.search(path.name):
-            continue
-        try:
-            tree = ET.parse(path)
+            el = ET.parse(f).getroot()
         except ET.ParseError as exc:
-            issues.append(f"WARN {path}: cannot parse XML ({exc})")
+            errors.append(f"{f}: does not parse: {exc}")
             continue
-        root_el = tree.getroot()
-        direction = root_el.find(f"{NAMESPACE_PREFIX}dataflowDirection")
-        if direction is None or not (direction.text or "").strip():
-            issues.append(
-                f"HIGH {path}: Feature Parameter missing <dataflowDirection> — must be "
-                "either LmoToSubscriber or SubscriberToLmo."
-            )
-        elif (direction.text or "").strip() not in {"LmoToSubscriber", "SubscriberToLmo"}:
-            issues.append(
-                f"HIGH {path}: <dataflowDirection> has invalid value '{direction.text}'; "
-                "must be exactly LmoToSubscriber or SubscriberToLmo."
-            )
-        default = root_el.find(f"{NAMESPACE_PREFIX}defaultValue")
-        if default is None or default.text is None or not default.text.strip():
-            issues.append(
-                f"WARN {path}: Feature Parameter missing <defaultValue>; subscribers "
-                "without a propagated value will see null on read — set an explicit default."
-            )
-    return issues
+        if _local(el.tag) != kind:
+            errors.append(f"{f}: root element <{_local(el.tag)}> does not match the file suffix ({kind})")
+            continue
+        fields = {_local(c.tag): (c.text or "").strip() for c in el}
+        direction = next((fields[t] for t in DIRECTION_TAGS if t in fields), None)
+        if not direction:
+            errors.append(f"{f}: missing dataFlowDirection (LmoToSubscriber or SubscriberToLmo)")
+        elif direction not in DIRECTIONS:
+            errors.append(f"{f}: dataFlowDirection '{direction}' is not LmoToSubscriber or SubscriberToLmo")
+        if not fields.get("masterLabel"):
+            errors.append(f"{f}: missing masterLabel")
+        value = fields.get("value")
+        if value is None or value == "":
+            errors.append(f"{f}: missing <value> -- it holds the parameter's default")
+        elif kind.endswith("Boolean") and value not in ("true", "false"):
+            errors.append(f"{f}: <value> '{value}' is not true or false")
+        elif kind.endswith("Integer") and not re.fullmatch(r"-?\d+", value):
+            errors.append(f"{f}: <value> '{value}' is not an integer")
+        elif kind.endswith("Integer") and len(value.lstrip("-")) > 9:
+            errors.append(f"{f}: <value> '{value}' exceeds nine digits")
+        elif kind.endswith("Date") and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            errors.append(f"{f}: <value> '{value}' is not a YYYY-MM-DD date")
+        unknown = sorted(_local(c.tag) for c in el if _local(c.tag) not in FP_FIELDS)
+        if unknown:
+            warns.append(f"{f}: element(s) {unknown} are not Feature Parameter fields (dataFlowDirection, masterLabel, value)")
+    return len(files)
 
 
-def check_isv_license_management_and_trialforce(manifest_dir: Path) -> list[str]:
-    issues: list[str] = []
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-    issues.extend(check_suspicious_license_objects(manifest_dir))
-    issues.extend(check_apex_namespace_omission(manifest_dir))
-    issues.extend(check_synchronous_fp_assumption(manifest_dir))
-    issues.extend(check_feature_parameter_metadata(manifest_dir))
-    return issues
+def check_apex(root: Path, errors: list[str], warns: list[str]) -> int:
+    hits = 0
+    for f in sorted(p for p in root.rglob("*") if p.is_file() and p.suffix in (".cls", ".trigger")):
+        try:
+            src = _strip_comments(f.read_text(encoding="utf-8", errors="ignore"))
+        except OSError:
+            continue
+        set_keys: dict[str, int] = {}
+        checks: list[tuple[str, int]] = []
+        for m in CALL_RE.finditer(src):
+            hits += 1
+            verb = m.group(1).lower()
+            args = _args(src, m.end())
+            line = src[:m.start()].count("\n") + 1
+            limit = 1 if verb == "check" else 2
+            if len(args) != limit:
+                errors.append(f"{f}:{line}: {verb}Package{m.group(2)}Value takes {limit} argument(s), got {len(args)} -- there is no other overload")
+                continue
+            key = args[0].strip("'") if args and args[0].startswith("'") else None
+            if key and verb == "set":
+                set_keys[key] = line
+            elif key:
+                checks.append((key, line))
+        for key, line in checks:
+            if key in set_keys:
+                warns.append(f"{f}:{line}: checkPackage*Value('{key}') in the same class that sets it (line {set_keys[key]}) -- do not read back a just-written value")
+    return hits
+
+
+def check_license_stores(root: Path, warns: list[str]) -> int:
+    n = 0
+    for f in root.rglob("*"):
+        if not f.is_file() or not re.search(r"\.object(-meta\.xml)?$", f.name):
+            continue
+        stem = re.sub(r"\.object(-meta\.xml)?$", "", f.name)
+        if LICENSE_STORE_RE.match(stem):
+            n += 1
+            warns.append(f"{f}: object '{stem}' looks like a hand-rolled license store; subscriber admins can edit it -- use the LMA and Feature Parameters")
+    return n
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = check_isv_license_management_and_trialforce(manifest_dir)
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--manifest-dir", required=True, help="Source tree root (e.g. force-app).")
+    ap.add_argument("--strict", action="store_true", help="Treat WARN findings as errors (exit 1).")
+    args = ap.parse_args()
 
-    if not issues:
-        print(f"No issues found under {manifest_dir}.")
-        return 0
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    if not any(p.is_file() for p in root.rglob("*")):
+        print(f"WARN: {root} is empty -- nothing to check")
+        return 1 if args.strict else 0
 
-    for issue in issues:
-        print(issue, file=sys.stderr)
+    errors: list[str] = []
+    warns: list[str] = []
+    found = check_feature_parameters(root, errors, warns)
+    found += check_apex(root, errors, warns)
+    found += check_license_stores(root, warns)
+    if not found:
+        warns.append(f"{root}: no Feature Parameter files, FeatureManagement calls or license-store objects found -- nothing was checked")
 
-    return 1
+    for e in errors:
+        print(f"ERROR: {e}")
+    for w in warns:
+        print(f"WARN: {w}")
+    if errors:
+        sys.exit(1)
+    if warns:
+        return 1 if args.strict else 0
+    print("OK: no ISV licensing issues found.")
+    return 0
 
 
 if __name__ == "__main__":

@@ -243,7 +243,10 @@ releases:
       licensing)
     size: M
     owner_model: opus
-    status: running
+    status: done
+    evidence: '4 devops skills 10/11 -> 12/12: ParticipantRole modelled as a Metadata API type across anti-patterns/template/checker;
+      FeatureParameter value field; rollbackOnError REST/SOAP disagreement stated; 4 checkers rewritten with fixtures, 9 fail-open
+      paths closed by review; validate --domain devops 0 errors'
   - id: R1-10
     title: 'Release: CHANGELOG [Plugin 1.4.0] + [0.5.1], versions, gate, merge main, push, ls-remote verify, tag mcp-v0.5.1,
       watch publish, fresh-clone bootstrap --verify-only'

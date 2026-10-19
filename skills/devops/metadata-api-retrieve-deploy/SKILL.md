@@ -31,7 +31,7 @@ outputs:
   - sf CLI retrieve and deploy commands
   - CI pipeline stanza
 dependencies: []
-version: 1.1.1
+version: 1.2.0
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -44,7 +44,7 @@ Activate when retrieving or deploying Salesforce metadata via `sf` CLI (Metadata
 
 - **Decide manifest scope.** Explicit members (safer for CI) vs wildcards (broad retrieve for initial capture).
 - **Choose test level.** `NoTestRun` applies only to development environments; `RunLocalTests` is the default for production deploys that include Apex, and `RunSpecifiedTests` changes the coverage rule.
-- **Decide rollback policy.** `rollbackOnError` defaults to `true` and must be `true` for production; `false` creates partial-state risk.
+- **Decide rollback policy.** `rollbackOnError` must be `true` for production (the REST reference defaults it to `true`, the SOAP `DeployOptions` table to false, so set it explicitly); `false` creates partial-state risk.
 - **Pre or post destructive?** Pre runs deletions before adds (safe for rename); post runs deletions after (needed when the deploy must first remove a reference to the deleted component).
 
 ## Questions to Ask Before Configuring
@@ -126,7 +126,7 @@ Pair with an empty `package.xml` that references only the API version.
 
 ### rollbackOnError
 
-Default `true`, and it must be `true` for a production deploy. Setting `false` is dangerous — a failed component leaves orphaned partial metadata. Rarely useful outside scripted cleanup.
+It must be `true` for a production deploy. The REST deploy reference gives its default as `true` (L3329), but the SOAP `DeployOptions` table says false (L4255–4261), so set it explicitly when you call the API directly. Setting `false` is dangerous — a failed component leaves orphaned partial metadata. Rarely useful outside scripted cleanup.
 
 ## Common Patterns
 
@@ -187,10 +187,12 @@ sf org login jwt \
 6. On approval, run `sf project deploy quick --job-id <ID>`.
 7. Tag the deploy in git; archive manifest + job ID for rollback trace.
 
+Before step 4, run `python3 scripts/check_metadata_api_retrieve_deploy.py --manifest-dir manifest --strict`. It errors on wildcards in a destructive manifest, a destructive manifest with no `package.xml` (or no `<version>` in it) beside it, and Pre/Post manifests below API 33.0. It warns on a component that is both added and deleted, which the guide doesn't address, and on `--ignore-errors` or `NoTestRun` in a deploy script. `references/retrieve-deploy-runbook.md` walks one release through every step, including a Post-destructive delete.
+
 ## Review Checklist
 
 - [ ] Manifest uses explicit members (no unintentional wildcards)
-- [ ] `rollbackOnError=true` (default) on production deploys
+- [ ] `rollbackOnError=true` (set explicitly) on production deploys
 - [ ] Test level is `RunLocalTests` or `RunSpecifiedTests` for prod
 - [ ] Destructive changes paired with empty package.xml
 - [ ] validate → quick pattern used for high-risk deploys

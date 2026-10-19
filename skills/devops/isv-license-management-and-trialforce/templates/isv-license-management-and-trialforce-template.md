@@ -56,7 +56,7 @@ Label every relevant org explicitly. Half of all ISV-licensing tickets resolve o
 Validate each row:
 - [ ] Direction is `LmoToSubscriber` or `SubscriberToLmo` (exact spelling)
 - [ ] Default value is set (not blank)
-- [ ] Reader Apex passes namespace as first argument to `checkPackage*Value`
+- [ ] Reader Apex calls `checkPackage*Value('<apiName>')` with one argument (there is no namespace overload)
 - [ ] Set/check pair is not in the same transaction (no synchronous-FP assumption)
 - [ ] FP is not used as an authorization decision (only as configuration)
 
@@ -90,7 +90,7 @@ Copy from SKILL.md and tick items as completed.
 - [ ] Beta versions not relied on for SubscriberToLmo testing
 - [ ] Trialforce templates re-snapshotted after UX-changing releases
 - [ ] License-suspension monitoring wired
-- [ ] Checkout renewal-event handler verified end-to-end (if used)
+- [ ] Seat changes for Checkout-provisioned licenses routed to the customer's Checkout subscription, not Modify License (if Checkout is used)
 - [ ] FP propagation latency documented; no transactional gates on just-flipped FPs
 
 ## Notes / Deviations
