@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
-"""Data model design pattern checker for Salesforce metadata.
+"""Data model checker for the data-model-design-patterns skill.
 
-Analyzes exported Salesforce metadata (force-app project structure or
-retrieved metadata) for common data model anti-patterns:
+Reads object and field metadata in source format (objects/<Obj>/<Obj>.object-meta.xml
+plus objects/<Obj>/fields/*.field-meta.xml) or Metadata API format (*.object).
 
-  1. Junction objects with two lookup fields instead of two MDR fields
-     (loses rollup summary capability and referential integrity).
-  2. MDR chains deeper than two levels (cascade delete risk).
-  3. Objects with no External ID field that contain integration-style naming
-     (heuristic: field labels containing "Id", "Code", "Key", "Ref" in
-     non-external-ID fields).
-  4. Text fields with labels suggesting phone or email data.
-  5. Objects exceeding the lookup relationship field count warning threshold.
+Rules (Object Reference "Relationships Among Objects"; Metadata API CustomField;
+Limits Quick Reference):
+  ERROR  a MasterDetail field whose master is BusinessHours, Idea, Lead,
+         OrderItem, Pricebook2, Product2, QuoteLineItem, or User (these can't be
+         the primary object); a MasterDetail field on a standard object that
+         points at a custom object (a standard object can't be the detail of a
+         custom object).
+  WARN   a custom object whose only relationship fields are two lookups (a
+         lookup-only junction: no native roll-ups, rows survive parent deletes);
+         a master-detail chain deeper than two levels; 35 or more relationship
+         fields on one object (a custom object allows up to 40 relationships);
+         a lookup with deleteConstraint Cascade (review access implications);
+         a Text field whose label suggests phone or email data.
 
-Uses stdlib only — no pip dependencies.
+Exit codes: 0 clean or WARN only; 1 on ERROR, missing directory, or WARN with
+--strict. An empty directory prints a WARN and exits 0. Stdlib only.
 
 Usage:
-    python3 check_data_model.py --manifest-dir path/to/force-app/main/default/objects
-    python3 check_data_model.py --manifest-dir .  (searches recursively for .object-meta.xml)
-    python3 check_data_model.py --help
+    python3 check_data_model.py --manifest-dir force-app/main/default [--strict]
 """
 
 from __future__ import annotations
@@ -27,401 +31,116 @@ import argparse
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import NamedTuple
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-SF_NS = "http://soap.sforce.com/2006/04/metadata"
-
-# Warn when an object has this many or more lookup relationships.
-LOOKUP_COUNT_WARNING_THRESHOLD = 30
-
-# Salesforce hard limit on MDR fields per child object.
-MDR_HARD_LIMIT = 2
-
-# Standard objects that can never be the primary (master) object in a
-# master-detail relationship. Object Reference, "Relationships Among Objects":
-# "you can't create a master-detail relationship where these standard objects
-# are the primary object." A lookup to one of these can never be converted to
-# master-detail, so never advise it.
-MDR_INELIGIBLE_MASTERS = {
-    "BusinessHours", "Idea", "Lead", "OrderItem",
-    "PriceBook2", "Pricebook2", "Product2", "QuoteLineItem", "User",
-}
-
-# Phone / email label keywords (case-insensitive) used for field type heuristic.
-PHONE_LABEL_KEYWORDS = {"phone", "mobile", "cell", "fax", "tel"}
-EMAIL_LABEL_KEYWORDS = {"email", "e-mail"}
-
-# Integration identifier label keywords used for external ID heuristic.
-INTEGRATION_ID_KEYWORDS = {"external id", "ext id", "erp id", "erp_id",
-                            "source id", "source_id", "legacy id", "legacy_id",
-                            "integration key", "ref id", "ref_id"}
+NS = "{http://soap.sforce.com/2006/04/metadata}"
+NEVER_MASTER = {"businesshours", "idea", "lead", "orderitem", "pricebook2", "product2", "quotelineitem", "user"}
+RELATIONSHIP_WARN = 35
+PHONE_WORDS = ("phone", "mobile", "fax")
+EMAIL_WORDS = ("email", "e-mail")
 
 
-# ---------------------------------------------------------------------------
-# Data structures
-# ---------------------------------------------------------------------------
-
-class FieldInfo(NamedTuple):
-    label: str
-    api_name: str
-    field_type: str
-    is_external_id: bool
-    is_unique: bool
-    relationship_name: str  # populated for Lookup / MasterDetail
-    reference_to: str       # populated for Lookup / MasterDetail
+def text(elem: ET.Element, tag: str) -> str:
+    node = elem.find(NS + tag)
+    if node is None:
+        node = elem.find(tag)
+    return node.text.strip() if node is not None and node.text is not None else ""
 
 
-class ObjectInfo(NamedTuple):
-    api_name: str
-    file_path: Path
-    fields: list[FieldInfo]
-
-
-# ---------------------------------------------------------------------------
-# XML parsing helpers
-# ---------------------------------------------------------------------------
-
-def _tag(local: str) -> str:
-    return f"{{{SF_NS}}}{local}"
-
-
-def _text(element: ET.Element, local: str) -> str:
-    child = element.find(_tag(local))
-    return (child.text or "").strip() if child is not None else ""
-
-
-def parse_object_file(path: Path) -> ObjectInfo | None:
-    """Parse a .object-meta.xml file and return an ObjectInfo, or None on error."""
+def parse(path: Path) -> ET.Element | None:
     try:
-        tree = ET.parse(path)
+        return ET.parse(path).getroot()
     except ET.ParseError as exc:
-        print(f"WARN: Could not parse {path}: {exc}", file=sys.stderr)
+        print(f"WARN: {path}: cannot parse ({exc})")
         return None
 
-    root = tree.getroot()
-    api_name = path.parent.name  # directory name is the object API name
 
-    fields: list[FieldInfo] = []
-    for field_el in root.findall(_tag("fields")):
-        label = _text(field_el, "label")
-        api_name_field = _text(field_el, "fullName")
-        field_type = _text(field_el, "type")
-        is_external_id = _text(field_el, "externalId").lower() == "true"
-        is_unique = _text(field_el, "unique").lower() == "true"
-        relationship_name = _text(field_el, "relationshipName")
-        ref_el = field_el.find(_tag("referenceTo"))
-        reference_to = (ref_el.text or "").strip() if ref_el is not None else ""
-        fields.append(FieldInfo(
-            label=label,
-            api_name=api_name_field,
-            field_type=field_type,
-            is_external_id=is_external_id,
-            is_unique=is_unique,
-            relationship_name=relationship_name,
-            reference_to=reference_to,
-        ))
-
-    return ObjectInfo(api_name=api_name, file_path=path, fields=fields)
-
-
-def discover_object_files(manifest_dir: Path) -> list[Path]:
-    """Recursively find all .object-meta.xml files under manifest_dir."""
-    return sorted(manifest_dir.rglob("*.object-meta.xml"))
+def load(root: Path) -> dict[str, list[tuple[Path, ET.Element]]]:
+    """Map object API name -> list of (file, CustomField element)."""
+    objects: dict[str, list[tuple[Path, ET.Element]]] = {}
+    for f in root.rglob("*.object-meta.xml"):
+        name = f.name[: -len(".object-meta.xml")]
+        objects.setdefault(name, [])
+        node = parse(f)
+        if node is not None:
+            for fld in node.findall(NS + "fields") + node.findall("fields"):
+                objects[name].append((f, fld))
+    for f in root.rglob("*.field-meta.xml"):
+        name = f.parent.parent.name if f.parent.name == "fields" else f.parent.name
+        node = parse(f)
+        if node is not None:
+            objects.setdefault(name, []).append((f, node))
+    for f in root.rglob("*.object"):
+        node = parse(f)
+        if node is not None:
+            objects.setdefault(f.stem, [])
+            for fld in node.findall(NS + "fields") + node.findall("fields"):
+                objects[f.stem].append((f, fld))
+    return objects
 
 
-# ---------------------------------------------------------------------------
-# Checks
-# ---------------------------------------------------------------------------
-
-def check_junction_object_mdr_pattern(objects: list[ObjectInfo]) -> list[str]:
-    """Flag objects that look like junction objects but use two lookups instead of two MDR fields.
-
-    Heuristic: a junction object has exactly two relationship fields (Lookup or MasterDetail)
-    and no other business fields beyond standard system fields. If both relationship fields
-    are Lookup type, flag as a potential anti-pattern.
-    """
-    issues: list[str] = []
-    relationship_types = {"Lookup", "MasterDetail"}
-
-    for obj in objects:
-        rel_fields = [f for f in obj.fields if f.field_type in relationship_types]
-        non_rel_custom_fields = [
-            f for f in obj.fields
-            if f.field_type not in relationship_types
-            and not f.api_name.endswith("__s")  # skip system fields (heuristic)
-            and f.api_name not in {
-                "Name", "OwnerId", "CreatedById", "LastModifiedById",
-                "IsDeleted", "SystemModstamp", "CreatedDate", "LastModifiedDate",
-                "LastActivityDate", "RecordTypeId",
-            }
-        ]
-
-        if len(rel_fields) == 2 and len(non_rel_custom_fields) == 0:
-            # Looks like a pure junction object
-            lookup_fields = [f for f in rel_fields if f.field_type == "Lookup"]
-            mdr_fields = [f for f in rel_fields if f.field_type == "MasterDetail"]
-
-            if len(lookup_fields) == 2:
-                blocked = [f for f in lookup_fields if f.reference_to in MDR_INELIGIBLE_MASTERS]
-                if len(blocked) == 2:
-                    advice = (
-                        f"Both parents ({blocked[0].reference_to}, {blocked[1].reference_to}) "
-                        f"are on the never-the-master list, so neither leg can become "
-                        f"MasterDetail. Rollups on these parents need Flow, Apex, or DLRS."
-                    )
-                elif blocked:
-                    convertible = [f for f in lookup_fields if f not in blocked]
-                    advice = (
-                        f"Convert {convertible[0].api_name} to MasterDetail for rollups and "
-                        f"referential integrity, but leave {blocked[0].api_name} as a Lookup — "
-                        f"{blocked[0].reference_to} can never be the master of a master-detail "
-                        f"relationship."
-                    )
-                else:
-                    advice = (
-                        "Convert to MasterDetail on both sides to enable rollup summaries and "
-                        "enforce referential integrity."
-                    )
-                issues.append(
-                    f"JUNCTION_LOOKUP: {obj.api_name} appears to be a junction object "
-                    f"(two relationship fields, no other custom fields) but both relationship "
-                    f"fields are Lookup type ({lookup_fields[0].api_name}, {lookup_fields[1].api_name}). "
-                    f"{advice} "
-                    f"[File: {obj.file_path}]"
-                )
-            elif len(lookup_fields) == 1 and len(mdr_fields) == 1:
-                lookup_field = lookup_fields[0]
-                if lookup_field.reference_to in MDR_INELIGIBLE_MASTERS:
-                    # One MDR + one Lookup to an MDR-ineligible parent is the only
-                    # legal shape for this junction, so it is not a finding at all.
-                    continue
-                advice = (
-                    "Consider converting the Lookup to MasterDetail if rollup summaries "
-                    "are needed on that parent."
-                )
-                issues.append(
-                    f"JUNCTION_MIXED: {obj.api_name} appears to be a junction object "
-                    f"but uses one Lookup ({lookup_field.api_name}) and one MasterDetail "
-                    f"({mdr_fields[0].api_name}). The Lookup side cannot support rollup summaries "
-                    f"on that parent object. {advice} "
-                    f"[File: {obj.file_path}]"
-                )
-
-    return issues
-
-
-def check_mdr_chain_depth(objects: list[ObjectInfo]) -> list[str]:
-    """Detect potential MDR chains deeper than 2 levels.
-
-    Builds a parent graph from MDR fields and checks for objects that are
-    both a master-detail child AND a master-detail parent of another object.
-    These form three-level chains with silent cascade delete risk.
-    """
-    issues: list[str] = []
-
-    # Map: child_object_api_name -> list of MDR parent api_names
-    mdr_parents: dict[str, list[str]] = {}
-    for obj in objects:
-        parents = [
-            f.reference_to for f in obj.fields
-            if f.field_type == "MasterDetail" and f.reference_to
-        ]
-        if parents:
-            mdr_parents[obj.api_name] = parents
-
-    # Map: parent_object_api_name -> list of MDR child api_names
-    mdr_children: dict[str, list[str]] = {}
-    for child, parents in mdr_parents.items():
-        for parent in parents:
-            mdr_children.setdefault(parent, []).append(child)
-
-    # An object that is both a parent (has MDR children) AND a child (has MDR parents)
-    # forms a chain: grandparent → parent → child
-    for obj_name, children in mdr_children.items():
-        if obj_name in mdr_parents:
-            grandparents = mdr_parents[obj_name]
-            issues.append(
-                f"MDR_CHAIN_DEPTH: {obj_name} is both an MDR child of "
-                f"{grandparents} and an MDR parent of {children}. "
-                f"This creates a cascade delete chain: deleting a "
-                f"{grandparents[0] if grandparents else 'grandparent'} record "
-                f"will permanently delete all {obj_name} records AND all "
-                f"{children} records. Verify that cascade delete at all three "
-                f"levels is intentional."
-            )
-
-    return issues
-
-
-def check_text_fields_for_phone_email(objects: list[ObjectInfo]) -> list[str]:
-    """Flag Text fields whose labels suggest they should be Phone or Email type."""
-    issues: list[str] = []
-
-    for obj in objects:
-        for field in obj.fields:
-            if field.field_type not in {"Text", "String"}:
+def check(objects: dict[str, list[tuple[Path, ET.Element]]]) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    md_parent: dict[str, str] = {}
+    for obj, fields in sorted(objects.items()):
+        rels = [(p, f) for p, f in fields if text(f, "type") in ("Lookup", "MasterDetail")]
+        for path, f in rels:
+            ftype, target, name = text(f, "type"), text(f, "referenceTo"), text(f, "fullName")
+            if ftype == "MasterDetail":
+                if target.lower() in NEVER_MASTER:
+                    out.append(("ERROR", f"{path}: {obj}.{name} is master-detail to {target}, which can't be the master object; use a lookup"))
+                if not obj.endswith("__c") and target.endswith("__c"):
+                    out.append(("ERROR", f"{path}: {obj}.{name} makes standard object {obj} the detail of custom object {target}, which isn't allowed"))
+                md_parent[obj] = target
+            if ftype == "Lookup" and text(f, "deleteConstraint") == "Cascade":
+                out.append(("WARN", f"{path}: {obj}.{name} lookup uses deleteConstraint Cascade; confirm availability and access implications"))
+        if obj.endswith("__c") and len(rels) == 2 and all(text(f, "type") == "Lookup" for _, f in rels):
+            out.append(("WARN", f"{rels[0][0]}: {obj} has exactly two lookups and no master-detail; if it is a junction, it gets no native roll-ups and its rows survive parent deletes"))
+        if len(rels) >= RELATIONSHIP_WARN:
+            out.append(("WARN", f"{obj}: {len(rels)} relationship fields; a custom object allows up to 40 relationships"))
+        for path, f in fields:
+            if text(f, "type") != "Text":
                 continue
-            label_lower = field.label.lower()
-
-            if any(kw in label_lower for kw in PHONE_LABEL_KEYWORDS):
-                issues.append(
-                    f"TEXT_FOR_PHONE: {obj.api_name}.{field.api_name} "
-                    f"(label: '{field.label}') is type Text but the label suggests "
-                    f"phone data. Use the Phone field type to get click-to-dial, "
-                    f"mobile formatting, and phone validation. "
-                    f"[File: {obj.file_path}]"
-                )
-            elif any(kw in label_lower for kw in EMAIL_LABEL_KEYWORDS):
-                issues.append(
-                    f"TEXT_FOR_EMAIL: {obj.api_name}.{field.api_name} "
-                    f"(label: '{field.label}') is type Text but the label suggests "
-                    f"email data. Use the Email field type to get email validation "
-                    f"and click-to-email behavior. "
-                    f"[File: {obj.file_path}]"
-                )
-
-    return issues
-
-
-def check_missing_external_id(objects: list[ObjectInfo]) -> list[str]:
-    """Heuristic: flag objects with integration-suggesting field labels but no External ID field."""
-    issues: list[str] = []
-
-    for obj in objects:
-        has_external_id = any(f.is_external_id for f in obj.fields)
-        if has_external_id:
-            continue
-
-        integration_fields = [
-            f for f in obj.fields
-            if any(kw in f.label.lower() for kw in INTEGRATION_ID_KEYWORDS)
-        ]
-
-        if integration_fields:
-            field_labels = ", ".join(f"'{f.label}'" for f in integration_fields[:3])
-            issues.append(
-                f"NO_EXTERNAL_ID: {obj.api_name} has fields with integration-suggesting "
-                f"labels ({field_labels}) but no field is marked as External ID. "
-                f"If an external system writes to this object, add an External ID field "
-                f"(Unique) to enable upsert operations and prevent duplicate records. "
-                f"[File: {obj.file_path}]"
-            )
-
-    return issues
-
-
-def check_lookup_field_count(objects: list[ObjectInfo]) -> list[str]:
-    """Warn when an object is approaching the 40-lookup-field limit."""
-    issues: list[str] = []
-
-    for obj in objects:
-        lookup_count = sum(1 for f in obj.fields if f.field_type == "Lookup")
-        if lookup_count >= LOOKUP_COUNT_WARNING_THRESHOLD:
-            issues.append(
-                f"LOOKUP_COUNT_HIGH: {obj.api_name} has {lookup_count} Lookup "
-                f"relationship fields (Salesforce limit: 40). Review whether all "
-                f"relationships are necessary or if some can be consolidated. "
-                f"[File: {obj.file_path}]"
-            )
-
-    return issues
-
-
-def check_mdr_count_per_object(objects: list[ObjectInfo]) -> list[str]:
-    """Flag objects with more than 2 master-detail fields (Salesforce hard limit is 2)."""
-    issues: list[str] = []
-
-    for obj in objects:
-        mdr_count = sum(1 for f in obj.fields if f.field_type == "MasterDetail")
-        if mdr_count > MDR_HARD_LIMIT:
-            issues.append(
-                f"MDR_LIMIT_EXCEEDED: {obj.api_name} has {mdr_count} MasterDetail "
-                f"fields, which exceeds the Salesforce limit of {MDR_HARD_LIMIT} "
-                f"per object. This metadata may not deploy successfully. "
-                f"[File: {obj.file_path}]"
-            )
-
-    return issues
-
-
-# ---------------------------------------------------------------------------
-# Orchestration
-# ---------------------------------------------------------------------------
-
-def run_all_checks(manifest_dir: Path) -> list[str]:
-    """Discover object files, parse them, and run all checks."""
-    issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    object_files = discover_object_files(manifest_dir)
-    if not object_files:
-        issues.append(
-            f"No .object-meta.xml files found under {manifest_dir}. "
-            f"Ensure the path points to a retrieved Salesforce metadata directory."
-        )
-        return issues
-
-    objects: list[ObjectInfo] = []
-    for path in object_files:
-        obj = parse_object_file(path)
-        if obj is not None:
-            objects.append(obj)
-
-    print(f"Parsed {len(objects)} object metadata files from {manifest_dir}")
-
-    issues.extend(check_junction_object_mdr_pattern(objects))
-    issues.extend(check_mdr_chain_depth(objects))
-    issues.extend(check_text_fields_for_phone_email(objects))
-    issues.extend(check_missing_external_id(objects))
-    issues.extend(check_lookup_field_count(objects))
-    issues.extend(check_mdr_count_per_object(objects))
-
-    return issues
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Check Salesforce object metadata for data model anti-patterns. "
-            "Analyzes .object-meta.xml files in a retrieved metadata directory."
-        ),
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help=(
-            "Root directory to search for .object-meta.xml files "
-            "(default: current directory). Typically force-app/main/default/objects."
-        ),
-    )
-    return parser.parse_args()
+            label = (text(f, "label") or text(f, "fullName")).lower()
+            if any(w in label for w in PHONE_WORDS):
+                out.append(("WARN", f"{path}: {obj}.{text(f, 'fullName')} stores phone-like data as Text; use the Phone type"))
+            elif any(w in label for w in EMAIL_WORDS):
+                out.append(("WARN", f"{path}: {obj}.{text(f, 'fullName')} stores email-like data as Text; use the Email type"))
+    for obj in sorted(md_parent):
+        depth, cur, seen = 1, md_parent[obj], {obj}
+        while cur in md_parent and cur not in seen:
+            seen.add(cur)
+            depth += 1
+            cur = md_parent[cur]
+        if depth > 2:
+            out.append(("WARN", f"{obj}: master-detail chain {depth} levels deep; one top-level delete cascades through every level"))
+    return out
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = run_all_checks(manifest_dir)
+    ap = argparse.ArgumentParser(description="Check relationship and field-type metadata (data-model-design-patterns skill).")
+    ap.add_argument("--manifest-dir", default=".", help="Root of the metadata tree")
+    ap.add_argument("--strict", action="store_true", help="Treat WARN as failure")
+    args = ap.parse_args()
 
-    if not issues:
-        print("No data model issues found.")
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+
+    objects = load(root)
+    if not objects:
+        print(f"WARN: no object or field metadata under {root}; nothing to check")
         return 0
 
-    print(f"\n{len(issues)} issue(s) found:\n")
-    for issue in issues:
-        print(f"ISSUE: {issue}\n")
-
-    return 1
+    findings = check(objects)
+    errors = sum(1 for s, _ in findings if s == "ERROR")
+    warns = len(findings) - errors
+    for sev, msg in findings:
+        print(f"{sev}: {msg}")
+    print(f"Scanned {len(objects)} object(s): {errors} ERROR, {warns} WARN")
+    if errors or (args.strict and warns):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

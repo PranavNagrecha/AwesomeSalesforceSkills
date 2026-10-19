@@ -2,83 +2,80 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Validation Rules Fire for System Administrators and Integration Users
+## Gotcha 1: Automation Fires for the Migration User Unless the Bypass Is Built In
 
-**What happens:** Every validation rule fires for every user, including users with the System Administrator profile, API-only users, and integration users. There is no built-in "admin bypass" for validation rules at the platform level. A migration load running under an admin user will fail on every record that violates an active validation rule — even if the rule was written for end-user data entry scenarios, not migration scenarios.
+**What happens:** Migration rows are rejected by validation rules, or triggers and flows send emails, create child records, and call external systems for every loaded row.
 
-**When it occurs:** Any time a migration job loads records into an object that has active validation rules. Common examples: a rule requiring a picklist field to have a specific value, a rule requiring a related object to exist, or a rule enforcing a date constraint that source system records do not satisfy.
+**When it occurs:** Every load. The LDV guide's advice for load throughput is to "Disable Apex triggers, workflow rules, and validations during loads" and process records with batch Apex afterwards; it also notes that workflow actions increase Bulk API processing time. Don't assume a profile exempts anyone: load one row that breaks each active rule in a sandbox as the migration user and confirm it fails until the bypass is in place.
 
-**How to avoid:** Build an explicit bypass before the migration starts. The preferred approach is a Custom Permission (e.g., `Bypass_Migration_Validation`) added to each validation rule's formula as `NOT($Permission.Bypass_Migration_Validation) AND (<original rule>)`. Assign the Custom Permission to the migration user via a Permission Set. Remove the Permission Set assignment after the migration completes. Never rely on profile alone to bypass validation rules.
-
----
-
-## Gotcha 2: Text External ID Lookups Are Case-Sensitive
-
-**What happens:** When Bulk API 2.0 resolves a relationship cross-reference using a Text-type External ID field (e.g., `Account.Legacy_CRM_Id__c`), the match is case-sensitive. If the Account was loaded with `Legacy_CRM_Id__c = "ACCT-001"` but the Contact CSV references `Account.Legacy_CRM_Id__c = "acct-001"`, Salesforce will not find the Account and the Contact insert will fail with "INVALID_CROSS_REFERENCE_KEY."
-
-**When it occurs:** Any migration that uses text-based source system keys (most legacy systems) where the source data has inconsistent or mixed-case ID values. It also occurs when the source system export produces lowercase IDs but the parent was loaded with uppercase IDs, or vice versa.
-
-**How to avoid:** Normalize all external ID values to a consistent case (all uppercase is recommended) in both the parent load file and all child load files before the migration starts. If using a Number-type External ID field, this problem does not apply because numbers are case-independent. Document the chosen casing convention in the migration plan.
+**How to avoid:** Scope the bypass to the migration user. In validation rules, add `NOT($Permission.<Custom_Permission>)`. In Apex, check the same permission with `FeatureManagement.checkPermission`, or read a hierarchy custom setting with `getInstance()`, which returns the value merged for the current user, so the flag can be set at the migration user's level instead of org-wide. Name an owner for removing the permission set (or resetting the setting) after cutover, and test a normal user's save afterwards.
 
 ---
 
-## Gotcha 3: Inactive or Unlicensed Owner Assignments Cause Row-Level Failures That Look Like Partial Success
+## Gotcha 2: External ID Indexes and Matches but Does Not Make Values Unique
 
-**What happens:** A Bulk API 2.0 job that includes records assigned to an inactive or unlicensed user does not fail the entire job — it fails only the affected rows. The job shows a "PartialSuccess" state. The error for each failed row is "INVALID_CROSS_REFERENCE_ID: invalid cross reference id" on the OwnerId field. Rows with valid owner assignments succeed. If the migration team does not check the error results file, they may believe the load completed correctly when in fact a portion of records was not created.
+**What happens:** Re-run loads update the wrong record, or upserts fail on some rows because two Salesforce records share the source key.
 
-**When it occurs:** Any time the source system includes owner references (salesperson, assigned user, account manager) where some of those users have been deactivated in Salesforce or are not yet provisioned. This is especially common in CRM migrations where legacy sales reps have left the company and their Salesforce user accounts are inactive.
+**When it occurs:** External ID and Unique are separate field flags. Upsert documentation: "If the external ID is matched multiple times, then a 300 error is reported, and the record isn't created or updated." Keys that were unique in the source can collide after merges, test loads, or manual entry.
 
-**How to avoid:** Before the migration, export `SELECT Id, Name, IsActive, UserType FROM User` from Salesforce. Cross-reference all owner IDs in the source data against this list. For records owned by inactive users, either re-assign to a designated placeholder active user ("Migration Owner"), or coordinate with the project team to temporarily reactivate the user for the migration window. Document the re-assignment mapping and plan for ownership correction after cutover.
-
----
-
-## Gotcha 4: Formula Fields Cannot Be External ID Fields
-
-**What happens:** External ID fields must be stored fields. Salesforce does not allow formula fields to be designated as External IDs, even if the formula computes a unique value that would be a perfect natural key. If a team designs their migration plan around using a formula-computed unique key as the upsert external ID, they discover this limitation only when trying to create the field — and must redesign the approach.
-
-**When it occurs:** When the natural key in the source system is a concatenation of two or more fields (e.g., `{AccountNumber}-{ContactType}`) and the Salesforce data model uses a formula field to replicate this combined key. The formula field correctly computes the unique value, but the External ID checkbox is not available on formula field setup.
-
-**How to avoid:** Always materialize natural keys into stored fields. Create a Text or Number field (not a formula), mark it External ID and Unique, and populate it explicitly in the migration load. If a formula-based unique key is the intent for ongoing use after migration, keep the formula field for display purposes but use a parallel stored field for upsert matching.
+**How to avoid:** Mark the key field both External ID and Unique when the source key must stay unique, and decide its case sensitivity (`caseSensitive` on the field) deliberately. Profile duplicates in the source before the first load.
 
 ---
 
-## Gotcha 5: Lookup Fields Reference Missing Parents Silently When the Lookup Is Not Required
+## Gotcha 3: Original Audit Values Can Only Be Set on Create, With a Permission
 
-**What happens:** A lookup relationship field that is not marked required on the record's page layout or field definition will allow inserts with a null or blank parent reference. If a child record's parent reference fails to resolve (because the parent was not yet loaded, the external ID cross-reference was wrong, or the parent load had errors), the Bulk API may insert the child record with a blank lookup field rather than failing the row — depending on the API version and configuration. The result is child records that appear in Salesforce but have no visible relationship to any parent.
+**What happens:** Migrated records show the load date as CreatedDate and the migration user as creator, and history-based reports break.
 
-**When it occurs:** Most commonly with lookup fields (as opposed to master-detail fields, which are always required and always block the insert on a missing parent). Affects Contact-to-Account lookups, Case-to-Contact lookups, and any custom lookup relationship where the field is optional.
+**When it occurs:** The Object Reference describes the steps: enable "Set Audit Fields upon Record Creation" and "Update Records with Inactive Owners" in User Interface settings, grant Set Audit Fields upon Record Creation to the loading user, then create records through the API with the audit fields set. The values can be set on Account, Case, Contact, Lead, Opportunity, Task, Event, custom objects, and others listed there; `SystemModstamp` can never be set. Audit dateTime fields accept dates from 1970-01-01 onwards.
 
-**How to avoid:** After each load batch, run a SOQL integrity check against every migrated object to count records with blank lookup fields that should be populated:
-
-```sql
-SELECT COUNT(Id) FROM Contact
-WHERE AccountId = null AND Legacy_CRM_Id__c != null
-```
-
-If the count is non-zero, investigate the parent load and re-upsert the affected child records with the correct parent reference. Include these integrity checks in the post-migration validation plan before it is formally approved.
+**How to avoid:** Decide before the first insert and set the values in the insert itself. The documented path is "create a record and set its audit fields," so don't plan on a later update pass to fix them.
 
 ---
 
-## Gotcha 6: Triggers and Flows Bypass with a Custom Setting Flag Must Be Removed Promptly
+## Gotcha 4: Inactive Owners Need a Decision Before the Load
 
-**What happens:** The Custom Setting flag pattern (`Migration_In_Progress__c = true`) is highly effective at suppressing automation during loads. However, if the flag is not cleared after the migration completes, the suppression persists indefinitely. New records created by end users or other integrations after cutover will also have their trigger and flow logic bypassed, causing silent data quality failures — missing related record creation, missing notifications, missing field updates.
+**What happens:** Rows whose owner is a departed salesperson fail or end up owned by the wrong user, and the team finds out from the error file.
 
-**When it occurs:** When the migration cutover is rushed, the post-migration checklist is incomplete, or the team member who set the flag is not the same person responsible for clearing it. Also occurs when multiple migration batches run across days and the flag is set and forgotten between runs.
+**When it occurs:** Source data references users who are inactive in Salesforce. The Object Reference pairs "Update Records with Inactive Owners" with the audit-field setup; whether your load can assign an inactive owner on insert is something to test in a sandbox with your settings, not to assume.
 
-**How to avoid:** Include "Clear `Migration_In_Progress__c` flag" as a mandatory, signed-off step in the migration runbook — not an optional checklist item. Assign a named person responsible for clearing the flag. After clearing it, run a test manual record save on each affected object and confirm that the expected automation (email, related record creation, field update) fires correctly. Document the flag status in the post-migration sign-off document.
+**How to avoid:** Export `SELECT Id, IsActive FROM User`, map every source owner, and choose per owner: an active placeholder owner (with a post-cutover reassignment list), or the inactive-owner permission after a sandbox test proves it works for your objects.
 
 ---
 
-## Gotcha 7: Master-Detail Fields Are Implicitly Required, and a Blank Parent Column Fails With REQUIRED_FIELD_MISSING
+## Gotcha 5: Relationship Columns Allow One Level and Indexed Parent Fields Only
 
-**What happens:** A blank or omitted master-detail column fails the row with:
+**What happens:** A child file references `Account.Parent.Legacy_Id__c`, or a parent field that isn't an External ID, and every row fails to resolve.
 
-```text
-REQUIRED_FIELD_MISSING: Required fields are missing: [Order__c]:Order__c --
-```
+**When it occurs:** Bulk API relationship headers use `RelationshipName.IndexedFieldName`. The guide's rules: child-to-parent only; no child-to-parent-grandparent chains; and "You can only use indexed fields on the parent object. A custom field is indexed if its External ID field is selected." Standard fields qualify when their `idLookup` property is true. Custom relationships use the `__r` name (`Mother_Of_Child__r.External_ID__c`).
 
-Salesforce Help gives the cause directly — "master-detail relationship fields are always required on child (detail) records." The requirement comes from the relationship type, not from a field-level setting: a field describe has no `required` property at all, and surfaces master-detail requiredness only as `nillable: false`. So an audit that looks for a required flag in field metadata will not predict this failure — `nillable: false` is the signal to key on.
+**How to avoid:** Give every parent object an External ID key, reference it one level up only, and resolve grandparents through the intermediate object's own key.
 
-**When it occurs:** Loading detail records whose source export has no parent key on some rows — line items whose header was purged from the legacy system, comments orphaned by an earlier cleanup, or a CSV where the `Parent__r.External_Id__c` cross-reference resolved to nothing. It also occurs when a team plans to load children now and backfill the parent later, which is viable for a lookup and impossible for a master-detail.
+---
 
-**How to avoid:** Populate the master-detail column on every row before submitting the job — either the 15- or 18-character parent record ID, or the external-ID cross-reference — and let the parent job finish before the child job starts. Rows with no resolvable parent are not migratable as they stand: either route them to a designated catch-all parent record, or hold them out of the load and reconcile them separately. Count the blank-parent rows in the source extract during pre-migration profiling so the number is known before cutover rather than discovered in an error file.
+## Gotcha 6: Sharing and Locking Slow Large Loads Unless Planned
+
+**What happens:** Loads crawl or fail with lock errors as each ownership change triggers sharing recalculation and many children update the same parent at once.
+
+**When it occurs:** The LDV guide's loading practices: use Public Read/Write defaults during the initial load to avoid sharing calculation, load users into roles before records, add sharing rules one at a time afterwards, use the defer sharing calculation permission, and group child records by parent in the same batch to minimize locking conflicts. It also notes that errors in a Bulk API 2.0 batch trigger single-row processing for that batch, which hurts performance, so dirty data slows everything.
+
+**How to avoid:** Put the sharing sequence in the cutover plan, sort child files by parent key, and clean data before loading.
+
+---
+
+## Gotcha 7: Rollback Deletes Leave Rows Restorable Unless Hard Deleted
+
+**What happens:** A rolled-back batch is deleted, but the rows can still be restored for 15 days and still have to be excluded from queries; or the team believes the deletes freed storage while the bin was holding it (it isn't: Recycle Bin items don't count against storage).
+
+**When it occurs:** The LDV guide: deleted items stay in the Recycle Bin for 15 days and still affect database performance; Bulk API and Bulk API 2.0 hard delete bypasses the bin and is recommended for large deletes. The hard-delete permission is off by default. Deleting a master record also deletes its detail records.
+
+**How to avoid:** Delete rollback batches child-first in reverse load order, using hard delete when the rows must not remain restorable, and rehearse the runbook in a sandbox.
+
+---
+
+## Gotcha 8: Master-Detail Children Fail Without a Parent Value, and Take Their Owner From It
+
+**What happens:** Detail rows with a blank parent column fail; an `OwnerId` column on a detail object has no effect.
+
+**When it occurs:** The Object Reference: the master-detail field is required on the detail record's page layout; the detail object has no Owner field of its own and takes the master record's owner; records can't be reparented unless "Allow reparenting" is enabled on the relationship. A plan to "load children now and attach parents later" works for a lookup but not for a master-detail.
+
+**How to avoid:** Count blank-parent rows during source profiling, route them to a catch-all parent or hold them out, load parents first, and drop owner columns from master-detail child files.

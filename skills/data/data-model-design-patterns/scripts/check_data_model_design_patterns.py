@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-"""Entry point shim for the data-model-design-patterns skill checker.
+"""Entry point for the data-model-design-patterns skill checker.
 
-The full implementation lives in check_data_model.py (same directory).
-This file satisfies the skill scaffolding convention of having a file
-named check_<skill-name>.py while keeping the canonical logic in the
-more descriptively named module.
+The implementation lives in check_data_model.py in this directory; this file keeps
+the check_<skill-name>.py naming convention. Same arguments and exit codes:
 
-Usage:
-    python3 check_data_model_design_patterns.py --manifest-dir path/to/metadata
-    python3 check_data_model.py --manifest-dir path/to/metadata  (equivalent)
+    python3 check_data_model_design_patterns.py --manifest-dir force-app/main/default [--strict]
+
+Exit codes: 0 clean or WARN only; 1 on ERROR, a missing directory, or WARN with
+--strict. An empty directory prints a WARN and exits 0. Stdlib only.
 """
 
 from __future__ import annotations
@@ -16,20 +15,13 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-# Re-export the real implementation from check_data_model.py
-_this_dir = Path(__file__).parent
-sys.path.insert(0, str(_this_dir))
+sys.path.insert(0, str(Path(__file__).parent))
 
-from check_data_model import main, run_all_checks  # noqa: E402
-
-
-def check_data_model_design_patterns(manifest_dir: Path) -> list[str]:
-    """Return issue strings for the given manifest directory."""
-    issues = run_all_checks(manifest_dir)
-    if issues:
-        print(f"WARN: {len(issues)} data model issue(s) detected", file=sys.stderr)
-    return issues
-
+try:
+    from check_data_model import main  # noqa: E402
+except ImportError as exc:
+    print(f"ERROR: cannot load check_data_model.py next to this file ({exc})")
+    sys.exit(1)
 
 if __name__ == "__main__":
     sys.exit(main())

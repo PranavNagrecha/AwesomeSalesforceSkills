@@ -71,26 +71,25 @@ External ID strategy for migrations:
 ```text
 Pre-migration bypass strategy:
 
-1. Validation Rules:
-   - Add a bypass condition: $User.Bypass_Validation__c = true
-   - Or temporarily deactivate non-essential rules (with change log)
+1. Validation rules:
+   - AND(NOT($Permission.Bypass_Migration_Validation), <original condition>)
+   - Grant the custom permission only to the migration user (permission set)
 
-2. Apex Triggers:
-   - Implement a bypass flag: Custom_Settings__c.Bypass_Triggers__c
-   - Check the flag in trigger handler before processing
+2. Apex triggers:
+   - if (FeatureManagement.checkPermission('Bypass_Migration_Validation')) return;
+   - or a hierarchy custom setting read with getInstance() and set at the
+     migration user's level, not org-wide
 
 3. Flows:
-   - Deactivate record-triggered Flows on objects being loaded
-   - Or add an entry condition: $User.Bypass_Flow__c != true
+   - Entry condition or first Decision on the same custom permission
 
-4. Workflow Rules / Process Builders:
-   - Deactivate during migration window
+4. Workflow rules / processes:
+   - Deactivate during the migration window (LDV guide: disable triggers,
+     workflow rules, and validations during loads)
 
-5. Assignment Rules:
-   - Uncheck "Use Assignment Rules" in Data Loader settings
-
-6. Sharing Rules:
-   - Defer sharing calculation during large loads (Setup > Sharing Settings)
+5. Sharing:
+   - Defer sharing calculation (permission) or Public Read/Write during
+     the initial load
 
 Re-enable ALL bypass mechanisms after migration and verify data integrity.
 ```
@@ -101,7 +100,7 @@ Re-enable ALL bypass mechanisms after migration and verify data integrity.
 
 ## Anti-Pattern 4: Not Planning for Rollback
 
-**What the LLM generates:** "If something goes wrong, delete the bad records and reload" as the rollback strategy, without planning for cascade delete implications, recycle bin limits, and the difficulty of identifying which records were loaded in the failed batch.
+**What the LLM generates:** "If something goes wrong, delete the bad records and reload" as the rollback strategy, without planning for cascade deletes, the 15-day restorable window, and the difficulty of identifying which records were loaded in the failed batch.
 
 **Why it happens:** Rollback in Salesforce is not a single "ROLLBACK" command like in a database transaction. LLMs apply relational database thinking to a platform where rollback requires deliberate planning.
 
@@ -167,24 +166,24 @@ Owner assignment during migration:
 
 ## Anti-Pattern 6: Misdiagnosing REQUIRED_FIELD_MISSING on a Master-Detail Field
 
-**What the LLM generates:** Given `REQUIRED_FIELD_MISSING: Required fields are missing: [Order__c]`, the assistant inspects the object's field metadata, finds nothing marked required on `Order__c`, and declares the error spurious — blaming a validation rule, a page layout, or a stale API version. It then proposes loading the children and parents in the same job, "since the field isn't actually required."
+**What the LLM generates:** Given `REQUIRED_FIELD_MISSING` on `Order__c`, the assistant finds no `<required>true</required>` in the field metadata, declares the error spurious, and proposes loading children and parents in the same job.
 
-**Why it happens:** A field describe has no `required` property. A master-detail field's requiredness appears only as `nillable: false` — never under the word "required". An assistant pattern-matching on that word finds no evidence and assumes the platform is wrong.
+**Why it happens:** The requirement comes from the relationship type, not a field flag. The Object Reference: in a master-detail relationship, the master-detail field is required on the detail record's page layout, and the detail record takes its owner and sharing from the master.
 
 **Correct pattern:**
 
 ```text
 REQUIRED_FIELD_MISSING on a relationship field -> identify the relationship TYPE first:
 
-1. Master-detail (nillable: false; requiredness comes from the relationship type)
-   -> always required on the detail record; the row cannot load without a parent
+1. Master-detail (requiredness comes from the relationship type)
+   -> required on the detail record; the row cannot load without a parent
    -> fix: populate the 15/18-char parent Id or Parent__r.External_Id__c on every row
    -> the parent job must be complete before the child job is submitted
 
-2. Lookup (nillable: true unless "Required" was explicitly checked)
+2. Lookup (optional unless made required)
    -> a BLANK column is legal; the row loads with a null reference
-   -> a parent key that IS supplied but does not resolve still fails the row
-      (see gotchas.md Gotcha 2) — blank and unresolvable are not the same case
+   -> a parent key that IS supplied but does not resolve fails the row
+      — blank and unresolvable are not the same case
 
 Never "resolve" this by merging the parent and child loads into one job.
 ```

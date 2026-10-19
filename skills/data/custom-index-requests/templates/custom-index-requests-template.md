@@ -6,7 +6,7 @@ Use this template when submitting a Salesforce Support case requesting a custom 
 
 ## Case Information
 
-**Case Type:** [ ] Custom index (non-unique) [ ] Skinny table [ ] Two-column composite index
+**Case Type:** [ ] Custom index [ ] Null-inclusive custom index [ ] Skinny table [ ] Two-column index (state column order)
 **Priority:** [ ] Standard [ ] High (justify below)
 **Org ID (15-char production org):** _______________________
 
@@ -44,7 +44,7 @@ LIMIT [n]
 ## Query Plan Output
 
 Paste the Query Plan tool output (from Developer Console > Query Plan) here.
-Run against your Full sandbox or production with the actual record count.
+Run in production, or in a sandbox that has the index (custom indexes: any sandbox created after the index exists; skinny tables: Full sandboxes only).
 
 ```
 [Paste Query Plan output here]
@@ -62,7 +62,7 @@ Cost: ___________
 **Selectivity percentage (matching / total):** _______%
 
 **Confirm selectivity is below threshold:**
-- [ ] < 10% of records (required for custom index to be used by query optimizer)
+- [ ] Under the custom-index threshold: 10% of the first million rows plus 5% of rows beyond (state the computed number)
 - [ ] Filter produces ≤ 200,000 records (recommended target for large orgs)
 
 ---
@@ -108,8 +108,8 @@ _______________________
 ## Checklist Before Submitting
 
 - [ ] Query Plan shows TABLESCAN (not already using an index)
-- [ ] Selectivity is below 10% threshold
+- [ ] Filter count is under the computed custom-index threshold for the object's row count
 - [ ] Org ID is the production 15-character ID (not sandbox)
-- [ ] Full sandbox or production used for Query Plan (not Developer/Partial sandbox)
+- [ ] Plan captured where the index exists (production, or a sandbox created after the index; Full sandbox for skinny tables)
 - [ ] Field distribution information included
 - [ ] Business justification included

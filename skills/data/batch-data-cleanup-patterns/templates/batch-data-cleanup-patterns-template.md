@@ -15,7 +15,7 @@ Use this template when implementing a scheduled batch job to delete aged or temp
 | Estimated record volume per run | `<VOLUME>` |
 | Cascade child objects | `<LIST_CHILD_OBJECTS_OR_NONE>` |
 | Average children per parent | `<AVG_CHILDREN>` |
-| Recommended batch size | `<BATCH_SIZE>` (= floor(10000 / avg_children), max 200) |
+| Recommended batch size | `<BATCH_SIZE>` (measure DML rows for one parent with `Limits.getDmlRows()` in a sandbox before choosing) |
 
 ---
 
@@ -36,59 +36,60 @@ public class <ObjectName>CleanupBatch
     // Track totals across chunks for the finish() summary
     private Integer totalDeleted = 0;
     private Integer totalFailed  = 0;
-    // Collect deleted SObject stubs for emptyRecycleBin — remove if not using hard delete
-    private List<SObject> deletedStubs = new List<SObject>();
+    private final Date cutoff;
+
+    public <ObjectName>CleanupBatch(Integer retentionDays) {
+        // Rolling cutoff. LAST_N_YEARS is calendar-year aligned and LAST_N_DAYS starts
+        // at midnight; use the literals only when the policy is written that way.
+        this.cutoff = Date.today().addDays(-retentionDays);
+    }
 
     // -----------------------------------------------------------------------
     // start() — define the records to delete
     // -----------------------------------------------------------------------
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        // LAST_N_DAYS:<N> selects records created MORE than <N> days ago
-        // Replace with LAST_N_YEARS:<Y> for year-based retention
         return Database.getQueryLocator(
-            'SELECT Id FROM <OBJECT_API_NAME> WHERE CreatedDate < LAST_N_DAYS:<N>'
+            'SELECT Id FROM <OBJECT_API_NAME> WHERE CreatedDate < :cutoff'
         );
     }
 
     // -----------------------------------------------------------------------
-    // execute() — delete each chunk with partial-failure tolerance
+    // execute() — delete each chunk with partial-failure tolerance, then purge
     // -----------------------------------------------------------------------
     public void execute(Database.BatchableContext bc, List<SObject> scope) {
-        // allOrNone=false: one bad record does not abort the chunk
         Database.DeleteResult[] results = Database.delete(scope, false);
+        List<Id> purge = new List<Id>();
+        List<Cleanup_Error_Log__c> errors = new List<Cleanup_Error_Log__c>();
 
         for (Integer i = 0; i < results.size(); i++) {
             if (results[i].isSuccess()) {
                 totalDeleted++;
-                deletedStubs.add(scope[i]); // needed for emptyRecycleBin
+                purge.add(scope[i].Id);
             } else {
                 totalFailed++;
-                // TODO: write failure detail to a custom audit object
-                // Database.Error err = results[i].getErrors()[0];
-                // insert new Cleanup_Error_Log__c(
-                //     Record_Id__c = scope[i].Id,
-                //     Error_Message__c = err.getMessage(),
-                //     Status_Code__c = String.valueOf(err.getStatusCode())
-                // );
+                Database.Error err = results[i].getErrors()[0];
+                errors.add(new Cleanup_Error_Log__c(
+                    Record_Id__c = scope[i].Id,
+                    Error_Message__c = err.getMessage().left(255),
+                    Status_Code__c = String.valueOf(err.getStatusCode())
+                ));
             }
         }
 
-        // Option A: empty recycle bin per chunk (safer for very large jobs — avoids heap)
-        // if (!deletedStubs.isEmpty()) {
-        //     Database.emptyRecycleBin(deletedStubs);
-        //     deletedStubs.clear();
-        // }
+        // Only when records must be unrecoverable. emptyRecycleBin takes at most
+        // 10,000 records per call, so purge per chunk, never all at once in finish().
+        if (<HARD_DELETE_REQUIRED> && !purge.isEmpty()) {
+            Database.emptyRecycleBin(purge);
+        }
+        if (!errors.isEmpty()) {
+            insert errors;
+        }
     }
 
     // -----------------------------------------------------------------------
     // finish() — post-job actions
     // -----------------------------------------------------------------------
     public void finish(Database.BatchableContext bc) {
-
-        // Option B: empty recycle bin in finish() (simpler; watch heap for >500K records)
-        if (!deletedStubs.isEmpty()) {
-            Database.emptyRecycleBin(deletedStubs);
-        }
 
         // Notify team of job completion
         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
@@ -127,7 +128,7 @@ public class <ObjectName>CleanupBatch
 public class <ObjectName>CleanupScheduler implements Schedulable {
     public void execute(SchedulableContext ctx) {
         // Adjust batch size: floor(10000 / avg_cascade_children_per_parent), max 200
-        Database.executeBatch(new <ObjectName>CleanupBatch(), <BATCH_SIZE>);
+        Database.executeBatch(new <ObjectName>CleanupBatch(<N>), <BATCH_SIZE>);
     }
 }
 ```
@@ -158,27 +159,31 @@ private class <ObjectName>CleanupBatchTest {
     static void makeData() {
         // Insert records EXPLICITLY — never use SeeAllData=true for deletion tests
         List<<OBJECT_API_NAME>> records = new List<<OBJECT_API_NAME>>();
-        for (Integer i = 0; i < 5; i++) {
+        for (Integer i = 0; i < 10; i++) {
             records.add(new <OBJECT_API_NAME>(
                 Name = 'Test Record ' + i
                 // Add required fields here
             ));
         }
         insert records;
+        // Age half the records past the cutoff; the rest stay inside retention.
+        for (Integer i = 0; i < 5; i++) {
+            Test.setCreatedDate(records[i].Id, Datetime.now().addDays(-(<N> + 5)));
+        }
     }
 
     @isTest
     static void testBatchDeletesRecords() {
         // Verify setup data exists
-        System.assertEquals(5, [SELECT COUNT() FROM <OBJECT_API_NAME>]);
+        System.assertEquals(10, [SELECT COUNT() FROM <OBJECT_API_NAME>]);
 
         Test.startTest();
-        Database.executeBatch(new <ObjectName>CleanupBatch(), 200);
+        // A batch test runs one execute, so the scope must cover every test row.
+        Database.executeBatch(new <ObjectName>CleanupBatch(<N>), 200);
         Test.stopTest();
 
-        // All test records should be deleted (all were inserted before LAST_N_DAYS threshold in test context)
-        System.assertEquals(0, [SELECT COUNT() FROM <OBJECT_API_NAME>],
-            'Batch should have deleted all eligible records.');
+        System.assertEquals(5, [SELECT COUNT() FROM <OBJECT_API_NAME>],
+            'Only records past the cutoff should be deleted.');
     }
 
     @isTest
@@ -197,16 +202,16 @@ private class <ObjectName>CleanupBatchTest {
 
 ## 6. Pre-Run Cascade Audit Queries
 
-Run these in Developer Console > Query Editor before the first production execution:
+Run these in Developer Console > Query Editor before the first production execution. Replace `<CUTOFF_DATETIME>` with a dateTime literal such as `2019-10-19T00:00:00Z`.
 
 ```sql
 -- Count eligible parent records
-SELECT COUNT() FROM <OBJECT_API_NAME> WHERE CreatedDate < LAST_N_DAYS:<N>
+SELECT COUNT() FROM <OBJECT_API_NAME> WHERE CreatedDate < <CUTOFF_DATETIME>
 
 -- Count cascade children (repeat for each master-detail child object)
 SELECT COUNT() FROM <CHILD_OBJECT__c>
 WHERE <MASTER_FIELD__c> IN (
-    SELECT Id FROM <OBJECT_API_NAME> WHERE CreatedDate < LAST_N_DAYS:<N>
+    SELECT Id FROM <OBJECT_API_NAME> WHERE CreatedDate < <CUTOFF_DATETIME>
 )
 ```
 
@@ -218,7 +223,7 @@ Document the child counts and adjust `<BATCH_SIZE>` before scheduling.
 
 ```sql
 -- Confirm records are gone
-SELECT COUNT() FROM <OBJECT_API_NAME> WHERE CreatedDate < LAST_N_DAYS:<N>
+SELECT COUNT() FROM <OBJECT_API_NAME> WHERE CreatedDate < <CUTOFF_DATETIME>
 
 -- Check for failures logged (if using custom error object)
 SELECT Record_Id__c, Error_Message__c, Status_Code__c, CreatedDate
@@ -227,4 +232,4 @@ ORDER BY CreatedDate DESC
 LIMIT 50
 ```
 
-After the first production run, check Setup > Company Information > Data Storage Used to confirm storage was reclaimed.
+After the first production run, check Setup > Storage Usage for the object's record count, and confirm in the Recycle Bin that purged records are absent when hard delete was required.

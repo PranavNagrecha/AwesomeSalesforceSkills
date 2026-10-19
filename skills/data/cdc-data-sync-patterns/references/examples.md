@@ -1,132 +1,108 @@
 # Examples — CDC Data Sync Patterns
 
+The Python below is illustrative pipeline code: `pubsub`, `bulk_api`, `rest_api`, `store`, and `replica` stand for your own client wrappers, not Salesforce libraries.
+
 ## Example 1: Day-0 Full Load Followed by Incremental CDC
 
-**Context:** A data engineering team is building a near-real-time replication pipeline to sync Salesforce Account and Opportunity records into a data warehouse. The objects have millions of existing records. CDC only publishes events for changes that occur after the subscription is established — it does not backfill pre-existing records.
+**Context:** A data engineering team replicates Account and Opportunity into a warehouse. Both objects already hold millions of records, and change events only describe changes, not existing state.
 
-**Problem:** If the team subscribes to CDC first and then runs the initial load, they miss all events published during the load window. If they run the load first and then subscribe at tip (`-1`), they miss events published during the load.
+**Problem:** Subscribing after the load misses changes made during the load; subscribing before it, without a saved position, has nowhere safe to resume from.
 
 **Solution:**
 
 ```python
-# Step 1: Record the current tip replayId BEFORE starting the Bulk API load.
-# Use Pub/Sub API GetTopic to fetch the latest replayId for the topic.
-tip_replay_id = pub_sub_client.get_topic("/data/AccountChangeEvent").latest_replay_id
+# Step 1: open a subscription at the tip and save a handoff position.
+# An empty keepalive FetchResponse carries the latest replay_id.
+handoff = pubsub.first_replay_id(topic="/data/ChangeEvents", replay_preset="LATEST")
+store.save_bytes("cdc_handoff", handoff)
 
-# Step 2: Execute Bulk API 2.0 query job to extract all existing Account records.
-job_id = bulk_api.create_query_job(
-    object="Account",
-    query="SELECT Id, Name, BillingCity, LastModifiedDate FROM Account"
-)
-bulk_api.wait_for_job(job_id)
-records = bulk_api.get_results(job_id)
-warehouse.upsert("account_dim", records, key="Id")
+# Step 2: extract current state with Bulk API 2.0 query jobs.
+for obj, soql in [("Account", "SELECT Id, Name, BillingCity, LastModifiedDate FROM Account"),
+                  ("Opportunity", "SELECT Id, Name, StageName, LastModifiedDate FROM Opportunity")]:
+    job = bulk_api.create_query_job(soql)
+    for rows in bulk_api.iter_results(job):        # follows Sforce-Locator until the string "null"
+        replica.upsert(obj, rows, key="Id")
 
-# Step 3: Subscribe to CDC starting at the recorded tip replayId.
-# Any events published between step 1 and step 3 are captured.
-cdc_subscriber.subscribe(
-    topic="/data/AccountChangeEvent",
-    replay_id=tip_replay_id
-)
+# Step 3: resubscribe from the handoff so changes made during the load are applied after it.
+pubsub.subscribe(topic="/data/ChangeEvents", replay_preset="CUSTOM",
+                 replay_id=store.load_bytes("cdc_handoff"), handler=process_event)
 ```
 
-**Why it works:** Recording the tip `replayId` before the Bulk API load creates a safe handoff point. Events published while the Bulk API job was running are captured when CDC subscription resumes from that position. The warehouse ends up with a consistent view that combines the full initial load with all incremental changes.
+**Why it works:** The handoff position is taken before the extract starts, so every change made during the extract is replayed afterwards. Upserts by record ID make the overlap harmless.
 
 ---
 
-## Example 2: Gap Event Detection and REST Fallback
+## Example 2: Gap Event Handling With a Dirty Flag
 
-**Context:** A CDC pipeline processes Account record changes and writes deltas to a downstream CRM. The pipeline encounters a `GAP_UPDATE` event after a large batch update ran directly via the Bulk API in Salesforce, which bypassed the application server and triggered a gap event instead of a full change event.
+**Context:** A database-level cleanup job changed Account rows outside an application-server transaction, and the subscriber received `GAP_UPDATE` events for them.
 
-**Problem:** The gap event has `changeType = GAP_UPDATE` and a `recordIds` list in the header but no field values in the event body. Processing the event body as a normal update writes null or empty values to the downstream CRM, corrupting the record.
+**Problem:** The gap event's header has `recordIds` but the body has no field data. Writing the body to the replica would null out fields.
 
 **Solution:**
 
 ```python
-def process_cdc_event(event):
+GAP_TYPES = {"GAP_CREATE", "GAP_UPDATE", "GAP_DELETE", "GAP_UNDELETE"}
+
+def process_event(event):
     header = event["ChangeEventHeader"]
     change_type = header["changeType"]
-
-    # Always check for GAP_ prefix before touching any field data.
-    if change_type.startswith("GAP_"):
-        handle_gap_event(header)
+    if change_type == "GAP_OVERFLOW":
+        start_entity_resync(header["entityName"], event["replay_id"])   # see Gotcha 4
         return
+    if change_type in GAP_TYPES:
+        for record_id in header["recordIds"]:                            # merged gaps carry several IDs
+            replica.mark_dirty(record_id, as_of=header["commitTimestamp"])
+            reconcile_queue.put(record_id)
+        return
+    for record_id in header["recordIds"]:
+        if replica.is_dirty(record_id):
+            continue                                                     # wait for reconciliation
+        buffer.add(header["transactionKey"], header["sequenceNumber"], record_id, event)
 
-    # Safe to process field data for non-gap events.
-    apply_delta_to_datastore(event)
-
-
-def handle_gap_event(header):
-    record_ids = header["recordIds"]
-    commit_timestamp = header["commitTimestamp"]
-
-    # Query current record state from REST API using the record IDs.
-    for record_id in record_ids:
-        current_record = rest_api.query_one(
-            f"SELECT Id, Name, BillingCity, LastModifiedDate "
-            f"FROM Account WHERE Id = '{record_id}'"
-        )
-        if current_record:
-            # Guard: only overwrite if the REST response is newer than
-            # what we last applied, using commitTimestamp as the fence.
-            datastore.upsert_if_newer(
-                record=current_record,
-                fence_timestamp=commit_timestamp
-            )
+def reconcile(record_id):
+    current = rest_api.get_record("Account", record_id)                  # REST sObject Rows GET
+    replica.upsert("Account", [current], key="Id")
+    replica.clear_dirty(record_id)
 ```
 
-**Why it works:** The `GAP_` prefix check is the gate that prevents field-less gap events from being processed as normal events. The REST fallback query retrieves the authoritative current state directly from Salesforce. The `commitTimestamp` guard prevents the gap recovery from overwriting a more recent non-gap event that was already applied.
+**Why it works:** It follows the CDC guide's gap procedure: mark dirty, skip later change events for the record until reconciled, retrieve the record, then clear the flag. Overflow events are routed away before any `recordIds` lookup, because their record ID is a dummy value.
 
 ---
 
-## Example 3: ReplayId Persistence and Reconnect Recovery
+## Example 3: Restart After a 4-Hour Outage, and After a 4-Day One
 
-**Context:** A CDC subscriber service restarts after a 4-hour infrastructure outage. It needs to resume processing from exactly where it stopped without replaying the entire 72-hour event window.
-
-**Problem:** Without external `replayId` persistence, the subscriber has no record of its last position. Using `-2` (full catch-up) replays up to 72 hours of events for a large org — potentially millions of events — causing excessive processing time and downstream load.
+**Context:** The subscriber stores its position after each committed transaction, plus the time of the last processed event.
 
 **Solution:**
 
 ```python
-REPLAY_ID_KEY = "cdc_account_replay_id"
+from datetime import datetime, timedelta, timezone
 
-def on_event_batch_committed(events):
-    """Called after a batch of events is successfully written to the datastore."""
-    last_replay_id = events[-1]["replayId"]
-    # Persist to durable external storage (Redis, database, etc.).
-    store.set(REPLAY_ID_KEY, last_replay_id)
+RETENTION = timedelta(days=3)
 
+def on_transaction_committed(last_event):
+    store.save_bytes("cdc_replay_id", last_event["replay_id"])              # opaque bytes
+    store.save("cdc_last_commit_ms", last_event["ChangeEventHeader"]["commitTimestamp"])
 
-def get_subscription_replay_id():
-    """Determine the replayId to use when (re)connecting."""
-    stored_id = store.get(REPLAY_ID_KEY)
-
-    if stored_id is None:
-        # First-ever connection: no stored position.
-        # For a new pipeline after day-0 load, use -1 (tip).
-        return -1
-
-    # Verify the stored replayId is still within the retention window.
-    try:
-        pub_sub_client.validate_replay_id(stored_id)
-        return stored_id
-    except ReplayIdExpiredError:
-        # Stored replayId is outside the 72-hour window.
-        # Signal that a full Bulk API re-sync is required.
-        raise BulkReSyncRequired(
-            f"Stored replayId {stored_id} is outside the 72-hour retention window. "
-            "A full Bulk API re-sync is required before resuming CDC."
-        )
+def resume():
+    last_ms = store.load("cdc_last_commit_ms")
+    if last_ms is None:
+        return run_day0_then_subscribe()                                     # Example 1
+    last = datetime.fromtimestamp(last_ms / 1000, tz=timezone.utc)
+    if datetime.now(timezone.utc) - last > RETENTION:
+        return run_full_resync_then_subscribe()                              # outside retention
+    pubsub.subscribe(topic="/data/ChangeEvents", replay_preset="CUSTOM",
+                     replay_id=store.load_bytes("cdc_replay_id"), handler=process_event)
 ```
 
-**Why it works:** Persisting the `replayId` after each committed batch provides a durable checkpoint. Validating the stored ID on reconnect catches the expired-window case explicitly and routes to the Bulk API re-sync path rather than silently starting at tip and producing a data gap.
+**Why it works:** The decision is based on elapsed time against the 3-day retention, which Salesforce documents, instead of an error the client library may or may not raise. After 4 hours the stored replay ID resumes the stream; after 4 days the pipeline re-syncs first.
 
 ---
 
-## Anti-Pattern: Processing GAP_ Events as Normal Change Events
+## Anti-Pattern: Treating GAP_OVERFLOW Like Other Gap Events
 
-**What practitioners do:** Subscribe to CDC events and process all events in a single path without checking `changeType` for the `GAP_` prefix. The code reads field values from the event body regardless of event type.
+**What practitioners do:** One branch handles every `changeType` starting with `GAP_` by looking up `recordIds`.
 
-**What goes wrong:** Gap events have no field data in their body. Processing them as normal events writes empty or null field values to the external datastore. Because there is no error thrown — the field is simply absent — this produces silent data drift that can take days or weeks to detect.
+**What goes wrong:** An overflow event's only record ID is `000000000000000AAA`. The lookup returns nothing and the changes after the first 100,000 in that transaction never reach the replica.
 
-**Correct approach:** Always branch on `changeType` before touching any field data. If `changeType.startswith("GAP_")`, skip field processing entirely and execute the REST API fallback query using `recordIds` from `ChangeEventHeader`.
+**Correct approach:** Test for `GAP_OVERFLOW` first and re-sync the entity named in `entityName`, starting from the overflow event's replay ID; handle the other four `GAP_` types with the dirty-flag procedure.

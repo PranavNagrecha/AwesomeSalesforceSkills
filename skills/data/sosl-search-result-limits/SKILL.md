@@ -12,6 +12,8 @@ triggers:
   - "SOSL is silently dropping matching results when I search several objects"
   - "how do I raise the SOSL single-object result cap above 250"
   - "my dynamic Search.query returns zero rows for a long search string"
+  - "find out why records of my custom object never show up in SOSL or global search"
+  - "stop an AND search term from behaving like OR when the search text gets long"
 tags:
   - sosl-search-result-limits
   - search-result-cap
@@ -26,14 +28,14 @@ outputs:
   - "A diagnosis of which stage limit (2,000-record scan, 250 single-object default, min(2000/n, 250) split, permission filter, or SearchQuery length) is dropping the record"
   - "A remediation: add WHERE/ORDER BY/LIMIT inside the RETURNING clause, narrow to fewer objects, or bound the SearchQuery string length"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-07-08
+updated: 2026-10-19
 ---
 
 # SOSL Search Result Limits
 
-This skill activates when a SOSL search returns fewer records than expected — or a specific record that plainly matches the search term never appears — and you need to explain *why*. The cause is almost never the developer's `RETURNING` field list; it is a stack of internal limits the search engine applies at each stage of query processing, most of which fail silently rather than raising an error.
+This skill activates when a SOSL search returns fewer records than expected, or a record that plainly matches the search term never appears, and you need to say which limit removed it. The cause is rarely the `RETURNING` field list; it is a stack of limits the search engine applies at each stage, most of which fail without an error.
 
 ---
 
@@ -41,40 +43,68 @@ This skill activates when a SOSL search returns fewer records than expected — 
 
 Gather this context before working on anything in this domain:
 
-- **Confirm the symptom is a missing/capped result, not a syntax or injection problem.** If the question is SOSL vs SOQL, `FIND` wildcards, escaping, or `USING ListView`, that belongs to `data/sosl-search-patterns`. This skill is specifically about records that match but do not come back.
-- **Count the objects in the `RETURNING` clause.** The default result cap depends on how many objects a single SOSL statement targets — a one-object search behaves very differently from a ten-object search, and neither uses the 2,000 ceiling most developers assume.
-- **Establish the running user's access.** Users with **View All Data** see the full computed result set; every other user has record-level permission filters applied *after* the engine matches, which shrinks results further. The same query returns different counts for an admin and a standard user.
-- **Note whether the query is static or dynamic.** A dynamic `SearchQuery` string (as passed to `Search.query`) has its own length thresholds — over 4,000 characters and over 10,000 characters — that change or void results with no exception thrown.
+- **Confirm the symptom is a missing or capped result.** SOSL vs SOQL, `FIND` wildcards, escaping, and `USING ListView` belong to `data/sosl-search-patterns`.
+- **Count the objects in `RETURNING`.** The per-object cap depends on that count.
+- **Establish the running user's access.** View All Data holders see the full result set; everyone else gets permission filters.
+- **Measure the search term, not the statement.** The 4,000 and 10,000 character thresholds apply to the `{SearchQuery}` text inside `FIND`; the whole SOSL statement has a separate 100,000-character default limit.
+- **Check that the object is searchable.** A custom object with search turned off returns nothing however the query is written.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "How many objects does the RETURNING clause name, and which one holds the missing record?" | Each object gets min(2,000/n, 250), so more objects shrink every slice (Gotcha 2) | A narrower object list, or a per-object search for the one that matters |
+| "Does the object's RETURNING clause have a WHERE or ORDER BY, and does it list at least one field?" | Only WHERE or ORDER BY lifts a single object from 250 to 2,000, and both need a field list (Gotcha 1) | A clause that actually raises the cap and still parses |
+| "Did the reporter run the search as themselves, and do they have View All Data?" | Non-admins get permission filters on the results (Gotcha 3) | A reproduction in the affected user's context |
+| "Is the object's Allow Search setting on, and has anyone searched it in the last 120 days?" | Search is off by default for new custom objects and can be switched off for idle ones (Gotcha 5) | `enableSearch` confirmed true in the object metadata |
+| "How long can the text inside FIND {…} get when it is built from input?" | Over 4,000 characters, AND becomes OR; over 10,000, no rows (Gotcha 4) | A length guard on the search term before the call |
+| "Were the records created or changed in bulk in the last few hours?" | New and changed data must be indexed before search can find it (Gotcha 6) | A re-test after indexing instead of a query rewrite |
+| "Is the expectation 'every matching record' rather than 'best matches'?" | A statement tops out at 2,000 rows and LIMIT cannot raise it (Gotcha 7) | A decision to use SOQL or a report for exhaustive retrieval |
+
+A proper configuration adds a stage-by-stage explanation of where the record was dropped and a guard for each stage, instead of a widened search that hides the same failure until the data grows.
 
 ---
 
 ## Core Concepts
 
-### The search engine limits records at each stage
+### The stages, in order
 
-Official docs state plainly: "The search engine limits the number of records analyzed at each stage of the search process." A record can be a genuine match on the search term and still be excluded because it fell outside one of those internal stage windows — there is no error, warning, or partial-result flag.
+| Stage | Limit | Source wording |
+|---|---|---|
+| Term matching | The engine looks for matches across a maximum of 2,000 records (API 28.0+) | SOSL Limits on Search Results |
+| One object returned | 250 records; a WHERE or ORDER BY in the object's RETURNING clause raises it to 2,000 | same |
+| Several objects returned | Each object returns up to min(2,000/n, 250): 2 objects → 250 each, 10 objects → 200 each | same |
+| Statement total | 2,000 results (API 28.0+) including child objects, unless custom limits are set | Limits Quick Reference |
+| Permission filter | View All Data sees everything returned; other users see only records they can access | SOSL Limits on Search Results |
 
-The first stage is term matching: "The search engine looks for matches to the search term across a maximum of 2,000 records (this limit starts with API version 28.0)." So even before any `RETURNING` shaping, the engine only *considers* up to 2,000 records for the term. If the record you want is the 2,001st the engine would have scanned, no amount of `RETURNING` tuning brings it back.
+Result sets and order also vary by user and "can change throughout the day as records are added or removed from the index."
 
-### The returned-record caps are not 2,000 by default
+### What LIMIT does and does not do
 
-After matching, the number of records actually returned is capped, and the cap depends on object count:
+`LIMIT n` sets a maximum up to 2,000, and the default is 2,000. The SOSL reference is explicit that "the LIMIT clause can't increase the maximum number of records returned." A statement-level LIMIT spreads results evenly across objects; a per-object LIMIT stops one object from using up the statement's budget. A LIMIT of 0 returns no records for that object.
 
-- **One object:** "If you query one object only, a maximum of 250 records are returned." Not 2,000 — 250. To lift it: "To return up to 2,000 results, include either the WHERE clause or ORDER BY clause." That `WHERE`/`ORDER BY` goes *inside* the object's parentheses in the `RETURNING` clause.
-- **Multiple objects:** "If you query multiple objects, each object returns up to the minimum number between 2,000/n (where n=number of objects) and 250." So with 2 objects each returns up to 250 (2000/2 = 1000, capped at 250); with 10 objects each returns up to 200 (2000/10 = 200, which is below 250). The more objects you add, the smaller each object's slice becomes once `n` exceeds 8.
-- **Statement total:** across the whole statement the ceiling is "2,000 results total (API version 28.0 and later), unless you specify custom limits in the query. This limit includes results from child objects."
+### Search term length versus statement length
 
-### View All Data vs. per-user permission filtering
+| What is measured | Threshold | Effect |
+|---|---|---|
+| `{SearchQuery}` text inside `FIND` | Over 4,000 characters | Logical operators are removed; AND defaults to OR |
+| `{SearchQuery}` text inside `FIND` | Over 10,000 characters | No result rows are returned |
+| Whole SOSL statement | 100,000 characters by default | Tied to the org's SOQL statement limit |
 
-"Admins (users with the View All Data permission) see the full set of results returned. For all other users, SOSL applies user permission filters." This filtering happens on top of the caps above, so a standard user can receive a shorter result list than an admin running the identical search — records the engine matched are removed because the user cannot see them. When debugging a "missing record," always reproduce as the affected user, not as an admin.
+### Objects that cannot be found at all
 
-### Dynamic SearchQuery string-length thresholds
+The `enableSearch` field on a custom object (Allow Search in Setup) controls whether its records can be found by SOSL and Salesforce search. It defaults to off for new custom objects, and the Metadata API guide says searchability is disabled for custom objects that haven't been searched for more than 120 days.
 
-When you build the search string dynamically and pass it to `Search.query`, the *string itself* has thresholds that change behavior silently:
-
-- Over 4,000 characters: "If SearchQuery is longer than 4,000 characters, any logical operators are removed." The engine keeps running, but your `AND`/`OR`/`NOT` semantics are gone — matches widen unexpectedly.
-- Over 10,000 characters: "If the SearchQuery string is longer than 10,000 characters, no result rows are returned." Not an error — an empty result set.
-- The overall SOSL statement: "By default, 100,000 characters. This limit is tied to the SOQL statement character limit defined for your org."
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- excerpt: objects/Project__c/Project__c.object-meta.xml — only the search-related element is shown;
+     merge it into the retrieved file rather than deploying this fragment on its own. -->
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <enableSearch>true</enableSearch>
+</CustomObject>
+```
 
 ---
 
@@ -82,98 +112,91 @@ When you build the search string dynamically and pass it to `Search.query`, the 
 
 ### Raise the single-object cap from 250 to 2,000
 
-**When to use:** a single-object SOSL search needs more than 250 results (reporting, bulk reconciliation, "find everything named X").
-
-**How it works:** add a `WHERE` filter and/or an `ORDER BY` inside the object's parentheses in the `RETURNING` clause. Per the docs, either one lifts the ceiling to 2,000 for that object.
-
 ```apex
-// 250-record cap (single object, no WHERE/ORDER BY inside RETURNING)
+// Capped at 250: one object, no WHERE or ORDER BY in its RETURNING clause
 List<List<SObject>> capped = [FIND 'Acme*' IN NAME FIELDS RETURNING Account(Id, Name)];
 
-// Up to 2,000 — a WHERE or ORDER BY inside the parentheses lifts the cap
+// Up to 2,000: ORDER BY (or WHERE) inside the parentheses, with a field list
 List<List<SObject>> raised = [
     FIND 'Acme*' IN NAME FIELDS
     RETURNING Account(Id, Name WHERE Industry = 'Technology' ORDER BY Name)
 ];
 ```
 
-**Why not the alternative:** widening the `FIND` term or removing filters does not raise the cap; only the `WHERE`/`ORDER BY` inside `RETURNING` does. Assuming 2,000 is the default and never adding a clause is the most common cause of a silently truncated single-object search.
+Adding `LIMIT 2000` instead does not lift the cap.
 
-### Narrow to one object to protect a specific record (the "Joe" pattern)
+### Narrow to one object to protect a specific record
 
-**When to use:** a user reports that one particular record never appears in a multi-object search, even though it matches.
+The reference's "Joe" example: a global search spreads the budget across object types, and the wanted record falls outside it. Searching one object gives that object the whole budget, and a more specific term (`Industrial Computing San Francisco` instead of `Industrial`) returns better matches under the same limits.
 
-**How it works:** the docs' own remedy — "If Joe limits his search to just one object, the limit applies to only that object, increasing the chance that the record he wants is returned." Scoping the search to the single object that holds the record removes the min(2000/n, 250) division and gives that object the full single-object budget.
-
-**Why not the alternative:** adding more objects to "cast a wider net" does the opposite — each additional object shrinks every object's slice once `n` passes 8, making the target record *less* likely to survive.
-
-### Bound the SearchQuery length before a dynamic search
-
-**When to use:** the `SearchQuery` string is assembled from user input or a variable-length list of terms and handed to `Search.query`.
-
-**How it works:** measure `String.length()` before the call and reject or truncate above a safe bound well under 4,000 characters, so logical operators are never stripped and you never cross the 10,000-character zero-result cliff.
+### Guard the search term length
 
 ```apex
-String searchQuery = buildSoslFromInput(userTerms);
-if (searchQuery.length() > 4000) {
-    throw new SearchInputException(
-        'Search string exceeds 4,000 characters; logical operators would be removed.'
-    );
-}
-List<List<SObject>> results = Search.query(searchQuery);
-```
+public with sharing class AccountSearch {
+    public class SearchTermTooLongException extends Exception {}
 
-**Why not the alternative:** relying on Salesforce to error out is unsafe — over 4,000 chars it silently drops operators, and over 10,000 it silently returns nothing. Neither throws.
+    public static List<List<SObject>> run(String term) {
+        // The 4,000 / 10,000 thresholds apply to the FIND {term}, not the whole statement.
+        if (term == null || term.length() > 4000) {
+            throw new SearchTermTooLongException('Search term must be 1 to 4,000 characters.');
+        }
+        return [FIND :term IN NAME FIELDS RETURNING Account(Id, Name ORDER BY Name)];
+    }
+}
+```
 
 ---
 
 ## Decision Guidance
 
-| Situation | Recommended Approach | Reason |
+| Situation | Recommended approach | Reason |
 |---|---|---|
-| Single-object search returns exactly 250 rows | Add a `WHERE` or `ORDER BY` inside the `RETURNING` object's parentheses | Either clause raises the single-object cap to 2,000 |
-| A specific record is missing from a multi-object search | Scope the search to just that object | Removes the min(2000/n, 250) split; gives the object its full budget |
-| Search targets 9+ objects and each returns few rows | Reduce object count, or split into per-object searches | Once n > 8, 2000/n drops below 250 and each object shrinks |
-| Admin sees the record, standard user does not | Reproduce as the affected user; check sharing/FLS | Non-admins have per-user permission filters applied to results |
-| Dynamic `Search.query` returns zero rows unexpectedly | Check `SearchQuery` length against 10,000 chars | Over 10,000 characters, no result rows are returned |
-| `AND`/`NOT` in a dynamic search behaves like a broad match | Check `SearchQuery` length against 4,000 chars | Over 4,000 characters, logical operators are removed |
-| Need more than 2,000 total results from one statement | Redesign — paginate, filter, or use SOQL/reporting | 2,000 total is the statement ceiling (incl. child objects) unless custom limits are set |
+| Single-object search returns exactly 250 rows | Add WHERE or ORDER BY inside that object's RETURNING clause | Only these raise the single-object cap to 2,000 |
+| One record missing from a multi-object search | Search that object alone, with a more specific term | Removes the min(2,000/n, 250) split |
+| Nine or more objects in RETURNING | Cut the list or split into per-object searches | 2,000/n falls below 250 once n is over 8 |
+| Admin sees the record, the user does not | Fix the user's access; never grant View All Data to fix search | Permission filters apply to non-admins |
+| Custom object never appears in any search | Check `enableSearch` in the object metadata | Search is off by default for new custom objects |
+| AND search returns far too much | Measure the FIND term length | Over 4,000 characters, AND defaults to OR |
+| Need every matching row, ordered | Use SOQL or a report | SOSL tops out at 2,000 per statement |
 
 ---
 
 ## Recommended Workflow
 
-1. **Reproduce as the affected user.** Run the exact SOSL as the reporting user, not as an admin — View All Data hides the permission-filter shrink that a standard user experiences.
-2. **Count the objects and read the RETURNING clause.** Determine whether the search is single-object (250 default) or multi-object (min(2000/n, 250) per object), and whether any object's parentheses already contain a `WHERE`/`ORDER BY`/`LIMIT`.
-3. **Map the symptom to a stage.** Zero rows from a dynamic query → check `SearchQuery` length (10,000 / 4,000 thresholds). Exactly 250 → single-object cap. Shrinking per-object counts → object-count division. Missing only for some users → permission filtering. Missing beyond ~2,000 scanned → the term-matching scan window.
-4. **Apply the matching remedy.** Add `WHERE`/`ORDER BY` inside `RETURNING` to lift a single-object cap; narrow to fewer objects to protect a specific record; bound the `SearchQuery` string length; or set explicit custom per-object limits.
-5. **Confirm you are not asking SOSL for a job SOQL should do.** If the requirement is exhaustive, ordered, relational retrieval rather than best-match search, route to SOQL/reporting instead of fighting the caps.
-6. **Run the checker and re-verify counts.** Run `scripts/check_sosl_search_result_limits.py` over the Apex, then re-run the search as the affected user and confirm the target record now returns.
+1. Copy the statement and the symptom into `templates/sosl-search-result-limits-template.md`, and record n (objects in RETURNING) and whether the user has View All Data.
+2. Reproduce as the affected user; if the record appears for an admin only, stop and treat it as an access problem.
+3. Retrieve the object's metadata and confirm `<enableSearch>true</enableSearch>`; for newly loaded data, wait for indexing and re-test.
+4. Map the symptom to a stage with the Core Concepts tables and apply the matching pattern (WHERE/ORDER BY, narrower object list, term length guard); `references/worked-example.md` walks one missing record through every stage.
+5. Run `python3 skills/data/sosl-search-result-limits/scripts/check_sosl_search_result_limits.py --manifest-dir force-app/main/default` and resolve every ERROR; review the WARN lines.
+6. Add an Apex test that uses `Test.setFixedSearchResults` for the search method and asserts on the record count the code expects, then re-run the real search as the affected user.
 
 ---
 
 ## Review Checklist
 
-Run through these before marking work in this area complete:
-
-- [ ] The search was reproduced as the affected (non-admin) user, not only as an admin with View All Data
-- [ ] Single-object searches that need more than 250 rows include a `WHERE` or `ORDER BY` inside the `RETURNING` parentheses
-- [ ] Multi-object searches account for the min(2000/n, 250) per-object cap; object count is not inflated past 8 without reason
-- [ ] The design does not assume a single statement can return more than 2,000 rows total (child objects included) without custom limits
-- [ ] Dynamic `SearchQuery` strings are length-bounded well under 4,000 characters (operator-stripping) and never approach 10,000 (zero rows)
-- [ ] The overall SOSL statement stays within the org's statement character limit (100,000 by default)
-- [ ] Any "missing record" claim was traced to a specific stage limit, not left as an unexplained gap
+- [ ] The search was reproduced as the affected user, not only as an admin
+- [ ] Single-object searches that need more than 250 rows have WHERE or ORDER BY (not just LIMIT) inside RETURNING, with a field list
+- [ ] Multi-object searches account for min(2,000/n, 250); object count is not over 8 without reason
+- [ ] The design does not expect more than 2,000 rows from one statement
+- [ ] The FIND term is length-checked under 4,000 characters when built from input
+- [ ] Searched custom objects have `enableSearch` set to true
+- [ ] The checker reports no ERROR lines
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full write-ups are in `references/gotchas.md`:
 
-1. **250, not 2,000, is the single-object default** — a single-object SOSL with no `WHERE`/`ORDER BY` inside `RETURNING` caps at 250 records, so a search that "works" in dev against small data silently truncates in production.
-2. **Adding objects shrinks every object's slice** — because each object returns min(2000/n, 250), a search over 10 objects returns at most 200 per object, not 250; "search more objects to find it" backfires.
-3. **Admins and standard users get different results** — permission filtering is applied to search output for everyone without View All Data, so a bug reproduced as an admin can look non-existent while a standard user still cannot see the record.
-4. **Dynamic SearchQuery length changes behavior with no error** — over 4,000 characters logical operators are dropped (an `AND` search widens), and over 10,000 characters zero rows return; both fail silently.
+| # | Gotcha |
+|---|---|
+| 1 | 250, not 2,000, is the single-object default, and the raising clause needs a field list |
+| 2 | More objects means fewer results per object |
+| 3 | Admins and standard users see different result sets |
+| 4 | The FIND term length changes results with no error |
+| 5 | Custom objects can be unsearchable by default or after 120 idle days |
+| 6 | New and changed data is invisible until the search index catches up |
+| 7 | LIMIT cannot raise any cap |
 
 ---
 
@@ -181,15 +204,20 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Stage-limit diagnosis | Which internal limit (2,000 scan, 250 single-object, min(2000/n, 250) split, permission filter, or SearchQuery length) is dropping the record |
-| Remediated SOSL | The `RETURNING` clause with a `WHERE`/`ORDER BY`/custom limit, a narrowed object list, or a length-bounded dynamic string |
-| `scripts/check_sosl_search_result_limits.py` output | Findings for single-object 250-caps, high object counts, and unguarded dynamic `Search.query` length risk |
-| `templates/sosl-search-result-limits-template.md` | A worksheet mapping each observed symptom to the stage limit and its remedy |
+| Stage-limit diagnosis | Which stage (scan, single-object cap, split, permission filter, term length, searchability, indexing) dropped the record |
+| Remediated SOSL | RETURNING clause with WHERE/ORDER BY, a narrower object list, or a term length guard |
+| Object metadata fix | `enableSearch` set to true on the custom object, when that was the cause |
+| Checker output | `scripts/check_sosl_search_result_limits.py` findings |
+| Filled worksheet | `templates/sosl-search-result-limits-template.md` |
 
 ---
 
 ## Related Skills
 
-- `data/sosl-search-patterns` — the companion skill for choosing SOSL vs SOQL, `FIND` syntax, search groups, injection safety, and `USING ListView`. Use it for *how to write* the search; use this skill for *why the search dropped a record*.
-- `templates/apex/BaseSelector.cls` — the canonical selector layer where a SOSL search method should live so caps, limits, and `USER_MODE` enforcement are set in one reviewed place rather than scattered inline.
-- `templates/apex/SecurityUtils.cls` — reference when the missing-record cause turns out to be CRUD/FLS/sharing (the permission-filter stage) rather than a result cap.
+- `data/sosl-search-patterns` — how to write the search: SOSL vs SOQL, FIND syntax, search groups, injection safety
+- `data/sosl-with-clauses` — WITH SNIPPET, WITH NETWORK, and the other WITH clauses
+- `data/sosl-external-object-search-limits` — search limits that apply to external objects
+- `data/soql-query-optimization` — when the requirement turns out to need exhaustive, ordered SOQL instead
+- `apex/soql-fundamentals` — the SOQL side of query syntax
+
+Templates: `templates/apex/BaseSelector.cls` is where a search method belongs so its caps and `USER_MODE` handling are reviewed in one place.

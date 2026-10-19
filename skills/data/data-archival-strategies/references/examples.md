@@ -2,7 +2,7 @@
 
 ## Example 1: Archiving 5-Year-Old Opportunity Records to a Big Object
 
-**Context:** A financial services org has 8 million Opportunity records, with 3 million older than 5 years that are closed and no longer actively used in reports. Data storage is at 78% of the Enterprise allocation. The compliance team requires that these records remain queryable for audit purposes for 7 years from close date.
+**Context:** A financial services org has 8 million Opportunity records, with 3 million older than 5 years that are closed and no longer actively used in reports. Setup > Storage Usage shows data storage at 78% of the org's allocation. The compliance team requires that these records remain queryable for audit purposes for 7 years from close date.
 
 **Problem:** Deleting records would violate the 7-year retention policy. Leaving them in place is pushing the org toward the storage limit, and reports on the Opportunity object are slowing down. Standard archival to an external system would make the data unavailable to Salesforce auditors without custom integration.
 
@@ -91,32 +91,35 @@ public class OpportunityArchivalBatch implements Database.Batchable<SObject> {
         for (Opportunity opp : scope) {
             toArchive.add(new ArchivedOpportunity__b(
                 AccountId__c = opp.AccountId,
-                CloseDate__c = DateTime.newInstance(opp.CloseDate, Time.newInstance(0,0,0,0)),
-                OriginalId__c = opp.Id,
+                CloseDate__c = DateTime.newInstance(opp.CloseDate, Time.newInstance(0, 0, 0, 0)),
+                OriginalId__c = String.valueOf(opp.Id).trim(),
                 Amount__c = opp.Amount,
-                StageName__c = opp.StageName
+                StageName__c = opp.StageName == null ? null : opp.StageName.trim()
             ));
         }
 
-        // Write to Big Object — idempotent, safe to retry
+        // Big object DML is treated as a callout, so it runs before any sObject DML here.
         List<Database.SaveResult> results = Database.insertImmediate(toArchive);
-
-        // Only delete source records if all archive writes succeeded
-        List<Id> successfullyArchived = new List<Id>();
-        for (Integer i = 0; i < results.size(); i++) {
-            if (results[i].isSuccess()) {
-                successfullyArchived.add(scope[i].Id);
+        for (Database.SaveResult r : results) {
+            if (!r.isSuccess()) {
+                // insertImmediate does not throw. Retry the whole batch later (writes are
+                // idempotent) and leave every source row in place.
+                System.enqueueJob(new OpportunityArchiveRetry(cutoffDate, scope));
+                return;
             }
         }
 
-        if (!successfullyArchived.isEmpty()) {
-            // Hard delete to bypass recycle bin and reclaim storage immediately
-            List<Opportunity> toDelete = new List<Opportunity>();
-            for (Id oppId : successfullyArchived) {
-                toDelete.add(new Opportunity(Id = oppId));
+        List<Database.DeleteResult> deleted = Database.delete(scope, false);
+        List<Id> toPurge = new List<Id>();
+        for (Integer i = 0; i < deleted.size(); i++) {
+            if (deleted[i].isSuccess()) {
+                toPurge.add(scope[i].Id);
             }
-            Database.delete(toDelete, false);
-            Database.emptyRecycleBin(toDelete);
+        }
+        if (!toPurge.isEmpty()) {
+            // Purging the bin helps query performance on Opportunity; Recycle Bin rows
+            // don't count against storage, so this is not a storage step.
+            Database.emptyRecycleBin(toPurge);
         }
     }
 
@@ -135,7 +138,7 @@ OpportunityArchivalBatch batch = new OpportunityArchivalBatch(cutoff);
 Database.executeBatch(batch, 200);
 ```
 
-**Why it works:** The Batch Apex job processes records in manageable chunks (200 per execute), writes to the Big Object before deleting from the source, and uses `Database.emptyRecycleBin()` to immediately reclaim storage without waiting 15 days. The Big Object's composite index on AccountId and CloseDate supports audit queries like "show me all archived opportunities for this account sorted by close date."
+**Why it works:** Each execute writes the whole scope to the big object first, deletes the source only when every write succeeded, and purges the deleted rows so they stop weighing on Opportunity queries. Storage falls because live Opportunity rows are gone, not because of the purge. The index on AccountId and CloseDate answers "all archived opportunities for this account, newest first." Deleting the source also deletes its field history; turn on a Field Audit Trail policy first if that history must be kept. `OpportunityArchiveRetry` is your Queueable that re-runs the same scope.
 
 ---
 
@@ -149,11 +152,15 @@ Database.executeBatch(batch, 200);
 
 Step 1 — Add an IsArchived__c custom field to Case:
 
-```
-Field Type: Checkbox
-Field Label: Is Archived
-API Name: IsArchived__c
-Default Value: Unchecked
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- objects/Case/fields/IsArchived__c.field-meta.xml -->
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsArchived__c</fullName>
+    <label>Is Archived</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+</CustomField>
 ```
 
 Step 2 — Batch Apex to flag old Cases as archived:
@@ -196,6 +203,6 @@ Step 4 — Compliance team creates a dedicated "Archived Cases" report type filt
 
 **What practitioners do:** Export old records using Data Loader to CSV files on a local drive, then delete records using Data Loader's standard delete operation (soft delete). Storage numbers do not decrease immediately, so the practitioner repeats the export and delete cycle, accumulating more records in the Recycle Bin.
 
-**What goes wrong:** Soft-deleted records remain in the Recycle Bin for 15 days and continue to affect query optimizer selectivity, so query performance does not improve. Storage may not be reclaimed at the rate expected. The CSV files on a local drive create a compliance and audit risk (sensitive data outside the platform). If the CSV is lost, the data is unrecoverable once the Recycle Bin clears.
+**What goes wrong:** Soft-deleted records stay in the Recycle Bin for 15 days and still have to be excluded from every query, so performance does not improve. Storage Usage may also lag behind the delete, which tempts repeat runs. The CSV files on a local drive are an unmanaged copy of production data, and if a file is lost the data is unrecoverable once the Recycle Bin clears. The field history of every deleted record is deleted with it.
 
-**Correct approach:** Use Bulk API 2.0 hard delete to bypass the Recycle Bin entirely, or use Batch Apex with `Database.emptyRecycleBin()` after each batch. Before deleting, archive records to a Big Object or an external store if retention is required. Never rely on local CSV files as the authoritative archive.
+**Correct approach:** Archive to a big object or a governed external store first and prove the read path. Then delete with Bulk API 2.0 hard delete (the LDV guide's recommendation for large deletes), or with Batch Apex followed by `Database.emptyRecycleBin()`. Never rely on local CSV files as the authoritative archive.

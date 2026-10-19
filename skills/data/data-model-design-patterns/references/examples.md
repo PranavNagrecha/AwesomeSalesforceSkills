@@ -30,14 +30,18 @@ Result: Deleting a student cascades to delete their enrollments. Deleting a cour
 
 **Solution:**
 
-```text
-Object: Product_Record__c
-New Field:
-  Label:      ERP Product Code
-  API Name:   ERP_Product_Code__c
-  Type:       Text(50)
-  External ID: checked
-  Unique:     checked (case-insensitive)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- objects/Product_Record__c/fields/ERP_Product_Code__c.field-meta.xml -->
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ERP_Product_Code__c</fullName>
+    <label>ERP Product Code</label>
+    <type>Text</type>
+    <length>50</length>
+    <externalId>true</externalId>
+    <unique>true</unique>
+    <caseSensitive>false</caseSensitive>
+</CustomField>
 ```
 
 After adding the field:
@@ -52,25 +56,26 @@ After adding the field:
 
 ## Example 3: Custom Index Request for Large Account Queries
 
-**Context:** A financial services org has 4 million Account records. Every morning, a reporting process runs a SOQL query filtering on `Account_Region__c` (a custom picklist field, not indexed) to generate territory summaries. The query consistently hits the 120-second timeout governor limit.
+**Context:** A financial services org has 4 million Account records. Every morning, a reporting process runs a SOQL query filtering on `Account_Region__c` (a custom picklist field, not indexed) to generate territory summaries. The query times out (the limits guide gives a query operation 2 minutes to execute).
 
-**Problem:** `Account_Region__c` is not indexed. The platform performs a full table scan across 4 million rows to evaluate the filter. The query is sufficiently selective (each region contains ~8% of records), but without an index, the optimizer cannot use a selective strategy.
+**Problem:** `Account_Region__c` is not indexed, so the plan is a table scan across 4 million rows. Each region holds about 5% of rows, which may be selective enough for a custom index; the arithmetic decides.
 
 **Solution:**
 
-1. Verify selectivity: each region value matches approximately 320,000 records out of 4,000,000 — roughly 8%, which is below the 10% selectivity threshold.
-2. Confirm the field is a picklist (not a formula, not encrypted, not multi-select picklist) — eligible for a custom index.
+1. Verify selectivity against the tiered threshold: for 4,000,000 rows a custom index is used below 10% × 1,000,000 + 5% × 3,000,000 = 250,000 rows. The largest region matches about 200,000 rows, so it qualifies. (At 8%, 320,000 rows, it would not, and the request would be wasted.)
+2. Confirm the field type can take a custom index: a single-select picklist can; a multi-select picklist, long text, encrypted text, or non-deterministic formula can't.
 3. Open a Salesforce Support case with:
    - Object: `Account`
    - Field API name: `Account_Region__c`
    - Justification: frequent large-volume SOQL query, 4M records, filter is selective
-4. After the index is created, validate using the Tooling API SOQL `EXPLAIN` command:
-   ```soql
-   EXPLAIN SELECT Id, Name FROM Account WHERE Account_Region__c = 'APAC'
+4. After the index is created, capture the plan with the REST API `explain` parameter (Beta):
+   ```bash
+   curl -H "Authorization: Bearer $ACCESS_TOKEN" \
+     "$INSTANCE_URL/services/data/v67.0/query/?explain=SELECT+Id,Name+FROM+Account+WHERE+Account_Region__c='APAC'"
    ```
-   The explain plan should show `Index` cardinality instead of `TableScan`.
+   The first plan should show `leadingOperationType: Index` and `relativeCost` under 1.0.
 
-**Why it works:** A custom index on a selective picklist field allows the query optimizer to use an index scan, returning only the matching fraction of rows rather than scanning the full table. The query drops from a timeout to sub-second execution.
+**Why it works:** The filter value is under the custom-index threshold for the object's size, so the optimizer can drive the query from the index instead of scanning every row. Re-check when the object grows, because the threshold is a share of the row count.
 
 ---
 

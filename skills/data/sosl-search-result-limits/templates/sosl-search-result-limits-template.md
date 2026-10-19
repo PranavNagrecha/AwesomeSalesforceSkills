@@ -22,7 +22,8 @@ responsible, then apply the documented remedy. Fill each section in order.
 - **Object count (n) in RETURNING:** ____
 - **Per-object clauses — does each have a WHERE / ORDER BY / LIMIT?** (list per object)
 - **Running user holds View All Data?** yes / no  →  reproduced as the *affected* user? yes / no
-- **Dynamic SearchQuery length (chars):** ____  (thresholds: 4,000 / 10,000; statement limit 100,000)
+- **FIND {…} term length (chars):** ____  (thresholds: 4,000 / 10,000 on the term; whole statement limit 100,000)
+- **Object `enableSearch` (Allow Search) true?** yes / no
 
 ## Stage-Limit Triage
 
@@ -33,8 +34,10 @@ Check the first row that matches the symptom; that is your likely cause.
 | Returns exactly 250, single object, no WHERE/ORDER BY | 250 single-object default | Add `WHERE` or `ORDER BY` inside the object's `RETURNING` parentheses (→ up to 2,000) |
 | Per-object counts shrink as objects are added; n ≥ 9 | min(2000/n, 250) split | Reduce object count or scope to the single needed object |
 | Admin sees the record, standard user does not | Per-user permission filtering | Fix sharing/FLS/CRUD for the user; do **not** grant View All Data as a workaround |
-| Dynamic query returns zero rows | SearchQuery > 10,000 chars | Bound the string length before `Search.query` |
-| `AND`/`NOT` matches too broadly (dynamic) | SearchQuery > 4,000 chars (operators removed) | Bound the string length well under 4,000 chars |
+| Query returns zero rows | FIND term > 10,000 chars, or object not searchable | Bound the term length; check `enableSearch` on the object |
+| `AND`/`NOT` matches too broadly | FIND term > 4,000 chars (operators removed, AND becomes OR) | Bound the term length under 4,000 chars |
+| Records created minutes ago are missing | Search indexing delay (about 15 minutes or more) | Re-test after indexing; use SOQL by Id for create-then-read flows |
+| Adding `LIMIT 2000` changed nothing | LIMIT cannot increase the maximum | Use WHERE or ORDER BY inside RETURNING |
 | Record beyond ~2,000 scanned never matches | 2,000-record term-matching scan (API 28.0+) | Narrow the `FIND` term / scope to one object so the target is inside the scan window |
 | Need > 2,000 total ordered rows | 2,000-per-statement ceiling | Redesign around SOQL / reporting; SOSL tops out at 2,000 total |
 

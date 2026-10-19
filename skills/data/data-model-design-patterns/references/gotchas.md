@@ -2,17 +2,17 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Master-Detail Cascade Delete Has No Recycle Bin Recovery
+## Gotcha 1: Master-Detail Cascade Delete Is Automatic, and One Undeletable Child Blocks It
 
-**What happens:** When a master record is deleted, all associated detail records are immediately and permanently deleted — they do not go to the Recycle Bin. This applies recursively: if the detail object is itself a master to another object, grandchild records are also permanently deleted. There is no undo.
+**What happens:** Deleting a master record deletes its detail records, and detail-of-detail records below them, with no prompt about the children. In the other direction, a parent delete fails outright when any one child can't be deleted.
 
-**When it occurs:** Any time a master record is deleted — manually by a user, via a data loader job, via Apex DML, or via an API call. The cascade is automatic and silent; there is no warning dialog in the standard UI. Bulk deletes (e.g., a data loader delete job on the parent object) trigger mass permanent deletion of all related children.
+**When it occurs:** The Object Reference: "When a record of the master object is deleted, its related detail records are also deleted." The Apex Developer Guide: deleting a parent deletes its children automatically "as long as each child record can be deleted," and if a child isn't deletable or is in use, the delete on the parent fails. Deleted records go to the Recycle Bin for 15 days; when purging, `Database.emptyRecycleBin` takes only the top-level record's Id and removes the related records with it.
 
 **How to avoid:**
-- Before choosing master-detail, explicitly confirm with the business that cascade delete is the desired behavior in all scenarios.
-- For junction objects, consider whether the business wants junction records to survive when one parent is deleted. If yes, use a lookup on that side instead of MDR.
-- Implement a before-delete Apex trigger on the master object that counts related detail records and throws an exception if the count exceeds a configurable threshold, as a safety gate for bulk deletes.
-- Enable Enhanced Transaction Security policies to alert administrators when bulk deletes occur above a record count threshold.
+- Confirm with the business that cascade delete is right in every scenario before choosing master-detail.
+- For a junction whose rows should survive one parent's deletion, use a lookup on that side.
+- Add a before-delete check on the master that counts detail rows and blocks deletes above a threshold, as a safety gate for bulk deletes.
+- Test restore in a sandbox (undelete the master within 15 days) before relying on it as a recovery plan.
 
 ---
 
@@ -59,43 +59,42 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: External ID Limit Is 25 Per Object, But Unique Index Behavior Differs by Field Type
+## Gotcha 5: External ID Indexes the Key; Unique and Case Sensitivity Are Separate Settings
 
-**What happens:** Each object supports up to 25 external ID fields, all of which are indexed by default. However, uniqueness enforcement behavior differs: `Text` external ID fields enforce case-insensitive uniqueness by default when the Unique option is selected, while `Number` external ID fields are always case-independent (numeric). Inserting a record with a Text external ID value that differs only by case (e.g., `ABC123` vs `abc123`) from an existing record will fail the unique constraint, even if your integration treats them as different keys.
+**What happens:** An integration sends `ORDER-001` and `order-001` as different orders and Salesforce treats them as one, or the reverse; or duplicates slip in because External ID was assumed to be unique.
 
-**When it occurs:** Integrations that use alphanumeric natural keys where the source system treats case as significant (e.g., `ORDER-001` and `order-001` are different orders in the ERP, but Salesforce treats them as the same external ID value).
+**When it occurs:** In `CustomField` metadata, `externalId`, `unique`, and `caseSensitive` are separate booleans; External ID is available on Auto Number, Email, Number, and Text fields. Upserts whose key matches more than one record fail with a 300 error, which shows duplicates can exist under External ID alone.
 
 **How to avoid:**
-- Normalize external ID values to a consistent case in the integration layer before inserting into Salesforce.
-- If the source system key is a pure numeric identifier, use a `Number` external ID field to avoid case ambiguity entirely.
-- Document the case-sensitivity behavior in the integration spec so downstream consumers understand the constraint.
+- Set `unique` when the key must be unique, and set `caseSensitive` deliberately to match the source system's semantics.
+- Normalize case in the integration layer when the source treats keys case-insensitively.
+- For purely numeric keys, consider a Number field.
 
 ---
 
-## Gotcha 6: Skinny Table Data May Lag After Large Bulk Loads
+## Gotcha 6: Skinny Tables Only Help Queries That Use Nothing Outside Them
 
-**What happens:** Skinny tables are denormalized projections of selected fields on a large object, maintained by Salesforce internally to speed up queries. After a large Bulk API data load (millions of records), the skinny table may not immediately reflect the newly inserted or updated data. Reports, SOQL queries, and list views that rely on the skinny table may return stale counts or missing rows for a period after the load completes.
+**What happens:** A skinny table is provisioned, and the report that motivated it stays slow because it also reads one field that isn't in the skinny table.
 
-**When it occurs:** Immediately after large bulk insert or update jobs on objects where a skinny table has been provisioned. The lag duration depends on load volume and platform conditions.
+**When it occurs:** The LDV guide: skinny tables are kept in sync with their source tables, and read-only operations that reference only fields in the skinny table skip the join between the standard and custom field tables. They hold at most 200 columns, can't include fields from other objects, can be created on custom objects and on Account, Contact, Opportunity, Lead, and Case, and are copied only to Full sandboxes. Adding a field to the report means asking Support to change the skinny table.
 
 **How to avoid:**
-- Schedule reports and SOQL-dependent processes with a buffer after bulk load jobs complete, rather than chaining them directly in the same automation sequence.
-- Use Bulk API 2.0 job status polling to confirm the job has completed before triggering downstream processes; then allow a platform-defined settling period before running aggregate queries on the loaded object.
-- Coordinate with Salesforce Support to understand the expected refresh lag for the specific skinny table configuration in your org.
+- Design report field sets so heavy reports stay inside the skinny table's fields.
+- Route any change to those reports through a Support request to update the skinny table definition.
+- Test in a Full sandbox; other sandbox types don't receive skinny tables.
 
 ---
 
-## Gotcha 7: Cascade Delete on a Lookup Is Not a Field-Wizard Option — It Needs a Support Case and Bypasses Sharing
+## Gotcha 7: Lookup Delete Behaviour Is a Metadata Setting — Check Cascade Before Designing on It
 
-**What happens:** The Metadata API `deleteConstraint` on a lookup field accepts three values: `SetNull` ("This value is the default. If the lookup record is deleted, the lookup field is cleared"), `Restrict` ("Prevents the record from being deleted if it's in a lookup relationship"), and `Cascade` ("Deletes the lookup record as well as associated lookup fields"). The Setup field wizard exposes only the first two. `Cascade` is gated on an org-level feature — "cascade delete on custom lookup relationships" — which is disabled by default. Salesforce states: "A cascade-delete bypasses security and sharing settings, which means users can delete records when the target lookup record is deleted even if they don't have access to the records." It is also unavailable entirely for lookup relationships to standard objects.
+**What happens:** A design says "set the lookup to delete its children," and the admin finds the option isn't available, or that its consequences for access weren't reviewed.
 
-**When it occurs:** Whenever children must disappear with the parent but master-detail is off the table — the 2-MDR limit is already spent, the parent must stay optional, or the parent is a standard object that cannot be a master (see Gotcha 8). The design doc says "set the lookup delete behavior to cascade" and the admin discovers there is no such radio button.
+**When it occurs:** The Metadata API `deleteConstraint` on a lookup field accepts `SetNull` ("This value is the default. If the lookup record is deleted, the lookup field is cleared"), `Restrict` ("Prevents the record from being deleted if it's in a lookup relationship"), and `Cascade` ("Deletes the lookup record as well as associated lookup fields"). Whether `Cascade` can be chosen in a given org, and what it means for users who can't see the child records, is not described in the Metadata API guide.
 
 **How to avoid:**
-- Do not commit to cascade-on-lookup in a design. Enabling it requires a System Administrator to file an Activations request with Salesforce Support and explicitly acknowledge the security bypass; there is no self-serve path.
-- Prefer master-detail when the dependency is genuine, or delete children explicitly from a before-delete Apex trigger or record-triggered Flow. Unlike cascade, that path lives in the org's metadata and its execution context is yours to choose — but it does not respect sharing by default either: a trigger runs in system mode unless its handler class is declared `with sharing`, and a record-triggered flow defaults to system context without sharing.
-- Use `Restrict` as the safe self-serve middle ground: it blocks the parent delete instead of silently removing children.
-- If the feature is already on in the org, treat every `deleteConstraint: Cascade` lookup as an audit finding — Salesforce notes that when the parent of a lookup relationship is deleted, field history tracking on the child does not record the deletion, so the child's history shows no sign of it.
+- Ask the org's admin whether lookup `Cascade` is available before putting it in a design, and review its effect on access with security.
+- Prefer master-detail when the dependency is genuine, or delete children from before-delete automation whose sharing mode you choose explicitly (an Apex class declared `with sharing`, for example).
+- Use `Restrict` as the safe middle ground: it blocks the parent delete instead of removing children.
 
 ---
 

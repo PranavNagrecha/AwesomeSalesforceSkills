@@ -35,31 +35,27 @@ Bulk API v1 (legacy):
 
 ## Anti-Pattern 2: Wrong CSV Format for Bulk API 2.0 Uploads
 
-**What the LLM generates:** CSV files with wrong line endings (LF-only on Windows clients), BOM characters, or missing headers, which cause parsing failures or silent data corruption in Bulk API 2.0.
+**What the LLM generates:** CSV content with a `lineEnding` that does not match the file, label-style headers, blank cells meant to clear fields, or values padded with spaces.
 
-**Why it happens:** LLMs generate CSV content as plain text without specifying the exact format requirements that Bulk API 2.0 enforces: UTF-8 encoding, CRLF or LF line endings, comma delimiter, and a mandatory header row matching field API names.
+**Why it happens:** Models write CSV as plain text and do not apply the Bulk API 2.0 rules: UTF-8, a declared line ending that matches the file, a header row of API names, `#N/A` for null, and no trimming.
 
 **Correct pattern:**
 
 ```text
-Bulk API 2.0 CSV requirements:
-- Encoding: UTF-8 (no BOM)
-- Line endings: LF or CRLF (both accepted)
-- Delimiter: comma by default (configurable via columnDelimiter in job creation)
-- Header row: REQUIRED, must use field API names (not labels)
-- Quoting: fields containing commas, newlines, or double-quotes must be quoted
-- Double-quote escaping: use "" (two double-quotes) inside a quoted field
+Bulk API 2.0 CSV requirements (Prepare CSV Files):
+- Encoding: UTF-8
+- Line endings: LF (default) or CRLF, and the job's lineEnding must match the file
+- Delimiter: comma by default; backquote, caret, pipe, semicolon, tab via columnDelimiter
+- Header row: field API names; header up to 32,000 characters
+- Quoting: wrap values containing the delimiter or line endings in double quotes
+- Null: empty values are ignored on update; #N/A sets null
+- Whitespace: values aren't trimmed; a space next to a double quote fails the row
 
 Example header for Account upsert:
 External_Id__c,Name,BillingCity,BillingState
-
-Common mistakes:
-- Using field labels instead of API names in headers
-- Including the Salesforce Id column for insert operations (omit it)
-- Missing External_Id__c in header for upsert operations
 ```
 
-**Detection hint:** Check CSV header rows for spaces (likely labels, not API names). Flag inserts that include an `Id` column or upserts missing the external ID field.
+**Detection hint:** Header cells with spaces (labels, not API names), upserts whose header lacks the `externalIdFieldName` column, a job body without `lineEnding` for files produced on Windows, or blank cells in an update file that is meant to clear values.
 
 ---
 
@@ -74,18 +70,18 @@ Common mistakes:
 ```text
 Bulk API 2.0 query result pagination:
 
-1. GET /services/data/vXX.0/jobs/query/{id}/results/
+1. GET /services/data/vXX.0/jobs/query/{id}/results
    Response headers include:
-   - Sforce-Locator: <locator-value>  (present if more pages exist)
-   - Sforce-NumberOfRecords: <count>
+   - Sforce-Locator: <locator-value>, or the string "null" on the last set
+   - Sforce-NumberOfRecords: <count in this set>
 
-2. If Sforce-Locator is not "null":
-   GET /services/data/vXX.0/jobs/query/{id}/results/?locator=<locator-value>
+2. If Sforce-Locator is not the string "null":
+   GET /services/data/vXX.0/jobs/query/{id}/results?locator=<locator-value>
 
-3. Repeat until Sforce-Locator = "null"
+3. Repeat until Sforce-Locator is the string "null"
 
-Default page size: ~1 GB or system-determined row count per page.
-Use maxRecords parameter to control page size if needed.
+Without maxRecords the server picks a default set size; pass maxRecords
+when large sets time out on the client. Never construct a locator.
 ```
 
 **Detection hint:** Flag Bulk API query examples that call the results endpoint only once without checking the `Sforce-Locator` header. Look for missing pagination loops in query job code.
@@ -94,9 +90,9 @@ Use maxRecords parameter to control page size if needed.
 
 ## Anti-Pattern 4: Omitting the Job Close Step After CSV Upload
 
-**What the LLM generates:** "Upload your CSV with PUT to the batches endpoint" and then immediately polling for results, without sending the PATCH request to change the job state from `UploadComplete` to signal processing should begin.
+**What the LLM generates:** "Upload your CSV with PUT to the batches endpoint," then polling for results, with no PATCH setting the job state to `UploadComplete`.
 
-**Why it happens:** In Bulk API v1, closing a batch was implicit. In v2, the client must explicitly close the job (PATCH with `"state": "UploadComplete"`) before processing begins. Training data from v1 patterns omits this step.
+**Why it happens:** Many examples show only the upload. In Bulk API 2.0 a standard job stays `Open` until the client sets `"state": "UploadComplete"`; only multipart jobs complete the upload automatically.
 
 **Correct pattern:**
 
@@ -109,7 +105,7 @@ Bulk API 2.0 ingest job lifecycle:
 
 2. Upload CSV: PUT /services/data/vXX.0/jobs/ingest/{id}/batches/
    Content-Type: text/csv
-   (Can repeat for multiple uploads)
+   (Total job data at most 150 MB after base64, about 100 MB raw)
 
 3. Close job: PATCH /services/data/vXX.0/jobs/ingest/{id}/
    Body: {"state": "UploadComplete"}
@@ -125,24 +121,30 @@ Bulk API 2.0 ingest job lifecycle:
 
 ## Anti-Pattern 5: Using PK Chunking Syntax in Bulk API 2.0 Query Jobs
 
-**What the LLM generates:** "Enable PK Chunking by setting the Sforce-Enable-PKChunking header on your Bulk API 2.0 query job" when PK Chunking is only available in Bulk API v1, not v2.
+**What the LLM generates:** "Enable PK Chunking by setting the Sforce-Enable-PKChunking header on your Bulk API 2.0 query job."
 
-**Why it happens:** PK Chunking is a frequently discussed optimization for large query exports. LLMs do not consistently distinguish between v1 and v2 feature availability, and PK Chunking is one of the features that did not carry over to v2.
+**Why it happens:** PK chunking is widely discussed for large exports, and the header is a Bulk API v1 mechanism. The guide's comparison table says Bulk API 2.0 "automatically performs PK chunking," while in v1 it "is manually invoked and configured."
 
 **Correct pattern:**
 
 ```text
-PK Chunking availability:
-- Bulk API v1: SUPPORTED. Set Sforce-Enable-PKChunking: true header.
-  Splits large queries into chunks based on record ID ranges.
-- Bulk API 2.0: NOT SUPPORTED. The platform handles chunking internally.
+PK chunking:
+- Bulk API v1: manual. Sforce-Enable-PKChunking header (chunkSize, parent, startRow).
+- Bulk API 2.0: automatic. No header; page through results with Sforce-Locator.
 
-If you need PK Chunking for very large query exports:
-- Use Bulk API v1 for that specific job
-- Or use Bulk API 2.0 and let the platform manage result pagination
-  via the Sforce-Locator mechanism
-
-Do not mix v1 headers (PKChunking) with v2 endpoints.
+Do not send v1 headers to /services/data/vXX.X/jobs/query endpoints.
 ```
 
 **Detection hint:** Flag any `Sforce-Enable-PKChunking` header used with a `/services/data/vXX.0/jobs/query/` endpoint (v2). PK Chunking headers belong to `/services/async/` (v1) only.
+
+---
+
+## Anti-Pattern 6: Treating 150 MB as a Per-Request Limit
+
+**What the LLM generates:** "Split the file into 100 MB chunks and PUT each chunk to the same job."
+
+**Why it happens:** Bulk API v1 batches are uploaded one by one, and models carry that shape into v2.
+
+**Correct pattern:** The Bulk API 2.0 guide allows up to 150 MB per job after base64 encoding, so upload no more than about 100 MB of raw CSV per job. Split larger files into separate jobs and reconcile each job.
+
+**Detection hint:** A loop that PUTs several chunks to one `jobs/ingest/{id}/batches` URL whose combined size exceeds 100 MB.

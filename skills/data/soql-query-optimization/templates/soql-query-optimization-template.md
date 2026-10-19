@@ -26,7 +26,7 @@ Use this template to document a query optimization investigation and its outcome
 
 ## Query Plan Output
 
-Run via Developer Console > Debug > Open Query Plan.
+Capture with Developer Console Query Plan or `GET /services/data/v67.0/query/?explain=<query>`.
 
 | Plan Step | Cost | Cardinality | Leading Operation |
 |---|---|---|---|
@@ -34,9 +34,8 @@ Run via Developer Console > Debug > Open Query Plan.
 | Plan 2 (alternative) | | | |
 
 **Overall assessment:**
-- [ ] Cost < 1.0 — index used (acceptable)
-- [ ] Cost 1.0–2.0 — marginal; monitor in production
-- [ ] Cost > 2.0 — full-table scan; high timeout risk on large objects
+- [ ] relativeCost < 1.0 and leadingOperationType = Index — selective
+- [ ] relativeCost > 1.0 — not selective (REST API guide, Query Performance Feedback); rewrite before shipping
 
 **Query Plan notes:**
 
@@ -79,7 +78,7 @@ For each WHERE clause field:
 - [ ] Null-inclusive index request
 - [ ] OR decomposition into multiple queries
 - [ ] Stored field to replace non-deterministic formula
-- [ ] Skinny table request (for 10M+ record objects)
+- [ ] Skinny table request (objects with millions of rows and stable read-only queries)
 
 **Optimized query:**
 
@@ -114,7 +113,7 @@ Complete this section if a custom index is needed from Salesforce Support.
 
 ## Skinny Table Request (if applicable)
 
-Complete this section if a skinny table is appropriate (10M+ records, recurring read-heavy pattern).
+Complete this section if a skinny table is appropriate (millions of rows, recurring read-only pattern, Full sandbox for testing).
 
 | Field | Value |
 |---|---|

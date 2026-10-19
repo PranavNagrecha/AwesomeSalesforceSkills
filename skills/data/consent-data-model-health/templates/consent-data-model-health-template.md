@@ -20,7 +20,7 @@ Before starting, answer these questions:
 - **Existing DataUsePurpose records:** (list names and IDs) _______________
 - **Existing AuthorizationForm records:** (list names and IDs) _______________
 - **Form version to use (AuthorizationFormText ID):** _______________
-- **Consent capture channel:** Web / Email / Verbal / Paper
+- **Consent capture channel (ConsentCapturedSourceType):** Email / InPerson / MailingAddress / Phone / Social / Video / Web
 
 ---
 
@@ -30,9 +30,9 @@ Before starting, answer these questions:
 |--------|--------|-----------------|
 | DataUsePurpose | Create / Use existing | Name: ___, CanDataSubjectOptOut: ___ |
 | AuthorizationForm | Create / Use existing | Name: ___, IsSignatureRequired: ___ |
-| AuthorizationFormText | Create new version | Name (version): ___, Language: ___ |
-| AuthorizationFormDataUse | Create | Links: [AuthorizationFormText ID] → [DataUsePurpose ID] |
-| AuthorizationFormConsent | Create at intake | ConsentGiverId (Individual): ___, Status: Signed, Source: ___, DateTime: ___ |
+| AuthorizationFormText | Create new version | Name (version): ___, AuthorizationFormId: ___, Locale: ___ (then set the form's DefaultAuthFormTextId) |
+| AuthorizationFormDataUse | Create once per form and purpose | Links: [AuthorizationForm ID] → [DataUsePurpose ID] |
+| AuthorizationFormConsent | Create at intake | Name: ___, ConsentGiverId (Individual): ___, Status: Signed, SourceType: ___, Source: ___, DateTime: ___ |
 
 ---
 
@@ -41,11 +41,13 @@ Before starting, answer these questions:
 Fill in at patient intake flow completion:
 
 ```
-ConsentGiverId:         [Individual ID — NOT Contact ID]
-AuthorizationFormTextId: [ID of form version presented to patient]
-Status:                  Signed
-ConsentCapturedSource:   [Web | Email | Verbal | Paper]
-ConsentCapturedDateTime: [Datetime.now() at form submission]
+Name:                      [required]
+ConsentGiverId:            [Individual ID — NOT Contact ID]
+AuthorizationFormTextId:   [ID of form version presented to patient]
+Status:                    Signed            (values: Rejected | Seen | Signed)
+ConsentCapturedSourceType: [Email | InPerson | MailingAddress | Phone | Social | Video | Web]
+ConsentCapturedSource:     [free text, e.g. portal URL or email address]
+ConsentCapturedDateTime:   [Datetime.now() at form submission]
 ```
 
 ---
@@ -57,7 +59,7 @@ Describe the gate implementation:
 - **Gate type:** Record-Triggered Flow / Apex Trigger
 - **Object:** CareProgramEnrollee
 - **Trigger:** Before Save, on Status change to 'Active'
-- **Query:** AuthorizationFormConsent WHERE ConsentGiverId = [Individual ID] AND Status = 'Signed' AND DataUsePurpose.Name = [___]
+- **Query:** forms for the purpose from AuthorizationFormDataUse (DataUsePurpose.Name = [___]), then AuthorizationFormConsent WHERE ConsentGiverId = [Individual ID] AND Status = 'Signed' AND AuthorizationFormText.AuthorizationFormId IN [those forms]
 - **Block condition:** Zero rows returned
 - **Error message:** _______________
 
@@ -68,13 +70,16 @@ Describe the gate implementation:
 Use this query to verify a patient's consent before clinical record access:
 
 ```soql
-SELECT Id, Status, ConsentCapturedSource, ConsentCapturedDateTime,
-       AuthorizationFormText.Name,
-       AuthorizationFormText.AuthorizationForm.Name
+-- Step 1: forms that cover the purpose
+SELECT AuthorizationFormId FROM AuthorizationFormDataUse WHERE DataUsePurpose.Name = '[Purpose Name]'
+
+-- Step 2: latest signed consent to any text of those forms
+SELECT Id, Status, ConsentCapturedSourceType, ConsentCapturedSource, ConsentCapturedDateTime,
+       AuthorizationFormText.Name, AuthorizationFormText.AuthorizationForm.Name
 FROM AuthorizationFormConsent
 WHERE ConsentGiverId = '[Individual ID]'
   AND Status = 'Signed'
-  AND AuthorizationFormText.AuthorizationFormDataUses.DataUsePurpose.Name = '[Purpose Name]'
+  AND AuthorizationFormText.AuthorizationFormId IN ('[form Id from step 1]')
 ORDER BY ConsentCapturedDateTime DESC
 LIMIT 1
 ```
@@ -99,10 +104,10 @@ Note: AuthorizationFormConsent does NOT control record visibility. Document the 
 ## Review Checklist
 
 - [ ] ConsentGiverId populated with Individual ID (not Contact ID)
-- [ ] Status = 'Signed' (exact case) for all executed authorizations
-- [ ] ConsentCapturedSource populated on all records
+- [ ] Status uses only Rejected, Seen, Signed; executed authorizations are Signed
+- [ ] ConsentCapturedSource and ConsentCapturedSourceType populated on all records
 - [ ] ConsentCapturedDateTime populated on all records
-- [ ] AuthorizationFormDataUse links form version to correct DataUsePurpose
+- [ ] AuthorizationFormDataUse links each form to the correct DataUsePurpose
 - [ ] CareProgramEnrollee activation gate implemented and tested
 - [ ] Sharing rules reviewed and confirmed independent of consent hierarchy
 - [ ] AuthorizationFormText treated as append-only — no in-place edits after go-live

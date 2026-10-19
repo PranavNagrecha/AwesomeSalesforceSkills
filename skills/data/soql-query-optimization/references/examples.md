@@ -1,8 +1,8 @@
 # Examples — SOQL Query Optimization
 
-## Example 1: Fixing a Non-Selective Query on a 2M-Record Custom Object
+## Example 1: Fixing a Non-Selective Query on a 2M-Row Custom Object
 
-**Context:** A financial services org has a `Loan_Application__c` custom object with 2.1 million records. A nightly batch job runs the following SOQL query to pull pending applications:
+**Context:** `Loan_Application__c` holds 2.1 million rows (live plus Recycle Bin). A nightly batch `start` method runs:
 
 ```soql
 SELECT Id, Applicant_Name__c, Status__c, Loan_Amount__c
@@ -11,99 +11,88 @@ WHERE Status__c = 'Pending Review'
 AND Assigned_Officer__c = null
 ```
 
-The job consistently times out after the org grew past 1.5 million records.
+The job started timing out after the object passed 1.5 million rows.
 
-**Problem:**
+**Diagnosis:**
 
-- `Status__c` is a custom picklist field with no index.
-- `Assigned_Officer__c` is a custom lookup field. Lookups are standard indexed, but the `= null` filter is not served by the index because index tables exclude null rows by default.
-- Query Plan tool shows cost of 4.2 — a full-table scan.
-
-**Diagnosis steps:**
-
-1. Open Developer Console > Debug > Open Query Plan.
-2. Paste the query. Cost = 4.2. Plan type: "TableScan". No index candidates listed.
-3. Run a selectivity check: `SELECT Status__c, COUNT(Id) FROM Loan_Application__c GROUP BY Status__c`. Result: 'Pending Review' = 180,000 records (8.6% of total). That is selective for a custom index.
-4. For the null filter: Salesforce standard index on `Assigned_Officer__c` excludes null rows by default.
+1. `GET /services/data/v67.0/query/?explain=<the query>` returns one plan, `leadingOperationType: TableScan`, `relativeCost` above 1.0, with a note that `Status__c` is unindexed.
+2. `SELECT Status__c, COUNT(Id) FROM Loan_Application__c GROUP BY ROLLUP(Status__c)` shows 'Pending Review' = 98,000 rows.
+3. Custom-index threshold for 2.1M rows: 10% of 1,000,000 + 5% of 1,100,000 = 100,000 + 55,000 = 155,000. 98,000 is under it.
+4. `Assigned_Officer__c = null` cannot drive the query: index tables leave out null rows by default.
 
 **Solution:**
 
-Step 1 — Request a custom index on `Status__c` via Salesforce Support. Provide: object API name (`Loan_Application__c`), field API name (`Status__c`), and the query pattern. Selectivity evidence: 8.6% match rate on target value.
-
-Step 2 — Request a null-inclusive index on `Assigned_Officer__c` via the same Support case.
-
-Step 3 — After indexes are confirmed active in production, re-run Query Plan. Expected: cost < 1.0, plan type uses the custom index.
-
-Step 4 — Rewrite query to ensure both filters remain indexed:
+- Ask Customer Support for a custom index on `Status__c`, attaching the GROUP BY output and the arithmetic above.
+- Replace the null test with a positive value the batch can index on: a `Queue_State__c` picklist set to `Unassigned` by the assignment automation (the LDV guide's "use values such as NA" advice).
 
 ```soql
 SELECT Id, Applicant_Name__c, Status__c, Loan_Amount__c
 FROM Loan_Application__c
 WHERE Status__c = 'Pending Review'
-AND Assigned_Officer__c = null
-ORDER BY CreatedDate ASC
-LIMIT 2000
+AND Queue_State__c = 'Unassigned'
 ```
 
-**Why it works:** With a custom index on `Status__c` (selective at 8.6%) and a null-inclusive index on `Assigned_Officer__c`, the optimizer can use both indexes. The AND combination cost drops below 1.0 because each individual filter is below the 10%/333,333 threshold for custom indexes.
+- After the index exists, capture the plan again: `leadingOperationType: Index` on `Status__c`, `relativeCost` under 1.0.
+
+**Why it works:** One filter is now indexed and under its threshold, so it can drive the query; the second filter no longer depends on null rows that the index does not hold.
 
 ---
 
-## Example 2: Debugging a Report Timeout Caused by a Formula Field Filter
+## Example 2: Report Timeout Caused by a Formula Filter
 
-**Context:** A sales operations team has a report on the `Opportunity` object (3.8M records) that filters by a formula field `Days_Since_Last_Activity__c`. The formula references `LastActivityDate` (a standard field on the object) and returns a numeric count. The report consistently times out for managers.
+**Context:** An Opportunity report (3.8M rows) filters on `Days_Since_Last_Activity__c`, a formula `TODAY() - LastActivityDate`. It times out for managers.
 
-**Problem:**
+**Problem:** The formula uses TODAY, so it is non-deterministic and cannot be indexed. Filtering on it always scans.
 
-`Days_Since_Last_Activity__c` is a non-deterministic formula field because it references `TODAY()` in its calculation (e.g., `TODAY() - LastActivityDate`). Non-deterministic formula fields cannot be indexed. Filtering on them always produces a full-table scan regardless of the selectivity of the computed value.
-
-Query Plan for `WHERE Days_Since_Last_Activity__c > 30` shows cost = 6.1, TableScan.
-
-**Solution:**
-
-Option A — Replace the formula field filter with a filter on `LastActivityDate` directly:
+**Solution A — filter on the source field:**
 
 ```soql
 SELECT Id, Name, OwnerId, StageName, Amount
 FROM Opportunity
-WHERE LastActivityDate < LAST_N_DAYS:30
-AND IsClosed = false
+WHERE OwnerId IN :teamIds
+AND LastActivityDate < LAST_N_DAYS:30
 ```
 
-`LastActivityDate` is not a standard indexed field, but `OwnerId` and `IsClosed` combined with a date range can be selective. Verify with Query Plan.
+`OwnerId` is indexed by default; scoping by owner gives the optimizer a selective, indexed driver. Check the plan, because `LastActivityDate` is not in the default index list.
 
-Option B — Create a stored numeric field `Days_Without_Activity__c` (Number type, non-formula). Populate it via a nightly scheduled Flow or batch Apex that sets the value from `LastActivityDate`. Request a custom index on this field. This converts the non-indexable formula into an indexable stored field.
+**Solution B — store the value:** A scheduled job writes `Last_Activity_Bucket__c` (a Text field, which can be an External ID or receive a custom index) each night. The report filters on the stored bucket. Freshness drops to nightly, which is usually acceptable for this report.
 
-```soql
-SELECT Id, Name, OwnerId, StageName, Amount
-FROM Opportunity
-WHERE Days_Without_Activity__c > 30
-AND IsClosed = false
+---
+
+## Example 3: Capturing the Plan in CI Before Code Merges
+
+**Context:** A team wants every selector query that runs from trigger code checked before merge.
+
+```bash
+# One query per line in selectors.txt; fail the build when any plan is not selective.
+while IFS= read -r q; do
+  enc=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote_plus(sys.argv[1]))' "$q")
+  curl -s -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "$INSTANCE_URL/services/data/v67.0/query/?explain=$enc" \
+  | python3 -c 'import json,sys; p=json.load(sys.stdin)["plans"][0]; print(p["leadingOperationType"], p["relativeCost"]); sys.exit(1 if p["relativeCost"] > 1.0 else 0)' \
+  || { echo "NOT SELECTIVE: $q"; exit 1; }
+done < selectors.txt
 ```
 
-Query Plan after custom index: cost < 1.0.
-
-**Why it works:** Stored fields have deterministic values and can receive custom indexes. The formula field approach trades real-time computation for a nightly refresh cycle — acceptable for most reporting use cases where overnight freshness is sufficient.
+**Why it works:** The `explain` resource returns plans sorted most to least optimal, so `plans[0]` is the plan that runs, and `relativeCost` above 1.0 means the query is not selective. Run it against a Full sandbox or production so row counts are realistic. The resource is Beta.
 
 ---
 
 ## Anti-Pattern: Adding LIMIT to a Non-Selective Query to Fix Timeouts
 
-**What practitioners do:** When a query times out on a large object, developers add `LIMIT 200` hoping it will prevent the timeout.
+**What practitioners do:** Add `LIMIT 200` to a timing-out query.
 
 ```soql
 SELECT Id, Status__c FROM Case WHERE Custom_Category__c = 'Urgent' LIMIT 200
 ```
 
-**What goes wrong:** LIMIT does not change the query optimizer's access strategy. If `Custom_Category__c` is non-indexed, Salesforce still performs a full-table scan to find any records matching the filter — it just stops returning results after 200. On a 5M-record object, the scan still touches millions of rows before it can return the first 200 qualifying records. The timeout occurs during the scan phase, before LIMIT is applied.
+**What goes wrong:** The filter is still unindexed, so the optimizer still has to find matching rows without an index. LIMIT changes how many rows come back, not how they are found.
 
-**Correct approach:** Make the query selective first (index the filter field, or restructure to use an indexed field). Then LIMIT is useful for pagination, not for performance rescue.
+**Correct approach:** Make the filter selective and indexed first. The documented exception is a Last_N_Days query with ORDER BY on an indexed field and a LIMIT under 100,000 (Gotcha 3).
 
 ---
 
 ## Anti-Pattern: OR Across Non-Indexed Custom Fields
-
-**What practitioners do:** Building a single flexible query that covers multiple filter paths using OR.
 
 ```soql
 SELECT Id, Name FROM Contact
@@ -111,6 +100,6 @@ WHERE Lead_Source_Detail__c = 'Webinar'
 OR Campaign_Origin__c = 'Q1-2025'
 ```
 
-**What goes wrong:** Neither `Lead_Source_Detail__c` nor `Campaign_Origin__c` has a custom index. For OR conditions, all branches must be indexed for any index to be used. Since neither field is indexed, the optimizer performs a full-table scan of the entire Contact object.
+**What goes wrong:** All fields in an OR must be indexed for any index to be used. Neither is, so the query scans Contact.
 
-**Correct approach:** Either request custom indexes on both fields (and verify each is selective), or decompose into two separate queries and merge results in Apex using a `Map<Id, Contact>` to deduplicate.
+**Correct approach:** Index both and confirm each is under its threshold, or split into two queries and merge them in a `Map<Id, Contact>`.

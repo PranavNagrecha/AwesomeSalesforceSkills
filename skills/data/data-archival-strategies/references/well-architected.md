@@ -2,15 +2,15 @@
 
 ## Relevant Pillars
 
-- **Reliability** — Storage exhaustion blocks all new record inserts org-wide, making storage management a direct reliability concern. A well-designed archival strategy prevents storage-induced outages by keeping data storage below alert thresholds, ensuring the org continues to function as record volumes grow. Recycle bin hygiene and proactive archival are reliability practices, not just housekeeping.
+- **Reliability** — An archive is only reliable if it can be read back. Big object writes can partly fail without an exception, and the index cannot be changed after deployment, so a reliable design proves the read path and gates source deletion on verified writes.
 - **Scalability** — Archival is the primary mechanism for designing against long-term data growth. Objects that grow unboundedly become query bottlenecks: the query optimizer struggles to use indexes on tables with tens of millions of rows, and reports slow down. A scalable data architecture uses archival to keep active-record counts within performant bounds, offloading aging data to Big Objects or external storage that scale independently.
-- **Performance** — While not a named pillar in isolation, query performance is directly affected by record counts, recycle bin volume, and field history accumulation. Archival strategy decisions have measurable performance consequences.
+- **Performance** — Query performance depends on live row counts and on soft-deleted rows, which still have to be excluded from every query. Archival plus a Recycle Bin purge shrinks both.
 
 ## Architectural Tradeoffs
 
 **Big Object vs External Storage**
 
-Big Objects keep archived data on-platform and queryable via SOQL (with index constraints), but they consume Salesforce infrastructure. External storage (S3, Heroku PostgreSQL, Data Cloud) removes data from Salesforce entirely, minimizing on-platform storage costs, but requires custom integration to surface data back to Salesforce users when needed. The tradeoff is: on-platform queryability vs cost-optimized cold storage.
+Big Objects keep archived data on-platform and queryable via SOQL (with index constraints) and the Bulk APIs. External storage (S3, Heroku PostgreSQL, Data Cloud) removes data from Salesforce entirely, minimizing on-platform storage costs, but requires custom integration to surface data back to Salesforce users when needed. The tradeoff is: on-platform queryability vs cost-optimized cold storage.
 
 Choose Big Objects when:
 - Audit or compliance teams need to run Salesforce-native queries against archived data
@@ -28,22 +28,31 @@ The IsArchived__c soft-delete pattern preserves full reporting capability at zer
 
 **Field History Retention**
 
-Disabling Field History Tracking on high-churn fields is the most effective way to control History object growth. However, once tracking is disabled, that history is gone — there is no retroactive capture. The decision to disable tracking should be made with input from compliance, audit, and data governance stakeholders.
+Field history doesn't count against data storage, so it is a retention question, not a storage one. Without Field Audit Trail it is kept up to 18 months (24 via the API), and deleting a record deletes its history. If auditors need history of archived records, a Field Audit Trail policy or an export has to run before the source delete.
 
 ## Anti-Patterns
 
-1. **Archiving without hard delete** — Moving records to a Big Object or external store and then soft-deleting the source records leaves recycle bin residue that degrades query performance for 15 days. Always pair archival writes with a hard delete (`Database.emptyRecycleBin()` or Bulk API hard delete) to fully reclaim storage and eliminate selectivity impact.
+1. **Archiving without a purge** — Soft-deleting the source after archiving leaves rows in the Recycle Bin for 15 days that every query must still exclude. Pair archival with `Database.emptyRecycleBin()` or Bulk API hard delete for query performance; the storage saving comes from the live delete itself.
 
 2. **Using Big Objects as a general-purpose record store** — Big Objects are optimized for high-volume, append-only archival with fixed query patterns. Using them to store data that needs arbitrary filtering, updates, or complex reporting creates significant query limitations and Apex complexity. Only move data to Big Objects when the query pattern is known and maps to an indexable composite key.
 
-3. **Leaving Field History Tracking enabled on high-churn fields indefinitely** — On objects like Case or Opportunity with frequent status changes, field history rows accumulate at a multiple of the parent record volume. Without active management, History objects can silently grow to be larger than the parent object they track, consuming disproportionate storage and eventually requiring emergency cleanup.
+3. **Deleting archived parents before settling field history** — The delete cascades to the record's history rows. If retention rules cover field changes, history is lost the moment the archive job deletes the source.
 
 ## Official Sources Used
 
-- Big Objects Implementation Guide — https://developer.salesforce.com/docs/atlas.en-us.bigobjects.meta/bigobjects/big_object_overview.htm
-- Salesforce Help 000394892: Big Objects Async SOQL Retirement — retired with Summer '23; "You must use the Bulk API or batch Apex to query or report on custom Big Objects" — https://help.salesforce.com/s/articleView?id=000394892&language=en_US&type=1
-- Salesforce Help: Data and File Storage Allocations — 10 GB data-storage base across editions; per-user increment 20 MB (EE/Prof/Contact Manager/Group) and 120 MB (Perf/Unlimited); file storage 10 GB per org (1 GB Essentials/Starter); storage recalculated asynchronously — https://help.salesforce.com/s/articleView?id=xcloud.overview_storage.htm&language=en_US&type=5
-- Salesforce Help: Manage the Recycle Bin — "Records in the Recycle Bin don't count against your Salesforce org's storage usage"; 15-day restore window; no record-count cap — https://help.salesforce.com/s/articleView?id=xcloud.recycle_bin_manage.htm&language=en_US&type=5
-- Salesforce Large Data Volumes Best Practices — https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/
-- Field History Tracking — https://help.salesforce.com/s/articleView?id=sf.field_history.htm
+Read for this revision (2026-10-19):
+
+- Big Objects Implementation Guide (API 67.0, fetched from https://developer.salesforce.com/docs/get_document_content/bigobjects/<page>.htm/en-us/262.0, pages big_object, big_object_considerations, big_object_define, big_object_populate, big_object_populate_apex, big_object_delete): editions and 1 million Developer cap; no triggers, flows, processes; object and field permissions only; idempotent writes; SOQL, Bulk, Chatter, SOAP as the only APIs and REST not supported; 100 big objects per org; no encryption for custom big objects; partial batch failures and retry-the-whole-batch; async Apex for writes; index fixed after deployment, required index fields, no LongTextArea/URL, 100-character text total; insertImmediate returns SaveResult, DML treated as callouts and not counted toward DML statements, .trim() advice, NULL upsert behaviour, tests write real data and mixed DML fails; deleteImmediate/deleteByExample with full index, 50,000 per call, 24-hour capacity note.
+- Bulk API 2.0 and Bulk API Developer Guide (`api_asynch.txt`): big objects supported for ingest and query in both APIs (L197-198).
+- Salesforce Security Guide (`salesforce_security_impl_guide.txt`): field history kept 18 months, 24 via the API, deletable any time, not counted against data storage (L4553-4556, L4632-4636); Field Audit Trail data not counted against storage (L4756, L4826-4827); HistoryRetentionPolicy via Metadata API, FieldHistoryArchive, 200 versus 20 tracked fields, kept until you delete it (L4828-4838); default archive after 18 months in production and one month in sandboxes (L4880-4883); delete cascades to history but not to FieldHistoryArchive (L4892-4897); previously archived history stays unencrypted (L4899-4904); Bulk API 2.0 query on FieldHistoryArchive (L4919-4941).
+- Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): big objects for archival via Bulk API or Batch Apex (L81-95); soft deletion still affects performance, Recycle Bin items don't count against storage, no item limit, 15-day retention, hard delete recommendation (L733-742); hard delete for one million or more records (L1019-1023); Recycle Bin kept empty in the report case (L1258).
+- Apex Reference Guide (`salesforce_apex_reference_guide.txt`): `Database.deleteImmediate` and the 50,000-record big object batch limit (L206783-206805); `Database.emptyRecycleBin` permanent, 10,000 records, counts as a DML statement (L206900-206935).
+- Apex Developer Guide (`salesforce_apex_developer_guide.txt`): callouts aren't allowed after DML operations in the same transaction by default (L35136).
+- Metadata API Developer Guide (`api_meta.txt`): Index and IndexField types, required name and sortDirection (L44136-44181); CustomField `trackHistory` (L43675).
+
+Listed in the original version and not re-read (help.salesforce.com cannot be fetched); the storage-allocation figures and the Async SOQL retirement note that rested on them were removed from this package rather than kept unverified:
+
+- Salesforce Help 000394892 (Big Objects Async SOQL retirement) — https://help.salesforce.com/s/articleView?id=000394892&language=en_US&type=1
+- Salesforce Help: Data and File Storage Allocations — https://help.salesforce.com/s/articleView?id=xcloud.overview_storage.htm&language=en_US&type=5
+- Salesforce Help: Manage the Recycle Bin — https://help.salesforce.com/s/articleView?id=xcloud.recycle_bin_manage.htm&language=en_US&type=5
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/well-architected/overview

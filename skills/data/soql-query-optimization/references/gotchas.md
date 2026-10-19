@@ -2,71 +2,80 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: The 10% Selectivity Threshold Applies Per Field, Not to the Combined WHERE Clause
+## Gotcha 1: AND Across Two Non-Selective Filters Can Still Be Selective
 
-**What happens:** Practitioners assume that combining two WHERE clause filters with AND makes the query selective. In reality, the optimizer evaluates each filter independently against its own threshold before deciding whether to use an index for that filter. Two individually non-selective filters joined by AND do not automatically produce a selective query.
+**What happens:** Practitioners either assume any AND makes a query selective, or (the opposite error) assume that two filters that each miss the threshold always force a table scan. Neither is the rule. For AND, the LDV guide says the overall condition is selective when each filter targets less than twice its own threshold, or when the intersection of the filters is under the threshold.
 
-**When it occurs:** When a developer adds a second custom field filter to a slow query hoping it will narrow the result set sufficiently. For example, filtering on `Region__c = 'West'` (returns 18% of records) AND `Tier__c = 'Gold'` (returns 12% of records). Each is above the 10%/333,333 custom index threshold, so neither index is used — the query still scans the full table.
+**When it occurs:** A 1M-row object with custom indexes on `Region__c` (180,000 matches, 18%) and `Tier__c` (120,000 matches, 12%). Each misses the 100,000 custom threshold, but each is under twice the threshold (200,000), so the combined condition can be selective. Conversely, if one filter returns more than 20% of the object's rows, the optimizer stops using the indexes for that AND.
 
-**How to avoid:** Always check selectivity for each filter field individually using a GROUP BY aggregate query. If either individual filter exceeds the threshold, restructure the query to introduce a more selective filter (such as RecordTypeId or a date range), or request a two-column composite index if the combined filter is selective together.
-
----
-
-## Gotcha 2: Custom Indexes Do Not Help Queries with Leading LIKE Wildcards
-
-**What happens:** A custom index exists on a field, but queries using `LIKE '%value%'` or `LIKE '%value'` still produce full-table scans. The index is completely bypassed.
-
-**When it occurs:** Any `LIKE` pattern where the wildcard appears at the start of the search string (`LIKE '%term'` or `LIKE '%term%'`) prevents index usage. This is a fundamental database-level limitation — an index is structured as an ordered prefix tree; a leading wildcard means the optimizer cannot use the tree prefix to narrow the search.
-
-**How to avoid:** There is no workaround within SOQL. Options:
-- If full-text search is needed, switch to SOSL (`FIND :term IN ALL FIELDS RETURNING Object__c(Id, Name)`).
-- If trailing wildcard is acceptable (`LIKE 'value%'`), Salesforce can use the index on that pattern.
-- If the search term is known and fixed, use an exact equality filter (`= 'value'`) instead of LIKE.
+**How to avoid:** Run a `GROUP BY ROLLUP` count for each filter and for the intersection, do the arithmetic for both tests, and confirm with the query plan (`relativeCost` under 1.0). Do not request a new index until the arithmetic says the existing ones cannot be used.
 
 ---
 
-## Gotcha 3: Adding ORDER BY to a Non-Selective Query Increases Cost, Not Reduces It
+## Gotcha 2: Non-Deterministic Formula Filters Never Use an Index
 
-**What happens:** Developers add `ORDER BY CreatedDate DESC` to a slow query, expecting it to help by using the CreatedDate index. Instead, the query becomes even more expensive. The cost in Query Plan increases.
+**What happens:** A report or query filters on a formula field and scans the table no matter how few rows match. A Support request for an index on that field is declined.
 
-**When it occurs:** When ORDER BY is applied to a query that already lacks a selective WHERE clause filter. ORDER BY is evaluated after the initial data access phase. If the optimizer is already scanning the full table to satisfy WHERE, it then has to sort those millions of records — adding I/O and memory pressure on top of the scan.
+**When it occurs:** The formula references a field through a lookup, uses TODAY or NOW, references a multi-select picklist, a currency field in a multicurrency org, a long text area, or calls TEXT() on a picklist. The LDV guide also treats formulas over some standard fields (for example Opportunity Amount and IsClosed, Case IsClosed) as non-deterministic.
 
-**How to avoid:** Always make the query selective (cost < 1.0 in Query Plan) before adding ORDER BY. If you need both filtering and sorting, consider a two-column composite custom index on (filter_field, sort_field), which allows the optimizer to use the index for both operations in a single pass.
-
----
-
-## Gotcha 4: Soft-Deleted Records Inflate Selectivity Calculations
-
-**What happens:** A query that appears selective based on active record counts is actually non-selective because soft-deleted records (records in the recycle bin) count toward the total record count used in selectivity threshold calculations. An index that would be selective on 1M live records may not be used if there are an additional 500K soft-deleted records inflating the total to 1.5M.
-
-**When it occurs:** Orgs with aggressive delete workflows, data migration projects that deleted large batches of records, or objects where records are soft-deleted and not permanently purged for 15 days.
-
-**How to avoid:** When calculating selectivity, use `SELECT COUNT() FROM Object__c WHERE IsDeleted = false ALL ROWS` to get the live count, and `SELECT COUNT() FROM Object__c ALL ROWS` to see the true total including soft-deleted records. Use the full total (including deleted) as the denominator when evaluating selectivity.
+**How to avoid:** Filter on the source field directly, use cross-object notation on an indexed parent field (`Parent__r.Indexed_Field__c`), or store the value in a regular field that automation keeps current and index that field.
 
 ---
 
-## Gotcha 5: Custom Indexes Are Not Propagated to Most Sandbox Types
+## Gotcha 3: ORDER BY Plus LIMIT Can Rescue a Last-N-Days Query; LIMIT Alone Does Not Fix a Scan
 
-**What happens:** A custom index is requested via Salesforce Support and confirmed active in production. Performance testing in a Developer or Partial sandbox shows the same query is still slow, leading teams to doubt whether the index is working.
+**What happens:** Two opposite mistakes. Developers add `LIMIT 200` to a query whose filter cannot use an index and expect the timeout to go away; the optimizer still has to find the matching rows. Others are told "ORDER BY always makes it worse" and miss the documented case where it helps.
 
-**When it occurs:** Custom indexes created by Salesforce Support in production are automatically copied only to Full sandboxes. Developer sandboxes, Developer Pro sandboxes, and Partial sandboxes do not receive custom indexes from production.
+**When it occurs:** The LDV guide's sort-optimization case study: `WHERE CreatedDate = LAST_N_DAYS:3` on an object too large for the CreatedDate threshold performed poorly; adding `ORDER BY CreatedDate LIMIT 99999` made the optimizer use the ORDER BY index without the threshold check. The guide's note: for Last_N_Days data, an ORDER BY on an indexed field with a limit under 100,000 records uses the ORDER BY index.
 
-**How to avoid:** Use Query Plan in production (read-only diagnostic, no records touched) rather than sandbox for index validation. If sandbox testing is required, request that Salesforce Support manually create the same index in the specific sandbox, or use a Full sandbox for performance testing.
+**How to avoid:** Use ORDER BY on an indexed field with a LIMIT under 100,000 only when returning at most that many rows is acceptable. For any other filter, make the filter selective first. The LDV guide lists adding a LIMIT (starting at 100,000) as the last step after tuning the filters, not the first.
 
 ---
 
-## Gotcha 6: Non-Selectivity Is a Thrown Exception Inside a Trigger, Not Just Slowness
+## Gotcha 4: Recycle Bin Rows Still Sit in the Table the Query Scans
 
-**What happens:** The identical query runs fine in Execute Anonymous, in a batch job, and behind a Lightning controller — then hard-fails the moment the same line is called from a trigger in production:
+**What happens:** A filter looks selective against the live row count and is not. The LDV guide says soft-deleted data "still affects database performance because the data is still resident, and deleted records have to be excluded from any queries." The Apex guide's selectivity examples state that the record count includes soft-deleted rows still in the Recycle Bin.
 
-```text
-System.QueryException: Non-selective query against large object type (more than 200000 rows). Consider an indexed filter or contact salesforce.com about custom indexing.
-```
+**When it occurs:** After large delete jobs, data migrations that deleted and reloaded, or objects with heavy churn. Deleted items stay for 15 days before they are scheduled for hard deletion.
 
-Salesforce Help is explicit that the exception occurs within Apex trigger contexts, and that the same query succeeds in the Developer Console or through SOAP/REST API, "which apply standard query timeouts instead of the trigger restriction." A query validated by hand is therefore not validated for the place it is about to ship.
+**How to avoid:** Count with `ALL ROWS` in Apex (or the `queryAll` REST resource) and use that total in the threshold arithmetic. For deletes of one million records or more, the LDV guide recommends the Bulk API hard delete option so rows bypass the Recycle Bin. One of its case studies fixed a slow report partly by keeping the Recycle Bin empty.
 
-**200,000 is the size of the object, not the size of the result.** The check activates once the object holds more than 200,000 rows; a query returning three records still throws if it cannot use a selective index on an object that large. And "an indexed filter" means a filter that clears the tiered thresholds in Core Concepts — an index alone is not enough above 10% of the first million records.
+---
 
-**When it occurs:** Most often when working code is moved, not written: a selector proven in a batch context is reused by a new trigger handler, or the org quietly crosses 200,000 rows on an object whose trigger has shipped unchanged for two years.
+## Gotcha 5: Custom Indexes Reach Every Sandbox; Skinny Tables Reach Only Full Sandboxes
 
-**How to avoid:** Before any SOQL moves into or under a trigger, run it through Query Plan (cost < 1.0) against production-scale row counts, not sandbox counts. Treat "runs fine in Developer Console" as evidence of nothing. Where the filter genuinely cannot be made selective, move the work out of the trigger into an async path where the trigger-context restriction does not apply — and accept the standard query timeout there instead.
+**What happens:** Teams test a skinny-table-dependent report in a Developer or Partial sandbox, see it run slowly, and conclude the skinny table is not working. The opposite mistake is assuming a Support-created custom index is missing from a Developer sandbox and filing a second request.
+
+**When it occurs:** The LDV guide says custom indexes that Customer Support creates in production are copied to all sandboxes created from that production org. Skinny tables are copied to Full sandboxes only; other sandbox types need a Support request to activate them.
+
+**How to avoid:** Test skinny-table queries in a Full sandbox. For custom indexes, a sandbox created after the index exists has it; check the plan there (`leadingOperationType` of `Index`) before raising a case.
+
+---
+
+## Gotcha 6: Trigger Context Is Where a Non-Selective Query Hurts Most
+
+**What happens:** A query that is acceptable in Execute Anonymous, a batch job, or a controller fails when the same selector is reused from a trigger. The Apex guide states that SOQL queries must be selective "particularly for queries inside triggers." The failure seen in debug logs is reported as `System.QueryException: Non-selective query against large object type (more than 200000 rows)`. UNVERIFIED (2026-10-19): the exception text and the 200,000-row figure come from a Salesforce Help article that could not be fetched; neither appears in the Apex Developer Guide or LDV guide used here.
+
+**When it occurs:** When working code is moved rather than written: a selector proven in batch is called from a new trigger handler, or an object grows past the size where its trigger query stops being selective.
+
+**How to avoid:** Before any SOQL moves into or under a trigger, capture its plan against production row counts and require `relativeCost` under 1.0. If the filter cannot be made selective, move the work to an asynchronous path.
+
+---
+
+## Gotcha 7: Optimizer Statistics Are Refreshed Nightly
+
+**What happens:** Right after a large load, delete, or mass update, a plan shows a table scan (or an index) that does not match the data now in the object. The LDV guide says the statistics-gathering process runs nightly, and that after large API changes the database must gather statistics before the application can access the data efficiently.
+
+**When it occurs:** Cut-over weekends, archive purges, and mass ownership changes.
+
+**How to avoid:** Re-run the plan the day after a bulk change before deciding the query needs an index. Schedule performance sign-off for after the first nightly statistics run.
+
+---
+
+## Gotcha 8: Negative Operators and Empty-Value Comparisons Defeat Custom Indexes
+
+**What happens:** A query filters with `Status__c != 'Closed'` or `Name != ''` and scans the table even though the field is indexed.
+
+**When it occurs:** The Apex guide lists the cases where a custom index typically isn't used: the value exceeds the threshold; the operator is negative (`!=`, NOT CONTAINS, NOT STARTS WITH); CONTAINS is used and more than 333,333 rows would be scanned; or the filter compares with an empty value. Its worked example `SELECT Id FROM Account WHERE Name != ''` is non-selective because it returns most rows.
+
+**How to avoid:** Rewrite negative filters as a positive `IN` list of the values you want. The LDV guide also recommends `IN` over long OR lists and replacing nulls with a value such as `NA` when nulls must be filtered.

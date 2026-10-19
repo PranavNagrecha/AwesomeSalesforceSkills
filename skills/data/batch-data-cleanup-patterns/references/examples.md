@@ -4,7 +4,7 @@
 
 **Context:** An org uses a custom object `Integration_Debug_Log__c` to capture raw payloads from inbound REST integrations. Logs must be retained for 30 days for troubleshooting but must be purged after that to control data storage. Volume reaches approximately 50,000 records per day.
 
-**Problem:** Without a scheduled cleanup, the object accumulates millions of records over months, inflating storage costs and slowing SOQL queries against the object. A manual Data Loader delete leaves records in the Recycle Bin for 15 days, continuing to count against storage.
+**Problem:** Without a scheduled cleanup, the object accumulates millions of records over months, using data storage and slowing SOQL queries against the object. A manual Data Loader delete leaves records restorable in the Recycle Bin for 15 days, where queries still have to skip them.
 
 **Solution:**
 
@@ -12,40 +12,38 @@
 // Batch class — delete logs older than 30 days and immediately empty recycle bin
 public class DebugLogCleanupBatch implements Database.Batchable<SObject>, Database.Stateful {
 
-    private List<Id> deletedIds = new List<Id>();
+    private Integer deletedCount = 0;
     private Integer failureCount = 0;
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        // CreatedDate < LAST_N_DAYS:30 returns records created MORE than 30 days ago
+        // Rolling 30-day cutoff, bound as a Date rather than a date literal
+        Date cutoff = Date.today().addDays(-30);
         return Database.getQueryLocator(
-            'SELECT Id FROM Integration_Debug_Log__c WHERE CreatedDate < LAST_N_DAYS:30'
+            [SELECT Id FROM Integration_Debug_Log__c WHERE CreatedDate < :cutoff]
         );
     }
 
     public void execute(Database.BatchableContext bc, List<SObject> scope) {
         // allOrNone = false: a bad record does not roll back the whole chunk
         Database.DeleteResult[] results = Database.delete(scope, false);
+        List<Id> purge = new List<Id>();
         for (Integer i = 0; i < results.size(); i++) {
             if (results[i].isSuccess()) {
-                deletedIds.add(scope[i].Id);
+                purge.add(scope[i].Id);
+                deletedCount++;
             } else {
                 failureCount++;
-                // Log failure — omitted for brevity; write to custom object in production
             }
+        }
+        // Purge per chunk: emptyRecycleBin accepts at most 10,000 records per call,
+        // and 50,000 logs a day would exceed that in finish().
+        if (!purge.isEmpty()) {
+            Database.emptyRecycleBin(purge);
         }
     }
 
     public void finish(Database.BatchableContext bc) {
-        // Immediately reclaim storage — do not leave records sitting in the Recycle Bin
-        if (!deletedIds.isEmpty()) {
-            List<SObject> stubs = new List<SObject>();
-            for (Id recordId : deletedIds) {
-                Integration_Debug_Log__c stub = new Integration_Debug_Log__c(Id = recordId);
-                stubs.add(stub);
-            }
-            Database.emptyRecycleBin(stubs);
-        }
-        // Optionally send a summary email or Platform Event here
+        System.debug(LoggingLevel.INFO, 'Deleted ' + deletedCount + ', failed ' + failureCount);
     }
 }
 
@@ -62,7 +60,7 @@ public class DebugLogCleanupScheduler implements Schedulable {
 System.schedule('Nightly Debug Log Cleanup', '0 0 2 * * ?', new DebugLogCleanupScheduler());
 ```
 
-**Why it works:** `Database.Batchable` resets governor limits for each 200-record chunk, allowing deletion of millions of records across multiple transactions. `Database.delete(scope, false)` with allOrNone=false prevents a single corrupt record from blocking the entire batch. `Database.emptyRecycleBin()` in `finish()` permanently removes the records in the same job run, reclaiming storage immediately rather than waiting 15 days.
+**Why it works:** Each 200-record chunk is its own transaction, so millions of rows can be deleted across a run. `Database.delete(scope, false)` keeps one bad record from blocking the chunk. Purging per chunk keeps every `emptyRecycleBin` call far under its 10,000-record limit and leaves nothing restorable after the run.
 
 ---
 
@@ -83,9 +81,11 @@ public class LoanApplicationRetentionBatch implements Database.Batchable<SObject
     private List<Id> failedIds = new List<Id>();
 
     public Database.QueryLocator start(Database.BatchableContext bc) {
-        // LAST_N_YEARS:7 returns records created MORE than 7 years ago
+        // LAST_N_YEARS:7 is calendar-aligned (it ends Dec 31 of last year), so bind
+        // an exact rolling cutoff instead.
+        Date cutoff = Date.today().addYears(-7);
         return Database.getQueryLocator(
-            'SELECT Id, Name FROM Loan_Application__c WHERE CreatedDate < LAST_N_YEARS:7'
+            [SELECT Id, Name FROM Loan_Application__c WHERE CreatedDate < :cutoff]
         );
     }
 
@@ -138,7 +138,7 @@ public class LoanRetentionScheduler implements Schedulable {
 System.schedule('Monthly Loan Retention Purge', '0 0 1 1 * ?', new LoanRetentionScheduler());
 ```
 
-**Why it works:** `Database.Stateful` allows `totalDeleted` and `totalFailed` counters to accumulate across all `execute()` chunks so the `finish()` summary is accurate. Calling `Database.emptyRecycleBin()` per chunk (rather than collecting all IDs until `finish()`) avoids hitting the `emptyRecycleBin` heap limit on very large jobs. The compliance email in `finish()` provides an auditable notification trail.
+**Why it works:** `Database.Stateful` allows `totalDeleted` and `totalFailed` counters to accumulate across all `execute()` chunks so the `finish()` summary is accurate. Calling `Database.emptyRecycleBin()` per chunk, rather than collecting all IDs until `finish()`, stays within the method's 10,000-record limit on a 300,000-record run. The compliance email in `finish()` provides an auditable notification trail.
 
 ---
 
@@ -146,6 +146,6 @@ System.schedule('Monthly Loan Retention Purge', '0 0 1 1 * ?', new LoanRetention
 
 **What practitioners do:** Add a `before delete` or `after insert` trigger that queries and deletes related records inline, intending to enforce a rolling retention window on every save operation.
 
-**What goes wrong:** Triggers run in the same transaction as the originating DML. Deleting records inside a trigger immediately consumes DML row limit (10,000 rows per transaction) and CPU time from the caller's governor budget. If a user saves a record and the trigger tries to delete 10,000 aged records, the save fails with a governor limit exception. Triggers also cannot call `Database.executeBatch()` from within a DML operation context — this throws a "You have uncommitted work pending" error.
+**What goes wrong:** Triggers run in the same transaction as the originating DML. Deleting records inside a trigger immediately consumes DML row limit (10,000 rows per transaction) and CPU time from the caller's governor budget. If a user saves a record and the trigger tries to delete 10,000 aged records, the save fails with a governor limit exception. Launching a batch from the trigger instead is allowed, but the Apex guide warns to use extreme caution: bulk updates fire the trigger repeatedly, and only five batch jobs can be queued or active at once.
 
 **Correct approach:** Move bulk deletion to a Batch Apex class scheduled via a `Schedulable` wrapper. The trigger, if needed, should only enqueue a Platform Event or set a flag — never perform bulk DML directly.

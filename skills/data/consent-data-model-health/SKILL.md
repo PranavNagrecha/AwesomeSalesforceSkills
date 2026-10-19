@@ -10,6 +10,9 @@ triggers:
   - "How do I set up patient consent for Health Cloud before enrolling in a care program?"
   - "AuthorizationFormConsent SOQL query to verify a patient has signed a consent form before clinical record access"
   - "CareProgramEnrollee status won't move to Active — is there a consent prerequisite?"
+  - "check that a patient signed the treatment authorization for the current form version"
+  - "find consent records whose consent giver is a contact instead of an individual"
+  - "record a patient's rejection of an authorization form without deleting the history"
 tags:
   - health-cloud
   - consent
@@ -27,14 +30,14 @@ outputs:
   - "SOQL query pattern to verify consent status before PHI access"
   - "Checklist of sharing rule gaps that must be addressed separately"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-10-19
 ---
 
 # Consent Data Model Health
 
-This skill activates when building or auditing the Health Cloud HIPAA authorization consent hierarchy. It provides authoritative guidance on the five-object consent data model, the correct field values on AuthorizationFormConsent, the prerequisite relationship to CareProgramEnrollee activation, and the critical boundary between consent recordkeeping and PHI sharing rule enforcement.
+This skill activates when building or auditing the authorization-form consent records a Health Cloud implementation relies on: which records make up the chain, which fields an auditor will read, how to check consent for a specific purpose before using patient data, and why the consent records and the sharing model must be designed separately.
 
 ---
 
@@ -42,127 +45,170 @@ This skill activates when building or auditing the Health Cloud HIPAA authorizat
 
 Gather this context before working on anything in this domain:
 
-- Confirm Health Cloud is provisioned and the Health Cloud permission set is assigned; the AuthorizationForm* objects are not present in base Salesforce CRM.
-- Identify whether the org uses Person Accounts or Individual records — ConsentGiverId must point to an Individual ID, not a Contact ID. Mixing these is the most common implementation error.
-- Clarify which DataUsePurpose records already exist; creating duplicates silently fragments the hierarchy and breaks downstream consent queries.
+- Confirm the objects are available. The Object Reference marks DataUsePurpose, AuthorizationForm, AuthorizationFormText, AuthorizationFormDataUse, and AuthorizationFormConsent as "available if Data Protection and Privacy is enabled" (API 45.0 to 46.0 and later); Health Cloud's own objects, such as CareProgramEnrollee, come with Health Cloud.
+- Decide which record represents the patient as consent giver. `ConsentGiverId` accepts Account, Contact, Individual, Lead, and User; the org's consent checks must all use the same one (this skill assumes Individual, reached through `Contact.IndividualId`).
+- List the DataUsePurpose records that already exist (Treatment, Research, and so on) so the hierarchy is extended, not duplicated.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which object is the consent giver in every query and every intake path?" | `ConsentGiverId` is polymorphic; a Contact Id saves fine but won't match a check written for Individual Ids (Gotcha 2) | One documented giver type, enforced in the intake automation |
+| "Which purposes does each form cover?" | AuthorizationFormDataUse links a form (not a form text) to a DataUsePurpose (Gotcha 6) | A purpose map per form, and a check that filters on the purpose |
+| "How is a new legal version of the form introduced?" | Consents point at the form text they were given against; editing that text in place rewrites history (Gotcha 4) | A new AuthorizationFormText per version |
+| "What counts as consent: Signed only, and how is a rejection recorded?" | `Status` is a restricted picklist with Rejected, Seen, and Signed (Gotcha 5) | A rule per form, and rejections stored as Rejected rather than deleted |
+| "Must enrollment be blocked until consent exists?" | Nothing in the data model stops a CareProgramEnrollee from being activated without consent (Gotcha 3) | A before-save gate on enrollment |
+| "Who should see a patient's clinical records, independent of consent?" | Consent records don't change sharing (Gotcha 1) | A separate sharing design for PHI objects |
+| "What evidence will an auditor ask for?" | `ConsentCapturedDateTime`, `ConsentCapturedSource`, and `ConsentCapturedSourceType` are required fields (Gotcha 7) | Intake that fills all three, plus the form text Id |
+
+A proper consent design adds a single giver type, purpose-specific checks, versioned form texts, and an enforced gate; "just storing a consent record" produces records no query can find and enrollments nobody can defend.
 
 ---
 
 ## Core Concepts
 
-### The Five-Object Consent Hierarchy
+### The objects and the fields that matter
 
-Health Cloud models HIPAA authorization as a strict parent-child chain:
+| Object | Purpose | Key fields |
+|---|---|---|
+| DataUsePurpose | Why data is used (Treatment, Research) | `Name`, `CanDataSubjectOptOut`, `LegalBasisId` |
+| AuthorizationForm | A form, with effective dates | `IsSignatureRequired`, `DefaultAuthFormTextId`, `EffectiveFromDate`, `EffectiveToDate`, `RevisionNumber` |
+| AuthorizationFormText | A form's text and language | `AuthorizationFormId`, `ContentDocumentId`, `DetailAuthorizationFormText`, `FullAuthorizationFormUrl`, `Locale` |
+| AuthorizationFormDataUse | Links a form to a purpose | `AuthorizationFormId`, `DataUsePurposeId` |
+| AuthorizationFormConsent | One person's consent to one form text | `ConsentGiverId`, `AuthorizationFormTextId`, `Status`, `ConsentCapturedDateTime`, `ConsentCapturedSource`, `ConsentCapturedSourceType`, `DocumentVersionId`, `RelatedRecordId` |
 
-1. **DataUsePurpose** — Defines why data is being used (e.g., Treatment, Research). The `PurposeId` field drives classification. `CanDataSubjectOptOut` controls whether the patient may revoke.
-2. **AuthorizationForm** — The master consent form record. `IsSignatureRequired` = true means the status on downstream records must be `Signed`, not merely `Seen`.
-3. **AuthorizationFormText** — A versioned text body of the form. One AuthorizationForm can have multiple AuthorizationFormText records representing form versions. The patient signs a specific version.
-4. **AuthorizationFormDataUse** — Junction object linking AuthorizationFormText to one or more DataUsePurpose records. This declares what the signed form authorizes.
-5. **AuthorizationFormConsent** — The per-patient record. This is the PHI authorization trail. Key fields:
-   - `ConsentGiverId` — Lookup to **Individual** (not Contact, not Account). Required.
-   - `AuthorizationFormTextId` — Links to the specific form version the patient signed.
-   - `ConsentCapturedSource` — How consent was captured (e.g., `Email`, `Web`, `Verbal`, `Paper`). Required for audit completeness; missing values indicate incomplete intake flows.
-   - `Status` — Enumeration: `Seen` (patient viewed but did not sign) or `Signed` (patient executed the authorization). Only `Signed` satisfies a signature-required authorization.
-   - `ConsentCapturedDateTime` — Timestamp of capture. Required for HIPAA audit trails.
+`Status` values are Rejected, Seen, and Signed (restricted picklist). `ConsentCapturedSourceType` is a restricted picklist (Email, InPerson, MailingAddress, Phone, Social, Video, Web); `ConsentCapturedSource` is free text such as an email address or URL.
 
-### CareProgramEnrollee Activation Gate
+### Consent records and record access are separate
 
-A CareProgramEnrollee record cannot be set to `Active` enrollment status unless the linked patient (Individual) has at least one AuthorizationFormConsent record in `Signed` status for the relevant DataUsePurpose associated with the care program. This is not enforced by a platform validation rule by default — implementors must build the gate as a Flow or Apex before-save trigger that queries AuthorizationFormConsent and blocks the status transition when no signed consent exists. If this gate is omitted, patients can be enrolled and receive PHI-backed care coordination without a documented HIPAA authorization on file.
+AuthorizationFormConsent is a record of what a person agreed to. Each consent object has its own sharing (`...Share` objects and owner sharing rules), but no field on it changes who can see clinical records. PHI access is designed with OWDs, sharing rules, and permission sets.
 
-### Consent Recordkeeping vs. PHI Record Access
+### Marketing consent is a different model
 
-AuthorizationFormConsent records the fact that a patient authorized a data use. It does **not** modify the Salesforce sharing model. A patient record can have a fully signed consent chain and still be inaccessible to a care team member if sharing rules are misconfigured — and vice versa: a patient record can be visible to a user with no consent record on file if org-wide defaults are set to Public Read. Sharing rules (criteria-based or role-based) must be designed and deployed separately to enforce PHI access controls. The consent hierarchy and the sharing model are orthogonal subsystems.
+ContactPointTypeConsent (consent for a contact point type, such as email or phone) and ContactPointConsent (consent to be contacted through a specific email address or phone number) record communication preferences. They are not authorization-form consents and don't satisfy a check written against AuthorizationFormConsent.
 
-### Distinction from Marketing Consent
+### Least-privilege access to the consent trail
 
-Health Cloud uses a fundamentally different object model from Marketing Cloud or Privacy Center consent. The marketing consent model uses `Individual → ContactPointTypeConsent → ContactPointConsent`. These objects track communication preferences (email opt-out, SMS opt-in) and are not HIPAA authorization records. Do not mix these hierarchies. An `AuthorizationFormConsent` record does not appear in Privacy Center dashboards, and `ContactPointConsent` records do not satisfy the CareProgramEnrollee consent gate.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- permissionsets/Consent_Intake.permissionset-meta.xml: intake users can record consent but not edit or delete it -->
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Consent Intake</label>
+    <objectPermissions>
+        <object>AuthorizationFormConsent</object>
+        <allowCreate>true</allowCreate>
+        <allowRead>true</allowRead>
+        <allowEdit>false</allowEdit>
+        <allowDelete>false</allowDelete>
+        <viewAllRecords>false</viewAllRecords>
+        <modifyAllRecords>false</modifyAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <object>AuthorizationFormText</object>
+        <allowCreate>false</allowCreate>
+        <allowRead>true</allowRead>
+        <allowEdit>false</allowEdit>
+        <allowDelete>false</allowDelete>
+        <viewAllRecords>false</viewAllRecords>
+        <modifyAllRecords>false</modifyAllRecords>
+    </objectPermissions>
+</PermissionSet>
+```
 
 ---
 
 ## Common Patterns
 
-### Pattern: Full Hierarchy Setup for Patient Portal Intake
+### Pattern 1: Set up a form for treatment consent
 
-**When to use:** A new Health Cloud implementation needs to capture HIPAA authorization during patient intake, before the patient is enrolled in a care program.
+1. Create (or reuse) DataUsePurpose `Treatment`.
+2. Create AuthorizationForm `General Patient Consent` with `IsSignatureRequired = true` and effective dates.
+3. Create AuthorizationFormText v1 (`AuthorizationFormId`, the document or text, `Locale`), and set it as the form's `DefaultAuthFormTextId`.
+4. Create AuthorizationFormDataUse linking the form to `Treatment`.
+5. At intake, create AuthorizationFormConsent with `ConsentGiverId` = the patient's Individual Id, `AuthorizationFormTextId` = the text shown, `Status = Signed`, and all three captured fields.
 
-**How it works:**
-1. Create one `DataUsePurpose` record per clinical use category (Treatment, Payment, Operations).
-2. Create one `AuthorizationForm` record per consent form type (e.g., "General Patient Consent"). Set `IsSignatureRequired = true`.
-3. Create an `AuthorizationFormText` record linked to the AuthorizationForm, containing the versioned legal text.
-4. Create `AuthorizationFormDataUse` junction records linking the AuthorizationFormText to each DataUsePurpose it covers.
-5. During patient portal intake, after the patient views and signs the form, create an `AuthorizationFormConsent` record with:
-   - `ConsentGiverId` = the patient's Individual ID
-   - `AuthorizationFormTextId` = the specific form version presented
-   - `Status` = `Signed`
-   - `ConsentCapturedSource` = `Web`
-   - `ConsentCapturedDateTime` = system timestamp at submission
+### Pattern 2: Check consent for a purpose before using data
 
-**Why not the alternative:** Creating only one record at the top of the hierarchy (e.g., just DataUsePurpose) and skipping the intermediate junction objects will result in AuthorizationFormConsent records that exist in isolation with no traceable link back to a specific form version or data use purpose — breaking audit trail requirements.
-
-### Pattern: Pre-Access Consent Verification Query
-
-**When to use:** A Flow, Apex class, or LWC needs to verify that a patient has valid signed consent before displaying clinical records or triggering a care protocol.
-
-**How it works:**
-
-```soql
-SELECT Id, Status, ConsentCapturedSource, ConsentCapturedDateTime,
-       AuthorizationFormText.AuthorizationForm.Name
-FROM AuthorizationFormConsent
-WHERE ConsentGiverId = :individualId
-  AND Status = 'Signed'
-  AND AuthorizationFormText.AuthorizationFormDataUses.DataUsePurpose.Name = 'Treatment'
-ORDER BY ConsentCapturedDateTime DESC
-LIMIT 1
+```apex
+public with sharing class ConsentCheck {
+    public static Boolean hasSignedConsent(Id individualId, String purposeName) {
+        Set<Id> formIds = new Set<Id>();
+        for (AuthorizationFormDataUse du : [
+            SELECT AuthorizationFormId FROM AuthorizationFormDataUse
+            WHERE DataUsePurpose.Name = :purposeName
+        ]) {
+            formIds.add(du.AuthorizationFormId);
+        }
+        if (formIds.isEmpty()) {
+            return false;
+        }
+        return ![
+            SELECT Id FROM AuthorizationFormConsent
+            WHERE ConsentGiverId = :individualId
+            AND Status = 'Signed'
+            AND AuthorizationFormText.AuthorizationFormId IN :formIds
+            ORDER BY ConsentCapturedDateTime DESC
+            LIMIT 1
+        ].isEmpty();
+    }
+}
 ```
 
-If the query returns zero rows, block the action and route the user to the consent intake flow.
-
-**Why not the alternative:** Checking only the `Status` field without filtering on DataUsePurpose may return a consent record for a Research purpose when Treatment authorization is required, producing a false positive clearance.
+The purpose hangs off the form, so the check finds the forms for the purpose first, then a signed consent to any text of those forms.
 
 ---
 
 ## Decision Guidance
 
-| Situation | Recommended Approach | Reason |
+| Situation | Recommended approach | Reason |
 |---|---|---|
-| Patient must sign before enrollment | Build a before-save Flow on CareProgramEnrollee that queries AuthorizationFormConsent | Platform does not enforce this gate natively; the check must be implemented explicitly |
-| Consent form is updated (new legal version) | Create a new AuthorizationFormText record linked to the same AuthorizationForm | Preserves historical consent records tied to old text versions; do not update the text in place |
-| Patient revokes consent | Set `Status` to `Seen` on the AuthorizationFormConsent record or create a new record with a revocation timestamp | Allows the audit trail to reflect the revocation without deleting the original authorization record |
-| Need to restrict PHI visibility after consent revocation | Update sharing rules and/or permission set assignments | AuthorizationFormConsent status change alone does not alter record visibility; the sharing model must be updated separately |
-| Marketing opt-out tracking needed | Use ContactPointConsent and ContactPointTypeConsent | AuthorizationFormConsent is not the correct object for communication preference management |
+| Enrollment must wait for consent | Before-save Flow or Apex on CareProgramEnrollee using Pattern 2 | The data model doesn't enforce it |
+| New legal wording | New AuthorizationFormText; update `DefaultAuthFormTextId` | Existing consents keep pointing at the text they were given against |
+| Patient declines or withdraws | New AuthorizationFormConsent with `Status = Rejected` | Keeps the earlier record as history |
+| Restrict PHI after withdrawal | Change sharing or permission set assignments | Consent status doesn't alter visibility |
+| Communication preferences | ContactPointTypeConsent / ContactPointConsent | Separate model for contact preferences |
 
 ---
 
 ## Recommended Workflow
 
-1. **Audit existing consent objects** — Query for existing DataUsePurpose, AuthorizationForm, and AuthorizationFormText records to avoid duplicates before creating new hierarchy nodes. Use `SELECT Id, Name FROM DataUsePurpose` to confirm what already exists.
-2. **Build the hierarchy top-down** — Create DataUsePurpose first, then AuthorizationForm, then AuthorizationFormText, then AuthorizationFormDataUse junction records. Each child requires its parent to exist before it can be linked.
-3. **Instrument the intake flow** — Add a screen component or e-signature step that presents the AuthorizationFormText body to the patient and, on confirmation, creates the AuthorizationFormConsent record with `ConsentGiverId` (Individual ID), `Status = Signed`, `ConsentCapturedSource`, and `ConsentCapturedDateTime`.
-4. **Implement the CareProgramEnrollee gate** — Add a before-save Flow or Apex trigger on CareProgramEnrollee that queries AuthorizationFormConsent for the enrollee's Individual, filtered by `Status = 'Signed'` and the relevant DataUsePurpose. Block the status transition to Active if no record is found.
-5. **Validate and audit** — Run the `scripts/check_consent_data_model_health.py` checker against your metadata export to confirm all consent records have `ConsentCapturedSource` populated and no AuthorizationFormConsent records reference a Contact ID in `ConsentGiverId`. Then review sharing rules to confirm PHI access controls are enforced independently of the consent hierarchy.
+1. Export the hierarchy (`SELECT Id, Name FROM DataUsePurpose`, forms, texts, data uses) and record the giver-type decision and the purpose map in `templates/consent-data-model-health-template.md`.
+2. Build or fix the hierarchy top-down (purpose, form, text, data use), one text per legal version.
+3. Instrument intake so every consent row gets the Individual Id, the text Id, `Status`, and the three captured fields; add the enrollment gate.
+4. Export consent rows with `ConsentGiver.Type` (`SELECT Id, ConsentGiverId, ConsentGiver.Type, Status, ConsentCapturedSource, ConsentCapturedSourceType, ConsentCapturedDateTime, AuthorizationFormTextId FROM AuthorizationFormConsent`) as JSON into a folder with the metadata export.
+5. Run `python3 skills/data/consent-data-model-health/scripts/check_consent_data_model_health.py --manifest-dir <export folder>` and fix every ERROR; `references/consent-audit-worked-example.md` walks through one audit.
+6. Review sharing for PHI objects separately and record the result.
 
 ---
 
 ## Review Checklist
 
-Run through these before marking work in this area complete:
-
-- [ ] All AuthorizationFormConsent records have `ConsentGiverId` pointing to an Individual (not a Contact or PersonAccount)
-- [ ] All `Status = Signed` records have `ConsentCapturedSource` and `ConsentCapturedDateTime` populated
-- [ ] CareProgramEnrollee activation is gated by a Flow or Apex check against AuthorizationFormConsent
-- [ ] AuthorizationFormDataUse junction records exist linking each form version to the correct DataUsePurpose
-- [ ] Sharing rules for PHI objects have been reviewed and configured independently of the consent hierarchy
+- [ ] Every consent row's giver is the agreed type (Individual), checked through `ConsentGiver.Type`
+- [ ] Every consent row has `AuthorizationFormTextId`, `ConsentCapturedDateTime`, `ConsentCapturedSource`, and `ConsentCapturedSourceType`
+- [ ] Each form is linked to its purposes through AuthorizationFormDataUse
+- [ ] New legal wording produced a new AuthorizationFormText
+- [ ] Rejections are stored as `Rejected`, not as deleted rows
+- [ ] CareProgramEnrollee activation is gated on a purpose-specific signed consent
+- [ ] PHI sharing was reviewed independently of consent
+- [ ] The checker reports no ERROR lines
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full write-ups are in `references/gotchas.md`:
 
-1. **AuthorizationFormConsent does not modify sharing** — Creating or signing a consent record has zero effect on who can see the patient's clinical records. Record-level PHI access is controlled entirely by the sharing model (OWD, sharing rules, manual shares). Teams that assume consent = access will expose PHI gaps in both directions.
-2. **ConsentGiverId must reference Individual, not Contact** — The `ConsentGiverId` field is a polymorphic lookup that accepts Contact, Individual, and Account. Health Cloud consent requires Individual. Populating it with a Contact ID will pass save validation but will not satisfy the CareProgramEnrollee consent gate query, which filters by Individual ID. The error is silent and extremely difficult to diagnose after the fact.
-3. **Marketing and Health consent models do not overlap** — `ContactPointConsent` and `AuthorizationFormConsent` are architecturally separate. Workflows that query `ContactPointConsent` to check for HIPAA authorization will always return false negatives, and vice versa. Do not mix these object families in consent verification logic.
+| # | Gotcha |
+|---|---|
+| 1 | Consent records don't change who can see clinical records |
+| 2 | `ConsentGiverId` accepts five object types |
+| 3 | The enrollment gate isn't in the data model |
+| 4 | Editing form text in place rewrites what patients appear to have signed |
+| 5 | `Status` is a restricted picklist with three values |
+| 6 | Purposes attach to the form, not the form text |
+| 7 | Source and source type are different fields |
 
 ---
 
@@ -170,14 +216,16 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Five-object consent hierarchy | DataUsePurpose, AuthorizationForm, AuthorizationFormText, AuthorizationFormDataUse, and AuthorizationFormConsent records correctly linked |
-| Intake flow modification | Screen flow or action that creates AuthorizationFormConsent with all required fields on patient confirmation |
-| Pre-access SOQL pattern | Query verifying signed consent for a specific DataUsePurpose before clinical record access |
-| CareProgramEnrollee gate | Before-save Flow or Apex trigger that blocks enrollment without valid consent |
+| Consent hierarchy | Purposes, forms, versioned texts, and data uses, linked correctly |
+| Intake changes | Automation that writes complete consent rows |
+| Purpose-specific check | Apex or Flow implementing Pattern 2 |
+| Enrollment gate | Before-save automation on CareProgramEnrollee |
+| Audit report | Checker output and the filled template |
 
 ---
 
 ## Related Skills
 
-- admin/health-cloud-consent-management — Admin-layer configuration of consent settings, permission sets, and the Consent Management feature in Health Cloud Setup
-- data/health-cloud-data-model — Broader Health Cloud data model coverage including patient, clinical, and care plan objects
+- `admin/health-cloud-consent-management` — Setup configuration of consent forms and withdrawal handling
+- `data/health-cloud-data-model` — the wider Health Cloud patient and care-plan model
+- `security/gdpr-data-privacy` — communication consent and privacy requests on ContactPointTypeConsent

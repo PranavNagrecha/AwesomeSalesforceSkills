@@ -4,14 +4,18 @@
 
 **Context:** A data integration team needs to insert 800,000 Account records from a legacy CRM into Salesforce. The source system exports a UTF-8 CSV with LF line endings and comma delimiters. The team needs a reference implementation for the full Bulk API 2.0 ingest lifecycle.
 
-**Problem:** The team previously used REST Composite batches of 200 records, requiring 4,000 HTTP calls and regularly hitting API call limits. They also had no integrity check — records that ended up in `unprocessedRecords` were silently lost.
+**Problem:** The team previously used REST Composite batches of 200 records, requiring 4,000 HTTP calls and regularly hitting API call limits. They also had no integrity check, so rows from a failed job were never resubmitted.
 
 **Solution:**
 
 ```
 Step 1 — Authenticate and obtain OAuth 2.0 bearer token.
 
-Step 2 — Create the ingest job:
+Step 2 — Size the work: the CSV is 240 MB raw. A Bulk API 2.0 job takes at most
+150 MB after base64 encoding (about 100 MB raw), so split into three files of
+roughly 80 MB and create one job per file. Steps 3-8 run once per job.
+
+Step 2a — Create the ingest job:
 POST /services/data/v66.0/jobs/ingest/
 Authorization: Bearer {token}
 Content-Type: application/json
@@ -25,16 +29,13 @@ Content-Type: application/json
 }
 Response: { "id": "750R000000xxxxAAA", "state": "Open", "contentUrl": "..." }
 
-Step 3 — Split the CSV into ~8 chunks of ~100,000 records each
-(each must be under 100 MB raw / 150 MB base64).
-For each chunk:
+Step 3 — Upload this job's file (one file per job, under 100 MB raw):
 PUT /services/data/v66.0/jobs/ingest/750R000000xxxxAAA/batches
 Content-Type: text/csv
-[chunk CSV body]
+[file CSV body]
 
-CSV format note: use "#N/A" in any cell to explicitly null a field.
-Empty cells set an empty string, which is NOT the same as null and will
-fail required-field validation on non-text fields.
+CSV format note: empty values are ignored on update; use "#N/A" to set a
+field to null. Values aren't trimmed, so strip spaces in the export.
 
 Step 4 — Signal upload complete (MANDATORY):
 PATCH /services/data/v66.0/jobs/ingest/750R000000xxxxAAA
@@ -46,28 +47,29 @@ Step 5 — Poll every 30 seconds:
 GET /services/data/v66.0/jobs/ingest/750R000000xxxxAAA
 Stop when state is "JobComplete", "Failed", or "Aborted".
 
-Step 6 — Retrieve all three result endpoints:
-GET .../750R000000xxxxAAA/successfulResults/   → 794,500 rows
-GET .../750R000000xxxxAAA/failedResults/       → 5,200 rows with sf__Error
-GET .../750R000000xxxxAAA/unprocessedRecords/  → 300 rows (batch timeout)
+Step 6 — Retrieve results for each job (all three jobs ended JobComplete):
+GET .../750R000000xxxxAAA/successfulResults/   → 264,900 rows
+GET .../750R000000xxxxAAA/failedResults/       → 1,767 rows with sf__Error
+(unprocessedrecords/ applies only to Failed or Aborted jobs)
 
-Integrity check: 794,500 + 5,200 + 300 = 800,000 ✓
+Integrity check per job: successful + failed = rows uploaded to that job;
+across the three jobs: 794,800 + 5,200 = 800,000
 
 Step 7 — Inspect failedResults sf__Error values:
 - 4,800 rows: "REQUIRED_FIELD_MISSING: [BillingCountry]" → fix source data
 - 400 rows: "DUPLICATE_VALUE" → switch to upsert for these records
 
-Step 8 — Create a NEW job for the 5,500 failed + unprocessed records.
-Never reuse the original job ID.
+Step 8 — Create a NEW job for the 5,200 fixed rows. If any job had ended
+Failed, add its unprocessedrecords rows to the resubmission too.
 ```
 
-**Why it works:** Splitting into chunks keeps each upload under the 150 MB base64 ceiling. The integrity check across all three result endpoints catches unprocessed records that would be silently missed if only `failedResults` was checked. Each error category requires a different root-cause fix before resubmission.
+**Why it works:** One file per job keeps each job under the 150 MB base64 ceiling. The per-job reconciliation proves every uploaded row is accounted for, and reading `unprocessedrecords/` for any Failed job catches rows that never ran. Each error category gets its own root-cause fix before resubmission.
 
 ---
 
 ## Example 2: Bulk SOQL Export with Locator Pagination
 
-**Context:** A data analyst needs to extract 4.2 million Opportunity records for an external analytics pipeline. Synchronous SOQL is not viable (50,000-record limit per query, plus timeout risk). The analyst needs paginated CSV output that can be resumed if interrupted.
+**Context:** A data analyst needs to extract 4.2 million Opportunity records for an external analytics pipeline. The LDV guide suggests the Bulk API 2.0 query capability for queries that can return more than a million results. The analyst needs paginated CSV output that can be resumed if interrupted.
 
 **Problem:** The team was using Export Now in Data Loader UI, which hit timeouts on large objects and produced partial exports with no way to verify completeness.
 
@@ -94,14 +96,14 @@ import urllib.request
 import json
 
 job_id = "750R000000yyyyBBB"
-base_url = f"https://yourorg.my.salesforce.com/services/data/v66.0/jobs/query/{job_id}/results"
+base_url = f"https://yourorg.my.salesforce.com/services/data/v66.0/jobs/query/{job_id}/results?maxRecords=50000"
 headers = {"Authorization": f"Bearer {token}", "Accept": "text/csv"}
 
 locator = None
 page_num = 1
 
 while True:
-    url = base_url if locator is None else f"{base_url}?locator={locator}"
+    url = base_url if locator is None else f"{base_url}&locator={locator}"
     req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req) as resp:
         csv_data = resp.read().decode("utf-8")
@@ -126,17 +128,17 @@ print(f"Downloaded {page_num} pages.")
 ```
 
 ```
-Result: ~85 pages × ~50,000 records = 4.2M records across 85 CSV files.
-Locator values are stable — safe to save and resume the loop if interrupted.
+Result: ~85 sets × up to 50,000 records (capped by maxRecords) = 4.2M records.
+A locator does not change while the job exists, so a saved locator resumes the loop.
 ```
 
-**Why it works:** Bulk API 2.0 query jobs automatically apply PK chunking to split the SOQL into sub-ranges, enabling reliable extraction of arbitrarily large result sets. The `Sforce-Locator` header provides a stable cursor that allows interrupted downloads to resume from the last successful page without re-processing earlier pages.
+**Why it works:** Bulk API 2.0 query jobs perform PK chunking automatically. `maxRecords` keeps each set small enough to download without a client timeout, and the `Sforce-Locator` value, compared as the string `null` for the end, lets an interrupted download resume from the last saved locator.
 
 ---
 
 ## Example 3: Multipart Upsert Job for Nightly ERP Integration
 
-**Context:** A nightly ERP sync pushes 12,000 Contact records using an `ERP_Contact_Id__c` external ID field. The payload is always under 2 MB. The integration team wants to minimize HTTP round-trips and eliminate the risk of forgetting the `UploadComplete` PATCH.
+**Context:** An hourly ERP sync pushes the Contacts changed in the last hour, usually 300 to 800 rows (well under 100,000 characters of CSV), using an `ERP_Contact_Id__c` external ID field. The integration team wants fewer HTTP round-trips and no risk of forgetting the `UploadComplete` PATCH.
 
 **Problem:** An earlier version of the integration sometimes failed between the upload step and the `UploadComplete` PATCH, leaving jobs orphaned in `Open` state indefinitely and consuming open-job slots.
 
@@ -168,10 +170,10 @@ John,Doe,john.doe@example.com,ERP-00002,#N/A
 --BOUNDARY--
 ```
 
-Response state will be `"UploadComplete"` immediately — no separate PATCH required.
-Do NOT send a `PATCH {"state": "UploadComplete"}` afterward — the job is already past Open state and the request will error.
+The guide: after you create a multipart job, the upload is completed for you automatically,
+so no separate PATCH is needed. The pipeline checks the returned `state` and skips the PATCH.
 
-**Why it works:** Multipart job creation eliminates the two-step create-then-signal pattern for small datasets (up to 100,000 characters of CSV). The atomicity means there is no window between upload and signal where an integration failure can orphan the job in Open state. The 12,000-record CSV is well within the 100,000-character limit for multipart jobs.
+**Why it works:** Multipart job creation removes the create-then-signal window for small datasets (100,000 characters or less). The client measures the CSV length first and falls back to the standard pattern when a backlog pushes it over the limit; a 12,000-row file at about 60 characters per row is 720,000 characters, far too big for multipart.
 
 ---
 
@@ -179,6 +181,6 @@ Do NOT send a `PATCH {"state": "UploadComplete"}` afterward — the job is alrea
 
 **What practitioners do:** After polling until `state == JobComplete`, retrieve `failedResults`, log the failure count, and declare the load successful if `failedResults` is empty or small.
 
-**What goes wrong:** Records that ended up in batches that timed out after 20 retries appear in `unprocessedRecords` — not `failedResults`. A `failedResults` count of zero does not guarantee that all records were written. In high-volume loads during peak org load, hundreds or thousands of records can be silently lost in `unprocessedRecords` while `failedResults` appears clean.
+**What goes wrong:** A job can end `Failed` (a batch still failing after 20 retries, or the daily record limit reached), and then the remaining data isn't processed. Those rows are in `unprocessedrecords/`, not `failedResults`, so a clean `failedResults` proves nothing about a failed job.
 
-**Correct approach:** Always retrieve all three endpoints after every job — `successfulResults`, `failedResults`, and `unprocessedRecords`. Verify that `count(successful) + count(failed) + count(unprocessed)` equals the total number of records uploaded. Treat any discrepancy as a pipeline error requiring investigation before declaring the load complete.
+**Correct approach:** Check the terminal state first. For `JobComplete`, verify successful plus failed equals rows uploaded. For `Failed` or `Aborted`, also read `unprocessedrecords/` and resubmit those rows in a new job. Treat any discrepancy as a pipeline error before declaring the load complete.
