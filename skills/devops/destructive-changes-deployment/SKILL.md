@@ -44,7 +44,7 @@ Gather this context before working on anything in this domain:
 
 - Confirm the exact API name and metadata type of every component to be deleted. Wildcards are not supported in destructiveChanges manifests — every member must be listed explicitly.
 - Identify all components that reference the target component. A deletion will fail with a deployment error if any active component still holds a reference (e.g., a field referenced in a validation rule, a class referenced in a trigger, a component embedded in an active Lightning page).
-- Know which components are permanently undeletable via the Metadata API: Record Types, Picklist values (field values), and active Flow versions cannot be deleted through a deployment. These require manual admin action in Setup.
+- Know which components need manual Setup work before or instead of a destructive deploy: an active Flow version can't be deleted (api_meta.txt L68041), and picklist field values are not standalone manifest members. Record Types are not in this list: the RecordType type is documented to "create, update, or delete record type definitions for a custom object" (api_meta.txt L44970). UNVERIFIED (2026-10-19): practitioners report destructive deletes of record types still assigned to records or profiles failing; reassign and deactivate first and prove the delete in a sandbox.
 
 ---
 
@@ -54,10 +54,10 @@ Gather this context before working on anything in this domain:
 |---|---|---|
 | Are the destructive manifests hand-written, or copied from an existing `package.xml`? | A copied manifest drags in a `<version>` element; the version belongs in the companion `package.xml`, which must sit in the same directory. | Produces a destructive manifest with explicit members and no version, plus a version-only `package.xml` (Gotcha 1). |
 | Does any deletion depend on an update in the same deploy clearing a reference first, such as a class that still uses the object? | Plain `destructiveChanges.xml` deletions run before additions, so the reference is still there when the delete runs. | Puts that member in `destructiveChangesPost.xml` (Gotcha 2). |
-| Is any component deleted and re-created under the same name in this release? | Only the Pre variant guarantees the old one is gone before the new one lands; plain and Pre behave the same. | Names the variant on purpose instead of relying on the plain file (Gotcha 2). |
+| Is any component deleted and re-created under the same name in this release? | Plain `destructiveChanges.xml` and the Pre variant both delete before additions (api_meta.txt L4648); only Post deletes after. | Names the variant on purpose instead of relying on the plain file (Gotcha 2). |
 | How will other branches, local projects and the CI pipeline learn that these files are gone? | A stale local file redeployed later brings the deleted component back. | Deletes the source files in the same PR and adds retrieve-before-deploy or source tracking (Gotcha 3). |
 | Does any flow on the list have an active version in the target org? | A flow with an active version cannot be deleted through a deploy, and the error may name it by internal ID. | Adds a deactivation step before the destructive deploy (Gotcha 4). |
-| Does the cleanup include record types or picklist values, global value sets included? | These fail in a destructive manifest and need manual Setup work. | Moves them to a manual runbook step with an owner and a date (Gotcha 5). |
+| Does the cleanup include record types or picklist values, global value sets included? | Picklist values are not manifest members and need Setup work; record types are documented as deletable for custom objects (api_meta.txt L44970), but in-use ones are reported to fail (UNVERIFIED (2026-10-19)). | Moves them to a manual runbook step with an owner and a date (Gotcha 5). |
 | Is any object or component on the list used by an active Lightning page or its action override? | Items tied to an active Lightning page can't be deleted by `destructiveChanges.xml`. | Adds the Lightning App Builder deactivation as a pre-deploy step (Gotcha 6). |
 
 A proper configuration orders every deletion and lists the manual steps before the deploy, so the release removes exactly what was planned and nothing comes back on the next deploy.
@@ -117,10 +117,10 @@ The `--manifest` flag is required even when the package.xml contains no componen
 
 ### Components That Cannot Be Deleted via API
 
-The following component types cannot be deleted through any destructive manifest and require manual removal in Setup:
+The following need manual work in Setup instead of, or before, a destructive manifest:
 
-- **Record Types** — must be deactivated and removed manually.
-- **Picklist values** — field values on picklist/multi-select picklist fields cannot be removed via API. Use the Replace Picklist Values feature or manual field editing.
+- **Record Types** — the RecordType type documents delete for custom-object record types (api_meta.txt L44970). UNVERIFIED (2026-10-19): deletes of record types still assigned to records or profiles are reported to fail; reassign, deactivate, and prove the delete in a sandbox first.
+- **Picklist values** — field values are not standalone members of a destructive manifest. UNVERIFIED (2026-10-19): they cannot be removed via API at all. Use the Replace Picklist Values feature or manual field editing.
 - **Active Flow versions** — an active version of an Autolaunched or Screen Flow cannot be deleted via deployment. Deactivate the flow in Setup first, then delete.
 
 Attempting to delete these via a manifest results in a deployment error. The error message is not always obvious about the root cause.
@@ -167,7 +167,7 @@ sf project deploy start \
 **How it works:**
 1. Read the deployment error message carefully. Common patterns: "Component in use by...", "Cannot delete...", "Component not found".
 2. "Component in use" — find the referencing component and either update it first (use post variant) or remove the reference in a prior deployment.
-3. "Cannot delete" on Record Type, Picklist value, or active Flow — these are undeletable via API; handle manually.
+3. "Cannot delete" on an active Flow (api_meta.txt L68041), an in-use Record Type, or a Picklist value — handle manually in Setup.
 4. "Component not found" — the API name or type is wrong in the manifest; re-check exact casing and type name.
 5. Run the checker script: `python3 scripts/check_destructive.py --manifest-dir <path>`.
 
@@ -180,7 +180,7 @@ sf project deploy start \
 | Deleting a component with no active references | `destructiveChanges.xml` or `--pre-destructive-changes` | Simplest case; no ordering concern |
 | Deleting a component that is still referenced, and clearing the reference in the same deploy | `destructiveChangesPost.xml` via `--post-destructive-changes` | Reference must be removed before deletion fires |
 | Deleting a component whose API name conflicts with a new component being added | `destructiveChangesPre.xml` via `--pre-destructive-changes` | Old component must be cleared before new one can land |
-| Deleting a Record Type, Picklist value, or active Flow version | Manual Setup action | These types are undeletable via Metadata API |
+| Deleting a Picklist value or an active Flow version; a Record Type still in use | Manual Setup action (deactivate the flow first) | Active flow versions can't be deleted (api_meta.txt L68041); record-type behaviour is UNVERIFIED (2026-10-19) beyond the documented delete support (L44970) |
 | Deleting many components across multiple types | Single manifest with multiple `<types>` blocks | Metadata API processes all members in one transaction |
 
 ---

@@ -145,10 +145,11 @@ Three problems:
 Two matching rules and two duplicate rules:
 
 ```xml
-<!-- excerpt: both rules live in one Account matching-rule file under a MatchingRules root (api_meta.txt L87308); per-rule elements abbreviated -->
+<!-- excerpt: both rules live in one Account matching-rule file (matchingRules/Account.matchingRule) under a MatchingRules root, one <matchingRules> child per rule (api_meta.txt L87233-87237, L87308-87310); label and ruleStatus omitted for brevity -->
 <MatchingRules xmlns="http://soap.sforce.com/2006/04/metadata">
     <!-- B2B side -->
-    <MatchingRule fullName="Account.B2B_Match">
+    <matchingRules>
+        <fullName>B2B_Match</fullName>
         <booleanFilter>1 AND 2 AND 3</booleanFilter>
         <matchingRuleItems>
             <fieldName>Name</fieldName>
@@ -162,10 +163,11 @@ Two matching rules and two duplicate rules:
             <fieldName>IsPersonAccount</fieldName>
             <matchingMethod>Exact</matchingMethod>
         </matchingRuleItems>
-    </MatchingRule>
+    </matchingRules>
 
     <!-- B2C side -->
-    <MatchingRule fullName="Account.B2C_Match">
+    <matchingRules>
+        <fullName>B2C_Match</fullName>
         <booleanFilter>(1 OR 2) AND 3</booleanFilter>
         <matchingRuleItems>
             <fieldName>PersonEmail</fieldName>
@@ -179,7 +181,7 @@ Two matching rules and two duplicate rules:
             <fieldName>IsPersonAccount</fieldName>
             <matchingMethod>Exact</matchingMethod>
         </matchingRuleItems>
-    </MatchingRule>
+    </matchingRules>
 </MatchingRules>
 ```
 

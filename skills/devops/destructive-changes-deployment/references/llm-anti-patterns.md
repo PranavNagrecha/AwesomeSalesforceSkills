@@ -93,12 +93,12 @@ When the referencing component is updated in the same deployment, use destructiv
 </types>
 ```
 
-**Why it happens:** The model knows Record Types are metadata and generalizes that all metadata can be deleted via destructive manifests. The constraint that Record Types and Picklist values are undeletable via the API is a Salesforce-specific limitation not obvious from general Metadata API patterns.
+**Why it happens:** The model knows Record Types are metadata and generalizes that all metadata can be deleted via destructive manifests. Picklist values are not standalone manifest members, and an in-use Record Type is reported to fail deletion (UNVERIFIED (2026-10-19); the RecordType type itself documents delete for custom objects, api_meta.txt L44970).
 
 **Correct pattern:**
 
 ```
-Record Types cannot be deleted via the Metadata API. Remove them manually in Setup > Object Manager > [Object] > Record Types. Similarly, Picklist field values must be removed through Setup, not through a deployment manifest.
+Before listing a Record Type in a destructive manifest, reassign its records and profile assignments and deactivate it; prove the delete in a sandbox, or remove it in Setup > Object Manager > [Object] > Record Types. Picklist field values must be removed through Setup, not through a deployment manifest.
 ```
 
 **Detection hint:** Scan generated manifest members for `<name>RecordType</name>` or check if the advice involves deleting picklist field values via XML.

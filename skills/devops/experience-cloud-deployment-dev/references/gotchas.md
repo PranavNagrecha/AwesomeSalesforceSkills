@@ -16,9 +16,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A metadata deployment including ExperienceBundle or DigitalExperienceBundle completes with exit code 0 and no deployment errors. The site loads in the target org and navigation works, but all content zones powered by CMS Managed Content are empty.
 
-**When it occurs:** When the site uses content created in a CMS Workspace (Digital Experiences CMS). This content is stored as Managed Content records — data, not metadata — and is silently excluded from both ExperienceBundle and DigitalExperienceBundle. The Metadata API does not warn about this exclusion.
+**When it occurs:** When the site uses content created in a CMS Workspace (Digital Experiences CMS). This content is stored as Managed Content records — data, not metadata — and is not part of the site's ExperienceBundle or DigitalExperienceBundle. Exception: content in an enhanced CMS *general* workspace is metadata — DigitalExperienceBundle supports the `general` workspace type for Salesforce CMS (api_meta.txt L51125, L51133). The Metadata API does not warn about this exclusion.
 
-**How to avoid:** Before starting any Experience Cloud deployment, inventory whether the site uses CMS Workspace content (check the site in Experience Builder for CMS content zones or content blocks). If it does, plan a parallel CMS content migration using either the CMS Workspaces export/import UI or the Managed Content REST API (`/connect/cms/contents`). Document this as a mandatory step in the release runbook. Never assume a successful deployment means all site content is present in the target org.
+**How to avoid:** Before starting any Experience Cloud deployment, inventory whether the site uses CMS Workspace content (check the site in Experience Builder for CMS content zones or content blocks). If it does, plan a parallel CMS content migration using either the CMS Workspaces export/import UI or the Managed Content REST API (`/connect/cms/contents`; UNVERIFIED (2026-10-19): Connect REST resource not in the grounding corpus). Document this as a mandatory step in the release runbook. Never assume a successful deployment means all site content is present in the target org.
 
 ---
 
@@ -32,6 +32,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 ```bash
 sf community publish --name "My Site Name" --target-org target-org
 ```
+UNVERIFIED (2026-10-19): `sf community publish` is a Salesforce CLI command not covered by the grounding corpus; confirm with `sf community publish --help` before putting it in a pipeline.
 Add site activation as a mandatory final step in the post-deployment runbook, not as an afterthought.
 
 ---

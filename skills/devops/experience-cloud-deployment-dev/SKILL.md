@@ -65,7 +65,7 @@ Gather this context before working on anything in this domain:
 |---|---|---|
 | Is the site Aura, LWR, or an enhanced LWR site created in Winter '23 or later? | Enhanced LWR sites deploy as `DigitalExperienceBundle`; Aura and other LWR sites use `ExperienceBundle`, and the wrong one deploys a broken structure. | Fixes the bundle type, its directory and the `sourceApiVersion` floor before the first retrieve (Gotchas 1 and 5). |
 | For an Aura site, is `enableExperienceBundleMetadata` true in `ExperienceBundle.settings` in both source and target? | With the setting off, a retrieve can come back with no site files while still reporting success. | Adds `Settings:ExperienceBundle` to the manifest and a pre-retrieve check in CI (Gotcha 1). |
-| Does any page show content from a CMS workspace? | Managed content is data, not metadata, so a clean deploy leaves those content zones empty. | Plans a separate CMS export/import or API migration in the release (Gotcha 2). |
+| Does any page show content from a CMS workspace? | Managed content in a non-enhanced CMS workspace is data, not metadata, so a clean deploy leaves those content zones empty; enhanced CMS general workspaces can travel as DigitalExperienceBundle (api_meta.txt L51125). | Plans a separate CMS export/import or API migration in the release (Gotcha 2). |
 | Does the site use custom CMS content types? | `ContentTypeBundle` is a separate metadata type that the site bundle does not include. | Adds the content types to the deploy before or with the site bundle (Gotcha 6). |
 | Who activates and publishes the site in the target after each deploy, and how? | A clean deploy can leave the site offline or showing its previous version. | Makes activation and publish a scripted or named runbook step (Gotcha 3). |
 | Does the site use a custom domain, single sign-on, or a CDN? | None of these bindings travel in any Experience Cloud metadata type. | Adds a post-deploy section for domain, SSO and CDN setup in each target (Gotcha 4). |
@@ -82,7 +82,7 @@ A proper configuration settles the runtime type, the settings flag and the conte
 Salesforce maintains two separate metadata types for Experience Cloud sites, split by the site's underlying runtime:
 
 - **ExperienceBundle** (API v46+) — used for Aura-based sites (Classic, Customer Service, Partner Central templates, and similar). Must be explicitly enabled by deploying `ExperienceBundleSettings` with `enableExperienceBundleMetadata` set to `true` before any retrieve/deploy of site bundles will work.
-- **DigitalExperienceBundle** (API v56+, api_meta.txt L51223; for enhanced LWR sites created in Winter '23 or later, L51233) — used for enhanced LWR sites (Build Your Own LWR, Microsites, Help Center, and other LWR-native templates). Has a different directory structure: site-level JSON, a `pages/` tree, and a `routes/` tree instead of the Aura-oriented `views/` and `components/` layout.
+- **DigitalExperienceBundle** (API v56+, api_meta.txt L51223; for enhanced LWR sites created in Winter '23 or later, L51233) — used for enhanced LWR sites (Build Your Own LWR, Microsites, Help Center, and other LWR-native templates). Has a different directory structure: workspace folders under `digitalExperiences/site/`, each holding content-type folders such as `sfdc_cms__route` and `sfdc_cms__view` (api_meta.txt L51134-L51135, L51215-L51217) instead of the ExperienceBundle `experiences/` layout.
 
 Using the wrong type is the most common mistake: deploying an enhanced LWR site's files into an ExperienceBundle structure produces a deployment that completes with no errors but renders incorrectly or not at all.
 
@@ -101,7 +101,7 @@ The member is `ExperienceBundle` because the settings file is named `ExperienceB
 
 ### CMS Managed Content Is Not Deployable via Metadata API
 
-Content created in a CMS workspace (Digital Experiences CMS, accessible from the CMS Workspaces app) is stored as Managed Content records, not as metadata. Neither ExperienceBundle nor DigitalExperienceBundle includes this content. A deployment that omits CMS content will exit with code 0 (success) but the content will not appear in the target org — no warning is issued.
+Content created in a CMS workspace (Digital Experiences CMS, accessible from the CMS Workspaces app) is stored as Managed Content records, not as metadata. The site's own bundle does not include this content. Exception: content in an enhanced CMS *general* workspace is metadata — DigitalExperienceBundle supports the `general` workspace type for Salesforce CMS (api_meta.txt L51125, L51133). A deployment that omits CMS content will exit with code 0 (success) but the content will not appear in the target org — no warning is issued.
 
 The two supported options for CMS content migration are:
 1. **CMS export/import** — Export a content collection from the source org (Setup > CMS Workspaces > Export) and import it in the target org. Manual and error-prone for large volumes.
@@ -154,7 +154,7 @@ The `Network` metadata type represents the community/site record configuration (
 5. Deploy to the target org. Activate the site manually in Experience Builder if it deploys in inactive state.
 6. Execute post-deployment manual steps.
 
-**Why not the alternative:** Using `ExperienceBundle` for an LWR site produces an empty retrieve. The underlying file structure differs — DigitalExperienceBundle uses a `pages/` and `routes/` layout that ExperienceBundle does not support.
+**Why not the alternative:** Using `ExperienceBundle` for an enhanced LWR site does not retrieve it; non-enhanced LWR sites, by contrast, do use ExperienceBundle (api_meta.txt L51233-L51234, L59902-L59903). The underlying file structure differs — DigitalExperienceBundle uses workspace and content-type folders (`sfdc_cms__route`, `sfdc_cms__view`) that ExperienceBundle does not have.
 
 ### Pattern 3: CI/CD Pipeline for Experience Cloud Sites
 
@@ -179,7 +179,7 @@ The `Network` metadata type represents the community/site record configuration (
 | Site is enhanced LWR (Build Your Own LWR, Microsites, Help Center) | Use DigitalExperienceBundle | ExperienceBundle retrieves nothing for LWR sites |
 | Unsure of runtime type | Check Experience Builder > Settings > Advanced > Site Runtime | Avoids silent failures from wrong metadata type |
 | Site uses CMS workspace content | Plan CMS export/import or Managed Content REST API script in addition to metadata deploy | CMS content is not included in either metadata type |
-| Post-deploy site is inactive | Manually activate in Experience Builder or use `sf community publish` CLI command | Site status is not reliably deployed by metadata |
+| Post-deploy site is inactive | Manually activate in Experience Builder or use `sf community publish` CLI command (UNVERIFIED (2026-10-19): confirm with `--help`) | Site status is not reliably deployed by metadata |
 | Scratch org development | Use DigitalExperienceBundle only; ExperienceBundle has known scratch org support gaps | Avoid inconsistent behavior in scratch orgs with Aura sites |
 | Target org missing custom domain or CDN config | Document as post-deployment manual step in release runbook | Domain/CDN config is not captured in any metadata type |
 

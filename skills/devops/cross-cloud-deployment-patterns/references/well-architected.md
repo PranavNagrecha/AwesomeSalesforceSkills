@@ -10,7 +10,7 @@
 
 **Split batches vs. single transaction:** A three-batch deployment is slower (three separate deploy transactions, each with validation overhead) than a single-package deploy. The tradeoff is correctness: single-transaction cross-cloud deployments are not guaranteed to resolve cross-layer references in the right order. The operational overhead of a split deploy is small compared to the cost of a failed production deployment of an Experience Cloud site.
 
-**Wildcard retrieval vs. explicit manifest:** Using wildcard `*` retrieval for Experience Cloud metadata is convenient but pulls in SiteDotCom and other non-deployable artifacts. The correct tradeoff is to use explicit member lists in `package.xml` for any retrieve that will feed directly into a deployment pipeline. Wildcard retrieval is appropriate only for exploration or local development, not for release engineering.
+**Wildcard retrieval vs. explicit manifest:** Using wildcard `*` retrieval for Experience Cloud metadata is convenient but pulls in SiteDotCom and other artifacts that must not ride along with an ExperienceBundle deploy. The correct tradeoff is to use explicit member lists in `package.xml` for any retrieve that will feed directly into a deployment pipeline. Wildcard retrieval is appropriate only for exploration or local development, not for release engineering.
 
 **API version alignment:** Enforcing that target orgs be at the same API version as source orgs before deploying Experience Cloud metadata is a reliability constraint that has a real cost: it sometimes blocks a deployment until a sandbox is refreshed or an org upgrade completes. The tradeoff is accepting that upgrade timing must be coordinated across environments, rather than discovering version incompatibility during a live deploy window.
 
@@ -20,7 +20,7 @@
 
 2. **Deploying without version alignment check** — Skipping API version verification before a cross-cloud deploy that includes DigitalExperienceBundle. This produces opaque errors at deploy time that are difficult to attribute to the version mismatch. The correct approach is to enforce a pre-flight API version check as a mandatory gate in the deployment pipeline.
 
-3. **Including SiteDotCom in deployment packages** — Staging all retrieved metadata without filtering out SiteDotCom, then including it in package.xml because it was returned during retrieval. SiteDotCom is never deployable. It should be in `.forceignore` permanently and reviewed out of every deployment manifest before execution.
+3. **Including SiteDotCom in deployment packages** — Staging all retrieved metadata without filtering out SiteDotCom, then including it in package.xml because it was returned during retrieval. SiteDotCom must not share a manifest with the ExperienceBundle that deploys the site (api_meta.txt L61110). For ExperienceBundle-managed sites it should be in `.forceignore` permanently and reviewed out of every deployment manifest before execution.
 
 ## Official Sources Used
 

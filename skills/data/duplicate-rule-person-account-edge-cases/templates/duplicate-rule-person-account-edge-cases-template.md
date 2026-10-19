@@ -134,7 +134,7 @@ When the org is mixed, also author the parallel B2B rule so the two universes ne
     <ruleStatus>Active</ruleStatus>
     <matchingRuleItems>
         <fieldName>Name</fieldName>
-        <matchingMethod>FuzzyCompanyName</matchingMethod>
+        <matchingMethod>CompanyName</matchingMethod>
     </matchingRuleItems>
     <matchingRuleItems>
         <fieldName>BillingStreet</fieldName>

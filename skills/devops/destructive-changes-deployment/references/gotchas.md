@@ -42,9 +42,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: Record Types and Picklist Values Are Permanently Undeletable via API
+## Gotcha 5: Record Types and Picklist Values Need Setup Work
 
-**What happens:** Deployments that include Record Types or Picklist field values in a destructive manifest fail unconditionally. The Metadata API does not support deletion of Record Types or individual Picklist values (including Global Value Set members). The only supported action for these types via the API is deactivation, not removal.
+**What happens:** Picklist field values (including Global Value Set members) are not standalone members of a destructive manifest, so a manifest cannot remove one. Record Types are different: the RecordType metadata type is documented to "create, update, or delete record type definitions for a custom object" (api_meta.txt L44970). UNVERIFIED (2026-10-19): practitioners report destructive deletes of record types that are still assigned to records or profiles failing, which is why teams fall back to Setup.
 
 **When it occurs:** When a data model cleanup effort includes retiring a Record Type or removing obsolete picklist values, and the team assumes the destructive manifest handles all metadata deletion uniformly.
 

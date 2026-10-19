@@ -18,10 +18,10 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any retrieve of an Experience Builder site that uses the older ExperienceBundle type, or any retrieve that spans a broad wildcard (`*`) on the experience types. The SiteDotCom blob is always generated as a side-effect of an Experience Cloud site retrieval.
 
-**How to avoid:** After any retrieve that includes Experience Cloud metadata, scan the local project for `.site` files or `siteDotCom` directories before staging changes. Add a `.forceignore` rule to prevent SiteDotCom from being staged or deployed:
+**How to avoid:** After any retrieve that includes Experience Cloud metadata, scan the local project for `.site` files or `siteDotComSites` directories (the SiteDotCom folder name, api_meta.txt L130579) before staging changes. Add a `.forceignore` rule to prevent SiteDotCom from being staged or deployed:
 
 ```
-**/siteDotCom/**
+**/siteDotComSites/**
 *.site
 ```
 

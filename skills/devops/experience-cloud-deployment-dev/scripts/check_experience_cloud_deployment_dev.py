@@ -120,8 +120,8 @@ def get_sfdx_api_version(manifest_dir: Path) -> int | None:
     return None
 
 
-def parse_package_xml(package_xml_path: Path) -> dict[str, list[str]]:
-    """Parse a package.xml and return a dict of {TypeName: [member, ...]}."""
+def parse_package_xml(package_xml_path: Path) -> dict[str, list[str]] | None:
+    """Parse a package.xml and return a dict of {TypeName: [member, ...]}, or None if unparseable."""
     result: dict[str, list[str]] = {}
     try:
         tree = ET.parse(package_xml_path)
@@ -139,7 +139,7 @@ def parse_package_xml(package_xml_path: Path) -> dict[str, list[str]]:
             ]
             result[type_name] = members
     except ET.ParseError:
-        pass
+        return None
     return result
 
 
@@ -147,6 +147,8 @@ def check_package_xml_for_issues(package_xml_path: Path) -> list[str]:
     """Check a package.xml for Experience Cloud deployment issues."""
     issues: list[str] = []
     components = parse_package_xml(package_xml_path)
+    if components is None:
+        return [f"{package_xml_path}: could not be parsed as XML; it was not checked."]
 
     has_experience_bundle = "ExperienceBundle" in components
     has_digital_experience_bundle = "DigitalExperienceBundle" in components
@@ -239,9 +241,11 @@ def check_experience_cloud_deployment_dev(manifest_dir: Path, package_xml: Path 
             )
 
     # Check 4: Analyze package.xml if provided
-    if package_xml is not None and package_xml.exists():
-        pkg_issues = check_package_xml_for_issues(package_xml)
-        issues.extend(pkg_issues)
+    if package_xml is not None:
+        if package_xml.exists():
+            issues.extend(check_package_xml_for_issues(package_xml))
+        else:
+            issues.append(f"--package-xml not found: {package_xml}")
     else:
         # Search for package.xml files in common locations
         for candidate_name in ["package.xml", "manifest/package.xml"]:
@@ -259,8 +263,9 @@ def check_experience_cloud_deployment_dev(manifest_dir: Path, package_xml: Path 
         if not runbook_indicators:
             issues.append(
                 f"INFO: {site_count} Experience Cloud site bundle(s) found. "
-                "CMS Managed Content (from CMS Workspaces) is NOT included in ExperienceBundle "
-                "or DigitalExperienceBundle and cannot be deployed via sf CLI. "
+                "CMS Managed Content from a non-enhanced CMS Workspace is NOT included in the "
+                "site's ExperienceBundle or DigitalExperienceBundle (enhanced CMS general "
+                "workspaces can be deployed as their own DigitalExperienceBundle). "
                 "If the site uses CMS Workspace content, plan a separate CMS export/import or "
                 "Managed Content REST API migration. A successful deploy (exit 0) does not guarantee "
                 "CMS content will be present in the target org."

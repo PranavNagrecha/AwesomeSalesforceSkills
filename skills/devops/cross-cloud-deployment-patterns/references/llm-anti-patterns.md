@@ -39,7 +39,7 @@ Each batch must complete successfully before the next begins.
 
 <!-- CORRECT — exclude SiteDotCom from all deployment manifests -->
 <!-- Add to .forceignore: -->
-<!-- **/siteDotCom/** -->
+<!-- **/siteDotComSites/** -->
 <!-- *.site -->
 </Package>
 ```
