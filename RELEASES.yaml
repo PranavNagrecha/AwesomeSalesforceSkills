@@ -384,6 +384,16 @@ releases:
     size: S
     owner_model: sonnet
     status: todo
+  - id: R2-10
+    title: Comment-aware fix for stripinaccessible + soql-security checkers (false P0/CRITICAL on a comment)
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-11
+    title: Fix trigger access-mode contradiction in apex-stripinaccessible-and-fls-enforcement (67.0 user mode)
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -449,5 +459,18 @@ inbox:
 - date: 2026-10-19
   ask: The scheduled org-validation.yml workflow fails on every run (3 failures on 2026-10-19 at 14:38/15:58/16:42); it needs
     the validation-org secret or should be disabled until one exists
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Found by the /scan-security agent proof: check_apex_stripinaccessible_and_fls_enforcement.py (P0) and check_soql_security.py
+    (CRITICAL) flag the literal ''WITH SECURITY_ENFORCED'' inside a // comment (tier2-webhook Tier2ChannelHealthQueueable.cls:129);
+    soql_security also flags triggers with no database operation. Make both comment-aware; add fixtures'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Library contradiction found by the agent proof: skills/apex/apex-stripinaccessible-and-fls-enforcement SKILL.md Before
+    Starting says a trigger body runs in system mode and the 67.0 user-mode default does not reach it; apex-security-patterns,
+    apex-with-without-sharing-decision Gotcha 3, soql-security and secure-coding-review-checklist Gotcha 1 say the opposite
+    quoting the Apex Developer Guide (apexdev ~L4881-4885, L11742). Correct the one skill against the guide'
   size: S
   slotted_into: 1.5.0
