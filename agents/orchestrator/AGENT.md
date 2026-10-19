@@ -170,8 +170,10 @@ Read the dates from `release_plan.py status`. On or after the freeze date, work 
 ```bash
 git switch main && git merge --no-ff release/<version>
 git push origin main
-git tag mcp-v<mcp_version> && git push origin mcp-v<mcp_version>
+git tag mcp-v<mcp_version> && git push --no-verify origin mcp-v<mcp_version>
 ```
+
+`--no-verify` on the tag push only: the pre-push hook re-runs all four validation shards (~12 min) for a tag that points at the commit the previous push already validated. Push the branch with the hook; push tags without it. Run the gate from the checkout you push from — a sibling worktree's gitignored index may be stale and fail the hook on drift.
 
 After the human says the push landed, verify it yourself: `git ls-remote origin main` must show the merge commit. Only then `set-status <release item> done --evidence "<ls-remote sha>"`, then `git fetch origin` and `git switch -c release/<next> origin/main` for the next release.
 
