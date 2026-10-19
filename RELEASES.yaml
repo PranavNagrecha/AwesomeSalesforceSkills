@@ -283,8 +283,20 @@ releases:
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: running
+    status: done
     parent: R2-01
+    evidence: 'GRADE PARTLY-WRONG. Findings mostly real (0 P0; F2/F3/F4 CORRECT, F3 understated -> P1: Create+Modify All+Delete
+      on Integration_Failure__c for every escalator, idempotency key derivable from editable Request_Payload__c, alerts go
+      to all holders); F1 premise partly (silent-loss branch real; Queueable running user is PLAN A2 UNVERIFIED) but F1 FIX
+      WRONG and harmful: WITH SYSTEM_MODE in a with sharing class still applies record sharing (apexdev L11958-11961) — inherited
+      from skills/apex/apex-with-without-sharing-decision SKILL.md L140-141 and the Decision Guidance row L208. Two checker
+      false positives confirmed. Usefulness: a practitioner acting on it would fix F3 correctly and mis-fix F1.'
+  - id: R2-12
+    title: 'Fix harmful claim: WITH SYSTEM_MODE in a with sharing class does not bypass record sharing (apex-with-without-sharing-decision
+      + siblings)'
+    size: S
+    owner_model: opus
+    status: running
   - id: R2-01-2
     title: 'Agent proof: /why-cant-user (access-path-explainer) on a real input — permission sets + sharing from examples/builds/northwind-sales/artefacts;
       then an adversarial grader scores right/useful/wrong against the corpus'
@@ -472,5 +484,14 @@ inbox:
     Starting says a trigger body runs in system mode and the 67.0 user-mode default does not reach it; apex-security-patterns,
     apex-with-without-sharing-decision Gotcha 3, soql-security and secure-coding-review-checklist Gotcha 1 say the opposite
     quoting the Apex Developer Guide (apexdev ~L4881-4885, L11742). Correct the one skill against the guide'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'HARMFUL library claim found by agent proof R2-01-1: skills/apex/apex-with-without-sharing-decision says WITH SYSTEM_MODE
+    on a query inside a with sharing class ''elevates only that statement'' (SKILL.md L140-141) and recommends it for ''one-off
+    elevated query inside a with sharing class'' (Decision Guidance L208). Apex Developer Guide L11958-11961: in system mode
+    the calling class''s sharing keyword determines record-level access, so this elevates FLS/object checks only, never sharing.
+    Correct the concept, the row, examples/anti-patterns/gotchas and the checker; cross-check apex-security-patterns and apex-stripinaccessible-and-fls-enforcement
+    for the same claim'
   size: S
   slotted_into: 1.5.0
