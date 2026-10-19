@@ -1,138 +1,128 @@
 #!/usr/bin/env python3
-"""Checker script for Custom Index Requests skill.
+"""Checker for the custom-index-requests skill.
 
-Scans Salesforce custom field metadata for index-related anti-patterns:
-- Custom fields marked as External ID that appear to be non-unique filter fields
-  (field names suggest categories, statuses, types — not external system keys)
-- Very wide objects (100+ fields) that may benefit from skinny table analysis
+Reads CustomField metadata (source-format *.field-meta.xml, or fields inside
+Metadata API *.object files) and CustomIndex components (*.indx-meta*).
 
-Uses stdlib only — no pip dependencies.
+Severity:
+  ERROR  externalId=true on a type other than AutoNumber, Email, Number, or Text
+         (the LDV guide allows External IDs only on those types); a CustomIndex
+         component whose allowNullValues is not true or false; a field, object,
+         or CustomIndex file that does not parse.
+  WARN   externalId=true on a formula field; externalId=true without
+         unique=true on a field whose name looks
+         categorical (status, type, region, ...): External ID makes it an upsert
+         key and duplicates make upserts fail; unique=true on such a field
+         (legitimate repeated values will be rejected).
+
+Exit codes: 0 clean or WARN only; 1 on ERROR, missing directory, or WARN with
+--strict. An empty directory prints a WARN and exits 0. Stdlib only.
 
 Usage:
-    python3 check_custom_index_requests.py [--help]
-    python3 check_custom_index_requests.py --metadata-dir path/to/force-app/main/default/objects
+    python3 check_custom_index_requests.py --manifest-dir force-app/main/default [--strict]
 """
 
 from __future__ import annotations
 
 import argparse
+import re
 import sys
-from pathlib import Path
 import xml.etree.ElementTree as ET
+from pathlib import Path
+
+NS = "{http://soap.sforce.com/2006/04/metadata}"
+EXTERNAL_ID_TYPES = {"AutoNumber", "Email", "Number", "Text"}
+CATEGORICAL = re.compile(r"(status|type|category|segment|region|tier|level|priority|source|channel|stage|phase|group|class)", re.IGNORECASE)
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Check Salesforce custom field metadata for index anti-patterns.",
-    )
-    parser.add_argument(
-        "--metadata-dir",
-        default=".",
-        help="Directory containing Salesforce object/field metadata (default: current directory).",
-    )
-    return parser.parse_args()
+def find(elem: ET.Element, tag: str) -> ET.Element | None:
+    node = elem.find(NS + tag)
+    if node is None:
+        node = elem.find(tag)
+    return node
 
 
-# Field names suggesting categorical/status values — not unique external IDs
-CATEGORICAL_INDICATORS = [
-    "status", "type", "category", "segment", "region", "tier", "level",
-    "priority", "source", "channel", "stage", "phase", "group", "class",
-]
+def text(elem: ET.Element, tag: str) -> str:
+    node = find(elem, tag)
+    return node.text.strip() if node is not None and node.text is not None else ""
 
 
-def scan_field_metadata(metadata_dir: Path) -> list[str]:
-    """Scan custom field XML files for index anti-patterns."""
-    issues: list[str] = []
-
-    if not metadata_dir.exists():
-        issues.append(f"Metadata directory not found: {metadata_dir}")
-        return issues
-
-    field_files = list(metadata_dir.rglob("*.field-meta.xml"))
-    if not field_files:
-        return issues
-
-    # Track field count per object for skinny table recommendation
-    object_field_counts: dict[str, int] = {}
-
-    for field_file in field_files:
-        try:
-            content = field_file.read_text(encoding="utf-8", errors="ignore")
-        except (OSError, PermissionError):
-            continue
-
-        # Count fields per object
-        object_name = field_file.parent.parent.name
-        object_field_counts[object_name] = object_field_counts.get(object_name, 0) + 1
-
-        # Parse XML to check externalId flag
-        try:
-            tree = ET.parse(field_file)
-            root = tree.getroot()
-        except ET.ParseError:
-            continue
-
-        # Handle namespace
-        ns = ""
-        if root.tag.startswith("{"):
-            ns = root.tag.split("}")[0] + "}"
-
-        external_id_elem = root.find(f"{ns}externalId")
-        unique_elem = root.find(f"{ns}unique")
-
-        is_external_id = external_id_elem is not None and external_id_elem.text == "true"
-        is_unique = unique_elem is not None and unique_elem.text == "true"
-
-        if is_external_id and not is_unique:
-            # External ID without Unique is unusual but possible
-            pass
-
-        if is_external_id:
-            field_name_lower = field_file.stem.lower().replace(".field-meta", "")
-            for indicator in CATEGORICAL_INDICATORS:
-                if indicator in field_name_lower:
-                    issues.append(
-                        f"{object_name}.{field_file.stem}: Field '{field_file.stem}' is marked "
-                        f"as External ID (creates a unique index). The field name suggests it may "
-                        f"be a categorical/status field with duplicate values. External ID enforces "
-                        f"uniqueness — if this field is not a unique external system key, upsert "
-                        f"operations will fail on duplicate values. Use a non-unique custom index "
-                        f"(via Support case) for non-unique filter fields."
-                    )
-                    break
-
-    # Check for wide objects (100+ fields) — skinny table candidates
-    for obj_name, count in object_field_counts.items():
-        if count >= 100:
-            issues.append(
-                f"Object '{obj_name}' has {count} custom field metadata files. Wide objects "
-                f"(100+ fields) may benefit from a Salesforce Support request for a skinny table "
-                f"if high-frequency read queries always access the same small field subset. "
-                f"Review Query Plan output for this object before requesting."
-            )
-
-    return issues
+PARSE_ERRORS: list[tuple[str, str]] = []
 
 
-def check_custom_index_requests(metadata_dir: Path) -> list[str]:
-    """Return a list of issue strings."""
-    return scan_field_metadata(metadata_dir)
+def parse(path: Path) -> ET.Element | None:
+    try:
+        return ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        PARSE_ERRORS.append(("ERROR", f"{path}: cannot parse ({exc}); not checked"))
+        return None
+
+
+def fields_in(path: Path) -> list[ET.Element]:
+    root = parse(path)
+    if root is None:
+        return []
+    if root.tag.endswith("CustomField"):
+        return [root]
+    return root.findall(NS + "fields") + root.findall("fields")
+
+
+def check_field(path: Path, f: ET.Element) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    name = text(f, "fullName") or path.name
+    ftype = text(f, "type")
+    ext = text(f, "externalId").lower() == "true"
+    uniq = text(f, "unique").lower() == "true"
+    if ext and find(f, "formula") is not None:
+        out.append(("WARN", f"{path}: {name} is a formula field marked externalId; the LDV guide lists External IDs only on Auto Number, Email, Number, and Text fields, so verify in a sandbox deploy"))
+    elif ext and ftype and ftype not in EXTERNAL_ID_TYPES:
+        out.append(("ERROR", f"{path}: {name} is {ftype} with externalId=true; External IDs are allowed only on AutoNumber, Email, Number, Text"))
+    if CATEGORICAL.search(name) is not None:
+        if ext and not uniq:
+            out.append(("WARN", f"{path}: {name} looks categorical but is an External ID; it becomes an upsert key and duplicates make upserts fail. Prefer a Support-built index"))
+        if uniq:
+            out.append(("WARN", f"{path}: {name} looks categorical but is unique=true; repeated values will be rejected"))
+    return out
 
 
 def main() -> int:
-    args = parse_args()
-    metadata_dir = Path(args.metadata_dir)
-    issues = check_custom_index_requests(metadata_dir)
+    ap = argparse.ArgumentParser(description="Check index-related field and CustomIndex metadata (custom-index-requests skill).")
+    ap.add_argument("--manifest-dir", default=".", help="Root of the metadata tree")
+    ap.add_argument("--strict", action="store_true", help="Treat WARN as failure")
+    args = ap.parse_args()
 
-    if not issues:
-        print("No custom index anti-patterns found in field metadata.")
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+
+    field_files = sorted(list(root.rglob("*.field-meta.xml")) + list(root.rglob("*.object")))
+    index_files = sorted(p for p in root.rglob("*") if p.is_file() and ".indx-meta" in p.name)
+    if not field_files and not index_files:
+        print(f"WARN: no field or CustomIndex metadata under {root}; nothing to check")
         return 0
 
-    for issue in issues:
-        print(f"ISSUE: {issue}")
+    findings: list[tuple[str, str]] = []
+    for path in field_files:
+        for f in fields_in(path):
+            findings.extend(check_field(path, f))
+    for path in index_files:
+        node = parse(path)
+        if node is None:
+            continue
+        value = text(node, "allowNullValues").lower()
+        if value not in {"", "true", "false"}:
+            findings.append(("ERROR", f"{path}: allowNullValues must be true or false, found '{value}'"))
 
-    print(f"\nFound {len(issues)} issue(s). Review before filing a Support case.")
-    return 1
+    findings = PARSE_ERRORS + findings
+    errors = sum(1 for s, _ in findings if s == "ERROR")
+    warns = len(findings) - errors
+    for sev, msg in findings:
+        print(f"{sev}: {msg}")
+    print(f"Scanned {len(field_files)} field/object file(s), {len(index_files)} CustomIndex file(s): {errors} ERROR, {warns} WARN")
+    if errors or (args.strict and warns):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

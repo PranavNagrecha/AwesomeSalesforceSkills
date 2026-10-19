@@ -1,148 +1,198 @@
 #!/usr/bin/env python3
-"""Checker script for Data Migration Planning skill.
+"""Checker for the data-migration-planning skill.
 
-This is the primary skill checker entry point. It delegates to
-check_migration_plan.py for detailed validation logic.
+Point --manifest-dir at a migration folder containing any of:
+  * migration_sequence.csv (or *sequence*.csv) with columns object, depends_on,
+    bypass_documented
+  * load CSVs (one per object; file name starts with the object API name,
+    e.g. Contact.csv or Contact_load.csv)
+  * target metadata in source format (objects/<Object>/fields/*.field-meta.xml,
+    objects/<Object>/validationRules/*.validationRule-meta.xml) or *.object files
 
-For full migration plan validation, run:
-    python3 check_migration_plan.py --plan-file <sequence.csv> [--csv-dir <dir>]
+Rules (Bulk API 2.0 guide "Relationship Fields in a Header Row"; LDV guide):
+  ERROR  sequence file lists a child before a parent it depends on; a load CSV
+         header that chains past one level (A.B.C), which Bulk API relationship
+         headers don't allow; a relationship column whose parent field is a
+         custom field in the scanned metadata without externalId=true (only
+         indexed parent fields can be referenced); a metadata file that does
+         not parse.
+  WARN   sequence row with bypass_documented not yes; a load CSV with no column
+         that looks like an external ID key; an active validation rule whose
+         formula has no $Permission bypass.
 
-This script performs a quick structural check on the skill directory itself
-and verifies that any migration plan documents present in the current directory
-include the key required sections.
-
-Uses stdlib only — no pip dependencies.
+Exit codes: 0 clean or WARN only; 1 on ERROR, missing directory, or WARN with
+--strict. An empty directory prints a WARN and exits 0. Stdlib only.
 
 Usage:
-    python3 check_data_migration_planning.py [--manifest-dir path/to/metadata]
-    python3 check_data_migration_planning.py --manifest-dir .
+    python3 check_data_migration_planning.py --manifest-dir path/to/migration [--strict]
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
+import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
-
-REQUIRED_PLAN_SECTIONS = [
-    "external id",
-    "bypass",
-    "rollback",
-    "migration sequence",
-    "validation",
-]
-
-PLAN_FILE_GLOB_PATTERNS = [
-    "*.md",
-    "*.txt",
-    "migration_plan*",
-    "data-migration-planning-template*",
-]
+NS = "{http://soap.sforce.com/2006/04/metadata}"
+KEY_HINTS = ("external_id", "externalid", "legacy", "source_id", "ext_id")
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Quick structural check for data migration planning artifacts. "
-            "For full CSV and sequence validation, use check_migration_plan.py."
-        ),
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Directory containing migration plan documents or metadata (default: current directory).",
-    )
-    return parser.parse_args()
+def find(elem: ET.Element, tag: str) -> ET.Element | None:
+    node = elem.find(NS + tag)
+    if node is None:
+        node = elem.find(tag)
+    return node
 
 
-def _find_plan_files(directory: Path) -> list[Path]:
-    """Find markdown or text files that look like migration plan documents."""
-    candidates: list[Path] = []
-    for pattern in PLAN_FILE_GLOB_PATTERNS:
-        candidates.extend(directory.glob(pattern))
-    # Deduplicate preserving order
-    seen: set[Path] = set()
-    result: list[Path] = []
-    for p in candidates:
-        if p not in seen and p.is_file():
-            seen.add(p)
-            result.append(p)
-    return result
+def text(elem: ET.Element, tag: str) -> str:
+    node = find(elem, tag)
+    return node.text.strip() if node is not None and node.text is not None else ""
 
 
-def check_plan_document_sections(plan_file: Path) -> list[str]:
-    """Check that a migration plan document covers required sections.
+PARSE_ERRORS: list[tuple[str, str]] = []
 
-    Returns a list of issue strings for missing sections.
-    """
-    issues: list[str] = []
+
+def parse_xml(path: Path) -> ET.Element | None:
     try:
-        content = plan_file.read_text(encoding="utf-8", errors="replace").lower()
-    except OSError as exc:
-        issues.append(f"{plan_file.name}: cannot read file — {exc}")
-        return issues
-
-    for section_keyword in REQUIRED_PLAN_SECTIONS:
-        if section_keyword not in content:
-            issues.append(
-                f"{plan_file.name}: missing required topic '{section_keyword}'. "
-                "Migration plans must address: external ID strategy, validation rule bypass, "
-                "rollback approach, migration sequence, and post-migration validation."
-            )
-
-    return issues
+        return ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        PARSE_ERRORS.append(("ERROR", f"{path}: cannot parse ({exc}); not checked"))
+        return None
 
 
-def check_data_migration_planning(manifest_dir: Path) -> list[str]:
-    """Run structural checks on migration planning artifacts in manifest_dir.
+def load_metadata(root: Path) -> tuple[dict[tuple[str, str], ET.Element], list[tuple[Path, ET.Element]]]:
+    fields: dict[tuple[str, str], ET.Element] = {}
+    rules: list[tuple[Path, ET.Element]] = []
+    for f in root.rglob("*.field-meta.xml"):
+        node = parse_xml(f)
+        if node is not None:
+            fields[(f.parent.parent.name.lower(), text(node, "fullName").lower() or f.name.split(".")[0].lower())] = node
+    for f in root.rglob("*.validationRule-meta.xml"):
+        node = parse_xml(f)
+        if node is not None:
+            rules.append((f, node))
+    for f in root.rglob("*.object"):
+        node = parse_xml(f)
+        if node is None:
+            continue
+        obj = f.stem.lower()
+        for fld in node.findall(NS + "fields") + node.findall("fields"):
+            fields[(obj, text(fld, "fullName").lower())] = fld
+        for vr in node.findall(NS + "validationRules") + node.findall("validationRules"):
+            rules.append((f, vr))
+    return fields, rules
 
-    Returns a list of issue strings found.
-    """
-    issues: list[str] = []
 
-    if not manifest_dir.exists():
-        issues.append(f"Directory not found: {manifest_dir}")
-        return issues
+def check_sequence(path: Path) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    with path.open(newline="", encoding="utf-8-sig") as fh:
+        reader = csv.DictReader(fh)
+        cols = {c.lower().strip() for c in (reader.fieldnames or [])}
+        if not {"object", "depends_on"} <= cols:
+            return [("ERROR", f"{path}: sequence file needs columns object, depends_on (bypass_documented recommended)")]
+        seen: set[str] = set()
+        for n, row in enumerate(reader, start=2):
+            r = {k.lower().strip(): (v or "").strip() for k, v in row.items() if k}
+            obj = r.get("object", "")
+            if not obj:
+                continue
+            for parent in [p.strip() for p in r.get("depends_on", "").split(",") if p.strip()]:
+                if parent.lower() != obj.lower() and parent.lower() not in seen:
+                    out.append(("ERROR", f"{path}:{n}: {obj} depends on {parent}, which is not loaded earlier"))
+            if r.get("bypass_documented", "").lower() not in {"yes", "y", "true", "1"}:
+                out.append(("WARN", f"{path}:{n}: {obj} has no documented automation bypass"))
+            seen.add(obj.lower())
+    return out
 
-    plan_files = _find_plan_files(manifest_dir)
 
-    if not plan_files:
-        # No plan documents found — inform but do not fail; the checker may be
-        # run against an org metadata directory that doesn't contain plan docs.
-        issues.append(
-            "No migration plan documents found in this directory. "
-            "Expected a completed data-migration-planning-template.md or similar. "
-            "Run the migration plan template at "
-            "skills/data/data-migration-planning/templates/data-migration-planning-template.md "
-            "and save the completed plan here."
-        )
-        return issues
+def child_object(csv_path: Path, known: set[str]) -> str:
+    stem = csv_path.stem.lower()
+    for obj in sorted(known, key=len, reverse=True):
+        if stem == obj or stem.startswith(obj + "_") or stem.startswith(obj + "-") or stem.startswith(obj + "."):
+            return obj
+    return re.split(r"[_.\-]", stem)[0]
 
-    for plan_file in plan_files:
-        section_issues = check_plan_document_sections(plan_file)
-        issues.extend(section_issues)
 
-    if not issues:
-        checked = ", ".join(f.name for f in plan_files)
-        print(f"Checked: {checked}")
+def check_load_csv(path: Path, fields: dict[tuple[str, str], ET.Element]) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    with path.open(newline="", encoding="utf-8-sig") as fh:
+        try:
+            header = next(csv.reader(fh))
+        except StopIteration:
+            return [("WARN", f"{path}: empty file")]
+    known_objects = {o for o, _ in fields}
+    child = child_object(path, known_objects)
+    if not any(any(h in col.lower() for h in KEY_HINTS) for col in header):
+        out.append(("WARN", f"{path}: no column looks like an external ID key; re-runs can't upsert safely"))
+    for col in header:
+        parts = col.strip().split(".")
+        if len(parts) > 2:
+            out.append(("ERROR", f"{path}: column '{col}' chains more than one level; Bulk API relationship headers allow child-to-parent only"))
+            continue
+        if len(parts) != 2:
+            continue
+        rel, parent_field = parts[0].lower(), parts[1].lower()
+        if rel.endswith("__r"):
+            lookup = fields.get((child, rel[:-3] + "__c"))
+            parent = text(lookup, "referenceTo").lower() if lookup is not None else ""
+        else:
+            parent = rel
+        if not parent or not parent_field.endswith("__c"):
+            continue
+        target = fields.get((parent, parent_field))
+        if target is not None and text(target, "externalId").lower() != "true":
+            out.append(("ERROR", f"{path}: column '{col}' references {parent}.{parts[1]}, which is not an External ID; only indexed parent fields can be used"))
+    return out
 
-    return issues
+
+def check_rule(path: Path, rule: ET.Element) -> list[tuple[str, str]]:
+    if text(rule, "active").lower() != "true":
+        return []
+    formula = text(rule, "errorConditionFormula")
+    if "$Permission" not in formula:
+        name = text(rule, "fullName") or path.name
+        return [("WARN", f"{path}: active validation rule {name} has no $Permission bypass; migration rows that break it will fail")]
+    return []
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = check_data_migration_planning(manifest_dir)
+    ap = argparse.ArgumentParser(description="Check a migration folder (data-migration-planning skill).")
+    ap.add_argument("--manifest-dir", default=".", help="Migration folder: sequence CSV, load CSVs, target metadata")
+    ap.add_argument("--strict", action="store_true", help="Treat WARN as failure")
+    args = ap.parse_args()
 
-    if not issues:
-        print("No issues found.")
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+
+    csvs = sorted(root.rglob("*.csv"))
+    fields, rules = load_metadata(root)
+    if not csvs and not fields and not rules and not PARSE_ERRORS:
+        print(f"WARN: no sequence file, load CSVs, or metadata under {root}; nothing to check")
         return 0
 
-    for issue in issues:
-        print(f"ISSUE: {issue}")
+    findings: list[tuple[str, str]] = []
+    for c in csvs:
+        if "sequence" in c.stem.lower():
+            findings.extend(check_sequence(c))
+        else:
+            findings.extend(check_load_csv(c, fields))
+    for path, rule in rules:
+        findings.extend(check_rule(path, rule))
 
-    return 1
+    findings = PARSE_ERRORS + findings
+    errors = sum(1 for s, _ in findings if s == "ERROR")
+    warns = len(findings) - errors
+    for sev, msg in findings:
+        print(f"{sev}: {msg}")
+    print(f"Scanned {len(csvs)} CSV file(s), {len(fields)} field(s), {len(rules)} validation rule(s): {errors} ERROR, {warns} WARN")
+    if errors or (args.strict and warns):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

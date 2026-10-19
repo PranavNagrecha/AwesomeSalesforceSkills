@@ -15,7 +15,7 @@ These patterns help the consuming agent self-check its own output.
 // WRONG — ContactPointConsent is for marketing communication preferences
 List<ContactPointConsent> cpc = [
     SELECT Id FROM ContactPointConsent WHERE DataUsePurposeId = :purposeId
-    AND ConsentGiverId = :individualId
+    AND PartyId = :individualId
 ];
 
 // CORRECT — AuthorizationFormConsent is the HIPAA authorization trail
@@ -54,7 +54,7 @@ Creating a consent record does NOT change who can see the record.
 
 **What the LLM generates:** Apex or Flow code that sets `ConsentGiverId` to a Contact record ID retrieved from the trigger context or a related field, rather than first resolving the Contact's associated Individual ID.
 
-**Why it happens:** Contact is the most familiar person-level object in Salesforce. LLMs default to Contact when they need a person record ID, missing the Health Cloud requirement that consent links to Individual.
+**Why it happens:** Contact is the most familiar person-level object, and `ConsentGiverId` accepts Account, Contact, Individual, Lead, and User, so nothing fails at save time. The mismatch only shows when a check written for Individual Ids finds nothing.
 
 **Correct pattern:**
 
@@ -67,7 +67,7 @@ Contact c = [SELECT IndividualId FROM Contact WHERE Id = :contactRecord.Id LIMIT
 afc.ConsentGiverId = c.IndividualId;
 ```
 
-**Detection hint:** Any `ConsentGiverId =` assignment that sources the value directly from a Contact, Account, or PersonAccount ID field (without a prior `IndividualId` lookup) is this anti-pattern. Search for `ConsentGiverId = :` followed by a variable that doesn't have `Individual` in its name.
+**Detection hint:** A `ConsentGiverId` assignment fed from a Contact, Account, or person account Id without a prior `IndividualId` lookup, or an audit query that never looks at `ConsentGiver.Type`.
 
 ---
 
@@ -75,16 +75,17 @@ afc.ConsentGiverId = c.IndividualId;
 
 **What the LLM generates:** Health Cloud implementation guides or code reviews that describe the consent hierarchy setup steps but omit any mention of blocking CareProgramEnrollee activation when consent is absent, treating consent records as a reporting-only concern.
 
-**Why it happens:** LLMs generate documentation-style outputs that describe what each object stores but do not reason about the operational gate that enforces the requirement. The gate is a custom-built control, not a native platform feature, so it does not appear in standard API references that LLMs are trained on.
+**Why it happens:** Models describe what each object stores and stop there. None of the consent objects reference CareProgramEnrollee, so the gate exists only if someone builds it.
 
 **Correct pattern:**
 
 ```
 After implementing the consent hierarchy, ALWAYS implement a before-save
 Flow or Apex trigger on CareProgramEnrollee that:
-1. Queries AuthorizationFormConsent for the enrollee's Individual ID
-2. Filters by Status = 'Signed' and the relevant DataUsePurpose
-3. Blocks the status transition to 'Active' if no signed consent exists
+1. Finds the forms linked to the care program's purpose (AuthorizationFormDataUse)
+2. Looks for a Signed AuthorizationFormConsent from the enrollee's Individual
+   whose AuthorizationFormText.AuthorizationFormId is one of those forms
+3. Blocks the status change with an error if none exists
 ```
 
 **Detection hint:** Any Health Cloud consent implementation plan that does not include a validation step on CareProgramEnrollee is incomplete. Look for the absence of "before-save," "validation rule," or "consent gate" in enrollment workflow descriptions.
@@ -93,9 +94,9 @@ Flow or Apex trigger on CareProgramEnrollee that:
 
 ## Anti-Pattern 5: Using Wrong Status Values or Case
 
-**What the LLM generates:** Consent record creation code or data migration scripts that use status values like `'Approved'`, `'Active'`, `'Consented'`, `'signed'` (lowercase), or `'SIGNED'` (uppercase) instead of the exact picklist values `'Seen'` or `'Signed'`.
+**What the LLM generates:** Consent code or migration scripts using `'Approved'`, `'Active'`, or `'Consented'`, or describing the field as two-valued (`Seen`/`Signed`) and recording withdrawals by deleting rows.
 
-**Why it happens:** LLMs generalize from other Salesforce objects (Case Status, Opportunity Stage, Lead Status) that use `Active`, `Closed`, `Approved` vocabulary. The exact two-value picklist on AuthorizationFormConsent is not well-represented in training data.
+**Why it happens:** Models generalize from other status fields. The Object Reference lists three values for AuthorizationFormConsent `Status` (Rejected, Seen, Signed) on a restricted picklist, which rejects values that aren't in the list.
 
 **Correct pattern:**
 
@@ -106,18 +107,19 @@ afc.Status = 'signed';    // wrong case
 afc.Status = 'SIGNED';    // wrong case
 afc.Status = 'Consented'; // not a valid value
 
-// CORRECT — exact picklist values
-afc.Status = 'Signed';  // patient executed the authorization
-afc.Status = 'Seen';    // patient viewed but did not sign
+// CORRECT — the three picklist values
+afc.Status = 'Signed';    // patient executed the authorization
+afc.Status = 'Seen';      // patient viewed but did not sign
+afc.Status = 'Rejected';  // patient declined; keep the row as history
 ```
 
-**Detection hint:** Any string literal in `Status =` assignments that is not exactly `'Seen'` or `'Signed'` (sentence case) is this anti-pattern. Search for `.Status = '` and verify the value against the two valid options.
+**Detection hint:** A `Status` literal on AuthorizationFormConsent other than `Rejected`, `Seen`, or `Signed`, or a `delete` of consent rows used to model withdrawal.
 
 ---
 
 ## Anti-Pattern 6: Editing AuthorizationFormText In Place for Form Revisions
 
-**What the LLM generates:** Guidance to update the `ContentDocument` field on an existing `AuthorizationFormText` record when the legal team revises the consent form language, treating the record like an editable configuration item.
+**What the LLM generates:** Guidance to update `ContentDocumentId` or `DetailAuthorizationFormText` on the existing AuthorizationFormText when legal revises the wording.
 
 **Why it happens:** LLMs model "update the form" as editing the existing record, following standard CRUD patterns. The audit trail implication of mutating a record that historical consent records point to is not surfaced in generic API documentation.
 
@@ -129,10 +131,10 @@ AuthorizationFormText is append-only.
 
 On form revision:
 1. Create a new AuthorizationFormText record (e.g., "HIPAA Authorization v2.0")
-2. Link it to the same AuthorizationForm
-3. Create new AuthorizationFormDataUse records for the new text
-4. Update the intake Flow to present the new AuthorizationFormText ID
-5. Old consent records retain their reference to the old text version
+2. Link it to the same AuthorizationForm and set the form's DefaultAuthFormTextId
+3. Keep the form's AuthorizationFormDataUse rows (purposes attach to the form)
+4. Update intake to present the new text Id
+5. Old consent records keep their reference to the old text
 ```
 
 **Detection hint:** Any instruction to "update" or "edit" an `AuthorizationFormText` record in the context of a form revision is this anti-pattern.

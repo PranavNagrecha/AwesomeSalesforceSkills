@@ -46,9 +46,9 @@ Migration throughput determines cutover window duration. Performance failures ex
 
 **Custom Permission bypass vs. temporary deactivation**: Custom Permission bypass requires editing every validation rule formula — more setup work but no org-wide exposure window. Temporary deactivation is simpler but exposes the org to bad data from any user or automation that runs during the migration window. In production orgs with active users, always prefer Custom Permission bypass.
 
-**Trigger bypass via Custom Setting vs. deployment-based deactivation**: Deployment-based deactivation (commenting out trigger code and deploying) is safe but requires two deployments (before and after migration) and code review cycles. The Custom Setting flag approach requires no deployment and is togglable in seconds. However, it requires that every trigger and flow has been updated to check the flag — which means the flag pattern must be part of the org's standard automation design, not retrofit just before migration.
+**Trigger bypass via Custom Setting vs. deployment-based deactivation**: Deployment-based deactivation (commenting out trigger code and deploying) is safe but requires two deployments (before and after migration) and code review cycles. The Custom Setting flag approach requires no deployment and is togglable in seconds. However, it requires that every trigger and flow checks the flag — so the pattern belongs in the org's standard automation design, not a retrofit just before migration. Set a hierarchy setting at the migration user's level (`getInstance()` merges the user's values) rather than org-wide, so other users' automation keeps running.
 
-**Soft delete rollback vs. hard delete rollback**: Soft delete (recycle bin) is simpler but leaves deleted records consuming storage and appearing in recycle bin queries. Hard delete is cleaner but requires explicit permission, is irreversible, and should be tested in sandbox before use in production.
+**Soft delete rollback vs. hard delete rollback**: A soft delete leaves rows restorable for 15 days, which is a safety net, but they still have to be excluded from queries (Recycle Bin rows don't count against storage). Hard delete is irreversible, needs the Bulk API Hard Delete permission, and should be rehearsed in a sandbox first.
 
 ---
 
@@ -66,23 +66,18 @@ Migration throughput determines cutover window duration. Performance failures ex
 
 ## Official Sources Used
 
-- Bulk API 2.0 Developer Guide — ingest job limits, batch size, upsert operation, relationship cross-references, hard delete
-  https://developer.salesforce.com/docs/atlas.en-us.api_bulk_v2.meta/api_bulk_v2/introduction_bulk_api_2.htm
+Read for this revision (2026-10-19):
 
-- Data Loader Guide — Data Loader configuration, Bulk API vs SOAP API mode, operation types, record limits
-  https://developer.salesforce.com/docs/atlas.en-us.dataLoader.meta/dataLoader/data_loader.htm
+- Bulk API 2.0 and Bulk API Developer Guide (`api_asynch.txt`): relationship fields in a header row, one level only, indexed parent fields, `__r` names (L1491-1531); external ID matched multiple times returns a 300 error (L2500); 10,000-record batches and 150,000,000 daily records (L1242); hard delete permission off by default (L1644-1647); workflow actions increase processing time (L5034).
+- Data Loader Guide (`salesforce_data_loader.txt`): up to 150,000,000 records with Bulk API 2.0 (L90, L117-118); batch size settings for SOAP, Bulk API, and Bulk API 2.0 (L351-360); Bulk API, serial mode, and Bulk API 2.0 options (L484-533).
+- Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): Loading Data from the API: 2,000-record guidance, insert faster than update faster than upsert, clean data because batch errors trigger single-row processing, delta-only updates, Public Read/Write during initial load, roles before records, sharing rules one at a time, disable triggers, workflow rules, and validations during loads, group children by parent, defer sharing calculation (L815-900); Recycle Bin retention, storage, and hard delete (L733-742).
+- Object Reference (`object_reference.txt`): Set Audit Fields upon Record Creation and Update Records with Inactive Owners, objects supporting audit fields, SystemModstamp not settable, audit date range (L2555-2568); master-detail behaviour: cascade delete, owner from master, required on the detail page layout, reparenting off by default (L3254-3266).
+- Apex Reference Guide (`salesforce_apex_reference_guide.txt`): hierarchy custom setting `getInstance()` returns values merged for the current user (L205053-205072); `FeatureManagement.checkPermission` (L215449-215454).
+- Metadata API Developer Guide (`api_meta.txt`): ValidationRule fields `active`, `errorConditionFormula`, `errorMessage` (L45370-45400); CustomField `externalId`, `unique`, `caseSensitive` (L43328, L43402, L43702).
 
-- Salesforce Help: Import Data — import wizard behavior, data import limits, supported objects
-  https://help.salesforce.com/s/articleView?id=sf.data_about_import.htm
+Listed in the original version and not re-read:
 
-- Apex Developer Guide: DML Upsert — upsert behavior, external ID matching semantics, insert-or-update logic
-  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_dml_upsert.htm
-
-- Salesforce Well-Architected Overview — architecture quality model, reliability and operational excellence framing
-  https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-
-- Object Reference: sObject Concepts — relationship types, referential integrity rules, master-detail behavior
-  https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
-
-- Salesforce Help 000382856: Error "Required Fields Are Missing" When Importing Records with the Salesforce Data Import Wizard — master-detail fields are always required on child records; REQUIRED_FIELD_MISSING cause and resolution
-  https://help.salesforce.com/s/articleView?id=000382856&language=en_US&type=1
+- Salesforce Help: Import Data — https://help.salesforce.com/s/articleView?id=sf.data_about_import.htm
+- Salesforce Help 000382856: "Required Fields Are Missing" when importing — https://help.salesforce.com/s/articleView?id=000382856&language=en_US&type=1
+- Apex Developer Guide: DML Upsert — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_dml_upsert.htm
+- Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

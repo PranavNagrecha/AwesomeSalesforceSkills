@@ -4,9 +4,9 @@
 
 - **Security** — The consent hierarchy is the HIPAA authorization audit trail. Every architectural decision must preserve the integrity, completeness, and immutability of that trail. ConsentGiverId must resolve to the correct Individual. AuthorizationFormText records must be append-only to prevent retroactive audit corruption. The consent model must be explicitly decoupled from the sharing model — neither system compensates for gaps in the other.
 - **Reliability** — The CareProgramEnrollee activation gate is a critical reliability control. If it is absent or misconfigured, patients can be enrolled without documented HIPAA authorization, creating regulatory exposure. The gate must be included in deployment packages and verified after every org refresh. Consent status checks in clinical workflows must filter on both status and DataUsePurpose to avoid false-positive clearances.
-- **Performance** — AuthorizationFormConsent records grow at patient scale. SOQL queries traversing the full hierarchy (AuthorizationFormConsent → AuthorizationFormText → AuthorizationFormDataUse → DataUsePurpose) must use selective filters on indexed fields. `ConsentGiverId` is indexed by default. Avoid cross-object formula fields on AuthorizationFormConsent that trigger recalculation at enrollment time.
+- **Performance** — AuthorizationFormConsent records grow at patient scale. Consent checks should filter on `ConsentGiverId` (a lookup, so indexed like other foreign keys) and resolve purposes through AuthorizationFormDataUse on the form, not through a path from the form text. Avoid cross-object formula fields on AuthorizationFormConsent that trigger recalculation at enrollment time.
 - **Scalability** — For large patient populations, consent records should be archived when the associated care episode is closed. Big Object archival or external storage should be planned for organizations with multi-million patient populations to prevent consent query degradation over time.
-- **Operational Excellence** — Consent hierarchy configuration (DataUsePurpose, AuthorizationForm, AuthorizationFormText, AuthorizationFormDataUse) should be managed as metadata and deployed through change management pipelines — not created manually in production. This ensures environment parity and enables regression testing of the consent gate.
+- **Operational Excellence** — The consent hierarchy (DataUsePurpose, AuthorizationForm, AuthorizationFormText, AuthorizationFormDataUse) is data, not metadata: keep it as versioned seed data loaded by a script with stable names, so every environment gets the same records and the consent gate can be regression-tested. The gate automation and permission sets are metadata and ship through the normal pipeline.
 
 ## Architectural Tradeoffs
 
@@ -29,9 +29,16 @@ These must be designed in tandem but remain independent in implementation. The c
 
 ## Official Sources Used
 
-- Health Cloud Consent Management Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.health_cloud_developer.meta/health_cloud_developer/
-- AuthorizationFormConsent Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_authorizationformconsent.htm
-- Health Cloud Object Reference (AuthorizationForm) — https://developer.salesforce.com/docs/atlas.en-us.health_cloud_object_reference.meta/health_cloud_object_reference/hco_object_authorization_form_consent.htm
+Read for this revision (2026-10-19), Object Reference (`object_reference.txt`, API 67.0):
+
+- AuthorizationForm: API 46.0+, available if Data Protection and Privacy is enabled; `DefaultAuthFormTextId`, `EffectiveFromDate`, `EffectiveToDate`, `IsSignatureRequired`, `RevisionNumber`; share and owner sharing rule objects (L45946-46075).
+- AuthorizationFormConsent: `AuthorizationFormTextId` ("the authorization form text that the Individual consented to"), `ConsentCapturedDateTime`, `ConsentCapturedSource` (string), `ConsentCapturedSourceType` (restricted picklist Email, InPerson, MailingAddress, Phone, Social, Video, Web), `ConsentGiverId` polymorphic to Account, Contact, Individual, Lead, User, `DocumentVersionId`, required `Name`, `RelatedRecordId`, `Status` restricted picklist Rejected, Seen, Signed (L46076-46293).
+- AuthorizationFormDataUse: `AuthorizationFormId` and `DataUsePurposeId` (L46294-46409); AuthorizationFormText: `AuthorizationFormId`, `ContentDocumentId`, `DetailAuthorizationFormText`, `FullAuthorizationFormUrl`, `Locale` (L46410-46530).
+- DataUsePurpose: API 45.0+, `CanDataSubjectOptOut`, `LegalBasisId`, `Name`, `PurposeId` (L95156-95290); Contact `IndividualId` (L71768); ContactPointConsent and ContactPointTypeConsent descriptions (L7662-7679, L74028-74031); restricted picklists reject unapproved values through the API (L2463-2464).
+- Apex Developer Guide (`salesforce_apex_developer_guide.txt`): polymorphic `What.Type` filtering (L9780-9786); lookup fields indexed by default (L9643-9645). Apex Reference Guide (`salesforce_apex_reference_guide.txt`): `Id.getSObjectType()` (L217368-217372).
+
+Listed in the original version and not re-read:
+
+- Health Cloud Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.health_cloud_developer.meta/health_cloud_developer/
 - Consent Management for Health Cloud (Help) — https://help.salesforce.com/s/articleView?id=ind.hc_consent_management.htm
-- Optimizing Health Cloud Consent Management (Trailhead) — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent)
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

@@ -20,19 +20,19 @@ Master-Detail:
 - Child inherits parent sharing (OWD of child is "Controlled by Parent")
 - Supports native Roll-Up Summary fields
 - Cannot reparent once created (unless Allow Reparenting is enabled)
-- Maximum 2 master-detail relationships per object
+- A junction object uses two master-detail fields (Object Reference)
 - These standard objects can NEVER be the master: BusinessHours, Idea, Lead,
   OrderItem, PriceBook2, Product2, QuoteLineItem, User
 
 Lookup:
 - Child can exist without parent (optional relationship)
-- No cascade delete: the field is cleared (deleteConstraint SetNull, default).
-  Restrict is self-serve; Cascade is NOT in the field wizard — it needs a
-  Salesforce Support case and it bypasses security and sharing
+- No cascade delete by default: the field is cleared (deleteConstraint SetNull).
+  Restrict blocks the parent delete. Cascade exists in metadata; confirm it is
+  available in the org and review its access implications before using it
 - Independent sharing model
 - No native Roll-Up Summary (use DLRS, Flow, or Apex alternatives)
 - Can be reparented freely
-- Up to 40 lookup relationships per object
+- A custom object allows up to 40 relationships (limits guide)
 
 Choose Lookup when: optionality, reparenting, or independent sharing is needed.
 Choose Master-Detail when: cascade delete and roll-up summaries are required
@@ -64,7 +64,7 @@ Before adding a redundant field, check native alternatives:
    Flow/DLRS/Apex (lookup relationships)
 
 Redundant trigger-populated fields should only be used when:
-- Cross-object formula fields exceed the compiled formula size limit (5,000 chars)
+- Cross-object formula fields exceed the formula limits (formula text is capped at 3,900 characters, Apex Developer Guide L28143-28144; the separate compile size limit, UNVERIFIED (2026-10-19): 5,000 bytes, is not in the local corpus)
 - The value is needed in a report filter or list view filter (formula fields
   have filtering limitations)
 - Performance: frequently queried fields on large-volume objects where
@@ -110,28 +110,22 @@ Use Text only when:
 
 ## Anti-Pattern 4: Ignoring the 40-Relationship-per-Object Limit
 
-**What the LLM generates:** Data models that add lookup after lookup to a central object (e.g., Case) without tracking the total relationship count. Salesforce limits each object to 40 lookup/master-detail relationships combined.
+**What the LLM generates:** Data models that add lookup after lookup to a central object without tracking the total relationship count. The limits guide notes that a custom object allows up to 40 relationships.
 
-**Why it happens:** The 40-relationship limit is a hard platform constraint that training data rarely mentions because most examples involve a few relationships. LLMs do not track cumulative relationship counts across a data model design.
+**Why it happens:** Most examples involve a few relationships, so models never track the cumulative count across a design.
 
 **Correct pattern:**
 
 ```text
-Relationship limits per object:
-- Maximum 40 total relationships (lookups + master-details combined)
-- Maximum 2 master-detail relationships per object
-- Each polymorphic lookup (e.g., WhoId, WhatId) counts as 1
+Relationship budget per custom object (limits guide: up to 40 relationships):
 
 Before adding relationships to an object:
-1. Query current count:
-   SELECT COUNT() FROM EntityParticle
-   WHERE EntityDefinitionId = 'CustomObject__c'
-   AND DataType IN ('reference')
-
-2. If approaching 40, consider:
-   - Junction objects to consolidate relationships
-   - Custom Metadata Types for configuration references
-   - Text fields with External IDs for soft references (not enforced)
+1. Count the Lookup and MasterDetail fields in the object's retrieved metadata
+   (the skill's checker reports the count per object).
+2. If the count is approaching 40, consider:
+   - A junction object instead of several parallel lookups
+   - Custom metadata types for configuration references
+   - A Text External ID for a soft reference (not enforced by the platform)
 ```
 
 **Detection hint:** Flag data model designs that add 5+ relationships to a single object without checking the current relationship count. Look for central objects (Case, Account) that may already be near the limit.
@@ -162,7 +156,6 @@ Junction object advantages over multi-select picklist:
 - Queryable: SOQL with relationship queries
 - Supports additional attributes per association
 - Enforced referential integrity
-- No 4,099-character limit (multi-select picklist limit)
 ```
 
 **Detection hint:** Flag multi-select picklist or comma-separated text field recommendations where the data model describes a relationship between two objects. Look for "store related [object] names in a field" patterns. Also flag any junction recipe that puts a master-detail on one of the eight never-the-master standard objects listed in Anti-Pattern 1 — that leg cannot be created, so the promised rollup on that parent does not exist.

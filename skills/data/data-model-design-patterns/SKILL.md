@@ -17,6 +17,7 @@ triggers:
   - "section status JSON in a long text area is not reportable"
   - "pipeline lives on account instead of opportunity"
   - "lookup driven junction create duplicates"
+  - "design a junction object between two objects so both sides get roll-up totals"
 tags:
   - data-model
   - relationships
@@ -40,9 +41,9 @@ outputs:
   - "Data model anti-pattern findings with remediation steps"
   - "Completed data-model-design-patterns-template.md for the org"
 dependencies: []
-version: 1.0.1
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # Data Model Design Patterns
@@ -62,7 +63,23 @@ Gather this context before working on anything in this domain:
 | Relationship requirements | Is cascade delete acceptable? Are rollup summaries needed? Can a child exist without a parent? |
 | Integration requirements | Does any external system upsert records? If so, what is the natural key? |
 | Common wrong assumption | Lookup relationships do NOT support rollup summary fields; only master-detail children do. |
-| Key limits in play | 2 master-detail per child object; 40 lookup per object; 25 external ID fields per object; custom indexes via Salesforce Support case (not self-serve). |
+| Key limits in play | A custom object allows up to 40 relationships (limits guide); External ID makes Auto Number, Email, Number, and Text fields indexed without a Support case; other custom indexes come from Customer Support. |
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "If the parent is deleted, should the children go too, and can any child ever block that?" | Master-detail deletes detail records, and the parent delete fails if any child can't be deleted (Gotcha 1) | A deliberate cascade decision and a guard for bulk deletes |
+| "Can a child ever exist without a parent, or move to a different parent?" | Master-detail is required and reparenting is off unless `reparentableMasterDetail` is set (Gotcha 2) | Lookup where optional, or master-detail with reparenting decided up front |
+| "Does either parent need totals across the children?" | Native roll-up summaries need the master-detail field as `summaryForeignKey` (Gotcha 3) | Master-detail legs where totals are needed, or a roll-up alternative chosen early |
+| "Is either side of the junction one of the standard objects that can't be a master?" | BusinessHours, Idea, Lead, OrderItem, PriceBook2, Product2, QuoteLineItem, and User can't be the master (Gotcha 8) | A lookup on that leg and a non-native roll-up plan for it |
+| "What is the source system's key, must it be unique, and is it case-sensitive?" | External ID, Unique, and case sensitivity are separate settings (Gotcha 5) | A key field whose flags match the source semantics |
+| "How many relationships does the object already have?" | A custom object allows up to 40 relationships | A relationship budget before adding more lookups |
+| "Should the child be editable by users who can only read the parent?" | `writeRequiresMasterRead` sets the parent access needed to create, edit, or delete detail records | A sharing behaviour chosen on purpose, not by default |
+
+A proper model adds relationship types chosen against deletion, ownership, totals, and keys; "just adding a lookup" leaves orphan rows, missing totals, and keys that collide in the first integration.
 
 ---
 
@@ -70,19 +87,19 @@ Gather this context before working on anything in this domain:
 
 ### Lookup Relationships
 
-A lookup relationship is a loosely coupled reference from a child object to a parent object. The child record can exist without a parent (the parent field is optional unless you mark it required on the page layout). Deleting the parent does not automatically delete child records — the lookup field is simply cleared (Metadata API `deleteConstraint: SetNull`, the default). You can self-serve switch that to `Restrict`, which blocks the parent delete. `Cascade` is **not** a third option in the field wizard: it requires Salesforce Support to enable the org feature "cascade delete on custom lookup relationships", it is unavailable for lookups to standard objects, and it bypasses security and sharing (see `references/gotchas.md`). Lookups do not support rollup summary fields on the parent.
+A lookup relationship is a loosely coupled reference from a child object to a parent object. The child record can exist without a parent (the parent field is optional unless you mark it required on the page layout). Deleting the parent does not delete child records by default — the lookup field is cleared (Metadata API `deleteConstraint: SetNull`, the default). `Restrict` blocks the parent delete instead. `Cascade` also exists in the metadata; confirm it is available in the org and review its access implications before designing on it (see `references/gotchas.md`). Lookups can't drive native roll-up summary fields.
 
-Each object supports up to 40 lookup relationship fields. Standard relationship fields (OwnerId, CreatedById, LastModifiedById, RecordTypeId) are indexed by default and do not count toward the custom lookup limit.
+The limits guide notes a custom object allows up to 40 relationships. Lookup and master-detail fields are foreign keys, which are indexed by default.
 
 **Use lookup when:** The child record has independent business meaning, the parent may be deleted without removing children, or you need more than 2 parent references on the same child.
 
 ### Master-Detail Relationships (MDR)
 
-A master-detail relationship is a tightly coupled parent-child relationship. The parent field on the child is required — a child record cannot exist without a parent. Deleting the parent cascades and permanently deletes all detail records. Master-detail relationships enable rollup summary fields (COUNT, SUM, MIN, MAX) on the parent object.
+A master-detail relationship is a tightly coupled parent-child relationship. The master-detail field is required on the detail record, the detail record takes its owner and sharing from the master, and deleting the master deletes its detail records (the parent delete fails if any child can't be deleted). Master-detail relationships enable roll-up summary fields on the parent.
 
-Each child object supports a maximum of **2** master-detail relationships. You cannot convert a lookup to master-detail if records already exist with a blank parent field (all existing children must have a populated parent). MDR fields are indexed automatically.
+A junction object carries two master-detail fields. Records can't be reparented unless `reparentableMasterDetail` is true, and `writeRequiresMasterRead` controls whether Read access on the master is enough to create, edit, or delete detail records. Converting a lookup to master-detail needs a parent on every existing child (see Gotcha 2).
 
-**Cascade delete chain risk**: If Object A is the master of Object B, and Object B is the master of Object C, deleting an A record cascades through B into C. Chains deeper than two levels are a production risk — a single parent delete can remove thousands of grandchild records silently.
+**Cascade delete chain risk**: If Object A is the master of Object B, and Object B is the master of Object C, deleting an A record cascades through B into C. A single parent delete can remove thousands of grandchild records.
 
 **Use master-detail when:** The child's entire existence depends on the parent (e.g., Order Line Item depends on Order), rollup summaries are required, and you are certain cascade delete is the desired behavior.
 
@@ -108,7 +125,7 @@ Choosing the wrong field type loses platform-enforced validation, formatting, an
 | Email address | Email | Text(255) | Click-to-email, email validation |
 | Percentage | Percent | Number | Automatic % display, decimal semantics |
 | Currency amounts | Currency | Number | Multi-currency support, locale formatting |
-| Long unformatted text | Long Text Area | Text(255) | Storage — Text truncates at 255 chars |
+| Long unformatted text | Long Text Area | Text(255) | Capacity — Text holds at most 255 chars, and a longer value fails the save unless truncation is requested (Apex Developer Guide L8519-8521) |
 | Structured rich content | Rich Text Area | Long Text Area | Formatting, inline images |
 | Unique record key | External ID (+ Unique) | Text | Indexed by default, available for upsert |
 | True/False | Checkbox | Picklist | Compact storage, formula compatibility |
@@ -117,13 +134,11 @@ Choosing the wrong field type loses platform-enforced validation, formatting, an
 
 Salesforce automatically indexes a small set of standard fields on every object: `Id`, `Name`, `OwnerId`, `CreatedDate`, `SystemModstamp`, `RecordTypeId`, and all standard and custom relationship fields.
 
-**Custom indexes** extend selective filtering to other fields. They are not self-serve — you request them via a Salesforce Support case. Conditions for a field to be eligible for a custom index:
-- Must not be a formula field
-- Must not be an encrypted field
-- Must not be a multi-select picklist
-- The query filter must be selective (typically, the filter must match fewer than 10% of total records, or fewer than 333,000 records for large objects)
+**Custom indexes** extend selective filtering to other fields. External ID or Unique on an Auto Number, Email, Number, or Text field creates one without a case; for other fields, Customer Support creates them. Constraints:
+- Not available on long or rich text areas, encrypted text, multi-select picklists, currency fields in a multicurrency org, or non-deterministic formulas (deterministic formulas can be indexed)
+- The optimizer uses a custom index only when the filter matches less than 10% of the first million rows and 5% of rows beyond (5M rows → 300,000)
 
-**Skinny tables** are a Salesforce-managed performance optimization for large objects with frequent queries on a specific set of fields. A skinny table is a denormalized projection of selected fields, maintained internally. You request skinny tables via Salesforce Support. They are most useful when a single object has millions of records and a small fixed set of non-indexed fields is repeatedly queried together.
+**Skinny tables** hold selected standard and custom fields together so read-only queries that use only those fields skip a join. Customer Support creates them; they stay in sync with the source table, hold up to 200 columns, and are copied to Full sandboxes only.
 
 ---
 
@@ -152,7 +167,7 @@ Salesforce automatically indexes a small set of standard fields on every object:
 3. Use the REST API `upsert` endpoint or Bulk API 2.0 upsert with the external ID field as the key.
 4. Salesforce matches on the external ID value: if found, updates; if not found, inserts.
 
-**Limit:** Each object supports up to 25 external ID fields. External ID fields indexed by default; standard text fields are not.
+**Note:** External ID makes the field indexed and usable as the upsert key; Unique is what rejects duplicate values, and `caseSensitive` decides whether `ABC` and `abc` are the same key.
 
 **Why not use Name as the key:** Name is not guaranteed unique and is not marked as an external ID, so the upsert API will not match on it.
 
@@ -161,12 +176,12 @@ Salesforce automatically indexes a small set of standard fields on every object:
 **When to use:** A large object (500k+ records) is queried frequently with a WHERE filter on a field that is not a standard indexed field, and the query is timing out or performing full table scans.
 
 **How it works:**
-1. Confirm the filter is selective (the filtered result is less than ~10% of total records, or under 333k records).
-2. Confirm the field is not a formula, encrypted, or multi-select picklist.
+1. Confirm the filter is under the custom-index threshold for the object's row count (10% of the first million rows plus 5% of the rest).
+2. Confirm the field type can be indexed (not long or rich text, encrypted text, multi-select picklist, or a non-deterministic formula).
 3. Open a Salesforce Support case requesting a custom index on the specific field and object.
-4. After the index is created, re-run the query and confirm execution plan shows index use (use SOQL `EXPLAIN` via Tooling API or Developer Console).
+4. After the index is created, capture the plan with Developer Console Query Plan or the REST `?explain=` parameter and confirm `leadingOperationType: Index`.
 
-**Why not just add an external ID:** External ID fields are indexed, but they carry uniqueness semantics. Use custom index requests for non-unique filter fields.
+**Why not just add an external ID:** External ID only applies to Auto Number, Email, Number, and Text fields, and it turns the field into an upsert key. For picklists, dates, and other filter fields, ask Support for the index.
 
 ---
 
@@ -183,7 +198,7 @@ Salesforce automatically indexes a small set of standard fields on every object:
 | Integration upsert with a source-system natural key | External ID field (Unique) | Automatically indexed; supported by upsert API endpoints |
 | Large object with slow non-indexed filter queries | Custom index (via Support case) | Selective index on the filter field reduces full-table scans |
 | Very large object, small set of repeatedly queried fields | Skinny table (via Support) | Denormalized projection eliminates wide-row scans |
-| Need to store more than 255 characters | Long Text Area | Text field hard-truncates at 255 characters |
+| Need to store more than 255 characters | Long Text Area | A Text field holds at most 255 characters; longer values fail the save |
 
 ---
 
@@ -220,21 +235,34 @@ Use this mode when a production issue traces back to the data model.
 | Rollup summary not available | Relationship is likely a lookup, not a master-detail. Rollups require master-detail. |
 | SOQL timeout or governor limit on large object | Check query execution plan. If full table scan, identify filter field and request a custom index if eligible. |
 | Upsert matching not working | Confirm the target field is marked External ID. Upsert won't match on non-External-ID fields. |
-| Orphaned children after a lookup parent delete | Lookup delete behavior is `SetNull` (clears the field) by default. `Cascade` is not self-serve — it needs a Salesforce Support case and bypasses sharing. Use `Restrict`, master-detail, or a before-delete trigger instead. |
-| Text field values getting truncated | Field is likely Text(255). Migrate to Long Text Area. |
+| Orphaned children after a lookup parent delete | Lookup delete behaviour is `SetNull` (clears the field) by default. Use `Restrict`, master-detail, or before-delete automation; check `Cascade` availability in the org before relying on it. |
+| Saves fail on long text values, or values arrive cut off (a client using `allowFieldTruncation`) | Field is likely Text(255). Migrate to Long Text Area. |
 
 ---
 
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
+1. List entities, volumes, query filters, and integration keys in `templates/data-model-design-patterns-template.md`.
+2. Choose each relationship with the Questions table and Decision Guidance; write the field metadata (example below) with `deleteConstraint`, `reparentableMasterDetail`, and `writeRequiresMasterRead` set on purpose.
+3. Run `python3 skills/data/data-model-design-patterns/scripts/check_data_model.py --manifest-dir force-app/main/default` and fix every ERROR (for example, a master-detail to a standard object that can't be a master); review WARN lines (lookup-only junctions, relationship counts near 40).
+4. For filter fields on large objects, do the threshold arithmetic and either set External ID or file a Support request (`data/custom-index-requests`).
+5. Deploy to a sandbox, load sample data, and capture plans for the main queries; record decisions in the template. `references/metadata-examples.md` shows junction legs, a Restrict lookup, and a key field with every decision attribute set.
 
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- objects/Enrollment__c/fields/Course__c.field-meta.xml: one master-detail leg of a junction -->
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Course__c</fullName>
+    <label>Course</label>
+    <type>MasterDetail</type>
+    <referenceTo>Course__c</referenceTo>
+    <relationshipName>Enrollments</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>
+```
 
 ---
 
@@ -254,19 +282,21 @@ Run through these before marking data model work complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full write-ups are in `references/gotchas.md`:
 
-1. **MDR cascade delete is silent and permanent** — Deleting a master record immediately and permanently deletes all detail records, including any detail-of-detail records two levels down. There is no recycle bin recovery for cascade-deleted records. A single accidental parent delete can wipe thousands of related records.
-
-2. **Converting lookup to master-detail requires all children to have a parent** — You cannot convert an existing lookup field to master-detail if any child records have a null parent field. You must first populate the parent field on all records, then perform the conversion — which may require a data migration step on large datasets.
-
-3. **Lookup filter conditions add to query cost, not reduce it** — Lookup filters restrict which records appear in the lookup search but do not create a database index. If the filter references a non-indexed field on the parent object, the lookup search itself may perform slowly at scale.
-
-4. **External ID limit is 25 per object, but only 3 are indexed in older API versions** — While the current platform allows up to 25 external ID fields per object (all indexed), integrations using older API versions (pre-Spring '16) may only respect the first 3. Always verify API version compatibility when adding more than 3 external ID fields.
-
-5. **Skinny tables are not updated in real time for all operations** — Skinny tables can lag during bulk data loads. If you run a report or query immediately after a large Bulk API job, the skinny table projection may not reflect the freshest data until the background refresh completes.
-
-6. **Junction object with two lookups loses rollup summary on both sides** — This is the most common many-to-many modeling mistake. Once a junction is built with lookup fields and populated with data, converting to MDR requires clearing and repopulating those fields — a non-trivial data migration.
+| # | Gotcha |
+|---|---|
+| 1 | Master-detail cascade delete is automatic, and one undeletable child blocks it |
+| 2 | Converting a lookup to master-detail needs a parent on every child |
+| 3 | Lookup-only junctions can't carry native roll-ups |
+| 4 | Lookup filters don't index anything |
+| 5 | External ID, Unique, and case sensitivity are separate settings |
+| 6 | Skinny tables help only queries that use nothing outside them |
+| 7 | Check lookup `Cascade` availability before designing on it |
+| 8 | Eight standard objects can never be the master |
+| 9 | Wizard state in a long text JSON blob is invisible to reports |
+| 10 | Processes built on the wrong standard object |
+| 11 | Lookup-driven junction creates need an existence check |
 
 ---
 
@@ -275,12 +305,16 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | `data-model-design-patterns-template.md` | Fill-in-the-blank output document capturing relationship decisions, field type choices, indexing plan, and anti-pattern findings |
-| `check_data_model.py` | stdlib Python checker that validates junction object MDR structure in exported Salesforce metadata |
+| `scripts/check_data_model.py` | stdlib checker for relationship metadata: never-master targets, lookup-only junctions, relationship counts |
 
 ---
 
 ## Related Skills
 
-- `object-creation-and-design` — use for step-by-step object creation and page layout setup; this skill covers design decisions, not UI creation steps
-- `large-data-volumes` — use when the primary concern is bulk data loading, archival, or Bulk API throughput at scale
-- `soql-query-optimization` — use when the focus is query tuning, EXPLAIN plan analysis, or governor limit debugging on existing queries
+- `admin/object-creation-and-design` — creating the object and its page layouts in Setup
+- `admin/lookup-and-relationship-design` — hierarchical, external, and polymorphic relationship types and per-object limits
+- `architect/salesforce-erd-and-diagramming` — drawing the model
+- `data/custom-index-requests` — getting the index or skinny table the model needs
+- `data/roll-up-summary-alternatives` — totals over lookup relationships
+- `data/soql-query-optimization` — tuning the queries the model must serve
+- `architect/large-data-volume-architecture` — objects expected to reach tens of millions of rows

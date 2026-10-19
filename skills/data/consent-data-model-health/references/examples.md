@@ -2,113 +2,99 @@
 
 ## Example 1: Setting Up the Consent Hierarchy for a Patient Portal Intake Flow
 
-**Context:** A healthcare organization is launching a patient portal built on Experience Cloud. Before a patient can be enrolled in a care program, they must view and sign a HIPAA Authorization for Treatment. The development team needs to configure the consent hierarchy and wire it to an intake Screen Flow.
+**Context:** A healthcare organization launches an Experience Cloud patient portal. Before a patient is enrolled in a care program, they must view and sign an authorization for treatment. The team needs the consent records and the intake write.
 
-**Problem:** Without a properly structured hierarchy, the AuthorizationFormConsent record created at intake will have no traceable link to a specific form version or data use purpose. Auditors cannot verify what the patient consented to, and the CareProgramEnrollee activation gate cannot reliably filter by purpose.
+**Problem:** Without a linked hierarchy, the consent row written at intake can't be traced to the wording shown or to the purpose it covers, and the enrollment gate can't filter by purpose.
 
-**Solution:**
-
-Step 1 — Create the DataUsePurpose record (can be done via Setup UI or data load):
+**Solution (anonymous Apex for a sandbox; field names from the Object Reference):**
 
 ```apex
-DataUsePurpose dup = new DataUsePurpose();
-dup.Name = 'Treatment Authorization';
-dup.CanDataSubjectOptOut = false; // HIPAA treatment authorization is not opt-out
-insert dup;
+DataUsePurpose treatment = new DataUsePurpose(
+    Name = 'Treatment Authorization',
+    CanDataSubjectOptOut = false
+);
+insert treatment;
+
+AuthorizationForm form = new AuthorizationForm(
+    Name = 'HIPAA Authorization for Treatment',
+    IsSignatureRequired = true,
+    EffectiveFromDate = Date.today(),
+    RevisionNumber = 'rev1.0'
+);
+insert form;
+
+AuthorizationFormText textV1 = new AuthorizationFormText(
+    Name = 'HIPAA Authorization v1.0',
+    AuthorizationFormId = form.Id,
+    DetailAuthorizationFormText = 'By signing this form, you authorize...'
+);
+insert textV1;
+
+form.DefaultAuthFormTextId = textV1.Id;
+update form;
+
+// Purposes attach to the form, not to the text
+insert new AuthorizationFormDataUse(
+    Name = 'HIPAA Treatment - Treatment Authorization',
+    AuthorizationFormId = form.Id,
+    DataUsePurposeId = treatment.Id
+);
 ```
 
-Step 2 — Create the AuthorizationForm:
+At intake completion (Apex invocable or flow Create Records with the same fields):
 
 ```apex
-AuthorizationForm af = new AuthorizationForm();
-af.Name = 'HIPAA Authorization for Treatment';
-af.IsSignatureRequired = true;
-insert af;
-```
-
-Step 3 — Create the AuthorizationFormText with the legal body text:
-
-```apex
-AuthorizationFormText aft = new AuthorizationFormText();
-aft.AuthorizationFormId = af.Id;
-aft.Name = 'HIPAA Authorization v1.0';
-aft.ContentDocument = 'By signing this form, you authorize...'; // abbreviated
-aft.Language = 'en_US';
-insert aft;
-```
-
-Step 4 — Create the AuthorizationFormDataUse junction:
-
-```apex
-AuthorizationFormDataUse afdu = new AuthorizationFormDataUse();
-afdu.AuthorizationFormTextId = aft.Id;
-afdu.DataUsePurposeId = dup.Id;
-insert afdu;
-```
-
-Step 5 — At intake flow completion, create the AuthorizationFormConsent using the patient's Individual ID:
-
-```apex
-// individualId is the Id of the Individual record, NOT the Contact Id
-AuthorizationFormConsent afc = new AuthorizationFormConsent();
-afc.ConsentGiverId = individualId;
-afc.AuthorizationFormTextId = aft.Id;
-afc.Status = 'Signed';
-afc.ConsentCapturedSource = 'Web';
-afc.ConsentCapturedDateTime = Datetime.now();
-insert afc;
-```
-
-**Why it works:** The chain DataUsePurpose → AuthorizationForm → AuthorizationFormText → AuthorizationFormDataUse ensures each consent record is fully traceable. The `IsSignatureRequired = true` flag on the form means only `Signed` status satisfies downstream consent checks. Populating `ConsentCapturedSource` and `ConsentCapturedDateTime` satisfies HIPAA audit trail requirements.
-
----
-
-## Example 2: Querying AuthorizationFormConsent to Verify Consent Before Clinical Record Access
-
-**Context:** An Apex service class exposes a method called before displaying a patient's clinical records in an LWC. The method must confirm the patient has a valid signed Treatment authorization before returning any data.
-
-**Problem:** A naive check queries only `Status = 'Signed'` without filtering on DataUsePurpose. This returns true if the patient signed a Research consent form but not a Treatment authorization — a false positive that could result in unauthorized PHI disclosure.
-
-**Solution:**
-
-```apex
-public static Boolean hasSignedTreatmentConsent(Id individualId) {
-    List<AuthorizationFormConsent> consents = [
-        SELECT Id, Status, ConsentCapturedDateTime
-        FROM AuthorizationFormConsent
-        WHERE ConsentGiverId = :individualId
-          AND Status = 'Signed'
-          AND AuthorizationFormText.AuthorizationFormDataUses.DataUsePurpose.Name
-              = 'Treatment Authorization'
-        ORDER BY ConsentCapturedDateTime DESC
-        LIMIT 1
-    ];
-    return !consents.isEmpty();
-}
-```
-
-Usage in the service class:
-
-```apex
-public static ClinicalRecord__c getClinicalRecord(Id patientIndividualId, Id recordId) {
-    if (!hasSignedTreatmentConsent(patientIndividualId)) {
-        throw new ConsentException(
-            'Patient does not have signed Treatment Authorization. ' +
-            'Route to consent intake before accessing clinical records.'
+public with sharing class ConsentIntake {
+    public static void recordSignature(Id individualId, Id formTextId, String portalUrl) {
+        if (individualId.getSObjectType() != Individual.SObjectType) {
+            throw new IllegalArgumentException('Consent giver must be an Individual Id');
+        }
+        insert new AuthorizationFormConsent(
+            Name = 'Treatment consent ' + Datetime.now().format('yyyy-MM-dd'),
+            ConsentGiverId = individualId,
+            AuthorizationFormTextId = formTextId,
+            Status = 'Signed',
+            ConsentCapturedSourceType = 'Web',
+            ConsentCapturedSource = portalUrl,
+            ConsentCapturedDateTime = Datetime.now()
         );
     }
-    return [SELECT Id, Name, ClinicalNotes__c FROM ClinicalRecord__c WHERE Id = :recordId LIMIT 1];
 }
 ```
 
-**Why it works:** Filtering on `AuthorizationFormText.AuthorizationFormDataUses.DataUsePurpose.Name` traverses the full hierarchy and ensures only a consent record linked to the correct data use purpose satisfies the check. The `ORDER BY ConsentCapturedDateTime DESC LIMIT 1` pattern retrieves the most recent authorization in case of multiple records.
+**Why it works:** Each consent row points at the exact text shown, the text belongs to a form, and the form is linked to its purpose, so any purpose-specific check can follow the chain. The row carries the required name, capture time, source, and source type, and the giver type is enforced before insert.
 
 ---
 
-## Anti-Pattern: Using ContactPointConsent to Check HIPAA Authorization
+## Example 2: Checking Treatment Consent Before Showing Clinical Records
 
-**What practitioners do:** Query `ContactPointConsent` (the marketing/communication consent object) to verify whether a patient has authorized PHI access before displaying clinical records.
+**Context:** An Apex service behind an LWC must confirm a signed treatment authorization before returning clinical data.
 
-**What goes wrong:** `ContactPointConsent` tracks communication channel preferences (email opt-in, SMS opt-out). It has no relationship to `AuthorizationFormConsent` or the DataUsePurpose hierarchy. A query against this object will always return empty results for HIPAA authorization checks, causing either false denials (all patients blocked) or false clearances (if the absence check is inverted). This is an architecturally silent failure — no error is thrown and no warning is logged.
+**Problem:** A check on `Status = 'Signed'` alone returns true for a patient who signed only a research authorization. And a filter like `AuthorizationFormText.AuthorizationFormDataUses...` doesn't work: data uses hang off the form, not the text, and a WHERE clause can't walk down a child relationship that way.
 
-**Correct approach:** Always use `AuthorizationFormConsent` with a `ConsentGiverId` (Individual ID) filter and a DataUsePurpose filter for HIPAA authorization checks. Reserve `ContactPointConsent` exclusively for communication preference management.
+**Solution:** Use the two-step check from SKILL.md Pattern 2 (`ConsentCheck.hasSignedConsent(individualId, 'Treatment Authorization')`), then:
+
+```apex
+public with sharing class ClinicalRecordService {
+    public class ConsentException extends Exception {}
+
+    public static ClinicalRecord__c getClinicalRecord(Id patientIndividualId, Id recordId) {
+        if (!ConsentCheck.hasSignedConsent(patientIndividualId, 'Treatment Authorization')) {
+            throw new ConsentException('No signed treatment authorization on file; route to consent intake.');
+        }
+        return [SELECT Id, Name, Clinical_Notes__c FROM ClinicalRecord__c WHERE Id = :recordId WITH USER_MODE LIMIT 1];
+    }
+}
+```
+
+**Why it works:** The purpose filter is applied where the data model keeps it (AuthorizationFormDataUse), and the record query still runs in user mode, because consent is a precondition, not an access grant.
+
+---
+
+## Anti-Pattern: Using ContactPointConsent to Check Treatment Authorization
+
+**What practitioners do:** Query ContactPointConsent (consent to be contacted through a specific email address or phone number) to decide whether clinical data may be used.
+
+**What goes wrong:** Contact-point consents record communication preferences. They aren't authorization-form consents, so the check returns nothing useful: every patient is blocked, or, if the absence check is inverted, everyone is cleared.
+
+**Correct approach:** Check AuthorizationFormConsent through its form text, form, and the form's data uses, filtered on the consent giver and `Status = 'Signed'`. Keep ContactPointConsent and ContactPointTypeConsent for communication preferences.

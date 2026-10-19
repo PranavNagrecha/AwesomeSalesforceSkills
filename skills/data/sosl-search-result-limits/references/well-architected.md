@@ -10,8 +10,8 @@
   gap.
 - **Reliability** — nearly every limit in this domain fails *silently*: a matching record
   beyond the 2,000-record scan window, past the 250 single-object cap, or filtered by the
-  min(2000/n, 250) split simply does not appear, with no error. Dynamic `SearchQuery` strings
-  over 4,000 characters drop logical operators and over 10,000 return zero rows, again with no
+  min(2000/n, 250) split simply does not appear, with no error. A `FIND {…}` search term
+  over 4,000 characters drops logical operators and over 10,000 returns zero rows, again with no
   exception. Reliable systems make these boundaries explicit — bound input length, set custom
   per-object limits, and assert result counts in tests — rather than trusting an unbounded
   search to surface everything.
@@ -43,10 +43,17 @@
    `WHERE`/`ORDER BY`, or scope to fewer objects, deliberately.
 2. **Debugging missing records only as an admin** — View All Data masks the per-user permission
    filter, so the bug is invisible to the investigator. Reproduce as the affected user.
-3. **Trusting length overruns to error** — letting a dynamic `SearchQuery` grow past 4,000 or
-   10,000 characters and expecting an exception. Bound the string length before the call.
+3. **Trusting length overruns to error** — letting the `FIND {…}` term grow past 4,000 or
+   10,000 characters and expecting an exception. Bound the term's length before the search runs.
 
 ## Official Sources Used
 
-- SOSL Limits on Search Results (SOQL and SOSL Reference) — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl_limits.htm
-- SOQL and SOSL Limits (Salesforce Platform limits cheat sheet) — https://developer.salesforce.com/docs/atlas.en-us.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_soslsoql.htm
+Read for this revision (2026-10-19):
+
+- SOQL and SOSL Reference, "SOSL Limits on Search Results" (API 67.0, fetched from https://developer.salesforce.com/docs/get_document_content/soql_sosl/sforce_api_calls_sosl_limits.htm/en-us/262.0): the 2,000-record term scan from API 28.0, the 250 single-object default and WHERE/ORDER BY raise to 2,000, min(2,000/n, 250) with the 2- and 10-object examples, View All Data versus permission filters, results changing as the index changes, and the Joe example.
+- SOQL and SOSL Reference, "SOSL Syntax" and "FIND {SearchQuery}" (fetched, same endpoint, pages sforce_api_calls_sosl_syntax and sforce_api_calls_sosl_find): `{SearchQuery}` is the text to search for; over 10,000 characters returns no rows; over 4,000 removes logical operators and AND defaults to OR; asterisks match at the middle or end of a term.
+- SOQL and SOSL Reference, "RETURNING FieldSpec" and "LIMIT n" (fetched, pages sforce_api_calls_sosl_returning and sforce_api_calls_sosl_limit): WHERE, ORDER BY, LIMIT, and OFFSET need a field list; OFFSET only for a single object; USING ListView searches the first 2,000 list-view records; RETURNING affects what is returned, not what is searched; LIMIT up to 2,000, cannot increase the maximum, statement LIMIT spread evenly across objects, LIMIT 0 returns none.
+- Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): 20 SOSL queries and 2,000 records per SOSL query per transaction (L60-62); SOSL statement length 100,000 characters by default (L1106-1107); SearchQuery 10,000/4,000 thresholds and AND-to-OR example (L1109-1123); 2,000 results total including child objects from API 28.0 (L1126-1129).
+- Metadata API Developer Guide (`api_meta.txt`): CustomObject `enableSearch`, disabled by default for new custom objects, disabled after 120 days without searches (L42062-42071).
+- Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): indexing before search and "about 15 minutes or more" latency (L160-162); index searched first, then narrowed by permissions and limits, remainder discarded (L171-174); large data changes must be indexed (L748); specific terms, search crowding over 2,000 matches, not indexing unwanted custom objects, targeted search groups (L921, L994-1005).
+- Apex Developer Guide (`salesforce_apex_developer_guide.txt`): SOSL in tests returns empty results unless `Test.setFixedSearchResults` is called; WHERE and LIMIT are applied to the fixed list (L41467-41475).

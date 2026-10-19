@@ -2,54 +2,70 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: AuthorizationFormConsent Does Not Grant or Restrict PHI Access
+## Gotcha 1: Consent Records Don't Change Who Can See Clinical Records
 
-**What happens:** Creating an `AuthorizationFormConsent` record with `Status = Signed` has no effect on the Salesforce sharing model. A patient's clinical records remain exactly as accessible — or inaccessible — as they were before the consent record was created. There is no platform mechanism that automatically tightens or relaxes record visibility based on consent status.
+**What happens:** A team assumes a signed AuthorizationFormConsent opens a patient's clinical records to the care team, or that withdrawing consent hides them. Neither happens.
 
-**When it occurs:** Any time a team assumes that the consent data model enforces data access. This is especially common when a team migrates from a non-Salesforce system where consent and access control were coupled in the same table.
+**When it occurs:** AuthorizationFormConsent is documented as the date and way in which someone consented to a form. Its associated objects are its own share object and owner sharing rules; none of its fields relate to the sharing of other records.
 
-**How to avoid:** Treat the consent hierarchy and the sharing model as two entirely separate subsystems. After implementing the consent hierarchy, explicitly audit OWD settings, criteria-based sharing rules, and permission set assignments for all PHI objects (ClinicalNote, EpisodeOfCare, PatientEncounter, etc.). Document the access control design in a separate architecture decision record. Never test PHI access by checking consent status — test it by running the sharing calculator on the specific records.
-
----
-
-## Gotcha 2: ConsentGiverId Silently Accepts Contact IDs But Breaks Downstream Consent Gates
-
-**What happens:** The `ConsentGiverId` field on `AuthorizationFormConsent` is a polymorphic lookup that accepts Contact, Individual, and Account record IDs. Salesforce does not raise a validation error if a Contact ID is inserted. The record saves successfully. However, the CareProgramEnrollee consent gate query filters against the Individual ID of the enrollee — not the Contact ID. The mismatch means the gate query returns zero results even though a consent record exists, and enrollment is blocked indefinitely.
-
-**When it occurs:** When developers or data loaders map `ConsentGiverId` from a Contact ID field (common in implementations that started without Person Accounts). Also occurs when a Flow retrieves the Contact ID from the trigger context and passes it to the consent record create action without first querying for the associated Individual.
-
-**How to avoid:** Always resolve the Individual ID before creating AuthorizationFormConsent. The Individual is accessible via `Contact.IndividualId` (for standard Contact records) or `PersonContact.IndividualId` (for Person Accounts). Validate with a SOQL check: `SELECT IndividualId FROM Contact WHERE Id = :contactId`. Add a validation rule on `AuthorizationFormConsent` that uses `GETRECORDIDS(ConsentGiver)` to assert the record type is `Individual` if your org requires it.
+**How to avoid:** Design PHI access (OWDs, sharing rules, permission sets) as its own workstream, test it with the sharing tools on specific records, and document it separately from the consent design.
 
 ---
 
-## Gotcha 3: CareProgramEnrollee Activation Gate Is Not Native — It Must Be Built
+## Gotcha 2: `ConsentGiverId` Accepts Five Object Types
 
-**What happens:** Salesforce Health Cloud does not ship with a built-in validation rule or workflow that prevents a `CareProgramEnrollee` record from moving to `Active` status without a signed consent record. The status field can be manually set to `Active` via UI or API with no consent records present, creating an enrollment record that violates HIPAA authorization requirements.
+**What happens:** Intake writes a Contact Id into `ConsentGiverId`. The record saves. The enrollment gate, written for Individual Ids, finds nothing and blocks the patient.
 
-**When it occurs:** In any Health Cloud implementation that has not explicitly built this gate. It also re-emerges after org refreshes if the gate Flow or Apex is not included in the deployment package.
+**When it occurs:** The Object Reference lists `ConsentGiverId` as a polymorphic lookup to Account, Contact, Individual, Lead, and User. Implementations that started from Contact, or flows that pass the triggering record's Id, write whatever Id is at hand.
 
-**How to avoid:** Implement the gate as a before-save Record-Triggered Flow (or Apex before-insert/before-update trigger) on the `CareProgramEnrollee` object. The Flow should:
-1. Get the related Individual ID from the CareProgramEnrollee record.
-2. Query `AuthorizationFormConsent` filtered by `ConsentGiverId = [individualId]`, `Status = 'Signed'`, and the DataUsePurpose linked to the care program.
-3. If the query returns zero rows, use the Add Error action to block the DML with a descriptive message.
-Include this component in all deployment packages and in your Health Cloud implementation checklist.
+**How to avoid:** Pick one giver type (this skill assumes Individual) and resolve it before insert: `SELECT IndividualId FROM Contact WHERE Id = :contactId`. In Apex, check `consentGiverId.getSObjectType() == Individual.SObjectType` before insert. Audit with `ConsentGiver.Type` in SOQL, as the Apex guide does with `What.Type` for polymorphic fields.
 
 ---
 
-## Gotcha 4: Updating AuthorizationFormText In Place Corrupts Historical Consent Records
+## Gotcha 3: The Enrollment Gate Isn't in the Data Model
 
-**What happens:** If a legal team updates the consent form language and a developer edits the `ContentDocument` field on an existing `AuthorizationFormText` record in place, all historical `AuthorizationFormConsent` records linked to that text ID now appear to reference the new version. An auditor querying what a patient consented to will see the updated language, not the language that was actually presented at the time of signing.
+**What happens:** CareProgramEnrollee records are activated for patients with no signed consent.
 
-**When it occurs:** Form revision cycles, especially when the implementation team treats `AuthorizationFormText` as a configuration record rather than an immutable consent artifact.
+**When it occurs:** None of the consent objects reference CareProgramEnrollee, and nothing in their definitions blocks another record's status change. Any "no enrollment without consent" rule has to be built.
 
-**How to avoid:** Treat every `AuthorizationFormText` record as append-only. On form revision, create a new `AuthorizationFormText` record (e.g., `HIPAA Authorization v2.0`) linked to the same `AuthorizationForm`. Create new `AuthorizationFormDataUse` junction records for the new text version. Update the intake flow to present the new version. Existing consent records continue to reference the old text version ID, preserving the exact language the patient signed. Optionally, archive the old text record by adding a suffix to the name.
+**How to avoid:** Add a before-save record-triggered flow or Apex trigger on CareProgramEnrollee that runs the purpose-specific check from SKILL.md Pattern 2 and blocks the change with an error when it returns false. Ship it with the rest of the consent metadata so sandboxes and new orgs get it too.
 
 ---
 
-## Gotcha 5: Status Value Casing Is Exact — Typos Pass Validation
+## Gotcha 4: Editing Form Text in Place Rewrites What Patients Appear to Have Signed
 
-**What happens:** The `Status` picklist on `AuthorizationFormConsent` accepts exactly `Seen` and `Signed`. Both are sentence-case. If a data loader, integration, or Apex script inserts a value like `signed`, `SIGNED`, or `Approved`, Salesforce will accept the insert (picklist fields in the API do not always enforce case sensitivity at the record layer) but the value will not match the expected picklist value. Downstream Flow checks using `{!record.Status} = 'Signed'` will evaluate to false, silently blocking enrollment and PHI access.
+**What happens:** Legal updates the wording; someone replaces the document on the existing AuthorizationFormText. Every earlier consent now points at the new wording.
 
-**When it occurs:** Data migrations from legacy systems with different status vocabularies, or integrations that normalize status strings to lowercase or uppercase before sending to Salesforce.
+**When it occurs:** AuthorizationFormConsent stores `AuthorizationFormTextId`, "the authorization form text that the Individual consented to," and `ContentDocumentId` and `DetailAuthorizationFormText` on the text record are updateable.
 
-**How to avoid:** Enforce exact casing in all data load scripts and integration mappings. In Apex, use constants or an enum pattern: `private static final String STATUS_SIGNED = 'Signed';`. In Flows, use the picklist value resource rather than a hardcoded text string. Run a post-load SOQL audit: `SELECT Status, COUNT(Id) FROM AuthorizationFormConsent GROUP BY Status` and investigate any values outside `Seen` and `Signed`.
+**How to avoid:** Treat form texts as versions. Create a new AuthorizationFormText for each wording, point the form's `DefaultAuthFormTextId` at it, and leave old texts untouched. Restrict edit on AuthorizationFormText to the people who own the legal text.
+
+---
+
+## Gotcha 5: `Status` Is a Restricted Picklist With Three Values
+
+**What happens:** Code and reports only know `Seen` and `Signed`, so rejections are stored by deleting rows or by reusing `Seen`; or a migration sends `Approved` and rows fail.
+
+**When it occurs:** The Object Reference lists `Status` values Rejected, Seen, and Signed, and marks the field a restricted picklist; for restricted picklists, "Users can't load unapproved values through the API." Whether a different-case value such as `signed` is accepted is something to test in a sandbox, not assume.
+
+**How to avoid:** Map legacy statuses to the three values before loading, use constants in Apex and picklist choices in flows, record declines as `Rejected`, and audit with `SELECT Status, COUNT(Id) FROM AuthorizationFormConsent GROUP BY Status`.
+
+---
+
+## Gotcha 6: Purposes Attach to the Form, Not the Form Text
+
+**What happens:** A consent check filters on a relationship path from the form text to the purposes, which doesn't exist, or a setup links purposes to each text version and the links drift.
+
+**When it occurs:** AuthorizationFormDataUse has `AuthorizationFormId` and `DataUsePurposeId`. The chain from a consent to a purpose is consent → form text → form → data use → purpose.
+
+**How to avoid:** Link purposes once per form. To check consent for a purpose, collect the form Ids for the purpose from AuthorizationFormDataUse, then look for a signed consent whose `AuthorizationFormText.AuthorizationFormId` is in that set.
+
+---
+
+## Gotcha 7: Source and Source Type Are Different Fields
+
+**What happens:** Intake writes `Web` into `ConsentCapturedSource` and leaves `ConsentCapturedSourceType` empty, or tries to write a URL into the type field and fails.
+
+**When it occurs:** `ConsentCapturedSource` is a string ("For example, user@example.com, www.example.com"). `ConsentCapturedSourceType` is a restricted picklist: Email, InPerson, MailingAddress, Phone, Social, Video, Web. Both are described as required, as is `ConsentCapturedDateTime`.
+
+**How to avoid:** Fill both: the type from the channel (`Web`), the source with the specific address or URL, and the capture time from the system clock.

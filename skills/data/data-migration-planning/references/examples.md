@@ -4,17 +4,24 @@
 
 **Context:** A company is migrating 180,000 Accounts, 620,000 Contacts, and 95,000 Opportunities from an on-premises legacy CRM to a new Salesforce org. The source system uses integer IDs as primary keys. Contacts have a lookup to Account; Opportunities have a lookup to Account. Opportunity Line Items (OLIs) have a master-detail to Opportunity and require a matching Price Book Entry.
 
-**Problem:** The team's first attempt loaded all objects simultaneously using separate insert jobs. Contacts failed because their Account lookup IDs were source system integers, not Salesforce record IDs. OLIs failed because the related Opportunities were still in the queue when the OLI job started. After the load, 40,000 Contact records had blank Account fields (the insert silently succeeded with a null lookup rather than failing — this was a Lookup, not an MDR). Duplicate Accounts appeared on re-run because insert was used instead of upsert.
+**Problem:** The team's first attempt loaded all objects simultaneously using separate insert jobs. Contacts failed because their Account lookup IDs were source system integers, not Salesforce record IDs. OLIs failed because the related Opportunities were still in the queue when the OLI job started. After the load, 40,000 Contacts whose source rows had no account key loaded with a blank Account lookup, which is legal for an optional lookup and went unnoticed until a report showed them. Duplicate Accounts appeared on re-run because insert was used instead of upsert.
 
 **Solution:**
 
 Step 1: Add External ID fields before any load.
 
-```
-Object        Field API Name         Type       Config
-Account       Legacy_CRM_Id__c       Text(20)   External ID, Unique, Not Required
-Contact       Legacy_CRM_Id__c       Text(20)   External ID, Unique, Not Required
-Opportunity   Legacy_CRM_Id__c       Text(20)   External ID, Unique, Not Required
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- objects/Contact/fields/Legacy_CRM_Id__c.field-meta.xml (same shape on Account and Opportunity) -->
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Legacy_CRM_Id__c</fullName>
+    <label>Legacy CRM ID</label>
+    <type>Text</type>
+    <length>20</length>
+    <externalId>true</externalId>
+    <unique>true</unique>
+    <required>false</required>
+</CustomField>
 ```
 
 Step 2: Define the load sequence.
@@ -35,7 +42,7 @@ CONT-001,Jane,Smith,ACCT-042,jane.smith@example.com
 CONT-002,Bob,Jones,ACCT-017,bob.jones@example.com
 ```
 
-The column `Account.Legacy_CRM_Id__c` uses Bulk API 2.0 relationship notation. Salesforce resolves the Account Salesforce record ID at load time using the Account's external ID.
+The column `Account.Legacy_CRM_Id__c` uses the Bulk API `RelationshipName.IndexedFieldName` header form; it works because `Legacy_CRM_Id__c` is an External ID on Account (only indexed parent fields are allowed). Sort the file by that column so contacts of the same account share a batch.
 
 Step 4: Load each object via Bulk API 2.0 upsert with `Legacy_CRM_Id__c` as the external ID field. Set `Migration_Batch_Id__c` to a unique value per run (e.g., `ACCT-2026-04-04-001`).
 
@@ -44,7 +51,7 @@ Step 5: After each object completes, verify:
 - Error file from Bulk API is empty or understood
 - Sample 1% of records for field accuracy
 
-**Why it works:** Upsert with external ID prevents duplicate creation on re-run. Relationship cross-references via `Parent__r.ExternalId__c` eliminate the need to pre-resolve Salesforce IDs. The strict load sequence ensures no child insert is attempted before its parent exists.
+**Why it works:** Upsert with an external ID makes re-runs safe. Relationship columns remove the step of looking up Salesforce IDs. The sequence means no child row is attempted before its parent exists, and a post-load count of contacts with a source account key but a blank `AccountId` catches the rows that slipped through.
 
 ---
 
@@ -52,7 +59,7 @@ Step 5: After each object completes, verify:
 
 **Context:** A retailer is migrating 50,000 Opportunities and 210,000 Opportunity Line Items (OLIs). The legacy system has product SKUs. Salesforce requires that each OLI reference both an Opportunity record and a Price Book Entry record. The migration team initially tried to load OLIs immediately after Opportunities, without first loading the product catalog.
 
-**Problem:** Every OLI insert failed with "FIELD_INTEGRITY_EXCEPTION: PricebookEntryId: id value of incorrect type." The team had not loaded Products or Price Book Entries. Because OLIs are a master-detail child of Opportunity, every failed OLI insert also created an orphaned Opportunity with no line items, making the Opportunities appear incomplete in the UI.
+**Problem:** Every OLI row failed because its price book entry reference did not resolve: the team had not loaded Products or Price Book Entries. The Opportunities loaded fine but had no line items, so amounts and products looked wrong in the UI until the catalog was loaded and the OLI job re-run.
 
 **Solution:**
 
@@ -72,14 +79,14 @@ Extended load sequence:
 OLI CSV structure (using external ID cross-references):
 
 ```csv
-Legacy_OLI_Id__c,Opportunity.Legacy_CRM_Id__c,PricebookEntry.ProductCode,Quantity,UnitPrice
-OLI-10001,OPP-5001,SKU-9900,2,299.99
-OLI-10002,OPP-5001,SKU-8812,1,149.00
+Legacy_OLI_Id__c,Opportunity.Legacy_CRM_Id__c,PricebookEntry.Legacy_PBE_Id__c,Quantity,UnitPrice
+OLI-10001,OPP-5001,PBE-STD-9900,2,299.99
+OLI-10002,OPP-5001,PBE-STD-8812,1,149.00
 ```
 
-`PricebookEntry.ProductCode` uses the ProductCode field on the PricebookEntry as a cross-reference (must be marked External ID, or use an explicit external ID field added to PricebookEntry).
+`PricebookEntry.Legacy_PBE_Id__c` references a custom External ID field added to PricebookEntry. A relationship column can only use an indexed parent field: a custom field with External ID selected, or a standard field whose `idLookup` property is true.
 
-**Why it works:** The Salesforce referential integrity model enforces that every master-detail parent exists before a child can be inserted. By loading the full product catalog before Opportunities and OLIs, all references are resolvable at load time. Using external ID cross-references for both parent relationships avoids manual ID resolution.
+**Why it works:** Every reference an OLI row carries (its Opportunity and its price book entry) exists before the OLI job starts, and both are referenced through External ID keys, so no Salesforce IDs need to be looked up.
 
 ---
 
@@ -87,7 +94,7 @@ OLI-10002,OPP-5001,SKU-8812,1,149.00
 
 **What practitioners do:** To save time, teams submit Bulk API jobs for all objects simultaneously — Accounts, Contacts, Opportunities, and Cases all start loading at the same time across parallel jobs.
 
-**What goes wrong:** Child object jobs complete rows before their parent jobs finish loading the corresponding parent records. Contacts with a reference to Account "ACCT-5500" fail if that Account hasn't been committed yet. Master-detail children (OLIs, Case Comments) fail with hard errors. Lookup children (Contacts) may partially succeed with null parent references if the lookup is not required — creating orphan records that are hard to detect without a post-migration integrity check.
+**What goes wrong:** Child object jobs complete rows before their parent jobs finish loading the corresponding parent records. Contacts with a reference to Account "ACCT-5500" fail if that Account hasn't been committed yet. Master-detail children (OLIs, Case Comments) fail with hard errors. Rows whose parent key has not been committed yet fail to resolve, so a parallel run produces a scatter of failures that must be re-run in order anyway.
 
 **Correct approach:** Build an explicit dependency graph before starting any loads. Submit load jobs sequentially per dependency tier — all records in Tier 1 (no parents) complete before Tier 2 begins. Verify each tier's error file before proceeding to the next. Use `Migration_Batch_Id__c` to tag each tier's records so any tier can be rolled back independently if downstream failures occur.
 
@@ -99,4 +106,4 @@ OLI-10002,OPP-5001,SKU-8812,1,149.00
 
 **What goes wrong:** Every record that loaded successfully in the first run is now duplicated. Accounts appear twice, Contacts appear twice, and every downstream relationship now has ambiguous parent references. Deduplication is expensive, time-consuming, and risks breaking relationships.
 
-**Correct approach:** Always use upsert with a populated External ID field, even for the very first load. If a record already exists, upsert updates it. If it does not exist, upsert inserts it. A re-run is always safe. The only cost is that the External ID field must be designed and created before the first load — which should be part of the migration planning phase, not an afterthought.
+**Correct approach:** Use upsert with a populated External ID field for any load that may be re-run. If a record exists, upsert updates it; otherwise it inserts it. The LDV guide ranks insert as faster than update and upsert, so for a very large first load into an empty object, an insert pass is reasonable as long as the External ID is populated and any re-run switches to upsert.

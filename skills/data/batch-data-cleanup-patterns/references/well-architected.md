@@ -9,27 +9,27 @@
 
 ## Architectural Tradeoffs
 
-**Soft delete vs. hard delete:** Soft delete (standard `delete` + `emptyRecycleBin()`) is recoverable within the `emptyRecycleBin` window if called incorrectly. Hard delete via Bulk API is permanent and unrecoverable — appropriate for compliance scenarios but requires extra permission and adds operational risk if the retention filter has a bug.
+**Soft delete vs. permanent delete:** A plain delete leaves records restorable for 15 days, which is a safety net if the retention filter has a bug. `emptyRecycleBin()` and Bulk API hard delete remove that net. Choose permanent deletion only when policy requires it, and test the filter on both sides of the cutoff first.
 
-**Per-chunk emptyRecycleBin vs. in finish():** Calling `emptyRecycleBin()` in each `execute()` chunk avoids accumulating large ID lists in memory (heap limit risk for millions of records), but adds a callout-equivalent operation per chunk. Calling it in `finish()` is simpler but requires `Database.Stateful` to track IDs, and the list can become very large for multi-million-record jobs. For jobs over 500,000 records, prefer per-chunk emptying.
+**Per-chunk emptyRecycleBin vs. in finish():** `emptyRecycleBin()` accepts at most 10,000 records per call and counts as a DML statement. Calling it per chunk keeps every call small; collecting Ids for `finish()` fails once a run deletes more than 10,000 records and grows heap the whole time.
 
-**Batch Apex vs. Bulk API HARD_DELETE:** Batch Apex offers full Apex control (conditional logic, error handling, notifications) but is slower than Bulk API (200 records per chunk vs. millions per API job). Use Batch Apex for moderate volumes and complex logic; use Bulk API HARD_DELETE for large-volume compliance runs where simplicity and speed matter more than Apex expressiveness.
+**Batch Apex vs. Bulk API `hardDelete`:** Batch Apex offers full Apex control (conditional logic, error handling, notifications) but is slower than Bulk API (200 records per chunk vs. millions per API job). Use Batch Apex for moderate volumes and complex logic; use a Bulk API `hardDelete` job for large-volume compliance runs where simplicity and speed matter more than Apex expressiveness.
 
 ## Anti-Patterns
 
 1. **Deleting records inside a trigger** — Triggers run synchronously within the caller's governor limits. Bulk deletion inside a trigger exhausts DML row limits and causes the originating save to fail. Use Batch Apex scheduled via a Schedulable class.
-2. **Relying on automatic 15-day Recycle Bin purge for storage relief** — Automatic purge is not immediate and does not satisfy storage budget requirements or compliance mandates for permanent deletion. Always explicitly empty the Recycle Bin or use hard delete.
-3. **Setting batch size at 200 without checking cascade child volume** — A single cascade explosion can silently fail entire batch chunks if child count pushes DML rows over 10,000 per transaction. Always profile cascade depth before finalizing batch size.
+2. **Relying on the automatic 15-day purge for a permanent-deletion mandate** — Records stay restorable until the purge, which has no guaranteed time. Recycle Bin rows don't count against storage, so the purge is about recoverability and query performance, not storage.
+3. **Setting batch size at 200 without checking cascade child volume** — Deleting a parent deletes its master-detail children. Measure the DML rows one heavy parent costs in a sandbox before finalizing the batch size, so chunks stay under the 10,000-row transaction limit.
 
 ## Official Sources Used
 
-- Apex Developer Guide — Batch Apex (`Database.Batchable`), `Database.delete()` allOrNone behavior, `Database.emptyRecycleBin()`, Schedulable interface, `System.schedule()` cron syntax
-  URL: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm
-- Apex Reference Guide — `Database.emptyRecycleBin()` method signature, `Database.DeleteResult` class, governor limits for DML operations
-  URL: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm
-- Bulk API 2.0 Developer Guide — HARD_DELETE operation, ingest job lifecycle, permissions required for hard delete
-  URL: https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm
-- Metadata API Developer Guide — Deleting Components from an Organization: `destructiveChanges.xml`, the `purgeOnDelete` option, and the roll-up summary field exception that bypasses the Recycle Bin unconditionally
-  URL: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy_deleting_files.htm
-- Salesforce Well-Architected Overview — Operational Excellence pillar framing, reliability and scalability guidance
-  URL: https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
+Read for this revision (2026-10-19):
+
+- Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): soft deletion still affects performance; Recycle Bin items don't count against storage; no item limit; 15-day retention and no guaranteed purge time; Bulk API hard delete recommended (L733-742); hard delete for one million or more records (L1019-1023).
+- Apex Reference Guide (`salesforce_apex_reference_guide.txt`): `Database.emptyRecycleBin` is permanent, takes 10,000 records, cascade Ids must be excluded (account example), and counts against DML statements (L206900-206935); `Test.setCreatedDate` (L240831-240836).
+- Apex Developer Guide (`salesforce_apex_developer_guide.txt`): test DML rolled back (L1008-1010); cron syntax and user time zone (L16812-16820); 100 scheduled Apex jobs (L16947); five queued or active batch jobs (L17012) and flex queue of 100 (L17235); invoking batch from a trigger with extreme caution (L17731-17733); one execute per batch test (L17734-17737); 50 million QueryLocator rows (L17701); default scope 200 and QueryLocator chunks up to 2,000 (L17309-17311, L17792).
+- Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): 10,000 DML rows per transaction (L66).
+- Bulk API 2.0 and Bulk API Developer Guide (`api_asynch.txt`): `hardDelete` skips the Recycle Bin; "Bulk API Hard Delete" permission off by default (L1640-1647); ingest workflow, batches upload, UploadComplete, and results resources (L161, L605-647, L698-734).
+- Metadata API Developer Guide (`api_meta.txt`): no deploy of a class with active jobs by default (L22218-22221); ApexClass `.cls-meta.xml` and `status` (L22231, L22271); `purgeOnDelete` only in Developer Edition and sandboxes, roll-up summary fields purged on Metadata API delete (L4234-4246, L4638-4640).
+- Salesforce Security Guide (`salesforce_security_impl_guide.txt`): deleting a record cascades to its field history (L4895-4896).
+- SOQL and SOSL Reference, "Date Formats and Date Literals" (fetched from https://developer.salesforce.com/docs/get_document_content/soql_sosl/sforce_api_calls_soql_select_dateformats.htm/en-us/262.0): `LAST_N_DAYS:n` starts at midnight n days ago and includes today; `LAST_N_YEARS:n` is calendar-year based and ends December 31 of last year.

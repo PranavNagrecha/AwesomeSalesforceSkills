@@ -44,7 +44,7 @@ Identify the objects to be archived. Collect record counts from Setup > Storage 
 
 **Recycle Bin Status:**
 - Current Recycle Bin record count: ___
-- Estimated storage impact if emptied: ___ GB
+- Storage impact if emptied: none (Recycle Bin items don't count against storage); record the count for query-performance planning
 
 ---
 
@@ -88,10 +88,10 @@ Define what makes a record eligible for archival.
 
 | Phase | Activity | Owner | Target Date | Status |
 |---|---|---|---|---|
-| 1 | Empty Recycle Bin | | | |
-| 2 | Disable Field History Tracking on low-value fields | | | |
+| 1 | Write down the read questions and design the big object index | | | |
+| 2 | Settle field history needs (Field Audit Trail policy or export) before any delete | | | |
 | 3 | Deploy Big Object metadata (if applicable) | | | |
-| 4 | Build and test Batch Apex archival job in sandbox | | | |
+| 4 | Build and test Batch Apex archival job in sandbox; prove the read path (references/read-path-worked-example.md) | | | |
 | 5 | Run archival job in production (first pass) | | | |
 | 6 | Validate storage reclamation | | | |
 | 7 | Schedule recurring archival job | | | |
@@ -103,18 +103,18 @@ Define what makes a record eligible for archival.
 
 | Action | Frequency | Method | Owner |
 |---|---|---|---|
-| Empty Recycle Bin | Weekly / Monthly | Setup UI or `Database.emptyRecycleBin()` | |
+| Empty Recycle Bin (query performance, not storage) | After each archive run | Setup UI or `Database.emptyRecycleBin()` (10,000 records per call) | |
 | Monitor Recycle Bin volume | Monthly | Setup > Recycle Bin | |
-| Hard delete after bulk archival jobs | Per-job | `Database.emptyRecycleBin()` in Apex batch | |
+| Hard delete for large one-off deletes | Per job | Bulk API 2.0 `hardDelete` | |
 
 ---
 
 ## 8. Storage Reclamation Estimate
 
-| Object | Records to Archive | Avg Record Size (KB) | Estimated Storage Reclaimed (GB) |
+| Object | Records to Archive | Object's share of data storage (from Storage Usage) | Estimated Storage Reclaimed (GB) |
 |---|---|---|---|
-| | | 2 | |
-| | | 2 | |
+| | | | |
+| | | | |
 | **Total** | | | |
 
 **Post-archival projected storage usage:**

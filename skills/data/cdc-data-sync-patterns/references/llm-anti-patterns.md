@@ -2,138 +2,106 @@
 
 Common mistakes AI coding assistants make when generating or advising on CDC data replication pipelines. These patterns help the consuming agent self-check its own output.
 
-## Anti-Pattern 1: Ignoring the GAP_ Prefix and Processing Gap Events as Normal Change Events
+## Anti-Pattern 1: Processing Gap Events as Normal Change Events
 
-**What the LLM generates:** A CDC event handler that reads field values from every event without checking `changeType` first. The generated code does something like `record.Name = event.payload.Name` unconditionally, or uses a generic `apply_event(event)` function with no gap event branch.
+**What the LLM generates:** A handler that copies fields from every event body (`record.Name = event["Name"]`) with no branch on `changeType`.
 
-**Why it happens:** Most CDC tutorial examples show happy-path normal events. Gap events are underrepresented in training data and documentation examples. LLMs generalize from the normal-event pattern and omit the exception path.
+**Why it happens:** Tutorials show happy-path change events; gap events rarely appear in examples.
 
 **Correct pattern:**
 
 ```python
-change_type = event["ChangeEventHeader"]["changeType"]
-if change_type.startswith("GAP_"):
-    # No field data available. Fall back to REST API query.
-    record_ids = event["ChangeEventHeader"]["recordIds"]
-    current_records = rest_api.query_by_ids(object_name, record_ids)
-    datastore.upsert(current_records)
+GAP_TYPES = {"GAP_CREATE", "GAP_UPDATE", "GAP_DELETE", "GAP_UNDELETE"}
+header = event["ChangeEventHeader"]
+if header["changeType"] == "GAP_OVERFLOW":
+    start_entity_resync(header["entityName"], event["replay_id"])
+elif header["changeType"] in GAP_TYPES:
+    for rid in header["recordIds"]:
+        mark_dirty_and_queue(rid, header["commitTimestamp"])
 else:
-    # Safe to process field data from the event body.
-    apply_delta(event)
+    buffer_by_transaction(event)
 ```
 
-**Detection hint:** Search generated code for CDC event processing logic that lacks any reference to `GAP_`, `startswith("GAP_")`, or equivalent gap-event check. Any CDC handler that processes `changeType` values without a `GAP_` branch is incomplete.
+**Detection hint:** A CDC handler with no reference to `GAP_`, or one that reads body fields before checking `changeType`.
 
 ---
 
-## Anti-Pattern 2: Assuming Salesforce Tracks Subscriber Position (Not Implementing External replayId Persistence)
+## Anti-Pattern 2: Lumping `GAP_OVERFLOW` In With the Other Gap Types
 
-**What the LLM generates:** Code that subscribes to CDC with `-2` (full catch-up) on every connection, or code that subscribes at `-1` (tip) on every restart, with no mechanism to store or retrieve a `replayId` between sessions. Sometimes the LLM generates code that reads `replayId` from the event but never writes it to durable storage.
+**What the LLM generates:** `if change_type.startswith("GAP_"): query records by recordIds`.
 
-**Why it happens:** LLMs trained on general event streaming concepts (Kafka, RabbitMQ) may assume the broker tracks consumer offsets. Salesforce's Pub/Sub API and CometD do not — the subscriber owns its position entirely.
+**Why it happens:** The shared prefix suggests one handling path.
 
-**Correct pattern:**
+**Correct pattern:** The CDC guide treats `GAP_OVERFLOW` as an overflow event: header only, entity name, and the dummy record ID `000000000000000AAA`. Re-sync the whole entity from the overflow event's replay ID; use record lookups only for the four true gap types.
+
+**Detection hint:** A `startswith("GAP_")` branch that reads `recordIds` without first testing for `GAP_OVERFLOW`.
+
+---
+
+## Anti-Pattern 3: Hard-Coding a Replay Option on Every Connect
+
+**What the LLM generates:** `replay_preset=EARLIEST` (or CometD `-2`) on every start, or `LATEST`/`-1` on every restart, with no stored position. A variant claims "Salesforce never tracks subscriber position."
+
+**Why it happens:** Models carry over broker-managed offsets from other systems, or overcorrect against them.
+
+**Correct pattern:** With `Subscribe`, store the replay ID (as bytes) after each committed transaction and resume with `CUSTOM`. Save the `replay_id` from empty keepalive responses too. `ManagedSubscribe` (Beta) is the server-side alternative that commits the replay ID for you.
 
 ```python
-# On startup: read stored replayId from durable storage.
-replay_id = persistent_store.get("last_replay_id") or -1
+stored = store.load_bytes("cdc_replay_id")
+if stored is None:
+    run_day0_then_subscribe()
+else:
+    pubsub.subscribe(topic="/data/ChangeEvents", replay_preset="CUSTOM", replay_id=stored)
 
-subscriber.connect(topic=TOPIC, replay_id=replay_id)
-
-# After each successfully committed batch: persist the new replayId.
-def on_batch_committed(events):
-    last_id = events[-1]["replayId"]
-    persistent_store.set("last_replay_id", last_id)
+def on_transaction_committed(last_event):
+    store.save_bytes("cdc_replay_id", last_event["replay_id"])
 ```
 
-**Detection hint:** Search for CDC subscriber code that does not include a read from and write to an external store for `replayId` (or `replay_id`). Any CDC subscription call that always passes `-1` or `-2` as a literal constant is missing durable position tracking.
+**Detection hint:** A subscribe call whose replay option is a literal constant and no write of `replay_id` anywhere in the subscriber.
 
 ---
 
-## Anti-Pattern 3: Not Handling the >72-Hour Offline Scenario — Assuming Replay Is Always Possible
+## Anti-Pattern 4: Inventing a Replay-Expired Exception
 
-**What the LLM generates:** Reconnection logic that always resumes from the stored `replayId` with no check for whether that ID is still within the retention window. The code catches the replay-expired error and either swallows it silently or crashes the subscriber, with no fallback to a Bulk API re-sync.
+**What the LLM generates:** `except ReplayIdExpiredError: run_resync()` as the only long-outage detection.
 
-**Why it happens:** The 72-hour retention limit is a Salesforce-specific constraint. General event streaming systems often have configurable or very long retention windows. LLMs that do not specifically know this limit assume replay is always available from any stored position.
+**Why it happens:** Models assume a typed error exists for every failure mode.
 
-**Correct pattern:**
+**Correct pattern:** Decide from elapsed time. Retention is 3 days, and Salesforce doesn't guarantee events beyond 72 hours (purging can also start later, so a replay that happens to work proves nothing). Store the last processed `commitTimestamp`; if it is more than 3 days old, re-sync before subscribing. Test what your client actually reports for an old replay ID instead of coding to an assumed exception.
+
+**Detection hint:** Recovery logic that only triggers on a named exception and never compares the last processed time with a 3-day window.
+
+---
+
+## Anti-Pattern 5: Ordering by Timestamp Instead of by Transaction
+
+**What the LLM generates:** Sorting all events by `commitTimestamp` (or arrival time) and applying them one by one.
+
+**Why it happens:** Timestamp ordering is the default mental model.
+
+**Correct pattern:** Follow the guide's transaction-based approach: buffer events in a map keyed by `transactionKey`, order each buffer by `sequenceNumber` (which starts at 1 within the transaction), and commit the transaction when the next event has a different key. Expect `sequenceNumber` gaps when some objects in the transaction aren't enabled for CDC.
 
 ```python
-try:
-    subscriber.connect(topic=TOPIC, replay_id=stored_replay_id)
-except ReplayIdExpiredError:
-    logger.warning(
-        "Stored replayId is outside the 72-hour retention window. "
-        "Initiating full Bulk API re-sync before resuming CDC."
-    )
-    run_bulk_api_resync(affected_objects)
-    subscriber.connect(topic=TOPIC, replay_id=-1)
+buffers = {}
+def on_event(e):
+    h = e["ChangeEventHeader"]
+    if buffers and h["transactionKey"] not in buffers:
+        (prev_key, prev_events), = buffers.items()
+        commit(sorted(prev_events, key=lambda x: x["ChangeEventHeader"]["sequenceNumber"]))
+        buffers.clear()
+    buffers.setdefault(h["transactionKey"], []).append(e)
 ```
 
-**Detection hint:** Search CDC reconnection code for handling of replay-expired errors (Pub/Sub API error code, Streaming API `400` invalid replayId, etc.). Code that does not have this error branch is missing the recovery path for long outages.
+**Detection hint:** Ordering code with no reference to `transactionKey`, or completeness checks that fail on non-contiguous `sequenceNumber`.
 
 ---
 
-## Anti-Pattern 4: Using Timestamps Instead of transactionKey + sequenceNumber for Event Ordering
+## Anti-Pattern 6: Logging and Skipping Gap Events
 
-**What the LLM generates:** Event ordering logic that sorts CDC events by `commitTimestamp` alone, or by the time the event was received at the subscriber. The generated code applies events in timestamp order without considering that multiple events in the same transaction share the same `commitTimestamp`.
+**What the LLM generates:** A gap branch that only logs (`logger.info("gap event")`) and continues.
 
-**Why it happens:** Timestamp-based ordering is the default mental model for event sequencing. The `transactionKey` + `sequenceNumber` combination is specific to Salesforce CDC and is not present in most general-purpose event streaming systems.
+**Why it happens:** The model recognizes the event is special and treats it as noise.
 
-**Correct pattern:**
+**Correct pattern:** A gap event is a real change whose details were not sent. Mark the records dirty, ignore later change events for them until reconciled, retrieve them through the API, save, and clear the flag.
 
-```python
-# Group events by transactionKey, then sort by sequenceNumber within each group.
-from itertools import groupby
-
-events_sorted = sorted(events, key=lambda e: (
-    e["ChangeEventHeader"]["commitTimestamp"],
-    e["ChangeEventHeader"]["transactionKey"],
-    e["ChangeEventHeader"]["sequenceNumber"]
-))
-
-for (ts, tx_key), group in groupby(events_sorted, key=lambda e: (
-    e["ChangeEventHeader"]["commitTimestamp"],
-    e["ChangeEventHeader"]["transactionKey"]
-)):
-    for event in group:
-        apply_delta(event)
-```
-
-**Detection hint:** Search ordering logic for use of `transactionKey` and `sequenceNumber`. Code that sorts by `commitTimestamp` or event arrival time alone, without referencing `sequenceNumber`, is applying the wrong ordering key for intra-transaction events.
-
----
-
-## Anti-Pattern 5: Conflating CDC Admin Setup with Replication Lifecycle Patterns
-
-**What the LLM generates:** Advice that mixes entity selection, channel configuration, and edition limits (admin concerns) with replay ID management, gap event handling, and day-0 load design (replication lifecycle concerns). For example: generating code that "enables CDC" and then immediately subscribes, without acknowledging that day-0 load and replay strategy are separate lifecycle steps.
-
-**Why it happens:** Most CDC documentation and examples treat setup and subscription as a single integrated flow. LLMs absorb this framing and conflate the two concerns, leading to incomplete implementations that skip the replication lifecycle steps.
-
-**Correct pattern:** Treat CDC setup (admin) and CDC replication lifecycle (data engineering) as distinct concerns handled by different skills and different implementation phases. Admin questions about entity selection, channels, and limits → `integration/change-data-capture-integration`. Replication lifecycle questions about day-0 load, replay, gap events, ordering → this skill (`data/cdc-data-sync-patterns`).
-
-**Detection hint:** Generated guidance that includes both "go to Setup > Change Data Capture" and "subscribe with replayId = -2" in the same code flow without a day-0 Bulk API load step is conflating setup and replication lifecycle.
-
----
-
-## Anti-Pattern 6: Not Implementing REST Fallback for GAP Events — Silently Missing Field Data
-
-**What the LLM generates:** GAP event detection code that logs the event and skips it without querying current record state. The code correctly identifies the gap event but takes no action to retrieve the data that the gap event was supposed to convey.
-
-**Why it happens:** LLMs may recognize that gap events are "special" and generate a skip/ignore branch, without understanding that the gap event represents a real data change that must be recovered via REST API. The logging-and-skipping pattern feels like correct error handling.
-
-**Correct pattern:**
-
-```python
-if change_type.startswith("GAP_"):
-    # Do NOT simply log and skip. The gap represents a real change.
-    # Query current record state from REST API.
-    record_ids = header["recordIds"]
-    records = rest_api.query(
-        f"SELECT Id, Name, ... FROM Account WHERE Id IN {record_ids}"
-    )
-    datastore.upsert(records)
-    # Do not return here without updating the datastore.
-```
-
-**Detection hint:** Search gap event handling code for REST API calls (`query`, `GET /services/data`, SOQL) following the GAP detection branch. Code that has a `if GAP_` branch containing only `logger.info(...)` or `continue` (without a subsequent REST query) is silently dropping data changes.
+**Detection hint:** A `GAP_` branch containing only logging or `continue`, with no retrieval call.

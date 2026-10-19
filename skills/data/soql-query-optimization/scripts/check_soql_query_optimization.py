@@ -1,18 +1,28 @@
 #!/usr/bin/env python3
-"""Checker script for SOQL Query Optimization skill.
+"""Checker for the soql-query-optimization skill.
 
-Scans Apex source files (.cls, .trigger) for common SOQL anti-patterns:
-  1. Leading wildcard LIKE patterns (LIKE '%...) — prevents index usage, no workaround
-  2. NULL/empty checks on non-standard fields (WHERE Field__c = null / != null / != '')
-  3. OR conditions in SOQL WHERE clauses — may bypass indexes if fields are non-indexed
-  4. SOQL queries without a LIMIT clause — risky on large objects
-  5. Formula field note — static analysis cannot detect formula fields; flagged as manual check
+Scans Apex source (.cls, .trigger) for SOQL shapes that the Large Data Volumes
+guide and the Apex Developer Guide say keep the optimizer from using an index.
+Comments are stripped before scanning, so commented-out SOQL is ignored.
 
-Uses stdlib only — no pip dependencies.
+Severity:
+  ERROR  in a .trigger file, a query whose WHERE clause has no positive filter
+         (every predicate is negative or compares with an empty value), or a
+         query with neither WHERE nor LIMIT. The Apex guide says queries must be
+         selective "particularly for queries inside triggers".
+  WARN   anywhere: leading-wildcard LIKE; null comparison on a custom field
+         (index tables exclude nulls by default); OR in a WHERE clause (every OR
+         field must be indexed); negative operators (!=, NOT IN, NOT LIKE);
+         FIELDS(ALL) or FIELDS(CUSTOM).
+
+Exit codes: 0 clean or WARN only; 1 on any ERROR, on a missing directory, or on
+WARN when --strict is set. An empty directory prints a WARN and exits 0.
+
+Stdlib only.
 
 Usage:
-    python3 check_soql_query_optimization.py [--manifest-dir path/to/src]
     python3 check_soql_query_optimization.py --manifest-dir force-app/main/default
+    python3 check_soql_query_optimization.py --manifest-dir force-app --strict
 """
 
 from __future__ import annotations
@@ -22,210 +32,136 @@ import re
 import sys
 from pathlib import Path
 
-
-# ---------------------------------------------------------------------------
-# Patterns
-# ---------------------------------------------------------------------------
-
-# Leading wildcard LIKE: LIKE '%something or LIKE "%something
-LEADING_WILDCARD_RE = re.compile(
-    r"""LIKE\s+['"][%]""",
-    re.IGNORECASE,
-)
-
-# NULL / empty checks on custom fields (field name ends with __c or __r)
-# Matches: WHERE Custom__c = null, != null, = '', != ''
-NULL_CHECK_CUSTOM_RE = re.compile(
-    r"""\bWHERE\b[^'"]*?\b(\w+__[cr])\s*(?:!=|=)\s*(?:null|''|"")""",
-    re.IGNORECASE,
-)
-
-# OR inside a SOQL WHERE clause (within a string literal that looks like SOQL)
-# Simplified: find string literals containing WHERE ... OR ...
-SOQL_OR_RE = re.compile(
-    r"""(?:SELECT\s+\S+.*?WHERE\s+.*?\bOR\b)""",
+INLINE_SOQL_RE = re.compile(r"\[\s*(SELECT\b.*?)\]", re.IGNORECASE | re.DOTALL)
+STRING_SOQL_RE = re.compile(r"'(\s*SELECT\b(?:[^'\\]|\\.)*)'", re.IGNORECASE | re.DOTALL)
+WHERE_RE = re.compile(
+    r"\bWHERE\b(.*?)(?=\bORDER\s+BY\b|\bGROUP\s+BY\b|\bLIMIT\b|\bOFFSET\b|\bFOR\s+(?:UPDATE|VIEW|REFERENCE)\b|\bALL\s+ROWS\b|\bWITH\b|$)",
     re.IGNORECASE | re.DOTALL,
 )
-
-# SOQL query without LIMIT — look for SELECT...FROM...WHERE without LIMIT
-# Catches both static SOQL in [ ] and dynamic SOQL in string literals
-SOQL_NO_LIMIT_RE = re.compile(
-    r"""\[?\s*SELECT\b(?:(?!LIMIT).)*?\bFROM\b(?:(?!LIMIT|\]|;).)*?(?:\]|;)""",
-    re.IGNORECASE | re.DOTALL,
-)
-
-# Inline SOQL blocks (in square brackets): [SELECT ... FROM ... WHERE ...]
-INLINE_SOQL_RE = re.compile(
-    r"""\[\s*SELECT\b.*?\]""",
-    re.IGNORECASE | re.DOTALL,
-)
-
-# Database.query( string ) dynamic SOQL calls
-DYNAMIC_SOQL_RE = re.compile(
-    r"""Database\.query\s*\(""",
-    re.IGNORECASE,
-)
-
-# FIELDS(ALL) or FIELDS(STANDARD) — expensive on large objects
-FIELDS_ALL_RE = re.compile(
-    r"""\bFIELDS\s*\(\s*(?:ALL|STANDARD|CUSTOM)\s*\)""",
-    re.IGNORECASE,
-)
+LIMIT_RE = re.compile(r"\bLIMIT\b", re.IGNORECASE)
+SPLIT_RE = re.compile(r"\s+(?:AND|OR)\s+", re.IGNORECASE)
+OR_RE = re.compile(r"\s+OR\s+", re.IGNORECASE)
+NEGATIVE_RE = re.compile(r"!=|<>|\bNOT\s+IN\b|\bNOT\s+LIKE\b|^\s*\(?\s*NOT\b", re.IGNORECASE)
+EMPTY_RE = re.compile(r"(?:!=|=)\s*''")
+LEADING_WILDCARD_RE = re.compile(r"\bLIKE\s+'%", re.IGNORECASE)
+NULL_CUSTOM_RE = re.compile(r"\b\w+__c\s*(?:!=|=)\s*null\b", re.IGNORECASE)
+FIELDS_RE = re.compile(r"\bFIELDS\s*\(\s*(?:ALL|CUSTOM)\s*\)", re.IGNORECASE)
 
 
-# ---------------------------------------------------------------------------
-# File scanning
-# ---------------------------------------------------------------------------
+def strip_comments(src: str) -> str:
+    """Blank out // and /* */ comments, keeping string literals and line numbers."""
+    out: list[str] = []
+    i, n = 0, len(src)
+    in_str = False
+    while i < n:
+        c = src[i]
+        if in_str:
+            out.append(c)
+            if c == "\\" and i + 1 < n:
+                out.append(src[i + 1])
+                i += 2
+                continue
+            if c == "'":
+                in_str = False
+            i += 1
+            continue
+        if c == "'":
+            in_str = True
+            out.append(c)
+            i += 1
+            continue
+        if src.startswith("//", i):
+            j = src.find("\n", i)
+            j = n if j == -1 else j
+            i = j
+            continue
+        if src.startswith("/*", i):
+            j = src.find("*/", i + 2)
+            j = n if j == -1 else j + 2
+            out.append("".join("\n" if ch == "\n" else " " for ch in src[i:j]))
+            i = j
+            continue
+        out.append(c)
+        i += 1
+    return "".join(out)
 
-def find_apex_files(root: Path) -> list[Path]:
-    """Return all .cls and .trigger files under root."""
-    apex_files: list[Path] = []
-    for ext in ("*.cls", "*.trigger"):
-        apex_files.extend(root.rglob(ext))
-    return sorted(apex_files)
+
+def queries(src: str):
+    """Yield (offset, soql) for inline [SELECT ...] blocks and 'SELECT ...' strings."""
+    for m in INLINE_SOQL_RE.finditer(src):
+        yield m.start(), m.group(1)
+    for m in STRING_SOQL_RE.finditer(src):
+        yield m.start(), m.group(1)
 
 
-def check_file(path: Path) -> list[str]:
-    """Return a list of issue strings found in a single file."""
-    issues: list[str] = []
+def check_query(soql: str, in_trigger: bool) -> list[tuple[str, str]]:
+    findings: list[tuple[str, str]] = []
+    where_m = WHERE_RE.search(soql)
+    where = where_m.group(1) if where_m is not None else ""
+    if in_trigger and where_m is None and LIMIT_RE.search(soql) is None:
+        findings.append(("ERROR", "query in trigger context has no WHERE and no LIMIT; it reads the whole object"))
+    if where:
+        preds = [p for p in SPLIT_RE.split(where) if p.strip()]
+        weak = [p for p in preds if NEGATIVE_RE.search(p) is not None or EMPTY_RE.search(p) is not None]
+        if in_trigger and preds and len(weak) == len(preds):
+            findings.append(("ERROR", "query in trigger context has no positive filter (only negative or empty-value comparisons), so no index can drive it"))
+        elif weak:
+            findings.append(("WARN", "negative operator or empty-value comparison; a custom index is typically not used for these"))
+        if OR_RE.search(where) is not None:
+            findings.append(("WARN", "OR in WHERE; every field in the OR must be indexed and each branch under its threshold"))
+        if NULL_CUSTOM_RE.search(where) is not None:
+            findings.append(("WARN", "null comparison on a custom field; index tables exclude null rows unless Support built a null-inclusive index"))
+    if LEADING_WILDCARD_RE.search(soql) is not None:
+        findings.append(("WARN", "leading-wildcard LIKE; capture the plan (?explain=) or use SOSL for keyword search"))
+    if FIELDS_RE.search(soql) is not None:
+        findings.append(("WARN", "FIELDS(ALL)/FIELDS(CUSTOM); select only the fields the transaction reads"))
+    return findings
+
+
+def scan_file(path: Path) -> list[tuple[str, str]]:
     try:
-        source = path.read_text(encoding="utf-8", errors="replace")
+        raw = path.read_text(encoding="utf-8", errors="replace")
     except OSError as exc:
-        return [f"{path}: Could not read file — {exc}"]
-
-    lines = source.splitlines()
-
-    for line_num, line in enumerate(lines, start=1):
-        location = f"{path}:{line_num}"
-
-        # 1. Leading wildcard LIKE
-        if LEADING_WILDCARD_RE.search(line):
-            issues.append(
-                f"{location}: LEADING WILDCARD — `LIKE '%...` prevents index usage. "
-                "No index workaround exists. Switch to SOSL for full-text search or "
-                "use a trailing wildcard (`LIKE 'value%`) if prefix match is sufficient."
-            )
-
-        # 2. NULL/empty checks on custom fields
-        if NULL_CHECK_CUSTOM_RE.search(line):
-            issues.append(
-                f"{location}: NULL FILTER ON CUSTOM FIELD — `WHERE custom__c = null` "
-                "or `!= null` is not served by default custom indexes (index tables "
-                "exclude null rows). Request a null-inclusive custom index from "
-                "Salesforce Support if this filter is needed on a large object."
-            )
-
-        # 3. OR conditions — flag for manual review
-        stripped = line.strip()
-        if re.search(r'\bOR\b', stripped, re.IGNORECASE) and re.search(
-            r'\bWHERE\b', stripped, re.IGNORECASE
-        ):
-            issues.append(
-                f"{location}: OR CONDITION IN WHERE — All fields in an OR clause "
-                "must be individually indexed and selective for any index to be used. "
-                "Consider decomposing into multiple queries if fields lack custom indexes."
-            )
-
-        # 4. FIELDS(ALL/STANDARD/CUSTOM)
-        if FIELDS_ALL_RE.search(line):
-            issues.append(
-                f"{location}: FIELDS() KEYWORD — FIELDS(ALL), FIELDS(STANDARD), or "
-                "FIELDS(CUSTOM) queries all fields on an object. This is expensive on "
-                "large objects and should be replaced with an explicit field list."
-            )
-
-    # 5. Inline SOQL without LIMIT
-    for match in INLINE_SOQL_RE.finditer(source):
-        soql_block = match.group(0)
-        if not re.search(r'\bLIMIT\b', soql_block, re.IGNORECASE):
-            # Find approximate line number
-            start_line = source[: match.start()].count("\n") + 1
-            issues.append(
-                f"{path}:{start_line}: MISSING LIMIT — Inline SOQL query has no LIMIT "
-                "clause. On objects with large data volumes, unlimited result sets "
-                "can cause heap or timeout issues. Add LIMIT or use OFFSET pagination."
-            )
-
-    # 6. Dynamic SOQL usage note
-    if DYNAMIC_SOQL_RE.search(source):
-        first_match = DYNAMIC_SOQL_RE.search(source)
-        start_line = source[: first_match.start()].count("\n") + 1
-        issues.append(
-            f"{path}:{start_line}: DYNAMIC SOQL DETECTED — `Database.query()` is used. "
-            "Verify that the WHERE clause in the dynamic query uses indexed fields. "
-            "The same selectivity rules apply to dynamic and static SOQL."
-        )
-
-    return issues
-
-
-# ---------------------------------------------------------------------------
-# Manual check reminders
-# ---------------------------------------------------------------------------
-
-MANUAL_CHECKS = [
-    "MANUAL CHECK: Formula fields in WHERE clauses cannot be detected statically. "
-    "Search for any SOQL WHERE clause filters that reference formula field API names "
-    "(fields whose definitions use formulas in Setup). Formula fields are not indexable.",
-    "MANUAL CHECK: Run the Query Plan tool (Developer Console > Debug > Open Query Plan) "
-    "on your slowest queries against large objects. Cost > 1.0 indicates a full-table scan.",
-    "MANUAL CHECK: Verify that custom indexed fields have selectivity < 10% or < 333,333 "
-    "matching records for the filter values used. Run GROUP BY aggregate queries to confirm.",
-]
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Scan Apex files for SOQL anti-patterns that cause query timeouts and "
-            "non-selective queries on large Salesforce objects."
-        ),
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory to scan for .cls and .trigger files (default: current directory).",
-    )
-    return parser.parse_args()
+        return [("ERROR", f"{path}: cannot read file ({exc})")]
+    src = strip_comments(raw)
+    in_trigger = path.suffix == ".trigger"
+    results: list[tuple[str, str]] = []
+    for offset, soql in queries(src):
+        line = src.count("\n", 0, offset) + 1
+        for sev, msg in check_query(soql, in_trigger):
+            results.append((sev, f"{path}:{line}: {msg}"))
+    return results
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
+    ap = argparse.ArgumentParser(description="Flag SOQL that cannot use an index (soql-query-optimization skill).")
+    ap.add_argument("--manifest-dir", default=".", help="Root to scan for .cls and .trigger files")
+    ap.add_argument("--strict", action="store_true", help="Treat WARN as failure")
+    args = ap.parse_args()
 
-    if not manifest_dir.exists():
-        print(f"ERROR: Directory not found: {manifest_dir}", file=sys.stderr)
-        return 1
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
 
-    apex_files = find_apex_files(manifest_dir)
-
-    if not apex_files:
-        print(f"No .cls or .trigger files found under: {manifest_dir}")
-        print("Nothing to check.")
+    files = sorted(list(root.rglob("*.cls")) + list(root.rglob("*.trigger")))
+    if not files:
+        print(f"WARN: no .cls or .trigger files under {root}; nothing to check")
         return 0
 
-    all_issues: list[str] = []
-    for apex_file in apex_files:
-        all_issues.extend(check_file(apex_file))
+    errors = warns = 0
+    for f in files:
+        for sev, msg in scan_file(f):
+            print(f"{sev}: {msg}")
+            if sev == "ERROR":
+                errors += 1
+            else:
+                warns += 1
 
-    # Print automated findings
-    if all_issues:
-        print(f"Found {len(all_issues)} issue(s) in {len(apex_files)} file(s):\n")
-        for issue in all_issues:
-            print(f"ISSUE: {issue}\n")
-    else:
-        print(f"No automated issues found in {len(apex_files)} file(s).")
-
-    # Always print manual check reminders
-    print("\n--- Manual checks required (cannot be detected statically) ---")
-    for reminder in MANUAL_CHECKS:
-        print(f"  {reminder}")
-
-    return 1 if all_issues else 0
+    print(f"Scanned {len(files)} file(s): {errors} ERROR, {warns} WARN")
+    if errors or (args.strict and warns):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

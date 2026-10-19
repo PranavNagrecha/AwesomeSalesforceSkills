@@ -45,7 +45,7 @@ Use this template when implementing or reviewing a Bulk API 2.0 integration.
 - [ ] Other: ___________________ — declare `"columnDelimiter"` at job creation
 
 **Null handling confirmed:**
-- [ ] Empty cells verified not to be used for null — using `#N/A` to null fields
+- [ ] Null policy applied: empty values are ignored on update, `#N/A` clears a field; values trimmed
 
 **Date/time format confirmed:** ISO 8601 (`YYYY-MM-DDTHH:MM:SS.sssZ`)
 
@@ -54,7 +54,7 @@ Use this template when implementing or reviewing a Bulk API 2.0 integration.
 ## 4. Job Creation Method
 
 **Method:**
-- [ ] Standard: POST /jobs/ingest/ → upload chunks → PATCH UploadComplete
+- [ ] Standard: POST /jobs/ingest/ → upload the job's file → PATCH UploadComplete
 - [ ] Multipart: POST /jobs/ingest/ with multipart body (auto-completes UploadComplete)
 
 **If multipart:**
@@ -62,8 +62,8 @@ Use this template when implementing or reviewing a Bulk API 2.0 integration.
 - [ ] Pipeline logic does NOT send a second UploadComplete PATCH
 
 **If standard:**
-- [ ] Upload chunk sizes confirmed under 100 MB raw (150 MB base64)
-- [ ] Number of chunks: _______________
+- [ ] Each job's file confirmed under 100 MB raw (150 MB base64 per job)
+- [ ] Number of jobs: _______________
 - [ ] UploadComplete PATCH included in pipeline (mandatory — job never starts without it)
 
 ---
@@ -87,7 +87,7 @@ Complete all three after every terminal state:
 
 - [ ] `GET .../successfulResults/` retrieved — count: _______________
 - [ ] `GET .../failedResults/` retrieved — count: _______________
-- [ ] `GET .../unprocessedRecords/` retrieved — count: _______________
+- [ ] `GET .../unprocessedrecords/` retrieved (Failed or Aborted jobs only) — count: _______________
 
 **Integrity check:** successful + failed + unprocessed == total uploaded?
 - Expected total: _______________
@@ -119,7 +119,7 @@ Complete all three after every terminal state:
 - [ ] New job created for failed records (do not reuse original job ID)
 - [ ] Retry job completed and verified
 
-**If unprocessedRecords count > 0:**
+**If unprocessedrecords count > 0:**
 
 - [ ] Root cause investigated (batch timeout, lock contention, peak org load)
 - [ ] Mitigation applied (CSV sort by parent ID, deferred sharing calculation, etc.)

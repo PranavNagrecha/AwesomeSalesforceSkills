@@ -23,21 +23,23 @@ outputs:
   - Query Plan tool interpretation
   - Skinny table or custom index request guidance
 triggers:
-  - my soql query is running slowly on a large object
-  - how do I use the query plan tool in salesforce
-  - non-selective soql query causing timeout
-  - index usage for soql performance
-  - soql query optimization for large data volumes
-  - skinny table request salesforce
+  - "my soql query is running slowly on a large object"
+  - "how do I use the query plan tool in salesforce"
+  - "non-selective soql query causing timeout"
+  - "index usage for soql performance"
+  - "soql query optimization for large data volumes"
+  - "skinny table request salesforce"
+  - "check whether my SOQL filter is selective before moving it into a trigger"
+  - "get a query plan from the REST API explain parameter instead of Developer Console"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-08-01
+updated: 2026-10-19
 ---
 
 # SOQL Query Optimization
 
-This skill activates when a SOQL query is slow, timing out, or causing load problems on a large-volume object. It guides practitioners through diagnosing selectivity, reading Query Plan output, requesting custom indexes, and restructuring queries to avoid full-table scans.
+This skill activates when a SOQL query is slow, timing out, or causing load problems on a large-volume object. It guides practitioners through measuring selectivity, reading query-plan output, choosing between a rewrite, a custom index, and a skinny table, and restructuring queries so the optimizer can drive them from an index.
 
 ---
 
@@ -45,202 +47,200 @@ This skill activates when a SOQL query is slow, timing out, or causing load prob
 
 Gather this context before working on anything in this domain:
 
-- Object name and approximate total record count (check Setup > Storage Usage or run `SELECT COUNT() FROM Object__c`)
-- The exact SOQL query that is slow or timing out
-- Whether a Query Plan tool reading is available (Developer Console > Debug > Open Query Plan)
-- Any error message text (QUERY_TIMEOUT, UNABLE_TO_LOCK_ROW, System.LimitException)
-- Whether the object has soft-deleted records that significantly inflate total count
+- Object name and total row count, including Recycle Bin rows (in Apex, `SELECT COUNT() FROM Object__c ALL ROWS` versus `SELECT COUNT() FROM Object__c WHERE IsDeleted = false`; over REST, the `queryAll` resource)
+- The exact SOQL query that is slow or timing out, with bind variables replaced by real literals
+- A query plan: Developer Console Query Plan, or `GET /services/data/v67.0/query/?explain=<query>`
+- Where the query runs: trigger, batch `start`, Lightning controller, report, list view, or an integration
+- Any error text (QUERY_TIMEOUT, System.QueryException, System.LimitException)
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "How many rows does the object hold today, including the Recycle Bin, and how fast is it growing?" | Index thresholds are percentages of the object's rows, and deleted rows still sit in the table the query must exclude (Gotcha 4) | A row count for the threshold arithmetic, and a date when the query will stop being selective |
+| "Will this query run inside a trigger, now or after a refactor?" | The Apex guide singles out queries inside triggers as the place selectivity matters most (Gotcha 6) | A gate: the plan must show `relativeCost` under 1.0 before the query moves into trigger code |
+| "Which filter is meant to drive the query, and how many rows does it match on its own?" | Each indexed filter is checked against its own threshold, and an AND can be selective when neither filter is (Gotcha 1) | A `GROUP BY ROLLUP` count per filter value instead of a guess |
+| "Does any filter use `!=`, `NOT`, a comparison with an empty string, or a leading `%`?" | Negative operators and empty-value comparisons usually stop a custom index from being used (Gotcha 8) | A rewrite to a positive filter, or a placeholder value such as `NA` in place of null |
+| "Is any filter field a formula, and does the formula cross a lookup or use TODAY()?" | Non-deterministic formulas cannot be indexed (Gotcha 2) | A stored field, or a cross-object filter on an indexed parent field |
+| "Was a large load, delete, or update run in the last day?" | Optimizer statistics are gathered nightly, so plans can be wrong right after a bulk change (Gotcha 7) | A rerun of the plan the next day before anyone files a Support case |
+| "Which sandbox will we test performance in?" | Custom indexes are copied to every sandbox created from production; skinny tables reach only Full sandboxes (Gotcha 5) | A test environment whose plans match production |
+
+A proper optimization adds a measured plan, threshold arithmetic tied to the real row count, and a recorded index decision; "just adding LIMIT" or an index request without numbers leaves the query to fail again when the object grows.
 
 ---
 
 ## Core Concepts
 
-### 1. Selectivity and Index Usage
+### 1. Selectivity thresholds
 
-The Lightning Platform query optimizer decides whether to use an index or perform a full-table scan based on selectivity: the estimated fraction of total records a filter will return.
+The query optimizer runs a pre-query against its own statistics to decide whether an index is worth using. The thresholds are tiered by the object's row count:
 
-**Standard indexed fields (indexed by default on most objects):** Id, Name, OwnerId, CreatedDate, SystemModstamp, RecordTypeId, and all master-detail and lookup relationship fields.
+| Index type | Used when the filter matches less than | Worked examples from the LDV guide |
+|---|---|---|
+| Standard index | 30% of the first million rows and 15% of rows beyond that | 2M rows → 450,000; 5M rows → 900,000 |
+| Custom index | 10% of the first million rows and 5% of rows beyond that | 500K rows → 50,000; 5M rows → 300,000 |
 
-Both thresholds are **tiered**, not flat percentages — the second tier is the part practitioners routinely miss.
+Standard indexes exist by default on Id, Name, OwnerId, CreatedDate, SystemModstamp, RecordTypeId, Division, Email on Contact and Lead, and every lookup and master-detail field. Custom fields marked External ID or Unique are indexed too.
 
-**Selectivity thresholds (standard indexed fields):** "30% of the first million records and 15% beyond that, capping at 1 million total targeted records."
-- Example: on a 2M-record object, the standard index is used up to 300,000 (30% of the first million) + 150,000 (15% of the second million) = 450,000 records.
+Combining filters:
 
-**Selectivity thresholds (custom indexed fields):** "10% of the first million records and 5% beyond, capping at 333,333 targeted records."
-- Example: on a 5M-record object, a custom index is used up to 100,000 + 5% × 4,000,000 = 300,000 records — the 333,333 cap is a ceiling, not the threshold itself.
+- **AND**: the optimizer uses the indexes unless one returns more than 20% of the object's rows. The overall condition is selective when each filter targets less than twice its threshold, or when the intersection of the filters is under the threshold.
+- **OR**: each filter must meet its threshold individually, and every field in the OR must be indexed for any index to be used.
+- **LIKE**: the optimizer does not use its statistics table; it samples up to 100,000 rows of real data to decide.
 
-**AND conditions:** The query optimizer uses indexes unless one filter alone returns more than 20% of records or 666,666 total records.
+If a filter misses its threshold, only that index is excluded; other indexed filters in the WHERE clause can still drive the query.
 
-**OR conditions:** All fields in the OR clause must be indexed for any index to be used. The index is used only if all OR branches return fewer than 10% of records or 333,333 total records. If the OR branches are non-selective or non-indexed, Salesforce cannot use any index.
+### 2. Reading a query plan
 
-If no selective filter exists, the optimizer performs a full-table scan, which will time out on objects with 1M+ records.
+Two tools return the same kind of plan without running the query:
 
-### 2. The Query Plan Tool
+- **Developer Console Query Plan** — turned on by the `Enable Query Plan` user preference.
+- **REST `explain` parameter** — `GET /services/data/vXX.X/query/?explain=<SOQL, or a report or list view Id>`, available since API 30.0 and labelled Beta. It works from any REST client, such as `curl` with a bearer token, so plans can be captured in CI.
 
-The Query Plan tool in Developer Console (Debug > Open Query Plan) shows the execution plan Salesforce would use for a given SOQL query — without actually running the query. It is **off by default**: "In the Developer Console, click Help | Preferences. Set Enable Query Plan to TRUE." No permission set or licence gates it, but the Debug menu item does not appear until that preference is flipped, which is why practitioners often report the tool as "missing."
+| Plan field | What it tells you |
+|---|---|
+| `leadingOperationType` | `Index`, `Sharing`, `Other`, or `TableScan` (no index) |
+| `relativeCost` | Cost compared with the selective-query threshold; above 1.0 means the query is not selective |
+| `cardinality` / `sobjectCardinality` | Estimated rows returned versus rows in the object |
+| `notes` | Why a filter was not considered, for example "unindexed" |
 
-**How to read output:**
-- **Cost < 1.0** — Salesforce plans to use an index. Lower cost = better.
-- **Cost > 1.0** — Full-table scan or an expensive operation. Queries in production on large objects with cost > 1.0 are at high risk of timeout.
-- The tool lists alternative plans and their costs; the lowest-cost plan is selected.
-- Each plan entry shows the cardinality (estimated rows to process) and the leading field used.
+Plans come back sorted from most to least optimal; the first one is what runs. A worked request and response is in `references/query-plan-worked-example.md`.
 
-**Limitations:** The Query Plan tool is only available in Developer Console. It is not available in VS Code or the Salesforce CLI. Use it as a manual diagnostic step when investigating a slow query.
+### 3. Indexes you can get, and how
 
-### 3. Index Types and Custom Index Requests
+- **External ID or Unique** on Auto Number, Email, Number, or Text fields creates an index at deploy time.
+- **Custom index by request**: Customer Support creates indexes on other custom fields and on standard fields that are not indexed by default. The Metadata API also has a `CustomIndex` type (API 50.0+, `.indx-meta` files in the `customindex` folder) whose use still requires contacting Support first.
+- **Cannot be indexed**: long text area, rich text area, encrypted text, multi-select picklists, currency fields in a multicurrency org, non-deterministic formulas (lookup references, TODAY and NOW, and the other cases the LDV guide lists), and formulas that call TEXT() on a picklist.
+- **Nulls**: index tables leave out null rows by default. Support can build a null-inclusive index, and existing indexes must be rebuilt to include nulls. Two-column indexes can hold nulls in the second column.
+- **Two-column indexes** help when one field selects and another sorts (list views), or when two fields are always filtered together.
 
-**Standard indexes** are maintained automatically by Salesforce for the fields listed above.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- excerpt: one CustomIndex component (.indx-meta, customindex folder; file name is illustrative).
+     Deploy only after Customer Support has agreed the index; see the CustomIndex type in the Metadata API guide. -->
+<CustomIndex xmlns="http://soap.sforce.com/2006/04/metadata">
+    <allowNullValues>false</allowNullValues>
+</CustomIndex>
+```
 
-**Custom indexes** can be created on custom fields (except long text areas, rich text areas, non-deterministic formula fields, and encrypted text fields). Two paths:
-1. **External ID checkbox** on a custom field — automatically creates a custom index when the field is marked as External ID in field metadata.
-2. **Salesforce Support request** — for custom fields that are not External IDs, or for standard fields that are not automatically indexed, open a case with Salesforce Support to request a custom index.
+### 4. Skinny tables
 
-**Non-deterministic formula fields cannot be indexed.** This includes formula fields that reference fields on related objects via lookups, reference multi-select picklists, reference currency fields in multicurrency orgs, or reference long text areas.
-
-**Two-column (composite) custom indexes:** Useful for queries that filter on one field and sort by another (common in list views and reports). A composite index on `(field1__c, field2__c)` outperforms two single-column indexes for queries with `WHERE field1__c = :val ORDER BY field2__c`.
-
-**Null handling:** By default, index tables do not include null-value records. If a query must filter for null values (`WHERE Field__c = null`), the standard index will not help. Salesforce Support can create custom indexes that include null rows.
-
-### 4. Skinny Tables
-
-Skinny tables are Salesforce-internal read-only copies of selected object fields, without joins. They are maintained by Salesforce and kept in sync with source data.
-
-**When to request:** Objects with 10M+ records and recurring read-heavy queries (reports, list views, batch jobs) that access the same subset of fields. Request via Salesforce Support.
-
-**Benefits:** Read-only queries that hit a skinny table skip the standard/custom field join, reducing I/O by 4–10x for qualifying queries.
-
-**Constraints:**
-- Maximum 200 columns per skinny table
-- Cannot include fields from other objects (no cross-object fields)
-- Read-only; not used for DML operations
-- Copied to Full sandboxes only; not copied to Developer, Developer Pro, or Partial sandboxes
-- Supported objects: custom objects, and Account, Contact, Opportunity, Lead, Case
-
-**Tradeoff:** Adds maintenance overhead for Salesforce. Not appropriate for objects with low record counts or infrequent query patterns.
+A skinny table is a Salesforce-maintained table holding standard and custom fields together, so read-only queries that touch only its fields skip the join between the two. It omits soft-deleted rows and stays in sync with the source table. Customer Support creates and changes it; you cannot. Limits: 200 columns, no fields from other objects, custom objects plus Account, Contact, Opportunity, Lead, and Case only, copied to Full sandboxes only. The LDV guide warns that a skinny table used in the wrong context can make performance worse, so request one only for objects with millions of rows and a stable set of read-heavy queries.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Diagnose and Rewrite a Non-Selective Query
+### Pattern 1: Diagnose and rewrite a non-selective query
 
-**When to use:** A SOQL query on a large object (500K+ records) is timing out or returning slowly. You suspect non-selective filters.
+1. Capture the plan (Developer Console or `?explain=`). `relativeCost` above 1.0, or `TableScan` as the first plan, means no index can drive the query.
+2. Count rows per filter value: `SELECT Status__c, COUNT(Id) FROM Loan_Application__c GROUP BY ROLLUP(Status__c)`.
+3. Compare each count with the threshold for that index type and the object's row count.
+4. Options, in order: lead with an indexed standard field (CreatedDate range, RecordTypeId, OwnerId); add a positive, selective filter; ask for a custom index if one value matches under 10%; split an OR into separate queries.
 
-**How it works:**
+### Pattern 2: OR decomposition
 
-1. Open Developer Console. Go to **Debug > Open Query Plan**.
-2. Paste the SOQL query and click **Execute**.
-3. Review the cost value. If cost > 1.0, the query is doing a full-table scan.
-4. Identify which WHERE clause fields are non-indexed or non-selective.
-5. Options (in order of preference):
-   - **Rewrite the query** to use a standard indexed field (OwnerId, CreatedDate, RecordTypeId) as the leading filter.
-   - **Add a selective filter** that narrows the result set before applying non-selective conditions.
-   - **Request a custom index** on a custom field if the field value distribution is selective (< 10% of records per value).
-   - **Decompose an OR query** into multiple queries and merge results in Apex.
+The LDV guide's fix when two indexed fields joined by OR exceed the threshold is to run two queries and join the results:
 
-**Why not just add LIMIT:** Adding LIMIT to a non-selective query does not make it selective. The optimizer must still scan the table to find qualifying records before applying LIMIT.
+```apex
+Map<Id, Account> combined = new Map<Id, Account>(
+    [SELECT Id, Name FROM Account WHERE Region__c = 'West']
+);
+combined.putAll(new Map<Id, Account>(
+    [SELECT Id, Name FROM Account WHERE Status__c = 'Active']
+));
+List<Account> results = combined.values();
+```
 
-### Pattern 2: OR Query Decomposition
+Each half must be selective on its own, and the split spends one extra SOQL query against the transaction limit.
 
-**When to use:** A query uses OR conditions across fields where only one is indexed, causing the index to be bypassed entirely.
+### Pattern 3: Recent-records query with ORDER BY on an indexed field
 
-**How it works:**
+For "records created in the last N days" on an object too large for the CreatedDate threshold, the LDV guide's case study adds `ORDER BY` on the indexed field and a `LIMIT` under 100,000; the optimizer then uses the ORDER BY index without the threshold check:
 
-Instead of:
 ```soql
-SELECT Id, Name FROM Account
-WHERE Region__c = 'West' OR Status__c = 'Active'
+SELECT Id, Product_Code__c
+FROM Customer_Product__c
+WHERE CreatedDate = LAST_N_DAYS:3
+ORDER BY CreatedDate
+LIMIT 99999
 ```
 
-Decompose into two indexed queries and merge in Apex:
+This returns at most 99,999 rows; if more were created in the window, the rest are not returned.
+
+### Pattern 4: Dynamic SOQL from a field set
+
 ```apex
-List<Account> westAccounts = [SELECT Id, Name FROM Account WHERE Region__c = 'West'];
-List<Account> activeAccounts = [SELECT Id, Name FROM Account WHERE Status__c = 'Active'];
-// Merge and deduplicate using a Map<Id, Account>
-Map<Id, Account> combined = new Map<Id, Account>(westAccounts);
-combined.putAll(new Map<Id, Account>(activeAccounts));
-```
-
-This works only if both fields are individually indexed. Each sub-query can use its own index.
-
-**Why not the alternative:** A single OR query cannot use an index on only one branch. Both branches must be indexed and selective, or Salesforce falls back to a full-table scan.
-
-### Pattern 3: Dynamic SOQL with Field Sets
-
-**When to use:** Query fields need to be configurable by admins without code changes, or the query is built dynamically.
-
-**How it works:**
-
-Use Salesforce field sets defined on the object in Setup. In Apex:
-```apex
-List<Schema.FieldSetMember> fields = SObjectType.Account.fieldSets.MyFieldSet.getFields();
-String query = 'SELECT Id';
-for (Schema.FieldSetMember f : fields) {
-    query += ', ' + f.getFieldPath();
+List<Schema.FieldSetMember> members = SObjectType.Account.fieldSets.Summary_Fields.getFields();
+List<String> paths = new List<String>{ 'Id' };
+for (Schema.FieldSetMember m : members) {
+    paths.add(m.getFieldPath());
 }
-query += ' FROM Account WHERE OwnerId = :userId LIMIT 200';
-List<Account> results = Database.query(query);
+Id ownerId = UserInfo.getUserId();
+String soql = 'SELECT ' + String.join(paths, ', ')
+    + ' FROM Account WHERE OwnerId = :ownerId LIMIT 200';
+List<Account> rows = Database.query(soql);
 ```
 
-**Important:** The same selectivity rules apply to dynamic SOQL. A `Database.query()` call with a non-selective WHERE clause will time out exactly as a static SOQL query would. Always ensure the WHERE clause in dynamic SOQL uses indexed fields.
-
-**Avoid SELECT * patterns:** Do not query all fields using `FIELDS(ALL)` or `FIELDS(STANDARD)` in Apex — this is expensive on objects with many fields and large data volumes. Explicit field lists are always preferred.
+Selectivity rules are the same for dynamic and static SOQL. Prefer explicit field lists: every selected field counts toward the 6 MB synchronous or 12 MB asynchronous heap.
 
 ---
 
 ## Decision Guidance
 
-| Situation | Recommended Approach | Reason |
+| Situation | Recommended approach | Reason |
 |---|---|---|
-| Query cost > 1.0 in Query Plan, uses a formula field filter | Remove formula field from WHERE; store value in a regular field and index it | Formula fields are not indexable |
-| OR across two fields, both custom, both selective | Decompose into two queries and merge in Apex | OR requires all branches to be indexed and selective |
-| Custom field used as a primary filter on 1M+ records | Request custom index via Salesforce Support | Custom fields are not indexed by default |
-| Query uses `LIKE '%value%'` (leading wildcard) | Switch to SOSL search if full-text search is needed; remove leading wildcard if not required | Leading wildcards prevent index usage with no workaround |
-| Object has 10M+ records and recurring reports on same field subset | Request skinny table via Salesforce Support | Eliminates join overhead on read-heavy, large-volume objects |
-| Query uses `WHERE Field__c = null` on non-indexed field | Request null-inclusive custom index or restructure query | Index tables exclude null rows by default |
-| ORDER BY on non-selective query | Make the query selective first; ORDER BY alone does not help | ORDER BY applied after scan increases cost, not reduces it |
-| Two-field filter pattern (WHERE f1 = :x ORDER BY f2) | Request two-column custom index on (f1, f2) | Single-column indexes are less efficient for this pattern |
+| `relativeCost` above 1.0 and the filter is a formula | Filter on the source field, or on a stored copy that can be indexed | Non-deterministic formulas cannot be indexed |
+| OR across two indexed fields, each selective alone | Two queries merged in Apex | OR needs every branch indexed and under its threshold |
+| Custom field drives a query on a large object | Custom index request with GROUP BY counts attached | Custom fields are not indexed unless External ID or Unique |
+| `LIKE '%term%'` on a large object | Confirm with `?explain=`; use SOSL for keyword search | LIKE index use is decided by sampling 100,000 rows |
+| Last-N-days query over the CreatedDate threshold | `ORDER BY CreatedDate LIMIT` under 100,000 | The ORDER BY index is used without the threshold check |
+| Filter is `= null` | Null-inclusive index, or store a placeholder such as `NA` | Index tables exclude nulls by default |
+| Millions of rows, the same field subset read by many reports | Skinny table request | Removes the standard/custom field join for read-only queries |
+| One field selects and another sorts in a list view | Two-column custom index | One index serves both the filter and the sort |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Record the object, the row count including the Recycle Bin, the call site, and the literal query in `templates/soql-query-optimization-template.md`.
+2. Capture the plan with `?explain=` or Developer Console Query Plan, and save the JSON or screenshot next to the filled template.
+3. Run `GROUP BY ROLLUP` counts for every filter field and do the threshold arithmetic from Core Concepts §1 against the real row count.
+4. Pick the fix from Decision Guidance; for an index or skinny table, fill the request section of the template with the counts as evidence.
+5. Run `python3 skills/data/soql-query-optimization/scripts/check_soql_query_optimization.py --manifest-dir force-app/main/default`, resolve every ERROR, and review the WARN lines for queries on large objects.
+6. Re-capture the plan after the change and confirm `relativeCost` is under 1.0 with an `Index` leading operation; for trigger code, also run the Apex tests that drive the trigger with 200 records.
 
 ---
 
 ## Review Checklist
 
-Run through these before marking query optimization work complete:
-
-- [ ] Query Plan tool shows cost < 1.0 for the optimized query
-- [ ] All WHERE clause fields are either standard indexed or have a confirmed custom index
-- [ ] No leading LIKE wildcards (`LIKE '%value'` or `LIKE '%value%'`) in the WHERE clause
-- [ ] No formula fields referenced in the WHERE clause
-- [ ] OR conditions either use only indexed, selective fields or have been decomposed
-- [ ] Dynamic SOQL uses an explicit field list, not `FIELDS(ALL)` or `FIELDS(STANDARD)`
-- [ ] A LIMIT clause is present where appropriate
-- [ ] NULL-filter queries use a null-inclusive custom index if null filtering is required
-- [ ] Skinny table request has been submitted to Support if object has 10M+ records and qualifies
+- [ ] The plan for the final query shows `relativeCost` under 1.0 and an `Index` leading operation
+- [ ] Threshold arithmetic uses the object's real row count, deleted rows included
+- [ ] No negative operator, empty-string comparison, or leading-wildcard LIKE drives the query
+- [ ] No non-deterministic formula field is a filter
+- [ ] OR branches are each indexed and selective, or the query is split
+- [ ] Index or skinny-table requests carry the GROUP BY counts that justify them
+- [ ] Performance was tested in a sandbox with the same indexes (any sandbox for custom indexes; Full only for skinny tables)
+- [ ] The checker reports no ERROR lines
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full write-ups live in `references/gotchas.md`:
 
-1. **The 10% selectivity threshold is per field, not per combined WHERE clause** — A query with two non-selective filters joined by AND is not automatically selective. The optimizer evaluates each filter independently and uses the threshold rules for AND/OR combinations. Two 15%-selective filters joined by AND may still trigger a full-table scan.
-2. **Custom indexes do not help queries with leading LIKE wildcards** — `LIKE '%value%'` and `LIKE '%value'` patterns prevent any index from being used. There is no workaround short of restructuring the query or switching to SOSL.
-3. **Adding ORDER BY to a non-selective query makes it worse, not better** — ORDER BY is evaluated after the initial scan. It adds a sort step on top of an already-expensive full-table scan and increases total cost.
-4. **Soft-deleted records count toward selectivity calculations** — If an object has a large recycle bin population, the total record count used in selectivity thresholds includes those soft-deleted records. A filter that appears selective may not be once deleted records are counted. Use `SELECT COUNT() FROM Object__c WHERE IsDeleted = false` to get the live count.
-5. **Custom indexes are not copied to most sandbox types** — Custom indexes created via Salesforce Support in production are copied to Full sandboxes only. Developer, Developer Pro, and Partial sandboxes do not receive them. Query Plan results and performance in those sandboxes may not reflect production behavior.
+| # | Gotcha |
+|---|---|
+| 1 | AND across two non-selective filters can still be selective |
+| 2 | Non-deterministic formula filters never use an index |
+| 3 | ORDER BY plus LIMIT can rescue a last-N-days query; LIMIT alone does not fix a scan |
+| 4 | Recycle Bin rows still sit in the table the query scans |
+| 5 | Custom indexes reach every sandbox; skinny tables reach only Full sandboxes |
+| 6 | Trigger context is where a non-selective query hurts most |
+| 7 | Optimizer statistics are refreshed nightly |
+| 8 | Negative operators and empty-value comparisons defeat custom indexes |
 
 ---
 
@@ -248,18 +248,21 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Optimized SOQL query | Rewritten query using indexed fields and avoiding non-selective patterns |
-| Query Plan interpretation | Cost value, plan type, and recommended action based on Developer Console output |
-| Custom index request guidance | Field API name, object, and justification to include in a Salesforce Support case |
-| Skinny table request guidance | Field list, object, and qualifying query patterns to include in a Salesforce Support case |
-| Query optimization report | Filled template from `templates/soql-query-optimization-template.md` |
+| Optimized SOQL query | Rewritten query led by an indexed, selective filter |
+| Query plan record | `?explain=` JSON or Query Plan capture, before and after |
+| Index request evidence | Object, field, value counts, and the threshold arithmetic |
+| CustomIndex metadata | `.indx-meta` file, only after Support has agreed the index |
+| Optimization report | Filled `templates/soql-query-optimization-template.md` |
 
 ---
 
 ## Related Skills
 
-- `apex-cpu-and-heap-optimization` — Use when the issue is Apex CPU time or heap consumption, not query performance or query timeouts
-- `soql-fundamentals` — Use when writing or learning basic SOQL syntax; this skill assumes SOQL fundamentals are already known
-- `data-model-design-patterns` — Use when the index strategy decision needs to be incorporated into a broader object design or data model review
-- `limits-and-scalability-planning` — Use when planning query performance at scale across multiple objects and future data growth milestones
-- `data-skew-and-sharing-performance` — Use when query slowness is caused by ownership skew or sharing recalculation, not by filter non-selectivity
+- `apex/apex-cpu-and-heap-optimization` — the problem is CPU time or heap, not query selectivity
+- `apex/soql-fundamentals` — basic SOQL syntax
+- `data/custom-index-requests` — preparing and tracking the index or skinny-table request itself
+- `data/data-model-design-patterns` — building the index strategy into an object design
+- `data/sosl-search-patterns` — keyword search that should not be a LIKE query
+- `architect/large-data-volume-architecture` — data skew, archival, and object-level volume strategy
+- `architect/limits-and-scalability-planning` — query performance against growth projections
+- `admin/data-skew-and-sharing-performance` — slowness caused by ownership skew or sharing recalculation

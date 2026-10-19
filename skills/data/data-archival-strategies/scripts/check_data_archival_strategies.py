@@ -1,345 +1,171 @@
 #!/usr/bin/env python3
-"""Checker script for Data Archival Strategies skill.
+"""Checker for the data-archival-strategies skill.
 
-Inspects a Salesforce metadata directory for archival-readiness signals
-and prints a guided checklist of items to review.
+Reads custom big object definitions, field history settings, and Apex in a
+metadata tree (Metadata API .object files or source-format object folders).
 
-Uses stdlib only — no pip dependencies.
+Rules (Big Objects Implementation Guide; Security guide, Field History Tracking):
+  ERROR  big object with no index; index field not defined, not required, of
+         type LongTextArea or URL, or without ASC/DESC sortDirection; text
+         fields in an index totalling over 100 characters (Email counts 80,
+         Phone 40); Database.insertImmediate(...) called as a bare statement,
+         because failures come back in SaveResults instead of an exception;
+         a metadata file that does not parse.
+  WARN   more than 20 fields with trackHistory=true on one object (the limit
+         without Field Audit Trail); Apex that calls the async-queries
+         endpoint (not among the APIs the guide lists for big objects).
+
+Exit codes: 0 clean or WARN only; 1 on ERROR, missing directory, or WARN with
+--strict. An empty directory prints a WARN and exits 0. Stdlib only.
 
 Usage:
-    python3 check_data_archival_strategies.py [--manifest-dir path/to/metadata]
-    python3 check_data_archival_strategies.py --help
+    python3 check_data_archival_strategies.py --manifest-dir force-app/main/default [--strict]
 """
 
 from __future__ import annotations
 
 import argparse
-import os
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-SALESFORCE_NS = "http://soap.sforce.com/2006/04/metadata"
-
-# Objects whose History objects are common hidden storage consumers
-HISTORY_OBJECTS = [
-    "Account",
-    "Case",
-    "Contact",
-    "Lead",
-    "Opportunity",
-    "Task",
-    "Event",
-]
-
-# Field types that tend to be high-churn and expensive to track in history
-HIGH_CHURN_TYPES = {"Picklist", "Boolean", "Currency", "Number", "Percent"}
+NS = "{http://soap.sforce.com/2006/04/metadata}"
+INDEX_TEXT_LIMIT = 100
+FIXED_TEXT_LENGTH = {"Email": 80, "Phone": 40}
+BANNED_INDEX_TYPES = {"LongTextArea", "Url", "URL"}
+HISTORY_FIELD_LIMIT = 20
+BARE_INSERT_RE = re.compile(r"^\s*Database\.insertImmediate\s*\(", re.IGNORECASE | re.MULTILINE)
+ASYNC_QUERY_RE = re.compile(r"/async-queries", re.IGNORECASE)
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Archival readiness checker for Data Archival Strategies skill.\n\n"
-            "Scans a Salesforce metadata directory for Big Object definitions, "
-            "field history tracking configuration, and provides a guided checklist "
-            "of storage and archival items to review in Salesforce Setup."
-        ),
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce metadata (default: current directory).",
-    )
-    return parser.parse_args()
+def find(elem: ET.Element, tag: str) -> ET.Element | None:
+    node = elem.find(NS + tag)
+    if node is None:
+        node = elem.find(tag)
+    return node
 
 
-def find_files_by_extension(root: Path, suffix: str) -> list[Path]:
-    """Return all files under root with the given suffix."""
-    matches = []
-    for dirpath, _dirnames, filenames in os.walk(root):
-        for fname in filenames:
-            if fname.endswith(suffix):
-                matches.append(Path(dirpath) / fname)
-    return sorted(matches)
+def findall(elem: ET.Element, tag: str) -> list[ET.Element]:
+    return elem.findall(NS + tag) + elem.findall(tag)
 
 
-def parse_xml_root(path: Path):
-    """Parse an XML file and return the root element, or None on failure."""
+def text(elem: ET.Element, tag: str) -> str:
+    node = find(elem, tag)
+    return node.text.strip() if node is not None and node.text is not None else ""
+
+
+PARSE_ERRORS: list[tuple[str, str]] = []
+
+
+def parse(path: Path) -> ET.Element | None:
     try:
-        tree = ET.parse(path)
-        return tree.getroot()
-    except ET.ParseError:
+        return ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        PARSE_ERRORS.append(("ERROR", f"{path}: cannot parse ({exc}); not checked"))
         return None
 
 
-def strip_ns(tag: str) -> str:
-    """Strip XML namespace from a tag string."""
-    if "}" in tag:
-        return tag.split("}", 1)[1]
-    return tag
+def object_name(path: Path) -> str:
+    name = path.name
+    for suffix in (".object-meta.xml", ".object"):
+        if name.endswith(suffix):
+            return name[: -len(suffix)]
+    return name
 
 
-def find_child_text(element, tag: str) -> str | None:
-    """Return the text of the first child with the given local tag name."""
-    for child in element:
-        if strip_ns(child.tag) == tag:
-            return child.text
-    return None
+def collect(path: Path) -> tuple[list[ET.Element], list[ET.Element]]:
+    """Fields and indexes for one object: inline elements plus source-format children."""
+    root = parse(path)
+    if root is None:
+        return [], []
+    fields = findall(root, "fields")
+    indexes = findall(root, "indexes")
+    folder = path.parent
+    if path.name.endswith(".object-meta.xml"):
+        for sub, bucket in (("fields", fields), ("indexes", indexes)):
+            for child in sorted((folder / sub).glob("*.xml")) if (folder / sub).is_dir() else []:
+                node = parse(child)
+                if node is not None:
+                    bucket.append(node)
+    return fields, indexes
 
 
-# ---------------------------------------------------------------------------
-# Checks
-# ---------------------------------------------------------------------------
-
-def check_big_object_definitions(manifest_dir: Path) -> list[str]:
-    """Scan for custom Big Object definitions (__b objects)."""
-    findings = []
-    object_dir = manifest_dir / "objects"
-    if not object_dir.exists():
-        return ["INFO: No 'objects/' directory found — cannot scan for Big Object definitions."]
-
-    big_object_files = [
-        f for f in object_dir.iterdir()
-        if f.is_file() and f.name.endswith("__b.object-meta.xml")
-    ]
-
-    if not big_object_files:
-        findings.append(
-            "INFO: No custom Big Object definitions found in objects/. "
-            "If planning to use Big Objects for archival, define them via Metadata API."
-        )
-    else:
-        findings.append(f"OK: Found {len(big_object_files)} Big Object definition(s):")
-        for f in big_object_files:
-            root = parse_xml_root(f)
-            index_count = 0
-            if root is not None:
-                for child in root:
-                    if strip_ns(child.tag) == "indexes":
-                        index_count += 1
-            index_note = f"{index_count} index(es) defined" if index_count else "WARNING — no index defined (required for queries)"
-            findings.append(f"  - {f.name}: {index_note}")
-
-    return findings
-
-
-def check_field_history_tracking(manifest_dir: Path) -> list[str]:
-    """Scan standard object metadata for Field History Tracking settings."""
-    findings = []
-    object_dir = manifest_dir / "objects"
-    if not object_dir.exists():
-        return []
-
-    tracked_objects = []
-    high_churn_tracked: list[tuple[str, str, str]] = []
-
-    for obj_name in HISTORY_OBJECTS:
-        meta_file = object_dir / f"{obj_name}.object-meta.xml"
-        if not meta_file.exists():
-            continue
-
-        root = parse_xml_root(meta_file)
-        if root is None:
-            continue
-
-        for field_el in root:
-            if strip_ns(field_el.tag) != "fields":
+def check_big_object(path: Path, fields: list[ET.Element], indexes: list[ET.Element]) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    by_name = {text(f, "fullName"): f for f in fields}
+    if not indexes:
+        out.append(("ERROR", f"{path}: big object has no index; a custom big object needs one and it can't be added or changed after deployment"))
+        return out
+    for idx in indexes:
+        total_text = 0
+        for ifield in findall(idx, "fields"):
+            name = text(ifield, "name")
+            field = by_name.get(name)
+            if field is None:
+                out.append(("ERROR", f"{path}: index field {name or '(blank)'} does not match any field fullName"))
                 continue
-            full_name = find_child_text(field_el, "fullName") or ""
-            tracked = find_child_text(field_el, "trackHistory")
-            field_type = find_child_text(field_el, "type") or ""
-            if tracked == "true":
-                tracked_objects.append(obj_name)
-                if field_type in HIGH_CHURN_TYPES:
-                    high_churn_tracked.append((obj_name, full_name, field_type))
-
-    if tracked_objects:
-        unique_objects = sorted(set(tracked_objects))
-        findings.append(
-            f"INFO: Field History Tracking is enabled on {len(unique_objects)} standard object(s): "
-            + ", ".join(unique_objects)
-        )
-        findings.append(
-            "  ACTION: Verify Setup > Storage Usage for History object sizes. "
-            "History objects count against data storage separately from the parent object."
-        )
-
-    if high_churn_tracked:
-        findings.append(
-            f"WARNING: {len(high_churn_tracked)} potentially high-churn field(s) have History Tracking enabled:"
-        )
-        for obj, field, ftype in high_churn_tracked:
-            findings.append(f"  - {obj}.{field} (type: {ftype})")
-        findings.append(
-            "  ACTION: Consider disabling tracking on fields that change frequently "
-            "and where history is not required for compliance."
-        )
-
-    return findings
-
-
-def check_archival_patterns_in_objects(manifest_dir: Path) -> list[str]:
-    """Look for soft-delete archival pattern (IsArchived__c or similar) in custom objects."""
-    findings = []
-    object_dir = manifest_dir / "objects"
-    if not object_dir.exists():
-        return []
-
-    archival_field_names = {"IsArchived__c", "Archived__c", "Is_Archived__c"}
-    objects_with_archival_field = []
-
-    for meta_file in object_dir.iterdir():
-        if not meta_file.name.endswith(".object-meta.xml"):
-            continue
-        if meta_file.name.endswith("__b.object-meta.xml"):
-            continue
-
-        root = parse_xml_root(meta_file)
-        if root is None:
-            continue
-
-        for field_el in root:
-            if strip_ns(field_el.tag) != "fields":
-                continue
-            full_name = find_child_text(field_el, "fullName") or ""
-            if full_name in archival_field_names:
-                obj_name = meta_file.name.replace(".object-meta.xml", "")
-                objects_with_archival_field.append(obj_name)
-                break
-
-    if objects_with_archival_field:
-        findings.append(
-            f"INFO: Soft-delete archival pattern (IsArchived__c or similar) detected on "
-            f"{len(objects_with_archival_field)} object(s): "
-            + ", ".join(sorted(objects_with_archival_field))
-        )
-        findings.append(
-            "  ACTION: Confirm all list views, queues, and reports exclude IsArchived__c = true records. "
-            "Consider requesting a custom index on the archival field from Salesforce Support."
-        )
-
-    return findings
-
-
-def print_storage_checklist() -> None:
-    """Print a guided checklist for storage and archival review in Setup."""
-    checklist = """
-================================================================================
-  DATA ARCHIVAL STRATEGIES — STORAGE & ARCHIVAL READINESS CHECKLIST
-================================================================================
-
-Run the following checks in Salesforce Setup before finalizing an archival plan:
-
-[ ] 1. STORAGE BASELINE
-      Setup > Storage Usage
-      - Note data storage: ___ GB used / ___ GB limit (___ %)
-      - Note file storage: ___ GB used / ___ GB limit (___ %)
-      - Alert threshold is 85% and 100%
-
-[ ] 2. RECYCLE BIN STATUS
-      Setup > Recycle Bin
-      - Count of soft-deleted records: ___
-      - If count is high: empty the Recycle Bin first (fastest storage win)
-      - Apex: Database.emptyRecycleBin(recordList)
-      - Note: soft-deleted records affect query optimizer selectivity
-
-[ ] 3. LARGE OBJECT IDENTIFICATION
-      Run SOQL in Developer Console:
-        SELECT COUNT(Id) recordCount FROM <ObjectName>
-      - Check the top 5 objects by record count
-      - Check History objects (AccountHistory, CaseHistory, etc.)
-
-[ ] 4. BIG OBJECT REVIEW (if applicable)
-      Setup > Big Objects
-      - Confirm index is defined on each custom Big Object
-      - Confirm query pattern matches the index field order
-      - Confirm no standard DML is used against Big Object records
-
-[ ] 5. FIELD HISTORY TRACKING REVIEW
-      Setup > Object Manager > [Object] > Fields & Relationships > Set History Tracking
-      - Identify fields with tracking enabled on high-volume, high-churn objects
-      - Disable tracking on fields where history is not required
-      - For extended retention (beyond 18 months): evaluate Salesforce Shield Field Audit Trail
-
-[ ] 6. ARCHIVAL JOB VALIDATION
-      - Test Batch Apex archival job in a sandbox with representative data volume
-      - Confirm Big Object writes succeed before deleting source records
-      - Confirm hard delete (not soft delete) is used after archival writes
-      - Monitor batch job via Setup > Apex Jobs
-
-[ ] 7. POST-ARCHIVAL VALIDATION
-      - Re-run Setup > Storage Usage after archival job completes
-      - Confirm storage % is below 80% alert threshold
-      - Run representative SOQL queries on archived object to confirm index works
-      - Validate list views, reports, and queues return correct results
-
-================================================================================
-"""
-    print(checklist)
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-def run_checks(manifest_dir: Path) -> list[str]:
-    """Run all checks and return a flat list of finding strings."""
-    findings: list[str] = []
-
-    if not manifest_dir.exists():
-        findings.append(f"ERROR: Manifest directory not found: {manifest_dir}")
-        return findings
-
-    findings.append(f"Scanning metadata at: {manifest_dir.resolve()}")
-    findings.append("")
-
-    findings.append("--- Big Object Definitions ---")
-    findings.extend(check_big_object_definitions(manifest_dir))
-    findings.append("")
-
-    findings.append("--- Field History Tracking ---")
-    history_findings = check_field_history_tracking(manifest_dir)
-    if history_findings:
-        findings.extend(history_findings)
-    else:
-        findings.append("INFO: No standard object metadata found to scan for History Tracking.")
-    findings.append("")
-
-    findings.append("--- Soft-Delete Archival Pattern ---")
-    pattern_findings = check_archival_patterns_in_objects(manifest_dir)
-    if pattern_findings:
-        findings.extend(pattern_findings)
-    else:
-        findings.append("INFO: No soft-delete archival pattern (IsArchived__c) detected in scanned objects.")
-    findings.append("")
-
-    return findings
+            ftype = text(field, "type")
+            if text(field, "required").lower() != "true":
+                out.append(("ERROR", f"{path}: index field {name} must be marked required"))
+            if ftype in BANNED_INDEX_TYPES:
+                out.append(("ERROR", f"{path}: index field {name} is {ftype}; LongTextArea and URL fields can't be in the index"))
+            if text(ifield, "sortDirection").upper() not in {"ASC", "DESC"}:
+                out.append(("ERROR", f"{path}: index field {name} needs sortDirection ASC or DESC"))
+            if ftype in FIXED_TEXT_LENGTH:
+                total_text += FIXED_TEXT_LENGTH[ftype]
+            elif ftype == "Text":
+                length = text(field, "length")
+                total_text += int(length) if length.isdigit() else 0
+        if total_text > INDEX_TEXT_LIMIT:
+            out.append(("ERROR", f"{path}: text fields in index total {total_text} characters; the limit is {INDEX_TEXT_LIMIT} unless Support raises it"))
+    return out
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
+    ap = argparse.ArgumentParser(description="Check big object definitions, field history, and archive Apex (data-archival-strategies skill).")
+    ap.add_argument("--manifest-dir", default=".", help="Root of the metadata tree")
+    ap.add_argument("--strict", action="store_true", help="Treat WARN as failure")
+    args = ap.parse_args()
 
-    findings = run_checks(manifest_dir)
-    for line in findings:
-        print(line)
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
 
-    print_storage_checklist()
+    objects = sorted(list(root.rglob("*.object")) + list(root.rglob("*.object-meta.xml")))
+    apex = sorted(root.rglob("*.cls"))
+    if not objects and not apex:
+        print(f"WARN: no object metadata or Apex under {root}; nothing to check")
+        return 0
 
-    errors = [f for f in findings if f.startswith("ERROR:") or f.startswith("WARNING:")]
-    if errors:
-        print(f"WARN: {len(errors)} archival issue(s) detected", file=sys.stderr)
-    return 1 if errors else 0
+    findings: list[tuple[str, str]] = []
+    for path in objects:
+        fields, indexes = collect(path)
+        if object_name(path).endswith("__b"):
+            findings.extend(check_big_object(path, fields, indexes))
+        tracked = [text(f, "fullName") for f in fields if text(f, "trackHistory").lower() == "true"]
+        if len(tracked) > HISTORY_FIELD_LIMIT:
+            findings.append(("WARN", f"{path}: {len(tracked)} fields track history; without Field Audit Trail the limit is {HISTORY_FIELD_LIMIT} per object"))
+    for path in apex:
+        src = path.read_text(encoding="utf-8", errors="replace")
+        for m in BARE_INSERT_RE.finditer(src):
+            line = src.count("\n", 0, m.start()) + 1
+            findings.append(("ERROR", f"{path}:{line}: Database.insertImmediate result is discarded; it returns SaveResults instead of throwing, so failures go unnoticed"))
+        m = ASYNC_QUERY_RE.search(src)
+        if m is not None:
+            line = src.count("\n", 0, m.start()) + 1
+            findings.append(("WARN", f"{path}:{line}: calls async-queries; the Big Objects guide lists SOQL, Bulk, Chatter, and SOAP APIs as the supported ones"))
+
+    findings = PARSE_ERRORS + findings
+    errors = sum(1 for s, _ in findings if s == "ERROR")
+    warns = len(findings) - errors
+    for sev, msg in findings:
+        print(f"{sev}: {msg}")
+    print(f"Scanned {len(objects)} object file(s), {len(apex)} Apex file(s): {errors} ERROR, {warns} WARN")
+    if errors or (args.strict and warns):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

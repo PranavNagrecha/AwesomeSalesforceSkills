@@ -2,74 +2,80 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: `concurrencyMode: Parallel` in Bulk API 2.0 Is Reserved — Serial Mode Does Not Exist in v2.0
+## Gotcha 1: `concurrencyMode` Is for Future Use — Bulk API 2.0 Is Parallel Only
 
-**What happens:** Developers who read Bulk API v1 documentation expect to set `concurrencyMode: Serial` in their Bulk API 2.0 job creation request to avoid lock contention. In Bulk API 2.0, `concurrencyMode` is a reserved field for future use and always returns `Parallel`. Passing `concurrencyMode: Serial` may silently be ignored, or in some API versions may return a validation error.
+**What happens:** Developers migrating from Bulk API v1 carry `concurrencyMode: Serial` into a Bulk API 2.0 job to avoid lock contention, and nothing about processing changes.
 
-**When it occurs:** Any time a developer migrates from legacy Bulk API v1 serial mode to Bulk API 2.0 and attempts to carry the serial mode configuration forward. Also occurs when developers read v1 documentation and apply it to v2.0 implementations.
+**When it occurs:** The Bulk API 2.0 job resources describe `concurrencyMode` as "For future use... Currently only parallel mode is supported," and say that when other modes arrive they "will be chosen automatically by the API and will not be user configurable."
 
-**How to avoid:**
-- Accept that Bulk API 2.0 supports parallel mode only.
-- If serial mode is genuinely required (to prevent `UNABLE_TO_LOCK_ROW` on objects with complex triggers), use legacy Bulk API v1 with `concurrencyMode: Serial` and SOAP-based authentication.
-- For Bulk API 2.0, mitigate lock contention by sorting the CSV by parent ID before upload so related records land in the same internal batch, reducing inter-batch lock collisions.
+**How to avoid:** Plan for parallel processing. The guide's lock-contention advice for Bulk API 2.0 is to sort records by parent so children of the same parent are not spread across jobs (its example: organize AccountTeamMember files by AccountId), and to be aware that creating users, changing ownership under private sharing, updating roles, and updating territory hierarchies are likely to cause contention. Use Bulk API v1 serial mode only when that is not enough.
 
 ---
 
-## Gotcha 2: `Sforce-Locator: null` Is a Literal String — Not JSON null, Not Empty String, Not Absent Header
+## Gotcha 2: `Sforce-Locator: null` Is a String
 
-**What happens:** When paginating query job results, the `Sforce-Locator` response header contains the literal string `"null"` to indicate there are no more pages. Code that checks `if locator is None`, `if not locator`, or `if locator == ""` will not detect the last page and will loop indefinitely, re-fetching the last page forever. This is a common bug in locator-based pagination implementations.
+**What happens:** A pagination loop checks `if locator is None` or `if not locator`, never sees the end, and re-requests forever.
 
-**When it occurs:** Any Bulk API 2.0 query job result pagination loop. Occurs in Python, JavaScript, Java, and any language where null-checking idioms behave differently from string equality.
+**When it occurs:** The guide's rules for query results: "If there are no more results, the Sforce-Locator header's value is the string 'null'." It also says to use only the value from the header and not to guess it, because how the parameter is evaluated is subject to change.
 
-**How to avoid:**
-- Always compare with string equality: `if locator == "null"` (Python) or `"null".equals(locator)` (Java).
-- Treat the presence of the `Sforce-Locator` header with the value `"null"` as the explicit end-of-results signal.
-- Do not rely on the header being absent — it is always present and always has a value (either a locator string or the string `"null"`).
+**How to avoid:** Compare with string equality (`locator == "null"`), pass the header value back unchanged as `locator`, and stop on `"null"`.
 
 ---
 
-## Gotcha 3: Empty CSV Cell Sets Empty String, Not Null — Use `#N/A` to Null a Field
+## Gotcha 3: Empty Cells Are Ignored on Update — `#N/A` Clears a Field
 
-**What happens:** In Bulk API 2.0 CSV uploads, an empty cell (`,,` between two commas, or a trailing comma on a row) sets the field to an empty string. For text fields this may be acceptable, but for required fields, number/currency fields, date/time fields, and lookup fields, an empty string causes a type mismatch or required-field validation error. Developers expecting that leaving a cell blank will "not touch" the field are surprised to find their records failing with unexpected errors.
+**What happens:** A migration intends to blank out fields by leaving cells empty. The update succeeds and the old values remain.
 
-**When it occurs:**
-- Upsert jobs where some records have no value for an optional field and the developer leaves the cell blank.
-- Migration jobs where the source system exports nulls as empty strings.
-- Any job where the intention is to clear an existing field value rather than set an empty string.
+**When it occurs:** The CSV rules: "Empty field values are ignored when you update records. To set a field value to null, use a field value of #N/A." Fields not present in the CSV header are also ignored during an update.
 
-**How to avoid:**
-- Use `#N/A` as the cell value to explicitly set a field to null.
-- For fields you want to leave unchanged during an upsert, omit the column from the CSV entirely (Salesforce will not touch fields not present in the CSV header).
-- For fields you want to clear, include the column and set the cell to `#N/A`.
-- Pre-process source CSVs to replace null/empty representations with `#N/A` before uploading.
+**How to avoid:** Decide the null policy per field. Use `#N/A` where a value must be cleared; leave the cell empty (or drop the column) where the existing value must be kept.
 
 ---
 
-## Gotcha 4: Multipart Job Auto-Completes UploadComplete — Sending a Second PATCH Causes an Error
+## Gotcha 4: Multipart Jobs Are Already Upload-Complete
 
-**What happens:** When a job is created using the multipart endpoint, it transitions directly to `UploadComplete` state on creation. If the integration code then sends the standard `PATCH {"state": "UploadComplete"}` as part of a shared pipeline function, Salesforce returns an error because the job is already past the `Open` state and the state transition is invalid.
+**What happens:** A shared pipeline function sends `PATCH {"state": "UploadComplete"}` after every job creation, including multipart ones, and the step for multipart jobs is at best redundant.
 
-**When it occurs:** Integration pipelines that abstract the ingest job lifecycle into a shared function that always sends the `UploadComplete` PATCH, without checking whether the job was created via standard or multipart creation. Occurs when developers add multipart support to an existing integration without updating the state transition logic.
+**When it occurs:** The guide: "After you create a multipart job, the upload is completed for you automatically. You don't need to manually set the job state to UploadComplete for a multipart job."
 
-**How to avoid:**
-- Check the `state` field in the job creation response before deciding whether to send the `UploadComplete` PATCH.
-- If `state == "Open"` in the creation response: this is a standard job — send the PATCH after uploading all chunks.
-- If `state == "UploadComplete"` in the creation response: this is a multipart job — skip the PATCH and proceed directly to polling.
-- Structure the pipeline to branch on the initial state rather than always sending the PATCH unconditionally.
+**How to avoid:** Branch on the `state` returned by job creation: send the PATCH only when the job is `Open`.
 
 ---
 
-## Gotcha 5: `lineEnding` Mismatch Between Job Declaration and Actual CSV Causes Silent Parse Failures
+## Gotcha 5: `lineEnding` Must Match the File
 
-**What happens:** Bulk API 2.0 requires the `lineEnding` field in the job creation request to match the actual line endings used in the uploaded CSV. If the CSV was generated on Windows (CRLF) but the job was created with `lineEnding: LF`, Salesforce may misparse the CSV — treating the `\r` as part of the field value or misidentifying row boundaries. The result is records that fail with unexpected field-value errors, or rows that are silently split or merged during parsing.
+**What happens:** A CSV written on Windows (CRLF) is uploaded to a job declared with the default `LF`, and rows fail with unexpected field values.
 
-**When it occurs:**
-- CSV files generated on Windows machines and uploaded by integrations created by developers on Unix/macOS who did not inspect the file line endings.
-- Source systems that change their export line endings between environments (e.g., dev exports with LF, prod exports with CRLF).
-- Any pipeline that does not explicitly normalize line endings before upload.
+**When it occurs:** The guide asks for a `lineEnding` "that matches the line ending used to create the CSV file"; LF is the default, and the text editor's setting can override the operating system's convention.
 
-**How to avoid:**
-- Inspect the actual line endings in your CSV before creating the job. Most text editors and tools (`file`, `hexdump`) can confirm LF vs CRLF.
-- Normalize line endings to LF during CSV generation or pre-processing.
-- Explicitly set `lineEnding` in the job creation request — do not rely on the default (LF) unless you have verified the CSV uses LF.
-- If using CRLF, declare `"lineEnding": "CRLF"` in the job creation body.
+**How to avoid:** Inspect the bytes (`file`, `od -c`) before creating the job, normalize to LF, or declare `"lineEnding": "CRLF"`.
+
+---
+
+## Gotcha 6: 150 MB Is a Per-Job Ceiling, Not Per Request
+
+**What happens:** An integration splits an 800 MB file into eight 100 MB uploads to the same job and the job rejects the data.
+
+**When it occurs:** The guide's quick start says "You can upload up to 150 MB per job (after base64 encoding)," and the limits guide lists 150 MB per job for Bulk API 2.0. Base64 adds about 50%, hence the advice to upload no more than 100 MB of raw data.
+
+**How to avoid:** Split large files into separate jobs of about 100 MB raw each, and track every job Id for reconciliation.
+
+---
+
+## Gotcha 7: Field Values Aren't Trimmed
+
+**What happens:** Upserts by external ID create duplicates because `" ACME-001"` does not match `"ACME-001"`, or rows fail outright.
+
+**When it occurs:** The CSV rules: a space before or after a delimiter is part of the field value, and a space before or after a double quote generates an error for the row (`"John", "Smith"` isn't valid).
+
+**How to avoid:** Trim every value in the export step and never put spaces around quotes.
+
+---
+
+## Gotcha 8: Unprocessed Records Exist Only for Failed or Aborted Jobs
+
+**What happens:** A reconciliation script expects an unprocessed-records file for every job and reports errors for `JobComplete` jobs, or a script that only reads `failedResults` misses the rows a failed job never touched.
+
+**When it occurs:** The unprocessed-records resource "Retrieves a list of unprocessed records for failed or aborted jobs" at `/jobs/ingest/jobID/unprocessedrecords/`. A batch that still fails after 20 retries moves the whole job to `Failed`, and the remaining data isn't processed. Results are retrievable for 7 days.
+
+**How to avoid:** For `JobComplete`, reconcile successful plus failed against the upload. For `Failed` or `Aborted`, add unprocessed records, then create a new job for failed and unprocessed rows.

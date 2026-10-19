@@ -65,17 +65,22 @@ wrap it in try/catch," or no length handling at all.
 
 **Why it happens:** the model assumes length overruns fault loudly, as they do for many APIs.
 
-**Correct pattern:** these thresholds fail *silently*. Over 4,000 characters the logical
-operators are removed; over 10,000 characters zero rows are returned. Guard proactively:
+**Correct pattern:** these thresholds fail *silently*, and they apply to the `FIND {…}`
+term, not the whole statement (the statement's own default limit is 100,000 characters).
+Over 4,000 characters the logical operators are removed and AND defaults to OR; over 10,000
+characters zero rows are returned. Guard the term:
 
 ```apex
-if (searchQuery.length() > 4000) {
-    throw new SearchInputException('Over 4,000 chars: logical operators would be removed.');
+String term = String.join(userTerms, ' AND ');
+if (term.length() > 4000) {
+    throw new SearchInputException('Search term over 4,000 characters: AND would become OR.');
 }
+List<List<SObject>> rows = [FIND :term IN ALL FIELDS RETURNING Account(Id, Name ORDER BY Name)];
 ```
 
-**Detection hint:** a `try/catch` around `Search.query` presented as the length safeguard, or
-any claim that an over-length `SearchQuery` "will error."
+**Detection hint:** a `try/catch` around `Search.query` presented as the length safeguard, a
+length check on the full statement string, or any claim that an over-length search term "will
+error."
 
 ---
 
@@ -109,3 +114,20 @@ the org default.
 
 **Detection hint:** any "Generally Available"/"Beta" label on these limits, or an API-version
 number for the scan limit that is not 28.0.
+
+---
+
+## Anti-Pattern 7: Using LIMIT to lift a cap
+
+**What the LLM generates:** `RETURNING Account(Id, Name LIMIT 2000)` presented as the way past
+the 250 single-object default, or a statement-level `LIMIT 2000` to "get all results."
+
+**Why it happens:** in SOQL, LIMIT is how you ask for more rows up to the governor limit, so
+the model carries that meaning across.
+
+**Correct pattern:** the SOSL reference says "The LIMIT clause can't increase the maximum
+number of records returned." Use WHERE or ORDER BY inside RETURNING to reach 2,000 for one
+object; use LIMIT only to lower or share out results.
+
+**Detection hint:** a single-object RETURNING clause whose only addition is `LIMIT`, offered as
+the fix for a 250-row result.

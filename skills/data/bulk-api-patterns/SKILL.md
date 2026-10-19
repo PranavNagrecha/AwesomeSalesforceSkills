@@ -13,6 +13,8 @@ triggers:
   - "What is the difference between Bulk API 2.0 and legacy Bulk API v1 — when should I use each?"
   - "How do I perform a hard delete with Bulk API to bypass the Recycle Bin?"
   - "how to load millions of records using Bulk API 2.0 ingest job"
+  - "write a script that downloads every page of a Bulk API 2.0 query job until the locator says null"
+  - "reconcile a Bulk API 2.0 ingest job against successful, failed, and unprocessed results"
 tags:
   - bulk-api
   - bulk-api-2
@@ -30,12 +32,12 @@ outputs:
   - REST endpoint call sequence for ingest or query jobs
   - CSV format specification for the upload
   - Job state polling pattern
-  - Result retrieval pattern (successfulResults, failedResults, unprocessedRecords)
+  - Result retrieval pattern (successfulResults, failedResults, unprocessedrecords)
   - Locator-based pagination pattern for query results
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-19
 ---
 
 # Bulk API Patterns
@@ -48,9 +50,25 @@ This skill activates when a practitioner needs to implement the actual REST API 
 
 Gather this context before working on anything in this domain:
 
-- **Which API version are you targeting?** Bulk API 2.0 is REST-based, uses OAuth 2.0 bearer tokens, and requires no WSDL. Legacy Bulk API v1 uses SOAP-based session tokens and requires WSDL knowledge. Prefer v2.0 for all new implementations unless a specific v1 capability is required (e.g., serial concurrency mode, XML/JSON content types, binary attachments for Document/ContentVersion).
+- **Which API version are you targeting?** Bulk API 2.0 is REST-based, uses OAuth 2.0 bearer tokens, and requires no WSDL. Legacy Bulk API v1 uses SOAP-based session tokens and requires WSDL knowledge. Prefer v2.0 for all new implementations unless a specific v1 capability is required (e.g., serial concurrency mode, XML/JSON content types, binary attachments, which the Bulk API guide limits to Attachment objects or Salesforce CRM Content).
 - **Most common wrong assumption.** Developers assume `concurrencyMode: Parallel` in Bulk API 2.0 is a meaningful configuration choice. It is not — Bulk API 2.0 only supports parallel mode, and the `concurrencyMode` field is reserved for future use. Serial mode is exclusively a Bulk API v1 feature.
-- **Key constraints in play.** Each upload request to a Bulk API 2.0 ingest job must not exceed 150 MB after base64 encoding (approximately 100 MB of raw CSV per PUT). Salesforce automatically creates one internal batch per 10,000 records, up to a daily maximum of 150,000,000 records per org. A multipart job creation request handles datasets up to 100,000 characters and auto-completes the upload step.
+- **Key constraints in play.** A Bulk API 2.0 ingest job accepts up to 150 MB of data after base64 encoding, so upload no more than about 100 MB of raw CSV per job and split larger files across jobs. Salesforce creates one internal batch per 10,000 records, up to 150,000,000 records per rolling 24 hours, and ingest batches count toward the 15,000-batch allocation shared with Bulk API v1. A multipart job creation request handles up to 100,000 characters of CSV and completes the upload for you.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "How big is the CSV in MB, not rows?" | A job takes at most 150 MB after base64 encoding, about 100 MB of raw CSV (Gotcha 6) | A split into several jobs before the first upload |
+| "On update, should a blank cell clear the field or leave it alone?" | Empty values are ignored on update; only `#N/A` sets null (Gotcha 3) | Source data transformed so the intent is explicit |
+| "Was the file produced on Windows or by a tool that writes CRLF?" | The declared `lineEnding` must match the file (Gotcha 5) | A `lineEnding` value checked against the bytes |
+| "Is any value padded with spaces, or quoted with spaces around the quotes?" | Field values aren't trimmed, and a space next to a double quote fails the row (Gotcha 7) | A trimming step in the export |
+| "How does the client detect the last page of a query job?" | The end marker is the string `null` in the `Sforce-Locator` header (Gotcha 2) | A loop that compares strings and never guesses locators |
+| "Does the pipeline create jobs both ways, multipart and standard?" | Multipart jobs are already upload-complete (Gotcha 4) | One code path that branches on the returned `state` |
+| "Who reconciles the counts, and against which result sets?" | Unprocessed records exist only for failed or aborted jobs (Gotcha 8) | A reconciliation that reads the right resources for each terminal state |
+
+A proper job design adds size planning, an explicit null policy, and a reconciliation step; "just uploading the file" produces jobs that silently skip blank fields, stall in `Open`, or lose rows nobody counted.
 
 ---
 
@@ -68,10 +86,10 @@ Bulk API 2.0 (released in API version 41.0 / Winter '18) is the current recommen
 | Batching | Automatic (10,000 records/batch) | Manual (developer creates batches) |
 | Concurrency modes | Parallel only (serial not available) | Parallel and Serial |
 | Query PK chunking | Automatic | Manual invocation required |
-| Result endpoints | Unified: successfulResults, failedResults, unprocessedRecords | Per-batch result retrieval |
+| Result endpoints | Job-level: successfulResults, failedResults, unprocessedrecords | Per-batch result retrieval |
 | Multipart create | Supported (single-call create + upload) | Not supported |
 
-Use Bulk API v1 only when: (1) serial concurrency mode is required to prevent lock contention and Bulk API 2.0 batching cannot be reorganized to avoid it, or (2) the data format is XML/JSON or includes binary attachment fields (Document, ContentVersion Attachment).
+Use Bulk API v1 only when: (1) serial concurrency mode is required to prevent lock contention and Bulk API 2.0 batching cannot be reorganized to avoid it, or (2) the data format is XML/JSON or includes binary attachments (Attachment objects or Salesforce CRM Content, per the Bulk API guide L4948).
 
 ### Ingest Job Lifecycle
 
@@ -81,13 +99,13 @@ Every Bulk API 2.0 ingest job follows a strict state machine:
 2. **UploadComplete** — Caller sends `PATCH /jobs/ingest/{jobId}` with `{"state": "UploadComplete"}`. This is mandatory — Salesforce will not begin processing without it. A multipart job creation request bypasses this step by transitioning automatically.
 3. **InProgress** — Salesforce auto-creates internal batches (one per 10,000 records) and processes them asynchronously.
 4. **JobComplete** — All internal batches have been attempted. Individual records may still have failed — this state means processing is done, not that all records succeeded.
-5. **Failed** — Salesforce could not complete the job (repeated batch timeouts after 20 retries per batch).
+5. **Failed** — Salesforce could not complete the job: a batch still failed after 20 retries (each batch has 5 minutes), or the daily record limit was exceeded mid-job. Remaining data isn't processed.
 6. **Aborted** — Job manually canceled by the creator or a user with the Manage Data Integrations permission.
 
-After reaching `JobComplete`, `Failed`, or `Aborted`, retrieve results from three separate endpoints:
+After the job reaches a terminal state, retrieve results (available for 7 days):
 - `GET .../successfulResults/` — records written successfully, with `sf__Id` and `sf__Created` columns.
-- `GET .../failedResults/` — records that failed at the record level, with `sf__Error` column describing the cause.
-- `GET .../unprocessedRecords/` — records never attempted (batch-level timeout or job aborted).
+- `GET .../failedResults/` — records that failed at the record level, with an `sf__Error` column.
+- `GET .../unprocessedrecords/` — for failed or aborted jobs only: records that were never processed. The documented path is lowercase.
 
 ### CSV Format Requirements
 
@@ -97,21 +115,22 @@ Bulk API 2.0 ingest jobs accept CSV data only. The format must conform to these 
 - **Line endings:** Specified at job creation time using the `lineEnding` field. Values: `LF` (default, Unix/macOS) or `CRLF` (Windows/DOS). Mismatch between the declared `lineEnding` and the actual file causes parse errors.
 - **Column delimiter:** Default is `COMMA`. Alternatives: `BACKQUOTE`, `CARET`, `PIPE`, `SEMICOLON`, `TAB`. Declared at job creation via `columnDelimiter`.
 - **First row:** Column headers matching Salesforce field API names. Relationship fields use dot notation: `Account.Name`, `Owner.Email`.
-- **Null values:** To null out a field, use `#N/A` as the cell value.
-- **Boolean fields:** Use `true` / `false` (case-insensitive).
-- **Date/time fields:** ISO 8601 format: `2024-01-15T10:30:00.000Z`.
+- **Null values:** Empty values are ignored when you update records. To set a field to null, use `#N/A`.
+- **Whitespace:** Field values aren't trimmed; a space before or after a delimiter is part of the value, and a space before or after a double quote fails the row.
+- **Date/time fields:** `yyyy-MM-ddTHH:mm:ss.SSSZ` or `yyyy-MM-ddTHH:mm:ss.SSS+/-HH:mm`, for example `2024-01-15T10:30:00.000Z`.
+- **Header row:** up to 32,000 characters; headers must match field API names.
 
 ### Query Job and Locator Pagination
 
 Query jobs return results as paginated CSV. The result set is not available as a single download for large queries.
 
 Pagination pattern:
-1. `GET .../jobs/query/{jobId}/results` — returns the first page of results (up to 50,000 records by default) and a `Sforce-Locator` response header.
+1. `GET .../jobs/query/{jobId}/results` — returns the first set of results and a `Sforce-Locator` response header.
 2. If `Sforce-Locator` is not `null`, there are more pages. Use the locator value in the next request: `GET .../results?locator={locatorValue}`.
 3. Repeat until `Sforce-Locator` is `null`.
-4. The `maxRecords` query parameter controls page size (default: 50,000; max: 50,000).
+4. The optional `maxRecords` parameter caps each set; without it the server uses a default based on the service. Set it when large sets time out on the client.
 
-The locator value is stable for the lifetime of the job. You can retrieve pages out of order or re-fetch a page using its locator. Bulk API 2.0 query jobs also automatically apply PK chunking for large queries, splitting the query into sub-queries by primary key range.
+As long as the job exists, a locator does not change and can be used to fetch the same set again. Use only values returned in the header; the guide says not to construct or guess them. Bulk API 2.0 query jobs also automatically apply PK chunking for large queries, splitting the query into sub-queries by primary key range.
 
 ---
 
@@ -138,7 +157,7 @@ Content-Type: application/json
 
 Response: { "id": "{jobId}", "state": "Open", "contentUrl": "..." }
 
-Step 2 — Upload CSV data (repeat for each chunk, max 150 MB base64 per request)
+Step 2 — Upload CSV data (at most 150 MB base64 per job, about 100 MB raw)
 PUT /services/data/v66.0/jobs/ingest/{jobId}/batches
 Authorization: Bearer {token}
 Content-Type: text/csv
@@ -160,12 +179,12 @@ GET /services/data/v66.0/jobs/ingest/{jobId}
 Step 5 — Retrieve all three result endpoints
 GET /services/data/v66.0/jobs/ingest/{jobId}/successfulResults/
 GET /services/data/v66.0/jobs/ingest/{jobId}/failedResults/
-GET /services/data/v66.0/jobs/ingest/{jobId}/unprocessedRecords/
+GET /services/data/v66.0/jobs/ingest/{jobId}/unprocessedrecords/   (Failed or Aborted jobs)
 
-Integrity check: count(successful) + count(failed) + count(unprocessed) == total uploaded records
+Integrity check: count(successful) + count(failed) [+ count(unprocessed)] == total uploaded records
 ```
 
-**Why not synchronous REST:** Synchronous REST Composite maxes at 25 sub-requests per call. At 2,000+ records the call volume hits API limits and response times become unacceptable. Bulk API 2.0 offloads processing to Salesforce's async infrastructure.
+**Why not synchronous REST:** The limits guide calls any operation over 2,000 records a good candidate for Bulk API 2.0 and recommends bulkified synchronous calls (such as Composite) below that. A regular composite request carries at most 25 subrequests (composite graphs, 500).
 
 ### Pattern 2: Multipart Job Creation (Small Datasets)
 
@@ -174,7 +193,7 @@ Integrity check: count(successful) + count(failed) + count(unprocessed) == total
 **How it works:**
 
 ```
-POST /services/data/v66.0/jobs/ingest/
+POST /services/data/v67.0/jobs/ingest/
 Content-Type: multipart/form-data; boundary="BOUNDARY"
 Authorization: Bearer {token}
 
@@ -229,13 +248,13 @@ GET /services/data/v66.0/jobs/query/{jobId}/results?locator=MjAwMDAw
 (Continue until Sforce-Locator header is the literal string "null")
 ```
 
-Use `maxRecords` parameter to control page size (up to 50,000 per page). The locator value is stable — safe to save and resume if the download is interrupted.
+Use `maxRecords` to cap the size of each set (the guide's example uses 50,000). A locator does not change while the job exists, so a saved locator resumes an interrupted download.
 
 ### Pattern 4: Hard Delete
 
 **When to use:** Permanently removing records without leaving them in the Recycle Bin — typically for compliance/data purging or when Recycle Bin bloat causes query degradation.
 
-**Requirements:** The running user must have the "Bulk API Hard Delete" permission (or System Administrator profile). This permission is separate from standard delete permission.
+**Requirements:** The running user needs the "Bulk API Hard Delete" permission, which is disabled by default and must be enabled by an administrator; a Salesforce user license is required.
 
 **How it works:** Use operation `hardDelete` instead of `delete` in the job creation body. All other steps in the standard ingest pattern are identical. Records bypassed from the Recycle Bin cannot be recovered via standard Recycle Bin restore — ensure data is verified before submitting a hardDelete job.
 
@@ -259,13 +278,12 @@ Use `maxRecords` parameter to control page size (up to 50,000 per page). The loc
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Record the operation, object, external ID field, file size in MB, line endings, delimiter, and null policy in `templates/bulk-api-patterns-template.md`; split files over about 100 MB raw into separate jobs.
+2. Transform the CSV: header names equal API names, `#N/A` wherever a field must be cleared, values trimmed, dateTimes in `yyyy-MM-ddTHH:mm:ss.SSSZ`.
+3. Implement the call sequence from Pattern 1 (or Pattern 2 for 100,000 characters or less), branching on the `state` returned at creation; for exports, Pattern 3 with a string comparison against `null`.
+4. Run `python3 skills/data/bulk-api-patterns/scripts/check_bulk_api_patterns.py --manifest-dir <integration source>` and fix every ERROR.
+5. Run the job against a sandbox with a few hundred rows, then reconcile with the script in `references/reconciliation-script.md` before the full run.
+6. Keep the source CSV until reconciliation passes; results are only retrievable for 7 days.
 
 ---
 
@@ -276,11 +294,11 @@ Run through these before marking work in this area complete:
 - [ ] API version confirmed — Bulk API 2.0 for new implementations, v1 only when serial mode or non-CSV format is required
 - [ ] `lineEnding` field in job creation matches the actual line endings in the CSV file (LF vs CRLF)
 - [ ] `columnDelimiter` declared if not using the default COMMA
-- [ ] Upload chunk size stays under 150 MB after base64 encoding (approximately 100 MB raw CSV)
+- [ ] Each job's data stays under 150 MB after base64 encoding (about 100 MB raw CSV); larger files are split across jobs
 - [ ] `UploadComplete` PATCH is sent (or multipart creation used) — job remains in Open state indefinitely without it
 - [ ] Poll loop handles all three terminal states: `JobComplete`, `Failed`, `Aborted`
-- [ ] All three result endpoints retrieved after every job: `successfulResults`, `failedResults`, `unprocessedRecords`
-- [ ] Integrity check performed: record counts across three endpoints sum to total uploaded
+- [ ] `successfulResults` and `failedResults` retrieved after every job, plus `unprocessedrecords` for Failed or Aborted jobs
+- [ ] Integrity check performed: record counts across the result sets sum to total uploaded
 - [ ] For query jobs: locator pagination loop terminates when `Sforce-Locator` header value is the literal string `"null"`
 - [ ] `hardDelete` permission verified on running user before submitting hardDelete jobs
 
@@ -288,15 +306,18 @@ Run through these before marking work in this area complete:
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full write-ups are in `references/gotchas.md`:
 
-1. **`concurrencyMode: Parallel` in v2.0 is a no-op — serial mode is not available** — The `concurrencyMode` field appears in Bulk API 2.0 job creation and always returns `Parallel`. It is reserved for future use only. If you need serial processing to avoid lock contention, you must use legacy Bulk API v1. Attempting to pass `concurrencyMode: Serial` in a v2.0 request either returns an error or is silently ignored, depending on API version.
-
-2. **Multipart job auto-completes UploadComplete — do NOT send a second PATCH** — When you create a job via the multipart endpoint, the job transitions directly from creation to `UploadComplete`. Sending a redundant `PATCH {"state": "UploadComplete"}` after a multipart creation will return an error because the job is already past the `Open` state. Check the `state` field in the creation response before deciding whether to send the PATCH.
-
-3. **`Sforce-Locator: null` is a string, not JSON null — comparison must be string equality** — When paginating query results, the `Sforce-Locator` response header contains the literal string `"null"` (not a JSON null, not an empty string, not absence of the header) to signal the last page. Code that checks `if locator is None` or `if not locator` will fail to detect the last page and loop indefinitely. Use `if locator == "null"` or `if locator.strip() == "null"`.
-
-4. **`#N/A` is the only way to null a field in CSV — empty string sets an empty value, not null** — In Bulk API 2.0 CSV uploads, leaving a cell empty (`,,`) sets the field to an empty string for text fields, which is not the same as null and will fail required-field validation for non-text fields. To explicitly clear a field to null, use the value `#N/A` in that cell. This is a common source of upsert failures when migrating records with intentionally blank fields.
+| # | Gotcha |
+|---|---|
+| 1 | `concurrencyMode` is for future use; Bulk API 2.0 is parallel only |
+| 2 | The last-page marker is the string `null` |
+| 3 | Empty cells are ignored on update; `#N/A` clears a field |
+| 4 | Multipart jobs are already upload-complete |
+| 5 | `lineEnding` must match the file |
+| 6 | 150 MB is a per-job ceiling, not per request |
+| 7 | Field values aren't trimmed |
+| 8 | Unprocessed records exist only for failed or aborted jobs |
 
 ---
 
@@ -308,6 +329,7 @@ Non-obvious platform behaviors that cause real production problems:
 | CSV format specification | Encoding, line ending, delimiter, null value, and header row requirements |
 | Query job pagination pattern | Locator-based loop to exhaust all result pages |
 | API version selection rationale | v2.0 vs v1 decision with justification for the chosen approach |
+| Metadata XML | Not applicable: Bulk API jobs are runtime REST calls, not deployable metadata (`standards/skill-authoring-style.md` § 4) |
 
 ---
 

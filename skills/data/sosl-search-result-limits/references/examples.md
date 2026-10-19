@@ -4,7 +4,7 @@ All SOSL below is illustrative scaffolding authored from the official *SOSL Limi
 Search Results* topic and the SOQL/SOSL limits cheat sheet. Replace object and field names
 with your own. The per-stage limits (2,000-record scan, 250 single-object default,
 min(2000/n, 250) multi-object split, permission filtering, and the SearchQuery length
-thresholds) are documented platform behaviors, not maturity-gated features.
+thresholds on the `FIND {…}` term) are documented platform behaviors, not maturity-gated features.
 
 ## Example 1: The 250-record single-object cap, and lifting it
 
@@ -26,7 +26,7 @@ List<List<SObject>> capped = [
 // AFTER — a WHERE (or ORDER BY) inside the parentheses raises the cap to 2,000
 List<List<SObject>> raised = [
     FIND :fragment IN NAME FIELDS
-    RETURNING Account(Id, Name WHERE RecordType.DeveloperName = 'Customer' ORDER BY Name)
+    RETURNING Account(Id, Name WHERE Type = 'Customer' ORDER BY Name)
 ];
 List<Account> accounts = (List<Account>) raised[0];
 ```
@@ -71,40 +71,44 @@ inside `RETURNING` lifts that single object to the 2,000 ceiling.
 
 ---
 
-## Example 3: Guarding a dynamic SearchQuery against the length thresholds
+## Example 3: Guarding the FIND term against the length thresholds
 
-**Context:** an Apex service builds a search string from a caller-supplied list of terms and
-runs it with `Search.query`. Occasionally it returns zero rows, and occasionally an `AND`
-search behaves like a broad `OR`.
+**Context:** an Apex service joins a caller-supplied list of product codes with `OR` and
+searches for them. Occasionally it returns zero rows, and occasionally a query meant as
+`A AND B` returns every product that matches either word.
 
-**Problem:** two silent thresholds. "If the SearchQuery string is longer than 10,000
-characters, no result rows are returned." And "If SearchQuery is longer than 4,000
-characters, any logical operators are removed" — so `AND` degrades toward matching anything.
-Neither throws an exception.
+**Problem:** the thresholds apply to the text inside `FIND {…}`. "If the SearchQuery string
+is longer than 10,000 characters, no result rows are returned. If SearchQuery is longer than
+4,000 characters, any logical operators are removed," and AND then defaults to OR. Neither
+throws. The original code measured the whole statement, which also contains the RETURNING
+clause, so its guard fired at the wrong length.
 
 **Solution:**
 
 ```apex
 public with sharing class ProductSearchService {
-    public class SearchInputException extends Exception {}
+    public class SearchTermTooLongException extends Exception {}
 
-    public List<List<SObject>> run(String searchQuery) {
-        // Bound well under 4,000 so logical operators are never stripped,
-        // and never approach the 10,000-char zero-result cliff.
-        if (searchQuery.length() > 4000) {
-            throw new SearchInputException(
-                'Search string is ' + searchQuery.length() +
-                ' chars; over 4,000 removes logical operators (over 10,000 returns nothing).'
+    public static List<Product2> run(List<String> codes) {
+        String term = String.join(codes, ' OR ');
+        // Measure the term that goes inside FIND {...}, not the whole statement.
+        if (term.length() > 4000) {
+            throw new SearchTermTooLongException(
+                'Search term is ' + term.length() + ' characters; split the codes into batches under 4,000.'
             );
         }
-        return Search.query(searchQuery);
+        List<List<SObject>> found = [
+            FIND :term IN ALL FIELDS
+            RETURNING Product2(Id, Name, ProductCode ORDER BY ProductCode)
+        ];
+        return (List<Product2>) found[0];
     }
 }
 ```
 
-**Why it works:** the check fails fast and loudly *before* the platform silently changes the
-match semantics or empties the result set, turning two invisible failures into one explicit,
-testable error.
+**Why it works:** the guard fails loudly before the platform silently changes the operator
+meaning or empties the result, and `ORDER BY` inside RETURNING lifts the single-object cap
+from 250 to 2,000.
 
 ---
 

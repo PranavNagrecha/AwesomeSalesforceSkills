@@ -3,178 +3,121 @@
 Common mistakes AI coding assistants make when generating or advising on Salesforce data archival strategies.
 These patterns help the consuming agent self-check its own output.
 
-## Anti-Pattern 1: Recommending Big Objects as a General-Purpose Archive Without Noting Query Limitations
+## Anti-Pattern 1: Treating a Big Object as a General-Purpose Archive Table
 
-**What the LLM generates:** "Archive old records to a Big Object and query them as needed" without explaining that Big Objects can only be queried using SOQL with exact match filters on composite index fields, and do not support wildcards, LIKE, OR, aggregate functions, or ORDER BY on non-index fields.
+**What the LLM generates:** "Archive old records to a big object and query them as needed," with ad hoc filters, a REST integration to read them, and a standard report for auditors.
 
-**Why it happens:** LLMs treat Big Objects as a "large table" equivalent from relational databases. The severe query constraints unique to Big Objects are underrepresented in training data.
-
-**Correct pattern:**
-
-```text
-Big Object query constraints:
-- SOQL only, with filters on composite index fields
-- First index field: = (equals) only
-- Subsequent fields: =, <, >, <=, >=, IN
-- Last index field can use range operators
-- No LIKE, no wildcards, no OR clauses
-- No GROUP BY, no aggregate functions (COUNT, SUM, etc.)
-- No ORDER BY on non-index fields (results are always ordered by index)
-- No subqueries or relationship queries
-
-Design the composite index to match your most common query pattern.
-If ad-hoc querying is needed, Big Objects are the wrong archival target.
-```
-
-**Detection hint:** Flag Big Object recommendations that do not mention composite index query constraints or that suggest LIKE, OR, or aggregate queries on Big Objects.
-
----
-
-## Anti-Pattern 2: Forgetting That Big Object Inserts Are Fire-and-Forget
-
-**What the LLM generates:** Apex code using `Database.insertImmediate()` for Big Objects without error handling, treating it like standard DML with full error reporting.
-
-**Why it happens:** Standard DML operations return `SaveResult` objects with success/failure information per record. `Database.insertImmediate()` for Big Objects is asynchronous and does not return per-record errors — failures are silent unless you check debug logs.
+**Why it happens:** Models map a big object to "a large table" from relational databases and carry over relational query and UI expectations.
 
 **Correct pattern:**
 
 ```text
-Big Object insert behavior:
-- Use Database.insertImmediate(records) — NOT standard insert
-- Returns void, not SaveResult[]
-- Failures are silent — no exception, no per-record error
-- Check debug logs for UNABLE_TO_INSERT errors
-- Duplicates (same composite index values) silently overwrite existing records
-
-Error handling strategy:
-1. Validate data before insertion (all index fields non-null)
-2. Log the batch ID and record count for reconciliation
-3. Query the Big Object after insertion to verify record count
-4. Verify archived data completeness with Batch Apex over the Big Object
-   (Async SOQL was retired in Summer '23 — do not use async-queries)
+Big objects (Big Objects Implementation Guide):
+- APIs: SOQL, Bulk API / Bulk API 2.0, Chatter, SOAP only. REST API isn't supported.
+- Queries and deletes follow the index: index fields in order, without gaps.
+- No triggers, flows, processes; object and field permissions only, no sharing rules.
+- Custom Lightning / Visualforce components instead of standard list views and detail pages.
+- Index fixed after deployment.
+Design the index from the questions auditors will ask. If the questions are unknown
+or ad hoc, a big object is the wrong target.
 ```
 
-**Detection hint:** Flag `Database.insertImmediate()` calls without subsequent verification or logging. Look for missing error handling after Big Object DML.
+**Detection hint:** A big object recommendation with no index design, any REST endpoint used to read a `__b` object, or a filter on a non-index field.
 
 ---
 
-## Anti-Pattern 3: Overlooking Recycle Bin Impact on Storage Reclamation
+## Anti-Pattern 2: Claiming `insertImmediate` Is Fire-and-Forget
 
-**What the LLM generates:** "Delete 5 million old records to free up storage" without mentioning that deleted records go to the Recycle Bin and continue consuming storage for 15 days before being hard-deleted automatically.
+**What the LLM generates:** "`Database.insertImmediate()` returns void and fails silently; check the debug log," or code that ignores the return value and deletes the source immediately.
 
-**Why it happens:** Most training data discusses delete as an immediate storage reclamation. The Recycle Bin's 15-day retention and its storage impact are operational details not commonly covered in development-focused content.
+**Why it happens:** Models conflate "doesn't throw" with "doesn't report."
+
+**Correct pattern:**
+
+```apex
+List<Database.SaveResult> results = Database.insertImmediate(rows);
+Boolean allOk = true;
+for (Database.SaveResult r : results) {
+    if (!r.isSuccess()) {
+        allOk = false;
+    }
+}
+if (!allOk) {
+    // Retry the entire batch (writes are idempotent); do not delete the source.
+    System.enqueueJob(new ArchiveRetryJob(rows));
+    return;
+}
+```
+
+The guide: failures return a `SaveResult` with `getErrors()`; no exception is thrown; retry the whole batch.
+
+**Detection hint:** `insertImmediate` whose result is not assigned, or a source delete in the same block with no success check.
+
+---
+
+## Anti-Pattern 3: Promising Storage Savings From the Recycle Bin
+
+**What the LLM generates:** "Deleted records keep consuming storage in the Recycle Bin for 15 days, so empty it to reclaim space," sometimes with an invented Recycle Bin capacity ("25 times your storage" or "25,000 records").
+
+**Why it happens:** It matches how many databases behave, and Storage Usage often does not move right after a mass delete.
+
+**Correct pattern:** The LDV guide says Recycle Bin items don't count against storage usage and that there is no limit on the number of deleted items it can hold. Emptying it helps query performance, because soft-deleted rows still have to be excluded from queries. Budget storage savings from records removed from live objects.
+
+**Detection hint:** Any sentence pairing "empty the Recycle Bin" with "reclaim storage," or any numeric Recycle Bin capacity.
+
+---
+
+## Anti-Pattern 4: Recommending External Storage Without Reporting and Lookup Answers
+
+**What the LLM generates:** "Archive records to S3 or Heroku Postgres to reduce storage," with no word on reports, lookups from active records, or how users find the data.
+
+**Why it happens:** External storage is well documented outside Salesforce; the in-org consequences are not.
 
 **Correct pattern:**
 
 ```text
-Storage reclamation after record deletion:
-
-1. Soft delete (standard delete): records move to Recycle Bin
-   - Storage is NOT freed for 15 days (or until Recycle Bin is emptied)
-   - Recycle Bin limit: 25 x data storage (MB) or 25,000 records,
-     whichever is greater
-
-2. Hard delete (Bulk API with hardDelete operation):
-   - Bypasses Recycle Bin — storage freed immediately
-   - Requires "Bulk API Hard Delete" permission enabled on the profile
-   - Cannot be undone — no recovery possible
-
-3. Empty Recycle Bin programmatically:
-   Database.emptyRecycleBin(recordIds) — permanently deletes records
-
-For large archival deletions, use Bulk API hardDelete to avoid
-Recycle Bin overflow and delayed storage reclamation.
+Before choosing an external archive, answer:
+1. Reporting: does anyone report on archived records? If yes, keep a summary
+   record in Salesforce or choose a soft archive.
+2. Lookups: do active records point at the records being archived?
+3. Access: will users reach the data through an external object, a link,
+   or an integration?
+4. Retention: does a regulation require the data to stay in Salesforce?
 ```
 
-**Detection hint:** Flag deletion-based archival recommendations that do not mention Recycle Bin behavior. Look for "delete to free storage" without `hardDelete` or `emptyRecycleBin` references.
+**Detection hint:** An external archive recommendation without an answer for reporting, lookups, and user access.
 
 ---
 
-## Anti-Pattern 4: Recommending External Storage Without Addressing Reporting and Lookup Requirements
+## Anti-Pattern 5: Getting Field History Retention Wrong
 
-**What the LLM generates:** "Archive records to Amazon S3 or Heroku Postgres to reduce Salesforce storage" without evaluating whether users need to view archived data in Salesforce reports, relate archived records to active records, or search archived data from within the Salesforce UI.
+**What the LLM generates:** "Field Audit Trail keeps history for 10 years," "history rows of deleted records stay until the 18-month truncation," or "field history is a hidden storage consumer."
 
-**Why it happens:** External storage is technically straightforward and well-documented outside Salesforce. LLMs recommend it without assessing the Salesforce-specific implications: broken report history, orphaned lookup references, and user experience disruption when records "disappear."
+**Why it happens:** Older material and paraphrases have drifted from the current Security guide.
 
 **Correct pattern:**
 
 ```text
-External archival readiness checklist:
-1. Reporting: will users need to report on archived data?
-   - If yes: consider Big Objects (limited reporting) or keep a summary
-     record in Salesforce with a link to the archived detail.
-2. Lookup integrity: do active records reference the archived records?
-   - If yes: broken lookups will display "Data Not Available" — consider
-     soft-archiving (custom status field) instead of deletion.
-3. Search: do users need to find archived records from Salesforce?
-   - If yes: use Salesforce Connect with External Objects for virtual access.
-4. Compliance: do regulations require data to remain in Salesforce?
-   - If yes: use Big Objects or Shield Field Audit Trail instead.
-
-External storage is best for: pure cold storage, data lake feeds, or
-data that was never frequently accessed in Salesforce.
+Security guide, Field History Tracking and Field Audit Trail:
+- Without Field Audit Trail: kept up to 18 months, 24 months via the API; 20 tracked fields per object.
+- With Field Audit Trail: archived into FieldHistoryArchive and kept until you delete it;
+  200 tracked fields per object; policy = HistoryRetentionPolicy via Metadata API;
+  default archive after 18 months (production) / 1 month (sandboxes).
+- Field history and Field Audit Trail data don't count against data storage.
+- Deleting a record cascades to its history rows (not to FieldHistoryArchive copies).
+- Field history can be deleted manually at any time.
 ```
 
-**Detection hint:** Flag external archival recommendations that do not assess reporting, lookup integrity, or user search requirements.
+**Detection hint:** A fixed year count for Field Audit Trail, a claim that history survives deletion of its parent, or field history listed as a data-storage consumer.
 
 ---
 
-## Anti-Pattern 5: Confusing Field Audit Trail with Field History Tracking for Archival
+## Anti-Pattern 6: Quoting Storage Allocations From Memory
 
-**What the LLM generates:** "Enable Field History Tracking to retain an audit trail of field changes for compliance" without distinguishing between standard Field History Tracking (18-month retention, 20 fields per object) and Shield Field Audit Trail (up to 10 years, configurable retention policy, FieldHistoryArchive object).
+**What the LLM generates:** A storage paragraph full of per-edition and per-licence numbers used to size the archival business case.
 
-**Why it happens:** Both features track field changes, and their names are similar. LLMs conflate the two, often recommending the free feature (Field History Tracking) when the compliance requirement demands the paid Shield feature (Field Audit Trail).
+**Why it happens:** Allocation tables are widely paraphrased, and every number in them attaches to a specific edition, licence, and storage type that is easy to mix up.
 
-**Correct pattern:**
+**Correct pattern:** Take used and allowed figures from the org's Setup > Storage Usage page and record them in the template; leave allocation tables to `data/data-storage-management`. Size the saving from the record counts of the objects being archived, not from Recycle Bin or field history contents, which don't count against data storage.
 
-```text
-Field History Tracking vs Shield Field Audit Trail:
-
-Field History Tracking (included with all editions):
-- Up to 20 fields per object
-- 18-month retention (data automatically deleted after 18 months)
-- Queried via AccountHistory, OpportunityHistory, etc.
-- No configurable retention policy
-
-Shield Field Audit Trail (requires Shield license):
-- Up to 60 fields per object
-- Up to 10-year retention with configurable policies
-- Data stored in FieldHistoryArchive object
-- Supports compliance requirements (FINRA, HIPAA, SOX)
-
-For compliance archival, Field History Tracking is NOT sufficient.
-Field Audit Trail (Shield) is required for long-term retention.
-```
-
-**Detection hint:** Flag compliance-driven archival recommendations that reference "Field History Tracking" without mentioning its 18-month limit. Check whether Shield Field Audit Trail is evaluated.
-
----
-
-## Anti-Pattern: Quoting a "1 GB Base" Storage Allocation, or Counting the Recycle Bin
-
-**What the LLM generates:** A storage-capacity paragraph of the shape "Essentials and Professional get 1 GB base; Enterprise and Unlimited get 10 GB base plus 20 MB per user licence," or "Enterprise gets 1 GB base plus 2 GB per user licence for file storage." Usually paired with "deleted records keep consuming storage in the Recycle Bin, so empty it to reclaim space."
-
-**Why it happens:** Every number in those sentences is a real Salesforce figure attached to the wrong dimension. **1 GB** is the *file* storage allocation for Essentials and Starter — it gets promoted into a data-storage base and spread across editions that do not have it. **20 MB** is the per-user data-storage increment, correct for Enterprise but not for Performance/Unlimited (120 MB). The Recycle Bin claim is a plausible inference from how most databases behave, reinforced by the genuine observation that Setup > Storage Usage often does not move right after a mass delete.
-
-**Correct version:**
-
-```text
-Data storage base: 10 GB for Contact Manager, Group, Essentials, Professional,
-                   Enterprise, Performance, Unlimited, Starter.
-Per-user data:     20 MB/licence  (Enterprise, Professional, Contact Manager, Group)
-                   120 MB/licence (Performance, Unlimited)
-                   none           (Essentials, Starter)
-File storage:      10 GB/org (Contact Manager, Group, Professional, Enterprise,
-                   Performance, Unlimited); 1 GB (Essentials, Starter);
-                   20 MB (Developer, Personal). Per-user file increments depend
-                   on the USER LICENCE type - read the table, do not quote one number.
-
-Recycle Bin: records in it do NOT count against storage, and the bin has no
-             record-count cap. 15 days is the RESTORE window.
-Why storage looks unchanged after a big delete: both pools are recalculated
-             ASYNCHRONOUSLY. Wait and re-check.
-```
-
-**Why it matters for archival specifically:** the whole business case for an archival project is a storage number. Sizing against a fabricated 1 GB base under-states headroom by an order of magnitude and can justify a project the org did not need; budgeting reclaimed storage against "emptying the Recycle Bin" books a saving that will never appear, and the operation destroying the 15-day restore window is irreversible.
-
-**Detection hint:** `grep -niE '1 ?GB base|2 ?GB per user' <files>` — neither shape is a real data-storage figure. And flag any storage allocation quoted without naming both the edition *and* whether the number is per-org or per-user-licence; a correct citation of this table cannot be a bare number.
+**Detection hint:** An allocation figure in an archival plan with no Storage Usage screenshot or export behind it.

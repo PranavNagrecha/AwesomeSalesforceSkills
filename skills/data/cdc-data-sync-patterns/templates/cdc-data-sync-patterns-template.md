@@ -25,12 +25,12 @@ Answer these before choosing a replication strategy:
 
 - **Is this a new pipeline or a reconnect?**
   - [ ] New pipeline — day-0 Bulk API load required
-  - [ ] Reconnect after < 72-hour outage — use stored replayId
-  - [ ] Reconnect after > 72-hour outage — full Bulk API re-sync required
+  - [ ] Reconnect within 3 days of the last processed event — resume with the stored replay ID (CUSTOM)
+  - [ ] Last processed event more than 3 days old — full Bulk API re-sync required
 
 - **Is a stored replayId available?** Yes / No
-  - If yes: confirm it is within the 72-hour retention window before using it.
-  - If no: determine which of -1 (tip) or -2 (full catch-up) is appropriate.
+  - If yes: confirm the last processed commitTimestamp is within 3 days before using it.
+  - If no: run the day-0 load from a saved handoff position (Pub/Sub LATEST / CometD -1).
 
 - **Time the subscriber was offline (if reconnecting):** _______
 
@@ -40,7 +40,7 @@ Answer these before choosing a replication strategy:
 
 | Step | Action | Status |
 |---|---|---|
-| 1 | Record tip replayId from Pub/Sub API GetTopic before starting Bulk API job | [ ] |
+| 1 | Subscribe with LATEST and save the replay_id from the first keepalive or event as the handoff, before starting the Bulk API job | [ ] |
 | 2 | Create Bulk API 2.0 query job for each target object | [ ] |
 | 3 | Download and load results into external datastore | [ ] |
 | 4 | Confirm record count matches Salesforce object count | [ ] |
@@ -78,7 +78,7 @@ Answer these before choosing a replication strategy:
 
 **Gap event handler location:** (file/class/function path)
 
-**Estimated gap event frequency:** (estimate based on Bulk API usage patterns in the org)
+**Expected gap and overflow sources:** (events over 1 MB, custom field type conversions, database-level jobs such as activity archiving, transactions over 100,000 changes such as large cascade deletes)
 
 ---
 
@@ -98,22 +98,19 @@ Answer these before choosing a replication strategy:
 Subscriber connects
         |
         v
-Is stored replayId available?
-    NO ──────────────────────────────> Is this a new pipeline?
-                                            YES → Run day-0 Bulk API load,
-                                                  then subscribe at tip (-1)
-                                            NO  → Subscribe at -2 (full catch-up)
-                                                  or tip (-1) as appropriate
+Is a stored replay ID available?
+    NO ──> Save a handoff position (LATEST / -1, first keepalive or event)
+           → day-0 Bulk API extract → resubscribe from the handoff (CUSTOM)
     YES
         |
         v
-Validate replayId against retention window
+Is the last processed commitTimestamp within 3 days?
         |
-        |── VALID (within 72 hours) ──> Subscribe with stored replayId
+        |── YES ──> Subscribe with the stored replay ID (CUSTOM)
         |
-        └── EXPIRED (> 72 hours) ────> Full Bulk API re-sync
-                                       → Subscribe at tip (-1)
-                                       → Persist new replayId on first event
+        └── NO ───> Full Bulk API re-sync of the replicated objects
+                    → subscribe (EARLIEST, or a fresh handoff position)
+                    → save the replay ID after the first committed transaction
 ```
 
 ---
@@ -126,13 +123,14 @@ Before marking the replication pipeline implementation complete:
 - [ ] Tip replayId is recorded before the Bulk API load starts.
 - [ ] replayId is persisted to durable external storage after every committed batch.
 - [ ] Reconnect logic reads the stored replayId and passes it to the subscription call.
-- [ ] Replay-expired error is handled explicitly and routes to Bulk API re-sync.
+- [ ] A last processed commitTimestamp older than 3 days routes to a Bulk API re-sync (do not rely on a specific error).
+- [ ] GAP_OVERFLOW triggers a per-entity re-sync; the four GAP_ record types use mark-dirty-and-retrieve.
 - [ ] All events are checked for GAP_ prefix in changeType before field processing.
 - [ ] Gap event fallback queries REST API using recordIds from ChangeEventHeader.
 - [ ] commitTimestamp is used as a staleness guard in gap event upserts.
 - [ ] Events within a transaction are applied in sequenceNumber order.
 - [ ] transactionKey + sequenceNumber is used as the idempotency key.
-- [ ] Recovery scenario (> 72 hours offline) has been tested or documented with a runbook.
+- [ ] Recovery scenario (more than 3 days offline) has been tested or documented with a runbook.
 
 ---
 
