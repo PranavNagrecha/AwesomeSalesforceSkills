@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "d645316a84bee2aa1286e95af5e264edf0cf2098074e361f4e13a6971860d402",
+  "generated_from_hash": "ec043e6d3ef22ee566a5d8ea988b392c1c215058d193b2db767ee65eca071a4a",
   "schema_version": 1,
   "skill_count": 1040,
   "skills": [
@@ -116078,6 +116078,7 @@
         "b1a02f337795d20af7ee",
         "b1b8005344e1e2d6c324",
         "b2347808e0a533a034cf",
+        "baf40b36104222822742",
         "bbe91ac598f196e84cd7",
         "bdac45a50ed14454a8af",
         "bdcd0d539cc0bd0bc6e4",
@@ -116109,7 +116110,7 @@
         "fe8bb22a1e04d0a03504",
         "fed8e7398561c30fe065"
       ],
-      "content_hash": "e7d53286b188ca7acc47a2eb721ef6aea1ec7a056de02d2f0c5be486c34b6ebc",
+      "content_hash": "8577f0123deafcdbc88dd5fceea1ba78a6772b8356619efec3813938ef511cc0",
       "dependencies": [],
       "description": "Use when sequencing a deployment that spans multiple Salesforce clouds \u2014 Sales Cloud, Service Cloud, and Experience Cloud \u2014 and encountering reference errors, cascading metadata failures, or DigitalExperienceBundle ordering problems. NOT for single-cloud deploys (use devops/pre-deployment-checklist) or Health Cloud specifics \u2014 use devops/health-cloud-deployment-patterns.",
       "file_location": "skills/devops/cross-cloud-deployment-patterns",
@@ -117771,6 +117772,7 @@
         "77be221fda76f87aeb2b",
         "786bb95c6328903ec159",
         "7c5c8a09a2a487316b9b",
+        "8246aea3d09ef1691bb4",
         "838a95f37ffd37e1dfdf",
         "8520c265c8f140c4bea9",
         "865bd7faf4bac69419c2",
@@ -117829,7 +117831,7 @@
         "fdeba881615a7236dd47",
         "ff9a9dcdc3ac31c5cda4"
       ],
-      "content_hash": "e57b28d8e518002fb6c2381f5d9b70bf458d83e239024caf61e7cb864f29dc1c",
+      "content_hash": "b3085343b7c7a786f74288d9665e868a10eb1203a1210a61a7ed4063de14e817",
       "dependencies": [],
       "description": "Deploying an Experience Cloud site (formerly Community) between Salesforce orgs or sandboxes: metadata ordering, ExperienceBundle enablement, post-deployment publishing, change-set or SFDX-based migration. NOT for automating the deploy in a CI/CD pipeline, or LWR DigitalExperienceBundle \u2014 use devops/experience-cloud-deployment-dev. NOT for building the site in Experience Builder \u2014 use admin/experience-cloud-site-setup.",
       "file_location": "skills/devops/experience-cloud-deployment-admin",

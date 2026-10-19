@@ -63,6 +63,7 @@
     "b1a02f337795d20af7ee",
     "b1b8005344e1e2d6c324",
     "b2347808e0a533a034cf",
+    "baf40b36104222822742",
     "bbe91ac598f196e84cd7",
     "bdac45a50ed14454a8af",
     "bdcd0d539cc0bd0bc6e4",
@@ -94,7 +95,7 @@
     "fe8bb22a1e04d0a03504",
     "fed8e7398561c30fe065"
   ],
-  "content_hash": "e7d53286b188ca7acc47a2eb721ef6aea1ec7a056de02d2f0c5be486c34b6ebc",
+  "content_hash": "8577f0123deafcdbc88dd5fceea1ba78a6772b8356619efec3813938ef511cc0",
   "dependencies": [],
   "description": "Use when sequencing a deployment that spans multiple Salesforce clouds \u2014 Sales Cloud, Service Cloud, and Experience Cloud \u2014 and encountering reference errors, cascading metadata failures, or DigitalExperienceBundle ordering problems. NOT for single-cloud deploys (use devops/pre-deployment-checklist) or Health Cloud specifics \u2014 use devops/health-cloud-deployment-patterns.",
   "file_location": "skills/devops/cross-cloud-deployment-patterns",

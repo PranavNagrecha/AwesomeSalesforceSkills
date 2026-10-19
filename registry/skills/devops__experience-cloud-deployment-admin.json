@@ -50,6 +50,7 @@
     "77be221fda76f87aeb2b",
     "786bb95c6328903ec159",
     "7c5c8a09a2a487316b9b",
+    "8246aea3d09ef1691bb4",
     "838a95f37ffd37e1dfdf",
     "8520c265c8f140c4bea9",
     "865bd7faf4bac69419c2",
@@ -108,7 +109,7 @@
     "fdeba881615a7236dd47",
     "ff9a9dcdc3ac31c5cda4"
   ],
-  "content_hash": "e57b28d8e518002fb6c2381f5d9b70bf458d83e239024caf61e7cb864f29dc1c",
+  "content_hash": "b3085343b7c7a786f74288d9665e868a10eb1203a1210a61a7ed4063de14e817",
   "dependencies": [],
   "description": "Deploying an Experience Cloud site (formerly Community) between Salesforce orgs or sandboxes: metadata ordering, ExperienceBundle enablement, post-deployment publishing, change-set or SFDX-based migration. NOT for automating the deploy in a CI/CD pipeline, or LWR DigitalExperienceBundle \u2014 use devops/experience-cloud-deployment-dev. NOT for building the site in Experience Builder \u2014 use admin/experience-cloud-site-setup.",
   "file_location": "skills/devops/experience-cloud-deployment-admin",
