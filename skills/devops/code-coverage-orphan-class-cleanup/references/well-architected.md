@@ -8,7 +8,7 @@
 ## Architectural Tradeoffs
 
 - **Delete vs. retain-and-test:** Both raise coverage. Delete is faster, removes maintenance burden, and reduces denominator. Retain-and-test preserves optionality but is only worth it if the class is referenced or has reactivation value.
-- **Hard delete vs. `@deprecated` then delete:** Soft-delete via the deprecation annotation gives one release cycle for hidden references to surface. Cheaper than rolling back a destructive deploy.
+- **Hard delete vs. `@deprecated` then delete:** Soft-delete via a `@deprecated` ApexDoc comment tag gives one release cycle for hidden references to surface. Cheaper than rolling back a destructive deploy.
 - **Per-deploy rescue vs. quarterly tax:** Treating cleanup as a routine quarterly tech-debt sweep keeps the org healthy. Treating it as a Friday-afternoon firefight when coverage drops below 75% is the alternative — predictable, expensive.
 
 ## Anti-Patterns

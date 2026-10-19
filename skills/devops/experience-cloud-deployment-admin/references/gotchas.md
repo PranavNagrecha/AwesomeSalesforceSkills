@@ -8,7 +8,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any time a practitioner retrieves an Experience Builder site and deploys the output without reviewing and cleaning the manifest. It is especially common when automating retrieval/deploy cycles without a manifest review step.
 
-**How to avoid:** After every retrieval of Experience Cloud site metadata, explicitly check the `package.xml` for `SiteDotCom` entries and remove them before deploying. If using a file-based project (`force-app`), also delete the `siteDotCom/` directory from the deployment payload. Add a pre-deploy validation step to the CI pipeline that fails the build if `SiteDotCom` is present in the manifest alongside `ExperienceBundle`.
+**How to avoid:** After every retrieval of Experience Cloud site metadata, explicitly check the `package.xml` for `SiteDotCom` entries and remove them before deploying. If using a file-based project (`force-app`), also delete the `siteDotComSites/` directory from the deployment payload. Add a pre-deploy validation step to the CI pipeline that fails the build if `SiteDotCom` is present in the manifest alongside `ExperienceBundle`.
 
 ---
 
@@ -18,17 +18,17 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Every ExperienceBundle deployment, regardless of whether the site was Published in the source org. Publishing status is not transferred as part of the deployment. This catches teams off guard on the first production deployment and on every subsequent deployment if publishing is not included in the release runbook.
 
-**How to avoid:** Include a mandatory Publish step in the deployment runbook immediately after the ExperienceBundle deploy succeeds. Options are: (1) open Experience Builder in the target org and click Publish, or (2) call `POST /services/data/vXX.0/connect/communities/{communityId}/publish` via the Connect REST API to automate the step in a pipeline. Add a post-deploy smoke test that checks the site's `Status` field in the `Network` object is `Live`.
+**How to avoid:** Include a mandatory Publish step in the deployment runbook immediately after the ExperienceBundle deploy succeeds. Options are: (1) open Experience Builder in the target org and click Publish, or (2) call `POST /services/data/vXX.0/connect/communities/{communityId}/publish` via the Connect REST API to automate the step in a pipeline (UNVERIFIED (2026-10-19): the Connect REST API is not in the grounding corpus; confirm the resource path and version in the Connect REST API Developer Guide before scripting it). Add a post-deploy smoke test that checks the site's `Status` field in the `Network` object is `Live`.
 
 ---
 
 ## Gotcha 3: Enable Experience Bundle Metadata API Must Be Enabled Independently in Every Org
 
-**What happens:** The **Enable Experience Bundle Metadata API** checkbox in Setup > Digital Experiences > Settings is org-specific. When a sandbox is refreshed from production, or when a new scratch org is created, this setting is not automatically carried over. Attempting to retrieve or deploy ExperienceBundle in an org where the flag is disabled results in a failure. The error message does not always clearly state that the flag is missing — it may present as a generic metadata retrieval or component-not-found error.
+**What happens:** The **Enable Experience Bundle Metadata API** checkbox in Setup > Digital Experiences > Settings is org-specific. A new scratch org starts with it off (the field defaults to false, api_meta.txt L115893). UNVERIFIED (2026-10-19): that a sandbox refresh from a production org with the flag on does not carry it over — check after each refresh rather than assuming either way. Attempting to retrieve or deploy ExperienceBundle in an org where the flag is disabled results in a failure. The error message does not always clearly state that the flag is missing — it may present as a generic metadata retrieval or component-not-found error.
 
 **When it occurs:** After a sandbox refresh, when onboarding a new sandbox environment, or when using scratch orgs for Experience Cloud development. Teams often enable the flag in their primary sandbox and forget to enable it in newly provisioned orgs.
 
-**How to avoid:** Add verification of this flag to the environment setup checklist and to the pre-deployment checklist. For scratch orgs, include `"hasSitesEnabled": true` and `"hasCommunityEnabled": true` in the scratch org definition file, and add a post-create script that navigates to Digital Experience settings and enables the checkbox (it cannot be set via the scratch org definition JSON directly). For sandbox refreshes, add the flag enablement as a post-refresh runbook step.
+**How to avoid:** Add verification of this flag to the environment setup checklist and to the pre-deployment checklist. For scratch orgs, include `"hasSitesEnabled": true` and `"hasCommunityEnabled": true` in the scratch org definition file, and deploy the `ExperienceBundleSettings` file (`settings/ExperienceBundle.settings` with `<enableExperienceBundleMetadata>true</enableExperienceBundleMetadata>`, api_meta.txt L115883-L115902) as a post-create step; it is ordinary settings metadata, so no UI step is needed. For sandbox refreshes, add the flag enablement as a post-refresh runbook step.
 
 ---
 

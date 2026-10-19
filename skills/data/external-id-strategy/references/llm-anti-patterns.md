@@ -69,9 +69,12 @@ and transient in the context of integration design.
 
 **Correct pattern:**
 ```xml
-<!-- Always set both flags for a field used as a upsert key -->
-<externalId>true</externalId>
-<unique>true</unique>
+<!-- excerpt: the two flags inside a CustomField definition -->
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- Always set both flags for a field used as a upsert key -->
+    <externalId>true</externalId>
+    <unique>true</unique>
+</CustomField>
 ```
 
 ```

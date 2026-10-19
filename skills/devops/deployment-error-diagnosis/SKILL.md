@@ -31,9 +31,9 @@ outputs:
   - "Test-coverage fix if applicable (which class / method needs coverage)"
   - "Workaround (if the underlying schema change isn't directly deployable)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-05
+updated: 2026-10-19
 ---
 
 # Deployment Error Diagnosis
@@ -66,6 +66,22 @@ mechanics — `admin/changeset-builder`. This skill is for the
   → sandbox may fail dev → prod for permission reasons.
 - **Note whether tests ran.** "Tests didn't run" vs "tests ran and
   failed" are different problems.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does the pipeline pass `--ignore-errors` or `--ignore-warnings`, and who added them? | `--ignore-errors` lets a half-deployed target report success, so the real failure surfaces later at runtime. | Removes the flag before diagnosis starts, or records the one warning it covers (Gotcha 8). |
+| Which test level did the failing deploy use: all local tests, or `RunSpecifiedTests`? | Local tests are judged on overall coverage; specified tests need 75% for each class and trigger in the package. | Reads the coverage failure against the right rule (Gotcha 3). |
+| Does the package contain profiles, and were they retrieved whole from the source org? | A full profile carries permissions for every field in the source, and each one missing in the target is its own error. | Scopes the profile to the package contents or moves the grants to permission sets (Gotcha 2). |
+| Does the package deploy a permission set group together with permission sets it references for the first time? | The group can be processed before its new permission sets exist. | Splits the deploy into permission sets first, then groups (Gotcha 7). |
+| Does the change alter the type of an existing field, and is that field populated in the target? | A type change on a populated field is rejected by design. | Chooses between clearing data and a new-field migration before the deploy is retried (Gotcha 1). |
+| Does `package.xml` list `*` and named members for the same type? | Mixing the two gives results that vary from deploy to deploy. | Picks one form per type, so a rerun deploys the same set (Gotcha 4). |
+| If the deploy removes or renames a component, where else is it referenced: formulas, dynamic Apex, flows? | Setup's reference list misses some references, so the deploy fails again after the listed ones are cleared. | Adds a source-wide search across metadata and Apex before the next attempt (Gotcha 6). |
+
+A proper configuration collects the full error, the test level and the package shape before any change, so each retry tests one hypothesis instead of piling fixes into the target org.
 
 ---
 
@@ -121,7 +137,8 @@ The cleanest patterns:
 ### Test coverage failures
 
 Salesforce requires 75% test coverage org-wide for production
-deploy. Per-class coverage is also tracked. Failures present as:
+deploy; with `RunSpecifiedTests` each deployed class and trigger needs 75%
+individually instead (gotchas § 3). Failures present as:
 
 ```
 Average test coverage across all Apex Classes is 73%, at least 75% is required.
@@ -286,7 +303,7 @@ or "Active flow refers to inactive subflow".
 
 ## Related Skills
 
-- `devops/sfdx-cicd-pipeline` — pipeline design where these errors show up.
-- `admin/changeset-builder` — change-set-specific deployment.
+- `devops/devops-center-pipeline` — pipeline design where these errors show up.
+- `devops/change-set-deployment` — change-set-specific deployment.
 - `apex/test-class-standards` — test coverage that prevents Pattern C failures.
-- `admin/order-of-execution` — when "deploy succeeds but behavior is wrong" comes from save-time ordering.
+- `apex/order-of-execution-deep-dive` — when "deploy succeeds but behavior is wrong" comes from save-time ordering.

@@ -28,26 +28,29 @@ sf project retrieve start \
 
 ## Anti-Pattern 2: Omitting ExperienceBundleSettings From the Retrieve/Deploy Plan
 
-**What the LLM generates:** A retrieve command or package.xml that includes `ExperienceBundle:My_Site` and `Network:My_Site` but does not include `Settings:ExperienceBundleSettings`. The assistant presents this as a complete deployment plan.
+**What the LLM generates:** A retrieve command or package.xml that includes `ExperienceBundle:My_Site` and `Network:My_Site` but does not include `Settings:ExperienceBundle`. The assistant presents this as a complete deployment plan.
 
 **Why it happens:** LLMs often skip prerequisite setup steps when generating deployment plans, focusing on the primary metadata types. The ExperienceBundleSettings dependency is a non-obvious feature flag that is rarely emphasized in deployment tutorials.
 
 **Correct pattern:**
 
 ```xml
-<!-- package.xml — always include ExperienceBundleSettings for Aura sites -->
-<types>
-  <members>ExperienceBundleSettings</members>
-  <name>Settings</name>
-</types>
-<types>
-  <members>My_Site</members>
-  <name>Network</name>
-</types>
-<types>
-  <members>My_Site</members>
-  <name>ExperienceBundle</name>
-</types>
+<!-- excerpt: version element omitted -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- package.xml — always include ExperienceBundleSettings for Aura sites -->
+    <types>
+      <members>ExperienceBundle</members>
+      <name>Settings</name>
+    </types>
+    <types>
+      <members>My_Site</members>
+      <name>Network</name>
+    </types>
+    <types>
+      <members>My_Site</members>
+      <name>ExperienceBundle</name>
+    </types>
+</Package>
 ```
 
 **Detection hint:** Any ExperienceBundle deployment plan that does not mention `ExperienceBundleSettings` is incomplete for Aura sites. Look for its absence in package.xml entries and CLI command sequences.

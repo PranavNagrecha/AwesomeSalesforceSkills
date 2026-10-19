@@ -25,7 +25,7 @@ from pathlib import Path
 
 
 EXPERIENCE_BUNDLE_MIN_API = 46
-DIGITAL_EXPERIENCE_BUNDLE_MIN_API = 58
+DIGITAL_EXPERIENCE_BUNDLE_MIN_API = 56  # api_meta.txt L51223
 
 # Salesforce Metadata API XML namespace
 META_NS = "http://soap.sforce.com/2006/04/metadata"
@@ -76,9 +76,9 @@ def find_digital_experience_bundle_dirs(manifest_dir: Path) -> list[Path]:
 def find_experience_bundle_settings(manifest_dir: Path) -> Path | None:
     """Find the ExperienceBundleSettings settings metadata file."""
     candidates = [
-        manifest_dir / "force-app" / "main" / "default" / "settings" / "ExperienceBundleSettings.settings-meta.xml",
-        manifest_dir / "settings" / "ExperienceBundleSettings.settings-meta.xml",
-        manifest_dir / "ExperienceBundleSettings.settings-meta.xml",
+        manifest_dir / "force-app" / "main" / "default" / "settings" / "ExperienceBundle.settings-meta.xml",
+        manifest_dir / "settings" / "ExperienceBundle.settings-meta.xml",
+        manifest_dir / "ExperienceBundle.settings-meta.xml",
     ]
     for candidate in candidates:
         if candidate.exists():
@@ -87,16 +87,16 @@ def find_experience_bundle_settings(manifest_dir: Path) -> Path | None:
 
 
 def check_experience_bundle_settings_enabled(settings_file: Path) -> bool:
-    """Return True if enableExperienceBundle is set to true in the settings file."""
+    """Return True if enableExperienceBundleMetadata is set to true in the settings file."""
     try:
         tree = ET.parse(settings_file)
         root = tree.getroot()
         # Handle namespaced XML
-        tag = f"{{{META_NS}}}enableExperienceBundle"
+        tag = f"{{{META_NS}}}enableExperienceBundleMetadata"
         for elem in root.iter(tag):
             return elem.text and elem.text.strip().lower() == "true"
         # Try without namespace
-        for elem in root.iter("enableExperienceBundle"):
+        for elem in root.iter("enableExperienceBundleMetadata"):
             return elem.text and elem.text.strip().lower() == "true"
     except ET.ParseError:
         pass
@@ -120,8 +120,8 @@ def get_sfdx_api_version(manifest_dir: Path) -> int | None:
     return None
 
 
-def parse_package_xml(package_xml_path: Path) -> dict[str, list[str]]:
-    """Parse a package.xml and return a dict of {TypeName: [member, ...]}."""
+def parse_package_xml(package_xml_path: Path) -> dict[str, list[str]] | None:
+    """Parse a package.xml and return a dict of {TypeName: [member, ...]}, or None if unparseable."""
     result: dict[str, list[str]] = {}
     try:
         tree = ET.parse(package_xml_path)
@@ -139,7 +139,7 @@ def parse_package_xml(package_xml_path: Path) -> dict[str, list[str]]:
             ]
             result[type_name] = members
     except ET.ParseError:
-        pass
+        return None
     return result
 
 
@@ -147,19 +147,21 @@ def check_package_xml_for_issues(package_xml_path: Path) -> list[str]:
     """Check a package.xml for Experience Cloud deployment issues."""
     issues: list[str] = []
     components = parse_package_xml(package_xml_path)
+    if components is None:
+        return [f"{package_xml_path}: could not be parsed as XML; it was not checked."]
 
     has_experience_bundle = "ExperienceBundle" in components
     has_digital_experience_bundle = "DigitalExperienceBundle" in components
     has_network = "Network" in components
     has_experience_bundle_settings = (
         "Settings" in components
-        and "ExperienceBundleSettings" in components.get("Settings", [])
+        and "ExperienceBundle" in components.get("Settings", [])
     )
 
     if has_experience_bundle and not has_experience_bundle_settings:
         issues.append(
             f"{package_xml_path.name}: ExperienceBundle is present but "
-            "Settings:ExperienceBundleSettings is missing. Retrieve/deploy of "
+            "Settings:ExperienceBundle (the ExperienceBundleSettings file) is missing. Retrieve/deploy of "
             "ExperienceBundle will silently return empty results if this setting "
             "is not enabled in the org."
         )
@@ -211,10 +213,10 @@ def check_experience_cloud_deployment_dev(manifest_dir: Path, package_xml: Path 
         site_names = [d.name for d in eb_dirs]
         issues.append(
             f"ExperienceBundle site directories found {site_names} but "
-            "ExperienceBundleSettings.settings-meta.xml is not present in this project. "
+            "ExperienceBundle.settings-meta.xml (ExperienceBundleSettings) is not present in this project. "
             "Without this settings file, retrieve/deploy of ExperienceBundle will silently "
             "return empty results if ExperienceBundleSettings is not already enabled in the target org. "
-            "Add Settings:ExperienceBundleSettings to your package.xml and project."
+            "Add Settings:ExperienceBundle to your package.xml and project."
         )
 
     # Check 2: ExperienceBundleSettings present but enableExperienceBundle is false
@@ -222,9 +224,9 @@ def check_experience_cloud_deployment_dev(manifest_dir: Path, package_xml: Path 
         if not check_experience_bundle_settings_enabled(settings_file):
             issues.append(
                 f"ExperienceBundleSettings found at {settings_file} but "
-                "<enableExperienceBundle> is not set to 'true'. "
+                "<enableExperienceBundleMetadata> is not set to 'true'. "
                 "Deploying this file will disable ExperienceBundle in the target org. "
-                "Set <enableExperienceBundle>true</enableExperienceBundle>."
+                "Set <enableExperienceBundleMetadata>true</enableExperienceBundleMetadata>."
             )
 
     # Check 3: API version too low for DigitalExperienceBundle
@@ -235,13 +237,15 @@ def check_experience_cloud_deployment_dev(manifest_dir: Path, package_xml: Path 
                 f"DigitalExperienceBundle directories found but sfdx-project.json "
                 f"sourceApiVersion is {api_version}.0, which is below the minimum "
                 f"required API version {DIGITAL_EXPERIENCE_BUNDLE_MIN_API}.0. "
-                "Update sourceApiVersion to 58.0 or higher."
+                "Update sourceApiVersion to 56.0 or higher."
             )
 
     # Check 4: Analyze package.xml if provided
-    if package_xml is not None and package_xml.exists():
-        pkg_issues = check_package_xml_for_issues(package_xml)
-        issues.extend(pkg_issues)
+    if package_xml is not None:
+        if package_xml.exists():
+            issues.extend(check_package_xml_for_issues(package_xml))
+        else:
+            issues.append(f"--package-xml not found: {package_xml}")
     else:
         # Search for package.xml files in common locations
         for candidate_name in ["package.xml", "manifest/package.xml"]:
@@ -259,8 +263,9 @@ def check_experience_cloud_deployment_dev(manifest_dir: Path, package_xml: Path 
         if not runbook_indicators:
             issues.append(
                 f"INFO: {site_count} Experience Cloud site bundle(s) found. "
-                "CMS Managed Content (from CMS Workspaces) is NOT included in ExperienceBundle "
-                "or DigitalExperienceBundle and cannot be deployed via sf CLI. "
+                "CMS Managed Content from a non-enhanced CMS Workspace is NOT included in the "
+                "site's ExperienceBundle or DigitalExperienceBundle (enhanced CMS general "
+                "workspaces can be deployed as their own DigitalExperienceBundle). "
                 "If the site uses CMS Workspace content, plan a separate CMS export/import or "
                 "Managed Content REST API migration. A successful deploy (exit 0) does not guarantee "
                 "CMS content will be present in the target org."

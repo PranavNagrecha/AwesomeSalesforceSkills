@@ -7,7 +7,7 @@ authoring mistakes. Stdlib only — no pip dependencies required.
 Checks performed:
   1. Destructive manifest contains <version> element (invalid — version belongs only in package.xml)
   2. Destructive manifest uses wildcard members (<members>*</members>)
-  3. Destructive manifest lists undeletable metadata types (RecordType, active Flows implied)
+  3. Destructive manifest lists types that need manual checks (RecordType, picklist values)
   4. Companion package.xml is missing when a destructive manifest is present
   5. Deployment command in shell scripts uses destructive flag without --manifest
 
@@ -30,8 +30,9 @@ DESTRUCTIVE_FILENAMES = {
     "destructiveChangesPost.xml",
 }
 
-# Types that cannot be deleted via the Metadata API.
-# Source: Salesforce Metadata API Developer Guide — Deleting Components
+# Types that need a manual check before a destructive deploy.
+# RecordType: api_meta.txt documents delete for custom-object record types, but
+# in-use record types are reported to fail (UNVERIFIED 2026-10-19).
 UNDELETABLE_TYPES = {
     "RecordType",
     "PicklistValue",
@@ -116,9 +117,10 @@ def check_manifest(manifest_path: Path) -> list[str]:
         type_name = type_name_el.text.strip()
         if type_name in UNDELETABLE_TYPES:
             issues.append(
-                f"[{rel}] WARNING: Metadata type '{type_name}' cannot be deleted via the "
-                "Metadata API. Record Types and Picklist values must be removed manually "
-                "through Setup. This deployment will fail."
+                f"[{rel}] WARNING: Metadata type '{type_name}' in a destructive manifest. "
+                "Picklist values must be removed in Setup; a Record Type still assigned to "
+                "records or profiles is reported to fail deletion. Reassign, deactivate, "
+                "and prove the delete in a sandbox first."
             )
 
     return issues

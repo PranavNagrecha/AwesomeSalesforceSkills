@@ -27,21 +27,24 @@ Each batch must complete successfully before the next begins.
 
 **What the LLM generates:** A `package.xml` that includes a `SiteDotCom` type block, often because the LLM retrieved metadata that included SiteDotCom and assumed it should be included in the deploy.
 
-**Why it happens:** LLMs see `SiteDotCom` in retrieved metadata and treat retrieval coverage as equivalent to deployability. The non-deployable status of SiteDotCom is a platform-specific constraint that is not prominently documented and is often absent from training data.
+**Why it happens:** LLMs see `SiteDotCom` in retrieved metadata and treat retrieval coverage as equivalent to deployability. The rule that SiteDotCom stays out of an ExperienceBundle deploy manifest (api_meta.txt L61110) is a platform-specific constraint that is not prominently documented and is often absent from training data.
 
 **Correct pattern:**
 
 ```xml
+<!-- excerpt: package.xml for an ExperienceBundle deploy -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
 <!-- WRONG — do not include -->
 <!-- <types><members>My_Site</members><name>SiteDotCom</name></types> -->
 
 <!-- CORRECT — exclude SiteDotCom from all deployment manifests -->
 <!-- Add to .forceignore: -->
-<!-- **/siteDotCom/** -->
+<!-- **/siteDotComSites/** -->
 <!-- *.site -->
+</Package>
 ```
 
-**Detection hint:** Search the generated `package.xml` for `<name>SiteDotCom</name>`. Its presence in a deploy manifest is always wrong.
+**Detection hint:** Search the generated `package.xml` for `<name>SiteDotCom</name>`. Its presence in a manifest that also deploys the site's ExperienceBundle is wrong.
 
 ---
 
@@ -94,25 +97,23 @@ experience-package.xml contents:
 
 **What the LLM generates:** Instructions that use `ExperienceBundle` for a site that requires `DigitalExperienceBundle` (or vice versa), because the LLM does not differentiate between the two types based on the org's API version or site framework.
 
-**Why it happens:** Both types serve the same conceptual purpose (packaging an Experience Builder site), and LLMs may conflate them or default to the more-documented `ExperienceBundle` name regardless of context. The version boundary (API v54.0) is a concrete platform constraint that requires specific knowledge to apply correctly.
+**Why it happens:** Both types serve the same conceptual purpose (packaging an Experience Builder site), and LLMs may conflate them or default to the more-documented `ExperienceBundle` name regardless of context. The split (enhanced LWR sites created in Winter '23 or later use DigitalExperienceBundle, API v56.0+; Aura and other LWR sites use ExperienceBundle) is a concrete platform constraint that requires specific knowledge to apply correctly.
 
 **Correct pattern:**
 
 ```
 Use ExperienceBundle when:
-  - Source org API version < 54.0
-  - Site was built before the Digital Experiences framework
+  - Site is an Aura site or a non-enhanced LWR site
 
 Use DigitalExperienceBundle when:
-  - Source org API version >= 54.0
-  - Site is built with the newer Digital Experiences framework
+  - Site is an enhanced LWR site created in Winter '23 or later (API v56.0+)
 
 Check by retrieving the site and inspecting the top-level directory:
-  - .../digitalExperienceBundles/<SiteName>/ → use DigitalExperienceBundle
-  - .../experienceBundle/<SiteName>/         → use ExperienceBundle
+  - .../digitalExperiences/<workspace>/ → use DigitalExperienceBundle
+  - .../experiences/<SiteName>/         → use ExperienceBundle
 ```
 
-**Detection hint:** If the generated package.xml specifies `ExperienceBundle` for a site that was retrieved under a `digitalExperienceBundles/` directory, the type name is wrong.
+**Detection hint:** If the generated package.xml specifies `ExperienceBundle` for a site that was retrieved under a `digitalExperiences/` directory, the type name is wrong.
 
 ---
 

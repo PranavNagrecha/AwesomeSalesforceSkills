@@ -30,7 +30,7 @@ Use this template when scripting or reviewing an Experience Cloud site deploymen
 ## Pre-Deployment Checks
 
 - [ ] **Runtime type confirmed** — ExperienceBundle or DigitalExperienceBundle selected correctly
-- [ ] **ExperienceBundleSettings enabled** (Aura sites only) — Settings file retrieved and confirmed `enableExperienceBundle = true`
+- [ ] **ExperienceBundleSettings enabled** (Aura sites only) — Settings file retrieved and confirmed `enableExperienceBundleMetadata = true`
 - [ ] **CMS content assessed** — Does the site use CMS Workspace managed content? ☐ Yes  ☐ No
 - [ ] **CMS migration plan documented** — If yes, plan recorded below in the CMS Content section
 - [ ] **Network metadata included** — `Network:<SiteName>` is in the component list
@@ -60,7 +60,7 @@ Record the complete list of components to deploy and their required order.
 
 # For Aura-based sites:
 sf project retrieve start \
-  --metadata "Settings:ExperienceBundleSettings" \
+  --metadata "Settings:ExperienceBundle" \
   --metadata "Network:<SITE_NAME>" \
   --metadata "ExperienceBundle:<SITE_NAME>" \
   --target-org <SOURCE_ORG_ALIAS>
@@ -91,7 +91,7 @@ ls force-app/main/default/digitalExperiences/site/
 
 # Step 1: ExperienceBundleSettings (Aura only)
 sf project deploy start \
-  --metadata "Settings:ExperienceBundleSettings" \
+  --metadata "Settings:ExperienceBundle" \
   --target-org <TARGET_ORG_ALIAS>
 
 # Step 2: Shared dependencies (LWC, Apex, custom objects)

@@ -33,9 +33,9 @@ outputs:
   - "Upgrade plan with prioritized list of components to update"
   - "Validated sfdx-project.json and component metadata at target version"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # API Version Management
@@ -51,6 +51,22 @@ Gather this context before working on anything in this domain:
 - **What is the project's `sourceApiVersion`?** Found in `sfdx-project.json`, this is the baseline version the project intends to use. Individual components can override it, and that override is where drift begins.
 - **What is the current Salesforce release?** Each major release (Spring, Summer, Winter) increments the API version by 1. Anchor points: Spring '24 = 60.0, Summer '24 = 61.0, Winter '25 = 62.0, Spring '25 = 63.0, Summer '25 = 64.0, Winter '26 = 65.0, Spring '26 = 66.0, Summer '26 = 67.0. Salesforce retires versions on a rolling basis in distinct waves — 7.0 through 20.0 were **retired** in Summer '22; 21.0 through 30.0 were **deprecated** in Summer '22 and **retired** in Summer '25, consistent with the minimum 3-year deprecation notice policy. Deprecated and retired are not the same state: a deprecated version still works.
 - **Are there integrations using explicit API version numbers?** External systems calling `/services/data/vXX.0/` or `/services/Soap/c/XX.0` endpoints pin to a version. These must be inventoried alongside metadata.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| When the team says "the project is on version N", do they mean `sourceApiVersion` in `sfdx-project.json` or the `<apiVersion>` in each `-meta.xml`? | Each component runs at the version in its own metadata file; `sourceApiVersion` only steers the CLI. | Scopes the upgrade as two edits per component, not one config change (Gotcha 1). |
+| Are deploys driven by the CLI from source, or by a hand-built `package.xml` through the Metadata API? | A deployment uses the `package.xml` `<version>`, which changes what the API can see but never rewrites a component's `<apiVersion>`. | Separates manifest version from component version in the plan and the audit (Gotcha 5). |
+| Which classes in the upgrade range handle nulls, JSON, or trigger context, and will the full test suite run at the target version in a sandbox first? | Apex behaviour can change between versions with no compile error, so a passing deploy proves nothing. | Lists the release notes to read per version in the range and a sandbox test gate (Gotcha 2). |
+| Does the upgrade range cross 66.0 → 67.0, and which classes have no sharing keyword? | At 67.0 a class with no sharing declaration runs `with sharing`, so queries quietly return fewer rows. | Writes the intended sharing keyword at the old version before the bump (Gotcha 6). |
+| Do any classes without a sharing keyword sit in an inheritance chain with a class that will move to 67.0? | Any class in the chain at 67.0 or later puts the whole chain in `with sharing`, including classes nobody touched. | Expands the tier to the whole chain or pins the keyword on every class in it (Gotcha 6). |
+| Which external clients call `/services/data/vXX.0/` or SOAP endpoints with a hard-coded version, and who owns each one? | A retired version fails hard (REST returns `410:GONE`) with no forwarding to a supported version. | Builds the integration inventory and an upgrade date ahead of the retirement wave (Gotcha 3). |
+| Which LWC bundles have no `<apiVersion>` in `.js-meta.xml`, and do any ship in a managed package? | Without an explicit version the bundle follows the org's version, so subscriber orgs on different releases can behave differently. | Adds explicit versions and a CI check that rejects bundles without one (Gotcha 4). |
+
+A proper configuration pins every component on purpose and moves tiers with the behaviour changes written down first, so an upgrade changes the numbers and nothing else.
 
 ---
 

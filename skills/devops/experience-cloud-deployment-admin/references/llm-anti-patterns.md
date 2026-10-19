@@ -37,7 +37,8 @@ Step 3: Only after Step 2 succeeds, deploy ExperienceBundle
 **Correct pattern:**
 
 ```xml
-<!-- WRONG — do not include SiteDotCom with ExperienceBundle -->
+<!-- WRONG — do not include SiteDotCom with ExperienceBundle (excerpt) -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
 <types>
     <members>CustomerPortal</members>
     <name>SiteDotCom</name>
@@ -46,12 +47,17 @@ Step 3: Only after Step 2 succeeds, deploy ExperienceBundle
     <members>CustomerPortal</members>
     <name>ExperienceBundle</name>
 </types>
+</Package>
+```
 
-<!-- CORRECT — remove SiteDotCom entirely from the deployment manifest -->
+```xml
+<!-- CORRECT — remove SiteDotCom entirely from the deployment manifest (excerpt) -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
 <types>
     <members>CustomerPortal</members>
     <name>ExperienceBundle</name>
 </types>
+</Package>
 ```
 
 **Detection hint:** Flag any deployment manifest or change set recommendation that contains both `SiteDotCom` and `ExperienceBundle` as members. Also flag any response that does not mention removing SiteDotCom when describing Experience Cloud site retrieval and redeployment.

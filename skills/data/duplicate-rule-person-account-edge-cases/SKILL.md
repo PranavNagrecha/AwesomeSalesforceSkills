@@ -37,16 +37,16 @@ outputs:
   - Lead-convert duplicate-rule wiring (which rule fires on convert)
   - Skill-local checker pass on the org's duplicate / matching rule set
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-19
 ---
 
 # Duplicate Rule Person Account Edge Cases
 
 Activate this skill when authoring or reviewing Duplicate Rules and Matching Rules in an org that has Person Accounts enabled (B2C, FSC, or mixed B2B/B2C). Person Accounts are a dual-record beast: one logical "consumer" is stored as a `001`-prefix Account row plus a `003`-prefix Contact row, kept in lock-step by the platform. Rules written for B2B Accounts or for stand-alone Contacts will silently mis-fire on PA — surfacing wrong matches, missing real duplicates, breaking Lead conversion, or worse, exposing PII across record-type boundaries.
 
-This skill is NOT a general duplicate-management primer (see `data/duplicate-management` for the platform model) and does NOT cover Data.com / Lightning Data (see `integration/data-com`). It assumes the practitioner already knows what a Matching Rule, a Duplicate Rule, and a Match Formula are.
+This skill is NOT a general duplicate-management primer (see `admin/duplicate-management` for the platform model) and does NOT cover Data.com / Lightning Data (see `integration/data-com`). It assumes the practitioner already knows what a Matching Rule, a Duplicate Rule, and a Match Formula are.
 
 ---
 
@@ -61,6 +61,22 @@ Gather this context before writing or editing any rule:
 - **Locale and dialing conventions** — international customers need a normalized phone (E.164 or stripped digits) before any equality match.
 
 The single most common wrong assumption: "PA is just an Account with a flag, so my B2B match rule will work." It will not. PA matching needs Account-side person fields, an `IsPersonAccount = true` filter, and (in mixed orgs) a RecordType filter.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which entry paths create consumers: the Account "New Person Account" page, lead convert, imports, or direct Person Contact edits? | A rule on `Contact` never runs on the Account-side create or a convert that lands on Person Account. | Puts the primary rule on `Account` (or the `PersonAccount.matchingRule` file) with Person fields (Gotcha 1). |
+| Do B2B business accounts and Person Accounts share the Account object in this org, now or on the roadmap? | Without an `IsPersonAccount` gate the deploy still succeeds, and "Acme Corp" matches "Acme Smith". | Decides whether the gate and a record-type filter are mandatory or future-proofing (Gotcha 2). |
+| Which phone field holds the "best" number, and are numbers entered free-form or stored E.164? | `Exact` on a phone field misses `+1 (555) 010-1234` vs `5550101234`. | Picks the `Phone` matching method, or an E.164 custom field matched with `Exact` (Gotcha 3). |
+| Does lead convert in this org land on Person Account, a business Account, or both? | Convert runs the target object's rule; a Lead-only rule leaves two Person Accounts for one consumer. | Pairs the Lead rule with a PA-aware Account rule and a cross-object `Lead.Email` ↔ `PersonEmail` item (Gotcha 4). |
+| How are privacy erasure requests executed, and by which job or user? | Deleting the Person Contact (`003`) alone fails; the Account row (`001`) is the unit of deletion. | Writes the retention runbook against the Account row before merge or delete rules ship (Gotcha 5). |
+| Was this rule cloned from a B2B template, and which fuzzy methods does it use on the name? | `CompanyName` fuzzy tuned for corporate suffixes under- and over-matches on person names. | Swaps to `FirstName` / `LastName` items paired with a high-cardinality field (Gotcha 6). |
+| Is Person Accounts enabled in every target org in the pipeline, scratch orgs included? | `Account.PersonEmail` does not exist until Person Accounts is enabled, so the deploy fails there. | Adds the `PersonAccounts` scratch feature and a pre-deploy enablement check (Gotcha 8). |
+
+A proper configuration settles these answers before the first match item is written, so the rule catches the duplicates lead convert and the Account UI actually create, instead of firing noise that teaches reps to ignore duplicate alerts.
 
 ---
 
@@ -239,8 +255,8 @@ Non-obvious platform behaviours that cause real production problems:
 
 ## Related Skills
 
-- `data/duplicate-management` — general duplicate-rule platform model (B2B-flavoured)
+- `admin/duplicate-management` — general duplicate-rule platform model (B2B-flavoured)
 - `data/data-quality-and-governance` — broader data quality framing (rule lifecycle, KPIs)
 - `data/external-id-strategy` — when matching on PersonEmail is not enough and an external Id is needed for upserts
-- `admin/person-accounts` — Person Account enablement, record types, page layouts
+- `data/person-accounts` — Person Account enablement, record types, page layouts
 - `data/consent-data-model-health` — consent and PII fields adjacent to PA data quality

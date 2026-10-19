@@ -37,14 +37,17 @@ Plus the fields the profile references. Or use `profileFieldLevelSecurities`
 
 ---
 
-## Gotcha 3: Test coverage is org-wide AND per-class
+## Gotcha 3: Test coverage is org-wide OR per-class, depending on the test level
 
-**What happens.** Deploy passes "average across all classes" but
-fails "individual class below 75%" for a specific new class.
+**What happens.** A deploy that passed with `RunLocalTests` fails
+with "individual class below 75%" when rerun with
+`RunSpecifiedTests` for a specific new class.
 
-**How to avoid.** Both thresholds apply. New classes need 75%
-individually AND the org-wide average needs 75%. Both can fail
-independently.
+**How to avoid.** Know which rule the test level applies. With all
+or all-local tests, overall coverage must be at least 75% and every
+trigger needs some coverage; with `RunSpecifiedTests`, each class
+and trigger in the package needs 75% individually (api_meta.txt
+L3456-L3459; `RunRelevantTests` is also per-class, L2613-L2614).
 
 ---
 

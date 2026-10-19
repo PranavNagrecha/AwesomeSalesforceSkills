@@ -42,10 +42,20 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: Record Types and Picklist Values Are Permanently Undeletable via API
+## Gotcha 5: Record Types and Picklist Values Need Setup Work
 
-**What happens:** Deployments that include Record Types or Picklist field values in a destructive manifest fail unconditionally. The Metadata API does not support deletion of Record Types or individual Picklist values (including Global Value Set members). The only supported action for these types via the API is deactivation, not removal.
+**What happens:** Picklist field values (including Global Value Set members) are not standalone members of a destructive manifest, so a manifest cannot remove one. Record Types are different: the RecordType metadata type is documented to "create, update, or delete record type definitions for a custom object" (api_meta.txt L44970). UNVERIFIED (2026-10-19): practitioners report destructive deletes of record types that are still assigned to records or profiles failing, which is why teams fall back to Setup.
 
 **When it occurs:** When a data model cleanup effort includes retiring a Record Type or removing obsolete picklist values, and the team assumes the destructive manifest handles all metadata deletion uniformly.
 
 **How to avoid:** Remove Record Types manually via Setup > Object Manager > Record Types. Remove Picklist values via Setup > Object Manager > [Object] > Fields > [Field] > Edit. For Global Value Sets, use Setup > Picklist Value Sets. Document these manual steps in the deployment runbook so they are not missed during a release.
+
+---
+
+## Gotcha 6: Components Tied to an Active Lightning Page Cannot Be Deleted
+
+**What happens:** A destructive deploy that names a custom object, a component placed on a Lightning page, or the page itself fails while the page is active. The Metadata API guide states that `destructiveChanges.xml` can't delete items associated with an active Lightning page (api_meta.txt L4618).
+
+**When it occurs:** When the object or component being retired is still the target of a Lightning page action override, often one nobody remembers assigning.
+
+**How to avoid:** Deactivate the page in Lightning App Builder to remove its action override first, as a manual pre-deploy step in the runbook, then run the destructive deploy.

@@ -50,11 +50,11 @@ Common mistakes AI assistants make when generating or advising on Duplicate / Ma
     <booleanFilter>1 AND 2 AND 3</booleanFilter>
     <matchingRuleItems>
         <fieldName>FirstName</fieldName>
-        <matchingMethod>FuzzyFirstName</matchingMethod>
+        <matchingMethod>FirstName</matchingMethod>
     </matchingRuleItems>
     <matchingRuleItems>
         <fieldName>LastName</fieldName>
-        <matchingMethod>FuzzyLastName</matchingMethod>
+        <matchingMethod>LastName</matchingMethod>
     </matchingRuleItems>
     <matchingRuleItems>
         <fieldName>IsPersonAccount</fieldName>
@@ -96,19 +96,22 @@ or a match item that points at a formula field `PersonEmail_Lower__c`.
 
 **What the LLM generates:** a custom formula field `Name_Soundex__c` or `Name_Levenshtein__c` that approximates string distance using nested `MID()` and `IF()` calls, then a match item that compares Exact on the formula field.
 
-**Why it happens:** the LLM "knows" fuzzy matching algorithms by name and reaches for them when asked for fuzzy match, ignoring that Salesforce ships tuned, indexed fuzzy methods (`FuzzyFirstName`, `FuzzyLastName`, `FuzzyStreet`).
+**Why it happens:** the LLM "knows" fuzzy matching algorithms by name and reaches for them when asked for fuzzy match, ignoring that Salesforce ships tuned, indexed fuzzy methods (metadata values `FirstName`, `LastName`, `Street` per api_meta.txt L87289).
 
 **Correct pattern:**
 
 ```xml
-<matchingRuleItems>
-    <fieldName>FirstName</fieldName>
-    <matchingMethod>FuzzyFirstName</matchingMethod>
-</matchingRuleItems>
-<matchingRuleItems>
-    <fieldName>LastName</fieldName>
-    <matchingMethod>FuzzyLastName</matchingMethod>
-</matchingRuleItems>
+<!-- excerpt: match items inside one rule of a MatchingRules file -->
+<matchingRules>
+    <matchingRuleItems>
+        <fieldName>FirstName</fieldName>
+        <matchingMethod>FirstName</matchingMethod>
+    </matchingRuleItems>
+    <matchingRuleItems>
+        <fieldName>LastName</fieldName>
+        <matchingMethod>LastName</matchingMethod>
+    </matchingRuleItems>
+</matchingRules>
 ```
 
 **Detection hint:** any formula field referenced from a matching rule whose name contains `Levenshtein`, `Jaro`, `Soundex`, `Metaphone`, or `Distance` is almost certainly reinventing a platform feature. Use the platform fuzzy methods.

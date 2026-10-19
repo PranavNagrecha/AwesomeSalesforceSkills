@@ -36,9 +36,9 @@ outputs:
 dependencies:
   - devops/github-actions-for-salesforce
   - admin/custom-metadata-types
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-10-19
 ---
 
 # Environment-Specific Value Injection
@@ -54,7 +54,23 @@ Gather this context before working on anything in this domain:
 - **Value classification:** Is the value a secret (OAuth token, password, private key, client secret) or non-sensitive config (base URL, queue ID, feature flag, threshold)? Secrets must never enter source control or Custom Metadata records. Non-sensitive config can be deployed as metadata.
 - **Deployment model:** Does the team deploy via `sf project deploy start`, unlocked packages, change sets, or OmniStudio DataPacks? Some mechanisms (sfdx string replacement) only work for source-deploy and scratch-org flows; others (Custom Metadata records) travel with any deployment model.
 - **Most common wrong assumption:** Practitioners often assume a Named Credential record deployed from source control carries the authentication detail (password, token, endpoint) per-environment. It does not — source-deployed Named Credentials carry the endpoint stub and authentication type only. The secret credential must be populated post-deploy in each org via Setup UI or the Connect REST API.
-- **Platform limits:** Custom Metadata Types have a 10 MB record limit per org and no runtime DML path. Named Credentials are org-bound and cannot be queried via SOQL — they surface only through Apex `Http.send()` callouts and merge fields.
+- **Platform limits:** Custom Metadata Types have an org-wide storage cap on records (UNVERIFIED (2026-10-19): stated here earlier as "10 MB"; not in the Summer '26 corpus, and commonly cited as a character count, so confirm in Setup > Custom Metadata Types before relying on it) and no runtime DML path. Named Credentials are org-bound; the `NamedCredential` object supports `query()` (object_reference.txt L185799), so SOQL can read the record's endpoint and settings, but the secret never comes back — it is used only through Apex callouts and merge fields.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| For each value that differs by org, is it a secret (password, token, key) or plain config (URL, ID, flag, threshold)? | A deployed Named Credential carries the endpoint and auth type, not the secret, so callouts return 401 until someone fills it in. | Splits secrets (populated per org after deploy) from config (deployed as metadata) (Gotcha 2). |
+| Which paths will carry this metadata: `sf project deploy start`, change sets, second-generation packages, or DataPacks? | `replacements` in `sfdx-project.json` run only in the CLI; change sets and DataPacks deploy the `${PLACEHOLDER}` text as-is (UNVERIFIED (2026-10-19) for `sf package version create`, see Gotcha 3). | Chooses Custom Metadata records or a manual step for any path the CLI does not run (Gotcha 3). |
+| Does anyone retrieve from an org after a deploy that used string replacement, and commit what comes back? | A retrieve returns the substituted URL, so the real value lands in source control and is reused everywhere. | Adds a pre-commit or CI scan for substituted values, or keeps those files out of retrieves (Gotcha 1). |
+| Where do Named Credential files live in the project, and are they excluded from routine retrieves? | Files in the main package directory get overwritten by every broad retrieve. | Moves them to their own package directory or a `.forceignore` entry (Gotcha 1). |
+| Who populates credentials after each deploy and sandbox refresh, and what proves it worked? | A successful deploy and an exception-free callout still end in 401 when the credential is empty. | Adds a scripted population step and a test callout that fails on a 4xx (Gotcha 2). |
+| Do existing post-deploy scripts write to `NamedCredential` fields, and which API version do they call? | From API 56.0 a named credential is either `Legacy` (auth on the NamedCredential) or `SecuredEndpoint` (auth on an External Credential) (api_meta.txt L90141-L90148); a script written for Legacy fields fails against a `SecuredEndpoint` credential. | Lists the scripts to rewrite against `ExternalCredential` objects before any credential is rebuilt as `SecuredEndpoint` (Gotcha 5). |
+| Is the config shipped in a managed package and read by subscriber code outside the namespace? | `getAll()` resolves in the caller's namespace, so subscriber code can get an empty map. | Uses fully qualified queries and documents which records are ISV-owned (Gotcha 4). |
+
+A proper configuration decides, per value, where it lives and who sets it in each org, so a deploy to a new sandbox works on the first callout instead of after an afternoon of 401s.
 
 ---
 
@@ -84,7 +100,7 @@ The substitution applies only during `sf project deploy start`, `sf project depl
 
 For values that cannot be expressed as metadata (passwords, OAuth refresh tokens, client secrets), post-deploy scripts use the Salesforce Connect REST API or Tooling API to write org-specific values directly into Named Credential or External Credential records after deployment. This pattern is used when the CI runner has access to the secret (injected as a pipeline variable) and needs to configure the org without manual intervention.
 
-The endpoint for Named Credential population changed in API v57.0+ with the introduction of External Credentials. As of Spring '25, the preferred model is External Credential + Named Credential, where the External Credential holds the authentication configuration (including principal and credential) and the Named Credential provides the callout URL. Post-deploy scripts must target the correct API version.
+The endpoint for Named Credential population changed in API v56.0+ with the introduction of External Credentials (api_meta.txt L63618). As of Spring '25, the preferred model is External Credential + Named Credential, where the External Credential holds the authentication configuration (including principal and credential) and the Named Credential provides the callout URL. Post-deploy scripts must target the correct API version.
 
 ---
 
@@ -217,7 +233,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 2. **sfdx string replacement runs at deploy time, not at source-retrieve time** — If a developer runs `sf project retrieve start` after a replacement-based deploy, the retrieved XML contains the substituted value (the real endpoint URL), not the `${PLACEHOLDER}` token. Committing that retrieval output back to source control leaks the org-specific value. Prevention: never commit retrieved Named Credential XML without reviewing it for substituted values; consider adding `*.namedCredential` to a pre-commit check.
 
-3. **External Credential vs Named Credential API surface changed in API v57.0** — Before Spring '23, Named Credentials held both the endpoint and the authentication credential in a single metadata type. From API v57.0, Salesforce introduced External Credentials as a separate type. Tooling API and Connect REST API scripts written for the old model will silently fail to populate credentials on orgs using API v57.0+ External Credentials. Prevention: check the `apiVersion` in `sfdx-project.json` and use the correct API surface for post-deploy scripts.
+3. **External Credential vs Named Credential API surface changed in API v56.0** — Before Winter '23 (API 56.0), Named Credentials held both the endpoint and the authentication credential in a single metadata type. From API v56.0, Salesforce introduced External Credentials as a separate type (api_meta.txt L63618; `NamedCredential.namedCredentialParameters` is 56.0+, L90124). Tooling API and Connect REST API scripts written for the old model will silently fail to populate credentials on orgs using API v56.0+ External Credentials. Prevention: check the `apiVersion` in `sfdx-project.json` and use the correct API surface for post-deploy scripts.
 
 4. **Custom Metadata `getAll()` returns records from the package namespace** — In a managed package context, `MyType__mdt.getAll()` returns only records in the package namespace. If subscriber org records are in a different namespace or no namespace, they are not returned. Prevention: in ISV contexts, use `[SELECT ... FROM MyNS__MyType__mdt]` SOQL and account for subscriber customization explicitly.
 
