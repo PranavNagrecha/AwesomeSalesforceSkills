@@ -31,3 +31,7 @@
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
 - Salesforce Well-Architected Framework — https://architect.salesforce.com/well-architected/overview
+- Metadata API Developer Guide, ParticipantRole (Summer '26 PDF, api_meta.txt L94367–94455) — a metadata type, API 50.0+, `.participantRole` in `participantRoles/`; fields `defaultAccessLevel`, `isActive`, `masterLabel`, `parentObject`. Supports Gotcha 4 and the corrected sequencing in SKILL.md.
+- Metadata API Developer Guide, IndustriesSettings (api_meta.txt L119332–119364) — per-object `enableCompliantDataSharingFor*` flags (Account, Opportunity, Interaction, InteractionSummary, custom objects), each defaulting to false.
+- Metadata API Developer Guide, ProfileRecordTypeVisibility `personAccountDefault` (api_meta.txt L98232–98233) — "Person accounts aren't enabled by default in Salesforce. To request person accounts, contact Salesforce." Object Reference, RecordType `IsPersonType` (object_reference.txt L244563–244568). Supports Gotcha 1.
+- Salesforce DX Developer Guide, Scratch Org Features (sfdx_dev.txt L4531–4534 `FinancialServicesUser:<value>`, L8553–8554 `PersonAccounts`). Supports the scratch-org row in Decision Guidance.

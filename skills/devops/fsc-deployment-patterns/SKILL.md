@@ -37,9 +37,9 @@ outputs:
   - "Namespace compatibility audit: FinServ__ vs standard-object API names across metadata artifacts"
   - "Post-deploy CDS validation checklist"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # FSC Deployment Patterns
@@ -53,9 +53,25 @@ Use this skill when planning or executing metadata deployments for Financial Ser
 Gather this context before working on anything in this domain:
 
 - **Confirm the FSC licensing model in use.** Managed-package FSC orgs use the `FinServ__` namespace prefix on all FSC objects and fields. Platform-native Core FSC orgs (introduced Winter '23) have no namespace — FSC objects are standard platform objects. Metadata artifacts are incompatible between these two models; a deployment package built for one cannot be applied to the other without an API name audit and rewrite.
-- **Confirm Person Account status in the target org.** Person Account enablement is an irreversible org-level change that cannot be performed via Metadata API. It must be enabled manually through Setup before any household record types, Relationship Groups, or Financial Account metadata can be deployed. If Person Accounts are not enabled, the deployment will fail with a reference error on household record types.
+- **Confirm Person Account status in the target org.** Person Account enablement is an irreversible org-level change that cannot be performed via Metadata API. It must be requested from Salesforce and in place before any household record types, Relationship Groups, or Financial Account metadata can be deployed. If Person Accounts are not enabled, the deployment will fail with a reference error on household record types.
 - **Check OWD settings for Account, Opportunity, and Financial Deal.** Compliant Data Sharing share-table entries are only meaningful when the target objects have Org-Wide Defaults (OWDs) set to Private or Public Read-Only. If OWDs are Public Read/Write, CDS share-table rows are written but have no access-control effect. OWDs must be set before deploying CDS-enabling metadata.
 - **Know your deployment tool's behavior with `IndustriesSettings`.** The IndustriesSettings Metadata API type controls feature flags for CDS and other FSC capabilities. Deploying IndustriesSettings does not always trigger immediate share-table recalculation — some flags require a post-deploy activation step or sharing recalculation job.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is each org in the pipeline on managed-package FSC (`FinServ__`) or platform-native FSC? | A package built for one model fails on the other with component-level errors that read like missing dependencies (Gotcha 3) | A per-org model list and a namespace audit before the first deploy to any new target |
+| Are person accounts enabled in every target, including the scratch org definition? | Person accounts are off by default and are requested from Salesforce, so no metadata deploy can turn them on (Gotcha 1) | A preflight query on `RecordType.IsPersonType` and the `PersonAccounts` scratch feature in the definition file |
+| Which objects get Compliant Data Sharing, and are their OWDs already Private or Public Read Only? | `IndustriesSettings` enables CDS per object, and under a Public Read/Write OWD the share rows grant nothing new (Gotcha 5) | The exact `enableCompliantDataSharingFor*` flags to deploy and the OWD change scheduled ahead of them |
+| How many records will the OWD tightening recalculate, and in which window? | Recalculation can run for hours, and CDS checks run during it are unreliable (Gotcha 5) | A maintenance window and a gate that waits for the background job to finish |
+| Do records that need CDS access already exist in the target? | Activating CDS does not backfill share rows for existing records (Gotcha 2) | A named recalculation step and the record count it must cover |
+| What does each `ParticipantRole` set for `parentObject`, `defaultAccessLevel`, and `isActive`? | A deploy validates the component's shape, not whether the role grants the access you expect (Gotcha 4) | A role-by-role access table the post-deploy test can check against |
+| Which test record and test user will prove access after the deploy? | Deploy success is not evidence of row-level access in either gotcha above (Gotchas 2, 4) | A share-table query and a log-in-as check written into the runbook |
+
+Answering these turns an FSC release into gated phases with a proof of access at the end; "just deploying" ships a CDS configuration that reports success and shares nothing.
 
 ---
 
@@ -63,7 +79,7 @@ Gather this context before working on anything in this domain:
 
 ### Irreversible Prerequisite: Person Account Enablement
 
-Person Account enablement is the foundational gate for FSC. Salesforce documentation explicitly states this change is irreversible and cannot be performed via Metadata API. It requires a Salesforce support case or a Setup toggle (depending on org type). Once enabled:
+Person Account enablement is the foundational gate for FSC. The Metadata API guide states: "Person accounts aren't enabled by default in Salesforce. To request person accounts, contact Salesforce." UNVERIFIED (2026-10-19): irreversibility is stated only in Salesforce Help, which could not be fetched; treat it as one-way when planning. Once enabled:
 
 - The `Account` object gains an `IsPersonAccount` field.
 - Household record types and Relationship Group metadata become deployable.
@@ -71,17 +87,17 @@ Person Account enablement is the foundational gate for FSC. Salesforce documenta
 
 **Impact for deployments:** If a CI pipeline attempts to deploy household-related record types or page layouts to an org where Person Accounts are not yet enabled, the deployment fails with an entity reference error. The fix is never a code change — it is an org configuration step that must precede the first metadata deploy wave.
 
-### Sequential Dependency: Record Types Before Participant Role Custom Metadata
+### Sequential Dependency: Prerequisites Before ParticipantRole Components
 
-FSC's Compliant Data Sharing model uses Participant Role custom metadata records to define which roles grant share-table access. These records reference Financial Account Role values, which are themselves tied to Account record types. The deployment sequence is therefore:
+FSC's Compliant Data Sharing model uses participant roles to define which roles grant share-table access. In the Summer '26 Metadata API guide `ParticipantRole` is its own metadata type (API 50.0+, `.participantRole` files in `participantRoles/`), not custom metadata, and its fields are `defaultAccessLevel` (Edit / None / Read), `isActive`, `masterLabel`, and `parentObject` (Account, Opportunity, FinancialDeal, Interaction, custom objects, and others) — no record type reference. The deployment sequence is therefore:
 
 1. Person Accounts enabled (manual, Setup)
 2. Account record types deployed (`RecordType` metadata)
 3. CDS-target objects enabled (OWDs set to Private or Public Read-Only)
 4. `IndustriesSettings` metadata deployed to activate CDS flags
-5. Participant Role custom metadata records deployed
+5. `ParticipantRole` components deployed
 
-Deploying Participant Role custom metadata before the Account record types exist results in a reference error because the custom metadata references record type developer names that do not yet exist in the target org.
+Deploying `ParticipantRole` last keeps every role behind the CDS flag and OWD state it depends on. A successful deploy proves only that the component is well formed — whether the role grants the expected access is a post-deploy test.
 
 ### Namespace Model: Managed Package vs Platform-Native Core FSC
 
@@ -89,13 +105,13 @@ FSC historically shipped as a managed package with the `FinServ__` namespace. Ev
 
 - `FinServ__FinancialAccount__c`
 - `FinServ__Financial_Account__c.FinServ__Balance__c`
-- `FinServ__ParticipantRole__mdt`
+- `FinServ__ParticipantRole__mdt` — UNVERIFIED (2026-10-19): the managed-package name is not in the Summer '26 Metadata API guide, which documents only the unprefixed `ParticipantRole` type.
 
 Starting with Winter '23, Salesforce introduced platform-native Core FSC, where FSC objects are standard platform objects with no namespace:
 
 - `FinancialAccount`
 - `FinancialAccount.Balance`
-- `ParticipantRole` (custom metadata without FinServ__ prefix)
+- `ParticipantRole` (a Metadata API type, not custom metadata)
 
 A metadata deployment package built for a managed-package org contains `FinServ__`-prefixed API names throughout. Deploying this package to a platform-native Core FSC org will fail because those namespace-qualified names do not match any metadata in the target. The reverse is equally true. There is no automated conversion — every API name in the package must be audited and rewritten for the target model.
 
@@ -120,7 +136,7 @@ Deploying `IndustriesSettings` to activate CDS on an org with Public Read/Write 
 **How it works:**
 
 Phase 0 — Org prerequisites (manual, cannot be scripted):
-1. Enable Person Accounts via Setup or Salesforce support case.
+1. Get Person Accounts enabled — "Person accounts aren't enabled by default in Salesforce. To request person accounts, contact Salesforce."
 2. Set OWDs for Account, Opportunity, and Financial Deal to Private (or Public Read-Only if full private is not required).
 3. Confirm FSC managed package is installed (managed-package model) or Core FSC is provisioned (platform-native model).
 
@@ -134,7 +150,7 @@ Phase 2 — Deploy Industries settings:
 sf project deploy start --metadata "IndustriesSettings" --target-org <alias>
 ```
 
-Phase 3 — Deploy Participant Role custom metadata:
+Phase 3 — Deploy `ParticipantRole` components:
 ```
 sf project deploy start --metadata "ParticipantRole" --target-org <alias>
 ```
@@ -142,10 +158,11 @@ sf project deploy start --metadata "ParticipantRole" --target-org <alias>
 Phase 4 — Trigger sharing recalculation (manual or via Apex):
 ```apex
 // Trigger CDS share recalculation for Financial Accounts
+// UNVERIFIED (2026-10-19): this batch class name is not in the Summer '26 Apex Reference; confirm it in the target org before scripting it
 Database.executeBatch(new FinancialAccountShareRecalcBatch(), 200);
 ```
 
-**Why not a single deploy wave:** Because Phase 0 requires manual org changes that block all subsequent metadata, and because Participant Role custom metadata references record types that must already exist in the target.
+**Why not a single deploy wave:** Because Phase 0 requires manual org changes that block all subsequent metadata, and because a role deployed before its CDS flag and OWD are in place cannot be tested for the access it is meant to grant.
 
 ### Namespace Audit and Rewrite Pattern
 
@@ -181,9 +198,9 @@ Database.executeBatch(new FinancialAccountShareRecalcBatch(), 200);
 | Deploying FSC to a net-new org | Phased prerequisite-first pattern; Person Accounts enabled before any metadata deploy | Household record types will fail to deploy without Person Accounts enabled |
 | Migrating pipeline from managed-package to Core FSC org | Namespace audit and rewrite of all metadata XML before deploy | FinServ__-prefixed API names do not exist in platform-native orgs |
 | CDS share table empty after deploy | Check OWDs first; trigger sharing recalculation job | OWDs must be Private/Public Read-Only; recalculation does not run automatically |
-| Participant Role custom metadata fails on deploy | Confirm Account record types were deployed first | Custom metadata references record type developer names that must pre-exist |
+| `ParticipantRole` deploys but grants no access | Check `isActive`, `parentObject`, and that object's CDS flag in `IndustriesSettings` | The type has no record type reference; deploy success proves shape, not access |
 | IndustriesSettings deploys but CDS shows no effect | Verify OWD setting for Account; check if CDS flag requires post-deploy activation step | CDS activation via IndustriesSettings does not apply retroactively to existing records |
-| Deploying FSC to a scratch org for CI | Use scratch org definition file with `"isFSCEnabled": true` and include Person Account enablement in the scratch org def | Scratch orgs can be provisioned with FSC and Person Accounts pre-enabled via definition |
+| Deploying FSC to a scratch org for CI | Add the `FinancialServicesUser:<value>` and `PersonAccounts` features to the scratch org definition file | Both are documented scratch org features; the first adds the FSC Standard permission set license |
 
 ---
 
@@ -192,11 +209,11 @@ Database.executeBatch(new FinancialAccountShareRecalcBatch(), 200);
 Step-by-step instructions for an AI agent or practitioner deploying FSC metadata:
 
 1. **Identify the FSC licensing model in the source and target orgs.** Check whether objects use the `FinServ__` namespace (managed-package) or bare names (platform-native Core FSC). If they differ, run the namespace audit and rewrite before any other step.
-2. **Confirm Person Accounts are enabled in the target org.** Query `SELECT Id, Name FROM AccountRecordType WHERE DeveloperName = 'PersonAccount'` or check Setup > Person Accounts. If not enabled, stop and enable them via Setup before proceeding. This cannot be automated and is irreversible.
+2. **Confirm Person Accounts are enabled in the target org.** Query `SELECT Id, DeveloperName FROM RecordType WHERE SobjectType = 'Account' AND IsPersonType = true` — `IsPersonType` is visible only when the person account feature is enabled. If not enabled, stop and request it from Salesforce; no metadata deploy turns it on.
 3. **Verify OWD settings for Account, Opportunity, and Financial Deal.** Navigate to Setup > Sharing Settings and confirm each object is set to Private or Public Read-Only. If OWDs are Public Read/Write, update them before deploying CDS configuration.
 4. **Deploy structural metadata in sequence:** first Account record types, then other FSC object record types. Validate each wave before proceeding: `sf project deploy validate --metadata "RecordType" --target-org <alias>`.
 5. **Deploy IndustriesSettings** to activate CDS and other FSC feature flags: `sf project deploy start --metadata "IndustriesSettings" --target-org <alias>`. Confirm the deploy succeeds without errors.
-6. **Deploy Participant Role custom metadata** after record types are confirmed in the target: `sf project deploy start --metadata "ParticipantRole" --target-org <alias>`.
+6. **Deploy `ParticipantRole` components** after the CDS flags and OWDs are confirmed in the target: `sf project deploy start --metadata "ParticipantRole" --target-org <alias>`.
 7. **Run CDS post-deploy validation:** confirm OWDs, trigger sharing recalculation if needed, and verify share-table rows are populated for test records. Log in as a test user to confirm row-level access is functioning correctly.
 
 ---
@@ -208,7 +225,7 @@ Run through these before marking FSC deployment work complete:
 - [ ] Confirmed FSC licensing model (managed-package vs platform-native) is the same in source and target orgs, or namespace audit and rewrite has been completed
 - [ ] Person Accounts are enabled in the target org before any household or Financial Account metadata was deployed
 - [ ] OWDs for Account, Opportunity, and Financial Deal are set to Private or Public Read-Only before CDS metadata was deployed
-- [ ] Account record types were deployed and confirmed present before Participant Role custom metadata was deployed
+- [ ] Each deployed `ParticipantRole` was checked for `isActive`, `parentObject`, and `defaultAccessLevel` against the intended access
 - [ ] IndustriesSettings deploy succeeded without errors
 - [ ] Post-deploy sharing recalculation job was triggered and completed
 - [ ] Share-table rows verified for at least one test Financial Account record
@@ -220,11 +237,11 @@ Run through these before marking FSC deployment work complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Person Account enablement is irreversible and blocks household metadata** — Attempting to deploy household Account record types or Relationship Group metadata before Person Accounts are enabled fails with a generic entity reference error. The root cause is not obvious from the error message. Enable Person Accounts in Setup before the first metadata deploy wave — and understand this change cannot be undone in the org.
+1. **Person Account enablement is irreversible and blocks household metadata** — Attempting to deploy household Account record types or Relationship Group metadata before Person Accounts are enabled fails with a generic entity reference error. The root cause is not obvious from the error message. Get Person Accounts enabled (requested from Salesforce) before the first metadata deploy wave — and understand this change cannot be undone in the org.
 2. **OWD mismatch silently breaks CDS without a deployment error** — Deploying `IndustriesSettings` to activate CDS on an org with Public Read/Write OWDs for Account succeeds with no errors. CDS appears active. But share-table entries have no access-control effect because the base OWD already grants everyone full access. This misconfiguration does not surface until a security audit or a pen-test reveals the data exposure.
 3. **FinServ__ namespace renders metadata non-portable between FSC models** — A `package.xml` built from a managed-package FSC org will reference `FinServ__FinancialAccount__c`. Deploying this to a platform-native Core FSC org fails because that object does not exist under that name. The sf CLI error message ("Component not found") does not mention namespace as the cause, leading practitioners to incorrectly diagnose the issue as a missing dependency or wrong API version.
 4. **IndustriesSettings does not backfill share-table rows for existing records** — After deploying CDS activation via IndustriesSettings, share-table rows are created for new records going forward but are not retroactively created for records that existed before CDS was activated. A sharing recalculation batch job must be explicitly triggered to populate shares for existing records. Skipping this step leaves pre-existing financial accounts invisible to users who should have access via CDS.
-5. **Participant Role custom metadata silently deploys with wrong record type references** — If Account record types referenced in Participant Role custom metadata records do not match the exact developer names in the target org (e.g., due to a record type rename during migration), the custom metadata deploys successfully but the CDS engine ignores those participant roles at runtime. There is no deploy-time validation of custom metadata field cross-references.
+5. **A `ParticipantRole` deploy proves shape, not access** — `ParticipantRole` is a Metadata API type with `defaultAccessLevel`, `isActive`, `masterLabel`, and `parentObject`; it carries no record type reference. The deploy succeeds whether or not the role is active or its parent object has CDS enabled, so only a share-table and log-in-as test shows the role grants what was intended.
 
 ---
 

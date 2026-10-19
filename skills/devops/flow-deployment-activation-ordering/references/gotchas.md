@@ -217,12 +217,12 @@ about, over activating hours ahead.
 **What happens:** A flow is deactivated as a kill switch and Apex keeps invoking
 it.
 
-**When it occurs:** `Flow.Interview.createInterview` and similar entry points do
-not universally require an active version, so "deactivated" is not a reliable
-platform-level off switch for a flow with code callers. `<!-- UNVERIFIED: the
-exact conditions under which an inactive flow version remains invocable from Apex
-were not confirmed against a fetchable official page during authoring. Test the
-behaviour in a sandbox before relying on deactivation as a kill switch. -->`
+**When it occurs:** Apex entry points do not require an active version. The
+Apex Reference for `Flow.Interview.start()` says: "When a flow user invokes an
+autolaunched flow, the active flow version runs. If there's no active version, the
+latest version runs. When a flow admin invokes a flow, the latest version always
+runs." So "deactivated" is not a platform-level off switch for a flow with code
+callers — it can promote an untested latest version instead.
 
 **How to avoid:** Do not use deactivation as the kill switch for a flow with Apex
 callers. Gate the caller — a Custom Metadata feature flag checked in the Apex, or

@@ -31,3 +31,5 @@
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
 - Salesforce DX Developer Guide: Source Format — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_source_file_format.htm
 - Salesforce DX Developer Guide: Migrate Existing Source — https://developer.salesforce.com/docs/platform/sfcli/guide/project-convert-mdapi.html
+- Salesforce DX Developer Guide, Summer '26 PDF (sfdx_dev.txt): `retrieve start --manifest` writes source format into `force-app` L2024–2035; `sf project generate manifest --from-org` L2045–2047; convert ignores dot-files and `.forceignore` matches L2066–2084; `sourceApiVersion` L2408–2416; profile retrieval and the permission-set recommendation L11881–11889; source tracking in Developer / Developer Pro sandboxes L989–995. Supports Pattern 1 and Gotchas 1, 2, 3, 6.
+- Metadata API Developer Guide (api_meta.txt): Profile retrieve contents L98477–98484; flow file names without versions and FlowDefinition precedence L73195–73200; Pre/Post destructive manifests L4648–4660. Supports Gotchas 3, 4, 5.

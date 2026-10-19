@@ -4,7 +4,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: `sf project convert mdapi` Silently Drops Unsupported Metadata Types
 
-**What happens:** Certain metadata types (e.g., InstalledPackage, certain legacy EmailTemplate subtypes, CustomPageWebLink in some contexts) are not supported in source format. The convert command completes without error but simply omits these components from the output. Your converted source directory has fewer files than your mdapi input directory, and you do not notice until a deploy fails because a referenced component is missing.
+**What happens:** Certain metadata types (e.g., InstalledPackage, certain legacy EmailTemplate subtypes, CustomPageWebLink in some contexts) are not supported in source format (UNVERIFIED (2026-10-19): this type list is not in the Summer '26 DX guide, which documents only that the convert "ignores all files that start with a 'dot'" and anything matched by `.forceignore`). The convert command completes without error but simply omits these components from the output. Your converted source directory has fewer files than your mdapi input directory, and you do not notice until a deploy fails because a referenced component is missing.
 
 **When it occurs:** Every migration that includes metadata types not supported in the source-format decomposition. The list of unsupported types changes with each Salesforce release.
 
@@ -22,23 +22,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 3: Profiles Retrieved in Full Overwrite Target Org Profiles on Deploy
+## Gotcha 3: A Retrieved Profile Is a Partial Snapshot That Deploys as Truth
 
-**What happens:** A profile retrieved via the Metadata API contains the complete permission set for that profile across every object, field, tab, app, and record type in the org — including standard objects and managed-package components. If you convert this to source format and deploy it to another org, it replaces the entire profile in the target, removing any permissions that exist in the target but not in the retrieved snapshot.
+**What happens:** A retrieved `.profile` file includes "security settings for the other metadata types referenced in the retrieve request" — plus user permissions, IP address ranges, and login hours, which are always retrieved. Which settings land in the file therefore depends on the manifest, the org type, and the tracking state. Deploying that file to another org pushes whatever partial snapshot it holds. UNVERIFIED (2026-10-19): how a deploy treats permissions absent from the file is not stated in the Summer '26 guides.
 
 **When it occurs:** The team includes profiles in the migration retrieval because change sets included profiles. They assume the deploy is additive (like change sets' "Add to profile" behavior) when it is actually a full overwrite.
 
-**How to avoid:** Exclude profiles from the migration entirely. Add `**/profiles/**` to `.forceignore`. Use permission sets and permission set groups as the access-control mechanism in the source-driven workflow. If profiles must be managed, use a dedicated profile-management tool or maintain profiles as a separate, carefully reviewed deployment step.
+**How to avoid:** Exclude profiles from the migration entirely — the DX guide recommends permission sets and adding profiles to `.forceignore`. Add `**/profiles/**` to `.forceignore`. Use permission sets and permission set groups as the access-control mechanism in the source-driven workflow. If profiles must be managed, use a dedicated profile-management tool or maintain profiles as a separate, carefully reviewed deployment step.
 
 ---
 
-## Gotcha 4: Flow Retrieval Pulls All Versions Including Inactive and Obsolete Ones
+## Gotcha 4: A Wildcard Flow Retrieve Pulls Flows Nobody Owns, and FlowDefinition Overrides Their Status
 
-**What happens:** Retrieving FlowDefinition with `<members>*</members>` returns every version of every flow — active, inactive, draft, and obsolete. The convert step creates source files for all of them. The team ends up with dozens of flow files they do not recognize, and deploying them may activate unintended flow versions.
+**What happens:** Retrieving `Flow` with `<members>*</members>` returns a file for every flow in the org — one version per flow, since API 44.0 file names carry no version number. The team ends up with flow files it does not recognize. If `FlowDefinition` files come along, "the active version numbers in the flow definitions override the status fields in the flows" on the next deploy, so a deploy can activate a version nobody chose.
 
 **When it occurs:** Any migration that uses wildcard retrieval for flows. Orgs with a long flow history may have 5-10 versions per flow.
 
-**How to avoid:** Use specific flow names in `package.xml` instead of wildcards. Retrieve only the active version by specifying the flow's DeveloperName. After conversion, audit the `force-app/main/default/flows/` directory and remove any flow versions the team does not actively maintain. Note: in source format, only one version per flow API name is stored; the latest retrieved version is what you get. The risk is pulling flows the team did not know existed.
+**How to avoid:** Use specific flow names in `package.xml` instead of wildcards. Naming a flow does not select its active version — the file holds the latest version, which may not be the active one — so record each flow's active version separately. Keep `FlowDefinition` out of the manifest. After the retrieve, audit `force-app/main/default/flows/` and remove flows the team does not maintain.
 
 ---
 
@@ -48,4 +48,14 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** First time the team needs to remove (not just add or update) metadata after migrating to the CLI workflow.
 
-**How to avoid:** Use `destructiveChangesPost.xml` (or `destructiveChangesPre.xml`) alongside the deployment manifest to explicitly declare components that should be deleted. Deploy with `sf project deploy start --manifest package.xml --post-destructive-changes destructiveChangesPost.xml`. Document this in the team's runbook as a key behavioral difference from change sets.
+**How to avoid:** Use `destructiveChangesPost.xml` (or `destructiveChangesPre.xml`) alongside the deployment manifest to explicitly declare components that should be deleted. Deploy with `sf project deploy start --manifest package.xml --post-destructive-changes destructiveChangesPost.xml` (UNVERIFIED (2026-10-19): the CLI flag name is not in the Summer '26 DX guide; check `sf project deploy start --help`). Document this in the team's runbook as a key behavioral difference from change sets.
+
+---
+
+## Gotcha 6: Source Tracking Exists Only Where It Has Been Turned On
+
+**What happens:** A team expects `sf project retrieve start` with no manifest to pick up every change, the way it does in a scratch org, and gets nothing useful from a full or partial copy sandbox.
+
+**When it occurs:** Source tracking is available in scratch orgs and in Developer and Developer Pro sandboxes once enabled — either from production for all such sandboxes, or per sandbox. Other sandbox types have no tracking.
+
+**How to avoid:** Decide per environment: source tracking in scratch orgs and tracked Developer / Developer Pro sandboxes, manifest-based retrieve and deploy everywhere else.

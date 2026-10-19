@@ -33,9 +33,9 @@ outputs:
   - "pre- and post-migration validation checklist"
   - "decision guidance on target deployment model (manifest vs. packages vs. DevOps Center)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-10-19
 ---
 
 # Migration From Change Sets To SFDX
@@ -53,6 +53,22 @@ Gather this context before working on anything in this domain:
 - Does a git repository already exist for this org's metadata, or is this a from-scratch setup?
 - What is the team's Salesforce edition? Source tracking is only available in scratch orgs and Developer/Developer Pro sandboxes. Full-copy and partial-copy sandboxes require manifest-based retrieval.
 - Are there active change set deployments in flight that must complete before the migration cutover?
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Do you already hold metadata-format files (an Ant or Metadata API repo), or will you retrieve from the org? | `sf project retrieve start --manifest` writes source format directly; only existing metadata-format files need `sf project convert mdapi`, and the convert skips dot-files and `.forceignore` matches (Gotcha 1) | One retrieve path per component group, plus a file-count check after any convert |
+| Will the first manifest be hand-built, wildcard, or generated with `sf project generate manifest --from-org`? | A broad manifest pulls components — flows especially — the team did not know existed (Gotcha 4) | A reviewed manifest listing only what the team owns |
+| What `sourceApiVersion` will `sfdx-project.json` pin? | It decides which fields are retrieved for each type (Gotcha 2) | A version chosen against the org, not copied from a template |
+| Does the team grant access through profiles today? | A retrieved profile holds only the settings for the other metadata in that request, and Salesforce recommends permission sets and ignoring profiles (Gotcha 3) | A decision to exclude profiles, or a separate reviewed profile step |
+| Which flows are active in production, and will a `FlowDefinition` ride along in the retrieve? | Flow files hold one version per flow, and a `FlowDefinition` in a deploy overrides the flows' status (Gotcha 4) | A flow inventory with the version each environment should run |
+| How will deletions be released once change sets are gone? | Removing a file and deploying the directory does not delete the component (Gotcha 5) | A `destructiveChangesPost.xml` step in the release runbook |
+| Which sandboxes will developers work in, and is source tracking enabled there? | Source tracking works only in scratch orgs and Developer / Developer Pro sandboxes with tracking turned on (Gotcha 6) | The tracking-or-manifest choice made per environment |
+
+Answering these first gives a repository that matches the org on day one and a release path that can delete as well as add; "just converting" ships a repo that quietly disagrees with production.
 
 ---
 
@@ -87,8 +103,8 @@ After migration, the team must choose a deployment model. **Source tracking** (`
 **How it works:**
 
 1. Build a `package.xml` listing one metadata type group at a time (e.g., all Apex classes first).
-2. Retrieve: `sf project retrieve start --manifest package.xml --target-org prod --output-dir mdapi-output/`
-3. Convert: `sf project convert mdapi --root-dir mdapi-output/ --output-dir force-app/`
+2. Retrieve: `sf project retrieve start --manifest package.xml --target-org prod` — this writes source format into the default package directory (`force-app`); no convert step is needed.
+3. Only for files you already hold in metadata format (an Ant or Metadata API repo): `sf project convert mdapi --root-dir mdapi-output/ --output-dir force-app/`
 4. Review the converted source, commit to git with a descriptive message ("Add Apex classes from production").
 5. Validate with a round-trip deploy to a sandbox: `sf project deploy start --source-dir force-app/ --target-org dev-sandbox`
 6. Repeat for the next metadata type group (custom objects, flows, LWC, etc.).
@@ -143,7 +159,7 @@ Step-by-step instructions for an AI agent or practitioner executing this migrati
 1. **Inventory current state** — List all metadata types currently promoted via change sets. Check recent change set history in Setup > Outbound Change Sets. Identify which components change frequently vs. rarely.
 2. **Set up the SFDX project** — Run `sf project generate --name <project-name>`. Initialize a git repository if none exists. Authenticate the source org with `sf org login web --alias prod`.
 3. **Build the migration manifest** — Create a `package.xml` targeting the first batch of metadata types. Start with Apex classes and triggers (they have the clearest file-to-component mapping).
-4. **Retrieve and convert** — Run `sf project retrieve start --manifest package.xml --target-org prod --output-dir mdapi-output/`. Then `sf project convert mdapi --root-dir mdapi-output/ --output-dir force-app/`. Review the output structure.
+4. **Retrieve (and convert only legacy files)** — Run `sf project retrieve start --manifest package.xml --target-org prod`, which writes source format into `force-app`. Run `sf project convert mdapi --root-dir <dir> --output-dir force-app/` only for files you already hold in metadata format. Review the output structure.
 5. **Validate round-trip** — Deploy the converted source to a sandbox: `sf project deploy start --source-dir force-app/ --target-org dev-sandbox`. Confirm zero errors. This proves the conversion is lossless.
 6. **Commit and iterate** — Commit the converted source to git. Repeat steps 3-5 for each remaining metadata type group. Resolve conflicts between batches as they arise.
 7. **Cut over** — Once all actively-maintained metadata is in the SFDX project, perform the next production release via `sf project deploy start` instead of a change set. Retire the change set process.

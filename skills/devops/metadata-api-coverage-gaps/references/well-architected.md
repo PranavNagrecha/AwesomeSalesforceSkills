@@ -37,3 +37,7 @@ Excluding unsupported types from `package.xml` is the simplest approach but lose
 - Unsupported Metadata Types -- https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_unsupported_types.htm
 - Salesforce DX Developer Guide -- https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
 - Salesforce Well-Architected Framework Overview -- https://architect.salesforce.com/well-architected/overview
+- Metadata API Developer Guide, Metadata Coverage Report and Unsupported Metadata Types (Summer '26 PDF, api_meta.txt L9548–9559) -- the report's channels; unsupported types are changed manually in each org; some types are also unsupported in source tracking, packaging, and change sets. Supports Core Concepts and Gotchas 5, 6, 7.
+- Metadata API Developer Guide, OrgPreferenceSettings (api_meta.txt L123747–123762) -- removed in API 48.0, preferences moved to Settings Boolean fields in 47.0. Supports the removed-type example.
+- Salesforce DX Developer Guide, `sourceApiVersion` (sfdx_dev.txt L2408–2416) and `.forceignore` structure using `.gitignore` rules (L1784–1798). Supports Gotchas 3 and 4.
+- Metadata API Developer Guide, FlowDefinition (api_meta.txt L73925–73931) -- the API 44.0 recommendation to stop using FlowDefinition for activation, and that flow definitions in a deploy override the flows' status fields. Supports the active-flow item in SKILL.md.

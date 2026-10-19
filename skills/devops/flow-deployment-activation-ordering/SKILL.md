@@ -30,9 +30,9 @@ outputs:
   - Rollback plan
   - Post-deploy verification
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # Flow Deployment & Activation Ordering
@@ -47,6 +47,20 @@ version. The team hits production incidents: "the approval flow stopped
 triggering," "paused interviews threw after deploy," "rollback just
 deactivated everything." This skill codifies the sequence, guards, and
 verification to make Flow deploys boring.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which version number is active today for each changed flow, in each target org? | A deploy always adds a version and never restores one, so the captured number is the whole rollback plan (Gotcha 1) | A pre-deploy snapshot the rollback step can point at |
+| Is any `FlowDefinition` file in the package or its source directory? | Its `activeVersionNumber` overrides every `status` in the same deploy (Gotcha 2) | Either an empty `flowDefinitions/` or a deliberate, standalone rollback component |
+| Is **Deploy processes and flows as active** enabled in production, and at what coverage? | The preference does not exist in sandboxes, so a green sandbox run proves nothing about production (Gotcha 7) | A release-readiness line item checked in the real target |
+| Does a changed flow call a subflow, or is it called as one? | Subflows resolve at interview time, and a child with no active version drops callers onto its latest version (Gotchas 4, 5) | The child-then-caller activation order written into the runbook |
+| How many paused or waiting interviews reference the versions in play? | Interviews resume on the version they started on and break when that version is deleted (Gotchas 8, 9) | A `FlowInterview` count that gates any version cleanup |
+| Does Apex start the flow, and is deactivation the planned off switch? | With no active version, the latest version runs for a flow user, and a flow admin always gets the latest (Gotcha 13) | A tested kill switch in the caller instead of deactivation |
+| Is a changed flow schedule-triggered, or does a managed package ship flows into this org? | Scheduled runs pick the active version at run time, and package upgrades move active versions outside your release (Gotchas 10, 12) | An activation time chosen against the next run and a post-deploy `FlowDefinitionView` diff |
+
+A runbook built from these answers rolls back by moving a pointer you already captured; "just deploying" leaves you redeploying old source and getting a brand-new version.
 
 ## Recommended Workflow
 

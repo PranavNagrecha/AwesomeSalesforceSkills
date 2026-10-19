@@ -31,9 +31,9 @@ outputs:
   - sf CLI retrieve and deploy commands
   - CI pipeline stanza
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-05-19
+updated: 2026-10-19
 ---
 
 # Metadata API Retrieve / Deploy
@@ -43,9 +43,23 @@ Activate when retrieving or deploying Salesforce metadata via `sf` CLI (Metadata
 ## Before Starting
 
 - **Decide manifest scope.** Explicit members (safer for CI) vs wildcards (broad retrieve for initial capture).
-- **Choose test level.** Production deploys require `RunLocalTests` or `RunSpecifiedTests`.
-- **Decide rollback policy.** `rollbackOnError=true` is the safe default; `false` creates partial-state risk.
-- **Pre or post destructive?** Pre runs deletions before adds (safe for rename); post runs deletions after (safe when new metadata depends on old).
+- **Choose test level.** `NoTestRun` applies only to development environments; `RunLocalTests` is the default for production deploys that include Apex, and `RunSpecifiedTests` changes the coverage rule.
+- **Decide rollback policy.** `rollbackOnError` defaults to `true` and must be `true` for production; `false` creates partial-state risk.
+- **Pre or post destructive?** Pre runs deletions before adds (safe for rename); post runs deletions after (needed when the deploy must first remove a reference to the deleted component).
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the target production, and does the deploy include Apex? | `NoTestRun` is for development environments only, `RunSpecifiedTests` needs 75% coverage per class and trigger, and production needs `rollbackOnError=true` (Gotcha 6) | A named test level and test list that production will accept |
+| Will the manifest use wildcards against an org with managed packages installed? | A wildcard capture is not the org: namespaced components and package installs are handled separately (Gotcha 1) | An explicit inventory of installed packages kept apart from the metadata manifest |
+| What `<version>` does each manifest declare, and when was each listed type introduced? | A type newer than the manifest version is outside what the request can address (Gotcha 2) | A version policy and a check of each new type's "available in API version" line |
+| Does the release delete anything that another component still references? | Deletions run before additions unless you use `destructiveChangesPost.xml` (Gotcha 7) | Each deletion placed in the Pre or Post manifest on purpose |
+| Are `Layout`, `Profile`, or `PermissionSet` files re-retrieved and diffed in CI? | Re-retrieves reorder XML and bury real changes in noise (Gotcha 3) | A normalisation step before commit |
+| Do any components reference each other across types? | Cross-type cycles can pass `validate` and fail the real deploy (Gotcha 4) | A split deploy order or a full rehearsal deploy before production |
+| How long between validation and the production quick deploy? | Quick deploy needs a successful validation within the last 10 days (Gotcha 4) | A release calendar that keeps the validated job usable |
+
+Settling these before the first deploy gives a manifest and option set production accepts on the first try; "just deploying" finds the test-level, ordering, and version problems one failed release at a time.
 
 ## Core Concepts
 
@@ -94,9 +108,9 @@ Use `--dry-run` (or `--check-only` equivalent) to validate without committing.
 ### destructiveChanges
 
 ```
-destructiveChangesPre.xml  → deletions BEFORE deploy
-destructiveChanges.xml     → deletions AFTER deploy (default)
-destructiveChangesPost.xml → alias for post
+destructiveChangesPre.xml  → deletions BEFORE additions (API 33.0+)
+destructiveChanges.xml     → deletions BEFORE additions (the default)
+destructiveChangesPost.xml → deletions AFTER additions (API 33.0+)
 ```
 
 Pair with an empty `package.xml` that references only the API version.
@@ -105,14 +119,14 @@ Pair with an empty `package.xml` that references only the API version.
 
 | Level | Behavior |
 |---|---|
-| NoTestRun | Sandbox only; prod rejects |
-| RunSpecifiedTests | Provide `--tests` list |
-| RunLocalTests | All tests except managed packages (required for prod) |
+| NoTestRun | Development environments only (sandbox, Developer Edition, trial) |
+| RunSpecifiedTests | Provide `--tests` list; each class and trigger needs 75% coverage |
+| RunLocalTests | All tests except those from installed managed and unlocked packages (default for prod deploys with Apex) |
 | RunAllTestsInOrg | All tests including managed |
 
 ### rollbackOnError
 
-Default `true`. Setting `false` is dangerous — a failed component leaves orphaned partial metadata. Rarely useful outside scripted cleanup.
+Default `true`, and it must be `true` for a production deploy. Setting `false` is dangerous — a failed component leaves orphaned partial metadata. Rarely useful outside scripted cleanup.
 
 ## Common Patterns
 
