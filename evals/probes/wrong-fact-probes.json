@@ -1,0 +1,245 @@
+{
+ "_comment": "Wrong-fact probes for evals/scripts/run_lift.py --probes. Each probe is a claim corrected on 2026-10-19 in the R1-07 / R1-08 batch-1 skills (the wrong_answer is the pre-fix text, close to verbatim; correct_answer is the fixed claim). source = Summer '26 corpus file + line.",
+ "probes": [
+  {
+   "id": "bulk-api-patterns-last-page",
+   "skill": "data/bulk-api-patterns",
+   "question": "I'm writing a client that downloads the results of a Bulk API 2.0 query job set by set. How does the client know it has fetched the last set of results?",
+   "wrong_answer": "The Sforce-Locator response header is only present while more pages exist; when it is absent or empty on a response, that was the last page.",
+   "correct_answer": "On the last set the Sforce-Locator header is still returned but its value is the literal string 'null'; keep requesting with the locator until the header's value is the string 'null'.",
+   "source": "api_asynch.txt L3503-L3509"
+  },
+  {
+   "id": "bulk-api-patterns-upload-size",
+   "skill": "data/bulk-api-patterns",
+   "question": "My CSV for a Bulk API 2.0 ingest job is 400 MB raw. Can I just PUT it to the same job in 100 MB pieces to stay under the upload limit?",
+   "wrong_answer": "Yes. The 150 MB (base64) limit applies to each PUT request, so repeat the PUT for every chunk on the same job before closing it.",
+   "correct_answer": "No. The roughly 150 MB base64 (about 100 MB raw) limit covers the data of the whole job, so a 400 MB file has to be split across several jobs.",
+   "source": "api_asynch.txt L602 and L1782-L1784"
+  },
+  {
+   "id": "bulk-api-patterns-blank-cells",
+   "skill": "data/bulk-api-patterns",
+   "question": "I'm doing a Bulk API 2.0 update from a CSV in which some cells are empty because the source value is blank. Will those Salesforce fields be cleared?",
+   "wrong_answer": "An empty cell sets the field to an empty string/null on update, so blank cells clear the field; use #N/A only for fields that must be a true null.",
+   "correct_answer": "No. Empty field values are ignored when you update records; to set a field to null the cell must contain #N/A.",
+   "source": "api_asynch.txt L1314"
+  },
+  {
+   "id": "bulk-api-patterns-pk-chunking",
+   "skill": "data/bulk-api-patterns",
+   "question": "How do I turn on PK chunking for a Bulk API 2.0 query job over 40 million Account rows?",
+   "wrong_answer": "You can't: PK chunking only exists in Bulk API v1 (Sforce-Enable-PKChunking header), so use v1 for that export.",
+   "correct_answer": "Bulk API 2.0 query jobs perform PK chunking automatically, so there is nothing to enable (the manually invoked Sforce-Enable-PKChunking header is the Bulk API v1 mechanism).",
+   "source": "api_asynch.txt L200-L201"
+  },
+  {
+   "id": "bulk-api-patterns-unprocessed",
+   "skill": "data/bulk-api-patterns",
+   "question": "A Bulk API 2.0 ingest job ended in state JobComplete. Which result sets must I read to account for every uploaded row?",
+   "wrong_answer": "All three, always: successfulResults, failedResults and unprocessedRecords, and the three counts must add up to the rows uploaded.",
+   "correct_answer": "successfulResults and failedResults account for the rows of a JobComplete job; the unprocessedrecords resource exists only for failed or aborted jobs.",
+   "source": "api_asynch.txt L2188"
+  },
+  {
+   "id": "soql-query-optimization-custom-index-threshold",
+   "skill": "data/soql-query-optimization",
+   "question": "Our Opportunity table has 10 million rows and the filter field has a custom index. Roughly how many rows can my filter match before the optimizer stops using that custom index?",
+   "wrong_answer": "About 333,333 rows: the custom-index threshold is capped at 333,333 targeted records no matter how large the table is.",
+   "correct_answer": "There is no flat cap: a custom index is used if the filter matches less than 10% of the first million rows plus less than 5% of the rest, which is about 550,000 rows for a 10-million-row table.",
+   "source": "salesforce_large_data_volumes_bp.txt L467-L471"
+  },
+  {
+   "id": "soql-query-optimization-sandbox-index",
+   "skill": "data/soql-query-optimization",
+   "question": "Support created a custom index on production for us. Will that index exist in our Partial and Developer sandboxes, so I can check query plans there?",
+   "wrong_answer": "No. Custom indexes created in production are copied to Full sandboxes only; Developer, Developer Pro and Partial sandboxes do not receive them.",
+   "correct_answer": "Yes. Custom indexes that Salesforce Customer Support creates in production are copied to all sandboxes created from that production org (skinny tables are the ones copied to Full sandboxes only).",
+   "source": "salesforce_large_data_volumes_bp.txt L398-L399"
+  },
+  {
+   "id": "soql-query-optimization-formula-filter",
+   "skill": "data/soql-query-optimization",
+   "question": "A SOQL query on a 5M-row object filters on a non-deterministic formula field AND on an indexed field that matches under 1% of the rows. Is the query doomed to a full table scan because of the formula field?",
+   "wrong_answer": "Yes. A WHERE filter on a non-deterministic formula field can never be indexed, so the query will always be a full-table scan whatever else is in the WHERE clause.",
+   "correct_answer": "No. The formula field cannot be indexed, but only that filter is excluded; another indexed filter in the WHERE clause that meets the selectivity thresholds can still drive the query.",
+   "source": "salesforce_large_data_volumes_bp.txt L409 and L472-L473"
+  },
+  {
+   "id": "custom-index-requests-flat-target",
+   "skill": "data/custom-index-requests",
+   "question": "Our Case table has 2 million rows and we are asking Support for a custom index. Is 'the filter returns no more than 200,000 records' a safe rule for the optimizer to use it?",
+   "wrong_answer": "Yes. Keeping the filter at or under about 200,000 records is the recommended target for large orgs, whatever the table size.",
+   "correct_answer": "No. There is no flat row target: the custom-index threshold scales with the table, 10% of the first million plus 5% of the rest, which is 150,000 rows for a 2-million-row table, so a filter matching 200,000 rows would not use the index.",
+   "source": "salesforce_large_data_volumes_bp.txt L467-L471"
+  },
+  {
+   "id": "data-model-design-patterns-external-id-types",
+   "skill": "data/data-model-design-patterns",
+   "question": "I filter on a custom picklist field all the time and want it indexed. Can I get an index simply by ticking External ID on that picklist?",
+   "wrong_answer": "Yes. External ID can be set on any custom field and automatically creates an index on it.",
+   "correct_answer": "No. External ID can be created only on Auto Number, Email, Number and Text fields; an index on other field types, or on standard fields, has to be requested from Salesforce Customer Support.",
+   "source": "salesforce_large_data_volumes_bp.txt L418-L423"
+  },
+  {
+   "id": "data-model-design-patterns-text-255",
+   "skill": "data/data-model-design-patterns",
+   "question": "From Apex saved at API 60.0 I insert an Account whose custom Text(255) field is given a 300-character string. What happens?",
+   "wrong_answer": "Salesforce silently truncates the value to 255 characters and the insert succeeds.",
+   "correct_answer": "The insert fails with an error because the value is too large; only if allowFieldTruncation is set does Apex truncate it instead.",
+   "source": "salesforce_apex_developer_guide.txt L8518-L8521"
+  },
+  {
+   "id": "data-migration-planning-insert-vs-upsert",
+   "skill": "data/data-migration-planning",
+   "question": "We are loading 80 million rows into an empty custom object for the first time. For raw load speed, should the job be insert or upsert?",
+   "wrong_answer": "Always upsert with an External ID, even for the first load; there is no speed penalty and re-runs are then always safe.",
+   "correct_answer": "insert() is the fastest operation, then update(), then upsert(), so for a very large first load into an empty object an insert pass is the faster choice (switch to upsert for re-runs).",
+   "source": "salesforce_large_data_volumes_bp.txt L834-L836"
+  },
+  {
+   "id": "batch-data-cleanup-patterns-empty-recycle-bin",
+   "skill": "data/batch-data-cleanup-patterns",
+   "question": "Our nightly purge batch deletes 500,000 records and we fear a storage alert. Should finish() call Database.emptyRecycleBin() to give the storage back?",
+   "wrong_answer": "Yes. Soft-deleted records stay in the Recycle Bin for up to 15 days and keep counting against data storage, so emptying the bin reclaims the storage immediately.",
+   "correct_answer": "Not for storage: items in the Recycle Bin don't count against the org's storage. Emptying it only makes the rows unrecoverable and removes soft-deleted rows that still burden queries.",
+   "source": "salesforce_large_data_volumes_bp.txt L735-L740"
+  },
+  {
+   "id": "data-archival-strategies-recycle-bin-storage",
+   "skill": "data/data-archival-strategies",
+   "question": "Our org just hit its data storage limit and inserts are blocked. Is emptying the Recycle Bin the fastest way to free space?",
+   "wrong_answer": "Yes. Empty the Recycle Bin first: deleted records stay there for up to 15 days and still count against data storage, so this is the fastest win.",
+   "correct_answer": "No. Items in the Recycle Bin don't count against storage, so emptying it won't free any; you need to remove or archive real records.",
+   "source": "salesforce_large_data_volumes_bp.txt L735-L737"
+  },
+  {
+   "id": "consent-data-model-health-status-values",
+   "skill": "data/consent-data-model-health",
+   "question": "Which values can AuthorizationFormConsent.Status hold, and how should I record a patient who declines the authorization?",
+   "wrong_answer": "Only Seen and Signed; a decline is modelled by not creating the consent row or by deleting it.",
+   "correct_answer": "Status is a restricted picklist with three values, Rejected, Seen and Signed; a patient who declines is recorded with Status = Rejected.",
+   "source": "object_reference.txt L46257-L46262"
+  },
+  {
+   "id": "consent-data-model-health-source-type",
+   "skill": "data/consent-data-model-health",
+   "question": "What values are valid for ConsentCapturedSourceType when a patient gives consent by phone or by postal mail?",
+   "wrong_answer": "The source type picklist is Web, Email, Verbal or Paper, so use Verbal for phone and Paper for mail.",
+   "correct_answer": "It is a restricted picklist with Email, InPerson, MailingAddress, Phone, Social, Video and Web, so use Phone or MailingAddress.",
+   "source": "object_reference.txt L46144-L46151"
+  },
+  {
+   "id": "consent-data-model-health-giver-id",
+   "skill": "data/consent-data-model-health",
+   "question": "On AuthorizationFormConsent, can ConsentGiverId point at a Contact, or must it be an Individual Id?",
+   "wrong_answer": "It must be an Individual Id; a Contact, Account or person-account Id is not valid there.",
+   "correct_answer": "ConsentGiverId is a polymorphic lookup that accepts Account, Contact, Individual, Lead or User, so a Contact Id is valid.",
+   "source": "object_reference.txt L46164-L46165"
+  },
+  {
+   "id": "consent-data-model-health-form-data-use",
+   "skill": "data/consent-data-model-health",
+   "question": "Which two objects does an AuthorizationFormDataUse row link, so I can tell which purposes a consent form covers?",
+   "wrong_answer": "It links an AuthorizationFormText (the form version) to a DataUsePurpose, so each new text version needs its own data-use rows.",
+   "correct_answer": "It links an AuthorizationForm to a DataUsePurpose (AuthorizationFormId and DataUsePurposeId), so purposes attach to the form, not to a text version.",
+   "source": "object_reference.txt L46309-L46330"
+  },
+  {
+   "id": "duplicate-rule-person-account-edge-cases-company-fuzzy",
+   "skill": "data/duplicate-rule-person-account-edge-cases",
+   "question": "In a .matchingRule metadata file, which matchingMethod value do I use to fuzzy-match company names?",
+   "wrong_answer": "FuzzyCompanyName.",
+   "correct_answer": "CompanyName; the valid matchingMethod values are Exact, FirstName, LastName, CompanyName, Phone, City, Street, Zip and Title.",
+   "source": "api_meta.txt L87289-L87299"
+  },
+  {
+   "id": "duplicate-rule-person-account-edge-cases-email-method",
+   "skill": "data/duplicate-rule-person-account-edge-cases",
+   "question": "Which matchingMethod can I put on a matching-rule item to match email addresses?",
+   "wrong_answer": "Email is one of the matching methods (alongside Exact, Phone and the fuzzy methods).",
+   "correct_answer": "There is no Email matching method; the valid values are Exact, FirstName, LastName, CompanyName, Phone, City, Street, Zip and Title, so email is matched with Exact.",
+   "source": "api_meta.txt L87289-L87299"
+  },
+  {
+   "id": "duplicate-rule-person-account-edge-cases-two-rules",
+   "skill": "data/duplicate-rule-person-account-edge-cases",
+   "question": "I need two separate Account matching rules, one for B2B and one for B2C, in source format. What does the metadata look like?",
+   "wrong_answer": "One MatchingRule element per rule, each declared with fullName=\"Account.<RuleName>\" as its own element.",
+   "correct_answer": "One file, matchingRules/Account.matchingRule, with a MatchingRules root that holds one <matchingRules> child (with its own <fullName>) per rule.",
+   "source": "api_meta.txt L87231-L87237 and L87308-L87310"
+  },
+  {
+   "id": "destructive-changes-deployment-record-types",
+   "skill": "devops/destructive-changes-deployment",
+   "question": "Can I delete a custom object's Record Type with a destructiveChanges.xml deployment, or is that impossible through the Metadata API?",
+   "wrong_answer": "Impossible: Record Types cannot be deleted via the Metadata API, so they must be removed manually in Setup.",
+   "correct_answer": "The RecordType metadata type is documented to create, update or delete record type definitions for a custom object, so it can be listed in a destructive manifest (an in-use record type may still fail, so reassign it first).",
+   "source": "api_meta.txt L44968-L44970"
+  },
+  {
+   "id": "destructive-changes-deployment-order",
+   "skill": "devops/destructive-changes-deployment",
+   "question": "I must delete Apex class Foo and add a replacement Foo in the same deployment. With a plain destructiveChanges.xml, when does the delete run relative to the additions in package.xml?",
+   "wrong_answer": "After the additions; to delete first you must use destructiveChangesPre.xml.",
+   "correct_answer": "By default deletions are processed before additions, so a plain destructiveChanges.xml already deletes first; destructiveChangesPost.xml is the variant that deletes after the additions.",
+   "source": "api_meta.txt L4648-L4650"
+  },
+  {
+   "id": "cross-cloud-deployment-patterns-sitedotcom-dir",
+   "skill": "devops/cross-cloud-deployment-patterns",
+   "question": "What is the SiteDotCom folder called in my SFDX project, so I can put it in .forceignore?",
+   "wrong_answer": "siteDotCom/ (so the ignore rule is **/siteDotCom/**).",
+   "correct_answer": "SiteDotCom components are stored in the siteDotComSites directory, so the ignore rule is **/siteDotComSites/**.",
+   "source": "api_meta.txt L130579"
+  },
+  {
+   "id": "cross-cloud-deployment-patterns-sitedotcom-deployable",
+   "skill": "devops/cross-cloud-deployment-patterns",
+   "question": "Is SiteDotCom a metadata type that can never be deployed, so I should drop it from every manifest permanently?",
+   "wrong_answer": "Yes. SiteDotCom is never deployable; it is a platform-generated blob that should be excluded from every manifest.",
+   "correct_answer": "No. SiteDotCom is a deployable metadata type in its own right (API 30.0 and later); the rule is that it must not be in the manifest of a deployment that carries the site's ExperienceBundle.",
+   "source": "api_meta.txt L61110 and L130600"
+  },
+  {
+   "id": "deployment-error-diagnosis-coverage-rule",
+   "skill": "devops/deployment-error-diagnosis",
+   "question": "Which code coverage rule applies to a deployment run with RunLocalTests versus one run with RunSpecifiedTests?",
+   "wrong_answer": "The same for both: overall org coverage must be at least 75% and every deployed class must also reach 75% individually.",
+   "correct_answer": "With all or all-local tests overall coverage must be at least 75% (triggers need some coverage); with RunSpecifiedTests each class and trigger being deployed must be covered at least 75% individually.",
+   "source": "api_meta.txt L3457-L3459"
+  },
+  {
+   "id": "experience-cloud-deployment-admin-eb-setting",
+   "skill": "devops/experience-cloud-deployment-admin",
+   "question": "How do I switch on 'Enable ExperienceBundle Metadata API' in every new scratch org without clicking through Setup?",
+   "wrong_answer": "You can't: the checkbox cannot be set through the scratch org definition or metadata, so a manual Setup step is needed in each org.",
+   "correct_answer": "It is ordinary settings metadata: deploy ExperienceBundle settings (settings/ExperienceBundle.settings with enableExperienceBundleMetadata set to true) as a post-create step; the field defaults to false.",
+   "source": "api_meta.txt L115893-L115902"
+  },
+  {
+   "id": "experience-cloud-deployment-dev-lwr-bundle",
+   "skill": "devops/experience-cloud-deployment-dev",
+   "question": "My LWR site was created before Winter '23 and is not an enhanced LWR site. Which metadata type do I retrieve, ExperienceBundle or DigitalExperienceBundle?",
+   "wrong_answer": "DigitalExperienceBundle: all LWR sites use it, and ExperienceBundle returns an empty retrieve for an LWR site.",
+   "correct_answer": "DigitalExperienceBundle is only for enhanced LWR sites created in Winter '23 or later; Aura sites and other LWR sites use ExperienceBundle.",
+   "source": "api_meta.txt L51233-L51234"
+  },
+  {
+   "id": "environment-specific-value-injection-nc-soql",
+   "skill": "devops/environment-specific-value-injection",
+   "question": "Can a post-deploy script read a Named Credential's endpoint with SOQL, or are named credentials not queryable?",
+   "wrong_answer": "They cannot be queried with SOQL; named credentials surface only through Apex callouts and merge fields.",
+   "correct_answer": "The NamedCredential object supports query(), so SOQL can read the record's endpoint and settings (the secret itself never comes back).",
+   "source": "object_reference.txt L185779 and L185798-L185799"
+  },
+  {
+   "id": "environment-specific-value-injection-nc-autoconvert",
+   "skill": "devops/environment-specific-value-injection",
+   "question": "If I raise sourceApiVersion to 63.0, will my existing Named Credentials be converted to the External Credential model automatically?",
+   "wrong_answer": "Yes. From API 56.0 the platform auto-migrates Named Credentials to the split External Credential + Named Credential model, so scripts written for the old fields break.",
+   "correct_answer": "No. Legacy remains a valid named credential type kept for backward compatibility; the External Credential model applies to credentials created as SecuredEndpoint, and raising the API version does not convert them.",
+   "source": "api_meta.txt L90139-L90142"
+  }
+ ]
+}

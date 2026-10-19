@@ -1,0 +1,319 @@
+{
+  "measured_on": "2026-10-19",
+  "commit": "9aecb2307",
+  "probes": {
+    "file": "evals/probes/wrong-fact-probes.json",
+    "n": 30,
+    "skills": 15,
+    "summary": {
+      "skills": {
+        "data/bulk-api-patterns": {
+          "correct_a": 4,
+          "correct_b": 5,
+          "wrong_a": 1,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 5,
+          "errors": 0
+        },
+        "data/soql-query-optimization": {
+          "correct_a": 2,
+          "correct_b": 3,
+          "wrong_a": 1,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 3,
+          "errors": 0
+        },
+        "data/custom-index-requests": {
+          "correct_a": 1,
+          "correct_b": 1,
+          "wrong_a": 0,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 1,
+          "errors": 0
+        },
+        "data/data-model-design-patterns": {
+          "correct_a": 2,
+          "correct_b": 2,
+          "wrong_a": 0,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 2,
+          "errors": 0
+        },
+        "data/data-migration-planning": {
+          "correct_a": 1,
+          "correct_b": 1,
+          "wrong_a": 0,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 1,
+          "errors": 0
+        },
+        "data/batch-data-cleanup-patterns": {
+          "correct_a": 0,
+          "correct_b": 1,
+          "wrong_a": 1,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 1,
+          "errors": 0
+        },
+        "data/data-archival-strategies": {
+          "correct_a": 0,
+          "correct_b": 1,
+          "wrong_a": 1,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 1,
+          "errors": 0
+        },
+        "data/consent-data-model-health": {
+          "correct_a": 2,
+          "correct_b": 4,
+          "wrong_a": 1,
+          "wrong_b": 0,
+          "neither_a": 1,
+          "neither_b": 0,
+          "paired": 4,
+          "errors": 0
+        },
+        "data/duplicate-rule-person-account-edge-cases": {
+          "correct_a": 3,
+          "correct_b": 3,
+          "wrong_a": 0,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 3,
+          "errors": 0
+        },
+        "devops/destructive-changes-deployment": {
+          "correct_a": 1,
+          "correct_b": 2,
+          "wrong_a": 1,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 2,
+          "errors": 0
+        },
+        "devops/cross-cloud-deployment-patterns": {
+          "correct_a": 2,
+          "correct_b": 2,
+          "wrong_a": 0,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 2,
+          "errors": 0
+        },
+        "devops/deployment-error-diagnosis": {
+          "correct_a": 1,
+          "correct_b": 1,
+          "wrong_a": 0,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 1,
+          "errors": 0
+        },
+        "devops/experience-cloud-deployment-admin": {
+          "correct_a": 1,
+          "correct_b": 1,
+          "wrong_a": 0,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 1,
+          "errors": 0
+        },
+        "devops/experience-cloud-deployment-dev": {
+          "correct_a": 1,
+          "correct_b": 1,
+          "wrong_a": 0,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 1,
+          "errors": 0
+        },
+        "devops/environment-specific-value-injection": {
+          "correct_a": 2,
+          "correct_b": 2,
+          "wrong_a": 0,
+          "wrong_b": 0,
+          "neither_a": 0,
+          "neither_b": 0,
+          "paired": 2,
+          "errors": 0
+        }
+      },
+      "overall": {
+        "correct_a": 23,
+        "correct_b": 30,
+        "wrong_a": 6,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 0,
+        "paired": 30,
+        "errors": 0,
+        "probes": 30,
+        "quotes_not_found": 1,
+        "pct_correct_a": 76.66666666666667,
+        "pct_correct_b": 100.0,
+        "pct_wrong_a": 20.0,
+        "pct_wrong_b": 0.0,
+        "pct_neither_a": 3.3333333333333335,
+        "pct_neither_b": 0.0
+      },
+      "cost_usd": 3.3549027,
+      "call_seconds": 851.201,
+      "input_tokens": 474532,
+      "output_tokens": 80105,
+      "elapsed_s": 261.2902283330004
+    }
+  },
+  "golden_convention_free_repeats2": {
+    "skills": {
+      "apex-security-patterns": {
+        "mean_a": 3.5833333333333335,
+        "mean_b": 3.7083333333333335,
+        "delta": 0.125,
+        "must_a": 22,
+        "must_b": 22,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      },
+      "async-apex": {
+        "mean_a": 3.25,
+        "mean_b": 3.125,
+        "delta": -0.125,
+        "must_a": 18,
+        "must_b": 25,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      },
+      "batch-apex-patterns": {
+        "mean_a": 3.0833333333333335,
+        "mean_b": 3.25,
+        "delta": 0.16666666666666652,
+        "must_a": 15,
+        "must_b": 12,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      },
+      "trigger-framework": {
+        "mean_a": 3.597222222222222,
+        "mean_b": 3.888888888888889,
+        "delta": 0.29166666666666696,
+        "must_a": 8,
+        "must_b": 8,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      },
+      "flow-bulkification": {
+        "mean_a": 3.444444444444444,
+        "mean_b": 4.0,
+        "delta": 0.5555555555555558,
+        "must_a": 16,
+        "must_b": 12,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      },
+      "bulk-api-2-patterns": {
+        "mean_a": 3.875,
+        "mean_b": 4.041666666666667,
+        "delta": 0.16666666666666696,
+        "must_a": 18,
+        "must_b": 11,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      },
+      "callouts-and-http-integrations": {
+        "mean_a": 3.25,
+        "mean_b": 3.5833333333333335,
+        "delta": 0.3333333333333335,
+        "must_a": 13,
+        "must_b": 10,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      },
+      "named-credentials-setup": {
+        "mean_a": 4.291666666666667,
+        "mean_b": 4.625,
+        "delta": 0.33333333333333304,
+        "must_a": 14,
+        "must_b": 5,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      },
+      "lwc-imperative-apex": {
+        "mean_a": 3.9305555555555554,
+        "mean_b": 3.902777777777778,
+        "delta": -0.027777777777777235,
+        "must_a": 10,
+        "must_b": 11,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      },
+      "wire-service-patterns": {
+        "mean_a": 3.6666666666666665,
+        "mean_b": 4.166666666666667,
+        "delta": 0.5000000000000004,
+        "must_a": 16,
+        "must_b": 10,
+        "cases": 3,
+        "paired": 6,
+        "errors": 0
+      }
+    },
+    "overall": {
+      "cases": 30,
+      "repeats": 2,
+      "paired": 60,
+      "mean_delta": 0.23194444444444445,
+      "stdev_delta": 0.5321782306498944,
+      "repeat_means": [
+        0.28055555555555556,
+        0.18333333333333332
+      ],
+      "b_gt_a": 35,
+      "b_lt_a": 11,
+      "tie": 14,
+      "sign_p": 0.0005355850721002753,
+      "errors": 0
+    },
+    "cost_usd": 11.382158999999998,
+    "call_seconds": 3742.8700000000017,
+    "input_tokens": 1225185,
+    "output_tokens": 444197,
+    "elapsed_s": 689.0892986670005,
+    "stripped_lines": 52
+  },
+  "caveats": [
+    "probe facts come from skills that now state them: B at 100% shows transmission, not generalisation",
+    "sonnet already knew 23/30 facts; the 7 A-failures are the signal",
+    "three probes share the Recycle Bin/storage fact",
+    "golden repeat 0 reuses v1 answers (regraded); only repeat 1 is a fresh draw",
+    "regex stripper also drops mixed lines carrying a generic check"
+  ]
+}

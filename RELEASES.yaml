@@ -199,12 +199,15 @@ releases:
     title: 'Lift test v2: convention-free rubric, repeats, wrong-fact probes from corrected claims'
     size: M
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: 'wrong-fact probes (30, 15 skills): correct A 76.7% -> B 100%, wrong A 20.0% -> B 0%; golden convention-free
+      repeats=2: delta +0.232 +/- 0.532, sign test B>A 35 / B<A 11 / tie 14, p=0.0005; 31 tests; cost 11.6 USD / 11 min; evals/probes/wrong-fact-probes.json
+      + evals/measurement/lift-baseline-v2-2026-10-19.json'
   - id: R1-15
     title: Define the S count in section 3.1 sizing (which retrieved skills count) + test on the five scenarios
     size: S
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R1-10
     title: 'Release: CHANGELOG [Plugin 1.4.0] + [0.5.1], versions, gate, merge main, push, ls-remote verify, tag mcp-v0.5.1,
       watch publish, fresh-clone bootstrap --verify-only'
