@@ -318,8 +318,13 @@ releases:
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: running
+    status: done
     parent: R2-01
+    evidence: 'GRADE PARTLY-WRONG. Flow XML parses, 28 elements reachable, 4 checkers clean; all Flow metadata/FlowTest/save-order/decision-tree
+      claims CORRECT vs api_meta + Apex guide; correctly chose extend-not-duplicate (~100% overlap). WRONG: told the requester
+      the web form carries severity — web-to-case-form-contract s6 posts no Severity__c, so ''Sev1 via web form'' is harmful;
+      email-keyword argument partly noise; two new fields = scope creep. Key catch: Case.Priority is Defaulted on create (object_reference
+      L62615) so the existing flow''s IsNull guard is dead and the Severity 1 rule fires on no channel.'
   - id: R2-01-4
     title: 'Agent proof: /analyze-field-impact (field-impact-analyzer) on a real input — a field in examples/builds/northwind-sales/artefacts;
       then an adversarial grader scores right/useful/wrong against the corpus'
@@ -430,6 +435,12 @@ releases:
     size: S
     owner_model: sonnet
     status: todo
+  - id: R2-16
+    title: Reconcile three flow skills' contradictory before-save statements (record-triggered-flow-patterns L89, flow-deployment-and-packaging
+      L77, flow-transactional-boundaries L216)
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -449,6 +460,12 @@ releases:
       maintenance only — plan written as items here, reviewed by 3 adversarial reviewers before work starts'
     size: M
     owner_model: fable
+    status: todo
+  - id: R3-03
+    title: 'case-onboarding: dead Priority IsNull guard (Defaulted on create) + form has no severity input; add the gotcha
+      to record-triggered-flow-patterns'
+    size: M
+    owner_model: opus
     status: todo
   - id: R3-02
     title: Release 1.6.0 / 0.5.3 — content set by R3-01
@@ -536,5 +553,20 @@ inbox:
   ask: 'From agent proof R2-01-2: access-path-explainer should always test record access first (UserRecordAccess.HasEditAccess
     / ownership) and, when the remedy is ''submit for approval'', check submitter eligibility (owner-only submit, Manager
     field populated) before recommending it; also cite AdminOnly as Modify All Data OR Modify All Records (api_meta L23184-23188)'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Scenario defect found by agent proof R2-01-3 in examples/builds/case-onboarding: Case.Priority is ''Defaulted on create''
+    (object_reference L62615), so Case_BeforeSave_StampEntitlementAndCalendar''s Priority-IsNull guard never passes for Web-to-Case
+    and the Severity 1 -> High rule fires on no channel; the web form contract (web-to-case-form-contract s6) has no severity
+    input at all; the existing flow also sets assignNullValuesIfNoRecordsFound with storeOutputAutomatically=true (invalid,
+    api_meta L71100-71107). Fix with an upgrade-only rule (raise to High on Sev1/Premier, never downgrade) and add a Severity
+    input to the form contract; add the ''defaulted-on-create field makes IsNull entry guards dead'' gotcha to flow/record-triggered-flow-patterns'
+  size: M
+  slotted_into: 1.6.0
+- date: 2026-10-19
+  ask: 'Library contradictions found by agent proof R2-01-3 (verified verbatim by the grader): flow/record-triggered-flow-patterns
+    L89, flow/flow-deployment-and-packaging L77, flow/flow-transactional-boundaries L216 contradict each other / the Metadata
+    API guide on before-save behaviour; reconcile against api_meta Flow section'
   size: S
   slotted_into: 1.5.0
