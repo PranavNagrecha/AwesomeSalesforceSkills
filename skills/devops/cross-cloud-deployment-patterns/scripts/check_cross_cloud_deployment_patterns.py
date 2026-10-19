@@ -11,6 +11,8 @@ Usage:
     python3 check_cross_cloud_deployment_patterns.py --help
     python3 check_cross_cloud_deployment_patterns.py --manifest-dir path/to/metadata
     python3 check_cross_cloud_deployment_patterns.py --package-xml path/to/package.xml
+
+Severity: ERROR (exit 1), WARN (exit 0, exit 1 with --strict), missing path exits 1.
 """
 
 from __future__ import annotations
@@ -92,6 +94,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Path to a specific package.xml file to inspect.",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat WARN findings as failures (exit 1).",
+    )
     return parser.parse_args()
 
 
@@ -111,21 +118,24 @@ def parse_package_xml(path: Path) -> dict[str, list[str]]:
     except ElementTree.ParseError as exc:
         return {"__parse_error__": [str(exc)]}
 
-    ns = {"sf": "http://soap.sforce.com/2006/04/metadata"}
-    types: dict[str, list[str]] = {}
-    root_elem = tree.getroot()
+    # Match on the local tag name so a package.xml without the metadata
+    # namespace is still read instead of silently yielding zero types.
+    def local(elem: ElementTree.Element) -> str:
+        return elem.tag.rsplit("}", 1)[-1]
 
-    for types_elem in root_elem.findall("sf:types", ns):
-        name_elem = types_elem.find("sf:name", ns)
-        if name_elem is None or not name_elem.text:
+    types: dict[str, list[str]] = {}
+    for types_elem in tree.getroot():
+        if local(types_elem) != "types":
             continue
-        type_name = name_elem.text.strip()
+        name_text = next(
+            (c.text for c in types_elem if local(c) == "name" and c.text), None
+        )
+        if not name_text:
+            continue
         members = [
-            m.text.strip()
-            for m in types_elem.findall("sf:members", ns)
-            if m.text
+            c.text.strip() for c in types_elem if local(c) == "members" and c.text
         ]
-        types[type_name] = members
+        types.setdefault(name_text.strip(), []).extend(members)
 
     return types
 
@@ -154,7 +164,7 @@ def check_package_for_mixed_layers(
 
     if "__parse_error__" in types:
         issues.append(
-            f"{package_path}: XML parse error — {types['__parse_error__'][0]}"
+            f"ERROR: {package_path}: XML parse error — {types['__parse_error__'][0]}"
         )
         return issues
 
@@ -168,7 +178,7 @@ def check_package_for_mixed_layers(
     for type_name in types:
         if type_name in NON_DEPLOYABLE_TYPES:
             issues.append(
-                f"{package_path}: contains non-deployable type '{type_name}'. "
+                f"ERROR: {package_path}: contains non-deployable type '{type_name}'. "
                 f"Remove '{type_name}' from this package.xml — it must never be deployed."
             )
 
@@ -177,7 +187,7 @@ def check_package_for_mixed_layers(
         experience_types = [t for t in types if t in EXPERIENCE_TYPES]
         foundation_types = [t for t in types if t in FOUNDATION_TYPES]
         issues.append(
-            f"{package_path}: mixes foundation types {foundation_types} and "
+            f"ERROR: {package_path}: mixes foundation types {foundation_types} and "
             f"experience types {experience_types} in the same package. "
             "Deploy foundation types first in a separate transaction to avoid "
             "'no Network named X found' errors."
@@ -189,7 +199,7 @@ def check_package_for_mixed_layers(
         experience_types = [t for t in types if t in EXPERIENCE_TYPES]
         network_types = [t for t in types if t in NETWORK_TYPES and t not in NON_DEPLOYABLE_TYPES]
         issues.append(
-            f"{package_path}: contains both network types {network_types} and "
+            f"WARN: {package_path}: contains both network types {network_types} and "
             f"experience types {experience_types} in the same package. "
             "Network metadata (Network, CustomSite) must be deployed in a prior "
             "transaction so they are fully committed before ExperienceBundle is evaluated."
@@ -198,29 +208,36 @@ def check_package_for_mixed_layers(
     return issues
 
 
-def check_for_sitedotcom_files(root: Path) -> list[str]:
-    """Scan for SiteDotCom blob files in the project directory."""
-    issues: list[str] = []
-    patterns = ["*.site", "siteDotCom"]
+def forceignore_excludes_sitedotcom(root: Path) -> bool:
+    """True when root/.forceignore has a SiteDotCom exclusion rule."""
+    forceignore = root / ".forceignore"
+    if not forceignore.exists():
+        return False
+    content = forceignore.read_text(encoding="utf-8", errors="replace")
+    return bool(re.search(r"sitedotcomsites", content, re.IGNORECASE))
 
-    for pattern in patterns:
-        matches = list(root.rglob(pattern))
-        for match in matches:
-            issues.append(
-                f"SiteDotCom artifact found: {match}. "
-                "Add '**/siteDotCom/**' and '*.site' to .forceignore to prevent "
-                "accidental staging and deployment."
-            )
 
-    # Also check for directories named siteDotCom
-    for d in root.rglob("*"):
-        if d.is_dir() and d.name.lower() in {"sitedotcom", "site-dot-com"}:
-            issues.append(
-                f"SiteDotCom directory found: {d}. "
-                "This directory contains non-deployable content. Add to .forceignore."
-            )
+def check_for_sitedotcom_files(root: Path, has_experience: bool) -> list[str]:
+    """Scan for SiteDotCom artifacts (siteDotComSites/ dirs, *.site blobs).
 
-    return issues
+    The Metadata API stores SiteDotCom components in `siteDotComSites/`
+    (api_meta.txt L130579). Unexcluded artifacts next to an ExperienceBundle
+    manifest are an ERROR; otherwise a WARN. A .forceignore rule silences it.
+    """
+    if forceignore_excludes_sitedotcom(root):
+        return []
+    found = [
+        d for d in root.rglob("*")
+        if d.is_dir() and d.name.lower() == "sitedotcomsites"
+    ] + [f for f in root.rglob("*.site") if f.is_file()]
+    level = "ERROR" if has_experience else "WARN"
+    return [
+        f"{level}: SiteDotCom artifact found: {m}. "
+        "Add '**/siteDotComSites/**' and '*.site' to .forceignore (or delete it) "
+        "so it is never deployed"
+        + (" with ExperienceBundle." if has_experience else ".")
+        for m in found
+    ]
 
 
 def check_forceignore_for_sitedotcom(root: Path) -> list[str]:
@@ -230,21 +247,16 @@ def check_forceignore_for_sitedotcom(root: Path) -> list[str]:
 
     if not forceignore.exists():
         issues.append(
-            f"{root}/.forceignore does not exist. "
-            "Create it and add '**/siteDotCom/**' and '*.site' to prevent "
+            f"WARN: {root}/.forceignore does not exist. "
+            "Create it and add '**/siteDotComSites/**' and '*.site' to prevent "
             "SiteDotCom blobs from being staged."
         )
         return issues
 
-    content = forceignore.read_text(encoding="utf-8", errors="replace")
-    has_sitedotcom_rule = bool(
-        re.search(r"sitedotcom|SiteDotCom|\.site\b", content, re.IGNORECASE)
-    )
-
-    if not has_sitedotcom_rule:
+    if not forceignore_excludes_sitedotcom(root):
         issues.append(
-            f"{forceignore}: does not contain a SiteDotCom exclusion rule. "
-            "Add '**/siteDotCom/**' and '*.site' to prevent accidental deployment."
+            f"WARN: {forceignore}: does not contain a SiteDotCom exclusion rule. "
+            "Add '**/siteDotComSites/**' and '*.site' to prevent accidental deployment."
         )
 
     return issues
@@ -260,30 +272,32 @@ def run_checks(manifest_dir: Path | None, package_xml_path: Path | None) -> list
     # Determine which package.xml files to inspect
     if package_xml_path is not None:
         if not package_xml_path.exists():
-            return [f"Package XML not found: {package_xml_path}"]
+            return [f"ERROR: Package XML not found: {package_xml_path}"]
         packages_to_check = [package_xml_path]
         root_dir = package_xml_path.parent
     elif manifest_dir is not None:
         root_dir = manifest_dir
         if not root_dir.exists():
-            return [f"Manifest directory not found: {root_dir}"]
+            return [f"ERROR: Manifest directory not found: {root_dir}"]
         packages_to_check = find_package_xmls(root_dir)
         if not packages_to_check:
             all_issues.append(
-                f"No package.xml files found under {root_dir}. "
+                f"WARN: No package.xml files found under {root_dir}. "
                 "Nothing to check — pass --package-xml for a specific file."
             )
     else:
-        return ["No --manifest-dir or --package-xml provided. Nothing to check."]
+        return ["ERROR: No --manifest-dir or --package-xml provided. Nothing to check."]
 
     # Check each package.xml for mixed-layer anti-patterns
+    has_experience = False
     for pkg_path in packages_to_check:
         types = parse_package_xml(pkg_path)
+        has_experience = has_experience or any(t in EXPERIENCE_TYPES for t in types)
         all_issues.extend(check_package_for_mixed_layers(pkg_path, types))
 
     # Scan project root for SiteDotCom artifacts and .forceignore rules
     if manifest_dir is not None:
-        all_issues.extend(check_for_sitedotcom_files(root_dir))
+        all_issues.extend(check_for_sitedotcom_files(root_dir, has_experience))
         all_issues.extend(check_forceignore_for_sitedotcom(root_dir))
 
     return all_issues
@@ -294,6 +308,10 @@ def main() -> int:
     manifest_dir = Path(args.manifest_dir) if args.manifest_dir else None
     package_xml_path = Path(args.package_xml) if args.package_xml else None
 
+    if manifest_dir is not None and not manifest_dir.exists():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
+
     issues = run_checks(manifest_dir, package_xml_path)
 
     if not issues:
@@ -301,9 +319,11 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
+        print(issue)
 
-    return 1
+    has_error = any(i.startswith("ERROR:") for i in issues)
+    has_warn = any(i.startswith("WARN:") for i in issues)
+    return 1 if has_error or (args.strict and has_warn) else 0
 
 
 if __name__ == "__main__":

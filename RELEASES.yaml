@@ -191,12 +191,15 @@ releases:
       bad-fixture tests
     size: S
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: siteDotCom -> siteDotComSites (api_meta L130579) in both checkers; bad fixture 0->1, missing dir 0->1 on experience
+      checker; 4 more fail-open paths closed (missing dir INFO, unparseable package.xml, namespace-less package.xml, duplicate
+      types)
   - id: R1-14
     title: 'Lift test v2: convention-free rubric, repeats, wrong-fact probes from corrected claims'
     size: M
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R1-15
     title: Define the S count in section 3.1 sizing (which retrieved skills count) + test on the five scenarios
     size: S
