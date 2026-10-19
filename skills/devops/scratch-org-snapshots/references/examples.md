@@ -14,11 +14,13 @@ integration.
 **Solution:** Consume the snapshot for the expensive parts and treat credentials as a
 post-create step that runs on every org.
 
+`config/ci-scratch-def.json` — the snapshot replaces `edition` and `features`; the guide says not to
+include `edition`, `features`, `hasSampleData`, `release`, or `sourceOrg` alongside it:
+
 ```json
-// config/ci-scratch-def.json — the snapshot replaces edition/features, it does not add to them
 {
   "orgName": "CI PR check",
-  "snapshot": "ci-base"
+  "snapshot": "cibase"
 }
 ```
 
@@ -50,7 +52,6 @@ jobs:
         run: |
           # Connected apps, external credentials and named credentials are NOT in a snapshot.
           sf project deploy start \
-            --metadata ExternalCredential,NamedCredential \
             --source-dir config/credentials \
             --target-org pr-check
 
@@ -86,7 +87,7 @@ Dev Hub whose snapshot allocation is small.
 allocation was exhausted within a day — both the active count and the daily creation count
 are per Dev Hub and depend on edition, and a Developer Edition Dev Hub gets 3 where an
 Enterprise Dev Hub gets 40. The second version tried to refresh in place by spinning an org
-up *from* `ci-base`, pushing changes, and snapshotting it back, which is not allowed: you
+up *from* `cibase`, pushing changes, and snapshotting it back, which is not allowed: you
 cannot snapshot a scratch org that was itself created from a snapshot.
 
 **Solution:** Rebuild the source org from the definition file each night, snapshot that, and
@@ -119,7 +120,7 @@ jobs:
       - name: Create the snapshot (name is capped at 15 characters)
         run: |
           sf org create snapshot \
-            --name ci-base-new \
+            --name cibasenew \
             --source-org snapshot-source \
             --target-dev-hub my-dev-hub \
             --description 'CI base: 3 managed packages + baseline metadata, rebuilt nightly'
@@ -129,20 +130,23 @@ jobs:
           set -euo pipefail
           for _ in $(seq 1 60); do
             STATUS=$(sf data query --target-org my-dev-hub --json \
-              --query "SELECT Status FROM ScratchOrgSnapshot WHERE SnapshotName='ci-base-new'" \
+              --query "SELECT Status FROM OrgSnapshot WHERE SnapshotName='cibasenew'" \
               | python3 -c "import json,sys; r=json.load(sys.stdin)['result']['records']; \
                             print(r[0]['Status'] if r else 'Missing')")
             echo "status: $STATUS"
             [ "$STATUS" = "Active" ] && exit 0
             [ "$STATUS" = "Error" ] && exit 1
+            sleep 30
           done
           echo "snapshot did not become Active in time"; exit 1
 
       - name: Promote the new snapshot and retire the old one
         run: |
-          # Only after Active: delete the previous snapshot, then rename or repoint consumers.
+          # Only after Active: repoint consumers, then delete the previous snapshot.
+          # There is no rename; consumers name the snapshot in config/ci-scratch-def.json,
+          # so alternate two names (cibase / cibasenew) and commit the switch.
           # Keeping the old one until this point means a failed rebuild is not an outage.
-          sf org delete snapshot --snapshot ci-base --target-dev-hub my-dev-hub --no-prompt || true
+          sf org delete snapshot --snapshot cibase --target-dev-hub my-dev-hub --no-prompt || true
 
       - name: Always release the source org
         if: always()
@@ -155,9 +159,9 @@ the definition file each time avoids the snapshot-of-a-snapshot restriction and,
 usefully, means the definition file stays exercised — a snapshot lineage that is never
 rebuilt from source hides the moment the definition stops working.
 
-**Why the status poll is not optional:** snapshot creation is asynchronous. The status moves
-to `InProgress` and only later to `Active`, and creating an org against a non-active snapshot
-fails. Create-then-consume in consecutive steps is an intermittent failure that reproduces
+**Why the status poll is not optional:** snapshot creation is asynchronous. The CLI first
+reports `InProgress` (the `OrgSnapshot.Status` picklist says `In Progress`), and the guide says
+you can use the snapshot only after the status changes to `Active`. Create-then-consume in consecutive steps is an intermittent failure that reproduces
 only when the source org is large enough for the timing to matter.
 
 **Why the reference data is minimal:** a snapshot includes data, which makes it tempting to
@@ -166,6 +170,6 @@ after 90 days and is in no diff, so "why did this test start failing" becomes un
 Keep genuinely static reference data in the snapshot and build test-specific records per test
 with a factory — see `templates/apex/tests/`.
 
-**On naming:** `ci-base` fits the 15-character maximum; a descriptive name like
-`nightly-base-with-packages` does not, and the rejection reads like a Dev Hub permissions
-problem to anyone who has not hit it before. Put the detail in `--description`.
+**On naming:** a snapshot name is at most 15 characters and alphanumeric only — no hyphens,
+underscores, or spaces. `cibase` passes; `nightly-base-with-packages` fails on both counts.
+Put the detail in `--description`.

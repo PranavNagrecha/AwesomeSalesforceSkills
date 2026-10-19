@@ -35,9 +35,16 @@ vanish at expiry, so a test that depends on them cannot be explained later.
 
 ## Official Sources Used
 
-- Scratch Org Snapshots — what a snapshot captures, the exclusions (connected apps, external credentials, named credentials), the per-edition allocations, and the 90-day expiry — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_intro.htm
-- Create a Scratch Org Snapshot — `sf org create snapshot`, the 15-character name limit, and the asynchronous `InProgress` → `Active` transition — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_create.htm
-- Create a Scratch Org Based on a Snapshot — the `snapshot` key in the definition file and the `--snapshot` flag — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_create_scratch_org.htm
-- Create a Snapshot for Use with Namespaced Scratch Orgs — the namespace restriction on the source org — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_namespace_limitations.htm
-- Salesforce CLI Snapshot Commands — the command surface including snapshot deletion — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_snapshots_cli_commands.htm
-- Build Your Own Scratch Org Definition File — the fallback path a snapshot pipeline must retain — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs_def_file.htm
+Corpus: `sfdx_dev.txt` is the Salesforce DX Developer Guide, Summer '26 (API 67.0), fetched from resources.docs.salesforce.com/262 and converted with `pdftotext -layout`. Line numbers are `grep -n` positions.
+
+- `sfdx_dev.txt` L9934–9950 — what a snapshot includes; static (delete and recreate to update); scratch-org-only in both directions; 200-MB data limit; not a replacement for source control or UAT sandboxes (SKILL.md Core Concepts).
+- `sfdx_dev.txt` L9959–9985 — same Dev Hub required; allocation equals the edition's active scratch org allocation (3 / 40 / 100); 90-day expiry; data retention; `ActiveOrgSnapshots` / `DailyOrgSnapshots` in `sf org list limits` (gotchas 2 and 6).
+- `sfdx_dev.txt` L9988–9994 — connected apps, external credentials, and named credentials aren't copied (gotcha 1).
+- `sfdx_dev.txt` L10094–10145 — source org can't be snapshot-created or namespaced; late changes not reflected; `sf org create snapshot` syntax; 15-character alphanumeric names; initial `InProgress` status (gotchas 3–5, checker).
+- `sfdx_dev.txt` L10150–10162 — namespaced scratch orgs from a snapshot via a `--no-namespace` source (Decision Guidance).
+- `sfdx_dev.txt` L10176–10202 and L10243–10251 — definition file with `snapshot` instead of `edition`; options not to include; larger `--wait`; `--snapshot` flag (SKILL.md JSON fence, checker).
+- `sfdx_dev.txt` L10255–10280 — scratch org release version follows the snapshot's when Dev Hub and snapshot differ during preview (gotcha 7).
+- `sfdx_dev.txt` L10340–10370 — `sf org get snapshot` status check, `Active` before use; `sf org list snapshot` (Recommended Workflow).
+- `sfdx_dev.txt` L10050–10072 — licenses and Org Snapshots object permissions for non-admin users (Recommended Workflow step 1).
+- Metadata API Developer Guide (`api_meta.txt`) L114215–114240 — `DevHubSettings.enableScratchOrgSnapshotPref` (API 61.0) and sample definition (SKILL.md XML fence).
+- Object Reference (`object_reference.txt`) L206582 and L206723–206735 — `OrgSnapshot` object and its `Status` values (`New`, `In Progress`, `Active`, `Error`, `Expired`) (examples.md poll query).

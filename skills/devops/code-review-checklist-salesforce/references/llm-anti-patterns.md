@@ -39,15 +39,16 @@ Require assertions, branch coverage on error paths, and bulk tests; cite code co
 
 **What the LLM generates:** Suggestions to synchronize Apex statics as if multi-threaded user code ran in parallel within one transaction.
 
-**Why it happens:** Cross-language pattern transfer; Apex transaction model is single-threaded per request.
+**Why it happens:** Cross-language pattern transfer. In Apex, `synchronized` is only a reserved keyword, and a static variable is static only within the scope of one Apex transaction — it is reset across transaction boundaries, so there is no cross-request shared memory to guard.
 
 **Correct pattern:**
 
 ```
-Explain per-transaction isolation; use statics only with clear reset semantics in tests, not locks.
+Explain per-transaction static scope; use statics only with clear reset semantics in tests.
+When two requests really can update the same record, lock it with SELECT ... FOR UPDATE.
 ```
 
-**Detection hint:** Keywords `synchronized`, “race condition” between two Apex requests in the same org.
+**Detection hint:** Keywords `synchronized`, “race condition” between two Apex requests in the same org, or a static used as a cross-user cache.
 
 ---
 
@@ -60,7 +61,9 @@ Explain per-transaction isolation; use statics only with clear reset semantics i
 **Correct pattern:**
 
 ```
-Create test Pricebook, entries, and products in `@testSetup`; reserve `seeAllData` for rare metadata-only cases with team approval.
+Create the Product2 and PricebookEntry rows in `@testSetup`, using Test.getStandardPricebookId()
+for the standard price book (it returns the ID even when the test cannot query org data);
+reserve `seeAllData` for rare cases with team approval.
 ```
 
 **Detection hint:** `@IsTest(SeeAllData=true)` added without a documented exception in the review notes.
@@ -80,3 +83,21 @@ Default to least privilege; scope elevated sharing to documented methods; pair w
 ```
 
 **Detection hint:** `without sharing` on UI-facing controllers or broad service facades with no threat-model comment.
+
+---
+
+## Anti-Pattern 6: "Triggers always run in system mode"
+
+**What the LLM generates:** "No need to check FLS here — Apex triggers run in system context, so the query sees every field and record."
+
+**Why it happens:** For most of Apex's history system mode was the default, and older training text says so flatly. The model does not read the trigger's `-meta.xml`.
+
+**Correct pattern:**
+
+```
+Read the trigger's apiVersion first. A trigger has no sharing keyword and runs without sharing,
+but at 67.0+ its unqualified SOQL/SOSL/DML run in user mode, re-applying the user's FLS and sharing.
+Require an explicit WITH USER_MODE / WITH SYSTEM_MODE on every trigger and handler query.
+```
+
+**Detection hint:** "system context" or "system mode" asserted about a trigger with no mention of its API version.

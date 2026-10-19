@@ -1,235 +1,163 @@
 #!/usr/bin/env python3
-"""Checker script for sandbox-refresh-and-templates skill.
+"""Checker for the sandbox-refresh-and-templates skill.
 
-Scans a Salesforce metadata directory for common issues related to sandbox
-refresh, SandboxPostCopy implementation, and hardcoded org IDs.
+Scans a project for sandbox definition files and SandboxPostCopy Apex.
 
-Uses stdlib only — no pip dependencies.
+Sandbox definition files (*sandbox-def.json, or any JSON with sandboxName):
+  ERROR  licenseType Partial without templateId (required for Partial sandboxes)
+  ERROR  templateId with licenseType Developer or Developer_Pro (not available)
+  ERROR  more than one of licenseType / sourceSandboxName / sourceId
+  ERROR  both apexClassId and apexClassName
+  ERROR  sandboxName missing, not alphanumeric, or longer than 10 characters
+  ERROR  licenseType not one of Developer, Developer_Pro, Partial, Full
+  WARN   no apexClassName / apexClassId (no post-copy automation)
+  WARN   features ['SandboxStorage'] on Partial or Full (Developer types only)
+SandboxPostCopy Apex (comments and strings ignored):
+  ERROR  a class implementing SandboxPostCopy with no runApexClass(...) method
+  ERROR  constructors declared but none is a no-arg constructor
+  WARN   System.abortJob in the class (scheduled jobs aren't copied on refresh)
+  WARN   no test calls Test.testSandboxPostCopyScript(... , true) for the class
+Any Apex (comments ignored, string literals scanned):
+  WARN   a literal org ID (00D...) in code
+
+Exit 1 on ERROR (or WARN with --strict) and when --manifest-dir is missing. Stdlib only.
 
 Usage:
-    python3 check_sandbox_refresh.py [--manifest-dir path/to/metadata]
-    python3 check_sandbox_refresh.py --manifest-dir force-app/main/default
+    python3 check_sandbox_refresh.py --manifest-dir .
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Patterns
-# ---------------------------------------------------------------------------
-
-# 15- or 18-character Salesforce ID that looks like an org/record ID.
-# Org IDs start with '00D'. We look for bare '00D' IDs in source files.
-ORG_ID_PATTERN = re.compile(r'\b00D[A-Za-z0-9]{12,15}\b')
-
-# SandboxPostCopy interface reference — should appear in at least one class
-SANDBOX_POST_COPY_INTERFACE = re.compile(
-    r'implements\s+(?:System\.)?SandboxPostCopy', re.IGNORECASE
-)
-
-# runApexClass method — required by the interface
-RUN_APEX_CLASS_METHOD = re.compile(
-    r'void\s+runApexClass\s*\(', re.IGNORECASE
-)
-
-# CronTrigger abort — should appear in any SandboxPostCopy implementation
-ABORT_JOB_CALL = re.compile(r'System\.abortJob\s*\(', re.IGNORECASE)
-
-# Hardcoded endpoint URL patterns that should not appear in SandboxPostCopy
-PRODUCTION_URL_PATTERN = re.compile(
-    r'https://[a-zA-Z0-9\-]+\.my\.salesforce\.com', re.IGNORECASE
-)
+ORG_ID_RE = re.compile(r"\b00D[A-Za-z0-9]{12}(?:[A-Za-z0-9]{3})?\b")
+IMPL_RE = re.compile(r"\bclass\s+(\w+)[^{]*\bimplements\b[^{]*\b(?:System\.)?SandboxPostCopy\b", re.I)
+RUN_RE = re.compile(r"\bvoid\s+runApexClass\s*\(", re.I)
+ABORT_RE = re.compile(r"\bSystem\.abortJob\s*\(", re.I)
+TEST_CALL_RE = re.compile(r"testSandboxPostCopyScript\s*\(\s*new\s+(\w+)\s*\(\s*\)(.*?)\)\s*;", re.I | re.S)
+LICENSES = {"Developer", "Developer_Pro", "Partial", "Full"}
 
 
-# ---------------------------------------------------------------------------
-# Checks
-# ---------------------------------------------------------------------------
+def strip_comments(src: str) -> str:
+    """Blank comments only, skipping over string literals so a '//' inside a URL survives."""
+    out, i, n = [], 0, len(src)
+    while i < n:
+        if src.startswith("//", i):
+            j = src.find("\n", i)
+            i = n if j < 0 else j
+        elif src.startswith("/*", i):
+            j = src.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            out.append(re.sub(r"[^\n]", " ", src[i:j]))
+            i = j
+        elif src[i] == "'":
+            m = re.compile(r"'(?:\\.|[^'\\])*'").match(src, i)
+            j = m.end() if m else n
+            out.append(src[i:j])
+            i = j
+        else:
+            out.append(src[i])
+            i += 1
+    return "".join(out)
 
-def find_apex_files(root: Path) -> list[Path]:
-    """Return all .cls files under root."""
-    return list(root.rglob('*.cls'))
+
+def strip_code(src: str) -> str:
+    return re.sub(r"'(?:\\.|[^'\\])*'", "''", strip_comments(src))
 
 
-def check_hardcoded_org_ids(apex_files: list[Path]) -> list[str]:
-    """Flag Apex files that contain hardcoded org IDs (00Dxxxxxxxxx)."""
-    issues: list[str] = []
-    for path in apex_files:
+def check_definition(path: Path, data: dict, out: list[tuple[str, str]]) -> None:
+    lic = data.get("licenseType")
+    sources = [k for k in ("licenseType", "sourceSandboxName", "sourceId") if data.get(k)]
+    if len(sources) > 1:
+        out.append(("ERROR", f"{path}: specify only one of licenseType / sourceSandboxName / sourceId (found {sources})"))
+    if lic is not None and lic not in LICENSES:
+        out.append(("ERROR", f"{path}: licenseType '{lic}' is not one of {sorted(LICENSES)}"))
+    if lic == "Partial" and not data.get("templateId"):
+        out.append(("ERROR", f"{path}: Partial sandbox without templateId (required for Partial sandboxes)"))
+    if lic in ("Developer", "Developer_Pro") and data.get("templateId"):
+        out.append(("ERROR", f"{path}: templateId isn't available for {lic} sandboxes"))
+    if data.get("apexClassId") and data.get("apexClassName"):
+        out.append(("ERROR", f"{path}: specify apexClassId or apexClassName, not both"))
+    name = data.get("sandboxName")
+    if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9]{1,10}", name):
+        out.append(("ERROR", f"{path}: sandboxName '{name}' must be alphanumeric and 10 characters or fewer"))
+    if not data.get("apexClassName") and not data.get("apexClassId"):
+        out.append(("WARN", f"{path}: no apexClassName/apexClassId; post-refresh setup is entirely manual"))
+    if "SandboxStorage" in str(data.get("features", "")) and lic in ("Partial", "Full"):
+        out.append(("WARN", f"{path}: features SandboxStorage can't be used with Partial or Full sandboxes"))
+
+
+def check_apex(root: Path, out: list[tuple[str, str]]) -> int:
+    files = sorted(root.rglob("*.cls"))
+    raws = {p: p.read_text(encoding="utf-8", errors="ignore") for p in files}
+    codes = {p: strip_code(t) for p, t in raws.items()}
+    tested: dict[str, bool] = {}
+    for code in codes.values():
+        for m in TEST_CALL_RE.finditer(code):
+            as_auto = re.search(r",\s*true\s*$", m.group(2).strip()) is not None
+            tested[m.group(1).lower()] = tested.get(m.group(1).lower(), False) or as_auto
+    for path, code in codes.items():
+        # org IDs are written as string literals, so search with strings kept (comments still ignored)
+        with_strings = strip_comments(raws[path])
+        m = ORG_ID_RE.search(with_strings)
+        if m:
+            out.append(("WARN", f"{path}:{with_strings.count(chr(10), 0, m.start()) + 1}: literal org ID; read it at runtime with UserInfo.getOrganizationId()"))
+        impl = IMPL_RE.search(code)
+        if not impl:
+            continue
+        cls = impl.group(1)
+        if not RUN_RE.search(code):
+            out.append(("ERROR", f"{path}: {cls} implements SandboxPostCopy but has no runApexClass(SandboxContext) method"))
+        ctors = re.findall(rf"\b{re.escape(cls)}\s*\(([^)]*)\)\s*\{{", code)
+        if ctors and not any(not c.strip() for c in ctors):
+            out.append(("ERROR", f"{path}: {cls} declares constructors but no no-arg constructor; the copy process uses the no-arg one"))
+        if ABORT_RE.search(code):
+            out.append(("WARN", f"{path}: {cls} calls System.abortJob; scheduled jobs aren't copied on refresh, reschedule what you need instead"))
+        if not tested.get(cls.lower()):
+            out.append(("WARN", f"{path}: no test calls Test.testSandboxPostCopyScript(new {cls}(), ..., true)"))
+    return len(files)
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Check sandbox definition files and SandboxPostCopy Apex.")
+    parser.add_argument("--manifest-dir", required=True, type=Path, help="Project directory to scan.")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on WARN as well as ERROR.")
+    args = parser.parse_args(argv)
+
+    root = args.manifest_dir
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+
+    out: list[tuple[str, str]] = []
+    defs = 0
+    for path in sorted(root.rglob("*.json")):
+        if "node_modules" in path.parts:
+            continue
         try:
-            text = path.read_text(encoding='utf-8', errors='replace')
-        except OSError:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            if path.name.endswith("sandbox-def.json"):
+                out.append(("ERROR", f"{path}: not valid JSON"))
             continue
-        matches = ORG_ID_PATTERN.findall(text)
-        if matches:
-            issues.append(
-                f"Hardcoded org ID(s) {matches} found in {path}. "
-                "Org IDs change on every sandbox refresh — store the ID in a "
-                "custom setting updated by SandboxPostCopy."
-            )
-    return issues
-
-
-def check_sandboxpostcopy_exists(apex_files: list[Path]) -> list[str]:
-    """Verify at least one class implements SandboxPostCopy."""
-    issues: list[str] = []
-    implementing_files: list[Path] = []
-
-    for path in apex_files:
-        try:
-            text = path.read_text(encoding='utf-8', errors='replace')
-        except OSError:
-            continue
-        if SANDBOX_POST_COPY_INTERFACE.search(text):
-            implementing_files.append(path)
-
-    if not implementing_files:
-        issues.append(
-            "No Apex class implementing SandboxPostCopy found in the manifest. "
-            "Without a SandboxPostCopy class, all post-refresh configuration "
-            "(org settings, scheduled job cleanup, data scrubbing) is manual."
-        )
-    return issues
-
-
-def check_sandboxpostcopy_aborts_jobs(apex_files: list[Path]) -> list[str]:
-    """Verify SandboxPostCopy implementations call System.abortJob."""
-    issues: list[str] = []
-    for path in apex_files:
-        try:
-            text = path.read_text(encoding='utf-8', errors='replace')
-        except OSError:
-            continue
-        if not SANDBOX_POST_COPY_INTERFACE.search(text):
-            continue
-        if not ABORT_JOB_CALL.search(text):
-            issues.append(
-                f"{path}: SandboxPostCopy class does not call System.abortJob(). "
-                "Scheduled jobs are copied from production in WAITING state and "
-                "will fire in the sandbox unless explicitly aborted."
-            )
-    return issues
-
-
-def check_sandboxpostcopy_has_run_method(apex_files: list[Path]) -> list[str]:
-    """Verify SandboxPostCopy class includes runApexClass method."""
-    issues: list[str] = []
-    for path in apex_files:
-        try:
-            text = path.read_text(encoding='utf-8', errors='replace')
-        except OSError:
-            continue
-        if not SANDBOX_POST_COPY_INTERFACE.search(text):
-            continue
-        if not RUN_APEX_CLASS_METHOD.search(text):
-            issues.append(
-                f"{path}: Class declares implements SandboxPostCopy but "
-                "runApexClass(SandboxContext) method not found. "
-                "The interface requires this method signature."
-            )
-    return issues
-
-
-def check_hardcoded_production_urls(apex_files: list[Path]) -> list[str]:
-    """Flag SandboxPostCopy classes that hardcode production .my.salesforce.com URLs."""
-    issues: list[str] = []
-    for path in apex_files:
-        try:
-            text = path.read_text(encoding='utf-8', errors='replace')
-        except OSError:
-            continue
-        if not SANDBOX_POST_COPY_INTERFACE.search(text):
-            continue
-        url_matches = PRODUCTION_URL_PATTERN.findall(text)
-        if url_matches:
-            issues.append(
-                f"{path}: SandboxPostCopy class contains hardcoded Salesforce URL(s) "
-                f"{url_matches}. Endpoint URLs change between production and sandbox — "
-                "use a custom setting or SandboxContext.sandboxName() to resolve the URL."
-            )
-    return issues
-
-
-def check_sandbox_template_metadata(root: Path) -> list[str]:
-    """Look for any sandbox definition XML that references a template."""
-    issues: list[str] = []
-    sandbox_files = list(root.rglob('*.sandbox'))
-    if not sandbox_files:
-        # Not necessarily a problem — sandbox definitions may not be in the repo
-        return issues
-
-    for path in sandbox_files:
-        try:
-            text = path.read_text(encoding='utf-8', errors='replace')
-        except OSError:
-            continue
-        if '<sandboxType>PARTIAL</sandboxType>' in text or \
-                '<type>PARTIAL</type>' in text.lower():
-            if '<templateId>' not in text and '<sandboxOptionsId>' not in text:
-                issues.append(
-                    f"{path}: Partial Copy sandbox definition found without a "
-                    "template reference. Without a template, records are copied "
-                    "randomly and test data is non-deterministic across refreshes."
-                )
-    return issues
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-def run_all_checks(manifest_dir: Path) -> list[str]:
-    """Run all checks and return a list of issue strings."""
-    issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    apex_files = find_apex_files(manifest_dir)
-
-    issues.extend(check_hardcoded_org_ids(apex_files))
-    issues.extend(check_sandboxpostcopy_exists(apex_files))
-    issues.extend(check_sandboxpostcopy_has_run_method(apex_files))
-    issues.extend(check_sandboxpostcopy_aborts_jobs(apex_files))
-    issues.extend(check_hardcoded_production_urls(apex_files))
-    issues.extend(check_sandbox_template_metadata(manifest_dir))
-
-    return issues
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Check Salesforce metadata for common sandbox-refresh issues: "
-            "hardcoded org IDs, missing SandboxPostCopy class, unaborted scheduled "
-            "jobs, and Partial Copy sandboxes without templates."
-        )
-    )
-    parser.add_argument(
-        '--manifest-dir',
-        default='.',
-        help='Root directory of the Salesforce metadata (default: current directory).',
-    )
-    return parser.parse_args()
-
-
-def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = run_all_checks(manifest_dir)
-
-    if not issues:
-        print('No sandbox refresh issues found.')
+        if isinstance(data, dict) and ("sandboxName" in data or path.name.endswith("sandbox-def.json")):
+            defs += 1
+            check_definition(path, data, out)
+    apex = check_apex(root, out)
+    if not defs and not apex:
+        print(f"WARN: no sandbox definition files or Apex classes under {root}; nothing to check")
         return 0
+    for level, msg in out:
+        print(f"{level}: {msg}")
+    errors = sum(1 for lvl, _ in out if lvl == "ERROR")
+    warns = len(out) - errors
+    print(f"Checked {defs} definition file(s) and {apex} Apex file(s): {errors} error(s), {warns} warning(s).")
+    return 1 if errors or (args.strict and warns) else 0
 
-    for issue in issues:
-        print(f'ISSUE: {issue}')
 
-    return 1
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

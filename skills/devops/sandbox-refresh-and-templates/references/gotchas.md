@@ -4,60 +4,70 @@ Non-obvious Salesforce platform behaviors that cause real problems during or aft
 
 ---
 
-## Gotcha 1: Org ID Changes on Every Refresh
+## Gotcha 1: Org IDs and URLs Copied from Production Are Wrong in the Sandbox
 
-**What happens:** Each sandbox refresh assigns the sandbox a new organization ID. Any code, custom setting value, custom metadata record, Remote Site Setting, or external system configuration that stores the org ID as a literal string is immediately stale after the refresh completes.
+**What happens:** A custom setting, custom metadata record, or Apex constant holds production's org ID or My Domain URL. After refresh the sandbox carries those values, so environment checks and callbacks point at production.
 
-**When it occurs:** Every refresh of every sandbox type. It is not specific to Full or Partial Copy — Developer sandboxes also receive a new org ID after refresh.
+**When it occurs:** Any code or configuration that stores the org ID or an org URL as a literal. The sandbox is a separate org; the `SandboxContext` passed to the post-copy class carries the sandbox's own org ID.
 
-**How to avoid:** Never hardcode the org ID. Instead, use a SandboxPostCopy class to read `context.organizationId()` and write the new value into a custom setting or custom metadata record on every refresh. All consumer code reads the org ID from that record. External systems that need the org ID for webhook validation must be updated as part of the post-refresh runbook.
-
----
-
-## Gotcha 2: Scheduled Jobs Are Copied in Active State
-
-**What happens:** All CronTrigger records from production are copied into the sandbox with their `State` preserved as `WAITING` or `ACQUIRED`. They begin executing on schedule in the sandbox immediately after refresh. If those jobs make callouts to production APIs, send emails, or insert records into shared external systems, they will do so from the sandbox.
-
-**When it occurs:** Any time a Full or Partial Copy sandbox (which receives production data including CronTrigger records) is refreshed. Developer and Developer Pro sandboxes are metadata-only and do not copy CronTrigger records.
-
-**How to avoid:** Abort all CronTrigger records in the SandboxPostCopy class using `System.abortJob(ct.Id)` in a loop. Do this as the first action in `runApexClass` before any other DML, to ensure no jobs fire during the post-copy window. For jobs that must run in the sandbox, reschedule them with sandbox-safe parameters after aborting the production copies.
+**How to avoid:** Read the org ID at runtime with `UserInfo.getOrganizationId()`; set environment-specific values in the post-copy class from `context.organizationId()` and `context.sandboxName()`. The checker flags literal `00D` IDs in Apex.
 
 ---
 
-## Gotcha 3: Named Credentials Lose Their Secrets After Refresh
+## Gotcha 2: Scheduled Jobs Are Not Copied
 
-**What happens:** Named Credentials are copied to the sandbox, but their secrets (passwords, OAuth access tokens, OAuth refresh tokens) are blanked. Any callout that uses a Named Credential will receive a 401 or connection error in the sandbox until the credential is reconfigured. The Named Credential record itself is present and appears configured, which makes this easy to miss.
+**What happens:** Nightly batch jobs that ran in production simply never run in the refreshed sandbox, and test cycles that depend on them stall.
 
-**When it occurs:** Every refresh, for all sandbox types. Named Credential metadata is copied; secrets are not.
+**When it occurs:** The Apex Developer Guide states that when you refresh a sandbox, scheduled jobs from the source org aren't copied and you must reschedule the jobs you need. A post-copy class that loops over `CronTrigger` calling `System.abortJob` is aborting nothing that came from production.
 
-**How to avoid:** Document every Named Credential that requires post-refresh secret entry in the manual runbook. There is no Apex API to set Named Credential secrets programmatically, so this step is always manual. Consider using a sandbox-specific Named Credential that points at a sandbox endpoint with a stable credential, and swap which Named Credential is used at the custom setting level via SandboxPostCopy.
-
----
-
-## Gotcha 4: SandboxPostCopy Runs as Automated Process User, Not a System Admin
-
-**What happens:** The `runApexClass` method executes in the context of the Automated Process user, which has limited object and field access. DML against objects where this user lacks permission will throw a `System.NoAccessException` or `DmlException`. The exception is recorded in sandbox status details, and the sandbox itself is still usable — but the post-copy script has silently failed.
-
-**When it occurs:** Any time the SandboxPostCopy class attempts DML on an object the Automated Process user cannot access — common with custom objects, permission-gated standard objects, or objects controlled by package namespaces.
-
-**How to avoid:** Before deploying a SandboxPostCopy class, identify every object and field it writes to. Assign the Automated Process user a permission set that grants the required access. Alternatively, delegate heavy DML work to a Queueable or @future method that runs as a different user, or use `Database.insert(records, false)` to allow partial success and log failures rather than failing the entire script.
+**How to avoid:** Keep a list of the jobs each sandbox needs and schedule them with `System.schedule` in the post-copy class or in the runbook. The checker warns on `System.abortJob` inside a `SandboxPostCopy` class.
 
 ---
 
-## Gotcha 5: Partial Copy Template Record Counts Are Caps, Not Guarantees
+## Gotcha 3: Integrations Still Point at Production Systems
 
-**What happens:** A sandbox template specifies 500 Accounts. After refresh, the sandbox contains 700 Accounts. This is because Salesforce follows parent-lookup relationships to preserve referential integrity — when a Contact or Opportunity's parent Account was not in the initial sample, Salesforce pulls in the parent. The template cap is a ceiling on the primary random sample, not on the final record count after relationship traversal.
+**What happens:** Configuration copied from production (custom settings, custom metadata, Named Credential endpoints) sends sandbox traffic to production endpoints, or sandbox callouts fail on credentials that belong to production.
 
-**When it occurs:** Any Partial Copy sandbox where the sampled child records reference parent records not in the initial sample. Complex data models with deep lookup chains amplify the effect.
+**When it occurs:** On any refresh of a sandbox whose integrations are configured by data or metadata copied from production.
 
-**How to avoid:** Treat template caps as approximations. Design sandbox templates to over-specify caps on parent objects so the relationship traversal does not add unexpected volume. Do not write tests that assert exact record counts in a Partial Copy sandbox — the count is non-deterministic across refreshes.
+**How to avoid:** Change endpoints in the post-copy class and use sandbox-specific Named Credentials and External Credentials. `ConnectApi.NamedCredentials.createCredential` (API 56.0) creates credentials from Apex, but the post-copy user may not have access to every feature, so keep a runbook line to verify each credential after refresh.
 
 ---
 
-## Gotcha 6: Refresh Interval Countdown Starts at Completion, Not Initiation
+## Gotcha 4: The Post-Copy User Can't Do Everything
 
-**What happens:** A Full sandbox refresh is initiated on Day 0 and completes on Day 2 due to data volume. The team assumes they can refresh again on Day 29 from initiation. The actual next-available refresh date is Day 31 (Day 2 + 29 days from completion).
+**What happens:** The post-copy class throws on DML against an object the Automated Process user can't access, and the remaining setup never happens.
 
-**When it occurs:** For Full (29-day) and Partial Copy (5-day) sandboxes where the refresh itself takes significant time. Less impactful for Developer sandboxes (1-day interval, minutes to complete).
+**When it occurs:** `runApexClass` runs at the end of the copy as a special Automated Process user that isn't visible in the org and doesn't have access to all objects and features.
 
-**How to avoid:** When planning refresh windows on a release calendar, calculate the next-available date from the expected completion date, not the initiation date. For Full sandboxes, add buffer for refresh duration when the release schedule is tight.
+**How to avoid:** Keep the class to operations that user can perform, test with `Test.testSandboxPostCopyScript(script, orgId, sandboxId, sandboxName, true)` so the test runs with the same permissions, and keep the documented fallback: if the script fails, run it after activation as a user with the right permissions.
+
+---
+
+## Gotcha 5: Templates Depend on the Sandbox Type
+
+**What happens:** A CLI create or refresh fails, or a Full sandbox copies far more than the team wanted, because the template rule was misremembered.
+
+**When it occurs:** In a sandbox definition file, `templateId` is required for Partial sandboxes, optional for Full sandboxes, and not available for Developer and Developer Pro sandboxes. A template selects which objects to copy.
+
+**How to avoid:** Put `templateId` in every Partial definition file, consider one for Full sandboxes when not every object is needed, and never add one for Developer types. The checker enforces all three.
+
+---
+
+## Gotcha 6: Production Personal Data Arrives Unmasked
+
+**What happens:** Developers and testers see real customer emails and phone numbers, and sandbox automation emails real people.
+
+**When it occurs:** Partial Copy and Full sandboxes receive production data along with metadata.
+
+**How to avoid:** Mask personal fields in the post-copy class (a Queueable for volume) before access is granted, or use a dedicated masking product; review which objects the template brings in.
+
+---
+
+## Gotcha 7: Refresh Options Are Set per Refresh
+
+**What happens:** A refresh runs without the post-copy class or with the wrong template, because the person refreshing from Setup forgot a field.
+
+**When it occurs:** The Apex class and template are chosen when the sandbox is created or refreshed. From the CLI, `sf org refresh sandbox --definition-file` takes a definition file with the options you want to change, such as `licenseType`, `templateId`, or `copyArchivedActivities`, but can't change the sandbox name; changing the name means delete and recreate.
+
+**How to avoid:** Keep one definition file per sandbox in source control and refresh from it, so the template and post-copy class are never retyped.

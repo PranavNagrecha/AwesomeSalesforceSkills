@@ -28,6 +28,8 @@ Copy the review checklist from SKILL.md and tick items as you complete them.
 - [ ] Triggers and synchronous services tolerate 200 records without redundant queries or per-row DML.
 - [ ] Sharing model is explicit and justified; user-facing queries enforce FLS/CRUD (`WITH USER_MODE`, or `stripInaccessible` on results as appropriate).
 - [ ] No `WITH SECURITY_ENFORCED` in new or rewritten code — removed at API 67.0; on a 67.0+ class it does not compile.
+- [ ] Any `apiVersion` bump across 67.0 is called out and re-tested as the production persona.
+- [ ] Checker run attached: `check_code_review_checklist_salesforce.py --manifest-dir <dir>` exits 0.
 - [ ] Dynamic SOQL/SOSL uses binding or escaping; no string concatenation of raw end-user input into queries.
 - [ ] Tests assert outcomes (not only coverage); include bulk and negative cases where behavior branches; avoid `SeeAllData=true` unless documented and unavoidable.
 - [ ] Async entry points (`execute`, `start`, schedulable `execute`) respect queueable/batch limits and do not chain blindly into unbounded recursion.

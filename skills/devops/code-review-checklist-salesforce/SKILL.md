@@ -2,7 +2,7 @@
 name: code-review-checklist-salesforce
 description: "Structured Salesforce code review for Apex, triggers, async, and tests before merge or deployment — governor limits, bulk-safe triggers, CRUD/FLS and sharing posture, meaningful tests, and naming consistency. NOT for AppExchange security-review-only deep dives — use security/secure-coding-review-checklist."
 category: devops
-salesforce-version: "Spring '25+"
+salesforce-version: "Summer '26+"
 well-architected-pillars:
   - Security
   - Performance
@@ -12,6 +12,9 @@ triggers:
   - "peer review Apex trigger before production deployment"
   - "Salesforce code review checklist for governor limits and bulkification"
   - "verify our Apex handles two hundred records without SOQL in loops"
+  - "review this pull request of Apex classes before we merge it"
+  - "check whether bumping a class to API 67.0 changes its sharing behaviour"
+  - "flag WITH SECURITY_ENFORCED and missing sharing keywords in a code review"
 tags:
   - code-review-checklist-salesforce
   - code-review
@@ -30,9 +33,9 @@ outputs:
   - "Section-by-section review notes tied to this checklist"
   - "List of blocking vs advisory findings for the PR or release record"
 dependencies: []
-version: 1.0.1
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # Code Review Checklist Salesforce
@@ -51,31 +54,58 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which `apiVersion` does each changed `.cls-meta.xml` / `.trigger-meta.xml` carry, and did the diff change it? | At 67.0 the default access mode becomes user mode and undeclared classes run `with sharing`; a version bump alone changes behaviour (gotcha 4). | The reviewer knows which default applies per file and treats a version bump as a behaviour change, not a no-op. |
+| What is the largest batch each entry point receives (UI save, Data Loader, Bulk API, integration)? | Triggers receive chunks of up to 200 records; code proven on five rows fails at 200 (gotcha 6). | A concrete row count for the bulk test the reviewer will demand. |
+| Is partial success (`allOrNone=false`) a product requirement for this DML? | Partial success returns per-row results the caller must inspect, or failures vanish (gotcha 1). | Either all-or-nothing DML, or a named owner for the failed-row handling. |
+| Which profile or permission set runs this code in production? | Tests run as an admin hide FLS and sharing failures (gotcha 2). | The persona to use in `System.runAs`, and the field list that must be readable. |
+| Does any class need to see records the running user cannot? | `without sharing` / `WITH SYSTEM_MODE` must be justified per method, and on 67.0 a trigger body query is user mode unless it says otherwise (gotcha 5). | A documented elevation scope the reviewer can check against the threat model. |
+| Will this change enqueue jobs from loops, `finish`, or other queueables? | Chained-queueable depth defaults to five in Developer and Trial Edition orgs and `System.enqueueJob` is capped at 50 per synchronous transaction (gotcha 3). | A bounded fan-out design and an expected job count per upstream event. |
+| Are scheduled or batch jobs running against classes this PR changes? | By default an Apex class with active jobs cannot be redeployed (gotcha 7). | A deploy-window plan: pause the jobs, or confirm the Deployment Settings option that allows deploys with jobs. |
+
+A proper review adds an explicit, version-aware access-mode decision and a bulk test sized to the real entry point, where "just reading the diff" approves code that passes on five admin-owned rows and fails on the first full batch.
+
+---
+
 ## Core Concepts
 
 ### Governor limits and bulk safety
 
-Salesforce enforces per-transaction limits on SOQL, DML, heap, CPU, and callouts. Code that issues queries or DML inside a loop over trigger records scales linearly with batch size and fails at 200. The review goal is constant work per transaction: collect ids, query once, map results, update collections. Async jobs get their own limit scope; still avoid unbounded queries inside loops because heap and CPU compound.
+Salesforce enforces per-transaction limits on SOQL, DML, heap, CPU, and callouts (100 SOQL queries synchronous / 200 asynchronous; 150 DML statements). Code that issues queries or DML inside a loop over trigger records scales linearly with batch size and fails at 200. The review goal is constant work per transaction: collect ids, query once, map results, update collections. Async jobs get their own, larger limit scope; still avoid unbounded queries inside loops because heap and CPU compound.
 
 ### CRUD, FLS, and sharing
 
-Reading or writing data without respecting the running user’s permissions is both a security defect and a deployment risk. Prefer `WITH USER_MODE` on inline SOQL, and `Security.stripInaccessible(AccessType, records).getRecords()` when returning dynamic query rows to callers — user mode throws and fails the whole DML, while `stripInaccessible` drops the inaccessible fields and continues, so the choice is about whether silent partial success is acceptable.
+Reading or writing data without respecting the running user’s permissions is both a security defect and a deployment risk. Prefer `WITH USER_MODE` on inline SOQL, and `Security.stripInaccessible(AccessType, records).getRecords()` when returning dynamic query rows to callers — user mode raises a `QueryException` (inspect it with `getInaccessibleFields()`) and fails the operation, while `stripInaccessible` drops the inaccessible fields and continues, so the choice is about whether silent partial success is acceptable.
 
-`WITH SECURITY_ENFORCED` is **not** an option a reviewer accepts. Per the Apex versioned-behavior-changes page, *"With API version 67.0 and later, you cannot use the WITH SECURITY_ENFORCED clause in SOQL SELECT queries in Apex code."* On a 67.0+ class its presence is a compile failure, not a style note; at 57.0–66.0 it is tech debt with a named migration to `WITH USER_MODE`. Treating it as evidence of a secure query is a defect in the review, at every version.
+`WITH SECURITY_ENFORCED` is **not** an option a reviewer accepts. The Apex Developer Guide's versioned behaviour changes state that in API version 67.0 and later you can't use the `WITH SECURITY_ENFORCED` clause in SOQL SELECT queries in Apex code. On a 67.0+ class its presence is a compile failure, not a style note; on older classes it is tech debt with a named migration to `WITH USER_MODE`.
 
-The controlling fact is the `apiVersion` in the class's own `.cls-meta.xml`, not the org's release — a Summer '26 org runs a class pinned to 58.0 with the older behaviour. The canonical per-version table is [Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version); cite it rather than restating it here.
+### Version-gated defaults
+
+The controlling fact is the `apiVersion` in the class's own `.cls-meta.xml`, not the org's release — a Summer '26 org runs a class pinned to 58.0 with the older behaviour. Two defaults flip at 67.0: database operations run in user mode unless system mode is set explicitly, and classes with no sharing declaration run `with sharing`. At 66.0 and earlier, system mode is the default and an undeclared class takes its sharing from the inheritance chain or caller. The canonical per-version table is [Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version); cite it rather than restating it here.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AccountService.cls-meta.xml: this number, not the org release, decides the access-mode default -->
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <status>Active</status>
+</ApexClass>
+```
 
 ### Tests as contract, not decoration
 
-Org-wide coverage gates exist, but reviewers should insist on assertions that prove behavior, `@testSetup` for shared data, and negative paths (expected exceptions, bulk scenarios). Tests that only instantiate classes to raise line coverage hide regressions until production.
+The 75% coverage gate is a floor; the Apex Developer Guide itself says not to focus on the percentage. Reviewers insist on assertions that prove behaviour, `@testSetup` for shared data, and negative paths (expected exceptions, bulk scenarios). Tests that only instantiate classes to raise line coverage hide regressions until production.
 
 ### Naming and structure
 
-Consistent class and method names reduce onboarding cost and align with the Apex Developer Guide naming guidance. Triggers should follow the Apex Developer Guide naming conventions (e.g., `ObjectNameTrigger`, handler class `ObjectNameTriggerHandler`).
+The Apex Developer Guide recommends Java naming standards: classes start with a capital letter, methods with a lowercase verb, and variables have meaningful names. Suffixes such as `AccountTrigger` / `AccountTriggerHandler` / `AccountService_Test` are a team convention layered on top, not platform guidance — the review enforces whichever convention the team wrote down.
 
 ### Architectural compliance
 
-The Apex Developer Guide trigger best-practices guidance calls for a single trigger per object and zero business logic in the trigger body. Logic in the body is untestable in isolation and creates merge conflicts when multiple developers change the same trigger file. A compliant pattern routes every entry point through a handler class that owns the logic and can be instantiated independently in tests. Reviewers flag any logic-bearing trigger body (branching, SOQL, DML, service calls) as a blocking architectural issue.
+When more than one trigger is defined on an object for the same event, the platform does not guarantee their execution order. That is the platform fact behind the common practice of one trigger per object with the logic in a handler class: the handler can be tested in isolation, ordering is explicit in code, and two developers stop colliding on the same trigger file. Reviewers flag any logic-bearing trigger body (branching, SOQL, DML, service calls) as a blocking architectural issue under this team practice.
 
 ---
 
@@ -93,7 +123,7 @@ The Apex Developer Guide trigger best-practices guidance calls for a single trig
 
 **When to use:** Inline SOQL in services called from Lightning or Experience Cloud where the running user’s FLS must apply.
 
-**How it works:** Append `WITH USER_MODE` to the SOQL; invalid field access throws instead of leaking data.
+**How it works:** Append `WITH USER_MODE` to the SOQL; invalid field access throws instead of leaking data. On a 67.0+ class user mode is already the default, but writing it out keeps the intent visible when the code is copied into an older-version class.
 
 **Why not the alternative:** Manual describe checks drift when fields are added; dynamic SOQL without stripping is easy to get wrong.
 
@@ -108,18 +138,19 @@ The Apex Developer Guide trigger best-practices guidance calls for a single trig
 | DML on mixed SObject lists | `Database.insert(records, false)` only when partial success is a product requirement | All-or-nothing default is usually safer for data integrity |
 | Test needs shared expensive data | `@testSetup` once per class | Cuts CPU and avoids order-dependent tests |
 | Method only used in system batch | Document `without sharing` rationale in class header | Reviewers flag implicit sharing without comment |
+| Diff bumps `apiVersion` from 66.0 or lower to 67.0 or higher | Treat as a behaviour change: re-run permission-sensitive tests as the production persona | User-mode and `with sharing` defaults apply from 67.0 |
 
 ---
 
 ## Recommended Workflow
 
-1. Map entry points and data flows from the diff; note trigger context variables used (`Trigger.newMap`, etc.) and the transaction context (synchronous trigger, async job, REST controller).
-2. Walk the governor and bulk section: SOQL/DML/callouts per loop, collection sizes, queries against large objects; all synchronous trigger paths must tolerate 200 records without per-row queries or DML.
-3. Verify CRUD/FLS and sharing: explicit `with sharing` / `without sharing` / `inherited sharing` on every class; SOQL access mode (`WITH USER_MODE`, or `Security.stripInaccessible` on returned rows) for user-facing reads. Flag any `WITH SECURITY_ENFORCED` — removed at API 67.0 — rather than accepting it as enforcement.
-4. Read test classes: assert messages, bulk test methods (200 rows), negative/error paths, `System.runAs` for permission-sensitive code; target 90%+ meaningful line coverage, not 75% minimum.
-5. Scan naming against Apex Developer Guide conventions (`ObjectNameTrigger`, handler suffix, test class suffix `_Test` or `Test`); flag dead code and `System.debug` statements left on production paths.
-6. Verify architectural compliance: one trigger per object, no business logic in the trigger body (no SOQL, DML, branching, or service calls inline); logic must live in a dedicated handler class.
-7. Record blocking vs advisory items in the PR or release template and link to official limit or testing docs when teaching the author.
+1. Map entry points and data flows from the diff; record each changed file's `apiVersion` from its `-meta.xml` and note the transaction context (synchronous trigger, async job, REST controller).
+2. Run `python3 skills/devops/code-review-checklist-salesforce/scripts/check_code_review_checklist_salesforce.py --manifest-dir force-app` over the changed package directory; treat its ERRORs (`WITH SECURITY_ENFORCED` on a 67.0+ class) as blocking and its WARNs as review prompts.
+3. Walk the governor and bulk section by hand: SOQL/DML/callouts per loop, collection sizes, queries against large objects; every synchronous trigger path must tolerate 200 records without per-row queries or DML.
+4. Verify CRUD/FLS and sharing: explicit `with sharing` / `without sharing` / `inherited sharing` on every class with database operations; `WITH USER_MODE` or `Security.stripInaccessible` for user-facing reads; a written reason for every `WITH SYSTEM_MODE` and `without sharing`.
+5. Read the test classes: assertions with messages, a 200-row bulk method, negative paths, `System.runAs` as the production persona; no `SeeAllData=true` where `Test.getStandardPricebookId()` or created test data would do.
+6. Check structure and naming against the team convention (one trigger per object, logic in a handler); confirm no scheduled or batch job blocks the deploy of a changed class.
+7. Record blocking vs advisory items in `templates/code-review-checklist-salesforce-template.md` and attach it to the PR or release record.
 
 ---
 
@@ -131,21 +162,22 @@ Run through these before marking work in this area complete:
 - [ ] Triggers and synchronous services tolerate 200 records without redundant queries or per-row DML.
 - [ ] Sharing model is explicit and justified; user-facing queries enforce FLS/CRUD (`WITH USER_MODE`, or `stripInaccessible` on results as appropriate).
 - [ ] No `WITH SECURITY_ENFORCED` in new or rewritten code — removed at API 67.0; on a 67.0+ class it does not compile.
+- [ ] Any `apiVersion` bump across 67.0 is called out and re-tested as the production persona.
 - [ ] Dynamic SOQL/SOSL uses binding or escaping; no string concatenation of raw end-user input into queries.
 - [ ] Tests assert outcomes (not only coverage); include bulk and negative cases where behavior branches; avoid `SeeAllData=true` unless documented and unavoidable.
 - [ ] Async entry points (`execute`, `start`, schedulable `execute`) respect queueable/batch limits and do not chain blindly into unbounded recursion.
-- [ ] Naming matches team conventions and Apex naming guidance; no `System.debug` left for production paths unless behind diagnostic flags.
+- [ ] Naming matches the team convention and Apex naming guidance; no `System.debug` left for production paths unless behind diagnostic flags.
 - [ ] One trigger per object; trigger body contains no business logic (no SOQL, DML, or service calls inline) — all logic routes through a handler class.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full list with mitigations in `references/gotchas.md`. The three reviewers miss most often:
 
-1. **Trigger row batch size** — Triggers fire with up to 200 records; code that worked in a five-record developer test fails in full batches. Always review with 200-row tests.
-2. **System context in triggers** — Apex triggers do not use the running user’s sharing by default for the trigger’s own class unless you use sharing keywords or user-mode SOQL. Data exposure reviews must include this.
-3. **Governor scope in test vs production** — Starting/stopping tests and async testing can mask limit issues; validate hot paths in synchronous integration-style tests where limits match production transaction scope.
+1. **Trigger row batch size** — triggers fire on chunks of up to 200 records; always review with a 200-row test.
+2. **Trigger sharing context is version-dependent** — a trigger body has no sharing keyword and runs without sharing, but on 67.0+ its unqualified SOQL/DML run in user mode.
+3. **`apiVersion` bumps are behaviour changes** — the 67.0 defaults apply per file the moment its metadata version changes.
 
 ---
 
@@ -154,7 +186,20 @@ Non-obvious platform behaviors that cause real production problems:
 | Artifact | Description |
 |---|---|
 | PR / release notes | Checklist results with blocking vs advisory labels |
+| Checker output | `check_code_review_checklist_salesforce.py` ERROR/WARN lines attached to the review |
 | Linked doc citations | Pointer to Apex limits, testing, or trigger best-practice pages when educating authors |
+
+---
+
+## Reference Files
+
+| File | Use it for |
+|---|---|
+| `references/examples.md` | Before/after fixes: SOQL in a trigger loop, assertion-free tests, undocumented elevation |
+| `references/gotchas.md` | Seven platform behaviours a reviewer must check, each with an avoidance rule |
+| `references/llm-anti-patterns.md` | Review conclusions AI assistants get wrong in this domain |
+| `references/well-architected.md` | Pillar framing and the official sources behind each claim |
+| `references/review-walkthrough.md` | A worked review of one PR from checker run to findings table |
 
 ---
 

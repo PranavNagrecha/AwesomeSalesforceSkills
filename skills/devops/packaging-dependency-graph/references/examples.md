@@ -43,7 +43,7 @@ the version ids.
   ],
   "packageAliases": {
     "Expense Manager - Util": "0HoB00000004CFpKAM",
-    "External Apex Library@1.0.0.4": "04tB0000000IB1EIAW",
+    "External Apex Library - 1.0.0.4": "04tB0000000IB1EIAW",
     "Expense Manager": "0HoB00000004CFuKAM"
   }
 }
@@ -56,8 +56,9 @@ needs instead of getting a runtime failure.
 
 **The two dependency forms, and why both appear:** the first entry names a package and pins
 its version separately, so it can float to the latest build of `4.7.0`. The second carries
-the version inside the alias — `External Apex Library@1.0.0.4` resolves to a specific `04t`
-subscriber package version id, which is how you depend on something you do not build.
+the version inside the alias — `External Apex Library - 1.0.0.4` is a `packageAliases` key that
+resolves to a specific `04t` subscriber package version id, which is how you depend on
+something you do not build. Every dependency `package` value must match an alias key exactly.
 
 **`NEXT` versus `LATEST`, which is the reversal that costs a day:** `NEXT` sits on *your*
 package's `versionNumber` and takes the next build number when you create a version.
@@ -65,10 +66,10 @@ package's `versionNumber` and takes the next build number when you create a vers
 They are not interchangeable, and `3.2.0.LATEST` on the package you are building is asking
 to build a version that already exists.
 
-**When to stop using `LATEST`:** it re-resolves on every version create, so two builds of
-the same commit can bind to different dependency builds. That is convenient during
-development and unacceptable for anything you promote — pin the literal build number for
-release candidates so the artefact is reproducible from the commit.
+**When to stop using `LATEST`:** it maps to the most recently created dependency version at
+the moment you create your version, promoted or not. That is convenient during parallel
+development and wrong for anything you promote: promote the base first, switch the
+dependency to `RELEASED` (the promoted version), then create the version you will promote.
 
 ---
 
@@ -130,19 +131,20 @@ way the core package can install is if its dependencies are declared and availab
 is exactly the condition production will impose. A missing declaration fails here instead of
 in a customer org.
 
-**Promotion order follows the same graph:** a package cannot be promoted while it depends
-on a version that is still beta, so promotion runs leaves-first for the same reason install
-does.
+**Promotion order follows the same graph:** the guide's sequence for parallel base and
+extension work is to promote the base version first, point the extension at it with
+`RELEASED`, then create, test, and promote the extension version — leaves first, for the
+same reason install runs leaves first.
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
 # Bottom-up: nothing is promoted before the things it depends on.
-for PKG in "External Apex Library" "Expense Manager - Util" "Expense Manager"; do
-  VERSION_ID=$(sf package version list --packages "$PKG" --released false --json \
-    | python3 -c "import json,sys; print(json.load(sys.stdin)['result'][-1]['SubscriberPackageVersionId'])")
-  echo "promoting $PKG -> $VERSION_ID"
+# The 04t IDs are the ones the clean-org install job just proved, recorded by the build.
+# (External Apex Library is not built here, so it is not promoted here.)
+for VERSION_ID in "$UTIL_04T" "$CORE_04T"; do
+  echo "promoting $VERSION_ID"
   sf package version promote --package "$VERSION_ID" --no-prompt
 done
 ```
