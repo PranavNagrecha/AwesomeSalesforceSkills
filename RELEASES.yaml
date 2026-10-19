@@ -181,23 +181,32 @@ releases:
       count'
     size: S
     owner_model: sonnet
+    status: done
+    evidence: 'tier2-webhook clarifier Steps 2-3 re-run: harvestable rows 59->98 but 0 of 14 capability queries surface a
+      skill changed this week; only adjacent phrasings reach devops/environment-specific-value-injection and data/data-archival-strategies
+      (7 rows each). Scenario''s dominant skills (apex/callouts-and-http-integrations, apex-named-credentials-patterns, platform-events-apex)
+      untouched. Finding: section 3.1 S-count is ambiguous (8 vs 13 literal for the same requirement -> feature vs project)'
+  - id: R1-13
+    title: Fix fail-open folder name (siteDotCom -> siteDotComSites) in cross-cloud + experience-cloud-admin checkers; add
+      bad-fixture tests
+    size: S
+    owner_model: sonnet
+    status: running
+  - id: R1-14
+    title: 'Lift test v2: convention-free rubric, repeats, wrong-fact probes from corrected claims'
+    size: M
+    owner_model: sonnet
+    status: todo
+  - id: R1-15
+    title: Define the S count in section 3.1 sizing (which retrieved skills count) + test on the five scenarios
+    size: S
+    owner_model: sonnet
     status: todo
   - id: R1-10
     title: 'Release: CHANGELOG [Plugin 1.4.0] + [0.5.1], versions, gate, merge main, push, ls-remote verify, tag mcp-v0.5.1,
       watch publish, fresh-clone bootstrap --verify-only'
     size: S
     owner_model: fable
-    status: todo
-  - id: R1-13
-    title: Fix fail-open folder name (siteDotCom -> siteDotComSites) in cross-cloud + experience-cloud-admin checkers; add
-      bad-fixture tests
-    size: S
-    owner_model: sonnet
-    status: todo
-  - id: R1-14
-    title: 'Lift test v2: convention-free rubric, repeats, wrong-fact probes from corrected claims'
-    size: M
-    owner_model: sonnet
     status: todo
   measured: {}
 - version: 1.5.0
@@ -238,10 +247,14 @@ releases:
     target: 20
     floor: 10
     domains:
+    - apex
+    - integration
     - data
     - devops
-    - integration
     - security
+    notes: 'R1-09 finding: target first the skills the five scenario builds actually retrieve (callouts-and-http-integrations,
+      apex-named-credentials-patterns, platform-events-apex, named-credentials-setup, …) so accuracy work changes what the
+      build loop asks.'
   - id: R2-05
     title: 'Candidate "better product" spike: package the skill checkers as one CI linter for Salesforce projects (run_all_checkers.py
       over a target tree, GitHub Action + CLI); run it on the five scenario builds and one real project; record findings/false
@@ -299,4 +312,11 @@ inbox:
     from the 101 claims writers/reviewers corrected this week (each probe = a question whose naive answer is the LLM error)
     so the test measures ''does the skill prevent the mistake an LLM makes'', which is the product''s claim'
   size: M
+  slotted_into: 1.4.0
+- date: 2026-10-19
+  ask: 'standards/build-orchestration.md section 3.1 sizing: S (skills with question tables) is ambiguous — the tier2-webhook
+    requirement counts 8 (topic skills only) or 13 (every top-3 hit incl. adjacent case/report skills), which flips feature->project.
+    Define which hits count (e.g. only skills whose table rows survive dedupe into CLARIFICATIONS.md) and add a test on the
+    five scenarios'
+  size: S
   slotted_into: 1.4.0
