@@ -207,12 +207,19 @@ releases:
     title: Define the S count in section 3.1 sizing (which retrieved skills count) + test on the five scenarios
     size: S
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: 'section 3.1: S = distinct source_skill among surviving clarifications[] rows (floor, not equality); build_plan.py
+      validate WARNs when recorded scale sits below S band; 5 scenarios reproduce; tests/test_build_plan.py 243 passed'
   - id: R1-10
     title: 'Release: CHANGELOG [Plugin 1.4.0] + [0.5.1], versions, gate, merge main, push, ls-remote verify, tag mcp-v0.5.1,
       watch publish, fresh-clone bootstrap --verify-only'
     size: S
     owner_model: fable
+    status: todo
+  - id: R1-16
+    title: 'release_plan.py next: offer running wave items with remaining target (batch 2+)'
+    size: S
+    owner_model: sonnet
     status: todo
   measured: {}
 - version: 1.5.0
@@ -324,5 +331,10 @@ inbox:
     requirement counts 8 (topic skills only) or 13 (every top-3 hit incl. adjacent case/report skills), which flips feature->project.
     Define which hits count (e.g. only skills whose table rows survive dedupe into CLARIFICATIONS.md) and add a test on the
     five scenarios'
+  size: S
+  slotted_into: 1.4.0
+- date: 2026-10-19
+  ask: release_plan.py next only offers status=todo items, so a running wave item (R1-07 10/20 done) never gets its next batch
+    offered; next must also yield a running item whose done_skills < target, with its work list
   size: S
   slotted_into: 1.4.0

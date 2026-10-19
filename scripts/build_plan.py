@@ -735,6 +735,18 @@ def semantic_issues(plan: dict, repo_root: Path) -> list[tuple[str, str]]:
                                    f"'feature' plan shape is 1 milestone, ≤ 5 steps) — this plan "
                                    f"has {n_milestones} milestone(s) and {n_steps} step(s); "
                                    f"re-tier to 'project', or re-init --scale"))
+    # S (§ 3.1) = distinct `source_skill` values among clarifications[]. The tier is
+    # the HIGHEST any signal reaches, so S is a floor: warn only when the recorded
+    # scale sits below S's band, never when D/O/X lifted it above.
+    n_skills = len({c.get("source_skill") for c in (plan.get("clarifications") or [])
+                    if isinstance(c, dict) and c.get("source_skill")})
+    s_band = "project" if n_skills >= 9 else "feature" if n_skills >= 4 else "ask"
+    if scale in ("ask", "feature") and SCALES.index(s_band) > SCALES.index(scale):
+        issues.append(("WARN", f"S={n_skills} distinct source_skill value(s) in clarifications[] "
+                               f"is the '{s_band}' band (§ 3.1's sizing rule: ask <= 3, "
+                               f"feature 4-8, project >= 9) but the recorded scale is "
+                               f"'{scale}' — re-tier with `set-scale`, or record why D/O/X "
+                               f"justify the lower tier"))
     if scale == "ask":
         for step in steps:
             if step.get("human_gate"):

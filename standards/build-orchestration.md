@@ -231,7 +231,11 @@ touch. A supporting artefact a single step legitimately ships alongside its
 primary type never raises D: a `$Permission` bypass's CustomPermission +
 PermissionSet riding along with the validation rule that reads them, a field's
 list-view entry, a flow's custom label. **S** cited skills carrying a
-`## Questions to Ask Before Configuring` table (after dedupe), **O** distinct
+`## Questions to Ask Before Configuring` table (after dedupe) — counted as the
+number of distinct `source_skill` values among the `clarifications[]` rows that
+survive dedupe into `plan.json`, so a skill that surfaced in a search but
+contributed no surviving row, such as an adjacent case or report skill, does not
+count (`validate` WARNs when the recorded `scale` sits below S's band), **O** distinct
 objects named, **X** whether an integration or a data migration is implied (an
 external system, an inbound or outbound API, a bulk load). The clarifier
 re-checks the tier exactly **once**, after the answers land, against what the

@@ -4586,3 +4586,51 @@ def test_amend_milestone_refuses_other_fields_and_unknown_milestone(tmp_path, fi
              "--by", "pranav", "--reason", "no such milestone", "--repo-root", str(fixture_repo))
     assert rc == 1
     assert path.read_bytes() == before
+
+
+def _rows_from_skills(n_skills: int, n_rows: int) -> list[dict]:
+    return [{"id": f"Q{i}", "question": f"q{i}?", "kind": "informational",
+             "proposed_default": "d", "status": "open",
+             "source_skill": f"admin/skill-{i % n_skills}"} for i in range(n_rows)]
+
+
+def _sizing_warn(tmp_path, fixture_repo, capsys, scale, n_skills, n_rows):
+    kwargs = {"scale": scale} if scale else {}
+    plan = plan_dict([step("M1-S01", "M1")], clarifications=_rows_from_skills(n_skills, n_rows),
+                     **kwargs)
+    path = write_plan_file(tmp_path / f"b-{scale}-{n_skills}-{n_rows}", plan)
+    capsys.readouterr()
+    rc = run("validate", str(path), "--repo-root", str(fixture_repo))
+    out = capsys.readouterr().out
+    assert rc == 0, "a sizing disagreement is a WARN, never an ERROR"
+    return out
+
+
+def test_validate_warns_when_distinct_source_skills_outgrow_recorded_scale(
+        tmp_path, fixture_repo, capsys):
+    # S = distinct source_skill values among clarifications[] (§ 3.1): 8 is the
+    # top of the 'feature' band, so recording 'ask' under-tiers the build ...
+    out = _sizing_warn(tmp_path, fixture_repo, capsys, "ask", 8, 8)
+    assert "S=8 distinct source_skill value(s)" in out
+    assert "'feature'" in out and "recorded scale is 'ask'" in out
+    # ... and 9 reaches the 'project' band, so 'feature' under-tiers it.
+    out = _sizing_warn(tmp_path, fixture_repo, capsys, "feature", 9, 9)
+    assert "S=9 distinct source_skill value(s)" in out
+    assert "'project'" in out and "recorded scale is 'feature'" in out
+
+
+def test_validate_sizing_counts_distinct_skills_not_rows(tmp_path, fixture_repo, capsys):
+    # 40 rows from 8 skills is S=8 (feature), not 40 (project).
+    out = _sizing_warn(tmp_path, fixture_repo, capsys, "feature", 8, 40)
+    assert "distinct source_skill" not in out
+
+
+def test_validate_sizing_is_a_floor_not_a_vote(tmp_path, fixture_repo, capsys):
+    # The tier is the HIGHEST any signal reaches: D, O or X may lift a build
+    # above its S band (cold-start-case-escalation-email: S=3, recorded feature).
+    assert "distinct source_skill" not in _sizing_warn(tmp_path, fixture_repo, capsys,
+                                                       "feature", 3, 3)
+    # project / absent scale are the top band: nothing can under-tier them.
+    for scale in ("project", None):
+        assert "distinct source_skill" not in _sizing_warn(tmp_path, fixture_repo, capsys,
+                                                           scale, 12, 12)
