@@ -122,7 +122,7 @@ releases:
     title: 'Depth wave: full rewrites, lowest score first across data, devops, integration, security'
     size: L
     owner_model: opus
-    status: running
+    status: done
     target: 20
     floor: 10
     domains:
@@ -144,6 +144,19 @@ releases:
     - data/data-migration-planning
     - data/data-model-design-patterns
     - data/consent-data-model-health
+    - devops/code-review-checklist-salesforce
+    - devops/devops-center-pipeline
+    - devops/feature-flag-custom-metadata
+    - devops/packaging-dependency-graph
+    - devops/pipeline-secrets-management
+    - devops/sandbox-refresh-and-templates
+    - devops/sfdx-monorepo-patterns
+    - devops/scratch-org-snapshots
+    - integration/api-governance-and-rate-limits
+    - integration/mutual-tls-callouts
+    evidence: '20 skills (data 10, devops 8, integration 2) to >=11/12 via writer+adversarial reviewer: 74+49 writer corrections,
+      11+10 reviewer corrections, 6 fabrications removed, 10 fail-open checkers closed; merges 79c9053aa + this; validate
+      --domain data/devops/integration 0 errors'
   - id: R1-08
     title: 'Top-up wave: Questions table + version on at-bar skills lacking a table (85 today), data/devops first'
     size: M
