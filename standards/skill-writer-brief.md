@@ -20,8 +20,10 @@ NOT corpus: help.salesforce.com (unfetchable), blogs, Trailhead, Component Libra
    types/fields, behaviours, version gates). Grade each GROUNDED (file L<n>) / CONTRADICTED (file L<n>, what
    the doc actually says) / NOT FOUND. Correct CONTRADICTED claims in place. Keep NOT FOUND claims only
    with `UNVERIFIED (2026-10-19): <why it could not be grounded>` written INLINE beside the claim —
-   never as a footnote or HTML comment, never dropped silently. The net UNVERIFIED count of the package
-   must not go up; prefer replacing an unverifiable claim with a grounded one.
+   never as a footnote or HTML comment, never dropped silently. Prefer replacing an unverifiable claim with a
+   grounded one; when none exists, the marker is the honest outcome — a package whose count rises because you
+   audited claims nobody had checked is better than one whose count stays at zero by assertion. Never mark a
+   claim you did not audit.
 2. Bring the package to the 12-signal bar (scripts/score_skill_depth.py; >= 10 required, 12 where the
    domain allows — architect/data analytical skills may legitimately have no XML fence; write
    "Not applicable" per standards/skill-authoring-style.md § 4 instead of inventing metadata):

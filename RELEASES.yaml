@@ -229,6 +229,12 @@ releases:
     owner_model: sonnet
     status: done
     evidence: next offers running wave items under target (batch N of ~M line); add inserts before the Release item; 23 tests
+  - id: R1-17
+    title: Full job on 4 devops skills left half-corrected by the top-up (fsc, change-set migration, retrieve-deploy, isv
+      licensing)
+    size: M
+    owner_model: opus
+    status: todo
   - id: R1-10
     title: 'Release: CHANGELOG [Plugin 1.4.0] + [0.5.1], versions, gate, merge main, push, ls-remote verify, tag mcp-v0.5.1,
       watch publish, fresh-clone bootstrap --verify-only'
@@ -351,4 +357,11 @@ inbox:
   ask: release_plan.py next only offers status=todo items, so a running wave item (R1-07 10/20 done) never gets its next batch
     offered; next must also yield a running item whose done_skills < target, with its work list
   size: S
+  slotted_into: 1.4.0
+- date: 2026-10-19
+  ask: 'W4 topup found structural errors beyond its budget in 4 devops skills: fsc-deployment-patterns treats ParticipantRole
+    as custom metadata (it is a Metadata API type, api_meta L94367; checker looks in the wrong folder), migration-from-change-sets-to-sfdx
+    still teaches retrieve-then-convert in examples/anti-patterns, metadata-api-retrieve-deploy has malformed XML fence +
+    5 template TODOs + 2 dead Related Skills, isv-license-management has an unsourced Checkout concept and a malformed fence'
+  size: M
   slotted_into: 1.4.0
