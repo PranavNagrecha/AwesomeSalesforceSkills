@@ -253,9 +253,9 @@ releases:
     size: S
     owner_model: fable
     status: done
-    evidence: main 450bcdeaf pushed and verified by ls-remote 2026-10-20; tags plugin-v1.4.0 + mcp-v0.5.1 pushed; release_gate.sh
-      10/10 PASS; fresh shallow clone bootstrap OK (chunk hash matches manifest, 94 commands, retrieval live); publish-mcp.yml
-      result recorded in the next commit
+    evidence: 'SHIPPED 2026-10-20: origin/main 450bcdeaf (ls-remote); tags plugin-v1.4.0 + mcp-v0.5.1 on origin at 450bcdeaf;
+      publish-mcp.yml run 39321079327 success; PyPI sfskills-mcp 0.5.1 live; GitHub Release ''sfskills-mcp 0.5.1 + Plugin
+      1.4.0'' with 4 assets; main CI validate/tests/Pages success; release_gate.sh 10/10; fresh clone bootstrap OK'
   measured:
     skills: 1040
     at_bar: 402
