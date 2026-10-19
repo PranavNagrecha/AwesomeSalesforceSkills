@@ -97,10 +97,16 @@ releases:
     title: 'Research screen: Agentforce Voice, Scale Center (no owner skill today)'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
     notes: 'research skill, official sources only (developer.salesforce.com/docs/ai/agentforce JSON endpoint; help.salesforce.com
       is not fetchable). Verdict per topic: real gap / covered elsewhere / not groundable. New skills, if any, are R2 items
       via new_skill.py --strict.'
+    evidence: 'Agentforce Voice = REAL GAP (narrow): api_meta.pdf AiPlannerVoiceDef (63.0+), MessagingChannel PstnVoice/SipVoice
+      (65.0+), object_reference.pdf VoiceCall end reasons; no skill mentions it -> R2-03 builds agentforce/agentforce-voice-channel-setup
+      via new_skill.py --strict, cross-link admin/service-cloud-voice-setup. Scale Center = NOT GROUNDABLE: zero hits in 6
+      PDFs, no PDF/trailhead, developer+architect.salesforce.com 403 on 2026-10-19 -> not built. search_knowledge verbatim:
+      ''Agentforce Voice'' -> agentforce-persona-design 2.505 (tone match); ''Scale Center'' -> devops-center-advanced 2.214
+      (lexical noise)'
   - id: R1-07
     title: 'Depth wave: full rewrites, lowest score first across data, devops, integration, security'
     size: L

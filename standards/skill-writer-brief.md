@@ -59,3 +59,13 @@ the lexical window is zero-sum and a bulked skill starves its neighbours.
 slug · score before → after · claims audit counts (G/C/NF) · the CONTRADICTED claims you corrected (one line each,
 with file L<n>) · UNVERIFIED before → after · salesforce-version set and why · checker fixtures results · anything
 you could not ground or finish. End with the verbatim verify_skill_package line per skill.
+
+## Job type `topup` (at-bar skill, score >= 10, missing the Questions table)
+Same ground-truth and grounding rules as above, but the change is bounded: (1) add the
+`## Questions to Ask Before Configuring` table in the exact format (7 rows, each traceable to an existing
+gotcha — add a gotcha only if a question has none to trace to); (2) set `salesforce-version` from the guide you
+cite for the skill's core claim, or leave it if nothing in the package is version-specific and say so;
+(3) burn down `UNVERIFIED` markers where the corpus now grounds the claim; mark nothing new as UNVERIFIED unless
+you also audited the claim. Budget: ≤ 40 net new lines per skill; no restructuring, no new reference files,
+no trigger changes beyond add-only. Bump `version` (patch) and `updated`. Report per skill: rows added,
+version decision and its citation, UNVERIFIED before → after.
