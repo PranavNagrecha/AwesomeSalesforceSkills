@@ -4,6 +4,64 @@ All notable changes to SfSkills are documented here. Format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [Plugin 1.4.0] — 2026-10-20 — depth gate for new skills, release loop, first knowledge-lift measurement
+
+### The gate: a new skill can no longer ship below the bar
+
+`validate_repo.py` now ERRORs when a **new** skill (absent from `HEAD`, or `version: 1.0.0` dated on/after
+2026-10-19) scores below 10 of 12 on `scripts/score_skill_depth.py` or lacks the exact
+`## Questions to Ask Before Configuring` table (`| Ask | Why it matters | What a good answer adds |`), and
+when an edited skill's score drops against `HEAD`. Untouched skills gain no new output. The scorer stopped
+counting `TODO` inside checker scripts and empty "extra" reference files (at-bar re-baselined 350 → 382 on
+the same content). `salesforce-version` has a schema pattern; 20 stray-quote values fixed; the scaffold now
+stamps `TODO` so an author must set a real value.
+
+### The release loop is a committed agent
+
+`agents/orchestrator/AGENT.md` (v2) runs the release plan in `RELEASES.yaml` through
+`scripts/release_plan.py` (`status` / `next` / `set-status` / `add` / `measure`); `/start-building` resumes
+from the plan and git after any session ends; `/add-to-backlog` (new `agents/backlog-intake`) sizes an ask
+S/M/L and slots it into a release. One subagent at a time, one writer worktree merged and verified per pass,
+an adversarial reviewer on every writer batch, and the human runs push/tag. `scripts/release_gate.sh` is
+the single ten-step gate; `evals/scripts/run_evals.py` fails closed when the grader errors.
+
+### Content: 40 skills through writer + adversarial reviewer
+
+20 full rewrites (data, devops, integration) and 20 top-ups (Questions tables on at-bar data/devops
+skills), every batch reviewed against the Summer '26 PDFs. **About 215 wrong claims corrected and 7
+fabrications removed** — roughly half of them introduced by the writers and caught by the reviewers
+(e.g. skinny tables hold 200 columns, not 100; `emptyRecycleBin` takes 10,000 records per call; scheduled
+jobs are not copied on sandbox refresh; `setClientCertificateName` exists; `OrgSnapshot`, not
+`ScratchOrgSnapshot`; `siteDotComSites/` is the real directory). About 25 fail-open checker paths closed.
+Questions tables: 273 → 309 skills. Claims no fetchable doc supports now carry an inline `UNVERIFIED`
+marker instead of being asserted (2,162 → 2,219 markers — the count rose because audited claims were marked).
+
+### Measurement: does loading a skill change the answer?
+
+`evals/scripts/run_lift.py` answers each golden case with and without the skill and grades both blind.
+Wrong-fact probes (30, built from this release's corrections): correct **76.7% → 100%**, wrong **20% → 0%**
+with the skill loaded. Golden cases, convention-free rubric, two repeats: **+0.23** on a 1–5 scale, better
+in 35 paired runs vs worse in 11 (p = 0.0005). Baselines: `evals/measurement/lift-baseline*-2026-10-19.json`.
+Caveat recorded with the numbers: the probe facts come from skills that now state them, so this shows
+transmission, not generalisation.
+
+### Also
+
+- `standards/build-orchestration.md` § 3.1: S is the number of distinct `source_skill` values among the
+  clarification rows that survive dedupe; `build_plan.py validate` WARNs when the recorded scale sits below
+  the S band (the same requirement had counted 8 or 13).
+- `standards/skill-writer-brief.md`: the Opus writer brief, promoted from a session scratchpad.
+- Research verdicts: Agentforce Voice is a narrow real gap (built next release); Scale Center is not
+  groundable from any fetchable official source and is not built.
+- `agent script` now reaches the shipped roster gloss for `agentforce/agent-script-dsl`.
+- Tests: 865 repo + 272 MCP passing in one process; `scripts/validate_framework.py --report-out` stops a
+  test rewriting a tracked file.
+
+## [0.5.1] — 2026-10-20 — sfskills-mcp (data bundle: 40 reviewed skills, depth gate)
+
+Server code is unchanged. The data bundle carries the 40 writer+reviewer skills above, the regenerated
+registry and routers, and the `agent script` gloss fix. See [Plugin 1.4.0].
+
 ## [Plugin 1.3.0] — 2026-10-03 — build orchestration layer, renderer, org-taught checker rules
 
 The release takes one client requirement to a verified, tested Salesforce build

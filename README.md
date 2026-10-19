@@ -94,7 +94,7 @@ Pick one path. [`docs/getting-started.md`](docs/getting-started.md) gives each a
 [`docs/installing.md`](docs/installing.md) has every flag, the bootstrap internals and the embeddings
 option.
 
-**Claude Code plugin** (plugin 1.3.0). Installs the 12 router skills and 92 slash commands. It does
+**Claude Code plugin** (plugin 1.4.0). Installs the 12 router skills and 94 slash commands. It does
 not install the agent loaders or wire the MCP server
 ([`docs/installing-the-plugin.md`](docs/installing-the-plugin.md)).
 
@@ -129,7 +129,7 @@ claude mcp add sfskills -- sfskills-mcp    # other clients: mcp/sfskills-mcp/doc
 sf org login web --alias my-dev            # optional; only the org tools need it
 ```
 
-This repository is at sfskills-mcp 0.5.0 (`mcp/sfskills-mcp/pyproject.toml`); `python3 -m pip show
+This repository is at sfskills-mcp 0.5.1 (`mcp/sfskills-mcp/pyproject.toml`); `python3 -m pip show
 sfskills-mcp` tells you which release PyPI installed. Client recipes for Claude Desktop, Cursor,
 Windsurf, Zed, VS Code, Cline, Continue, Codex CLI, Gemini CLI and Goose are in
 [`mcp/sfskills-mcp/docs/CONNECT.md`](mcp/sfskills-mcp/docs/CONNECT.md).
@@ -251,7 +251,7 @@ scrubbed to `[REDACTED]` (`mcp/sfskills-mcp/tests/test_sf_cli_redaction.py`).
 - [x] 70 run-time agents, eight of them the beta requirement-to-build loop
 - [x] Five end-to-end build scenarios under `examples/builds/`
 - [x] Golden evals for 10 flagship skills (3 P0 cases each)
-- [x] Claude Code plugin 1.3.0 and sfskills-mcp 0.5.0
+- [x] Claude Code plugin 1.4.0 and sfskills-mcp 0.5.1
 
 ## Why you can trust the output
 

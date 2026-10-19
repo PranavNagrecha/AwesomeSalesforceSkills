@@ -139,4 +139,4 @@
 #            without a full git checkout. 0.4.9 GitHub assets remain published
 #            but are superseded by this release for `/releases/latest`.
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"

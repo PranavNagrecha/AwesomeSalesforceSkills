@@ -546,9 +546,9 @@ Checked 2026-10-03: the newest release on PyPI is **0.4.10**, and it pins
 `mcp>=1.7.0,<2.0`. GitHub releases `mcp-v0.4.7` through `mcp-v0.4.10` each
 carry `sfskills-data.tar.gz`, and
 `releases/latest/download/sfskills-data.tar.gz` answers HTTP 200. In-tree the
-package is **0.5.0** (`mcp/sfskills-mcp/pyproject.toml` and
-`src/sfskills_mcp/__init__.py` agree), and 0.5.0 reaches PyPI when the
-`mcp-v0.5.0` tag lands, so until then a PyPI install trails a checkout. A PyPI
+package is **0.5.1** (`mcp/sfskills-mcp/pyproject.toml` and
+`src/sfskills_mcp/__init__.py` agree), and 0.5.1 reaches PyPI when the
+`mcp-v0.5.1` tag lands, so until then a PyPI install trails a checkout. A PyPI
 install serves the corpus its release bundled; to serve your own checkout, use
 the clone path above.
 
@@ -628,10 +628,10 @@ Owner authorization is a safety gate. An agent may execute this section **only
 when the repository owner explicitly authorizes the active task**. This
 document is the runbook; it is not standing permission.
 
-Current in-tree versions (checked 2026-10-03; `python3 scripts/check_release_versions.py` prints them):
+Current in-tree versions (checked 2026-10-20; `python3 scripts/check_release_versions.py` prints them):
 
-- Plugin/library: **1.3.0** (`PLUGIN_VERSION` in `scripts/build_plugin.py`)
-- sfskills-mcp: **0.5.0** (`pyproject.toml` and `sfskills_mcp.__version__`)
+- Plugin/library: **1.4.0** (`PLUGIN_VERSION` in `scripts/build_plugin.py`)
+- sfskills-mcp: **0.5.1** (`pyproject.toml` and `sfskills_mcp.__version__`)
 
 Do not create a separate public GitHub Release for a `plugin-v*` tag.
 `sfskills-mcp-init` downloads `/releases/latest/download/sfskills-data.tar.gz`,
@@ -661,10 +661,10 @@ tarball includes `chunks.jsonl` and `lexical.sqlite`. Embeddings stay out.
    bypass protection.
 4. Tag and push **one tag per push**:
    ```bash
-   git tag -a plugin-v1.3.0 <final-main> -m "SfSkills plugin 1.3.0"
-   git push origin plugin-v1.3.0
-   git tag -a mcp-v0.5.0 <final-main> -m "sfskills-mcp 0.5.0"
-   git push origin mcp-v0.5.0
+   git tag -a plugin-v1.4.0 <final-main> -m "SfSkills plugin 1.4.0"
+   git push origin plugin-v1.4.0
+   git tag -a mcp-v0.5.1 <final-main> -m "sfskills-mcp 0.5.1"
+   git push origin mcp-v0.5.1
    ```
 5. Watch `publish-mcp.yml`: `gh run watch`.
 6. Confirm assets on the MCP release include `sfskills-data.tar.gz`, the
@@ -676,7 +676,7 @@ tarball includes `chunks.jsonl` and `lexical.sqlite`. Embeddings stay out.
    ```
 8. Clean-room smoke test from public PyPI:
    ```bash
-   pip install "sfskills-mcp==0.5.0" && sfskills-mcp-init --force
+   pip install "sfskills-mcp==0.5.1" && sfskills-mcp-init --force
    ```
 
 ---

@@ -253,7 +253,13 @@ releases:
     size: S
     owner_model: fable
     status: todo
-  measured: {}
+  measured:
+    skills: 1040
+    at_bar: 402
+    questions_tables: 309
+    unverified_markers: 2219
+    default_version_skills: 1005
+    measured_on: 2026-10-19
 - version: 1.5.0
   mcp_version: 0.5.2
   branch: release/1.5.0
