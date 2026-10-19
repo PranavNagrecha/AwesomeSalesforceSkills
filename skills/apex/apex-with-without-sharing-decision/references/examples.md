@@ -53,20 +53,33 @@ visibility — discovered weeks later when MRR reports were short.
 ```apex
 public inherited sharing class AccountSelector {
 
-    public List<Account> selectByIds(Set<Id> ids) {
-        return [SELECT Id, Name, OwnerId FROM Account WHERE Id IN :ids];
+    // The caller states the access mode. At API 67.0+ an unqualified query
+    // runs in user mode and enforces sharing whatever the caller's keyword.
+    public List<Account> selectByIds(Set<Id> ids, AccessLevel mode) {
+        return Database.queryWithBinds(
+            'SELECT Id, Name, OwnerId FROM Account WHERE Id IN :ids',
+            new Map<String, Object>{ 'ids' => ids },
+            mode
+        );
     }
 
-    public List<Account> selectActive() {
-        return [SELECT Id, Name FROM Account WHERE IsActive__c = true];
+    public List<Account> selectActive(AccessLevel mode) {
+        return Database.query(
+            'SELECT Id, Name FROM Account WHERE IsActive__c = true', mode
+        );
     }
 }
 ```
 
-When called from `with sharing CaseController`, queries enforce the
-agent's visibility. When called from `without sharing
-NightlyAggregationBatch`, queries see all accounts. The selector itself
-takes no opinion.
+When called from `with sharing CaseController` with
+`AccessLevel.USER_MODE`, queries enforce the agent's visibility. When
+called from `without sharing NightlyAggregationBatch` with
+`AccessLevel.SYSTEM_MODE`, queries see all accounts: system mode lifts
+FLS/CRUD, and the row filter follows the inherited `without sharing`.
+The `AccessLevel` parameter is what makes this work at API 67.0+, where
+an unqualified query runs in user mode and enforces sharing whatever the
+caller's keyword (Apex Developer Guide L11954-11961). The selector
+itself takes no opinion.
 
 **Why it works:** `inherited sharing` makes the inheritance explicit and
 auditable. Reviewers reading the selector know the keyword is
@@ -94,8 +107,10 @@ public without sharing class RevenueAggregationBatch
         implements Database.Batchable<SObject>, Schedulable {
 
     public Database.QueryLocator start(Database.BatchableContext ctx) {
+        // WITH SYSTEM_MODE is required at API 67.0+: without it the query
+        // runs in user mode and enforces sharing despite `without sharing`.
         return Database.getQueryLocator(
-            'SELECT Id, Amount, CloseDate FROM Opportunity WHERE IsClosed = true'
+            'SELECT Id, Amount, CloseDate FROM Opportunity WHERE IsClosed = true WITH SYSTEM_MODE'
         );
     }
 
@@ -117,7 +132,65 @@ public without sharing class RevenueAggregationBatch
 
 **Why it works:** the `// reason:` comment documents intent for future
 reviewers. The class explicitly elevates only the data-aggregation job;
-no `@AuraEnabled` surface is exposed.
+no `@AuraEnabled` surface is exposed. The two axes are both stated:
+`without sharing` lifts the row filter for system-mode queries, and
+`WITH SYSTEM_MODE` puts the query in system mode.
+
+---
+
+## Example 4: One elevated read from a `with sharing` controller
+
+**Context:** An LWC controller is `with sharing`. One method must load
+the `Region_Config__c` record for the user's region; that object is
+Private and the record is owned by an admin, so the user cannot see it.
+
+**Problem:** The first fix added `WITH SYSTEM_MODE` to the query in the
+controller. The FLS error on `Escalation_Queue__c` went away, but the
+query still returned no row: in system mode, record sharing follows the
+class keyword (Apex Developer Guide L11960-11961), and the class is
+`with sharing`.
+
+**Solution:**
+
+```apex
+public with sharing class RegionConfigController {
+
+    @AuraEnabled(cacheable=true)
+    public static Region_Config__c getConfig() {
+        // Region comes from the running user's own record, never from the
+        // client, so the elevated read cannot be pointed at another region.
+        String region = [
+            SELECT Region__c FROM User WHERE Id = :UserInfo.getUserId()
+        ].Region__c;
+        return ConfigReader.forRegion(region);
+    }
+
+    // reason: Region_Config__c is Private and admin-owned; users need the
+    //         one row for their region, read-only, fields chosen here.
+    private without sharing class ConfigReader {
+        public static Region_Config__c forRegion(String region) {
+            List<Region_Config__c> rows = [
+                SELECT Id, Escalation_Queue__c, SLA_Hours__c
+                FROM Region_Config__c
+                WHERE Region__c = :region
+                WITH SYSTEM_MODE
+                LIMIT 1
+            ];
+            return rows.isEmpty() ? null : rows[0];
+        }
+    }
+}
+```
+
+**Why it works:** the inner class carries its own keyword — "inner
+classes don't adopt the sharing mode of the container class" (L4931) —
+and its method runs in the mode of the class where it is defined
+(L4927). `without sharing` lifts the row filter; `WITH SYSTEM_MODE` keeps
+the query in system mode at API 67.0+, where an unqualified query would
+run in user mode and enforce sharing anyway (L11954-11959). The
+elevation is one query wide, its filter comes from the running user's
+own record (nothing the client sends), and the `// reason:` comment sits above the class the checker
+reads. Test it with `System.runAs` as a user who cannot see the record.
 
 ---
 
@@ -133,6 +206,9 @@ object reference. Security review months later finds the class can
 return any record by ID.
 
 **Correct approach:** keep the class `with sharing`. If permission errors
-appear during development, fix the user's permission set or use
+appear during development, fix the user's permission set. If the error
+is FLS or object access on rows the user can already see, use
 `WITH SYSTEM_MODE` on the *one* offending query with a comment
-explaining why elevation is required there.
+explaining why. If the user genuinely needs rows outside their
+perimeter, `WITH SYSTEM_MODE` will not return them from a `with sharing`
+class — use the inner `without sharing` helper of Example 4.

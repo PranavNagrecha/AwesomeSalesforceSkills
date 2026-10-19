@@ -92,7 +92,7 @@
     "f6f2f333e026c1e312cb",
     "fad80144f5d25b2d42c9"
   ],
-  "content_hash": "80c806f1d1dab13b972d9f37a63e7df347c2cd1726a7934e3f304ad1f237a51b",
+  "content_hash": "7af10a259b8068377dd9b265c23d42a83684d6df1cd3227074714fdf7a0e9259",
   "dependencies": [],
   "description": "Use Security.stripInaccessible to enforce CRUD/FLS on user-supplied records before DML, and to scrub query results before returning them to clients. Covers AccessType.READABLE/CREATABLE/UPDATABLE/UPSERTABLE, the SObjectAccessDecision API, and when to prefer WITH USER_MODE on the SOQL itself. NOT for the with sharing / without sharing keyword choice \u2014 use apex/apex-with-without-sharing-decision. NOT for SOQL injection review \u2014 use apex/soql-security.",
   "file_location": "skills/apex/apex-stripinaccessible-and-fls-enforcement",
@@ -145,7 +145,7 @@
   "templates": [
     "skills/apex/apex-stripinaccessible-and-fls-enforcement/templates/apex-stripinaccessible-and-fls-enforcement-template.md"
   ],
-  "updated": "2026-09-12",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

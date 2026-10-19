@@ -13,6 +13,7 @@ triggers:
   - "managed package class ignoring caller sharing rules"
   - "with user_mode vs with sharing class keyword difference"
   - "trigger handler default sharing behavior surprising users"
+  - "why does a with system_mode query in a with sharing class still hide records"
 tags:
   - apex
   - sharing
@@ -33,9 +34,9 @@ outputs:
   - Per-query override plan using WITH USER_MODE where appropriate
   - Reviewer checklist confirming inherited-method risks are handled
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-10-03
+updated: 2026-10-20
 ---
 
 # Apex With / Without / Inherited Sharing Decision
@@ -60,12 +61,33 @@ Gather this context before deciding:
   and write records they cannot normally see (e.g., audit aggregation,
   approval routing, compliance scrubbing)?
 - **Caller context.** If this class will be called from other Apex,
-  remember that `with`/`without sharing` is **inherited from the calling
-  class** — your keyword may be irrelevant if a `without sharing` caller
-  invokes you, unless you explicitly declare `with sharing`.
+  remember that only an `inherited sharing` class — or a bare class
+  pinned at API ≤ 66.0 — takes its mode from the caller. An explicit
+  `with` / `without sharing` keyword holds whoever calls it: "the sharing
+  mode of a method is determined by where the method is defined, not
+  where it's called from" (Apex Developer Guide L4927).
 - **Annotations on the class.** `@AuraEnabled`, `@RemoteAction`, and
   `@RestResource` classes are user-facing entry points and **must default
   to `with sharing`** unless you have a documented elevation reason.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| What `apiVersion` is in the class's `.cls-meta.xml`? | Both the bare-class sharing default and the default access mode flip at 67.0 (Gotchas 1, 3, 7) | The row of the version table every later answer is judged against |
+| Which entry points reach this class — LWC/Aura, REST, Flow, batch, trigger, other Apex? | An `inherited sharing` class — or a bare one pinned at API ≤ 66.0 — takes its mode from whoever calls it (Gotchas 1, 3) | The full caller list, so no second path silently changes the mode |
+| Must this operation return records the running user cannot see — which ones, and why? | Row elevation needs a `without sharing` class plus system mode at 67.0+; system mode alone in a `with sharing` class still filters rows (Gotcha 7) | A named record set and a `// reason:` sentence, scoped to one small helper |
+| Is the elevation about rows (sharing) or about fields and objects (FLS/CRUD)? | System mode lifts only FLS and object checks; `WITH USER_MODE` adds FLS on top of sharing (Gotchas 6, 7) | The right tool per statement instead of a class flip |
+| Is any number this class returns meant to be org-wide (`COUNT`, `SUM`, KPI tile)? | Aggregates obey the class keyword and the access mode, and under-count silently (Gotcha 4) | A decision, shown on the surface, between org-wide and per-user totals |
+| Does the class call, or get called by, managed-package code? | Packaged code keeps its own keyword; the subscriber cannot tighten it (Gotcha 2) | A trust boundary where returned IDs are re-read through your own selector |
+| Is this a trigger handler, and what does the trigger body itself query? | The trigger body's mode is version-split and independent of the handler keyword (Gotcha 5) | An explicit access mode on every trigger-body operation and an explicit handler keyword |
+
+A proper configuration over "just add a keyword" leaves each class with
+a keyword a reviewer can audit, keeps any row elevation inside one small
+justified helper instead of a whole controller, and survives an
+`apiVersion` bump without changing who sees what.
 
 ---
 
@@ -78,7 +100,7 @@ Gather this context before deciding:
 | Keyword | Sharing applied to direct SOQL | Default for what entry points | When to use |
 |---|---|---|---|
 | `with sharing` | Running user's sharing rules enforced; invisible records filtered out | `@AuraEnabled`, `@RemoteAction`, `@RestResource` (must default here) | Any user-facing entry point unless you have a documented elevation reason |
-| `without sharing` | Running user's sharing rules ignored for this class's own queries | None — never a safe default | Audit aggregation, approval routing, compliance scrubbing — deliberate elevation only |
+| `without sharing` | Running user's sharing rules ignored for this class's own **system-mode** queries — at API 67.0+ a query with no mode clause runs in user mode and still enforces sharing (Apex Developer Guide L11954-11961) | None — never a safe default | Audit aggregation, approval routing, compliance scrubbing — deliberate elevation only |
 | `inherited sharing` | Adopts the **caller's** mode; **defaults to `with sharing`** when called directly from Lightning/REST/Aura | Reusable utilities, selectors, base service classes | Shared service/selector code that should respect whatever the entry point demanded |
 
 `without sharing` is a record-visibility keyword, not a blanket system context. It does not turn off FLS or CRUD — and at API 67.0+ database operations enforce the running user's FLS and object permissions by default with no keyword at all, so an elevation that genuinely needs them off states it per statement (`WITH SYSTEM_MODE`, `AccessLevel.SYSTEM_MODE`).
@@ -129,18 +151,35 @@ sharing. Canonical version table:
 [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md)
 § *Apex security idiom by API version*.
 
-### Interaction with `WITH USER_MODE`
+### Interaction with `WITH USER_MODE` and `WITH SYSTEM_MODE`
 
-`WITH USER_MODE` on a SOQL query (and `Database.queryWithBinds(...,
-AccessLevel.USER_MODE)`, plus DML overloads with `AccessLevel.USER_MODE`)
-enforces **both sharing rules and FLS/CRUD** for that single statement,
-regardless of the class-level keyword. This means a `without sharing`
-class can run a single query in user mode without changing the rest of
-its behavior — useful when 95% of a system-context job needs one
-user-scoped lookup. Conversely, `WITH SYSTEM_MODE` on a query inside a
-`with sharing` class elevates only that statement. Class keyword sets the
-default; `WITH USER_MODE` / `WITH SYSTEM_MODE` is the per-statement
-override.
+The two clauses are not mirror images.
+
+- **User mode tightens everything.** `WITH USER_MODE` on a SOQL query
+  (and `Database.queryWithBinds(..., AccessLevel.USER_MODE)`, plus DML
+  overloads with `AccessLevel.USER_MODE`) enforces **sharing rules and
+  FLS/CRUD** for that statement whatever the class keyword: "the
+  operation always respects the user's sharing rules" (Apex Developer
+  Guide L11959). A `without sharing` job can therefore run one
+  user-scoped lookup without changing the rest of its behavior.
+- **System mode loosens only FLS and object permissions.** For
+  `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE`, "the sharing keyword
+  on the calling class determines whether the operation respects the
+  user's record-level permissions" (Developer Guide L11960-11961);
+  `AccessLevel.SYSTEM_MODE` is the mode where "object and field-level
+  permissions of the current user are ignored, and the record sharing
+  rules are controlled by the class sharing keywords" (Apex Reference
+  Guide L199118-199119). Inside a `with sharing` class, a
+  `WITH SYSTEM_MODE` query still returns only the rows the user can see.
+
+So a per-statement clause can tighten sharing but cannot lift it. To
+read rows outside the user's perimeter from a `with sharing` class, move
+that one query into a small `without sharing` helper — an inner class
+works, because "inner classes don't adopt the sharing mode of the
+container class" (Developer Guide L4931) — and, at API 67.0+, give the
+query `WITH SYSTEM_MODE` too, since without it the query runs in user
+mode and enforces sharing anyway. Code: `references/examples.md`
+Example 4.
 
 ### Always justify `without sharing`
 
@@ -159,8 +198,10 @@ accessed and why the elevation is required. The checker enforces this.
 **How it works:** declare `with sharing`. Let the user's record
 visibility govern. If a single operation legitimately needs elevation
 (e.g., loading a configuration record outside the user's perimeter),
-factor it into a separate `without sharing` helper with a `// reason:`
-comment, or use `WITH SYSTEM_MODE` on that one query.
+factor that one query into a small `without sharing` helper (inner or
+separate class) with a `// reason:` comment, and at API 67.0+ give the
+query `WITH SYSTEM_MODE`. `WITH SYSTEM_MODE` on its own, left in the
+`with sharing` controller, lifts FLS and object checks but not sharing.
 
 **Why not the alternative:** `without sharing` on an `@AuraEnabled` class
 is a frequent insecure-direct-object-reference vector — the LWC may pass
@@ -186,8 +227,11 @@ elevation.
 regardless of user perimeter (data scrubs, aggregation, retention sweeps).
 
 **How it works:** `without sharing` with a `// reason:` comment
-explaining why system context is required. Add a unit test that asserts
-the job processes records the running user cannot see.
+explaining why system context is required. At API 67.0+ the keyword is
+not enough on its own: a query with no mode clause runs in user mode and
+enforces sharing, so the cross-perimeter queries also need
+`WITH SYSTEM_MODE` (or `AccessLevel.SYSTEM_MODE`). Add a unit test that
+asserts the job processes records the running user cannot see.
 
 **Why not the alternative:** `with sharing` on a batch run by an
 integration user can silently miss records and cause incomplete jobs.
@@ -201,11 +245,12 @@ integration user can silently miss records and cause incomplete jobs.
 | `@AuraEnabled` controller for LWC | `with sharing` | User invoked it; respect their visibility |
 | `@RestResource` exposed to a community / partner | `with sharing` | External caller authenticates as a user |
 | Reusable selector / service / domain class | `inherited sharing` | Caller chooses; you remain neutral |
-| Batch / Schedulable system job | `without sharing` + `// reason:` | Cross-perimeter aggregation |
+| Batch / Schedulable system job | `without sharing` + `// reason:` (+ `WITH SYSTEM_MODE` on its queries at API 67.0+) | Cross-perimeter aggregation; at 67.0+ an unqualified query runs in user mode and enforces sharing |
 | Trigger handler | `without sharing` (typical) | A trigger always carries an implicit `without sharing` context, but its own SOQL and DML are version-split: user mode (running user's sharing, FLS, object permissions applied) at API 67.0+, system mode before 67.0. The handler's keyword governs only the handler's own queries |
 | Site / guest user controller | `with sharing` (mandatory for guest) | Guest perimeter must not be elevated |
 | Managed-package internal class | `without sharing` (Salesforce-enforced) | Subscriber's keyword cannot override package |
-| One-off elevated query inside a `with sharing` class | keep class `with sharing`, use `WITH SYSTEM_MODE` per-query | Minimum-blast-radius elevation |
+| One-off elevated read inside a `with sharing` class | keep the class `with sharing`; move that one query into a small `without sharing` helper (inner or separate class) with a `// reason:` comment, and give the query `WITH SYSTEM_MODE` at API 67.0+ | Minimum-blast-radius elevation. `WITH SYSTEM_MODE` left in the `with sharing` class lifts only FLS/CRUD — record sharing follows the class keyword (Developer Guide L11960-11961; Reference Guide L199118-199119) |
+| One query in a `with sharing` class must read a field the user lacks FLS on, rows already visible | keep class `with sharing`, `WITH SYSTEM_MODE` on that query + `// reason:` | System mode lifts FLS/CRUD only, which is exactly the need |
 
 ---
 
@@ -217,7 +262,7 @@ When this skill activates, the agent runs these steps in order:
 2. **Match category to the Decision Guidance table** above and propose the default keyword for each class.
 3. **Trace inherited-sharing risk** — for any class without an explicit keyword, list every caller and confirm none of them are `without sharing` in a way that would silently elevate this code.
 4. **Justify every `without sharing`** with a single-line `// reason:` comment immediately above the class declaration; reject the change if the reason is generic ("performance", "convenience").
-5. **Plan per-query overrides** — if 90%+ of the class is one mode but one query needs the other, do not flip the class keyword; use `WITH USER_MODE` / `WITH SYSTEM_MODE` on that statement.
+5. **Plan per-query overrides** — if 90%+ of the class is one mode but one query needs the other, do not flip the class keyword. To tighten one query in a `without sharing` class, use `WITH USER_MODE`. To lift FLS/CRUD only, use `WITH SYSTEM_MODE`. To see rows outside the user's perimeter from a `with sharing` class, extract that query into a `without sharing` helper (plus `WITH SYSTEM_MODE` at 67.0+) — a mode clause cannot lift sharing.
 6. **Run** `python3 skills/apex/apex-with-without-sharing-decision/scripts/check_apex_with_without_sharing_decision.py --manifest-dir <path>` to flag missing keywords on `@AuraEnabled` classes and unjustified `without sharing`.
 7. **Add a Review Checklist citation** to the PR confirming the keyword choice was deliberate and the `// reason:` comment exists where required.
 
@@ -230,7 +275,7 @@ When this skill activates, the agent runs these steps in order:
 - [ ] Every `without sharing` class has a `// reason:` comment above it
 - [ ] Reusable service / selector classes use `inherited sharing`
 - [ ] No `with sharing` class silently calls a `without sharing` helper that exposes user-invisible data back to the UI
-- [ ] Per-query `WITH USER_MODE` / `WITH SYSTEM_MODE` used where the class default is wrong for one statement
+- [ ] Per-query `WITH USER_MODE` / `WITH SYSTEM_MODE` used where the class default is wrong for one statement — and no `WITH SYSTEM_MODE` in a `with sharing` class is relied on to return rows the user cannot see (the checker WARNs on it)
 - [ ] Trigger handlers explicitly declare `without sharing` (or `with sharing` if user-mode behavior is intended) — never bare
 - [ ] Test class exists that proves the chosen keyword by running as a low-privilege user
 
@@ -268,6 +313,11 @@ When this skill activates, the agent runs these steps in order:
    it to a query inside a `without sharing` class can suddenly start
    throwing `QueryException` if the user lacks field-level read on a
    selected field.
+6. **System mode is not `without sharing`.** `WITH SYSTEM_MODE` in a
+   `with sharing` class drops FLS and object checks but keeps the row
+   filter, so a "security fix" that adds it to reach hidden records
+   changes nothing about which records come back. Details and the fix:
+   `references/gotchas.md` Gotcha 7.
 
 ---
 
@@ -277,13 +327,14 @@ When this skill activates, the agent runs these steps in order:
 |---|---|
 | Keyword recommendation per class | Explicit `with` / `without` / `inherited sharing` choice with rationale |
 | `// reason:` comment text | One-line justification for every `without sharing` class |
-| Per-query override list | Statements that need `WITH USER_MODE` / `WITH SYSTEM_MODE` |
+| Per-query override list | Statements that need `WITH USER_MODE` (tighten) or `WITH SYSTEM_MODE` (FLS/CRUD only), plus any query moved into a `without sharing` helper for row elevation |
 | Test class scaffold | Runs the code as a minimum-permission user to prove keyword behavior |
 
 ---
 
 ## Related Skills
 
-- `apex/apex-fls-crud-enforcement` — sharing is record-level; FLS/CRUD is field/object-level. Both must be considered.
-- `apex/apex-aura-enabled-security` — controller-specific security review including sharing keyword
+- `apex/apex-stripinaccessible-and-fls-enforcement` — sharing is record-level; FLS/CRUD is field/object-level. Both must be considered.
+- `apex/apex-security-patterns` — controller-specific security review including sharing keyword and the version-gated access mode
+- `apex/soql-security` — per-query `WITH USER_MODE` / `WITH SYSTEM_MODE` usage on SOQL
 - `standards/decision-trees/sharing-selection.md` — org-level sharing mechanisms (OWD, role hierarchy, sharing rules) — read this when the question is broader than "what keyword goes on this class"

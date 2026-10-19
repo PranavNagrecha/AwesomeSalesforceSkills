@@ -286,7 +286,8 @@ def find_elevation_without_reason(
         findings.append(
             f"REVIEW {path}: system-mode elevation at line {token_line} carries no "
             "// reason: comment — state why this operation must ignore the running "
-            "user's FLS/sharing (gotcha: The Default Access Mode Flipped In API 67.0)"
+            "user's object and field permissions; record sharing still follows the "
+            "class keyword (gotcha: The Default Access Mode Flipped In API 67.0)"
         )
     return findings
 

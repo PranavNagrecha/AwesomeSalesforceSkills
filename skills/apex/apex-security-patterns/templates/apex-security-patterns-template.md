@@ -11,7 +11,7 @@
 | Should caller visibility be honored? | Yes / No |
 | Read enforcement | `WITH USER_MODE` / `AccessLevel.USER_MODE` / Describe / Other |
 | Write enforcement | `stripInaccessible` / `as user` / `AccessLevel.USER_MODE` / Describe / Other |
-| Elevation opt-out, if any | `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` + `// reason:` |
+| Elevation opt-out, if any | `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` + `// reason:` (lifts CRUD/FLS only; rows outside the user's perimeter also need the statement in a `without sharing` class) |
 
 ## Review Questions
 

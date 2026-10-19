@@ -34,9 +34,9 @@ outputs:
   - Test class proving FLS enforcement under a non-admin profile
   - "Decision: stripInaccessible vs WITH USER_MODE vs proactive describe checks"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-10-20
 ---
 
 # Apex stripInaccessible and FLS Enforcement
@@ -51,7 +51,7 @@ Activate when Apex code accepts records from a less-privileged context (LWC, Aur
 - Decide the AccessType: are you reading, creating, updating, or upserting? The wrong enum will silently strip the wrong fields.
 - Confirm the calling class's sharing keyword. `with sharing` enforces record visibility; stripInaccessible enforces FIELD visibility. Both are needed for full enforcement.
 - Read the `apiVersion` in the class's `.cls-meta.xml` before judging what the surrounding code already enforces — that value is the gate, not the org's release. At 67.0+ (Summer '26) SOQL, SOSL, DML and `Database` methods default to user mode and a class with no sharing keyword runs `with sharing`; at 66.0 and earlier both defaulted the other way, so a class pinned to 58.0 in a Summer '26 org keeps the old behaviour. Canonical table: [`agents/_shared/AGENT_CONTRACT.md` → Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version). Either way `Security.stripInaccessible` is unaffected — it evaluates the running user's FLS at every version.
-- Apex **triggers** are the exception at every API version: a trigger body runs in system mode, cannot declare a sharing or access mode, and bypasses sharing, FLS and object permissions. The 67.0 default-user-mode change does not reach it. Delegate to a handler class where the keyword and access level can be set.
+- Apex **triggers** follow the same version gate on their own `.trigger-meta.xml`. A trigger cannot declare a sharing keyword and always runs in an implicit `without sharing` context, but its SOQL, SOSL, DML and `Database` calls "run in user mode unless system mode is explicitly specified", and user mode overrides that context (Apex Developer Guide L4881-4884) — so at 67.0+ a trigger body enforces sharing, FLS and object permissions by default. Only an operation that states `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` bypasses FLS and object permissions there, and it then sees every row because the fallback context is `without sharing` (L4903). Delegate to a handler class where the sharing keyword is yours to set; in that class, system mode lifts FLS/CRUD only and rows follow the class keyword (L11960-11961).
 - If the SOQL itself is fetching records to return to a less-privileged caller, prefer `WITH USER_MODE` (Spring '23 / API 57.0+) on the query and skip a redundant strip pass.
 
 ---
@@ -255,8 +255,8 @@ Without `runAs`, test code runs as whoever is running the test — normally an a
 
 ## Related Skills
 
-- `apex/apex-with-user-mode-soql` — when to prefer USER_MODE on the SOQL itself
-- `apex/apex-sharing-keywords` — class-level `with sharing` / `without sharing` / `inherited sharing` (record visibility, complements FLS)
-- `apex/apex-security-utils` — using the shared `templates/apex/SecurityUtils.cls` helpers
+- `apex/soql-security` — when to prefer USER_MODE on the SOQL itself
+- `apex/apex-with-without-sharing-decision` — class-level `with sharing` / `without sharing` / `inherited sharing` (record visibility, complements FLS)
+- `apex/apex-security-patterns` — execution context and system-vs-user mode review; the shared `templates/apex/SecurityUtils.cls` helpers sit beside it
 - `apex/test-class-standards` — how to build the `System.runAs` user that makes an FLS test real, and why a user-mode build fails `--dry-run` validation without one
-- `security/security-fls-crud-enforcement` — broader CRUD/FLS strategy across the org
+- `apex/field-level-security-in-async-contexts` — CRUD/FLS when the running user changes across Queueable, Batch and `@future` boundaries

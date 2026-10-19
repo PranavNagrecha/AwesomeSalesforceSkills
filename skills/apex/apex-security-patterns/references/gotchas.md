@@ -48,7 +48,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** At API version 67.0 and later, SOQL, SOSL, DML, and `Database` methods run in user mode by default and apply the running user's sharing rules, FLS, and object permissions. At 66.0 and earlier, system mode is the default. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release, so a Summer '26 org runs a class pinned to 58.0 with the old behaviour indefinitely. The same version bump also removes `WITH SECURITY_ENFORCED` from SOQL `SELECT` in Apex, so a query that used it no longer compiles.
 
-**How to avoid:** Before bumping a class to 67.0, inventory every query and DML in it that depends on elevated access and give each one an explicit `WITH SYSTEM_MODE` or `AccessLevel.SYSTEM_MODE` with a `// reason:` comment. Migrate `WITH SECURITY_ENFORCED` to `WITH USER_MODE` in the same pass. Full version matrix: [Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
+**How to avoid:** Before bumping a class to 67.0, inventory every query and DML in it that depends on elevated access and give each one an explicit `WITH SYSTEM_MODE` or `AccessLevel.SYSTEM_MODE` with a `// reason:` comment. That restores the CRUD/FLS bypass only. If the operation also needs rows the running user cannot see, the class must be declared `without sharing` too: a bare class becomes `with sharing` at 67.0, and in system mode "the sharing keyword on the calling class determines whether the operation respects the user's record-level permissions" (Apex Developer Guide L11960-11961). Migrate `WITH SECURITY_ENFORCED` to `WITH USER_MODE` in the same pass. Full version matrix: [Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
 
 ---
 
@@ -72,6 +72,16 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
+## System Mode Is Not `without sharing`
+
+**What happens:** A `with sharing` controller must read one record the user cannot see. The fix adds `WITH SYSTEM_MODE` to that query and is reviewed as a narrow elevation. The FLS error disappears; the record still does not come back. `AccessLevel.SYSTEM_MODE` is the mode where "the object and field-level permissions of the current user are ignored, and the record sharing rules are controlled by the class sharing keywords" (Apex Reference Guide L199118-199119).
+
+**When it occurs:** Any system-mode statement inside a class whose own declaration is `with sharing` — or bare at API 67.0+, which runs `with sharing`. Reviewers carry the belief over from triggers, where `WITH SYSTEM_MODE` does see every row only because the trigger's own context is `without sharing` (Apex Developer Guide L4903).
+
+**How to avoid:** Ask which axis the statement needs. Fields or objects only: `WITH SYSTEM_MODE` in the `with sharing` class is right. Rows outside the user's perimeter: move that statement into a narrow `without sharing` class or inner class (inner classes keep their own keyword, L4931) with a `// reason:` comment, and keep `WITH SYSTEM_MODE` on it at 67.0+ — an unqualified query there runs in user mode, which always respects sharing (L11959). Cover it with a `System.runAs` test that asserts the hidden row is returned.
+
+---
+
 ## Ambiguous Sharing Intent Slows Reviews
 
 **What happens:** A reusable class omits a sharing declaration. Reviewers cannot tell whether user context or elevated access was intended.
@@ -88,4 +98,4 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any static checker that matches security clauses, elevation keywords, or access-mode claims against the full file buffer, including `//` line comments, `/* … */` block comments, and string literals. The case-onboarding `CaseMilestoneService` and tier2-webhook `Tier2ChannelHealthQueueable` both carried this comment shape after the API 67.0 uplift.
 
-**How to avoid:** Blank comments and single-quoted literals (same length, newlines kept) before every code-facing rule. Keep two review rules that *do* read original comments on purpose: (1) at apiVersion ≥ 67.0, each `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` needs a nearby `// reason:` explaining why the operation ignores the running user's FLS/sharing (gotcha: The Default Access Mode Flipped In API 67.0); (2) at apiVersion ≥ 67.0, a comment that still claims code `run(s) in system mode` or `system mode by default` — without `not` / `no longer` / `66` qualifying the claim — is stale and must be corrected with the code or rewritten.
+**How to avoid:** Blank comments and single-quoted literals (same length, newlines kept) before every code-facing rule. Keep two review rules that *do* read original comments on purpose: (1) at apiVersion ≥ 67.0, each `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` needs a nearby `// reason:` explaining why the operation ignores the running user's object and field permissions — record sharing still follows the class keyword (gotcha: The Default Access Mode Flipped In API 67.0); (2) at apiVersion ≥ 67.0, a comment that still claims code `run(s) in system mode` or `system mode by default` — without `not` / `no longer` / `66` qualifying the claim — is stale and must be corrected with the code or rewritten.

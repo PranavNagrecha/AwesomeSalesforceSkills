@@ -30,9 +30,9 @@ outputs:
   - "review findings for sharing, CRUD/FLS, and system-context risks"
   - "secure service-layer pattern for reads and writes"
 dependencies: []
-version: 1.2.1
+version: 1.2.2
 author: Pranav Nagrecha
-updated: 2026-09-16
+updated: 2026-10-20
 ---
 
 Use this skill when Apex security needs to be explicit rather than assumed. The purpose is to choose the right sharing model, enforce CRUD and FLS deliberately on reads and writes, and prevent user-facing entry points from silently operating in broader system context than intended.
@@ -56,6 +56,7 @@ behaviour in `references/gotchas.md` that a keyword choice alone cannot recover 
 | "What is the class or trigger's `.cls-meta.xml` / `.trigger-meta.xml` `apiVersion`?" | At 67.0+ undeclared classes default to `with sharing` and SOQL/DML default to user mode; below 67.0 both defaults differ (The Default Sharing Mode Changed In API 67.0; The Default Access Mode Flipped In API 67.0) | The version row before any "is this secure?" claim, plus an inventory of operations that still need `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` with a `// reason:` |
 | "For a trigger, are you judging the sharing context or the access mode of each operation?" | Triggers are always implicitly `without sharing`, but body operations follow the version-gated access-mode default (A Trigger's `without sharing` Context Says Nothing About Its Access Mode) | Per-operation elevation only where needed, with accurate comments — not a blanket "triggers run in system mode" claim |
 | "Will a comment mention `WITH SECURITY_ENFORCED` or system mode without the keyword appearing in code?" | Scanners that read comments as code raise false CRITICALs; stale system-mode comments mislead reviewers (A Checker That Reads Comments As Code Flags Safe Classes) | Comments that either omit removed clauses, negate old defaults, or sit next to real `SYSTEM_MODE` / `insertAsSystem` elevation |
+| "Does a statement you plan to elevate need rows the user cannot see, or only fields/objects they lack permission on?" | System mode lifts CRUD/FLS only; record sharing follows the class keyword, so `WITH SYSTEM_MODE` in a `with sharing` class still filters rows (System Mode Is Not `without sharing`) | The right boundary: `WITH SYSTEM_MODE` alone for an FLS need; a narrow `without sharing` helper plus `WITH SYSTEM_MODE` for a row need |
 
 What a proper configuration adds over just picking keywords: every public class declares its sharing intent, every elevation carries a reason tied to the statement that elevates, CRUD/FLS is enforced on the write path as deliberately as on the read path, and comments match the `apiVersion` the metadata actually pins.
 
@@ -65,7 +66,7 @@ What a proper configuration adds over just picking keywords: every public class 
 
 ### Sharing Keywords Set The Record-Access Boundary
 
-`with sharing`, `without sharing`, and `inherited sharing` are design choices, not style preferences. `with sharing` enforces row-level sharing rules for the class. `without sharing` explicitly widens record visibility and must be justified — for record-visibility purposes it lets the code see records as if the running user had Modify All Data. `inherited sharing` makes the class adopt the caller’s sharing model and is often the safest default for reusable service layers that should not surprise reviewers.
+`with sharing`, `without sharing`, and `inherited sharing` are design choices, not style preferences. `with sharing` enforces row-level sharing rules for the class. `without sharing` explicitly widens record visibility and must be justified — for record-visibility purposes it lets the code's **system-mode** operations see records as if the running user had Modify All Data. A user-mode operation (the default at API 67.0+) "always respects the user's sharing rules" whatever the keyword (Apex Developer Guide L11959), and a system-mode operation in a `with sharing` class still enforces sharing (L11960-11961). `inherited sharing` makes the class adopt the caller’s sharing model and is often the safest default for reusable service layers that should not surprise reviewers.
 
 Do not lean on the default. In API version 67.0 and later, a class with no explicit sharing declaration runs in `with sharing` mode. That is a safer default than older versions, but it also means a class that genuinely needs elevated visibility can silently start enforcing sharing after an API-version bump, and older code being uplifted may change behavior. Declare the intended mode explicitly rather than depending on the version default.
 
@@ -125,18 +126,18 @@ Teams often secure queries and then perform unsafe DML on fields the user should
 | User-facing code reads data for the current user | Explicit user-context read pattern such as `WITH USER_MODE` | Sharing alone is not enough |
 | User-facing code updates records | `Security.stripInaccessible` before DML | Prevents unauthorized field writes |
 | Documented admin or maintenance process truly needs elevated access | Narrow `without sharing` helper with explicit justification | Keeps privilege elevation contained |
-| Integration, batch, or platform-utility code on a 67.0+ class must see all rows and fields | Explicit `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` plus a `// reason:` comment | Elevation is now the opt-in half; silence means user mode and silently fewer rows |
+| Integration, batch, or platform-utility code on a 67.0+ class must see all rows and fields | Class declared `without sharing` **and** explicit `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE`, plus a `// reason:` comment | Elevation is now the opt-in half; silence means user mode and silently fewer rows. System mode lifts CRUD/FLS only — record sharing follows the class keyword (Apex Developer Guide L11960-11961; Apex Reference Guide L199118-199119), so in a `with sharing` or bare 67.0 class it still returns fewer rows |
+| One statement in a `with sharing` class needs fields the user lacks FLS on, among rows they can see | `WITH SYSTEM_MODE` on that statement + `// reason:` | System mode is exactly an FLS/CRUD lift; no row elevation is needed |
 
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Read the version first.** Open each class's `.cls-meta.xml` (or trigger's `.trigger-meta.xml`) and record its `apiVersion`; pick the matching row of [Apex security idiom by API version](../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version) before calling anything secure.
+2. **Map the boundary per class.** For each entry point and every class it calls, record the declared sharing keyword (inner classes separately) and the access mode of each SOQL/DML statement; fill `templates/apex-security-patterns-template.md`.
+3. **Judge rows and permissions separately.** Row visibility = class keyword for system-mode statements, always enforced for user-mode ones. CRUD/FLS = access mode. Any statement meant to see hidden rows must sit in a `without sharing` class **and** run in system mode; flag a `WITH SYSTEM_MODE` in a `with sharing` class that claims to.
+4. **Secure the write path** with `Security.stripInaccessible(...).getRecords()` or `AccessLevel.USER_MODE` DML, per `apex/apex-stripinaccessible-and-fls-enforcement`.
+5. **Run the checker:** `python3 skills/apex/apex-security-patterns/scripts/check_apex_security_patterns.py --manifest-dir <force-app path>`; resolve every CRITICAL/HIGH and justify every REVIEW with a `// reason:`.
+6. **Prove it with tests** that `System.runAs` a minimum-permission user and assert both the rows returned and the fields stripped, per `apex/test-class-standards`.
 
 ---
 
@@ -184,6 +185,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 7. **A trigger's `without sharing` context does not decide its access mode** — the context is fixed and undeclarable, but it only governs operations that run in system mode; database operations in the body follow the version-gated default (user mode at 67.0+, system mode at ≤66.0), and a user-mode operation overrides the `without sharing` context and enforces sharing for that operation.
 8. **`WITH SECURITY_ENFORCED` stops compiling at API 67.0** — it was removed from SOQL `SELECT` in Apex; `WITH USER_MODE` is the replacement for both SOQL and SOSL.
 9. **The user-mode default is gated on the class, not the org** — a Summer '26 org still runs a class pinned to 58.0 in system mode, so read the `apiVersion` before calling code secure or insecure.
+10. **System mode is not `without sharing`** — `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` drops CRUD and FLS checks only; in a `with sharing` class the row filter stays, so it never reaches records the user cannot see on its own.
 
 ## Output Artifacts
 

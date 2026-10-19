@@ -43,11 +43,32 @@
    convention; the checker enforces it.
 3. **Flipping the class keyword to fix one query.** When 95% of a class
    is correct in one mode and one statement needs the other, change the
-   query (`WITH USER_MODE` / `WITH SYSTEM_MODE`), not the class. Class
-   flips have wide blast radius and break the inheritance contract for
-   every callee.
+   query, not the class: `WITH USER_MODE` to tighten, `WITH SYSTEM_MODE`
+   to lift FLS/CRUD only. A statement that must see rows outside the
+   user's perimeter cannot be fixed by a mode clause in a `with sharing`
+   class; it moves into a small `without sharing` helper. Class flips
+   have wide blast radius and break the inheritance contract for every
+   callee.
 
 ## Official Sources Used
+
+- Apex Developer Guide (Summer '26, `salesforce_apex_developer_guide.txt`)
+  L11954-11961, *Set an Access Mode for Database Operations* — grounds
+  "user mode always respects sharing; in system mode the calling class's
+  sharing keyword decides record-level access" (Gotcha 7, Anti-Pattern 7,
+  the Decision Guidance elevated-read row).
+- Apex Reference Guide (Summer '26, `salesforce_apex_reference_guide.txt`)
+  L199118-199119, *AccessLevel.SYSTEM_MODE* — grounds "object and
+  field-level permissions ignored, record sharing controlled by the class
+  sharing keywords".
+- Apex Developer Guide L4927 and L4931, *Other Implementation Details* —
+  grounds "a method's sharing mode is set where it is defined" and "inner
+  classes don't adopt the container's mode", which make the inner
+  `without sharing` helper of Example 4 work.
+- Apex Developer Guide L4881-4884 and L4903, *Implementation in Apex
+  Triggers* — grounds why `WITH SYSTEM_MODE` sees every row in a trigger
+  body (the trigger's own context is `without sharing`) but not in a
+  `with sharing` class.
 
 - Apex Developer Guide — Using the with sharing, without sharing, and inherited sharing Keywords —
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm

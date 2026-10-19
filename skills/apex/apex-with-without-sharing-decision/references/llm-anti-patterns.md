@@ -19,11 +19,12 @@ regression, not a bug fix.
 ```apex
 // Keep the controller `with sharing`. Diagnose the permission error:
 //   1. Is the user missing a permission set? Add it.
-//   2. Is one specific query needing system context? Override THAT
-//      query with WITH SYSTEM_MODE and document why.
-//   3. Is the class doing org-wide work that doesn't belong in a
-//      controller at all? Move it to a separate `without sharing`
-//      service class with a // reason: comment.
+//   2. Is one query hitting an FLS/object error on rows the user can
+//      already see? Add WITH SYSTEM_MODE to THAT query and document why.
+//      (System mode does not lift sharing in a with sharing class.)
+//   3. Does one query need rows outside the user's perimeter, or is the
+//      class doing org-wide work? Move it to a small `without sharing`
+//      helper with a // reason: comment (+ WITH SYSTEM_MODE at 67.0+).
 public with sharing class MyController {
     // ...
 }
@@ -53,6 +54,8 @@ needs system context.
 //         outside the integration user's role hierarchy.
 public without sharing class RevenueAggregationBatch
         implements Database.Batchable<SObject> {
+    // At API 67.0+ every query here also needs WITH SYSTEM_MODE, or it
+    // runs in user mode and enforces sharing despite the keyword.
     // ...
 }
 ```
@@ -117,15 +120,22 @@ Class keyword controls **sharing only**; `WITH USER_MODE` enforces
 **Correct pattern:**
 
 ```apex
-// Class default: with sharing.
-// Per-query elevation for one statement that needs system context:
+// Class default: with sharing. The org-wide count is a row elevation,
+// which a mode clause cannot give a with sharing class — so it lives in
+// an inner without sharing class (inner classes keep their own keyword).
 public with sharing class MetricsController {
     @AuraEnabled(cacheable=true)
     public static Integer countAllOpenCases() {
-        // reason: org-wide KPI tile, must not filter by user perimeter
-        return [
-            SELECT COUNT() FROM Case WHERE IsClosed = false WITH SYSTEM_MODE
-        ];
+        return OrgWideCounts.openCases();
+    }
+
+    // reason: org-wide KPI tile, must not filter by user perimeter
+    private without sharing class OrgWideCounts {
+        public static Integer openCases() {
+            return [
+                SELECT COUNT() FROM Case WHERE IsClosed = false WITH SYSTEM_MODE
+            ];
+        }
     }
 }
 ```
@@ -167,6 +177,7 @@ trigger AccountTrigger on Account (before insert, after update) {
 // The handler keyword governs only the handler's own queries/DML. Declare
 // it explicitly, and state the access mode on statements that need
 // all records.
+// reason: handler reconciles related Accounts the editing user may not own.
 public without sharing class AccountTriggerHandler {
     public void run() {
         List<Account> all = [SELECT Id FROM Account WITH SYSTEM_MODE LIMIT 10];
@@ -210,3 +221,46 @@ XML to grade them.
 no `with sharing`, `without sharing`, or `inherited sharing` keyword —
 and any review comment that states the bare default without naming the
 class's `apiVersion`.
+
+---
+
+## Anti-Pattern 7: Elevating one statement with `WITH SYSTEM_MODE` and expecting sharing to be bypassed
+
+**What the LLM generates:** asked to let a `with sharing` controller
+read a record the user cannot see, the model keeps the class keyword and
+adds `WITH SYSTEM_MODE` (or `AccessLevel.SYSTEM_MODE`) to that one query,
+then reports it as a "minimum-blast-radius elevation" or a security fix:
+
+```apex
+public with sharing class RegionConfigController {
+    @AuraEnabled(cacheable=true)
+    public static Region_Config__c getConfig(String region) {
+        // "System mode elevates only this statement" -- wrong for rows
+        return [SELECT Id, Escalation_Queue__c FROM Region_Config__c
+                WHERE Region__c = :region WITH SYSTEM_MODE LIMIT 1];
+    }
+}
+```
+
+**Why it happens:** the model treats `WITH USER_MODE` and
+`WITH SYSTEM_MODE` as mirror images. They are not. User mode always
+enforces sharing (Apex Developer Guide L11959); system mode drops only
+FLS and object permissions and leaves record sharing to "the sharing
+keyword on the calling class" (L11960-11961; Apex Reference Guide
+L199118-199119). The trigger example in the guide, where
+`WITH SYSTEM_MODE` does see all rows, reinforces the error — that works
+only because a trigger's own context is `without sharing` (L4903).
+
+**Correct pattern:** keep the controller `with sharing` and put the one
+query in a small `without sharing` helper — an inner class keeps its own
+keyword (L4931) — with a `// reason:` comment and, at API 67.0+,
+`WITH SYSTEM_MODE` on the query. Full code: `references/examples.md`
+Example 4. If the real need is an FLS-restricted field on rows the user
+can already see, the one-clause version above is correct; say which of
+the two needs you are solving.
+
+**Detection hint:** `WITH SYSTEM_MODE` or `AccessLevel.SYSTEM_MODE`
+inside a class whose own declaration is `with sharing` (or bare at
+67.0+), paired with a comment or PR text that says the query can now see
+records the user cannot. `check_apex_with_without_sharing_decision.py`
+WARNs on the construct.

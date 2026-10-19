@@ -72,10 +72,13 @@ page — and is silently wrong for users with limited perimeter.
 analytics surfaces, anywhere `SUM`/`COUNT`/`AVG` is used in a
 sharing-enforced class.
 
-**How to avoid:** for org-wide metrics, use a `without sharing` class
-(with `// reason:` comment) or `WITH SYSTEM_MODE` on the aggregate
-query. Document the elevation in the metric's surface so users know
-they're seeing org-wide totals.
+**How to avoid:** for org-wide metrics, run the aggregate in a
+`without sharing` class or inner class (with `// reason:` comment), and
+at API 67.0+ also put `WITH SYSTEM_MODE` on the aggregate query.
+`WITH SYSTEM_MODE` alone, left in the `with sharing` class, does not fix
+the count — it lifts FLS and object checks, not sharing (Gotcha 7).
+Document the elevation in the metric's surface so users know they're
+seeing org-wide totals.
 
 ---
 
@@ -138,3 +141,39 @@ target persona in a sandbox. Verify FLS coverage with
 `Schema.describeSObjects(...)` or restrict the field list to ones in
 the user's permission set. Treat `WITH USER_MODE` as a full
 user-context query, not a sharing-only filter.
+
+---
+
+## Gotcha 7: System mode is not `without sharing`
+
+**What happens:** A `with sharing` controller needs one record the
+running user cannot see, so someone adds `WITH SYSTEM_MODE` to that
+query (or passes `AccessLevel.SYSTEM_MODE` to `Database.query`). The
+query compiles, the FLS error goes away, and the record still does not
+come back. System mode ignores the user's object and field permissions
+only; for record sharing, "the sharing keyword on the calling class
+determines whether the operation respects the user's record-level
+permissions" (Apex Developer Guide L11960-11961). The Apex Reference
+Guide defines `AccessLevel.SYSTEM_MODE` the same way: object and field
+permissions ignored, "record sharing rules are controlled by the class
+sharing keywords" (L199118-199119). In a `with sharing` class the row
+filter stays on.
+
+**When it occurs:** any "one elevated query" change made inside a
+`with sharing` (or 67.0+ bare, which is `with sharing`) class, and any
+review that reads `WITH SYSTEM_MODE` as "this statement runs as admin".
+It is the trigger body that misleads people: there,
+`WITH SYSTEM_MODE` does see every row, because the trigger's own
+implicit context is `without sharing` (Developer Guide L4881, L4903).
+
+**How to avoid:** decide the two axes separately. If the need is a
+field the user lacks FLS on, among rows they can already see,
+`WITH SYSTEM_MODE` in the `with sharing` class is right. If the need is
+rows outside the user's perimeter, move that one query into a small
+`without sharing` helper with a `// reason:` comment — an inner class
+works, since inner classes do not adopt the container's mode (L4931) and
+a method's mode is set where it is defined (L4927) — and at API 67.0+
+add `WITH SYSTEM_MODE` to it, because an unqualified query there runs in
+user mode, which "always respects the user's sharing rules" (L11959).
+Prove it with a `System.runAs` test that asserts the hidden record is
+returned. Code: `references/examples.md` Example 4.

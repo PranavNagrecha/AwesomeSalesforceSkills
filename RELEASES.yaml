@@ -296,7 +296,11 @@ releases:
       + siblings)'
     size: S
     owner_model: opus
-    status: running
+    status: done
+    evidence: 3 apex skills corrected against apexdev L11959-11961 / L4883-4909 / L4927-4932 and apexref L199118-199119; Decision
+      Guidance now = without sharing inner helper + WITH SYSTEM_MODE; new gotcha + anti-pattern; checker WARNs on SYSTEM_MODE
+      inside a with sharing class (fixtures a-h); reviewer fixed 6 defects incl. a client-supplied region in the new example;
+      AGENT_CONTRACT 67.0+ row corrected; validate --domain apex 0 errors, --agents 0 errors
   - id: R2-01-2
     title: 'Agent proof: /why-cant-user (access-path-explainer) on a real input — permission sets + sharing from examples/builds/northwind-sales/artefacts;
       then an adversarial grader scores right/useful/wrong against the corpus'
@@ -406,6 +410,11 @@ releases:
     size: S
     owner_model: sonnet
     status: todo
+  - id: R2-13
+    title: 'Sharing checker: cover ''as system'' DML; fix inherited-sharing-from-batch nuance in apex-security-patterns'
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -493,5 +502,11 @@ inbox:
     the calling class''s sharing keyword determines record-level access, so this elevates FLS/object checks only, never sharing.
     Correct the concept, the row, examples/anti-patterns/gotchas and the checker; cross-check apex-security-patterns and apex-stripinaccessible-and-fls-enforcement
     for the same claim'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Leftovers from R2-12 review: the sharing checker rule does not match ''as system'' DML; apex-security-patterns llm-anti-patterns.md
+    L81 says an inherited sharing service called from a batch ''silently runs without sharing'' — at 67.0+ only true for system-mode
+    statements'
   size: S
   slotted_into: 1.5.0

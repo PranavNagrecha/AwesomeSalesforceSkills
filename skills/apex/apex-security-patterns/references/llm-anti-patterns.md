@@ -223,14 +223,20 @@ public class NightlySyncBatch implements Database.Batchable<SObject> {
 // State the version you read, then apply the matching row.
 // NightlySyncBatch.cls-meta.xml: <apiVersion>67.0</apiVersion>
 // reason: nightly territory sync must span all accounts, not the job owner's.
-return Database.getQueryLocator(
-    'SELECT Id, Territory__c FROM Account WITH SYSTEM_MODE'
-);
+public without sharing class NightlySyncBatch implements Database.Batchable<SObject> {
+    public Database.QueryLocator start(Database.BatchableContext ctx) {
+        return Database.getQueryLocator(
+            'SELECT Id, Territory__c FROM Account WITH SYSTEM_MODE'
+        );
+    }
+    public void execute(Database.BatchableContext ctx, List<Account> scope) {}
+    public void finish(Database.BatchableContext ctx) {}
+}
 ```
 
-If the `.cls-meta.xml` is not in scope, say which row you assumed rather than picking a default. The matrix is [Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
+Both halves are needed. `WITH SYSTEM_MODE` lifts CRUD/FLS; record sharing in system mode follows the class keyword (Apex Developer Guide L11960-11961), and the bare original runs `with sharing` at 67.0, so `WITH SYSTEM_MODE` alone would still return only the accounts the job's running user can see. If the `.cls-meta.xml` is not in scope, say which row you assumed rather than picking a default. The matrix is [Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
 
-**Detection hint:** Any answer containing "Apex runs in system mode by default" or "Apex runs in user mode by default" with no `apiVersion` cited in the same answer. Also flag advice that adds `WITH USER_MODE` "for security" to a class already at 67.0+ (a no-op), and elevated-access classes bumped to 67.0 with no `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` added.
+**Detection hint:** Any answer containing "Apex runs in system mode by default" or "Apex runs in user mode by default" with no `apiVersion` cited in the same answer. Also flag advice that adds `WITH USER_MODE` "for security" to a class already at 67.0+ (a no-op), and elevated-access classes bumped to 67.0 with no `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` added — or with it added while the class is still bare or `with sharing`, which lifts FLS but not the row filter.
 
 ---
 

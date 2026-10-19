@@ -23,8 +23,20 @@ issues:
         usually need system context; `with sharing` here may silently
         under-process records.
 
+  WARN: `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` inside a class
+        whose own declaration is `with sharing` (or bare at apiVersion
+        67.0+, which is `with sharing` unless the class extends a parent,
+        whose mode it then adopts). System mode ignores FLS and
+        object permissions only; record sharing follows the class
+        keyword (Apex Developer Guide, "Set an Access Mode for Database
+        Operations"; Apex Reference Guide, AccessLevel.SYSTEM_MODE). Fine
+        for an FLS-only need; wrong if the statement is meant to see rows
+        the user cannot. Attributed to the innermost enclosing class, so a
+        `without sharing` inner helper does not warn.
+
 Stdlib only. Issues print to stderr as `ISSUE:` lines. Exit 1 if any
-P0 or P1 finding; exit 0 otherwise (WARN does not fail the build).
+P0 or P1 finding (or any WARN with --strict); exit 0 otherwise. A
+missing --manifest-dir is an ERROR (exit 1); an empty one is a WARN.
 """
 
 from __future__ import annotations
@@ -46,6 +58,8 @@ AURAENABLED_RE = re.compile(r"@AuraEnabled\b", re.IGNORECASE)
 API_VERSION_RE = re.compile(r"<apiVersion>\s*([0-9.]+)\s*</apiVersion>")
 EXEC_BATCH_SELF_RE = re.compile(r"Database\.executeBatch\s*\(\s*this\b", re.IGNORECASE)
 REASON_COMMENT_RE = re.compile(r"//\s*reason\s*:", re.IGNORECASE)
+EXTENDS_RE = re.compile(r"\bextends\b", re.IGNORECASE)
+SYSTEM_MODE_RE = re.compile(r"\bWITH\s+SYSTEM_MODE\b|\bAccessLevel\s*\.\s*SYSTEM_MODE\b", re.IGNORECASE)
 
 # The bare-class default inverted in API 67.0 (Summer '26): below it a class
 # with no sharing keyword ran effectively `without sharing`; at and above it
@@ -81,7 +95,96 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory containing Apex .cls files (default: current directory).",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat WARN findings as failures (exit 1).",
+    )
     return parser.parse_args()
+
+
+def code_only(lines: List[str], keep_strings: bool = False) -> List[str]:
+    """Blank comments (and, unless keep_strings, single-quoted literal bodies).
+
+    Length-preserving, one entry per input line, so column positions in the
+    two variants line up: braces are counted on the string-blanked variant,
+    SYSTEM_MODE is matched on the variant that keeps dynamic-SOQL strings.
+    """
+    out: List[str] = []
+    in_block = False
+    for line in lines:
+        buf: List[str] = []
+        i, n = 0, len(line)
+        while i < n:
+            if in_block:
+                end = line.find("*/", i)
+                stop = n if end == -1 else end + 2
+                buf.append(" " * (stop - i))
+                in_block = end == -1
+                i = stop
+                continue
+            ch = line[i]
+            if line.startswith("//", i):
+                buf.append(" " * (n - i))
+                break
+            if line.startswith("/*", i):
+                in_block = True
+                buf.append("  ")
+                i += 2
+                continue
+            if ch == "'":
+                j = i + 1
+                while j < n and line[j] != "'":
+                    j += 2 if line[j] == "\\" else 1
+                body = line[i + 1 : min(j, n)]
+                buf.append("'" + (body if keep_strings else " " * len(body)))
+                if j < n:
+                    buf.append("'")
+                i = j + 1
+                continue
+            buf.append(ch)
+            i += 1
+        out.append("".join(buf))
+    return out
+
+
+def system_mode_in_with_sharing(
+    lines: List[str], bare_is_with_sharing: bool
+) -> List[Tuple[int, str, str]]:
+    """(line_no, class_name, keyword) for each SYSTEM_MODE token whose innermost
+    enclosing class runs `with sharing` by its own declaration."""
+    hits: List[Tuple[int, str, str]] = []
+    stack: List[Tuple[str, str, int]] = []  # (class_name, keyword, depth)
+    pending: Tuple[str, str] | None = None
+    depth = 0
+    with_strings = code_only(lines, keep_strings=True)
+    for idx, line in enumerate(code_only(lines)):
+        decl = CLASS_DECL_RE.match(line)
+        if decl:
+            kw = (decl.group(1) or "").strip().lower()
+            if not kw and EXTENDS_RE.search(line[decl.end():]):
+                # A bare subclass adopts its parent's sharing mode (Apex
+                # Developer Guide, "Omitted Sharing"); the parent is not in
+                # view here, so do not assume `with sharing`.
+                kw = "extends"
+            pending = (decl.group(2), kw)
+        starts = {m.start() for m in SYSTEM_MODE_RE.finditer(with_strings[idx])}
+        for pos, ch in enumerate(line):
+            if pos in starts and stack:
+                name, keyword, _ = stack[-1]
+                keyword = re.sub(r"\s+", " ", keyword)
+                if keyword == "with sharing" or (not keyword and bare_is_with_sharing):
+                    hits.append((idx + 1, name, keyword or "bare (with sharing at 67.0+)"))
+            if ch == "{":
+                depth += 1
+                if pending:
+                    stack.append((pending[0], pending[1], depth))
+                    pending = None
+            elif ch == "}":
+                if stack and stack[-1][2] == depth:
+                    stack.pop()
+                depth -= 1
+    return hits
 
 
 def find_class_declarations(lines: List[str]) -> List[Tuple[int, str, str]]:
@@ -166,6 +269,18 @@ def check_file(path: Path) -> Tuple[List[str], List[str], List[str]]:
                 f"system context; verify user-scoped behavior is intended here."
             )
 
+    # WARN: system mode inside a class that runs `with sharing` by its own
+    # declaration. System mode lifts FLS/object checks only; rows still
+    # follow the class keyword, so this does not reach hidden records.
+    for line_no, class_name, keyword in system_mode_in_with_sharing(lines, bare_is_with_sharing):
+        warn.append(
+            f"{path}:{line_no}: WARN SYSTEM_MODE inside class `{class_name}` "
+            f"({keyword}). System mode ignores FLS and object permissions only; "
+            f"record sharing still follows the class keyword, so this statement "
+            f"does NOT return rows the user cannot see. If it must, move it into a "
+            f"`without sharing` helper (inner class is fine) with a `// reason:` comment."
+        )
+
     return (p0, p1, warn)
 
 
@@ -173,14 +288,14 @@ def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
 
-    if not manifest_dir.exists():
-        print(f"ISSUE: manifest directory not found: {manifest_dir}", file=sys.stderr)
-        return 2
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
 
     cls_files = sorted(manifest_dir.rglob("*.cls"))
     if not cls_files:
-        print(f"No .cls files found under {manifest_dir}.")
-        return 0
+        print(f"WARN: no .cls files found under {manifest_dir}; nothing checked.")
+        return 1 if args.strict else 0
 
     total_p0: List[str] = []
     total_p1: List[str] = []
@@ -202,6 +317,8 @@ def main() -> int:
     print(summary)
 
     if total_p0 or total_p1:
+        return 1
+    if total_warn and args.strict:
         return 1
     return 0
 
