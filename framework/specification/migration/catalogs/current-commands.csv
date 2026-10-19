@@ -1,5 +1,6 @@
 command_id,path,current_agents,mapped_v2_products,v2_disposition,default_v2_surface,required_action
 add-skill,commands/add-skill.md,,,preserve-maintainer-command,false,Keep out of the end-user product surface and validate under maintainer policy.
+add-to-backlog,commands/add-to-backlog.md,,,preserve-legacy-command,false,Ledger row added during live reconciliation; assess disposition.
 analyze-field-impact,commands/analyze-field-impact.md,field-impact-analyzer,P04,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 analyze-flow,commands/analyze-flow.md,flow-analyzer,P05,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 architect-perms,commands/architect-perms.md,permission-set-architect,P03;P07,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
@@ -83,6 +84,7 @@ run-fit-gap,commands/run-fit-gap.md,fit-gap-analyzer,,preserve-legacy-command,fa
 scan-security,commands/scan-security.md,security-scanner,P07,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 score-deployment,commands/score-deployment.md,deployment-risk-scorer,P01;P06,preserve-legacy-alias-or-input,false,Keep compatibility; map useful behavior into typed product commands only when the mapped product is implemented.
 sfskills-doctor,commands/sfskills-doctor.md,,,promote-native-framework-command,true,Framework doctor/install verification; not a legacy alias.
+start-building,commands/start-building.md,,,preserve-legacy-command,false,Ledger row added during live reconciliation; assess disposition.
 sync-upstream-skills,commands/sync-upstream-skills.md,,,preserve-maintainer-command,false,Keep out of the end-user product surface and validate under maintainer policy.
 test-build-step,commands/test-build-step.md,,,preserve-legacy-command,false,Ledger row added during live reconciliation; assess disposition.
 triage-apex-tests,commands/triage-apex-tests.md,apex-test-failure-triager,P02,promote-native-product-command,true,Primary P02 entry command; requires independent review and read-only broker.

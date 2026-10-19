@@ -12,6 +12,7 @@ assignment-and-auto-response-rules-designer,runtime,stable,agents/assignment-and
 audit-router,runtime,stable,agents/audit-router/AGENT.md,1.0.0,P03;P07;P10;P12,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 automation-migration-router,runtime,stable,agents/automation-migration-router/AGENT.md,1.0.0,P05,reuse-as-legacy-specialist,false,Reuse knowledge and proven steps during mapped product integration; do not auto-export as a native subagent.
 automation-transaction-profiler,runtime,stable,agents/automation-transaction-profiler/AGENT.md,,P05,promote-native-product-agent,true,Export as focused Cursor subagent for P05.
+backlog-intake,runtime,stable,agents/backlog-intake/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 build-doc-keeper,runtime,stable,agents/build-doc-keeper/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 build-planner,runtime,stable,agents/build-planner/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
 build-step-runner,runtime,stable,agents/build-step-runner/AGENT.md,,,preserve-legacy-specialist,false,Ledger row added during live reconciliation; assess disposition.
