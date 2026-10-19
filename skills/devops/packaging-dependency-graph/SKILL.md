@@ -14,6 +14,7 @@ triggers:
   - "work out the install order for our unlocked packages"
   - "decide between LATEST and RELEASED for a package dependency"
   - "find which package versions a 04t depends on before installing it"
+  - "pin a dependency to an exact package version instead of LATEST"
 tags:
   - packaging
   - 2gp
@@ -24,7 +25,7 @@ inputs:
 outputs:
   - "dependency diagram, pinning strategy, promotion runbook"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -87,7 +88,9 @@ Each `packageDirectories` entry may carry a `dependencies` array. A dependency i
 }
 ```
 
-### Version keywords
+### Version keywords (package version pinning)
+
+A dependency's `versionNumber` is how you pin a package version: an explicit build number pins to exactly that version, while the keywords below pin to a moving target. Package version pinning is a choice between these three forms, not a separate setting.
 
 | Keyword | Where | Resolves to |
 |---|---|---|

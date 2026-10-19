@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "ea5513c3de5522a286f5e23285f0d92fd37947205f0e96434a261c9ebed2e8bd",
+  "generated_from_hash": "b9d09cd34e5b32110c3045600ddd3f1c28a955480f5f4bef573d8a7e4a754cc3",
   "schema_version": 1,
   "skill_count": 1040,
   "skills": [
@@ -120702,7 +120702,6 @@
         "1d4646a3b22e390466bb",
         "1ddba472763ad984fd90",
         "1e50e19f3397e1821d9d",
-        "25ff054216a892a6e4a3",
         "2bb9c1a58ba58a4d803d",
         "2c30ed80dd90e0f957a2",
         "319f41edf94ab01f1fe3",
@@ -120734,6 +120733,7 @@
         "7819de3cffbe9ce01e86",
         "786759c0109fa205b201",
         "7fd4fbbfcc30804171fe",
+        "805b2fd3c5398c2b7f7a",
         "85166598eb6199844628",
         "86f57ecba922e805863d",
         "87228d5c17c8f669bd21",
@@ -120769,7 +120769,7 @@
         "fe3b8979c9e791e63c7f",
         "feb313fd00106d20731e"
       ],
-      "content_hash": "fb3e7a961ab66ce0bbc6d470161dfce64767d4c0fe3c34bb1d1959274ef7e0b8",
+      "content_hash": "152174038f9bad73f00857ff22a70460900805aec1c4057ce1320ca0ec960965",
       "dependencies": [],
       "description": "Model and verify unlocked package dependencies, version pinning, and promotion. NOT for 1GP managed packages \u2014 use devops/multi-package-development.",
       "file_location": "skills/devops/packaging-dependency-graph",
@@ -120814,7 +120814,7 @@
       ],
       "updated": "2026-10-19",
       "vector_embedding": null,
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "category": "devops",

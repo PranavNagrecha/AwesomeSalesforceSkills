@@ -3,7 +3,7 @@
   "name": "sfskills",
   "displayName": "SfSkills — Salesforce AI Skill Library",
   "version": "1.3.0",
-  "description": "1,040 grounded Salesforce skill packages, 70 run-time agents and 92 slash commands, reached through 12 lightweight router skills instead of a flat index.",
+  "description": "1,040 grounded Salesforce skill packages, 70 run-time agents and 94 slash commands, reached through 12 lightweight router skills instead of a flat index.",
   "author": {
     "name": "Pranav Nagrecha",
     "url": "https://github.com/PranavNagrecha/AwesomeSalesforceSkills"

@@ -1,6 +1,6 @@
 ---
 name: salesforce
-description: "Entry point for the SfSkills Salesforce library: 1,040 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 70 run-time agents and 92 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
+description: "Entry point for the SfSkills Salesforce library: 1,040 skill packages across 11 domains (admin, agentforce, apex, architect, data, devops, flow, integration, lwc, omnistudio, security), 70 run-time agents and 94 slash commands. Use for any Salesforce, Force.com or Lightning Platform question — Apex, SOQL, SOSL, triggers, Flow, LWC, sObject, custom field, permission set, profile, sharing rule, validation rule, deployment, sandbox, Agentforce, OmniStudio, org setup. This skill does not answer Salesforce questions itself; it routes to the specific skill package that does, then hands off to a domain router."
 ---
 
 # Salesforce — SfSkills library router
@@ -17,7 +17,7 @@ load. This file tells you how to reach the one page you need.
   `well-architected.md` and `llm-anti-patterns.md`.
 - **70 run-time agents** under `${CLAUDE_PLUGIN_ROOT}/agents/<id>/AGENT.md`,
   exposed as subagents (see the roster at the bottom of this file).
-- **92 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
+- **94 slash commands** under `${CLAUDE_PLUGIN_ROOT}/commands/`.
 - **Decision trees** under `${CLAUDE_PLUGIN_ROOT}/standards/decision-trees/`,
   which route between technologies *before* a skill is opened.
 - **Canonical templates** under `${CLAUDE_PLUGIN_ROOT}/templates/`.
