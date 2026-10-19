@@ -1,6 +1,6 @@
 ---
 name: agent-script-dsl
-description: "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types, including the Agent Script language for the new Agentforce Builder (hybrid-reasoning -> logic vs | prompt instructions, @actions/@subagent/@variables references, subagents). Use when creating agents in source control, writing or debugging Agent Script, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'how do I deploy an Agentforce agent using source control', 'convert an agent topic to a subagent', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship', 'Agent Script logic vs prompt instructions'. NOT for Apex-based agent actions — use agentforce/custom-agent-actions-apex. NOT for clicking the agent together in the Builder UI — use agentforce/agentforce-agent-creation."
+description: "Authoring and managing Agentforce agent definitions using the declarative Agent Script DSL (.agent files) and associated metadata types, including the Agent Script language for the new Agentforce Builder (hybrid-reasoning -> logic vs | prompt instructions, @actions/@subagent/@variables references, subagents). Use when creating agents in source control, writing or debugging Agent Script, debugging agent metadata, or understanding the metadata lifecycle of GenAiPlugin/GenAiPlanner/BotVersion types. Triggers: 'write or debug Agent Script', 'how do I deploy an Agentforce agent using source control', 'convert an agent topic to a subagent', 'what metadata types make up an Agentforce agent', 'agent test run command failing in CI pipeline', 'GenAiPlugin vs GenAiPlanner metadata relationship', 'Agent Script logic vs prompt instructions'. NOT for Apex-based agent actions — use agentforce/custom-agent-actions-apex. NOT for clicking the agent together in the Builder UI — use agentforce/agentforce-agent-creation."
 category: agentforce
 salesforce-version: "Summer '26+"
 well-architected-pillars:
@@ -30,9 +30,9 @@ outputs:
   - "sf agent test run commands for CI pipeline integration"
   - "Source control layout and metadata deployment guidance for agents"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # Agent Script DSL

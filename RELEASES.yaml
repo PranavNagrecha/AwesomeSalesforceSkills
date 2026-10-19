@@ -81,9 +81,11 @@ releases:
     title: 'Roster gloss fix: ''agent script'' term reaches the shipped gloss of agentforce/agent-script-dsl'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
     notes: check_gloss_coverage.py reports CLIPPED 189/220; substitute the term into the description Triggers clause (not
       an add-only trigger). Verbatim before/after; zero fixture regression.
+    evidence: agent-script-dsl description Triggers clause; check_gloss_coverage 'agent script' 0 -> 1 package; validate --changed-only
+      0 errors; search rank 1 (3.243)
   - id: R1-05
     title: 'Stale generated reports: drop checker-findings.md from git; regenerate duplicate-candidates.md and docs/queue-progress.md'
     size: S
