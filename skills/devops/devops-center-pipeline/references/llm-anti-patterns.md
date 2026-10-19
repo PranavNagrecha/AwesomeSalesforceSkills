@@ -16,8 +16,8 @@ These patterns help the consuming agent self-check its own output.
    vs enableALMDevopsCorePref (next-generation, API 65.0+).
 2. Next-generation: evaluate DevopsTestSuite / DevopsQualityGate per stage
    before adding an external CI gate.
-3. Either edition: validate-only deployment is not available in the
-   next-generation product, so a production check-only run belongs in CLI/CI.
+3. Next-generation: validate-only deployment is not supported, so a
+   production check-only run belongs in CLI/CI.
 ```
 
 **Detection hint:** Any capability claim about DevOps Center with no mention of `enableDevOpsCenterGA` / `enableALMDevopsCorePref` or of the edition.

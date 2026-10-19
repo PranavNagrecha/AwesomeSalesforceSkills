@@ -80,7 +80,7 @@ PR owns is the signal, and it only shows up if someone is looking.
 
 The defect unique to a Salesforce monorepo. The DX guide allows a field to live in a different
 package directory from its object — its own example puts `MyObject` in the default directory
-and `MyField` in an "extension" directory. What it relies on is the object existing first.
+and `MyField` in an "extension" directory. The field still needs the object to exist in the org first.
 Assistants generate the layout by feature, give two directories partial
 `objects/Customer_Profile__c/` folders, and never declare which one owns the object.
 

@@ -38,7 +38,7 @@ Non-obvious Salesforce platform behaviors that cause real problems during or aft
 
 **What happens:** The post-copy class throws on DML against an object the Automated Process user can't access, and the remaining setup never happens.
 
-**When it occurs:** `runApexClass` runs at the end of the copy as a special Automated Process user that isn't visible in the org and doesn't have access to all objects and features. Because the user isn't visible, you can't assign it a permission set in the sandbox ahead of time.
+**When it occurs:** `runApexClass` runs at the end of the copy as a special Automated Process user that isn't visible in the org and doesn't have access to all objects and features.
 
 **How to avoid:** Keep the class to operations that user can perform, test with `Test.testSandboxPostCopyScript(script, orgId, sandboxId, sandboxName, true)` so the test runs with the same permissions, and keep the documented fallback: if the script fails, run it after activation as a user with the right permissions.
 

@@ -12,7 +12,8 @@ ERROR (exit 1):
     Metadata API guide says must not be added to source control
   - a <consumerSecret> element in connected app metadata
 WARN (exit 0 unless --strict):
-  - a CI/script file that runs `sf org auth show-...` or sets SF_TEMP_SHOW_SECRETS
+  - a CI/script file that runs `sf org auth show-...`, `sf org display --verbose`,
+    or sets SF_TEMP_SHOW_SECRETS
   - `set -x` in a CI/script file that also handles a JWT key file
   - connected app metadata with isAdminApproved false or missing
 
@@ -32,7 +33,13 @@ from pathlib import Path
 
 AUTH_URL_RE = re.compile(r"force://[^\s\"'<>]+@[^\s\"'<>]+")
 PEM_RE = re.compile(r"-----BEGIN (?:RSA |EC |ENCRYPTED |OPENSSH )?PRIVATE KEY-----")
-SHOW_RE = re.compile(r"\b(?:sf|sfdx)\s+org\s+auth\s+show-[a-z-]+|SF_TEMP_SHOW_SECRETS\s*[:=]\s*['\"]?true", re.I)
+SHOW_RE = re.compile(
+    r"\b(?:sf|sfdx)\s+org\s+auth\s+show-[a-z-]+"
+    r"|SF_TEMP_SHOW_SECRETS\s*[:=]\s*['\"]?true"
+    # the installed CLI's own help still says `org display --verbose` displays the sfdxAuthUrl property
+    r"|\b(?:sf|sfdx)\s+(?:force:)?org[\s:]+display\b[^\n]*--verbose",
+    re.I,
+)
 SETX_RE = re.compile(r"^\s*set\s+-[a-wyz]*x", re.M)
 JWT_RE = re.compile(r"--jwt-key-file|org\s+login\s+jwt", re.I)
 SECRET_EL_RE = re.compile(r"<consumerSecret>\s*[^<\s]")
@@ -88,7 +95,7 @@ def scan(root: Path, out: list[tuple[str, str]]) -> int:
         if is_ci:
             m = SHOW_RE.search(text)
             if m:
-                out.append(("WARN", f"{rel}:{_line(text, m.start())}: CI step prints credentials (org auth show-* / SF_TEMP_SHOW_SECRETS)"))
+                out.append(("WARN", f"{rel}:{_line(text, m.start())}: CI step prints credentials (org auth show-* / org display --verbose / SF_TEMP_SHOW_SECRETS)"))
             if JWT_RE.search(text):
                 m = SETX_RE.search(text)
                 if m:

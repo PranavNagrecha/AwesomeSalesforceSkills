@@ -24,7 +24,7 @@ The ERROR is the version bump: `AccountLookup` compiled at 62.0 with `WITH SECUR
 | Area | What the reviewer read | Finding |
 |---|---|---|
 | Version defaults | `AccountLookup.cls-meta.xml` 62.0 → 67.0 | Beyond the compile error, its unqualified `Database.query` now runs in user mode; the integration user's permission set lacks read on `Account.Rating`. Blocking. |
-| Bulk | `OpportunityStamping.stamp()` line 14 | One `Account` query per opportunity; fails at the 101st row of a 200-row chunk. Blocking. |
+| Bulk | `OpportunityStamping.stamp()` line 14 | One `Account` query per opportunity on top of the trigger's own query; crosses the 100-query synchronous limit partway through a 200-row chunk. Blocking. |
 | Sharing | `OpportunityStamping` | No keyword; at 67.0 that means `with sharing`, which is the intended behaviour — ask the author to write `with sharing` so the intent survives a copy into an older class. Advisory. |
 | Trigger | `OpportunityTrigger` | Inline `[SELECT ...]` before the handler call; move into the handler so ordering is explicit. Advisory (team practice). |
 | Tests | `OpportunityStamping_Test` | Single-row insert, `Assert.areEqual` present, runs as the test-context user only. Ask for a 200-row method and a `System.runAs` as the Sales User persona. Blocking for the bulk method. |

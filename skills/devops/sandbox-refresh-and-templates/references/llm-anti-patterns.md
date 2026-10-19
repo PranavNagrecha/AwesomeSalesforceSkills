@@ -92,7 +92,7 @@ for each job the sandbox needs.
 
 ## Anti-Pattern 5: Assuming the Post-Copy Class Runs as an Admin
 
-**What the LLM generates:** A post-copy class that inserts users, edits permission-gated objects, and makes callouts, plus "assign the Automated Process user a permission set first".
+**What the LLM generates:** A post-copy class that inserts users, edits permission-gated objects, and makes callouts, with no plan for what happens when that user lacks access.
 
 **Why it happens:** Models assume setup code runs with full access.
 
@@ -105,7 +105,7 @@ activation as a user with appropriate permissions. Test with
 Test.testSandboxPostCopyScript(script, orgId, sandboxId, sandboxName, true).
 ```
 
-**Detection hint:** "Assign a permission set to the Automated Process user", or a post-copy class with no fallback plan.
+**Detection hint:** A plan that depends on granting the Automated Process user extra access instead of the documented fallback (re-run after activation as a user with the right permissions), or a post-copy class with no fallback plan.
 
 ---
 

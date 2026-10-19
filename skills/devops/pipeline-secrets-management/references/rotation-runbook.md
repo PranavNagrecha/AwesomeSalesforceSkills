@@ -17,6 +17,8 @@ The design uses two apps per environment ("blue" and "green") so the new certifi
 
 ## Workflow skeleton (GitHub Actions)
 
+A job cannot pause for a human halfway through, and a runner's files do not survive into the next job. So the skeleton is two jobs: the first generates the pair, parks the private key in the secret store under a `_NEXT` name, and publishes only the certificate (public) as an artifact; the second runs behind the `production` environment's required reviewers, which is the gate where a human uploads `new.crt` to the idle app before approving.
+
 ```yaml
 name: Rotate Salesforce JWT credentials (production)
 on:
@@ -24,36 +26,55 @@ on:
     - cron: '0 3 1 */3 *'          # quarterly, well inside a 365-day certificate
   workflow_dispatch:
 jobs:
-  rotate:
+  generate:
     runs-on: ubuntu-latest
-    environment: production         # required reviewers
     steps:
-      - name: Generate key pair
+      - name: Generate key pair and park the key
+        env:
+          GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN }}                     # [REDACTED]
         run: |
           set -euo pipefail
           umask 077
           openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
             -keyout new.key -out new.crt -subj "/CN=ci-prod-$(date +%Y%m%d)"
-      - name: Upload new.crt to the idle app (manual gate)
-        run: echo "Upload new.crt to the idle app for production, then approve the next step."
+          base64 -w0 new.key | gh secret set SF_JWT_KEY_PROD_NEXT --env production
+          rm -f new.key
+      - name: Publish the certificate (public half only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-prod-certificate
+          path: new.crt
+  prove-and-publish:
+    needs: generate
+    runs-on: ubuntu-latest
+    environment: production         # required reviewers: approve only after new.crt is on the idle app
+    steps:
       - name: Prove the new key on the idle app
         env:
-          SF_CLIENT_ID_IDLE: ${{ secrets.SF_CLIENT_ID_PROD_IDLE }}   # [REDACTED]
+          SF_JWT_KEY_NEXT:  ${{ secrets.SF_JWT_KEY_PROD_NEXT }}      # [REDACTED]
+          SF_CLIENT_ID_IDLE: ${{ secrets.SF_CLIENT_ID_PROD_IDLE }}  # [REDACTED]
           SF_USERNAME:       ${{ vars.SF_USERNAME_PROD }}
         run: |
           set -euo pipefail
-          sf org login jwt --client-id "$SF_CLIENT_ID_IDLE" --jwt-key-file new.key \
+          umask 077
+          KEYFILE=$(mktemp); trap 'rm -f "$KEYFILE"' EXIT
+          printf '%s' "$SF_JWT_KEY_NEXT" | base64 -d > "$KEYFILE"
+          sf org login jwt --client-id "$SF_CLIENT_ID_IDLE" --jwt-key-file "$KEYFILE" \
             --username "$SF_USERNAME" --alias rotation-check
           sf org display --target-org rotation-check --json \
             | python3 -c "import json,sys; print('ok as', json.load(sys.stdin)['result']['username'])"
-      - name: Publish and clean up
+      - name: Promote the idle app's credentials to active
         env:
           GH_TOKEN: ${{ secrets.GH_ADMIN_TOKEN }}                     # [REDACTED]
+          SF_JWT_KEY_NEXT:  ${{ secrets.SF_JWT_KEY_PROD_NEXT }}      # [REDACTED]
+          SF_CLIENT_ID_IDLE: ${{ secrets.SF_CLIENT_ID_PROD_IDLE }}  # [REDACTED]
         run: |
           set -euo pipefail
-          base64 -w0 new.key | gh secret set SF_JWT_KEY_PROD --env production
-          rm -f new.key new.crt
+          printf '%s' "$SF_JWT_KEY_NEXT"   | gh secret set SF_JWT_KEY_PROD --env production
+          printf '%s' "$SF_CLIENT_ID_IDLE" | gh secret set SF_CLIENT_ID_PROD --env production
 ```
+
+After step 5 of the table, swap which app is "idle" (store the old active consumer key as `SF_CLIENT_ID_PROD_IDLE`) and delete `SF_JWT_KEY_PROD_NEXT`.
 
 ## Diagnosing a failed proof (step 3) without printing anything
 

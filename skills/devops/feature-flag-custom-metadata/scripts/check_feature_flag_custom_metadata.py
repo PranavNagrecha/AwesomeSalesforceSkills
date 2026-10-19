@@ -124,6 +124,8 @@ def check_apex(root: Path, out: list[tuple[str, str]]) -> int:
         for var in sorted(mdt_vars):
             if re.search(rf"\b(insert|update|upsert|delete)\s+{re.escape(var)}\s*;", code, re.I):
                 out.append(("ERROR", f"{path}: DML on custom metadata variable '{var}'; deploy with Metadata.Operations.enqueueDeployment"))
+        for m in re.finditer(r"\b(insert|update|upsert|delete)\s+new\s+(\w+__mdt)\b", code, re.I):
+            out.append(("ERROR", f"{path}: DML on a new {m.group(2)} record; deploy with Metadata.Operations.enqueueDeployment"))
         if re.search(r"\bMath\.random\s*\(", code):
             out.append(("WARN", f"{path}: Math.random() in a class that reads custom metadata; rollout must be deterministic per user"))
     return n

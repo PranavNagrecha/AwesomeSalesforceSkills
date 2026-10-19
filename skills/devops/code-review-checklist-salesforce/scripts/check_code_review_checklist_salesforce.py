@@ -12,6 +12,7 @@ ERROR (blocking, exit 1):
 
 WARN (review prompt, exit 0 unless --strict):
   - WITH SECURITY_ENFORCED on a pre-67.0 file (migrate to WITH USER_MODE).
+  - WITH SECURITY_ENFORCED inside a string literal (dynamic SOQL), any version.
   - a non-test class with SOQL/DML but no with/without/inherited sharing keyword
     (its default flips at 67.0: with sharing; before that it depends on callers).
   - SOQL or DML inside a for-loop body.
@@ -37,7 +38,7 @@ from pathlib import Path
 
 NS = "{http://soap.sforce.com/2006/04/metadata}"
 SOQL_RE = re.compile(r"\[\s*select\b", re.I)
-DML_RE = re.compile(r"(?<![\w.])(insert|update|upsert|delete|undelete|merge)\s+(as\s+(user|system)\s+)?[a-z_]\w*\s*;", re.I)
+DML_RE = re.compile(r"(?<![\w.])(insert|update|upsert|delete|undelete|merge)\s+(as\s+(user|system)\s+)?(new\b|\[|[a-z_][\w.]*\s*;)", re.I)
 DB_RE = re.compile(r"\bDatabase\.(insert|update|upsert|delete|undelete|merge|query)\s*\(", re.I)
 SHARING_RE = re.compile(r"\b(with|without|inherited)\s+sharing\b", re.I)
 SEC_ENF_RE = re.compile(r"\bWITH\s+SECURITY_ENFORCED\b", re.I)
@@ -55,8 +56,8 @@ def _child(elem: ET.Element, tag: str) -> ET.Element | None:
     return elem.find(tag)
 
 
-def strip_code(src: str) -> str:
-    """Blank comments and string literals in one pass, keeping newlines and length."""
+def strip_code(src: str, keep_strings: bool = False) -> str:
+    """Blank comments (and string literals unless keep_strings) in one pass, keeping newlines and length."""
     out = []
     i, n = 0, len(src)
     while i < n:
@@ -70,12 +71,19 @@ def strip_code(src: str) -> str:
             j = n if j < 0 else j + 2
             out.append("".join(c if c == "\n" else " " for c in src[i:j]))
             i = j
-        elif src[i] == "'":
+        elif src[i] == "'" and not keep_strings:
             j = i + 1
             while j < n and src[j] != "'":
                 j += 2 if src[j] == "\\" else 1
             j = min(j + 1, n)
             out.append("'" + " " * max(j - i - 2, 0) + ("'" if j - i >= 2 else ""))
+            i = j
+        elif src[i] == "'":
+            j = i + 1
+            while j < n and src[j] != "'":
+                j += 2 if src[j] == "\\" else 1
+            j = min(j + 1, n)
+            out.append(src[i:j])
             i = j
         else:
             out.append(src[i])
@@ -152,6 +160,9 @@ def scan_file(path: Path, findings: list[tuple[str, str]]) -> None:
             findings.append(("ERROR", f"{path}: WITH SECURITY_ENFORCED on an API {ver} file; not allowed from 67.0, use WITH USER_MODE"))
         else:
             findings.append(("WARN", f"{path}: WITH SECURITY_ENFORCED (API {ver}); migrate to WITH USER_MODE before the next version bump"))
+    elif SEC_ENF_RE.search(strip_code(raw, keep_strings=True)):
+        # dynamic SOQL: the clause sits inside a string literal passed to Database.query
+        findings.append(("WARN", f"{path}: WITH SECURITY_ENFORCED inside a string literal (dynamic SOQL, API {ver}); the 67.0 removal covers SOQL in Apex, use WITH USER_MODE / AccessLevel.USER_MODE"))
     if not is_trigger and not is_test and has_db and not SHARING_RE.search(code):
         findings.append(("WARN", f"{path}: database operations but no sharing keyword; default is with sharing at 67.0+, caller-dependent before (API {ver})"))
     if is_trigger and has_db:

@@ -17,7 +17,7 @@ SandboxPostCopy Apex (comments and strings ignored):
   ERROR  constructors declared but none is a no-arg constructor
   WARN   System.abortJob in the class (scheduled jobs aren't copied on refresh)
   WARN   no test calls Test.testSandboxPostCopyScript(... , true) for the class
-Any Apex:
+Any Apex (comments ignored, string literals scanned):
   WARN   a literal org ID (00D...) in code
 
 Exit 1 on ERROR (or WARN with --strict) and when --manifest-dir is missing. Stdlib only.
@@ -42,10 +42,31 @@ TEST_CALL_RE = re.compile(r"testSandboxPostCopyScript\s*\(\s*new\s+(\w+)\s*\(\s*
 LICENSES = {"Developer", "Developer_Pro", "Partial", "Full"}
 
 
+def strip_comments(src: str) -> str:
+    """Blank comments only, skipping over string literals so a '//' inside a URL survives."""
+    out, i, n = [], 0, len(src)
+    while i < n:
+        if src.startswith("//", i):
+            j = src.find("\n", i)
+            i = n if j < 0 else j
+        elif src.startswith("/*", i):
+            j = src.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            out.append(re.sub(r"[^\n]", " ", src[i:j]))
+            i = j
+        elif src[i] == "'":
+            m = re.compile(r"'(?:\\.|[^'\\])*'").match(src, i)
+            j = m.end() if m else n
+            out.append(src[i:j])
+            i = j
+        else:
+            out.append(src[i])
+            i += 1
+    return "".join(out)
+
+
 def strip_code(src: str) -> str:
-    src = re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), src, flags=re.S)
-    src = re.sub(r"//[^\n]*", "", src)
-    return re.sub(r"'(?:\\.|[^'\\])*'", "''", src)
+    return re.sub(r"'(?:\\.|[^'\\])*'", "''", strip_comments(src))
 
 
 def check_definition(path: Path, data: dict, out: list[tuple[str, str]]) -> None:
@@ -72,16 +93,19 @@ def check_definition(path: Path, data: dict, out: list[tuple[str, str]]) -> None
 
 def check_apex(root: Path, out: list[tuple[str, str]]) -> int:
     files = sorted(root.rglob("*.cls"))
-    codes = {p: strip_code(p.read_text(encoding="utf-8", errors="ignore")) for p in files}
+    raws = {p: p.read_text(encoding="utf-8", errors="ignore") for p in files}
+    codes = {p: strip_code(t) for p, t in raws.items()}
     tested: dict[str, bool] = {}
     for code in codes.values():
         for m in TEST_CALL_RE.finditer(code):
             as_auto = re.search(r",\s*true\s*$", m.group(2).strip()) is not None
             tested[m.group(1).lower()] = tested.get(m.group(1).lower(), False) or as_auto
     for path, code in codes.items():
-        m = ORG_ID_RE.search(code)
+        # org IDs are written as string literals, so search with strings kept (comments still ignored)
+        with_strings = strip_comments(raws[path])
+        m = ORG_ID_RE.search(with_strings)
         if m:
-            out.append(("WARN", f"{path}:{code.count(chr(10), 0, m.start()) + 1}: literal org ID; read it at runtime with UserInfo.getOrganizationId()"))
+            out.append(("WARN", f"{path}:{with_strings.count(chr(10), 0, m.start()) + 1}: literal org ID; read it at runtime with UserInfo.getOrganizationId()"))
         impl = IMPL_RE.search(code)
         if not impl:
             continue

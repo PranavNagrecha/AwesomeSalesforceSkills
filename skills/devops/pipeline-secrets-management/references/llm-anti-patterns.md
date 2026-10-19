@@ -75,7 +75,9 @@ widely readable than the secret store, and provider masking only covers declared
 ```
 
 If a human genuinely needs a token, that is a local action on their own machine, never a
-pipeline step. Treat any generated workflow containing `org auth show-` as a finding.
+pipeline step. Treat any generated workflow containing `org auth show-` as a finding, and
+`sf org display --verbose` too: the installed CLI's help (2.151.7) still describes `--verbose`
+as displaying the sfdxAuthUrl property, so do not rely on the newer hiding behaviour.
 
 ## Anti-Pattern 3: One Connected App and one integration user for every environment
 

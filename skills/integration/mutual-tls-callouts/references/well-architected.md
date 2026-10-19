@@ -9,6 +9,7 @@
 Corpus: Summer '26 (API 67.0) PDFs; line numbers are `grep -n` positions in the `pdftotext -layout` text.
 
 - Apex Developer Guide (`salesforce_apex_developer_guide.txt`) L35767–35784 — two-way SSL with a Salesforce-generated or CA-signed certificate; share a self-signed certificate with the partner's keystore; Remote Site Setting unless the endpoint is a Named Credential (SKILL.md Core Concepts, anti-pattern 1).
+- Apex Developer Guide L35790–35791 — a key pair can also be imported from a keystore (gotcha 1).
 - Apex Developer Guide L35795–35837 — generating certificates, SOAP `clientCertName_x`, HTTP `setClientCertificateName('DocSampleCert')` (Decision Guidance).
 - Apex Reference Guide (`salesforce_apex_reference_guide.txt`) L216559–216587 — `setClientCertificate(clientCert, password)` deprecated; `setClientCertificateName(certDevName)` (gotcha 3, checker).
 - Apex Reference Guide L216720–216722 and Apex Developer Guide L35854 — `setTimeout` 1–120,000 ms, connection set-up semantics, 10-second default (gotcha 7).

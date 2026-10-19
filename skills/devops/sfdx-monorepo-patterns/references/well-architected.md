@@ -44,4 +44,4 @@ Corpus: `sfdx_dev.txt` is the Salesforce DX Developer Guide, Summer '26 (API 67.
 - `sfdx_dev.txt` L2410–2420 — `sourceApiVersion` determines the fields retrieved for each metadata type (gotcha 7).
 - `sfdx_dev.txt` L14750–14826 — `dependencies` declaration in install order (gotcha 6, examples.md).
 - `api_meta.txt` L3143–3163 — `testLevel` values; `RunLocalTests` excludes tests from installed managed and unlocked packages (anti-pattern 7).
-- `sfdx_dev.txt` L16141–16143 — 75% code coverage before an unlocked package can be promoted (test classes stay inside the package).
+- `sfdx_dev.txt` L16147 (also L15695) — 75% code coverage before an unlocked package can be promoted (test classes stay inside the package).

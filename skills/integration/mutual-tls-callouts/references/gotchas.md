@@ -4,7 +4,7 @@
 
 **What happens:** IT generates a key pair on a workstation, gets it signed, and tries to "upload the key". The key file now exists outside the org, on disks and in tickets.
 
-**When it occurs:** Teams follow a generic TLS recipe. In Salesforce, a CA-signed certificate is created in Certificate and Key Management, its CSR is downloaded and signed, and the signed chain is uploaded back to the same certificate; the Metadata API doesn't import or export private keys.
+**When it occurs:** Teams follow a generic TLS recipe. In Salesforce, a CA-signed certificate is created in Certificate and Key Management, its CSR is downloaded and signed, and the signed chain is uploaded back to the same certificate; the Metadata API doesn't import or export private keys. Importing a key pair from a keystore is possible (the Apex Developer Guide lists it for SOAP two-way SSL), but by then the key already exists outside the org.
 
 **How to avoid:** Create the certificate in Salesforce, send out only the CSR, and upload the signed chain to that same record — a new record has a different key pair and won't match.
 

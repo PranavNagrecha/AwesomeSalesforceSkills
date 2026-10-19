@@ -4,7 +4,7 @@
 
 **What happens:** A field on `Customer_Profile__c` lives in `sales-core`, the object definition lives in `base-utils`, and `sales-core` doesn't depend on `base-utils`. Installs and clean-org deploys of `sales-core` fail because the object isn't there.
 
-**When it occurs:** Teams extend a shared custom object from their own directory. The DX guide explicitly allows a field to live in a different directory from its object; what it requires is that the object exists first.
+**When it occurs:** Teams extend a shared custom object from their own directory. The DX guide explicitly allows a field to live in a different directory from its object; the field still can't deploy or install into an org where the object doesn't exist yet.
 
 **How to avoid:** One directory owns each custom object's definition; every directory holding its fields declares a dependency on the owner. The checker warns when a field's object is owned by a directory the package doesn't depend on.
 

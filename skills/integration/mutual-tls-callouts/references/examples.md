@@ -82,7 +82,7 @@ by the time the expiry date arrives it is far too late to start.
 
 **Solution — two independent signals, because expiry is not the only way a certificate
 stops working.** Signal 1 runs in CI against source: retrieve the certificate metadata and let
-the checker read `expirationDate` (Apex can't query certificates as records).
+the checker read `expirationDate` (Certificate isn't an sObject in the Object Reference, so plain Apex SOQL can't read its expiry).
 
 ```bash
 sf project retrieve start --metadata Certificate --target-org prod --output-dir cert-check
