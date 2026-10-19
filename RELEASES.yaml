@@ -133,6 +133,17 @@ releases:
     notes: 'Writers in isolated worktrees, 10 skills each, 2 writers + 1 adversarial reviewer. Corpus: scratchpad/corpus/*.txt
       (Summer ''26 PDFs). Every touched skill: Questions table in the exact format, salesforce-version from the cited guide,
       UNVERIFIED net count not up.'
+    done_skills:
+    - data/soql-query-optimization
+    - data/sosl-search-result-limits
+    - data/data-archival-strategies
+    - data/batch-data-cleanup-patterns
+    - data/bulk-api-patterns
+    - data/cdc-data-sync-patterns
+    - data/custom-index-requests
+    - data/data-migration-planning
+    - data/data-model-design-patterns
+    - data/consent-data-model-health
   - id: R1-08
     title: 'Top-up wave: Questions table + version on at-bar skills lacking a table (85 today), data/devops first'
     size: M
@@ -158,7 +169,7 @@ releases:
       record pass rate and mean rubric per arm'
     size: M
     owner_model: sonnet
-    status: todo
+    status: running
     notes: 'Owner 2026-10-19: no more releasing without testing. Same grader, same cases, two arms; the only difference is
       whether the skill package text is in the answering prompt. Report the delta per skill and overall. A zero delta is a
       finding, not a failure of the test.'
