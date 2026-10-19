@@ -95,9 +95,12 @@ Then `python3 scripts/release_plan.py set-status <ID> running` if the item is no
 
 ### Step 3 — Merge and verify, one writer at a time
 
-Never merge two writers in the same pass. For the finished branch `worktree-agent-<id>`:
+Never merge two writers in the same pass. Writers do not commit, so their work sits uncommitted in the worktree: commit it there first (skip the hook — it would rebuild the worktree's own index, and the real validation runs after the merge), then run the adversarial reviewer (Step 2, `review`) on that worktree, commit its fixes the same way, and only then merge:
 
 ```bash
+git -C <worktree-path> add skills/
+git -C <worktree-path> commit --no-verify -m "wip(<job>): <writer> — <n> skills (<item id> batch <k>, unreviewed)"
+# … reviewer runs on <worktree-path>, then the same add + commit with "reviewed" …
 git merge --no-ff worktree-agent-<id>
 git worktree remove <worktree-path>
 ```
