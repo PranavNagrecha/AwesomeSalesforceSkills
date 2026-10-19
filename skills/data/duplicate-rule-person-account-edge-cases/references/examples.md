@@ -125,11 +125,11 @@ The B2B rule:
     <booleanFilter>1 AND 2</booleanFilter>
     <matchingRuleItems>
         <fieldName>Name</fieldName>
-        <matchingMethod>Fuzzy:CompanyName</matchingMethod>
+        <matchingMethod>CompanyName</matchingMethod>
     </matchingRuleItems>
     <matchingRuleItems>
         <fieldName>BillingStreet</fieldName>
-        <matchingMethod>Fuzzy:Street</matchingMethod>
+        <matchingMethod>Street</matchingMethod>
     </matchingRuleItems>
 </MatchingRule>
 ```
@@ -137,7 +137,7 @@ The B2B rule:
 Three problems:
 
 1. No `IsPersonAccount` filter — B2B records compete with B2C records for matches.
-2. `Fuzzy:CompanyName` is tuned for legal-entity tokens (Inc, LLC, Co); on a person name it produces low-quality matches.
+2. The `CompanyName` fuzzy method is tuned for legal-entity tokens (Inc, LLC, Co); on a person name it produces low-quality matches.
 3. The B2C signal that would actually catch dups (`PersonEmail`, `PersonMobilePhone`) is not in the rule at all.
 
 ### Correct rule (parallel B2B + B2C, each gated)
@@ -145,39 +145,42 @@ Three problems:
 Two matching rules and two duplicate rules:
 
 ```xml
-<!-- B2B side -->
-<MatchingRule fullName="Account.B2B_Match">
-    <booleanFilter>1 AND 2 AND 3</booleanFilter>
-    <matchingRuleItems>
-        <fieldName>Name</fieldName>
-        <matchingMethod>Fuzzy:CompanyName</matchingMethod>
-    </matchingRuleItems>
-    <matchingRuleItems>
-        <fieldName>BillingStreet</fieldName>
-        <matchingMethod>Fuzzy:Street</matchingMethod>
-    </matchingRuleItems>
-    <matchingRuleItems>
-        <fieldName>IsPersonAccount</fieldName>
-        <matchingMethod>Exact</matchingMethod>
-    </matchingRuleItems>
-</MatchingRule>
+<!-- excerpt: both rules live in one Account matching-rule file under a MatchingRules root (api_meta.txt L87308); per-rule elements abbreviated -->
+<MatchingRules xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- B2B side -->
+    <MatchingRule fullName="Account.B2B_Match">
+        <booleanFilter>1 AND 2 AND 3</booleanFilter>
+        <matchingRuleItems>
+            <fieldName>Name</fieldName>
+            <matchingMethod>CompanyName</matchingMethod>
+        </matchingRuleItems>
+        <matchingRuleItems>
+            <fieldName>BillingStreet</fieldName>
+            <matchingMethod>Street</matchingMethod>
+        </matchingRuleItems>
+        <matchingRuleItems>
+            <fieldName>IsPersonAccount</fieldName>
+            <matchingMethod>Exact</matchingMethod>
+        </matchingRuleItems>
+    </MatchingRule>
 
-<!-- B2C side -->
-<MatchingRule fullName="Account.B2C_Match">
-    <booleanFilter>(1 OR 2) AND 3</booleanFilter>
-    <matchingRuleItems>
-        <fieldName>PersonEmail</fieldName>
-        <matchingMethod>Exact</matchingMethod>
-    </matchingRuleItems>
-    <matchingRuleItems>
-        <fieldName>PersonMobilePhone</fieldName>
-        <matchingMethod>Phone</matchingMethod>
-    </matchingRuleItems>
-    <matchingRuleItems>
-        <fieldName>IsPersonAccount</fieldName>
-        <matchingMethod>Exact</matchingMethod>
-    </matchingRuleItems>
-</MatchingRule>
+    <!-- B2C side -->
+    <MatchingRule fullName="Account.B2C_Match">
+        <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+        <matchingRuleItems>
+            <fieldName>PersonEmail</fieldName>
+            <matchingMethod>Exact</matchingMethod>
+        </matchingRuleItems>
+        <matchingRuleItems>
+            <fieldName>PersonMobilePhone</fieldName>
+            <matchingMethod>Phone</matchingMethod>
+        </matchingRuleItems>
+        <matchingRuleItems>
+            <fieldName>IsPersonAccount</fieldName>
+            <matchingMethod>Exact</matchingMethod>
+        </matchingRuleItems>
+    </MatchingRule>
+</MatchingRules>
 ```
 
 The B2B Duplicate Rule's match formula adds `AND IsPersonAccount = FALSE`; the B2C side adds `AND IsPersonAccount = TRUE`. They are mutually exclusive — no record is ever evaluated by both.

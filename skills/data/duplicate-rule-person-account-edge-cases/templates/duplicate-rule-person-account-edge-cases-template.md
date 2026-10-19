@@ -64,11 +64,11 @@ path and a fuzzy fallback:
 ```xml
 <matchingRuleItems>
     <fieldName>FirstName</fieldName>
-    <matchingMethod>FuzzyFirstName</matchingMethod>
+    <matchingMethod>FirstName</matchingMethod>
 </matchingRuleItems>
 <matchingRuleItems>
     <fieldName>LastName</fieldName>
-    <matchingMethod>FuzzyLastName</matchingMethod>
+    <matchingMethod>LastName</matchingMethod>
 </matchingRuleItems>
 <matchingRuleItems>
     <fieldName>BillingPostalCode</fieldName>
@@ -138,7 +138,7 @@ When the org is mixed, also author the parallel B2B rule so the two universes ne
     </matchingRuleItems>
     <matchingRuleItems>
         <fieldName>BillingStreet</fieldName>
-        <matchingMethod>FuzzyStreet</matchingMethod>
+        <matchingMethod>Street</matchingMethod>
     </matchingRuleItems>
     <matchingRuleItems>
         <fieldName>IsPersonAccount</fieldName>
@@ -158,7 +158,7 @@ The B2B Duplicate Rule's match formula adds `AND IsPersonAccount = FALSE`; the B
 - [ ] `IsPersonAccount` match item present in every PA-targeted rule
 - [ ] Phone fields use `matchingMethod = Phone`, not `Exact`
 - [ ] No `LOWER(...)` wrapper on the email match field
-- [ ] Fuzzy-name uses `FuzzyFirstName` / `FuzzyLastName`, not `FuzzyCompanyName` on `Account.Name`
+- [ ] Fuzzy-name uses the `FirstName` / `LastName` matching methods, not `CompanyName` on `Account.Name`
 - [ ] Lead-convert path: at least one Account-targeted Duplicate Rule is active
 - [ ] In mixed orgs: parallel B2B + B2C rules with mutually exclusive `IsPersonAccount` gates
 - [ ] `python3 scripts/check_duplicate_rule_person_account_edge_cases.py force-app/main/default` exits 0

@@ -10,23 +10,25 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Record the answers to the Questions to Ask Before Configuring table in SKILL.md here.
 
-- Setting / configuration:
-- Known constraints:
-- Failure modes to watch for:
+- Full error text (every line, not the first):
+- Package contents (`package.xml` or source paths) and API version:
+- Source and target environments; test level used (`RunLocalTests`, `RunSpecifiedTests`, ...):
+- CLI flags in the pipeline (`--ignore-errors`, `--ignore-warnings`):
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Error pattern from the Core Concepts table that matches, and why:
 
 ## Checklist
 
-Copy the review checklist from SKILL.md and tick items as you complete them.
-
-- [ ] TODO
-- [ ] TODO
+- [ ] Full deploy error message captured (not just first line).
+- [ ] Package contents reviewed.
+- [ ] Test-coverage status (ran / didn't run / failed) and test level noted.
+- [ ] Fix applied in source control, not the target org.
+- [ ] Dependent metadata included in the package.
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Deviations from the standard pattern and why:

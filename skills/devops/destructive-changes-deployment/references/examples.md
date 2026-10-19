@@ -11,8 +11,8 @@
 Build a `destructiveChanges.xml` alongside an empty companion `package.xml`:
 
 ```xml
-<!-- destructiveChanges.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- destructiveChanges.xml -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>Account.LegacyRegion__c</members>
@@ -22,8 +22,8 @@ Build a `destructiveChanges.xml` alongside an empty companion `package.xml`:
 ```
 
 ```xml
-<!-- package.xml (empty companion) -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- package.xml (empty companion) -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <version>61.0</version>
 </Package>
@@ -53,8 +53,8 @@ sf project deploy start \
 Put the updated validation rule in `package.xml` and the field deletion in `destructiveChangesPost.xml`:
 
 ```xml
-<!-- package.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- package.xml -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>Opportunity.BlockHighDiscount</members>
@@ -65,8 +65,8 @@ Put the updated validation rule in `package.xml` and the field deletion in `dest
 ```
 
 ```xml
-<!-- destructiveChangesPost.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- destructiveChangesPost.xml -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>Opportunity.DiscountOverride__c</members>

@@ -31,9 +31,9 @@ Confirm package.xml does not include a `SiteDotCom` type block before running an
 
 ## Gotcha 3: DigitalExperienceBundle Is Not Backward-Compatible Across API Versions
 
-**What happens:** A deployment that includes `DigitalExperienceBundle` (introduced at API v54.0) to a target org running on an earlier API version fails. The error message may reference an unrecognized metadata type or produce a generic API error rather than clearly stating the version mismatch.
+**What happens:** A deployment that includes `DigitalExperienceBundle` (available in API v56.0 and later, api_meta.txt L51223) to a target org running on an earlier API version fails. The error message may reference an unrecognized metadata type or produce a generic API error rather than clearly stating the version mismatch.
 
-**When it occurs:** When the source org is on API v54.0 or higher and the target org (sandbox or production) is on an older version. This can happen when sandboxes are not refreshed after a Salesforce major release, or when production is still mid-upgrade cycle.
+**When it occurs:** When the source org is on API v56.0 or higher and the target org (sandbox or production) is on an older version. This can happen when sandboxes are not refreshed after a Salesforce major release, or when production is still mid-upgrade cycle.
 
 **How to avoid:** Before any cross-cloud deployment that includes Experience Cloud sites, run a version check on both source and target:
 

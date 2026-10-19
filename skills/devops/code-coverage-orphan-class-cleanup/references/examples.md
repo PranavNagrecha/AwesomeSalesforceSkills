@@ -50,12 +50,11 @@ Sandbox-deploy the destructive manifest, run RunLocalTests, confirm the test pas
 **Solution:**
 
 ```apex
-// Soft-delete pass: annotate then deploy
+// Soft-delete pass: ApexDoc tag only (no @Deprecated annotation in org code), then deploy
 /**
  * @deprecated Marked 2026-04-30 by tech-debt sweep. Pending delete in 2026-Q3
  * if no usage signal arrives. Owner: platform-eng@.
  */
-@deprecated
 global class OldDiscountEngine {
     // ... existing code unchanged
 }
@@ -63,7 +62,7 @@ global class OldDiscountEngine {
 
 Watch one full release cycle. If Apex Job Logs, Setup Audit Trail, and customer issues stay quiet, schedule the destructive deploy for the following quarter.
 
-**Why it works:** `@deprecated` doesn't change runtime behavior but flags any new compile-time references — engineers will see the warning and surface dependencies the static search missed.
+**Why it works:** the `@Deprecated` annotation itself is not an option here: "You can’t use the @Deprecated annotation in Apex classes or triggers in unmanaged packages" (salesforce_apex_developer_guide.txt L43108). The ApexDoc tag changes nothing at runtime or compile time; it is a searchable triage marker (the checker skips tagged classes) that gives hidden callers one cycle to surface.
 
 ---
 

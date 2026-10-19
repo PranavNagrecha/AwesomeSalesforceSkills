@@ -29,7 +29,7 @@ inputs:
   - "Source org (sandbox or scratch org) and target org (production or UAT sandbox) details"
   - "Whether the site uses CMS managed content from a CMS workspace"
   - "Domain configuration requirements: custom domain, CDN, or SSO settings"
-  - "API version in use (ExperienceBundle requires v46+; DigitalExperienceBundle requires v58+)"
+  - "API version in use (ExperienceBundle requires v46+; DigitalExperienceBundle requires v56+)"
 outputs:
   - "Correct metadata type selection (ExperienceBundle vs. DigitalExperienceBundle) with rationale"
   - "Retrieve and deploy CLI commands with correct flags and package.xml entries"
@@ -37,9 +37,9 @@ outputs:
   - "Post-deployment manual step runbook covering domain config, SSO bindings, and CDN URL configuration"
   - "ExperienceBundleSettings activation instructions for orgs where ExperienceBundle is not yet enabled"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-10-19
 ---
 
 # Experience Cloud Deployment Dev
@@ -59,14 +59,30 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the site Aura, LWR, or an enhanced LWR site created in Winter '23 or later? | Enhanced LWR sites deploy as `DigitalExperienceBundle`; Aura and other LWR sites use `ExperienceBundle`, and the wrong one deploys a broken structure. | Fixes the bundle type, its directory and the `sourceApiVersion` floor before the first retrieve (Gotchas 1 and 5). |
+| For an Aura site, is `enableExperienceBundleMetadata` true in `ExperienceBundle.settings` in both source and target? | With the setting off, a retrieve can come back with no site files while still reporting success. | Adds `Settings:ExperienceBundle` to the manifest and a pre-retrieve check in CI (Gotcha 1). |
+| Does any page show content from a CMS workspace? | Managed content is data, not metadata, so a clean deploy leaves those content zones empty. | Plans a separate CMS export/import or API migration in the release (Gotcha 2). |
+| Does the site use custom CMS content types? | `ContentTypeBundle` is a separate metadata type that the site bundle does not include. | Adds the content types to the deploy before or with the site bundle (Gotcha 6). |
+| Who activates and publishes the site in the target after each deploy, and how? | A clean deploy can leave the site offline or showing its previous version. | Makes activation and publish a scripted or named runbook step (Gotcha 3). |
+| Does the site use a custom domain, single sign-on, or a CDN? | None of these bindings travel in any Experience Cloud metadata type. | Adds a post-deploy section for domain, SSO and CDN setup in each target (Gotcha 4). |
+| Will full-site deploys be tested in scratch orgs or in a sandbox? | Enhanced LWR site deploys into scratch orgs have known gaps and can fail or half-render. | Uses scratch orgs for components and a sandbox for full-site deploy tests (Gotcha 5). |
+
+A proper configuration settles the runtime type, the settings flag and the content outside metadata before scripting, so a pipeline run that reports success has actually delivered a working site.
+
+---
+
 ## Core Concepts
 
 ### ExperienceBundle vs. DigitalExperienceBundle — The Runtime Split
 
 Salesforce maintains two separate metadata types for Experience Cloud sites, split by the site's underlying runtime:
 
-- **ExperienceBundle** (API v46+) — used for Aura-based sites (Classic, Customer Service, Partner Central templates, and similar). Must be explicitly enabled by deploying `ExperienceBundleSettings` with `enableExperienceBundle` set to `true` before any retrieve/deploy of site bundles will work.
-- **DigitalExperienceBundle** (API v58+, generally available Spring '23) — used for enhanced LWR sites (Build Your Own LWR, Microsites, Help Center, and other LWR-native templates). Has a different directory structure: site-level JSON, a `pages/` tree, and a `routes/` tree instead of the Aura-oriented `views/` and `components/` layout.
+- **ExperienceBundle** (API v46+) — used for Aura-based sites (Classic, Customer Service, Partner Central templates, and similar). Must be explicitly enabled by deploying `ExperienceBundleSettings` with `enableExperienceBundleMetadata` set to `true` before any retrieve/deploy of site bundles will work.
+- **DigitalExperienceBundle** (API v56+, api_meta.txt L51223; for enhanced LWR sites created in Winter '23 or later, L51233) — used for enhanced LWR sites (Build Your Own LWR, Microsites, Help Center, and other LWR-native templates). Has a different directory structure: site-level JSON, a `pages/` tree, and a `routes/` tree instead of the Aura-oriented `views/` and `components/` layout.
 
 Using the wrong type is the most common mistake: deploying an enhanced LWR site's files into an ExperienceBundle structure produces a deployment that completes with no errors but renders incorrectly or not at all.
 
@@ -77,11 +93,11 @@ ExperienceBundle retrieval is gated behind an org-level feature flag. The metada
 To enable it, include in `package.xml`:
 ```xml
 <types>
-  <members>ExperienceBundleSettings</members>
+  <members>ExperienceBundle</members>
   <name>Settings</name>
 </types>
 ```
-And ensure the retrieved `ExperienceBundleSettings.settings` file has `<enableExperienceBundle>true</enableExperienceBundle>`.
+The member is `ExperienceBundle` because the settings file is named `ExperienceBundle.settings` (api_meta.txt L115883). Ensure the retrieved `ExperienceBundle.settings` file has `<enableExperienceBundleMetadata>true</enableExperienceBundleMetadata>`.
 
 ### CMS Managed Content Is Not Deployable via Metadata API
 
@@ -105,11 +121,11 @@ The `Network` metadata type represents the community/site record configuration (
 
 **How it works:**
 1. Verify `ExperienceBundleSettings` is enabled in the target org or include it in the deployment.
-2. Construct a `package.xml` that includes `Settings:ExperienceBundleSettings`, `Network:<SiteName>`, and `ExperienceBundle:<SiteName>`.
+2. Construct a `package.xml` that includes `Settings:ExperienceBundle`, `Network:<SiteName>`, and `ExperienceBundle:<SiteName>`.
 3. Retrieve from the source org:
    ```bash
    sf project retrieve start \
-     --metadata "Settings:ExperienceBundleSettings" \
+     --metadata "Settings:ExperienceBundle" \
      --metadata "Network:My_Site" \
      --metadata "ExperienceBundle:My_Site" \
      --target-org source-sandbox
@@ -145,7 +161,7 @@ The `Network` metadata type represents the community/site record configuration (
 **When to use:** Setting up a repeatable automated pipeline that deploys Experience Cloud site changes alongside Apex, LWC, and other metadata.
 
 **How it works:**
-1. In `sfdx-project.json`, set `sourceApiVersion` to 58.0 or higher to support DigitalExperienceBundle.
+1. In `sfdx-project.json`, set `sourceApiVersion` to 56.0 or higher to support DigitalExperienceBundle.
 2. Add a pre-deploy step that checks ExperienceBundleSettings is enabled in the target org (for Aura sites).
 3. Deploy in the correct order: shared metadata first, then ExperienceBundleSettings, then Network, then the site bundle.
 4. Add a post-deploy step script that calls the Managed Content REST API to sync CMS content if the site uses a CMS workspace.
@@ -174,7 +190,7 @@ The `Network` metadata type represents the community/site record configuration (
 Step-by-step instructions for deploying an Experience Cloud site:
 
 1. **Identify the site runtime** — In Experience Builder for the source site, navigate to Settings > Advanced and note the Site Runtime value. "Aura" means use ExperienceBundle; "Enhanced LWR" means use DigitalExperienceBundle. This step cannot be skipped.
-2. **Verify ExperienceBundleSettings (Aura sites only)** — Attempt a test retrieve of `Settings:ExperienceBundleSettings`. If the retrieve returns empty, the feature is not yet enabled. Deploy the settings metadata to activate it in the source and target orgs before proceeding.
+2. **Verify ExperienceBundleSettings (Aura sites only)** — Attempt a test retrieve of `Settings:ExperienceBundle`. If the retrieve returns empty, the feature is not yet enabled. Deploy the settings metadata to activate it in the source and target orgs before proceeding.
 3. **Build the component list and deploy order** — Construct the full component list: ExperienceBundleSettings (Aura only), shared LWC/Apex dependencies, Network record, and the site bundle. Document the required deployment order.
 4. **Retrieve from source** — Run `sf project retrieve start` with the correct metadata type. Inspect the retrieved file structure to confirm the bundle directory is non-empty before proceeding.
 5. **Assess CMS content** — Determine whether the site uses CMS workspace content. If yes, create a parallel CMS migration plan using export/import or the Managed Content REST API. Document this as a separate runbook step.

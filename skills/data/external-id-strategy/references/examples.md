@@ -11,8 +11,8 @@
 Create a Number external ID field on Account:
 
 ```xml
-<!-- force-app/main/default/objects/Account/fields/ERP_Customer_Number__c.field-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/objects/Account/fields/ERP_Customer_Number__c.field-meta.xml -->
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>ERP_Customer_Number__c</fullName>
     <label>ERP Customer Number</label>
@@ -59,8 +59,8 @@ ERP_Customer_Number__c,Name,BillingCity,BillingCountry
 Create a Text external ID field with a composite key:
 
 ```xml
-<!-- force-app/main/default/objects/Contact/fields/Source_Composite_Key__c.field-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/objects/Contact/fields/Source_Composite_Key__c.field-meta.xml -->
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Source_Composite_Key__c</fullName>
     <label>Source Composite Key</label>

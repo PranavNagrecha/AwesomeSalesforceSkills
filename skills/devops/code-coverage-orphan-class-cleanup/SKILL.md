@@ -27,9 +27,9 @@ outputs:
   - "destructive-changes manifest for safe-to-delete classes"
   - "test-required list for classes that must stay"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-30
+updated: 2026-10-19
 ---
 
 # Code Coverage Orphan Class Cleanup
@@ -44,8 +44,24 @@ Gather this context before working on anything in this domain:
 
 - Current org-wide coverage and the gap to 75%. The Tooling API query against `ApexOrgWideCoverage` gives a single number; per-class data lives in `ApexCodeCoverageAggregate`.
 - Whether managed-package classes are inflating the denominator. Salesforce excludes managed-package code from the org-wide calculation, but unmanaged code from a previously-installed-then-uninstalled package may still be present.
-- Any classes flagged as `@deprecated` already, since those telegraph the team's intent.
+- Any classes already carrying a `@deprecated` ApexDoc comment tag, since those telegraph the team's intent.
 - Whether any of the candidate classes are referenced from non-Apex artifacts: Flow Apex action invocations, LWC `@AuraEnabled` callers, REST endpoints (URL mappings), Process Builder Apex actions, scheduled jobs, custom buttons. Coverage-only signals miss these references.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| When did the last complete `RunLocalTests` run finish, and did any class fail to compile in it? | `ApexCodeCoverageAggregate` holds the latest run only, so a skipped class reads as 0% for reasons unrelated to tests. | Forces a clean refresh before any class is called an orphan (Gotcha 1). |
+| Which classes are HTTP entry points (`@RestResource`, `@HttpGet`, `@HttpPost` and the rest), and which outside systems call them? | An endpoint has no Apex callers, so a source search marks it dead while an integration depends on it. | Drops every annotated class from the candidate list before ranking (Gotcha 2). |
+| Which Flows or Process Builder processes call Apex actions? | Invocable classes are named only in flow XML, so a `.cls` search misses them and the destructive deploy fails late. | Adds a flow-XML search for `<actionName>` to the reference check (Gotcha 3). |
+| Were any jobs scheduled from Setup or Anonymous Apex rather than from code in the repo? | A schedule created outside source leaves no `System.schedule` call to find, yet it runs the class every week. | Adds a `CronTrigger` query for every `Schedulable` candidate (Gotcha 4). |
+| Which packages are installed, and were any uninstalled while their unmanaged classes stayed behind? | Managed-package code is outside the org-wide coverage requirement and cannot be deleted; leftover unmanaged classes can. | Filters on `NamespacePrefix = NULL` and targets the leftovers as one batch (Gotcha 5). |
+| Which other metadata can call Apex here: custom buttons, Lightning pages, Aura or LWC `@AuraEnabled` callers? | These references also live outside `.cls` files and break the deploy or the page after deletion. | Widens the search to weblink, flexipage and component bundles alongside flows (Gotcha 3). |
+| For candidates the team is unsure about, is there time for one release with a `@deprecated` comment tag before deletion? | Hidden callers from flows and Setup-only schedules often surface only in use. | Splits the list into delete-now and tag-then-delete, so a miss does not need a rollback (Gotchas 3 and 4). |
+
+A proper configuration proves each class is unreachable before it goes in a destructive manifest, so coverage rises without a deploy failure or a broken integration the next week.
 
 ---
 
@@ -103,7 +119,7 @@ If all four hold, the class is delete-safe. If only the first three hold and the
 | 0% coverage, 0 source refs, 0 metadata refs, no `@RestResource` | Delete | Pure dead weight on the denominator |
 | 0% coverage, used by a Flow/button/REST mapping | Write test or document waiver | Active code; test debt is real debt |
 | Low (<75%) coverage, actively referenced | Out of scope — see apex/test-class-standards | Different problem (improve tests) |
-| 0% coverage, looks unused, but team uncertain | Mark `@deprecated`, deploy, watch one cycle | Cheap reversibility before destructive change |
+| 0% coverage, looks unused, but team uncertain | Add a `@deprecated` ApexDoc comment tag (the `@Deprecated` annotation is managed-package only), deploy, watch one cycle | Cheap reversibility before destructive change |
 
 ---
 
@@ -125,7 +141,7 @@ If all four hold, the class is delete-safe. If only the first three hold and the
 - [ ] Each candidate verified against four orphan criteria (coverage, source ref, metadata ref, REST entry)
 - [ ] Sandbox deploy of the destructive manifest passes all tests
 - [ ] Org-wide coverage measured before and after; delta documented
-- [ ] Classes kept-but-untested have a tracked issue or `@deprecated` annotation
+- [ ] Classes kept-but-untested have a tracked issue or a `@deprecated` comment tag
 
 ---
 

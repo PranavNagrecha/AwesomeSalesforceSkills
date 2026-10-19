@@ -37,9 +37,9 @@ dependencies:
   - data-migration-planning
   - rest-api-patterns
   - data-model-design-patterns
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-19
 ---
 
 # External ID Strategy
@@ -57,6 +57,22 @@ Gather this context before working on anything in this domain:
 - How many external ID fields already exist on each target object? The platform supports up to 25 external ID fields per object (all indexed automatically). Confirm current count before adding fields.
 - Are parent-child object relationships involved? If child records must reference parents by source key rather than Salesforce `Id`, the parent object must have an external ID field populated before children are loaded.
 - Is the source key guaranteed unique in the source system? A non-unique external ID field will cause upsert operations to error on any row where multiple Salesforce records share the same value.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does the source system treat `ORDER-001` and `order-001` as two different records? | A unique Text external ID is case-insensitive unless the case-sensitive option (`caseSensitive` in `CustomField`) is set, so the second insert fails. | Sets the case option at creation and fixes one normalization rule in the ETL spec (Gotcha 1). |
+| Will this field be an upsert key, or only a cross-system reference? | External ID alone indexes the field but does not stop duplicate values; once duplicates exist every upsert on that value errors. | Decides whether `<unique>true</unique>` is mandatory and documents reference-only fields as never-upsert (Gotcha 3). |
+| Does the object already hold rows with values in this field from legacy loads or UI testing? | A Unique flag added late meets existing duplicates, and REST upsert returns 300 when a value matches more than one record. | Runs the `GROUP BY ... HAVING COUNT(Id) > 1` check and a cleanup before the field becomes a key (Gotcha 2). |
+| Who reads the Bulk API 2.0 job's failed-results file after each run, and what alerts on a non-zero `numberRecordsFailed`? | A job with failed rows still finishes `JobComplete`, so status alone hides lost records. | Names an owner and an automated alert on failed rows, not on job status (Gotcha 2). |
+| Do child records reference parents by source key, and does the pipeline wait for the parent job and its error file before submitting children? | An unresolved parent reference fails only that child row, and the job still reports partial success. | Fixes parent-before-child ordering and a count reconciliation gate between jobs (Gotcha 4). |
+| Are key values trimmed and padded the same way in every feed that writes this object? | A trailing space or a different zero-padding makes the relationship lookup miss and the upsert insert a duplicate. | Puts trimming and format rules in the ETL layer, the only place every feed passes through (Gotchas 1 and 4). |
+| How does the field reach production: source-controlled metadata, a change set, or hand-built in Setup? | A `CustomField` file without `<externalId>true</externalId>` deploys as a plain field, and upserts that name it fail. | Adds a pre-promotion check that both the `externalId` and `unique` flags are in the XML (Gotcha 5). |
+
+A proper configuration settles key semantics, uniqueness and load order before the first upsert runs, so reruns update the records they loaded the first time and never add a second copy.
 
 ---
 

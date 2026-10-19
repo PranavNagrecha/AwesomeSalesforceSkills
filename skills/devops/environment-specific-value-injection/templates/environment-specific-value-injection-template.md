@@ -27,7 +27,7 @@ Record the answers to the Before Starting questions from SKILL.md here.
 
 - **CI/CD platform:** (GitHub Actions / Bitbucket Pipelines / GitLab CI / Azure DevOps / other)
 
-- **API version in sfdx-project.json:** (check whether >= 57.0 for External Credential model)
+- **API version in sfdx-project.json:** (check whether >= 56.0 for External Credential model)
 
 ## Mechanism Selection
 

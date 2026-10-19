@@ -42,10 +42,10 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: External Credential API Surface Breaks Scripts Written for Pre-v57.0 Named Credentials
+## Gotcha 5: External Credential API Surface Breaks Scripts Written for Pre-v56.0 Named Credentials
 
-**What happens:** A team has a working post-deploy Python script that populates Named Credential passwords using the Tooling API endpoint `/services/data/v55.0/tooling/sobjects/NamedCredential/{id}`. After upgrading `sourceApiVersion` to `63.0` in `sfdx-project.json`, their Named Credentials are deployed as the new split model (External Credential + Named Credential, introduced in v57.0). The old Tooling API PATCH now returns an error because the password field on `NamedCredential` no longer exists — it has moved to `ExternalCredential` and `ExternalCredentialPrincipal`. Callout authentication is broken until the script is updated.
+**What happens:** A team has a working post-deploy Python script that populates Named Credential passwords using the Tooling API endpoint `/services/data/v55.0/tooling/sobjects/NamedCredential/{id}`. After upgrading `sourceApiVersion` to `63.0` in `sfdx-project.json`, their Named Credentials are deployed as the new split model (External Credential + Named Credential, introduced in v56.0 per api_meta.txt L63618). The old Tooling API PATCH now returns an error because the password field on `NamedCredential` no longer exists — it has moved to `ExternalCredential` and `ExternalCredentialPrincipal`. Callout authentication is broken until the script is updated.
 
-**When it occurs:** When `sourceApiVersion` is bumped to 57.0 or higher and Named Credentials in the org were previously using the legacy single-object model. The platform auto-migrates the records; scripts that were correct for the old model silently fail.
+**When it occurs:** When `sourceApiVersion` is bumped to 56.0 or higher and Named Credentials in the org were previously using the legacy single-object model. The platform auto-migrates the records; scripts that were correct for the old model silently fail.
 
 **How to avoid:** When upgrading API version, audit all post-deploy scripts that interact with Named Credentials. Test the scripts against a sandbox first. Use the Tooling API schema explorer (`/services/data/v63.0/tooling/describe`) to confirm the current fields on `NamedCredential` and `ExternalCredential` objects before writing or updating credential population scripts.

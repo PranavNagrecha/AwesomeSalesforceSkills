@@ -34,9 +34,9 @@ outputs:
   - "List of metadata types that must be excluded from the Experience layer package"
   - "Decision table mapping deployment scenarios to correct packaging strategy"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # Cross-Cloud Deployment Patterns
@@ -56,6 +56,22 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Will `Network` and the site bundle ship in the same `package.xml`, or as separate ordered deploys? | In one transaction the bundle can be evaluated before the Network is committed and fail with a "Network cannot be found" error. | Splits the release into foundation, network and experience manifests (Gotcha 1). |
+| Does the deploy tool wait for a succeeded status on each batch before submitting the next, or fire them back to back? | Splitting the manifests only helps if the second deploy starts after the first has committed. | Adds a status gate between batches in the pipeline script (Gotcha 1). |
+| Is `CustomSite` in the network-layer manifest, or assumed to exist because the `Network` does? | The bundle references both records, and a `CustomSite` created by hand in one org is often missing in the next. | Deploys `CustomSite` with `Network` every time; redeploying it is harmless (Gotcha 5). |
+| Which permission sets grant access to objects this release creates, and which batch are they in? | A permission set grouped with the experience layer can be evaluated before the object it references exists. | Moves those permission sets into the foundation batch (Gotcha 4). |
+| Does the retrieve-and-stage step filter out `SiteDotCom` files before anything is committed? | Retrieves pull `SiteDotCom` in with no warning, and it must not be in a manifest that deploys the site's ExperienceBundle. | Adds `.forceignore` rules and a manifest check for a `SiteDotCom` block (Gotcha 2). |
+| Is the site an enhanced LWR site (`DigitalExperienceBundle`) or an Aura or other LWR site (`ExperienceBundle`)? | The two types are not interchangeable, and the wrong one fails with an error that does not name the cause. | Picks the bundle type from the site, not from habit, before the manifest is written (Gotcha 3). |
+| Which API version is each org in the path on, and is any sandbox behind production after a release? | A target on an older version than the source does not recognise newer Experience metadata. | Adds a version check on every target before the experience batch runs (Gotcha 3). |
+
+A proper configuration fixes the batch order, the bundle type and the version check before the first deploy, so a cross-cloud release fails in planning rather than halfway through production.
+
+---
+
 ## Core Concepts
 
 ### Foundation-First Sequence
@@ -72,16 +88,16 @@ Deploying these three layers in a single transaction is possible only when the M
 
 ### ExperienceBundle vs DigitalExperienceBundle
 
-Salesforce introduced `DigitalExperienceBundle` in API version 54.0 as the successor to `ExperienceBundle` for Experience Builder sites. The two types are not interchangeable across API versions:
+`DigitalExperienceBundle` is available in API version 56.0 and later and is used for enhanced LWR sites created in Winter '23 or later; Aura sites and other LWR sites use `ExperienceBundle` (recommended) or `SiteDotCom` (api_meta.txt L51223, L51234). The two types are not interchangeable:
 
-- `ExperienceBundle` is available from API v45.0 and covers earlier Experience Cloud sites.
-- `DigitalExperienceBundle` is required for sites built with the newer Digital Experiences framework (API v54.0+).
+- `ExperienceBundle` is available from API v46.0 (api_meta.txt L59898) and covers Aura sites and non-enhanced LWR sites.
+- `DigitalExperienceBundle` is required for enhanced LWR sites (API v56.0+).
 
-When the source org is on API v54.0+ and the target org is on an older version, `DigitalExperienceBundle` metadata is not recognized in the target and the deployment fails. Always confirm both org API versions before attempting a cross-cloud deploy that includes Experience Cloud sites.
+When the source org is on API v56.0+ and the target org is on an older version, `DigitalExperienceBundle` metadata is not recognized in the target and the deployment fails. Always confirm both org API versions before attempting a cross-cloud deploy that includes Experience Cloud sites.
 
 ### SiteDotCom Blob Exclusion Rule
 
-`SiteDotCom` is a binary blob that Salesforce auto-generates when you retrieve certain Experience Cloud site metadata. It is not deployable as part of a standard Metadata API deployment package. Including it — even unintentionally — causes a deployment failure that can be mistaken for an unrelated error. The fix is to explicitly exclude the `SiteDotCom` type from `package.xml` and from any `.forceignore` or `.gitignore` files that might accidentally allow it to be staged.
+`SiteDotCom` is a binary blob that Salesforce auto-generates when you retrieve certain Experience Cloud site metadata. It is a metadata type in its own right (API 30.0+, api_meta.txt L130600), but when an Experience Builder site is deployed with ExperienceBundle the manifest must not include it (api_meta.txt L61110). Including it — even unintentionally — causes a deployment failure that can be mistaken for an unrelated error. The fix is to explicitly exclude the `SiteDotCom` type from `package.xml` and from any `.forceignore` or `.gitignore` files that might accidentally allow it to be staged.
 
 ### API Version Compatibility Constraint
 
@@ -122,7 +138,7 @@ The target org cannot be on an older API version than the source org when Experi
 |---|---|---|
 | Full multi-cloud release with new objects, Apex, and new Experience site | Three-batch split: foundation → network → experience | Guarantees cross-layer dependencies resolve in order |
 | Only Experience layer content updates, foundation stable | Single experience-layer batch | Network already exists; no ordering risk |
-| Source org on API v54+, target org on older version | Block deployment until target is upgraded | DigitalExperienceBundle is not backward-compatible |
+| Source org on API v56+, target org on older version | Block deployment until target is upgraded | DigitalExperienceBundle is not backward-compatible |
 | SiteDotCom appears in retrieved metadata | Exclude via package.xml and .forceignore before packaging | Including it causes deployment failure |
 | Network metadata and ExperienceBundle must go together | Deploy Network first, then ExperienceBundle in sequence | ExperienceBundle references Network by name |
 | Permission sets grant access to objects in the same release | Include permission sets in the foundation batch, not experience batch | Object must exist before permission grants can resolve |

@@ -145,16 +145,16 @@ Sandbox refresh post-deploy checklist must include:
 
 ---
 
-## Anti-Pattern 6: Using the Legacy Named Credential Model (Pre-v57.0) in New Implementations
+## Anti-Pattern 6: Using the Legacy Named Credential Model (Pre-v56.0) in New Implementations
 
 **What the LLM generates:** Named Credential XML that uses the single-object model with `<protocol>Password</protocol>` and `<Username>` and `<Password>` fields directly in the NamedCredential metadata type, or Tooling API scripts that PATCH `/tooling/sobjects/NamedCredential/{id}` to set a password field.
 
-**Why it happens:** The pre-v57.0 Named Credential model is widely documented in older tutorials and Stack Overflow answers. LLMs are trained on this content and reproduce the legacy approach even when generating for a Spring '25 org.
+**Why it happens:** The pre-v56.0 Named Credential model is widely documented in older tutorials and Stack Overflow answers. LLMs are trained on this content and reproduce the legacy approach even when generating for a Spring '25 org.
 
 **Correct pattern:**
 
 ```
-As of API v57.0 (Summer '23+), use the split model:
+As of API v56.0 (Winter '23+), use the split model:
   - ExternalCredential: holds authentication type, principal, and credential
   - NamedCredential: holds the callout base URL and references the ExternalCredential
 
@@ -162,7 +162,7 @@ Post-deploy credential population targets ExternalCredentialPrincipal, not Named
   PATCH /services/data/v63.0/tooling/sobjects/ExternalCredentialPrincipal/{id}
   Body: {"Credentials": {"Password": "...", "Username": "..."}}
 
-New implementations should use sourceApiVersion 57.0+ and the split model.
+New implementations should use sourceApiVersion 56.0+ and the split model.
 Legacy single-object Named Credentials still work but are the old model.
 ```
 

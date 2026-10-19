@@ -21,23 +21,23 @@ First, check whether ExperienceBundleSettings is enabled by retrieving it:
 
 ```bash
 sf project retrieve start \
-  --metadata "Settings:ExperienceBundleSettings" \
+  --metadata "Settings:ExperienceBundle" \
   --target-org full-sandbox
 ```
 
-Inspect the retrieved file at `force-app/main/default/settings/ExperienceBundleSettings.settings-meta.xml`. If it contains `<enableExperienceBundle>false</enableExperienceBundle>` (or the file does not exist), the feature is not enabled. Deploy the corrected settings to activate it:
+Inspect the retrieved file at `force-app/main/default/settings/ExperienceBundle.settings-meta.xml`. If it contains `<enableExperienceBundleMetadata>false</enableExperienceBundleMetadata>` (or the file does not exist), the feature is not enabled. Deploy the corrected settings to activate it:
 
 ```xml
-<!-- force-app/main/default/settings/ExperienceBundleSettings.settings-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/settings/ExperienceBundle.settings-meta.xml -->
 <ExperienceBundleSettings xmlns="http://soap.sforce.com/2006/04/metadata">
-    <enableExperienceBundle>true</enableExperienceBundle>
+    <enableExperienceBundleMetadata>true</enableExperienceBundleMetadata>
 </ExperienceBundleSettings>
 ```
 
 ```bash
 sf project deploy start \
-  --metadata "Settings:ExperienceBundleSettings" \
+  --metadata "Settings:ExperienceBundle" \
   --target-org full-sandbox
 
 # Now retrieve the site bundle — it will return the full page structure
@@ -133,13 +133,16 @@ The retrieved bundle will appear under `force-app/main/default/digitalExperience
 **Correct approach:** Always include both the site bundle and the corresponding Network record in the same deployment:
 
 ```xml
-<!-- package.xml — always include both -->
-<types>
-  <members>My_Site</members>
-  <name>Network</name>
-</types>
-<types>
-  <members>My_Site</members>
-  <name>ExperienceBundle</name>  <!-- or DigitalExperienceBundle for LWR -->
-</types>
+<!-- excerpt: version element omitted -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- package.xml — always include both -->
+    <types>
+      <members>My_Site</members>
+      <name>Network</name>
+    </types>
+    <types>
+      <members>My_Site</members>
+      <name>ExperienceBundle</name>  <!-- or DigitalExperienceBundle for an enhanced LWR site -->
+    </types>
+</Package>
 ```

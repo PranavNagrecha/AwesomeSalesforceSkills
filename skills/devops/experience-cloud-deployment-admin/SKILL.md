@@ -35,9 +35,9 @@ outputs:
   - "Post-deployment publishing instructions (UI path and Connect REST API alternative)"
   - "Review checklist confirming site is live and permissioned correctly"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-10-19
 ---
 
 # Experience Cloud Deployment Admin
@@ -50,10 +50,26 @@ This skill activates when a practitioner needs to deploy an Experience Cloud sit
 
 Gather this context before working on anything in this domain:
 
-- Confirm that **Enable Experience Bundle Metadata API** is checked in Setup > Digital Experiences > Settings in both the source org and the target org. Without this flag, ExperienceBundle metadata cannot be retrieved or deployed.
+- Confirm that **Enable Experience Bundle Metadata API** is checked in Setup > Digital Experiences > Settings in both the source org and the target org. Without this flag, ExperienceBundle metadata for Aura sites cannot be retrieved or deployed; LWR sites use ExperienceBundle by default (api_meta.txt L59901-L59903).
 - Identify the full dependency chain: Apex classes used by the site, custom objects, profiles, permission sets, and any connected apps must be deployed before the site metadata.
 - The most common wrong assumption is that deploying ExperienceBundle alone is sufficient. The Network, CustomSite, and all Apex/class dependencies must already exist in the target org before the ExperienceBundle deploy step.
 - A successful deployment does not automatically publish the site. A site that has never been published stays at `Network.Status = UnderConstruction` (Setup label **Preview**) until an admin triggers Publish in Experience Builder or calls the Connect REST API.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the site Aura or LWR, and is **Enable ExperienceBundle Metadata API** on in every org in the path, refreshed sandboxes and scratch orgs included? | For Aura sites the setting is per org and is not carried by a refresh; when it is off, the error rarely names it. | Adds the setting to the environment setup and post-refresh checklists (Gotcha 3). |
+| Does the retrieve-and-deploy routine remove `SiteDotCom` from the manifest and the `siteDotCom/` folder before deploying? | Retrieves include it automatically, and deploying it with ExperienceBundle fails with an error that blames the bundle. | Adds a CI check that fails when both types share a manifest (Gotcha 1). |
+| Who publishes the site after each deploy, by hand in Experience Builder or through an API call, and is that step in the runbook? | A successful deploy never publishes, so members keep seeing the old version or the Under Construction page. | Makes Publish a named step with an owner after every site deploy (Gotcha 2). |
+| What does the post-deploy check assert, and how does the runbook take the site offline for maintenance? | `Network.Status` API values are `Live`, `UnderConstruction` and `DownForMaintenance`, not the Setup labels, and a published site can never return to `UnderConstruction`. | Asserts `Status = 'Live'` and uses `DownForMaintenance` for planned downtime (Gotcha 6). |
+| Does the site already exist in the target org, or must it be created there first? | `Network` supports query, retrieve and update but not create or delete, so a script cannot provision the site. | Plans creation through Setup or the `Network` metadata type before the bundle deploy (Gotcha 6). |
+| Has the site been renamed since it was created, and does the target's `Network` name match the bundle's reference exactly? | A name mismatch leaves the bundle without its parent Network and the deploy fails. | Adds a name comparison to the pre-deploy checks (Gotcha 4). |
+| Has the guest user profile changed in the source, and is it in a deploy step of its own? | The guest profile is a separate `Profile` component, so guest access can break or overexpose data while logged-in users see no problem. | Adds the guest profile to the package and a post-deploy access check (Gotcha 5). |
+
+A proper configuration settles org settings, deploy order, publishing and guest access before the first deploy, so "deployment succeeded" also means members see the new site.
 
 ---
 

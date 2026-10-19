@@ -27,9 +27,9 @@ outputs:
   - Validated deletion sequence accounting for dependencies
   - Deployment command with correct --pre-destructive-changes or --post-destructive-changes flags
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-19
 ---
 
 # Destructive Changes Deployment
@@ -45,6 +45,22 @@ Gather this context before working on anything in this domain:
 - Confirm the exact API name and metadata type of every component to be deleted. Wildcards are not supported in destructiveChanges manifests — every member must be listed explicitly.
 - Identify all components that reference the target component. A deletion will fail with a deployment error if any active component still holds a reference (e.g., a field referenced in a validation rule, a class referenced in a trigger, a component embedded in an active Lightning page).
 - Know which components are permanently undeletable via the Metadata API: Record Types, Picklist values (field values), and active Flow versions cannot be deleted through a deployment. These require manual admin action in Setup.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Are the destructive manifests hand-written, or copied from an existing `package.xml`? | A copied manifest drags in a `<version>` element; the version belongs in the companion `package.xml`, which must sit in the same directory. | Produces a destructive manifest with explicit members and no version, plus a version-only `package.xml` (Gotcha 1). |
+| Does any deletion depend on an update in the same deploy clearing a reference first, such as a class that still uses the object? | Plain `destructiveChanges.xml` deletions run before additions, so the reference is still there when the delete runs. | Puts that member in `destructiveChangesPost.xml` (Gotcha 2). |
+| Is any component deleted and re-created under the same name in this release? | Only the Pre variant guarantees the old one is gone before the new one lands; plain and Pre behave the same. | Names the variant on purpose instead of relying on the plain file (Gotcha 2). |
+| How will other branches, local projects and the CI pipeline learn that these files are gone? | A stale local file redeployed later brings the deleted component back. | Deletes the source files in the same PR and adds retrieve-before-deploy or source tracking (Gotcha 3). |
+| Does any flow on the list have an active version in the target org? | A flow with an active version cannot be deleted through a deploy, and the error may name it by internal ID. | Adds a deactivation step before the destructive deploy (Gotcha 4). |
+| Does the cleanup include record types or picklist values, global value sets included? | These fail in a destructive manifest and need manual Setup work. | Moves them to a manual runbook step with an owner and a date (Gotcha 5). |
+| Is any object or component on the list used by an active Lightning page or its action override? | Items tied to an active Lightning page can't be deleted by `destructiveChanges.xml`. | Adds the Lightning App Builder deactivation as a pre-deploy step (Gotcha 6). |
+
+A proper configuration orders every deletion and lists the manual steps before the deploy, so the release removes exactly what was planned and nothing comes back on the next deploy.
 
 ---
 

@@ -8,7 +8,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** When `ExperienceBundleSettings` has not been enabled in the source org. The ExperienceBundle metadata type is gated behind an org-level feature flag. Salesforce does not return an error when the flag is off — it simply returns no components.
 
-**How to avoid:** Always retrieve and verify `Settings:ExperienceBundleSettings` before attempting a site bundle retrieve. If the settings file contains `<enableExperienceBundle>false</enableExperienceBundle>`, deploy the corrected settings first. Add a pre-retrieve check to CI pipelines that validates ExperienceBundleSettings is enabled before attempting the site bundle retrieve.
+**How to avoid:** Always retrieve and verify `Settings:ExperienceBundle` before attempting a site bundle retrieve. If the settings file contains `<enableExperienceBundleMetadata>false</enableExperienceBundleMetadata>`, deploy the corrected settings first. Add a pre-retrieve check to CI pipelines that validates ExperienceBundleSettings is enabled before attempting the site bundle retrieve.
 
 ---
 

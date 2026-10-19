@@ -11,7 +11,8 @@
 Split the release into three ordered deployments:
 
 ```xml
-<!-- foundation-package.xml — deploy first -->
+<!-- foundation-package.xml — deploy first (excerpt: version element omitted) -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
 <types>
   <members>*</members>
   <name>CustomObject</name>
@@ -24,10 +25,12 @@ Split the release into three ordered deployments:
   <members>*</members>
   <name>PermissionSet</name>
 </types>
+</Package>
 ```
 
 ```xml
-<!-- network-package.xml — deploy second, after foundation succeeds -->
+<!-- network-package.xml — deploy second, after foundation succeeds (excerpt) -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
 <types>
   <members>Partner_Portal</members>
   <name>Network</name>
@@ -36,6 +39,7 @@ Split the release into three ordered deployments:
   <members>Partner_Portal</members>
   <name>CustomSite</name>
 </types>
+</Package>
 ```
 
 ```xml

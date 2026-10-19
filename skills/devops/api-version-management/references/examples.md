@@ -66,8 +66,8 @@ find force-app/ -name '*-meta.xml' -exec grep -l '<apiVersion>3[5-9]\|<apiVersio
 **Solution:**
 
 ```xml
-<!-- After: .js-meta.xml with explicit version -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- After: .js-meta.xml with explicit version -->
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>63.0</apiVersion>
     <isExposed>true</isExposed>

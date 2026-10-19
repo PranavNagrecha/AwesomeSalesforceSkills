@@ -49,3 +49,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** When a data model cleanup effort includes retiring a Record Type or removing obsolete picklist values, and the team assumes the destructive manifest handles all metadata deletion uniformly.
 
 **How to avoid:** Remove Record Types manually via Setup > Object Manager > Record Types. Remove Picklist values via Setup > Object Manager > [Object] > Fields > [Field] > Edit. For Global Value Sets, use Setup > Picklist Value Sets. Document these manual steps in the deployment runbook so they are not missed during a release.
+
+---
+
+## Gotcha 6: Components Tied to an Active Lightning Page Cannot Be Deleted
+
+**What happens:** A destructive deploy that names a custom object, a component placed on a Lightning page, or the page itself fails while the page is active. The Metadata API guide states that `destructiveChanges.xml` can't delete items associated with an active Lightning page (api_meta.txt L4618).
+
+**When it occurs:** When the object or component being retired is still the target of a Lightning page action override, often one nobody remembers assigning.
+
+**How to avoid:** Deactivate the page in Lightning App Builder to remove its action override first, as a manual pre-deploy step in the runbook, then run the destructive deploy.
