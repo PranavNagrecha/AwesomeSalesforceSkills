@@ -2,13 +2,15 @@
 name: {skill_name}
 description: "TODO: One sentence explaining when to use this skill and its main trigger keywords. NOT for TODO: explicit scope exclusion — what does this skill NOT cover."
 category: {domain}
-salesforce-version: "Spring '25+"
+salesforce-version: "TODO"
 well-architected-pillars:
   - Security
 triggers:
   - "TODO: symptom or question a practitioner would type that should route here"
   - "TODO: another natural-language symptom or problem statement for this skill"
   - "TODO: a third phrasing of a real scenario this skill handles"
+  - "TODO: a fourth phrasing, ideally verb-first (configure, audit, design)"
+  - "TODO: a fifth phrasing, e.g. the error message or symptom a practitioner pastes"
 tags:
   - {skill_name}
   - TODO_TAG_2

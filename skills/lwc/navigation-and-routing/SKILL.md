@@ -2,7 +2,7 @@
 name: navigation-and-routing
 description: "URL routing, deep links, and page-reference patterns beyond basic NavigationMixin calls. Triggers: deep link LWC, page reference, URL state, c__ state key, GenerateUrl href, CurrentPageReference, standard__component, lightning__UrlAddressable, navItemPage custom tab. NOT for simple in-app navigation — use lwc/lwc-navigation-mixin."
 category: lwc
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - User Experience
   - Reliability

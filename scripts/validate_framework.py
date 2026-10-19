@@ -66,6 +66,12 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Skip framework/specification/scripts/run_all_checks.py",
     )
+    parser.add_argument(
+        "--report-out",
+        type=Path,
+        default=RECONCILE_REPORT,
+        help="Where to write the reconciliation report (default: docs/product-v2/migration-reconciliation.md)",
+    )
     args = parser.parse_args(argv)
 
     if not SPEC_ROOT.is_dir():
@@ -89,7 +95,7 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     reconcile = reconcile_migration_ledgers(ROOT, SPEC_ROOT / "migration" / "catalogs")
-    write_reconciliation_report(reconcile, RECONCILE_REPORT)
+    write_reconciliation_report(reconcile, args.report_out)
     steps.append(
         {
             "id": "migration-reconcile",
@@ -118,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
     report = {
         "valid": valid,
         "spec_root": str(SPEC_ROOT),
-        "reconciliation_report": str(RECONCILE_REPORT),
+        "reconciliation_report": str(args.report_out),
         "steps": steps,
         "migration": reconcile.to_dict(),
     }

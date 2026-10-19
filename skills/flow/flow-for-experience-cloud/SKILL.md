@@ -2,7 +2,7 @@
 name: flow-for-experience-cloud
 description: "Use when embedding or exposing Salesforce Flows in Experience Cloud, especially for guest or external users, `lightning-flow` usage, site runtime differences, and data-access safety. Triggers: 'flow in experience cloud', 'guest user flow', 'lightning-flow on community page', 'external user flow access', 'LWR flow limitations'. NOT for general Experience Cloud sharing architecture when Flow is not part of the problem - use security/experience-cloud-security."
 category: flow
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - User Experience
   - Security

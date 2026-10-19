@@ -2,7 +2,7 @@
 name: static-resources-in-lwc
 description: "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and CSP-safe delivery. Also covers the StaticResource `-meta.xml` (cacheControl Private vs Public, contentType), `lwc:dom=\"manual\"` containers for DOM-owning libraries, and Jest-mocking the resource loader. NOT for npm-bundled code that ships through the build pipeline or server-side integration assets — use security/csp-and-trusted-urls."
 category: lwc
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Performance
   - Operational Excellence

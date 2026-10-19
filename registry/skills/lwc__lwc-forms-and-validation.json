@@ -141,7 +141,7 @@
     "fc202f89cc3c50211361",
     "ff7b089936c77dba7044"
   ],
-  "content_hash": "8629e41f7e01c0608ad1491ca023100afc1649f90ab2399c3316e24cb533ea2e",
+  "content_hash": "3148305d16a0371cfdd202b4a45b326735b0261ad92b4b44ce68fec1bca02868",
   "dependencies": [],
   "description": "Use when building or reviewing Lightning Web Component form UX, especially the choice between `lightning-record-edit-form` and custom inputs, client-side validation with `reportValidity()`, server-side validation feedback, and file upload flows. NOT for Flow screen design or Apex-only validation logic \u2014 use lwc/lwc-lightning-record-forms.",
   "file_location": "skills/lwc/lwc-forms-and-validation",

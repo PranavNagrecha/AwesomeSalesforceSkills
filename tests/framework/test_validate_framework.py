@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -23,12 +24,24 @@ class MigrationReconcileTests(unittest.TestCase):
 
 class ValidateFrameworkCliTests(unittest.TestCase):
     def test_cli_passes_on_clean_tree(self) -> None:
+        tracked = ROOT / "docs" / "product-v2" / "migration-reconciliation.md"
+        before = tracked.read_bytes()
+        with tempfile.TemporaryDirectory() as tmp:
+            report = Path(tmp) / "report.md"
+            self._run_cli(report)
+            self.assertTrue(report.is_file())
+        # A test must never rewrite a tracked file.
+        self.assertEqual(tracked.read_bytes(), before)
+
+    def _run_cli(self, report: Path) -> None:
         proc = subprocess.run(  # noqa: S603
             [
                 "python3",
                 str(ROOT / "scripts" / "validate_framework.py"),
                 "--skip-spec-checks",
                 "--json",
+                "--report-out",
+                str(report),
             ],
             cwd=ROOT,
             capture_output=True,

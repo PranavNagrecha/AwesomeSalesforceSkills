@@ -136,7 +136,7 @@
     "fe017bec0bda2d0e35a1",
     "fe59dfbd416f4793daf3"
   ],
-  "content_hash": "e0700b0565bba0acd3c3c678d9d0b4c717d1ff67cf067c592fb22aa6295e5837",
+  "content_hash": "63c2e0631e3e6f4aaa22640a34969bc1bfb025d8da46b4a98aa580741f55ecde",
   "dependencies": [],
   "description": "Use when designing or reviewing LWCs for keyboard access, semantic labeling, focus. Triggers: LWC accessibility, keyboard nav, aria-label, aria-labelledby, aria-describedby, label for id, focus order, delegatesFocus, tabindex, shadow DOM label association, live region, screen reader. NOT for specific ARIA/datatable implementation patterns \u2014 use lwc/lwc-accessibility-patterns. NOT for SLDS styling with no assistive-tech impact \u2014 use lwc/lwc-css-and-styling.",
   "file_location": "skills/lwc/lwc-accessibility",

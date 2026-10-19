@@ -153,7 +153,7 @@
     "f89976b04ccd72281eb3",
     "ff3b23000a49524199be"
   ],
-  "content_hash": "b3dee766681e70b99ba796d00c90199b37f5626189096f2ac858c43ead290bd7",
+  "content_hash": "34c61c4617d425967fe0dc68bfbbf940cf9b247b0170e53ab7e3a02babed2ac7",
   "dependencies": [],
   "description": "URL routing, deep links, and page-reference patterns beyond basic NavigationMixin calls. Triggers: deep link LWC, page reference, URL state, c__ state key, GenerateUrl href, CurrentPageReference, standard__component, lightning__UrlAddressable, navItemPage custom tab. NOT for simple in-app navigation \u2014 use lwc/lwc-navigation-mixin.",
   "file_location": "skills/lwc/navigation-and-routing",

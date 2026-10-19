@@ -45,7 +45,8 @@
     },
     "salesforce-version": {
       "type": "string",
-      "minLength": 4
+      "minLength": 4,
+      "pattern": "^(Spring|Summer|Winter) '\\d{2}\\+([ ;(].*)?$"
     },
     "well-architected-pillars": {
       "type": "array",

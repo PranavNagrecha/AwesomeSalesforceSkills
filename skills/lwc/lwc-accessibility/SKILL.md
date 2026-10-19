@@ -2,7 +2,7 @@
 name: lwc-accessibility
 description: "Use when designing or reviewing LWCs for keyboard access, semantic labeling, focus. Triggers: LWC accessibility, keyboard nav, aria-label, aria-labelledby, aria-describedby, label for id, focus order, delegatesFocus, tabindex, shadow DOM label association, live region, screen reader. NOT for specific ARIA/datatable implementation patterns — use lwc/lwc-accessibility-patterns. NOT for SLDS styling with no assistive-tech impact — use lwc/lwc-css-and-styling."
 category: lwc
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - User Experience
   - Security

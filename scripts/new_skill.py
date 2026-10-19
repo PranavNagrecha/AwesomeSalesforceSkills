@@ -424,6 +424,26 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:** TODO: describe the conditions
 
 **How to avoid:** TODO: fix or prevention
+
+---
+
+## Gotcha 4: TODO: Name
+
+**What happens:** TODO: describe the unexpected behavior
+
+**When it occurs:** TODO: describe the conditions
+
+**How to avoid:** TODO: fix or prevention
+
+---
+
+## Gotcha 5: TODO: Name
+
+**What happens:** TODO: describe the unexpected behavior
+
+**When it occurs:** TODO: describe the conditions
+
+**How to avoid:** TODO: fix or prevention
 """
 
 

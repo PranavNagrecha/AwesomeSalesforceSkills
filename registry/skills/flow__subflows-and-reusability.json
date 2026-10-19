@@ -145,7 +145,7 @@
     "fab09af665e5d9c86e67",
     "ffa471600abcc4ae6d68"
   ],
-  "content_hash": "e69b49cfcf613f14b0d2e6c6f6ad77c6a78c3cdd6648fc27b6c31ef13af71256",
+  "content_hash": "bb07ed3783f53e34a9b83d9d827bcdd7b9dec0be127e5eca8946db1bf5a38c7b",
   "dependencies": [],
   "description": "Use when extracting reusable Flow logic into subflows, defining input and output variables, keeping parent flows maintainable, and sharing common automation contracts across multiple flows. Triggers: 'reuse this flow logic', 'how should subflow variables work', 'too much duplicated flow logic', 'subflow contract design'. NOT for Apex-called Flow execution \u2014 use flow/auto-launched-flow-patterns. NOT for Flow Orchestration process design \u2014 use flow/flow-orchestration-patterns.",
   "file_location": "skills/flow/subflows-and-reusability",

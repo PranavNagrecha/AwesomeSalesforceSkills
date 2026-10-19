@@ -146,9 +146,44 @@ def lint(files: list[EvalFile]) -> int:
     return 1 if any_errors else 0
 
 
+def _rel(path: Path) -> str:
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def _grade_one(grader_cmd: str, payload: dict) -> dict:
+    """Run the grader on one case. Raises ValueError on ANY grader fault."""
+    proc = subprocess.run(
+        grader_cmd,
+        shell=True,
+        input=json.dumps(payload),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        raise ValueError(f"grader exited {proc.returncode}: {proc.stderr.strip()}")
+    try:
+        result = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        raise ValueError("grader returned non-JSON") from None
+    rubric = result.get("rubric") if isinstance(result, dict) else None
+    if (
+        not isinstance(rubric, dict)
+        or not rubric
+        or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in rubric.values())
+    ):
+        raise ValueError("grader returned no numeric rubric scores")
+    return result
+
+
 def grade(files: list[EvalFile], grader_cmd: str, output_path: Path | None) -> int:
+    """Fail closed: a grader fault is a failed case, never a skipped one."""
     results = []
     p0_failures = 0
+    errors = 0
     for f in files:
         for case in f.cases:
             payload = {
@@ -157,35 +192,26 @@ def grade(files: list[EvalFile], grader_cmd: str, output_path: Path | None) -> i
                 "priority": case.priority,
                 "case_markdown": case.text,
             }
-            proc = subprocess.run(
-                grader_cmd,
-                shell=True,
-                input=json.dumps(payload),
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            if proc.returncode != 0:
-                print(f"[ERROR] grader failed for {case.name}: {proc.stderr.strip()}")
-                continue
+            record = {"file": _rel(f.path), "case": case.name, "priority": case.priority}
             try:
-                result = json.loads(proc.stdout)
-            except json.JSONDecodeError:
-                print(f"[ERROR] grader returned non-JSON for {case.name}")
-                continue
-            result.update({
-                "file": str(f.path.relative_to(REPO_ROOT)),
-                "case": case.name,
-                "priority": case.priority,
-            })
-            results.append(result)
-            if case.priority == "P0":
-                rubric = result.get("rubric", {})
-                if any(score < 4 for score in rubric.values()):
+                result = _grade_one(grader_cmd, payload)
+            except ValueError as exc:
+                print(f"[ERROR] {case.name}: {exc}")
+                errors += 1
+                if case.priority == "P0":
                     p0_failures += 1
+                results.append({**record, "error": str(exc)})
+                continue
+            result.update(record)
+            results.append(result)
+            if case.priority == "P0" and any(score < 4 for score in result["rubric"].values()):
+                p0_failures += 1
     if output_path:
         output_path.write_text(json.dumps(results, indent=2))
         print(f"Report written to {output_path}")
+    if errors:
+        print(f"[FAIL] {errors} grader error(s); {p0_failures} P0 case(s) failed (errors count as failures).")
+        return 2
     if p0_failures:
         print(f"[FAIL] {p0_failures} P0 cases scored below 4/5 on at least one rubric item.")
         return 2

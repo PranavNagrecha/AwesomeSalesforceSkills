@@ -47,6 +47,7 @@ from pipelines.validators import (
     validate_frontmatter,
     validate_knowledge_source,
     validate_official_sources_uniqueness,
+    validate_depth_gate,
     validate_skill_authoring_style,
     validate_skill_registry_record,
     validate_skill_similarity,
@@ -115,7 +116,7 @@ def _check_skill_local_script(script_path: Path, cwd: Path) -> list[ValidationIs
     return issues
 
 
-def validate_one_skill(skill_dir: Path, root: Path) -> SkillRecord:
+def validate_one_skill(skill_dir: Path, root: Path, changed_only: bool = False) -> SkillRecord:
     """Validate a single skill's structure + frontmatter. Does NOT run the
     script ``--help`` check (that's parallelized separately). Returns a
     SkillRecord that includes the skill_id / name so the driver can detect
@@ -125,6 +126,7 @@ def validate_one_skill(skill_dir: Path, root: Path) -> SkillRecord:
     issues.extend(validate_skill_structure(skill_dir))
     issues.extend(validate_frontmatter(root, skill_path))
     issues.extend(validate_skill_authoring_style(skill_dir))
+    issues.extend(validate_depth_gate(root, skill_dir, changed_only))
 
     skill_id = ""
     name = ""
@@ -304,7 +306,7 @@ def run_skill_validation(
     seen_names: dict[str, str] = {}
 
     # Step 1 — frontmatter + structure for filtered skills (in-process, fast).
-    records: list[SkillRecord] = [validate_one_skill(p, ROOT) for p in filtered_dirs]
+    records: list[SkillRecord] = [validate_one_skill(p, ROOT, changed_only) for p in filtered_dirs]
     for rec in records:
         issues.extend(rec.issues)
         if rec.skill_id:

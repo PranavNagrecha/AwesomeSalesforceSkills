@@ -2,7 +2,7 @@
 name: flow-testing
 description: "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior — use flow/flow-debugging. Also covers: FlowTest metadata, flowtest-meta.xml, testPoints, Flow.Interview, sf flow run test, flow coverage."
 category: flow
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Reliability
   - Operational Excellence

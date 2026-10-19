@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "0da93add686911d8f95c490454a19938f80c5cfed168e9a20cb9241483e95ef5",
+  "generated_from_hash": "9e385532e3e8c35f5f1d23b8acb3cae91d1657ced684f077363577debf579ed0",
   "schema_version": 1,
   "skill_count": 1040,
   "skills": [
@@ -29963,7 +29963,7 @@
         "fdab9af6812c277752e3",
         "fed93275c38ea9d0d139"
       ],
-      "content_hash": "1baa57551d02e6b8bc05670f95ef0c145d1ee89780fca92f91f843df08ae5ff1",
+      "content_hash": "c22652e4c3f69d47d070ff1e974f20620971a099b342d7dda8a6ee5b5810d936",
       "dependencies": [],
       "description": "Use when designing or reviewing list views, compact layouts, highlights panels, and search-result presentation so users can scan, find, and act on records quickly across desktop and mobile. Covers the deployable ListView, CompactLayout, SearchLayouts and ProfileSearchLayouts metadata: filterScope, booleanFilter, sharedTo, compactLayoutAssignment, and the package.xml shapes for each. Triggers: 'too many list views', 'compact layout not showing the right fields', 'search layouts vs list views', 'mobile highlights panel', 'list view missing after sandbox refresh', 'deploy a list view between orgs', 'list view column deployed blank', 'compact layout deploy failed', 'compact layout was named in package.xml but was not found in zipped directory'. NOT for page layouts or record types \u2014 use admin/record-types-and-page-layouts. NOT for Dynamic Forms \u2014 use admin/dynamic-forms-and-actions.",
       "file_location": "skills/admin/list-views-and-compact-layouts",
@@ -125450,7 +125450,7 @@
         "fc78b8bc18fa34f6f5bb",
         "fe4da4a1113cf97a4c61"
       ],
-      "content_hash": "abebb09e82dda8963d036a37397d5b4a5f6afb534739e95097f0cf920ce4243f",
+      "content_hash": "94ca87b9e6503ad9b8e4a94a872f56601578418e958cd29db513af546d2ba086",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale', 'collection variable', 'noMoreValuesConnector', 'Collection Filter', 'Collection Sort', 'Too many SOQL queries: 101', 'Too many DML statements: 151', 'bulk-safe flow XML'. NOT for 'Too many query rows' at LDV scale \u2014 use flow/flow-large-data-volume-patterns. NOT for refactoring one Loop element \u2014 use flow/flow-loop-element-patterns.",
       "file_location": "skills/flow/flow-bulkification",
@@ -126076,7 +126076,7 @@
         "fa07556c146ab3df3c51",
         "fa6ed9e8fafed96ebb21"
       ],
-      "content_hash": "6f1357c43bd8f974e7054cc834c143011c368d432577fa1af2d82381b9b14ad0",
+      "content_hash": "765755b5279efa606d4ca7771324a880268c712069c3b2f6c63819f7a018d02f",
       "dependencies": [],
       "description": "Decide whether a Flow screen component or invocable action needs a Custom Property Editor at all, and if it does, what the design-time contract owes the admin: which configuration fields are genuinely unmanageable in the default property pane, how generic sObject type mapping gets declared, and how the design-time editor is kept from drifting away from the runtime component it configures. Routing and design review, not implementation. Triggers: 'do we need a flow custom property editor', 'flow custom property editor builder context validate', 'Flow Builder admin configuration UX', 'design-time surface vs runtime surface'. NOT for authoring the editor LWC itself \u2014 use lwc/custom-property-editor-for-flow. NOT for the runtime screen component it configures \u2014 use flow/flow-screen-lwc-components.",
       "file_location": "skills/flow/flow-custom-property-editors",
@@ -128050,7 +128050,7 @@
         "fd0bf40bf10166e42ee8",
         "ffcc54df793a1b62b373"
       ],
-      "content_hash": "305595f05cbd732559414653414785bae8bf6be3309cec468da211787bb8b1ed",
+      "content_hash": "0e7f14bf6ee4a37fc61fca8d2c3cd7fbd1fa2b8878f353edc8e77d41c5098f9d",
       "dependencies": [],
       "description": "Use when embedding or exposing Salesforce Flows in Experience Cloud, especially for guest or external users, `lightning-flow` usage, site runtime differences, and data-access safety. Triggers: 'flow in experience cloud', 'guest user flow', 'lightning-flow on community page', 'external user flow access', 'LWR flow limitations'. NOT for general Experience Cloud sharing architecture when Flow is not part of the problem - use security/experience-cloud-security.",
       "file_location": "skills/flow/flow-for-experience-cloud",
@@ -128942,7 +128942,7 @@
         "ff1a1d936ab3a1af0341",
         "ff8011fff9dc66da41bf"
       ],
-      "content_hash": "3248553ece82789011dbf47c499534ddfce2e25b939b9f9a9bb4ec4d003255c9",
+      "content_hash": "fc469defb2eefc96b4ead6752f58795de11216d72675c3ccb618a4514b5ebbc6",
       "dependencies": [],
       "description": "Use when establishing operational standards for a Salesforce Flow portfolio, including naming conventions, ownership, version discipline, retirement of stale flows, and release readiness checks. Triggers: 'flow naming convention', 'too many old flows', 'who owns this flow', 'flow version governance', 'flow deployed but not active', 'two flows on the same object', 'triggerOrder', 'Flow.settings', 'deploy processes and flows as active', 'paused flow interviews', 'cannot delete flow version', 'flow inventory query'. NOT for element-by-element flow logic design or dedicated fault-handling review - use flow/fault-handling.",
       "file_location": "skills/flow/flow-governance",
@@ -132086,7 +132086,7 @@
         "fe3125df4302470b4606",
         "ffb336159214b4c99313"
       ],
-      "content_hash": "58d8e018d5e481b6cfb2a609db0da74066dede72d9b281f26b25da0f2f5c37a4",
+      "content_hash": "07aff817c34c2e405405785a0c1fbc2ca990905931b912808d14334a373325cb",
       "dependencies": [],
       "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior \u2014 use flow/flow-debugging. Also covers: FlowTest metadata, flowtest-meta.xml, testPoints, Flow.Interview, sf flow run test, flow coverage.",
       "file_location": "skills/flow/flow-testing",
@@ -132748,7 +132748,7 @@
         "f590a15b7ceedd7f5acc",
         "f7e88134862429730aed"
       ],
-      "content_hash": "b9a27d432d52fe5bc8a52dd0b6ca917a0bfa181856776102d6b73215138d33be",
+      "content_hash": "50874969bd12702cd0ccf7338faba5a0e3f2953d1c657d3dd133e761292119be",
       "dependencies": [],
       "description": "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for stage gating, work-item assignment and the cancel pathway \u2014 use flow/flow-orchestration-patterns. NOT for lightweight approval routing that needs no orchestration \u2014 use admin/approval-processes.",
       "file_location": "skills/flow/orchestration-flows",
@@ -133296,7 +133296,7 @@
         "fe04425ba47b63437182",
         "fe6930daac9af13fefdb"
       ],
-      "content_hash": "e10722d6b057fe4f185a5ed6e97f94acd7a23b00f70f9b89735dc4fba07ad1a3",
+      "content_hash": "5f73825c9c067c1541ad619c54fc3ac86d3fb186382d0db3134dcc6c27bf1a9d",
       "dependencies": [],
       "description": "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion', 'triggerOrder', 'doesRequireRecordChangedToMeetCriteria', 'scheduled path', 'RecordBeforeDelete', 'flow-meta.xml', 'FlowTest'. NOT for tracing save order against triggers \u2014 use flow/flow-record-save-order-interaction. NOT for bulk-load failures once the trigger model is right \u2014 use flow/flow-bulkification.",
       "file_location": "skills/flow/record-triggered-flow-patterns",
@@ -133668,7 +133668,7 @@
         "ea02e089fe50048186ff",
         "eaa23a7e6824277ff008"
       ],
-      "content_hash": "0e2e82be231831a7ad9e423193e1fb02a7d9d38972a7e2a55b749c1539abc3e2",
+      "content_hash": "d531307c8279c4678731fb120e9bf6eb5b8737e532fd47e620ef4c548895dd4a",
       "dependencies": [],
       "description": "Use when designing or reviewing schedule-triggered flows for recurring automation, replacement of time-based workflow patterns, bounded record selection, idempotent processing, and escalation to Apex when volume is too high. Triggers: 'scheduled flow design', 'nightly flow job', 'time based workflow replacement', 'schedule triggered flow limits'. NOT for record-triggered scheduled paths \u2014 use flow/flow-time-based-patterns. NOT for large-scale batch processing \u2014 use apex/batch-apex-patterns.",
       "file_location": "skills/flow/scheduled-flows",
@@ -134170,7 +134170,7 @@
         "f68db1c3f03adcc611e1",
         "ffd4c765c3bd88d22bdd"
       ],
-      "content_hash": "0f4508addf417a95771986b3e7163dc55f087066a83487faae2f60f3cda11049",
+      "content_hash": "2682da9fabbc2657954e0e6d3495c1abda32bd3f3850955b21f24a7a33fbcd2f",
       "dependencies": [],
       "description": "Use when designing or reviewing interactive Flow screen experiences, including navigation, validation, screen component choice, custom LWC screen components, and user-safe commit timing. Triggers: 'screen flow validation', 'back button behavior in flow', 'custom flow screen component', 'screen flow UX'. NOT for building the custom LWC that renders on a screen \u2014 use flow/flow-screen-lwc-components. NOT for per-field validation that blocks Next \u2014 use flow/flow-screen-input-validation-patterns.",
       "file_location": "skills/flow/screen-flows",
@@ -134366,7 +134366,7 @@
         "fab09af665e5d9c86e67",
         "ffa471600abcc4ae6d68"
       ],
-      "content_hash": "e69b49cfcf613f14b0d2e6c6f6ad77c6a78c3cdd6648fc27b6c31ef13af71256",
+      "content_hash": "bb07ed3783f53e34a9b83d9d827bcdd7b9dec0be127e5eca8946db1bf5a38c7b",
       "dependencies": [],
       "description": "Use when extracting reusable Flow logic into subflows, defining input and output variables, keeping parent flows maintainable, and sharing common automation contracts across multiple flows. Triggers: 'reuse this flow logic', 'how should subflow variables work', 'too much duplicated flow logic', 'subflow contract design'. NOT for Apex-called Flow execution \u2014 use flow/auto-launched-flow-patterns. NOT for Flow Orchestration process design \u2014 use flow/flow-orchestration-patterns.",
       "file_location": "skills/flow/subflows-and-reusability",
@@ -137378,7 +137378,7 @@
         "fbb6fa33215872249464",
         "fbe882e5e233176e96e2"
       ],
-      "content_hash": "7714aa9f17a441fbfaefd871ccc83282c38f701f723925665b082c7fb1604015",
+      "content_hash": "54b807b09f972ff0769e62a704614334701ecdcae9a0a9a22219195821714baf",
       "dependencies": [],
       "description": "Use when designing or reviewing Salesforce GraphQL API usage, especially endpoint selection, field shaping, connection-based pagination, LWC wire adapters, and GraphQL vs REST tradeoffs. Triggers: 'GraphQL API'. NOT for building a custom GraphQL server or for generic REST integration design with no GraphQL component \u2014 use integration/rest-api-patterns.",
       "file_location": "skills/integration/graphql-api-patterns",
@@ -138696,7 +138696,7 @@
         "fc33c2b7ddd3a4e0a379",
         "fdffd3c139eb8841644f"
       ],
-      "content_hash": "5f86068956cf368ab586e9839448353c388a40ec0423921a59106c8f0f826607",
+      "content_hash": "7dfd7cce4c75b6e362735804ab202f4d1359b58888258011ccc2b92b43247142",
       "dependencies": [],
       "description": "Use when choosing or reviewing Salesforce OAuth flows and connected-app policy for integrations, including client credentials, JWT bearer, authorization code, device flow, scopes, and token lifecycle controls. Triggers: 'OAuth flow', 'connected app', 'client credentials', 'JWT bearer', 'refresh token', 'integration user'. NOT for creating and configuring the connected app or External Client App itself in Setup \u2014 use admin/connected-apps-and-auth. NOT for wiring the Named Credential and External Credential that carry the chosen flow \u2014 use integration/named-credentials-setup. NOT for a live token failure such as invalid_grant after refresh, or token rotation and revocation \u2014 use security/oauth-token-management.",
       "file_location": "skills/integration/oauth-flows-and-connected-apps",
@@ -140556,7 +140556,7 @@
         "fe1c63f4275b297037a0",
         "ffc9d303e5a368c43354"
       ],
-      "content_hash": "2ba06a2e55ee39e6e538825d9a661622312e565e58362f05f29e9ca4cca4386f",
+      "content_hash": "ca1ac7f36e9a1fa0fd7fcf8c63e9487e5b196388a69bb0eff2705dab48c02abe",
       "dependencies": [],
       "description": "Use when deciding whether Salesforce Connect and External Objects are the right fit for external data access, or when reviewing OData, cross-org, and custom adapter patterns, query limitations, and latency tradeoffs. Triggers: 'Salesforce Connect', 'External Objects', '__x', 'OData adapter', 'custom adapter'. NOT for the External Object configuration walkthrough and the full inventory of what they cannot do \u2014 triggers, validation rules, record-triggered flows, roll-ups, indirect lookup keys \u2014 use data/data-virtualization-patterns. NOT for keeping high-volume history inside Salesforce instead \u2014 use data/external-data-and-big-objects.",
       "file_location": "skills/integration/salesforce-connect-external-objects",
@@ -145478,7 +145478,7 @@
         "fe017bec0bda2d0e35a1",
         "fe59dfbd416f4793daf3"
       ],
-      "content_hash": "e0700b0565bba0acd3c3c678d9d0b4c717d1ff67cf067c592fb22aa6295e5837",
+      "content_hash": "63c2e0631e3e6f4aaa22640a34969bc1bfb025d8da46b4a98aa580741f55ecde",
       "dependencies": [],
       "description": "Use when designing or reviewing LWCs for keyboard access, semantic labeling, focus. Triggers: LWC accessibility, keyboard nav, aria-label, aria-labelledby, aria-describedby, label for id, focus order, delegatesFocus, tabindex, shadow DOM label association, live region, screen reader. NOT for specific ARIA/datatable implementation patterns \u2014 use lwc/lwc-accessibility-patterns. NOT for SLDS styling with no assistive-tech impact \u2014 use lwc/lwc-css-and-styling.",
       "file_location": "skills/lwc/lwc-accessibility",
@@ -148557,7 +148557,7 @@
         "fc202f89cc3c50211361",
         "ff7b089936c77dba7044"
       ],
-      "content_hash": "8629e41f7e01c0608ad1491ca023100afc1649f90ab2399c3316e24cb533ea2e",
+      "content_hash": "3148305d16a0371cfdd202b4a45b326735b0261ad92b4b44ce68fec1bca02868",
       "dependencies": [],
       "description": "Use when building or reviewing Lightning Web Component form UX, especially the choice between `lightning-record-edit-form` and custom inputs, client-side validation with `reportValidity()`, server-side validation feedback, and file upload flows. NOT for Flow screen design or Apex-only validation logic \u2014 use lwc/lwc-lightning-record-forms.",
       "file_location": "skills/lwc/lwc-forms-and-validation",
@@ -150462,7 +150462,7 @@
         "fa00032f54b5ae8bb02e",
         "ff96c0c5d4db7b4c5679"
       ],
-      "content_hash": "d12a5c64b1e0399f5a3c7cb5c92f4ec3a122cd22713a393217813bff92afe186",
+      "content_hash": "54ff1ff55bf57f343005a682c624431a3587e72981df7d7deea9dca099af9645",
       "dependencies": [],
       "description": "Use when choosing or reviewing overlay patterns in Lightning Web Components, especially `LightningModal`, confirmation dialogs, toasts, focus handling, and overlay dismissal behavior. Triggers: 'lightning modal in lwc', 'toast or modal decision', 'focus trap in modal', 'overlay close result', 'extends LightningModal', 'lightning-modal-body', 'close(result)', 'LightningConfirm', 'LightningAlert', 'LightningPrompt', 'lightning/toast', 'ShowToastEvent', 'modal stacking', 'CloseActionScreenEvent'. NOT for full Flow screen UX design or record-edit processes that should stay on-page - use flow/screen-flows.",
       "file_location": "skills/lwc/lwc-modal-and-overlay",
@@ -151801,7 +151801,7 @@
         "fe4d2180cb0ba0413786",
         "fefd8892f7936cd17eb4"
       ],
-      "content_hash": "0a335e571c7e1c2627d8490efcdb1292d320d7d392cb45ee75a641cd914db46b",
+      "content_hash": "3993625fcf8a22b30bc6598acf1d3c2c4540441a9946c91964152aac2c7ac6ce",
       "dependencies": [],
       "description": "Use when designing or reviewing Lightning Web Components for DOM safety, Lightning Web Security. Triggers: 'innerHTML in lwc', 'Lightning Web Security', 'document.querySelector', 'light DOM security', 'secure apex class for lwc'. NOT for org-wide sharing architecture or Apex-only security reviews when no LWC surface  \u2014 use lwc/lwc-light-dom.",
       "file_location": "skills/lwc/lwc-security",
@@ -154259,7 +154259,7 @@
         "f89976b04ccd72281eb3",
         "ff3b23000a49524199be"
       ],
-      "content_hash": "b3dee766681e70b99ba796d00c90199b37f5626189096f2ac858c43ead290bd7",
+      "content_hash": "34c61c4617d425967fe0dc68bfbbf940cf9b247b0170e53ab7e3a02babed2ac7",
       "dependencies": [],
       "description": "URL routing, deep links, and page-reference patterns beyond basic NavigationMixin calls. Triggers: deep link LWC, page reference, URL state, c__ state key, GenerateUrl href, CurrentPageReference, standard__component, lightning__UrlAddressable, navItemPage custom tab. NOT for simple in-app navigation \u2014 use lwc/lwc-navigation-mixin.",
       "file_location": "skills/lwc/navigation-and-routing",
@@ -154448,7 +154448,7 @@
         "fcd10cffd3285d518209",
         "fcfdda0e0612d9afef37"
       ],
-      "content_hash": "9ac1b2fe4ff571fa2b2c15848b4a035af4510ed0739402f43859fa29b4d96cc9",
+      "content_hash": "1f17b09b5bb887f59f889048b1e52ea17e5440fdd22ae7abb1874f68c3202e14",
       "dependencies": [],
       "description": "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and CSP-safe delivery. Also covers the StaticResource `-meta.xml` (cacheControl Private vs Public, contentType), `lwc:dom=\"manual\"` containers for DOM-owning libraries, and Jest-mocking the resource loader. NOT for npm-bundled code that ships through the build pipeline or server-side integration assets \u2014 use security/csp-and-trusted-urls.",
       "file_location": "skills/lwc/static-resources-in-lwc",

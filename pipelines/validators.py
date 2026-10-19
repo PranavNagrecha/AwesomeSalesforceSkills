@@ -6,7 +6,10 @@ import difflib
 import hashlib
 import json
 import re
+import subprocess
+import tempfile
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
 from .frontmatter import parse_markdown_with_frontmatter
@@ -368,6 +371,115 @@ def validate_skill_structure(path: Path) -> list[ValidationIssue]:
             after_heading = text.split("## Official Sources Used", 1)[1].strip()
             if not after_heading:
                 issues.append(ValidationIssue("ERROR", str(waf_path), "`## Official Sources Used` section is empty; list at least one source"))
+    return issues
+
+
+# ---------------------------------------------------------------------------
+# Depth gate (no-regression): a NEW skill must meet the depth bar; an EXISTING
+# skill touched in --changed-only mode must not score lower than at HEAD.
+# Untouched old skills are never judged, so the full sweep gains no new output.
+# ---------------------------------------------------------------------------
+
+DEPTH_BAR = 10
+DEPTH_NEW_SKILL_CUTOFF = "2026-10-19"
+QUESTIONS_HEADING = "## Questions to Ask Before Configuring"
+QUESTIONS_HEADER = ["ask", "why it matters", "what a good answer adds"]
+
+
+def _git_out(root: Path, *args: str) -> str | None:
+    try:
+        return subprocess.run(
+            ["git", *args], cwd=root, capture_output=True, text=True, check=True
+        ).stdout
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+        return None
+
+
+@lru_cache(maxsize=4)
+def _head_files(root: str) -> frozenset[str] | None:
+    """Every path tracked at HEAD, or None when git/HEAD is unavailable."""
+    out = _git_out(Path(root), "ls-tree", "-r", "--name-only", "HEAD")
+    return None if out is None else frozenset(out.splitlines())
+
+
+def _questions_table_problem(text: str) -> str | None:
+    lines = text.splitlines()
+    start = next((i for i, ln in enumerate(lines) if ln.rstrip() == QUESTIONS_HEADING), None)
+    if start is None:
+        return f"SKILL.md has no `{QUESTIONS_HEADING}` heading"
+    for ln in lines[start + 1:]:
+        if ln.startswith("## "):
+            break
+        if ln.strip().startswith("|"):
+            cells = [c.strip().lower() for c in ln.strip().strip("|").split("|")]
+            if cells[:3] == QUESTIONS_HEADER:
+                return None
+            break
+    return (f"the table under `{QUESTIONS_HEADING}` must start with the header row "
+            "`| Ask | Why it matters | What a good answer adds |`")
+
+
+def _score_at_head(root: Path, rel: str) -> dict | None:
+    from scripts.score_skill_depth import score_skill
+
+    listing = _git_out(root, "ls-tree", "-r", "--name-only", "HEAD", "--", rel)
+    if not listing:
+        return None
+    with tempfile.TemporaryDirectory(prefix="sfskills-head-") as tmp:
+        for f in listing.splitlines():
+            sub = f[len(rel) + 1:]
+            if not (sub == "SKILL.md" or (sub.startswith("references/") and sub.endswith(".md"))
+                    or (sub.startswith("scripts/") and sub.endswith(".py"))):
+                continue
+            body = _git_out(root, "show", f"HEAD:{f}")
+            if body is None:
+                continue
+            dest = Path(tmp) / rel / sub
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_text(body, encoding="utf-8")
+        return score_skill(Path(tmp) / rel)
+
+
+def validate_depth_gate(root: Path, path: Path, changed_only: bool = False) -> list[ValidationIssue]:
+    """NEW skill: score >= DEPTH_BAR and a real Questions table. EXISTING skill
+    (only when ``changed_only``): score must not drop below its HEAD score."""
+    from scripts.score_skill_depth import SIGNALS, score_skill
+
+    skill_md = path / "SKILL.md"
+    if not skill_md.exists():
+        return []
+    text = skill_md.read_text(encoding="utf-8")
+    rel = path.relative_to(root).as_posix()
+    ver = re.search(r"^version:\s*[\"']?([\d.]+)", text, re.MULTILINE)
+    upd = re.search(r"^updated:\s*[\"']?(\d{4}-\d{2}-\d{2})", text, re.MULTILINE)
+    head = _head_files(str(root))
+    is_new = (head is not None and f"{rel}/SKILL.md" not in head) or bool(
+        ver and upd and ver.group(1) == "1.0.0" and upd.group(1) >= DEPTH_NEW_SKILL_CUTOFF
+    )
+    issues: list[ValidationIssue] = []
+    if is_new:
+        row = score_skill(path)
+        if row["score"] < DEPTH_BAR:
+            missing = ", ".join(s for s in SIGNALS if not row[s])
+            issues.append(ValidationIssue(
+                "ERROR", str(skill_md),
+                f"new skill scores {row['score']}/{len(SIGNALS)} on scripts/score_skill_depth.py; "
+                f"the bar is {DEPTH_BAR}. Missing signals: {missing}",
+            ))
+        problem = _questions_table_problem(text)
+        if problem:
+            issues.append(ValidationIssue("ERROR", str(skill_md), f"new skill: {problem}"))
+    elif changed_only:
+        before = _score_at_head(root, rel)
+        if before is not None:
+            now = score_skill(path)
+            if now["score"] < before["score"]:
+                lost = ", ".join(s for s in SIGNALS if before[s] and not now[s])
+                issues.append(ValidationIssue(
+                    "ERROR", str(skill_md),
+                    f"depth score regressed {before['score']} -> {now['score']} vs HEAD "
+                    f"(lost signals: {lost})",
+                ))
     return issues
 
 

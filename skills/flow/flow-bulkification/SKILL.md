@@ -2,7 +2,7 @@
 name: flow-bulkification
 description: "Use when designing, reviewing, or troubleshooting Salesforce Flows that must survive data loads, integrations, or high-volume record changes without hitting transaction limits. Triggers: 'Get Records in loop', 'Flow bulkification', 'data loader causing flow errors', 'DML in loop', 'record-triggered flow scale', 'collection variable', 'noMoreValuesConnector', 'Collection Filter', 'Collection Sort', 'Too many SOQL queries: 101', 'Too many DML statements: 151', 'bulk-safe flow XML'. NOT for 'Too many query rows' at LDV scale — use flow/flow-large-data-volume-patterns. NOT for refactoring one Loop element — use flow/flow-loop-element-patterns."
 category: flow
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Scalability
   - Performance

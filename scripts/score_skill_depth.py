@@ -14,9 +14,13 @@ standards/skill-authoring-style.md § 3.7 and CLAUDE.md "Skill Package Standard"
     sources     >= 4 bullets under `## Official Sources Used`
     checker     scripts/check_*.py is not the scaffold stub
     examples    references/examples.md is not the scaffold stub
-    todos       zero `TODO` markers across the package
+    todos       zero `TODO` markers in SKILL.md and references/*.md (scripts/ and
+                templates/ are not prose and are not counted)
     triggers    >= 5 natural-language triggers in frontmatter
-    extras      at least one reference file beyond the four required ones
+    extras      at least one reference file beyond the four required ones, >= 500 bytes
+
+`unverified_n` (count of the literal UNVERIFIED across SKILL.md + references/)
+is reported alongside but is not a signal.
 
 Each signal is worth one point (max 12). The report lists the lowest scores
 first — that is the worklist.
@@ -39,6 +43,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
+MIN_EXTRA_BYTES = 500
 REQUIRED_REFS = {"examples.md", "gotchas.md", "well-architected.md", "llm-anti-patterns.md"}
 ARTIFACT_LANGS = {"xml", "apex", "java", "javascript", "js", "soql", "sql", "json", "yaml", "yml", "bash", "sh", "html", "css", "python"}
 BOILERPLATE_WORKFLOW = "Gather context — confirm the org edition"
@@ -73,14 +78,11 @@ def score_skill(skill_dir: Path) -> dict:
     skill_md = _read(skill_dir / "SKILL.md")
     fm = _frontmatter(skill_md)
     refs_dir = skill_dir / "references"
-    ref_files = {p.name for p in refs_dir.glob("*.md")} if refs_dir.exists() else set()
     ref_texts = {p.name: _read(p) for p in refs_dir.glob("*.md")} if refs_dir.exists() else {}
     all_text = skill_md + "".join(ref_texts.values())
     fences = _fences(all_text)
     scripts = list((skill_dir / "scripts").glob("*.py")) if (skill_dir / "scripts").exists() else []
     script_text = "".join(_read(p) for p in scripts)
-    templates = list((skill_dir / "templates").glob("*")) if (skill_dir / "templates").exists() else []
-    template_text = "".join(_read(p) for p in templates if p.is_file())
 
     triggers: list[str] = []
     # anchor on the YAML key at line start; the description prose may contain "triggers:"
@@ -97,7 +99,11 @@ def score_skill(skill_dir: Path) -> dict:
         sources_block = wa[wa.index("## Official Sources Used"):]
     sources = sum(1 for ln in sources_block.splitlines() if ln.lstrip().startswith("- "))
 
-    todo_count = len(re.findall(r"\bTODO\b", all_text + script_text + template_text))
+    todo_count = len(re.findall(r"\bTODO\b", all_text))
+    unverified_n = all_text.count("UNVERIFIED")
+    extras_ok = any(
+        p.name not in REQUIRED_REFS and p.stat().st_size >= MIN_EXTRA_BYTES for p in refs_dir.glob("*.md")
+    ) if refs_dir.exists() else False
     sig = {
         "questions": "## Questions to Ask" in skill_md,
         "workflow": "## Recommended Workflow" in skill_md and BOILERPLATE_WORKFLOW not in skill_md,
@@ -110,7 +116,7 @@ def score_skill(skill_dir: Path) -> dict:
         "examples": "examples.md" in ref_texts and "TODO" not in ref_texts["examples.md"],
         "todos": todo_count == 0,
         "triggers": len(triggers) >= 5,
-        "extras": len(ref_files - REQUIRED_REFS) >= 1,
+        "extras": extras_ok,
     }
     m_ver = re.search(r"^version:\s*([\d.]+)", fm, re.M)
     m_upd = re.search(r"^updated:\s*[\"']?(\d{4}-\d{2}-\d{2})", fm, re.M)
@@ -124,6 +130,7 @@ def score_skill(skill_dir: Path) -> dict:
         "sources_n": sources,
         "trigger_n": len(triggers),
         "todo_n": todo_count,
+        "unverified_n": unverified_n,
         "lines": skill_md.count("\n"),
         "version": m_ver.group(1) if m_ver else "",
         "updated": m_upd.group(1) if m_upd else "",
@@ -167,11 +174,11 @@ def main() -> int:
     ranked = sorted(rows, key=lambda r: (r["score"], r["skill"]))
     lines.append(f"## Ranked worklist (lowest {args.top})")
     lines.append("")
-    lines.append("| score | skill | missing | gotchas | sources | triggers | todos | tags |")
-    lines.append("|---:|---|---|---:|---:|---:|---:|---|")
+    lines.append("| score | skill | missing | gotchas | sources | triggers | todos | unverified | tags |")
+    lines.append("|---:|---|---|---:|---:|---:|---:|---:|---|")
     for r in ranked[: args.top]:
         missing = ",".join(s for s in SIGNALS if not r[s])
-        lines.append(f"| {r['score']} | {r['skill']} | {missing} | {r['gotcha_n']} | {r['sources_n']} | {r['trigger_n']} | {r['todo_n']} | {r['tags']} |")
+        lines.append(f"| {r['score']} | {r['skill']} | {missing} | {r['gotcha_n']} | {r['sources_n']} | {r['trigger_n']} | {r['todo_n']} | {r['unverified_n']} | {r['tags']} |")
     report = "\n".join(lines) + "\n"
 
     if args.out:

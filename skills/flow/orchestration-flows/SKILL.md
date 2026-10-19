@@ -2,7 +2,7 @@
 name: orchestration-flows
 description: "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for stage gating, work-item assignment and the cancel pathway — use flow/flow-orchestration-patterns. NOT for lightweight approval routing that needs no orchestration — use admin/approval-processes."
 category: flow
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Reliability
   - Scalability

@@ -2,7 +2,7 @@
 name: graphql-api-patterns
 description: "Use when designing or reviewing Salesforce GraphQL API usage, especially endpoint selection, field shaping, connection-based pagination, LWC wire adapters, and GraphQL vs REST tradeoffs. Triggers: 'GraphQL API'. NOT for building a custom GraphQL server or for generic REST integration design with no GraphQL component — use integration/rest-api-patterns."
 category: integration
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Performance
   - Reliability

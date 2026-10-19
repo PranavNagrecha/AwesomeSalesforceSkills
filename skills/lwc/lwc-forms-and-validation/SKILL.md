@@ -2,7 +2,7 @@
 name: lwc-forms-and-validation
 description: "Use when building or reviewing Lightning Web Component form UX, especially the choice between `lightning-record-edit-form` and custom inputs, client-side validation with `reportValidity()`, server-side validation feedback, and file upload flows. NOT for Flow screen design or Apex-only validation logic — use lwc/lwc-lightning-record-forms."
 category: lwc
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - User Experience
   - Reliability

@@ -63,7 +63,7 @@
     "f590a15b7ceedd7f5acc",
     "f7e88134862429730aed"
   ],
-  "content_hash": "b9a27d432d52fe5bc8a52dd0b6ca917a0bfa181856776102d6b73215138d33be",
+  "content_hash": "50874969bd12702cd0ccf7338faba5a0e3f2953d1c657d3dd133e761292119be",
   "dependencies": [],
   "description": "Use when designing or reviewing Flow Orchestration for long-running, multi-user, or asynchronous business processes with stages, steps, work items, and monitoring needs. Triggers: 'flow orchestration', 'work item', 'stages and steps', 'multi-user process', 'long-running flow'. NOT for stage gating, work-item assignment and the cancel pathway \u2014 use flow/flow-orchestration-patterns. NOT for lightweight approval routing that needs no orchestration \u2014 use admin/approval-processes.",
   "file_location": "skills/flow/orchestration-flows",

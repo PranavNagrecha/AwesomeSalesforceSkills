@@ -2,7 +2,7 @@
 name: lwc-modal-and-overlay
 description: "Use when choosing or reviewing overlay patterns in Lightning Web Components, especially `LightningModal`, confirmation dialogs, toasts, focus handling, and overlay dismissal behavior. Triggers: 'lightning modal in lwc', 'toast or modal decision', 'focus trap in modal', 'overlay close result', 'extends LightningModal', 'lightning-modal-body', 'close(result)', 'LightningConfirm', 'LightningAlert', 'LightningPrompt', 'lightning/toast', 'ShowToastEvent', 'modal stacking', 'CloseActionScreenEvent'. NOT for full Flow screen UX design or record-edit processes that should stay on-page - use flow/screen-flows."
 category: lwc
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - User Experience
   - Reliability

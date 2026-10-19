@@ -214,7 +214,7 @@
     "fe04425ba47b63437182",
     "fe6930daac9af13fefdb"
   ],
-  "content_hash": "e10722d6b057fe4f185a5ed6e97f94acd7a23b00f70f9b89735dc4fba07ad1a3",
+  "content_hash": "5f73825c9c067c1541ad619c54fc3ac86d3fb186382d0db3134dcc6c27bf1a9d",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion', 'triggerOrder', 'doesRequireRecordChangedToMeetCriteria', 'scheduled path', 'RecordBeforeDelete', 'flow-meta.xml', 'FlowTest'. NOT for tracing save order against triggers \u2014 use flow/flow-record-save-order-interaction. NOT for bulk-load failures once the trigger model is right \u2014 use flow/flow-bulkification.",
   "file_location": "skills/flow/record-triggered-flow-patterns",

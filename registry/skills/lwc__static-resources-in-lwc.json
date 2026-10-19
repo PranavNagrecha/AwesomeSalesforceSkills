@@ -134,7 +134,7 @@
     "fcd10cffd3285d518209",
     "fcfdda0e0612d9afef37"
   ],
-  "content_hash": "9ac1b2fe4ff571fa2b2c15848b4a035af4510ed0739402f43859fa29b4d96cc9",
+  "content_hash": "1f17b09b5bb887f59f889048b1e52ea17e5440fdd22ae7abb1874f68c3202e14",
   "dependencies": [],
   "description": "Use when packaging third-party JavaScript, CSS, or asset files into Salesforce static resources for Lightning Web Components, including `@salesforce/resourceUrl`, `loadScript`, `loadStyle`, zip pathing, versioning, and CSP-safe delivery. Also covers the StaticResource `-meta.xml` (cacheControl Private vs Public, contentType), `lwc:dom=\"manual\"` containers for DOM-owning libraries, and Jest-mocking the resource loader. NOT for npm-bundled code that ships through the build pipeline or server-side integration assets \u2014 use security/csp-and-trusted-urls.",
   "file_location": "skills/lwc/static-resources-in-lwc",

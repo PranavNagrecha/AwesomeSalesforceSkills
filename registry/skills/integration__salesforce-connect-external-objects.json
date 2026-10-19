@@ -92,7 +92,7 @@
     "fe1c63f4275b297037a0",
     "ffc9d303e5a368c43354"
   ],
-  "content_hash": "2ba06a2e55ee39e6e538825d9a661622312e565e58362f05f29e9ca4cca4386f",
+  "content_hash": "ca1ac7f36e9a1fa0fd7fcf8c63e9487e5b196388a69bb0eff2705dab48c02abe",
   "dependencies": [],
   "description": "Use when deciding whether Salesforce Connect and External Objects are the right fit for external data access, or when reviewing OData, cross-org, and custom adapter patterns, query limitations, and latency tradeoffs. Triggers: 'Salesforce Connect', 'External Objects', '__x', 'OData adapter', 'custom adapter'. NOT for the External Object configuration walkthrough and the full inventory of what they cannot do \u2014 triggers, validation rules, record-triggered flows, roll-ups, indirect lookup keys \u2014 use data/data-virtualization-patterns. NOT for keeping high-volume history inside Salesforce instead \u2014 use data/external-data-and-big-objects.",
   "file_location": "skills/integration/salesforce-connect-external-objects",

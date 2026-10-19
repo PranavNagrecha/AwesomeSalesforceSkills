@@ -2,7 +2,7 @@
 name: lwc-security
 description: "Use when designing or reviewing Lightning Web Components for DOM safety, Lightning Web Security. Triggers: 'innerHTML in lwc', 'Lightning Web Security', 'document.querySelector', 'light DOM security', 'secure apex class for lwc'. NOT for org-wide sharing architecture or Apex-only security reviews when no LWC surface  — use lwc/lwc-light-dom."
 category: lwc
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Security
   - Reliability

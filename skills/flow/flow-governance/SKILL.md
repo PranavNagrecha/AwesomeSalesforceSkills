@@ -2,7 +2,7 @@
 name: flow-governance
 description: "Use when establishing operational standards for a Salesforce Flow portfolio, including naming conventions, ownership, version discipline, retirement of stale flows, and release readiness checks. Triggers: 'flow naming convention', 'too many old flows', 'who owns this flow', 'flow version governance', 'flow deployed but not active', 'two flows on the same object', 'triggerOrder', 'Flow.settings', 'deploy processes and flows as active', 'paused flow interviews', 'cannot delete flow version', 'flow inventory query'. NOT for element-by-element flow logic design or dedicated fault-handling review - use flow/fault-handling."
 category: flow
-salesforce-version: "Spring '25+'"
+salesforce-version: "Spring '25+"
 well-architected-pillars:
   - Operational Excellence
 tags:
