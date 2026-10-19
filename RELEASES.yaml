@@ -126,7 +126,7 @@ releases:
     title: 'Top-up wave: Questions table + version on at-bar skills lacking a table (85 today), data/devops first'
     size: M
     owner_model: opus
-    status: todo
+    status: running
     target: 40
     domains:
     - data
@@ -194,6 +194,12 @@ releases:
     title: Release 1.5.0 / 0.5.2
     size: S
     owner_model: fable
+    status: todo
+  - id: R2-07
+    title: '[split before scheduling] Distribution push: list sfskills-mcp + plugin on MCP registries/directories and awesome
+      lists; contributor on-ramp'
+    size: L
+    owner_model: opus
     status: todo
   measured: {}
 - version: 1.6.0
@@ -304,4 +310,9 @@ releases:
     owner_model: fable
     status: todo
   measured: {}
-inbox: []
+inbox:
+- date: 2026-10-19
+  ask: 'Marketing/distribution: publish the SfSkills MCP and plugin to more places (MCP registries and directories, awesome
+    lists, plugin marketplaces, community posts) so the repo gets more stars and contributors'
+  size: L
+  slotted_into: 1.5.0
