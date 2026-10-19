@@ -271,14 +271,69 @@ releases:
   theme: 'Prove it or shrink it: agent proof on real inputs, roster shrink, measured distribution test'
   items:
   - id: R2-01
-    title: 'Agent proof: run 8 agents a Salesforce admin/dev would reach for on real inputs (/why-cant-user, /scan-security,
-      /build-flow, /analyze-field-impact, /architect-perms, /design-object, /triage-deployment, /build-from-requirements);
-      grade each output right/useful/wrong with the evidence'
+    title: '[parent] Agent proof: 8 agents on real inputs — tracer items R2-01-1..8'
     size: L
     owner_model: opus
-    status: todo
+    status: dropped
     notes: 'Inputs: the five examples/builds scenarios plus one real metadata tree the owner points at. Output per agent:
       verdict + what it got wrong + would a practitioner have used it. Split into tracer items (one agent each) before scheduling.'
+    evidence: split into R2-01-1..R2-01-8 on 2026-10-20
+  - id: R2-01-1
+    title: 'Agent proof: /scan-security (security-scanner) on a real input — Apex from examples/builds/tier2-webhook/artefacts;
+      then an adversarial grader scores right/useful/wrong against the corpus'
+    size: S
+    owner_model: opus
+    status: running
+    parent: R2-01
+  - id: R2-01-2
+    title: 'Agent proof: /why-cant-user (access-path-explainer) on a real input — permission sets + sharing from examples/builds/northwind-sales/artefacts;
+      then an adversarial grader scores right/useful/wrong against the corpus'
+    size: S
+    owner_model: opus
+    status: todo
+    parent: R2-01
+  - id: R2-01-3
+    title: 'Agent proof: /build-flow (flow-builder) on a real input — a requirement line from examples/builds/case-onboarding/requirement.md;
+      then an adversarial grader scores right/useful/wrong against the corpus'
+    size: S
+    owner_model: opus
+    status: todo
+    parent: R2-01
+  - id: R2-01-4
+    title: 'Agent proof: /analyze-field-impact (field-impact-analyzer) on a real input — a field in examples/builds/northwind-sales/artefacts;
+      then an adversarial grader scores right/useful/wrong against the corpus'
+    size: S
+    owner_model: opus
+    status: todo
+    parent: R2-01
+  - id: R2-01-5
+    title: 'Agent proof: /architect-perms (permission-set-architect) on a real input — personas in examples/builds/case-onboarding/CLARIFICATIONS.md;
+      then an adversarial grader scores right/useful/wrong against the corpus'
+    size: S
+    owner_model: opus
+    status: todo
+    parent: R2-01
+  - id: R2-01-6
+    title: 'Agent proof: /design-object (object-designer) on a real input — an object concept from examples/builds/northwind-sales/requirement.md;
+      then an adversarial grader scores right/useful/wrong against the corpus'
+    size: S
+    owner_model: opus
+    status: todo
+    parent: R2-01
+  - id: R2-01-7
+    title: 'Agent proof: /triage-deployment (deployment-failure-triager) on a real input — a real deploy failure from examples/builds/*/reports
+      (org dry runs); then an adversarial grader scores right/useful/wrong against the corpus'
+    size: S
+    owner_model: opus
+    status: todo
+    parent: R2-01
+  - id: R2-01-8
+    title: 'Agent proof: /build-from-requirements (build-planner) on a real input — examples/builds/opp-amount-lock/requirement.md
+      re-run cold; then an adversarial grader scores right/useful/wrong against the corpus'
+    size: S
+    owner_model: opus
+    status: todo
+    parent: R2-01
   - id: R2-02
     title: 'Roster shrink: every runtime agent not proven in R2-01 or by a build scenario -> status: experimental and out
       of the roster docs (slash redirects stay); doc counts regenerated'
@@ -323,6 +378,11 @@ releases:
       days after listing (R2-07), linter spike (R2-05) -> the direction for 1.6.0'
     size: S
     owner_model: fable
+    status: todo
+  - id: R2-09
+    title: 'org-validation.yml: fix or disable the failing scheduled workflow'
+    size: S
+    owner_model: sonnet
     status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
@@ -386,3 +446,8 @@ inbox:
     5 template TODOs + 2 dead Related Skills, isv-license-management has an unsourced Checkout concept and a malformed fence'
   size: M
   slotted_into: 1.4.0
+- date: 2026-10-19
+  ask: The scheduled org-validation.yml workflow fails on every run (3 failures on 2026-10-19 at 14:38/15:58/16:42); it needs
+    the validation-org secret or should be disabled until one exists
+  size: S
+  slotted_into: 1.5.0
