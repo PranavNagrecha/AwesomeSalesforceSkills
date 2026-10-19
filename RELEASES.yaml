@@ -210,16 +210,17 @@ releases:
     status: done
     evidence: 'section 3.1: S = distinct source_skill among surviving clarifications[] rows (floor, not equality); build_plan.py
       validate WARNs when recorded scale sits below S band; 5 scenarios reproduce; tests/test_build_plan.py 243 passed'
+  - id: R1-16
+    title: 'release_plan.py next: offer running wave items with remaining target (batch 2+)'
+    size: S
+    owner_model: sonnet
+    status: done
+    evidence: next offers running wave items under target (batch N of ~M line); add inserts before the Release item; 23 tests
   - id: R1-10
     title: 'Release: CHANGELOG [Plugin 1.4.0] + [0.5.1], versions, gate, merge main, push, ls-remote verify, tag mcp-v0.5.1,
       watch publish, fresh-clone bootstrap --verify-only'
     size: S
     owner_model: fable
-    status: todo
-  - id: R1-16
-    title: 'release_plan.py next: offer running wave items with remaining target (batch 2+)'
-    size: S
-    owner_model: sonnet
     status: todo
   measured: {}
 - version: 1.5.0

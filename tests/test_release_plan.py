@@ -124,9 +124,9 @@ def test_next_target_worklist_lowest_first_skips_done(plan, skills, capsys):
     assert load(plan)["releases"][0]["items"][1]["done_skills"] == ["data/low"]
     capsys.readouterr()
     run(plan, "next", "--today", "2026-10-19", skills=skills)
-    # running item is not "todo"; move to R1-03 topup instead
+    # R1-02 is a running wave item under target: still offered, minus its done skills
     out = capsys.readouterr().out
-    assert "R1-03" in out
+    assert "R1-02" in out and "data/low" not in out and "data/mid" in out
 
 
 def test_next_json(plan, skills, capsys):
@@ -142,6 +142,31 @@ def test_next_topup_list(plan, skills, capsys):
     run(plan, "next", "--today", "2026-10-19", skills=skills)
     out = capsys.readouterr().out
     assert "data/high" in out and "data/high2" not in out and "data/mid" not in out
+
+
+def test_next_offers_running_wave_item_under_target(plan, skills, capsys):
+    run(plan, "set-status", "R1-02", "running", "--done-skills", "data/low,data/mid")
+    capsys.readouterr()
+    assert run(plan, "next", "--today", "2026-10-19", "--batch", "1", skills=skills) == 0
+    out = capsys.readouterr().out
+    assert out.startswith("R1-02") and "batch 3 of ~10 (done 2/target 10)" in out
+    assert "data/high" in out and "data/low" not in out and "data/mid" not in out
+
+
+def test_next_skips_running_wave_item_at_target(plan, skills, capsys):
+    run(plan, "set-status", "R1-02", "running", "--done-skills", ",".join(f"data/x{i}" for i in range(10)))
+    capsys.readouterr()
+    run(plan, "next", "--today", "2026-10-19", skills=skills)
+    assert capsys.readouterr().out.startswith("R1-03")
+
+
+def test_next_skips_running_item_without_target(plan, capsys):
+    for i in ("R1-02", "R1-03"):
+        run(plan, "set-status", i, "dropped")
+    run(plan, "set-status", "R1-04", "running")
+    capsys.readouterr()
+    run(plan, "next", "--today", "2026-10-19")
+    assert capsys.readouterr().out.startswith("R1-05")
 
 
 def test_done_requires_evidence(plan, capsys):
@@ -172,6 +197,18 @@ def test_add_s_before_and_after_freeze(plan, capsys):
     assert new["title"] == "tiny later"
 
 
+def test_add_inserts_before_release_item(plan):
+    run(plan, "add", "tiny ask", "--size", "S", "--today", "2026-10-19")
+    ids = [it["id"] for it in load(plan)["releases"][0]["items"]]
+    assert ids[-2:] == ["R1-06", "R1-05"]
+
+
+def test_add_without_release_item_appends(plan):
+    plan.write_text(plan.read_text().replace('"Release 1.4.0"', '"Ship it"'), encoding="utf-8")
+    run(plan, "add", "tiny ask", "--size", "S", "--today", "2026-10-19")
+    assert [it["id"] for it in load(plan)["releases"][0]["items"]][-2:] == ["R1-05", "R1-06"]
+
+
 def test_add_m_close_to_freeze_goes_next(plan):
     run(plan, "add", "medium", "--size", "M", "--today", "2026-10-27")
     assert slotted(plan) == "1.5.0"
@@ -180,7 +217,7 @@ def test_add_m_close_to_freeze_goes_next(plan):
 def test_add_m_with_capacity_goes_current(plan):
     run(plan, "add", "medium", "--size", "M", "--today", "2026-10-19", "--owner-model", "fable")
     assert slotted(plan) == "1.4.0"
-    assert load(plan)["releases"][0]["items"][-1]["owner_model"] == "fable"
+    assert load(plan)["releases"][0]["items"][-2]["owner_model"] == "fable"
 
 
 def test_add_m_without_capacity_goes_next(plan):

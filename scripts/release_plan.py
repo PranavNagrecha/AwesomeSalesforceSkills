@@ -56,9 +56,14 @@ def to_date(s: str | None) -> date:
     return date.fromisoformat(s) if s else date.today()
 
 
+def under_target(it: dict) -> bool:
+    """A running wave item that still owes skills; a running item without a target is never offered."""
+    return it["status"] == "running" and "target" in it and len(it.get("done_skills") or []) < it["target"]
+
+
 def actionable(rel: dict, today: date) -> dict | None:
     for it in rel["items"]:
-        if it["status"] != "todo":
+        if it["status"] != "todo" and not under_target(it):
             continue
         if today > rel["freeze"] and not (
             it["title"].startswith("Release") or "gate fix" in str(it.get("notes", "")).lower()
@@ -118,6 +123,9 @@ def cmd_next(args) -> int:
     if item.get("notes"):
         print(f"notes: {item['notes']}")
     if "target" in item:
+        if item["status"] == "running":
+            done, size = len(item.get("done_skills") or []), max(args.batch, 1)
+            print(f"batch {done // size + 1} of ~{-(-item['target'] // size)} (done {done}/target {item['target']})")
         print(f"target {item['target']} floor {item.get('floor', '-')}; batch of {len(work)}:")
         for w in work:
             print(f"  {w['score']:>2}  {w['skill']}  missing: {', '.join(w['missing']) or '-'}")
@@ -178,7 +186,8 @@ def cmd_add(args) -> int:
         "owner_model": args.owner_model or ("sonnet" if args.size == "S" else "opus"),
         "status": "todo",
     }
-    target["items"].append(item)
+    pos = next((i for i, it in enumerate(target["items"]) if it["title"].startswith("Release")), len(target["items"]))
+    target["items"].insert(pos, item)
     data["inbox"] = (data.get("inbox") or []) + [
         {"date": today, "ask": args.ask, "size": args.size, "slotted_into": target["version"]}
     ]
