@@ -224,8 +224,9 @@ def test_real_file_round_trips_through_write(tmp_path):
     real = Path(__file__).resolve().parents[1] / "RELEASES.yaml"
     copy = tmp_path / "RELEASES.yaml"
     copy.write_text(real.read_text(encoding="utf-8"), encoding="utf-8")
-    assert run(copy, "set-status", "R1-04", "running") == 0
-    d = load(copy)
     orig = yaml.safe_load(real.read_text(encoding="utf-8"))
-    d["releases"][0]["items"][3]["status"] = "todo"
+    item = orig["releases"][0]["items"][3]
+    assert run(copy, "set-status", item["id"], "running") == 0
+    d = load(copy)
+    d["releases"][0]["items"][3]["status"] = item["status"]
     assert d == orig

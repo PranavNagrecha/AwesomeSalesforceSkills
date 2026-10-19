@@ -36,7 +36,7 @@ releases:
   branch: release/1.4.0
   ships: 2026-10-30
   freeze: 2026-10-28
-  theme: Gate, loop, test hygiene, clarifier coverage for data/devops/integration/security
+  theme: Gate, loop, accuracy on data/devops, and the first measurement (knowledge lift) before shipping
   items:
   - id: R1-01
     title: 'Test hygiene: pytest tests runs in one process; no test writes a tracked file'
@@ -107,13 +107,24 @@ releases:
       PDFs, no PDF/trailhead, developer+architect.salesforce.com 403 on 2026-10-19 -> not built. search_knowledge verbatim:
       ''Agentforce Voice'' -> agentforce-persona-design 2.505 (tone match); ''Scale Center'' -> devops-center-advanced 2.214
       (lexical noise)'
+  - id: R1-11
+    title: 'Committed orchestrator: rewrite agents/orchestrator (reads RELEASES.yaml, /start-building resumes from file+git),
+      new agents/backlog-intake (/add-to-backlog sizes and slots an ask), scripts/release_plan.py (next/add/set-status/measure)
+      with tests'
+    size: M
+    owner_model: sonnet
+    status: done
+    notes: 'Owner correction 2026-10-19: the loop must be a reusable repo agent anyone starts with one command, not a session
+      timer. Jumps the queue.'
+    evidence: agents/orchestrator/AGENT.md v2.0.0 + agents/backlog-intake + commands/start-building.md + commands/add-to-backlog.md;
+      scripts/release_plan.py 57 tests; check_doc_counts 99 agents OK; validate --agents 0 errors
   - id: R1-07
     title: 'Depth wave: full rewrites, lowest score first across data, devops, integration, security'
     size: L
     owner_model: opus
     status: running
-    target: 40
-    floor: 40
+    target: 20
+    floor: 10
     domains:
     - data
     - devops
@@ -127,10 +138,19 @@ releases:
     size: M
     owner_model: opus
     status: running
-    target: 40
+    target: 20
     domains:
     - data
     - devops
+  - id: R1-12
+    title: 'Knowledge-lift test: run the 30 golden eval cases WITH and WITHOUT the skill loaded through scripts/eval_grader.sh;
+      record pass rate and mean rubric per arm'
+    size: M
+    owner_model: sonnet
+    status: todo
+    notes: 'Owner 2026-10-19: no more releasing without testing. Same grader, same cases, two arms; the only difference is
+      whether the skill package text is in the answering prompt. Report the delta per skill and overall. A zero delta is a
+      finding, not a failure of the test.'
   - id: R1-09
     title: 'Scenario check: re-run clarifier Steps 2-3 on examples/builds/tier2-webhook requirement; record tier + question
       count'
@@ -143,63 +163,69 @@ releases:
     size: S
     owner_model: fable
     status: todo
-  - id: R1-11
-    title: 'Committed orchestrator: rewrite agents/orchestrator (reads RELEASES.yaml, /start-building resumes from file+git),
-      new agents/backlog-intake (/add-to-backlog sizes and slots an ask), scripts/release_plan.py (next/add/set-status/measure)
-      with tests'
-    size: M
-    owner_model: sonnet
-    status: done
-    notes: 'Owner correction 2026-10-19: the loop must be a reusable repo agent anyone starts with one command, not a session
-      timer. Jumps the queue.'
-    evidence: agents/orchestrator/AGENT.md v2.0.0 + agents/backlog-intake + commands/start-building.md + commands/add-to-backlog.md;
-      scripts/release_plan.py 57 tests; check_doc_counts 99 agents OK; validate --agents 0 errors
   measured: {}
 - version: 1.5.0
   mcp_version: 0.5.2
   branch: release/1.5.0
   ships: 2026-11-13
   freeze: 2026-11-11
-  theme: data + devops to bar; remaining top-ups; R1-screen skills
+  theme: 'Prove it or shrink it: agent proof on real inputs, roster shrink, measured distribution test'
   items:
   - id: R2-01
-    title: 'Depth wave: full rewrites — data and devops remainder, lowest first (replan count from R1 measured cost)'
+    title: 'Agent proof: run 8 agents a Salesforce admin/dev would reach for on real inputs (/why-cant-user, /scan-security,
+      /build-flow, /analyze-field-impact, /architect-perms, /design-object, /triage-deployment, /build-from-requirements);
+      grade each output right/useful/wrong with the evidence'
     size: L
     owner_model: opus
     status: todo
-    target: 95
-    floor: 60
+    notes: 'Inputs: the five examples/builds scenarios plus one real metadata tree the owner points at. Output per agent:
+      verdict + what it got wrong + would a practitioner have used it. Split into tracer items (one agent each) before scheduling.'
   - id: R2-02
-    title: 'Top-up wave: remaining at-bar skills without Questions table; then at-bar skills still on default version (data/devops)'
+    title: 'Roster shrink: every runtime agent not proven in R2-01 or by a build scenario -> status: experimental and out
+      of the roster docs (slash redirects stay); doc counts regenerated'
     size: M
-    owner_model: opus
+    owner_model: sonnet
     status: todo
-    target: 60
+    notes: 'Honest surface: ~8-16 agents listed, the rest marked experimental until someone proves or asks for them.'
   - id: R2-03
-    title: New skills from R1-06 verdicts (<= 3), via new_skill.py --strict — gate forces the bar
+    title: 'Distribution push: list sfskills-mcp + plugin on MCP registries/directories and awesome lists; contributor on-ramp
+      — as a measured test: 3 listings, then clones/downloads/stars/issues tracked for 14 days'
     size: M
     owner_model: opus
     status: todo
   - id: R2-04
-    title: Golden eval added for every flagship skill touched this release (repo rule); grader run recorded
-    size: S
-    owner_model: sonnet
+    title: 'Accuracy wave (continues R1): full rewrites with claims audit on the next 20 lowest data/devops/integration/security
+      skills + adversarial review per batch'
+    size: L
+    owner_model: opus
     status: todo
+    target: 20
+    floor: 10
+    domains:
+    - data
+    - devops
+    - integration
+    - security
   - id: R2-05
-    title: Scenario check on one scenario whose domains this release touched
-    size: S
+    title: 'Candidate "better product" spike: package the skill checkers as one CI linter for Salesforce projects (run_all_checkers.py
+      over a target tree, GitHub Action + CLI); run it on the five scenario builds and one real project; record findings/false
+      positives'
+    size: M
     owner_model: sonnet
     status: todo
+    notes: 'Hypothesis to test, not a commitment: the checkers are the one asset a model cannot replace. Success = real findings
+      a reviewer agrees with, false-positive rate under 20%, installable in one step.'
   - id: R2-06
-    title: Release 1.5.0 / 0.5.2
+    title: 'Decision memo in RELEASES.yaml measured{}: knowledge lift (R1-12), agent proof (R2-01), distribution metrics 14
+      days after listing (R2-07), linter spike (R2-05) -> the direction for 1.6.0'
     size: S
     owner_model: fable
     status: todo
-  - id: R2-07
-    title: '[split before scheduling] Distribution push: list sfskills-mcp + plugin on MCP registries/directories and awesome
-      lists; contributor on-ramp'
-    size: L
-    owner_model: opus
+  - id: R2-08
+    title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
+      nothing and record why)
+    size: S
+    owner_model: fable
     status: todo
   measured: {}
 - version: 1.6.0
@@ -207,105 +233,16 @@ releases:
   branch: release/1.6.0
   ships: 2026-12-01
   freeze: 2026-11-27
-  theme: integration + security + omnistudio to bar; BACKLOG RESEARCH rows resolved
+  theme: 'Decision release: direction chosen from 1.5.0 measurements; first slice of the better product (or the honest shrink)'
   items:
   - id: R3-01
-    title: 'Depth wave: integration, security, omnistudio remainder (omnistudio has no PDF: industries_reference JSON pages
-      only; mark UNVERIFIED, never invent)'
-    size: L
-    owner_model: opus
+    title: 'Direction decided from R2-06 memo: (a) linter product first slice, (b) build loop as the product, or (c) library
+      maintenance only — plan written as items here, reviewed by 3 adversarial reviewers before work starts'
+    size: M
+    owner_model: fable
     status: todo
-    target: 95
-    floor: 60
   - id: R3-02
-    title: 'Top-up wave: at-bar default-version skills in integration/security/omnistudio'
-    size: M
-    owner_model: opus
-    status: todo
-    target: 60
-  - id: R3-03
-    title: 'BACKLOG.yaml: verdict on the 100 RESEARCH rows (TODO or DUPLICATE); dashboard regenerated'
-    size: M
-    owner_model: sonnet
-    status: todo
-  - id: R3-04
-    title: Scenario check + eval grader run
-    size: S
-    owner_model: sonnet
-    status: todo
-  - id: R3-05
-    title: Release 1.6.0 / 0.5.3
-    size: S
-    owner_model: fable
-    status: todo
-  measured: {}
-- version: 1.7.0
-  mcp_version: 0.5.4
-  branch: release/1.7.0
-  ships: 2026-12-15
-  freeze: 2026-12-11
-  theme: architect + agentforce to bar
-  items:
-  - id: R4-01
-    title: 'Depth wave: architect (Well-Architected fundamentals via plain curl, Metadata API, LDV PDF; xml ''Not applicable''
-      per style § 4) and agentforce (developer.salesforce.com/docs/ai/agentforce)'
-    size: L
-    owner_model: opus
-    status: todo
-    target: 95
-    floor: 60
-  - id: R4-02
-    title: 'Top-up wave: at-bar default-version skills in architect/agentforce'
-    size: M
-    owner_model: opus
-    status: todo
-    target: 60
-  - id: R4-03
-    title: Scenario check + eval grader run
-    size: S
-    owner_model: sonnet
-    status: todo
-  - id: R4-04
-    title: Release 1.7.0 / 0.5.4
-    size: S
-    owner_model: fable
-    status: todo
-  measured: {}
-- version: 1.8.0
-  mcp_version: 0.5.5
-  branch: release/1.8.0
-  ships: 2026-12-29
-  freeze: 2026-12-23
-  theme: admin + apex + flow + lwc remainder begins; hygiene
-  items:
-  - id: R5-01
-    title: 'Depth wave: admin, apex, flow, lwc by score (remainder continues in R6/R7 — corpus at bar is an R7 outcome at
-      measured pace)'
-    size: L
-    owner_model: opus
-    status: todo
-    target: 95
-    floor: 60
-  - id: R5-02
-    title: 'Top-up wave: at-bar default-version skills in admin/apex/flow/lwc'
-    size: M
-    owner_model: opus
-    status: todo
-    target: 60
-  - id: R5-03
-    title: 'Hygiene: dated measurement docs re-measured (docs/agent-invocation-modes.md first); build_plugin --measure back
-      under budget; MASTER_QUEUE.md reduced to a pointer; dist/ zips out of the tree; stale local branches listed for the
-      owner'
-    size: M
-    owner_model: sonnet
-    status: todo
-  - id: R5-04
-    title: Scenario check + eval grader run
-    size: S
-    owner_model: sonnet
-    status: todo
-  - id: R5-05
-    title: Release 1.8.0 / 0.5.5
+    title: Release 1.6.0 / 0.5.3 — content set by R3-01
     size: S
     owner_model: fable
     status: todo
@@ -315,4 +252,4 @@ inbox:
   ask: 'Marketing/distribution: publish the SfSkills MCP and plugin to more places (MCP registries and directories, awesome
     lists, plugin marketplaces, community posts) so the repo gets more stars and contributors'
   size: L
-  slotted_into: 1.5.0
+  slotted_into: 1.5.0 (R2-03)
