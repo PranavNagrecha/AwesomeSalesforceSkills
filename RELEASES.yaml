@@ -252,7 +252,10 @@ releases:
       watch publish, fresh-clone bootstrap --verify-only'
     size: S
     owner_model: fable
-    status: todo
+    status: done
+    evidence: main 450bcdeaf pushed and verified by ls-remote 2026-10-20; tags plugin-v1.4.0 + mcp-v0.5.1 pushed; release_gate.sh
+      10/10 PASS; fresh shallow clone bootstrap OK (chunk hash matches manifest, 94 commands, retrieval live); publish-mcp.yml
+      result recorded in the next commit
   measured:
     skills: 1040
     at_bar: 402
