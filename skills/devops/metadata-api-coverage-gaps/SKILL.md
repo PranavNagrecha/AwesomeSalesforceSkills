@@ -31,9 +31,9 @@ outputs:
   - "Workaround recommendations (Tooling API, post-deploy scripts, Setup UI steps, or data loader)"
   - "package.xml or sfdx-project.json adjustments to exclude unsupported types and avoid silent failures"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # Metadata API Coverage Gaps
@@ -52,15 +52,31 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which channels will carry this release — Metadata API deploy, change sets, unlocked, 2GP, or classic managed packages? | Coverage is per channel, and a type that deploys through Metadata API can still fail in a managed package version (Gotcha 6) | The coverage-report columns to check for every type in the release |
+| Which `sourceApiVersion` does the project pin, and do every developer and CI use it? | It decides the fields retrieved for each type, so mixed versions behave differently for the same source (Gotcha 4) | One pinned version, changed only as a team decision |
+| Was coverage checked at the API version you will deploy at, after the latest release? | Coverage changes between API versions, and the report may trail a new release (Gotcha 1) | A dated coverage check plus a sandbox retrieve-and-deploy of any newly supported type |
+| Which Settings types are in the release, and how will you confirm each field landed? | A supported Settings type can still leave sub-elements unapplied (Gotcha 2) | A post-deploy Setup or Tooling API comparison against the source XML |
+| What will `.forceignore` exclude, and has each pattern been tested? | Patterns follow `.gitignore` rules, so a broad glob silently drops unrelated components (Gotcha 3) | Narrow, reviewed patterns and a retrieve that proves only the intended files are excluded |
+| Does the release delete anything, and is each deleted type covered by Metadata API? | A type Metadata API can't handle has to be deleted by hand in each org (Gotcha 5) | A destructive manifest of covered types plus runbook steps for the rest |
+| Are changes being found through source tracking in a scratch org or Developer / Developer Pro sandbox? | Types unsupported in source tracking never show up as changes (Gotcha 7) | An explicit retrieve list for untracked types in the CI retrieve step |
+
+A configuration built from these answers turns every coverage gap into a named runbook step with an owner; "just deploying" finds the gaps in production, one environment at a time.
+
+---
+
 ## Core Concepts
 
 ### The Metadata Coverage Report
 
-Salesforce publishes the Metadata Coverage Report at `developer.salesforce.com/docs/metadata-coverage`. This interactive tool lists every metadata type and its support status across four channels: Metadata API, source tracking, unlocked packages, and managed packages. Each type is marked as Supported, Not Supported, or Beta. This is the authoritative source for determining whether a given type can be deployed programmatically.
+Salesforce publishes the Metadata Coverage Report at `developer.salesforce.com/docs/metadata-coverage`. The Metadata API guide calls it "the ultimate source of truth for metadata coverage across several channels. These channels include Metadata API, scratch org source tracking, unlocked packages, second-generation managed packages, classic managed packages, and more." It is the authoritative source for determining whether a given type can be deployed through a given channel.
 
 ### Unsupported vs. Partially Supported Types
 
-The Metadata API Developer Guide maintains a dedicated "Unsupported Metadata Types" page listing types that cannot be retrieved or deployed through the Metadata API at all. Examples include active Flow versions (only inactive or latest versions are retrievable), certain OrgPreferenceSettings fields (some were removed in API v48), and several Industry Cloud setup types. Partially supported types are more dangerous: they retrieve successfully but deploy with silent data loss or require specific field ordering that is not enforced by the API.
+The Metadata API Developer Guide's "Unsupported Metadata Types" page does not list the types itself. It says some features "have metadata types that aren't available in Metadata API," that changes to them must be made "manually in each of your organizations," that some types "may also be unsupported in source tracking, packaging, and change sets," and it points to Metadata Coverage for the list. Types can also be removed: `OrgPreferenceSettings` was deprecated in API 47.0 and removed in 48.0, with most of its preferences moved to Boolean fields on other Settings types. Partially supported types are more dangerous: they retrieve successfully but deploy with silent data loss or require specific field ordering that is not enforced by the API.
 
 ### Release Runbooks for Manual Steps
 
@@ -130,7 +146,7 @@ Source tracking in scratch orgs and sandboxes (with Developer/Developer Pro lice
 Step-by-step instructions for handling metadata API coverage gaps:
 
 1. **Identify the gap** -- Run `sf project retrieve start` or `sf project deploy start` and note any errors referencing unsupported types. Alternatively, consult the Metadata Coverage Report for the project's API version.
-2. **Classify the type** -- Check the Metadata Coverage Report for support status across all four channels (Metadata API, source tracking, unlocked packages, managed packages). Record the result in the coverage gap table.
+2. **Classify the type** -- Check the Metadata Coverage Report for support status across every channel it lists (Metadata API, scratch org source tracking, unlocked packages, 2GP and classic managed packages, and more). Record the result in the coverage gap table.
 3. **Assess impact** -- Determine whether the gap is Critical (blocks deployment), High (causes config drift between environments), or Low (rarely changed, cosmetic).
 4. **Choose a workaround** -- For Tooling API-accessible types, write a post-deploy script. For truly unsupported types, document manual steps in a release runbook. For source-tracking gaps, add an explicit retrieve step to the CI pipeline.
 5. **Update project configuration** -- Add unsupported types to `.forceignore` or exclude them from `package.xml` / `sfdx-project.json` packageDirectories. Ensure the CI pipeline does not fail on excluded types.
@@ -157,8 +173,8 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Active Flow versions are not retrievable** -- Metadata API retrieves the latest version of a Flow, not the currently active version. If version 3 is active but version 5 is the latest (inactive) version, `sf project retrieve` pulls version 5. Deploying it to another org activates version 5, not version 3. You must use the Tooling API `FlowDefinition` object to activate a specific version after deployment.
-2. **OrgPreferenceSettings silent removal** -- Several `OrgPreferenceSettings` fields were removed in API v48+. Projects that pin to older API versions may retrieve these fields successfully but fail on deploy to orgs running newer versions. The fix is to remove deprecated fields from retrieved metadata before committing.
+1. **Retrieve pulls the latest Flow version, not the active one** -- A Flow member without a version number "is the latest version" (Metadata API guide, Flow `fullName`), not the currently active version. If version 3 is active but version 5 is the latest (inactive) version, `sf project retrieve` pulls version 5. Deploying it ships version 5's content under whatever `<status>` the file carries, not version 3. Control activation with `<status>` on the Flow — the Metadata API guide recommends, as of API 44.0, discontinuing `FlowDefinition` for activation, and a `FlowDefinition` in the same deploy overrides the flows' status fields.
+2. **OrgPreferenceSettings was removed as a whole type** -- It is available in API 37.0 to 47.0, deprecated in 47.0, and removed in 48.0. A project that raises `sourceApiVersion` to 48.0 or later can no longer carry `OrgPreference.settings`. The fix is to move each preference to its Boolean field on the replacement Settings type (for example `enableCompileOnDeploy` on `ApexSettings`) and delete the old file.
 3. **Source tracking does not track permission set assignments** -- Changes to `PermissionSetAssignment` records (which users are assigned to which permission sets) are data, not metadata. Source tracking will never detect these changes. Use data loader or a post-deploy script to manage assignments.
 4. **Unlocked packages silently exclude unsupported types** -- When creating a package version, unsupported types in the package directory are silently excluded rather than causing an error. The package installs successfully but is missing configuration, leading to runtime failures in the subscriber org.
 5. **ForecastingSettings has persistent gaps** -- `ForecastingSettings` is a long-standing example of a partially supported type. Retrieving it succeeds, but deploying it often fails with cryptic errors depending on the target org's forecasting configuration. Manual Setup configuration is typically required.

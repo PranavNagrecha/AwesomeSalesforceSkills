@@ -6,9 +6,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** When a CI/CD pipeline attempts to deploy FSC household record types, Relationship Group metadata, or Financial Account layouts to an org where Person Accounts have not been enabled, the deployment fails with a metadata entity reference error. The error message identifies the failing component (e.g., `RecordType:Account.Household`) but does not state that the root cause is a missing org-level configuration.
 
-**When it occurs:** Any time a managed-package FSC or Core FSC metadata package is deployed to a net-new sandbox, scratch org (without `"isPersonAccountEnabled": true` in the scratch org definition), or any org where the Person Accounts feature has not been manually enabled.
+**When it occurs:** Any time a managed-package FSC or Core FSC metadata package is deployed to a net-new sandbox, scratch org (without the `PersonAccounts` feature in the scratch org definition), or any org where the Person Accounts feature has not been manually enabled.
 
-**How to avoid:** Gate every FSC deployment pipeline on a pre-flight Person Account check. Add a step before any metadata deployment that queries `SELECT Id, DeveloperName FROM RecordType WHERE SObjectType = 'Account' AND DeveloperName = 'PersonAccount'` against the target org. If the query returns zero rows, halt the pipeline and surface an actionable error message: "Person Accounts must be enabled in Setup before FSC metadata can be deployed." For scratch orgs, add `"features": ["PersonAccounts"]` and `"settings": {"personAccountSettings": {"enablePersonAccounts": true}}` to the scratch org definition file. For persistent sandboxes and production, Person Account enablement requires a manual Setup toggle and is not reversible — plan org provisioning accordingly.
+**How to avoid:** Gate every FSC deployment pipeline on a pre-flight Person Account check. Add a step before any metadata deployment that queries `SELECT Id, DeveloperName FROM RecordType WHERE SobjectType = 'Account' AND IsPersonType = true` against the target org (`IsPersonType` is "Visible only if the organization has the person account feature enabled"). If the query returns zero rows or fails on the field, halt the pipeline with an actionable message: "Person Accounts must be enabled before FSC metadata can be deployed." For scratch orgs, add `"features": ["PersonAccounts"]` to the scratch org definition file. For persistent sandboxes and production, "To request person accounts, contact Salesforce" — plan org provisioning accordingly. UNVERIFIED (2026-10-19): that enablement cannot be reversed is stated only in Salesforce Help, which could not be fetched.
 
 ---
 
@@ -18,7 +18,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any time CDS is activated via a metadata deployment on an org that already contains Financial Account records. This is the most common scenario in production promotions, where the sandbox already had test data when CDS was first enabled, and the pattern was never caught because sandbox data volume was low enough that all records were re-created after CDS was turned on.
 
-**How to avoid:** After every `IndustriesSettings` deployment that activates CDS, explicitly run a sharing recalculation. In managed-package FSC, execute the `FinServ.FinancialAccountShareRecalcBatch` Apex batch. In platform-native Core FSC, use the Sharing Settings recalculation mechanism for the Financial Account object. Add a post-deploy validation step to the pipeline that queries the share table and confirms rows exist for a known set of test records before marking the deployment complete.
+**How to avoid:** After every `IndustriesSettings` deployment that activates CDS, explicitly run a sharing recalculation. In managed-package FSC, execute the `FinServ.FinancialAccountShareRecalcBatch` Apex batch (UNVERIFIED (2026-10-19): this class name is not in the Summer '26 Apex Reference; confirm it in the org). In platform-native Core FSC, use the Sharing Settings recalculation mechanism for the Financial Account object. Add a post-deploy validation step to the pipeline that queries the share table and confirms rows exist for a known set of test records before marking the deployment complete.
 
 ---
 
@@ -32,13 +32,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 4: Participant Role Custom Metadata Deploys Successfully With Broken Cross-References
+## Gotcha 4: A ParticipantRole Deploy Succeeds Without Proving Any Access
 
-**What happens:** Participant Role custom metadata records reference Account record type developer names to map roles to record types. If the record type developer name in the custom metadata does not exactly match the developer name in the target org (e.g., because the record type was renamed during a migration, or because managed-package vs. platform-native naming differs), the custom metadata deploys without any error. At runtime, the CDS engine silently ignores Participant Role records whose record type references do not resolve — resulting in no share-table rows being written for that record type, and no access being granted to users via that role.
+**What happens:** `ParticipantRole` components deploy cleanly and users still get no access through the role. Teams then hunt for a broken reference that does not exist: `ParticipantRole` is a Metadata API type (API 50.0+, `.participantRole` files in `participantRoles/`), not custom metadata, and its only fields are `defaultAccessLevel` (Edit / None / Read), `isActive`, `masterLabel`, and `parentObject`. There is no record type reference to break.
 
-**When it occurs:** After a record type rename, after a namespace migration, or when deploying custom metadata built in one org to a target where record type developer names differ. The silence of the deploy tool makes this particularly dangerous — there is no deploy-time validation of custom metadata cross-references.
+**When it occurs:** When the role is deployed with `isActive` false, against a `parentObject` whose `enableCompliantDataSharingFor<Object>` flag in `IndustriesSettings` is still at its default of false, or with a `defaultAccessLevel` that differs from what the business asked for. None of these is a deploy error.
 
-**How to avoid:** After deploying Participant Role custom metadata, query the target org for all Account record types and compare their developer names against the references in the deployed custom metadata records. Test each Participant Role by assigning it to a test Financial Account and confirming a share-table row is written for the expected user or group. Add this validation as a post-deploy automated check in the pipeline.
+**How to avoid:** Review each `ParticipantRole` file for those four fields against the intended access before deploying. After deploying, assign the role on a test record and confirm a share-table row is written for the expected user or group, then log in as that user. Add this as a post-deploy automated check in the pipeline.
 
 ---
 

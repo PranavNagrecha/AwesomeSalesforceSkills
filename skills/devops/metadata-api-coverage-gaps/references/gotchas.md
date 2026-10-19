@@ -8,7 +8,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems wh
 
 **What happens:** The Metadata Coverage Report at `developer.salesforce.com/docs/metadata-coverage` is not always updated on the same day as a new Salesforce release. A type listed as "Not Supported" may have been added in the latest API version but not yet reflected in the report.
 
-**When it occurs:** During the first 2-4 weeks after a major Salesforce release (Spring, Summer, Winter). Teams that upgrade their `sourceApiVersion` immediately after a release may find discrepancies.
+**When it occurs:** During the first 2-4 weeks after a major Salesforce release (Spring, Summer, Winter). UNVERIFIED (2026-10-19): the Summer '26 Metadata API and DX guides call the report "the ultimate source of truth" and state no update lag; the window is field experience. Teams that upgrade their `sourceApiVersion` immediately after a release may find discrepancies.
 
 **How to avoid:** Cross-reference the Metadata Coverage Report with the Metadata API Developer Guide release notes for the specific API version. Test retrieval and deployment of newly supported types in a sandbox before relying on them in CI/CD.
 
@@ -46,7 +46,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems wh
 
 ## Gotcha 5: Destructive Deployments Cannot Remove Unsupported Types
 
-**What happens:** A practitioner creates a `destructiveChanges.xml` to remove a metadata component from the target org. If the type is not supported by Metadata API, the destructive deployment silently skips it. The component remains in the org but is removed from source control, creating permanent drift.
+**What happens:** A practitioner creates a `destructiveChanges.xml` to remove a metadata component from the target org. If the type is not supported by Metadata API, the destructive deployment silently skips it. The component remains in the org but is removed from source control, creating permanent drift. UNVERIFIED (2026-10-19): the guide says only that unsupported types "can't be retrieved or deployed with Metadata API" and must be changed "manually in each of your organizations"; whether a destructive manifest skips or rejects them is not stated.
 
 **When it occurs:** During org cleanup or refactoring projects that use destructive deployments to remove deprecated components.
 
@@ -61,3 +61,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems wh
 **When it occurs:** When ISVs or internal teams transition from unlocked packages to managed packages for AppExchange distribution.
 
 **How to avoid:** Always check the "Managed Packages" column in the Coverage Report, not just the "Metadata API" column. Test `sf package version create` for the managed package type early in the development cycle.
+
+---
+
+## Gotcha 7: Source Tracking Only Reports the Types It Tracks
+
+**What happens:** A setting changed in a scratch org or a Developer / Developer Pro sandbox with source tracking enabled never appears in the tracked changes, so it never reaches source control.
+
+**When it occurs:** Whenever the changed type is unsupported in source tracking. The Metadata API guide warns that "some metadata types may also be unsupported in source tracking, packaging, and change sets," and the coverage report has a scratch org source tracking channel for exactly this reason.
+
+**How to avoid:** Check the source tracking column for every type the team edits in the org UI. Retrieve untracked types explicitly by name in the CI retrieve step, and diff them, rather than relying on tracked changes.

@@ -27,16 +27,15 @@ least one managed package installed (so: virtually every
 production org, given FSL, CPQ, Pardot, Marketing Cloud Connector
 are all managed).
 
-**How to avoid:** Add an explicit `installedPackage` block to the
-manifest. The manifest captures the package version (not the
-contents — those aren't retrievable by subscribers), enough to
-reconstruct the org by re-installing those package versions:
+**How to avoid:** Keep the installed-package inventory in its own manifest. `InstalledPackage`
+represents a first-generation managed package "to be installed or uninstalled" (members are namespace
+prefixes), and "When you deploy InstalledPackage, it must be the only metadata type specified in the
+manifest file." Unlocked and 2GP managed packages are installed with `sf package install` instead:
 
 ```xml
+<!-- excerpt: its own manifest, never merged into the metadata package.xml -->
 <types>
-    <members>FieldServiceLightning</members>
-    <members>SBQQ</members>
-    <members>pi</members>
+    <members>acme_ns</members>
     <name>InstalledPackage</name>
 </types>
 ```
@@ -50,10 +49,11 @@ to enumerate the namespace prefixes that need to appear.
 
 **What happens:** A team copies a 2-year-old `package.xml` to
 bootstrap a new repo. The manifest declares `<version>50.0</version>`
-(Spring '20). They add a `<types>` entry for `LightningExperienceTheme`
-— a type introduced in v52. The retrieve quietly returns no
+(Winter '21). They add a `<types>` entry for `ExternalCredential`
+— available only in API 56.0 and later. The retrieve quietly returns no
 results for that type; the deploy validates but doesn't actually
-create the component. No error. The API version in the request
+create the component. No error. UNVERIFIED (2026-10-19): the guide gives each type's minimum API
+version, not whether an older request skips or rejects a newer type. The API version in the request
 limits the catalog of metadata types the request can address —
 newer types simply aren't in v50's catalog, so they're skipped
 silently rather than rejected loudly.
@@ -111,7 +111,11 @@ the canonical form is what your sort script emits.
 (`AccountTierValues`), which is curated by a `CustomMetadata`
 type (`Account_Tier_Mapping__mdt`) whose records reference back
 to `Account.Tier__c`. `sf project deploy validate` succeeds —
-the validation phase checks each type's XML schema independently
+UNVERIFIED (2026-10-19): the Metadata API guide describes a validation
+as "a test deployment … of components without saving the components
+in the target org" and documents no per-type-only checking; the
+mechanism below is field report, not documented behaviour.
+The validation phase checks each type's XML schema independently
 and resolves dependencies *within* each type, but doesn't fully
 resolve cross-type references. Validation reports "green" with
 100% tests passing. The `sf project deploy quick` execution
@@ -139,6 +143,8 @@ and the prod quick-deploy.
 ---
 
 ## Gotcha 5: `deployedFromIde` and the strict-gating rejection
+
+UNVERIFIED (2026-10-19): neither `deployedFromIde` nor a "Disable deployments from Salesforce CLI / IDE" setting appears in the Summer '26 Metadata API or DX guides; confirm both before acting on this gotcha.
 
 **What happens:** A `sf project deploy start` against prod returns
 "Deploys from the IDE are not allowed by this org's deployment
@@ -169,3 +175,23 @@ using the SOAP `deploy()` call with `deployedFromIde=false`
 explicitly) for prod deploys, while keeping `sf` CLI for all
 other environments. Document the exception in the runbook so the
 next engineer doesn't repeat the diagnosis.
+
+---
+
+## Gotcha 6: Production changes the test and rollback rules
+
+**What happens:** Options that worked in every sandbox are refused, or pass with different coverage maths, in production.
+
+**When it occurs:** `NoTestRun` "applies only to deployments to development environments." `RunLocalTests` is the default for production deploys that include Apex classes or triggers. With `RunSpecifiedTests`, "each class and trigger in the deployment package must be covered by the executed tests for a minimum of 75% code coverage," computed per class rather than org-wide. `rollbackOnError` "must be set to true if you're deploying to a production org."
+
+**How to avoid:** Set the production test level and `--tests` list explicitly, and rehearse with the same options in a full-copy sandbox validation.
+
+---
+
+## Gotcha 7: Deletions run before additions by default
+
+**What happens:** A deploy that edits an Apex class to stop referencing a custom object, and deletes that object in the same deploy, fails on the delete.
+
+**When it occurs:** When the deletion sits in `destructiveChanges.xml`. "By default, deletions are processed before component additions," so the object is deleted while the old class still references it.
+
+**How to avoid:** Put deletions that depend on this deploy's edits in `destructiveChangesPost.xml` (API 33.0+), and deletions that must clear the way for new components in `destructiveChangesPre.xml`.

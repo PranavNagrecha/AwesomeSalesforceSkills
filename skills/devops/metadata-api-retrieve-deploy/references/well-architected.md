@@ -129,5 +129,7 @@ documented alongside.
   https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy.htm
 - Salesforce CLI Reference — `sf project retrieve` / `sf project deploy`:
   https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_retrieve_commands_unified.htm
+- Metadata API Developer Guide, Summer '26 PDF (api_meta.txt): `testLevel` values and defaults L4278–4321; `rollbackOnError` defaults to true and must be true for production L3329–3333; deletions before additions by default, Pre/Post manifests from API 33.0 L4648–4660; quick deploy needs validation within the last 10 days L3454. Supports Gotchas 4, 6, 7 and the Core Concepts tables.
+- Metadata API Developer Guide, InstalledPackage (api_meta.txt L81389–81397) — 1GP install/uninstall type that must be alone in a deploy manifest; unlocked and 2GP use `sf package install`. ExternalCredential available from API 56.0 (L63618). Supports Gotchas 1 and 2.
 - Salesforce Well-Architected — Operationally Excellent (Resilient):
   https://architect.salesforce.com/well-architected/operational-excellence/resilient

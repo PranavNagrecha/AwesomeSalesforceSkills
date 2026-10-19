@@ -129,14 +129,19 @@ have screens**.
 
 ---
 
-## Gotcha 8: Paused Interviews Break at Resume, Not at Delete
+## Gotcha 8: Paused Interviews Block Version Deletes, and Clearing Them Loses Work
 
-**What happens:** A cleanup deletes old versions. Weeks later, users resuming
-long-paused screen flows get errors nobody connects to the cleanup.
+**What happens:** A cleanup deletes old versions, clearing the paused interviews
+that blocked it. Weeks later, users find the screen flows they paused are gone,
+and nobody connects it to the cleanup.
 
 **When it occurs:** A paused interview resumes on the version it started on.
-Deleting that version breaks it — silently at delete time, visibly at resume
-time, with a long gap in between. Since Spring '24 there is no platform cap on
+The Metadata API guide is explicit that the platform blocks the version delete
+itself: "You can delete a flow version if it isn't active and doesn't have any
+paused interviews. If the flow version has paused interviews, wait for those
+interviews to resume and finish, or delete them." The damage comes from the
+cleanup that clears the way — deleting the interviews to unblock the version
+delete throws away work users expected to resume. Since Spring '24 there is no platform cap on
 how many paused and waiting interviews an org accumulates, so the population
 grows quietly.
 
@@ -217,12 +222,12 @@ about, over activating hours ahead.
 **What happens:** A flow is deactivated as a kill switch and Apex keeps invoking
 it.
 
-**When it occurs:** `Flow.Interview.createInterview` and similar entry points do
-not universally require an active version, so "deactivated" is not a reliable
-platform-level off switch for a flow with code callers. `<!-- UNVERIFIED: the
-exact conditions under which an inactive flow version remains invocable from Apex
-were not confirmed against a fetchable official page during authoring. Test the
-behaviour in a sandbox before relying on deactivation as a kill switch. -->`
+**When it occurs:** Apex entry points do not require an active version. The
+Apex Reference for `Flow.Interview.start()` says: "When a flow user invokes an
+autolaunched flow, the active flow version runs. If there's no active version, the
+latest version runs. When a flow admin invokes a flow, the latest version always
+runs." So "deactivated" is not a platform-level off switch for a flow with code
+callers — it can promote an untested latest version instead.
 
 **How to avoid:** Do not use deactivation as the kill switch for a flow with Apex
 callers. Gate the caller — a Custom Metadata feature flag checked in the Apex, or

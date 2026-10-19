@@ -29,9 +29,9 @@ outputs:
   - "Trialforce architecture diagram (TMO vs TSO vs Template) and trial-method decision"
   - "Feature Parameter inventory with direction (LmoToSubscriber / SubscriberToLmo), default values, and Apex consumption pattern"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # ISV License Management and Trialforce
@@ -47,7 +47,23 @@ Gather this context before proposing any change:
 - **Package generation.** 1GP and 2GP managed packages differ on what is wired through the LMA, and only 1GP packages can be created and managed inside a 1GP packaging org. Feature Parameters work for both 1GP and 2GP managed packages but require slightly different declaration paths.
 - **Which org is which.** ISVs juggle four org roles: the **Partner Business Org (PBO)** holds the AppExchange listing and the security review record; the **License Management Org (LMO)** holds the License Management App (LMA) and `sfLma__License__c` records; the **packaging org** (1GP) or DX hub (2GP) builds package versions; the **TMO / TSO** issues trials. These are usually distinct orgs. Conflating them is the most common ISV mistake.
 - **Trial method already chosen?** AppExchange listing trial, SignupRequest API, and free install map to different Trialforce setups and different conversion-tracking surfaces. Pick the trial method *before* designing the LMA + Trialforce wiring, not after.
-- **Edition limits.** A 1GP package can include up to **200 Feature Parameters**. Beta package versions can't register with the LMA, so `SubscriberToLmo` Feature Parameters can't be tested in beta — only released package versions.
+- **Edition limits.** A package can include up to **200 Feature Parameters**. Beta package versions can't register with the LMA, so `SubscriberToLmo` Feature Parameters can't be tested in beta — only released package versions.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which org is the LMO, and is it the PBO? | Salesforce strongly recommends the PBO as the LMO, and moving the LMA later means relinking packages and refreshing licenses by hand (Gotcha 6) | One named LMO per package — a package can be associated with only one |
+| Does the LMO already have triggers, validation rules, required fields, or workflow on Lead or License, or Slack or DLRS installed? | Any of them can stop the LMA creating leads and licenses, and Slack or DLRS blocks the install outright (Gotcha 8) | A clean-LMO checklist run before registration |
+| Which version will prove the LMA wiring — released (1GP) or promoted (2GP)? | Beta versions don't display in the LMA, so a beta install proves nothing (Gotcha 1) | A planned released or promoted version reserved for the wiring smoke test |
+| What default license behavior — trial length and seats — will registration set, and will any licenses come through AppExchange Checkout? | Every new license is created from those defaults, and Checkout licenses can't be modified in the LMA (Gotcha 2) | Defaults agreed with billing before the first install, and a separate path for Checkout customers |
+| Does any Feature Parameter flow `SubscriberToLmo`? | Its values can't be tested in a beta version, and its direction can't change once released (Gotcha 5) | A release gate that validates the channel before consumer code depends on it |
+| How quickly must an `LmoToSubscriber` change reach the customer? | Propagation is asynchronous and the publisher can't observe it (Gotcha 3) | A support SLA that does not promise instant effect |
+| Which Trialforce source org backs each live template, and who renews it? | A deleted or downgraded source org breaks trial signups (Gotcha 4) | A source-org inventory with an owner and renewal date per template |
+
+Settling these first gives a license path that creates every record it should and a trial path that still works next quarter; "just registering" leaves licenses on unreviewed defaults in an LMO that may be blocking them.
 
 ---
 
@@ -58,11 +74,11 @@ Gather this context before proposing any change:
 The LMA is a free Salesforce-published managed package that the ISV installs in their **License Management Org**. It creates two key custom objects:
 
 - **`sfLma__Package__c`** — one record per registered managed package (the version number and the Salesforce-issued package ID).
-- **`sfLma__License__c`** — one record per subscriber org that installs the package. The license record carries seat count, status (`Active` / `Suspended` / `Uninstalled`), expiration date, and the subscriber org's 18-character Org ID.
+- **`sfLma__License__c`** — one record per subscriber org that installs the package. The license record carries seat count, status (`Active` / `Suspended` / `Trial` / `Uninstalled`), expiration date, and the subscriber org's 18-character Org ID.
 
 Salesforce updates the License record automatically when a subscriber installs, upgrades, or uninstalls. The ISV adjusts seat counts and expiration dates as part of their billing process. Subscriber orgs query their license state through the platform — if a license is expired or suspended, the package's components stop being usable in that org. The LMA is the only supported way to enforce subscription billing on a 1GP managed package, and is required for AppExchange Checkout.
 
-The LMA is registered with a package via **AppExchange Publishing → Package** form using the `sfLma__License_Management_Org__c` setting on the package record. Once registered, every subsequent install of any version of that package writes to the same License Management Org.
+A package is registered from the Partner Console: connect the packaging org (1GP) or Dev Hub (2GP), then on the **Solutions** tab click **Register Package** for a version, log in to the LMO, and set the default license behavior. Package versions created after linking inherit the association, and a package can be associated with only one LMO.
 
 ### Concept 2 — Trialforce splits provisioning into TMO + TSO + Template
 
@@ -98,9 +114,9 @@ AppExchange Checkout adds e-commerce (credit-card billing, subscription renewals
 **How it works:**
 1. Install the LMA managed package in a fresh **License Management Org** (recommended: the Partner Business Org or a dedicated production org — never a sandbox).
 2. In the partner-side packaging org (1GP) or DX project (2GP), upload the package version and capture the `04t...` package version ID.
-3. In the AppExchange Publishing Console, open the listing's package record and set the License Management Org to the LMO from step 1. The LMO must be in a Salesforce edition that supports the LMA (Enterprise+).
+3. In the Partner Console, connect the packaging org (1GP) or Dev Hub (2GP) under **Technologies > Orgs**, then on the **Solutions** tab click **Register Package** for the version and log in to the LMO from step 1. The LMA installs only in Enterprise, Unlimited, or Performance Edition production orgs.
 4. Verify by installing the package into a throwaway sandbox and confirming a `sfLma__License__c` record is auto-created in the LMO within 2–3 minutes.
-5. In the LMA, set the **Default License Type** (`Trial` / `Active` / `Free`) and **Default Seats** for the package. These apply to every new install until manually overridden.
+5. At registration, set the default license behavior — trial length and number of seats. Every new license is created from these values until changed on the license's **Modify License** page.
 6. Build a scheduled job in the LMO that watches `sfLma__License__c` for `Status='Suspended'` and notifies the customer-success team — the LMA does not include outbound notifications.
 
 **Why not skip the LMA:** Without LMA registration, the partner has no view of installs, no way to enforce expiration, and no path to AppExchange Checkout. Adding the LMA later requires a Salesforce-side reconciliation case for existing installs.
@@ -125,8 +141,8 @@ AppExchange Checkout adds e-commerce (credit-card billing, subscription renewals
 **When to use:** A specific subscriber needs a feature enabled for them only — without shipping a new package version.
 
 **How it works:**
-1. In the package source, define a `FeatureParameterBoolean` (e.g. `Enable_Beta_Reports`) with a `defaultValue` of `false` and direction `LmoToSubscriber`.
-2. In subscriber-side Apex that gates the feature, call `System.FeatureManagement.checkPackageBooleanValue('namespace', 'Enable_Beta_Reports')` and branch on the result.
+1. In the package source, define a `FeatureParameterBoolean` (e.g. `Enable_Beta_Reports`) with a `value` (the default) of `false` and `dataflowDirection` `LmoToSubscriber`.
+2. In subscriber-side Apex that gates the feature, call `System.FeatureManagement.checkPackageBooleanValue('Enable_Beta_Reports')` (one argument, the API name) and branch on the result.
 3. Release the package version. Existing subscribers receive `false` (the default).
 4. To flip for one customer: in the LMO, open their `sfLma__License__c` record, find the related Feature Parameter record (created automatically when the FP was added to a registered version), and set `Value__c = true`.
 5. Within the propagation window (minutes), the customer's Apex sees `true` on the next call.

@@ -7,8 +7,11 @@ Common mistakes AI coding assistants make when scripting retrieves and deploys.
 **What the LLM generates:**
 
 ```xml
-<types><members>*</members><name>ApexClass</name></types>
-<types><members>*</members><name>CustomObject</name></types>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: the anti-pattern's wildcard <types> blocks -->
+    <types><members>*</members><name>ApexClass</name></types>
+    <types><members>*</members><name>CustomObject</name></types>
+</Package>
 ```
 
 **Why it happens:** Model optimizes for "get everything" rather than diff-driven deploys.

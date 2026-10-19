@@ -20,7 +20,7 @@
 
 1. **Converting everything at once without validation** — Retrieving the entire org's metadata with wildcards and committing it in one pass. This produces an unmanageable repository, includes managed-package and standard metadata the team cannot deploy, and makes it impossible to isolate conversion issues. Always migrate in targeted batches with round-trip validation.
 
-2. **Treating source-format deploy as additive like change sets** — Assuming that deploying a subset of metadata only affects those components. In reality, deploying a profile replaces the entire profile; deploying an object definition replaces all fields and validation rules in that definition unless source format decomposition is used correctly. Teams must understand that CLI deploys are declarative (the deployed state becomes the org state for those components), not incremental.
+2. **Treating source-format deploy as additive like change sets** — Assuming that deploying a subset of metadata only affects those components. In reality, a deployed profile overwrites the settings it contains (and those depend on the retrieve manifest); deploying an object definition replaces all fields and validation rules in that definition unless source format decomposition is used correctly. Teams must understand that CLI deploys are declarative (the deployed state becomes the org state for those components), not incremental.
 
 3. **Skipping .forceignore configuration** — Failing to exclude managed-package components, standard objects, and profiles from the source project. This leads to deploy failures ("Cannot modify managed component"), unintended permission overwrites, and a bloated repository full of metadata the team does not own.
 
@@ -31,3 +31,5 @@
 - Salesforce DX Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
 - Salesforce DX Developer Guide: Source Format — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_source_file_format.htm
 - Salesforce DX Developer Guide: Migrate Existing Source — https://developer.salesforce.com/docs/platform/sfcli/guide/project-convert-mdapi.html
+- Salesforce DX Developer Guide, Summer '26 PDF (sfdx_dev.txt): `retrieve start --manifest` writes source format into `force-app` L2024–2035; `sf project generate manifest --from-org` L2045–2047; convert ignores dot-files and `.forceignore` matches L2066–2084; `sourceApiVersion` L2408–2416; profile retrieval and the permission-set recommendation L11881–11889; source tracking in Developer / Developer Pro sandboxes L989–995. Supports Pattern 1 and Gotchas 1, 2, 3, 6.
+- Metadata API Developer Guide (api_meta.txt): Profile retrieve contents L98477–98484 and standard-object permissions not overwritten unless included L98502–98506; flow file names without versions and FlowDefinition precedence L73195–73200; Pre/Post destructive manifests L4648–4660. Supports Gotchas 3, 4, 5.

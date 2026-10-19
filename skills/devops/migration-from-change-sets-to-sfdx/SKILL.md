@@ -33,9 +33,9 @@ outputs:
   - "pre- and post-migration validation checklist"
   - "decision guidance on target deployment model (manifest vs. packages vs. DevOps Center)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-10-19
 ---
 
 # Migration From Change Sets To SFDX
@@ -56,11 +56,27 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Do you already hold metadata-format files (an Ant or Metadata API repo), or will you retrieve from the org? | `sf project retrieve start --manifest` writes source format directly; only existing metadata-format files need `sf project convert mdapi`, and the convert skips dot-files and `.forceignore` matches (Gotcha 1) | One retrieve path per component group, plus a file-count check after any convert |
+| Will the first manifest be hand-built, wildcard, or generated with `sf project generate manifest --from-org`? | A broad manifest pulls components — flows especially — the team did not know existed (Gotcha 4) | A reviewed manifest listing only what the team owns |
+| What `sourceApiVersion` will `sfdx-project.json` pin? | It decides which fields are retrieved for each type (Gotcha 2) | A version chosen against the org, not copied from a template |
+| Does the team grant access through profiles today? | A retrieved profile holds only the settings for the other metadata in that request, and Salesforce recommends permission sets and ignoring profiles (Gotcha 3) | A decision to exclude profiles, or a separate reviewed profile step |
+| Which flows are active in production, and will a `FlowDefinition` ride along in the retrieve? | Flow files hold one version per flow, and a `FlowDefinition` in a deploy overrides the flows' status (Gotcha 4) | A flow inventory with the version each environment should run |
+| How will deletions be released once change sets are gone? | Removing a file and deploying the directory does not delete the component (Gotcha 5) | A `destructiveChangesPost.xml` step in the release runbook |
+| Which sandboxes will developers work in, and is source tracking enabled there? | Source tracking works only in scratch orgs and Developer / Developer Pro sandboxes with tracking turned on (Gotcha 6) | The tracking-or-manifest choice made per environment |
+
+Answering these first gives a repository that matches the org on day one and a release path that can delete as well as add; "just converting" ships a repo that quietly disagrees with production.
+
+---
+
 ## Core Concepts
 
 ### Metadata API Format vs. Source Format
 
-Salesforce metadata exists in two on-disk representations. **Metadata API format** (also called "mdapi format") is the legacy structure produced by `sf project retrieve start --metadata-dir` or the older `sfdx force:mdapi:retrieve`. Files land in a flat directory with `package.xml` at the root and subdirectories like `classes/`, `objects/`, `flows/`. **Source format** is the decomposed structure used by SFDX projects: a single custom object is split into individual files per field, per list view, per validation rule under `force-app/main/default/objects/ObjectName/`. Source format is designed for version control — smaller files, cleaner diffs, fewer merge conflicts.
+Salesforce metadata exists in two on-disk representations. **Metadata API format** (also called "mdapi format") is the legacy structure produced by `sf project retrieve start --target-metadata-dir` (UNVERIFIED (2026-10-19): flag name not in the Summer '26 DX guide; `--metadata-dir` is a deploy flag — check `sf project retrieve start --help`) or the older `sfdx force:mdapi:retrieve`. Files land in a flat directory with `package.xml` at the root and subdirectories like `classes/`, `objects/`, `flows/`. **Source format** is the decomposed structure used by SFDX projects: a single custom object is split into individual files per field, per list view, per validation rule under `force-app/main/default/objects/ObjectName/`. Source format is designed for version control — smaller files, cleaner diffs, fewer merge conflicts.
 
 The conversion command `sf project convert mdapi --root-dir <mdapi-dir> --output-dir <source-dir>` transforms metadata API format into source format. This is a one-way formatting conversion; it does not deploy or retrieve anything.
 
@@ -87,8 +103,8 @@ After migration, the team must choose a deployment model. **Source tracking** (`
 **How it works:**
 
 1. Build a `package.xml` listing one metadata type group at a time (e.g., all Apex classes first).
-2. Retrieve: `sf project retrieve start --manifest package.xml --target-org prod --output-dir mdapi-output/`
-3. Convert: `sf project convert mdapi --root-dir mdapi-output/ --output-dir force-app/`
+2. Retrieve: `sf project retrieve start --manifest package.xml --target-org prod` — this writes source format into the default package directory (`force-app`); no convert step is needed.
+3. Only for files you already hold in metadata format (an Ant or Metadata API repo): `sf project convert mdapi --root-dir mdapi-output/ --output-dir force-app/`
 4. Review the converted source, commit to git with a descriptive message ("Add Apex classes from production").
 5. Validate with a round-trip deploy to a sandbox: `sf project deploy start --source-dir force-app/ --target-org dev-sandbox`
 6. Repeat for the next metadata type group (custom objects, flows, LWC, etc.).
@@ -143,7 +159,7 @@ Step-by-step instructions for an AI agent or practitioner executing this migrati
 1. **Inventory current state** — List all metadata types currently promoted via change sets. Check recent change set history in Setup > Outbound Change Sets. Identify which components change frequently vs. rarely.
 2. **Set up the SFDX project** — Run `sf project generate --name <project-name>`. Initialize a git repository if none exists. Authenticate the source org with `sf org login web --alias prod`.
 3. **Build the migration manifest** — Create a `package.xml` targeting the first batch of metadata types. Start with Apex classes and triggers (they have the clearest file-to-component mapping).
-4. **Retrieve and convert** — Run `sf project retrieve start --manifest package.xml --target-org prod --output-dir mdapi-output/`. Then `sf project convert mdapi --root-dir mdapi-output/ --output-dir force-app/`. Review the output structure.
+4. **Retrieve (and convert only legacy files)** — Run `sf project retrieve start --manifest package.xml --target-org prod`, which writes source format into `force-app`. Run `sf project convert mdapi --root-dir <dir> --output-dir force-app/` only for files you already hold in metadata format. Review the output structure.
 5. **Validate round-trip** — Deploy the converted source to a sandbox: `sf project deploy start --source-dir force-app/ --target-org dev-sandbox`. Confirm zero errors. This proves the conversion is lossless.
 6. **Commit and iterate** — Commit the converted source to git. Repeat steps 3-5 for each remaining metadata type group. Resolve conflicts between batches as they arise.
 7. **Cut over** — Once all actively-maintained metadata is in the SFDX project, perform the next production release via `sf project deploy start` instead of a change set. Retire the change set process.
@@ -169,15 +185,15 @@ Run through these before marking the migration complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **`sf project convert mdapi` silently skips unsupported types** — Some metadata types (e.g., InstalledPackage, certain legacy email template types) are not supported in source format. The convert command does not error; it just omits them. Always compare the count of components in the mdapi directory against the converted source directory to catch dropped items.
+1. **`sf project convert mdapi` silently skips unsupported types** — Some metadata types (e.g., InstalledPackage, certain legacy email template types) are not supported in source format (UNVERIFIED (2026-10-19): the DX guide documents only that the convert skips dot-files and `.forceignore` matches). The convert command does not error; it just omits them. Always compare the count of components in the mdapi directory against the converted source directory to catch dropped items.
 
 2. **Source API version mismatch breaks retrieval** — If `sfdx-project.json` specifies `"sourceApiVersion": "59.0"` but the org is on API version 62.0, certain newer metadata types will not be retrieved or may have missing fields. Always set `sourceApiVersion` to match the target org's current release API version.
 
 3. **Object decomposition creates hundreds of files** — Converting a single custom object with 80 fields, 10 validation rules, and 5 list views from mdapi format produces 95+ individual files in source format. This is by design, but teams unfamiliar with source format are alarmed by the file count. Prepare the team for this before the first conversion.
 
-4. **Profiles and permission sets do not round-trip cleanly** — Retrieved profiles contain every object and field permission in the org, including standard objects and managed-package fields. Deploying this back overwrites the target org's profile with exactly what was retrieved, potentially removing permissions granted after retrieval. Use `.forceignore` to exclude profiles, or use permission sets exclusively.
+4. **Profiles do not round-trip cleanly** — A retrieved profile holds only the security settings for the other metadata in that retrieve request (plus user permissions, IP ranges, and login hours, which are always retrieved), so its contents depend on the manifest. Deploying it pushes that partial snapshot. Salesforce recommends permission sets and excluding profiles with `.forceignore`.
 
-5. **Flows retrieved in mdapi format include inactive versions** — A retrieve with `<members>*</members>` for FlowDefinition pulls all versions, including inactive ones. Converting these creates source files for flows the team may not recognize. Use specific member names in `package.xml` to retrieve only the active flow versions you intend to manage.
+5. **A wildcard flow retrieve pulls flows nobody owns** — `<members>*</members>` for `Flow` returns one file per flow (the latest version, which may not be the active one), including flows the team does not recognize. A `FlowDefinition` in the next deploy overrides the flows' status fields. Name flows explicitly and keep `FlowDefinition` out of the manifest.
 
 ---
 
