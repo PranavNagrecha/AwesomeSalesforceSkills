@@ -306,7 +306,7 @@ releases:
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: todo
+    status: running
     parent: R2-01
   - id: R2-01-3
     title: 'Agent proof: /build-flow (flow-builder) on a real input — a requirement line from examples/builds/case-onboarding/requirement.md;
@@ -415,6 +415,11 @@ releases:
     size: S
     owner_model: sonnet
     status: todo
+  - id: R2-14
+    title: 'Approval invalidation on later discount change: gotcha in admin/approval-processes + northwind-sales build fix'
+    size: S
+    owner_model: opus
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -508,5 +513,12 @@ inbox:
   ask: 'Leftovers from R2-12 review: the sharing checker rule does not match ''as system'' DML; apex-security-patterns llm-anti-patterns.md
     L81 says an inherited sharing service called from a batch ''silently runs without sharing'' — at 67.0+ only true for system-mode
     statements'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Agent proof R2-01-2 found a design gap in examples/builds/northwind-sales: Approval_Status__c is never cleared when
+    Discount__c changes after approval (deal approved at 21% can close at 40%; VR line 15 satisfied; panel disables resubmit
+    while Approved). Add the ''approval does not re-fire on later field change'' gotcha + a clearing automation pattern to
+    admin/approval-processes, and fix the build (flow or VR) as a scenario finding'
   size: S
   slotted_into: 1.5.0
