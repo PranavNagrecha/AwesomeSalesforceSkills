@@ -1,0 +1,131 @@
+{
+  "measured_on": "2026-10-19",
+  "commit": "79c9053aa",
+  "answer_model": "sonnet",
+  "grader_model": "opus",
+  "cases": 30,
+  "summary": {
+    "skills": {
+      "apex-security-patterns": {
+        "mean_a": 2.9333333333333336,
+        "mean_b": 3.1333333333333333,
+        "delta": 0.19999999999999973,
+        "must_a": 13,
+        "must_b": 11,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      },
+      "async-apex": {
+        "mean_a": 2.733333333333333,
+        "mean_b": 2.466666666666667,
+        "delta": -0.26666666666666616,
+        "must_a": 12,
+        "must_b": 16,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      },
+      "batch-apex-patterns": {
+        "mean_a": 2.3333333333333335,
+        "mean_b": 2.6666666666666665,
+        "delta": 0.33333333333333304,
+        "must_a": 14,
+        "must_b": 11,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      },
+      "trigger-framework": {
+        "mean_a": 2.533333333333333,
+        "mean_b": 3.0,
+        "delta": 0.4666666666666668,
+        "must_a": 12,
+        "must_b": 8,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      },
+      "flow-bulkification": {
+        "mean_a": 2.4,
+        "mean_b": 2.8666666666666667,
+        "delta": 0.4666666666666668,
+        "must_a": 12,
+        "must_b": 10,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      },
+      "bulk-api-2-patterns": {
+        "mean_a": 3.1999999999999997,
+        "mean_b": 3.6666666666666665,
+        "delta": 0.4666666666666668,
+        "must_a": 10,
+        "must_b": 7,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      },
+      "callouts-and-http-integrations": {
+        "mean_a": 2.6,
+        "mean_b": 2.9333333333333336,
+        "delta": 0.3333333333333335,
+        "must_a": 17,
+        "must_b": 12,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      },
+      "named-credentials-setup": {
+        "mean_a": 3.6,
+        "mean_b": 3.8000000000000003,
+        "delta": 0.20000000000000018,
+        "must_a": 7,
+        "must_b": 3,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      },
+      "lwc-imperative-apex": {
+        "mean_a": 3.1999999999999997,
+        "mean_b": 3.266666666666667,
+        "delta": 0.06666666666666732,
+        "must_a": 7,
+        "must_b": 7,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      },
+      "wire-service-patterns": {
+        "mean_a": 3.1999999999999997,
+        "mean_b": 3.466666666666667,
+        "delta": 0.26666666666666705,
+        "must_a": 8,
+        "must_b": 5,
+        "cases": 3,
+        "paired": 3,
+        "errors": 0
+      }
+    },
+    "overall": {
+      "cases": 30,
+      "paired": 30,
+      "mean_delta": 0.25333333333333335,
+      "b_gt_a": 22,
+      "b_lt_a": 6,
+      "tie": 2,
+      "errors": 0
+    },
+    "cost_usd": 6.3002608,
+    "call_seconds": 1837.5929999999998,
+    "input_tokens": 608918,
+    "output_tokens": 223290,
+    "elapsed_s": 593.864315750001
+  },
+  "caveats": [
+    "rubric MUST items reward repo conventions (templates, CMDT names); generic Correctness delta +0.13",
+    "3 cases/skill, 1 answer/arm, no repeats; per-skill deltas <=0.3 are within noise",
+    "Citation item ~1.0 in both arms (no tools/URLs) adds no signal",
+    "grader sees the gold reference; arm-B answers may mention the skill package"
+  ]
+}

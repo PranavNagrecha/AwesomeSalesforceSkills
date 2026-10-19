@@ -169,10 +169,13 @@ releases:
       record pass rate and mean rubric per arm'
     size: M
     owner_model: sonnet
-    status: running
+    status: done
     notes: 'Owner 2026-10-19: no more releasing without testing. Same grader, same cases, two arms; the only difference is
       whether the skill package text is in the answering prompt. Report the delta per skill and overall. A zero delta is a
       finding, not a failure of the test.'
+    evidence: 'evals/scripts/run_lift.py (7 tests); 30 cases sonnet answers / opus blind grader: B>A 22, B<A 6, tie 2, mean
+      delta +0.253 (1-5 scale), MUST violations 107->91; Completeness +0.43, Bulk safety +0.40, Correctness +0.13; async-apex
+      -0.27; cost 6.30 USD, 594 s; baseline evals/measurement/lift-baseline-2026-10-19.json'
   - id: R1-09
     title: 'Scenario check: re-run clarifier Steps 2-3 on examples/builds/tier2-webhook requirement; record tier + question
       count'
@@ -189,6 +192,11 @@ releases:
     title: Fix fail-open folder name (siteDotCom -> siteDotComSites) in cross-cloud + experience-cloud-admin checkers; add
       bad-fixture tests
     size: S
+    owner_model: sonnet
+    status: todo
+  - id: R1-14
+    title: 'Lift test v2: convention-free rubric, repeats, wrong-fact probes from corrected claims'
+    size: M
     owner_model: sonnet
     status: todo
   measured: {}
@@ -285,4 +293,10 @@ inbox:
   ask: 'Two checkers fail open on a wrong folder name: devops/cross-cloud-deployment-patterns and devops/experience-cloud-deployment-admin
     look for siteDotCom/ but the Metadata API directory is siteDotComSites/ (api_meta L130579), so they never fire'
   size: S
+  slotted_into: 1.4.0
+- date: 2026-10-19
+  ask: 'Lift test v2: convention-free rubric (no template/CMDT names), 3 repeats per arm, and a ''wrong-fact probe'' set built
+    from the 101 claims writers/reviewers corrected this week (each probe = a question whose naive answer is the LLM error)
+    so the test measures ''does the skill prevent the mistake an LLM makes'', which is the product''s claim'
+  size: M
   slotted_into: 1.4.0
