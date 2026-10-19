@@ -27,252 +27,273 @@ baseline:
   questions_tables: 273
   unverified_markers: 2162
   default_version_skills: 989
-  notes: "at_bar = score_skill_depth >= 10 after the R1-02 scorer fix (350 under the old scorer); questions_tables = exact heading present; default_version_skills = salesforce-version Spring 25+ (1009 after the 20 stray-quote fixes)"
+  notes: at_bar = score_skill_depth >= 10 after the R1-02 scorer fix (350 under the old scorer); questions_tables = exact
+    heading present; default_version_skills = salesforce-version Spring 25+ (1009 after the 20 stray-quote fixes)
   golden_eval_skills: 10
-
 releases:
-  - version: 1.4.0
-    mcp_version: 0.5.1
-    branch: release/1.4.0
-    ships: 2026-10-30
-    freeze: 2026-10-28
-    theme: "Gate, loop, test hygiene, clarifier coverage for data/devops/integration/security"
-    items:
-      - id: R1-01
-        title: "Test hygiene: pytest tests runs in one process; no test writes a tracked file"
-        size: S
-        owner_model: sonnet
-        status: done
-        evidence: "exit 137 not reproduced: one-process suite peaks 414 MB RSS; tracked-file writer was tests/framework/test_validate_framework.py via scripts/validate_framework.py RECONCILE_REPORT -> --report-out; pytest tests -q: 769 passed before index rebuild"
-        notes: "exit 137 locally on `python3 -m pytest tests`; a tests/product run rewrote docs/product-v2/migration-reconciliation.md. Root-cause (diagnosing-bugs), fix with tmp_path / marker, failing test first."
-      - id: R1-02
-        title: "No-regression gate for new skills + scorer fixes + version pattern"
-        size: M
-        owner_model: sonnet
-        status: done
-        evidence: "pipelines/validators.py validate_depth_gate; tests/test_depth_gate.py 28 cases; pytest test_depth_gate+test_validators+test_frontmatter: 148 passed; at_bar 350->382 after scorer fix; 20 version strings fixed; version pattern added to config/skill-frontmatter.schema.json (rejects the stray-quote shape and TODO)"
-        notes: >-
-          validate_repo: NEW skill (SKILL.md absent from `git ls-tree HEAD`, or version 1.0.0 with
-          updated >= 2026-10-19) -> ERROR if score_skill() < 10; ERROR if no exact
-          `## Questions to Ask Before Configuring` heading with header row `Ask | Why it matters | What a good answer adds`.
-          CHANGED skill in --changed-only -> ERROR if score < score at HEAD. No new WARNs for untouched skills.
-          Scorer: todos counts SKILL.md + references/ only; extras requires >= 500 bytes; add unverified_n column.
-          Schema: salesforce-version pattern ^(Spring|Summer|Winter) '\d{2}\+(\W.*)?$ ; fix the 20 trailing-quote values.
-          new_skill.py scaffold writes salesforce-version: "TODO" (forces a real value); gotchas 3->5, triggers 3->5 in the scaffold.
-          Two literal ValidationIssue("ERROR"/"WARN") calls (generate_validation_index.py reads literals). tests/test_depth_gate.py covers new / regressed / padded-empty / old-untouched.
-          Re-baseline at_bar in this file in the same commit.
-      - id: R1-03
-        title: "release_gate.sh + eval grader fail-closed + grader wrapper + tests/test_releases.py"
-        size: M
-        owner_model: sonnet
-        status: done
-        evidence: "scripts/release_gate.sh (10 steps, GATE_ONLY), scripts/eval_grader.sh, run_evals.grade fails closed; tests/test_releases.py + tests/test_run_evals.py: 44 passed 1 skipped; gate steps 6+9 PASS"
-        notes: >-
-          scripts/release_gate.sh: skill_sync --all --skip-embeddings; build_plugin.py; build_plugin.py --check;
-          validate_repo.py --all; python -m pytest tests -q; mcp suite via the CI command verbatim (unittest discover);
-          check_doc_counts.py; check_release_versions.py; check_routing_acceptance.py; run_heldout.py --check with the
-          previous release's --min-hit1/--min-hit3; run_model_routing.py; run_evals.py --structure; run_evals.py with
-          --grader-cmd (claude -p headless) over the 30 P0 cases; git diff --exit-code on generated files (publish-mcp.yml does this).
-          evals/scripts/run_evals.py grade(): a grader error must FAIL the case, never `continue` into [PASS] (L163-171). Failing test first.
-          tests/test_releases.py: schema, ships >= 14 days apart, freeze < ships, every done item has evidence, every item has size.
-      - id: R1-04
-        title: "Roster gloss fix: 'agent script' term reaches the shipped gloss of agentforce/agent-script-dsl"
-        size: S
-        owner_model: sonnet
-        status: todo
-        notes: "check_gloss_coverage.py reports CLIPPED 189/220; substitute the term into the description Triggers clause (not an add-only trigger). Verbatim before/after; zero fixture regression."
-      - id: R1-05
-        title: "Stale generated reports: drop checker-findings.md from git; regenerate duplicate-candidates.md and docs/queue-progress.md"
-        size: S
-        owner_model: fable
-        status: done
-        evidence: "correction: docs/reports/ is gitignored on main, so no stale report ever shipped; docs/queue-progress.md regenerates byte-identical (its date is BACKLOG.yaml's last change); local checker-findings.md moved out of the tree"
-      - id: R1-06
-        title: "Research screen: Agentforce Voice, Scale Center (no owner skill today)"
-        size: S
-        owner_model: sonnet
-        status: todo
-        notes: "research skill, official sources only (developer.salesforce.com/docs/ai/agentforce JSON endpoint; help.salesforce.com is not fetchable). Verdict per topic: real gap / covered elsewhere / not groundable. New skills, if any, are R2 items via new_skill.py --strict."
-      - id: R1-07
-        title: "Depth wave: full rewrites, lowest score first across data, devops, integration, security"
-        size: L
-        owner_model: opus
-        status: running
-        target: 40
-        floor: 40
-        domains: [data, devops, integration, security]
-        notes: "Writers in isolated worktrees, 10 skills each, 2 writers + 1 adversarial reviewer. Corpus: scratchpad/corpus/*.txt (Summer '26 PDFs). Every touched skill: Questions table in the exact format, salesforce-version from the cited guide, UNVERIFIED net count not up."
-      - id: R1-08
-        title: "Top-up wave: Questions table + version on at-bar skills lacking a table (85 today), data/devops first"
-        size: M
-        owner_model: opus
-        status: todo
-        target: 40
-        domains: [data, devops]
-      - id: R1-09
-        title: "Scenario check: re-run clarifier Steps 2-3 on examples/builds/tier2-webhook requirement; record tier + question count"
-        size: S
-        owner_model: sonnet
-        status: todo
-      - id: R1-10
-        title: "Release: CHANGELOG [Plugin 1.4.0] + [0.5.1], versions, gate, merge main, push, ls-remote verify, tag mcp-v0.5.1, watch publish, fresh-clone bootstrap --verify-only"
-        size: S
-        owner_model: fable
-        status: todo
-      - id: R1-11
-        title: "Committed orchestrator: rewrite agents/orchestrator (reads RELEASES.yaml, /start-building resumes from file+git), new agents/backlog-intake (/add-to-backlog sizes and slots an ask), scripts/release_plan.py (next/add/set-status/measure) with tests"
-        size: M
-        owner_model: sonnet
-        status: running
-        notes: "Owner correction 2026-10-19: the loop must be a reusable repo agent anyone starts with one command, not a session timer. Jumps the queue."
-    measured: {}
-
-  - version: 1.5.0
-    mcp_version: 0.5.2
-    branch: release/1.5.0
-    ships: 2026-11-13
-    freeze: 2026-11-11
-    theme: "data + devops to bar; remaining top-ups; R1-screen skills"
-    items:
-      - id: R2-01
-        title: "Depth wave: full rewrites — data and devops remainder, lowest first (replan count from R1 measured cost)"
-        size: L
-        owner_model: opus
-        status: todo
-        target: 95
-        floor: 60
-      - id: R2-02
-        title: "Top-up wave: remaining at-bar skills without Questions table; then at-bar skills still on default version (data/devops)"
-        size: M
-        owner_model: opus
-        status: todo
-        target: 60
-      - id: R2-03
-        title: "New skills from R1-06 verdicts (<= 3), via new_skill.py --strict — gate forces the bar"
-        size: M
-        owner_model: opus
-        status: todo
-      - id: R2-04
-        title: "Golden eval added for every flagship skill touched this release (repo rule); grader run recorded"
-        size: S
-        owner_model: sonnet
-        status: todo
-      - id: R2-05
-        title: "Scenario check on one scenario whose domains this release touched"
-        size: S
-        owner_model: sonnet
-        status: todo
-      - id: R2-06
-        title: "Release 1.5.0 / 0.5.2"
-        size: S
-        owner_model: fable
-        status: todo
-    measured: {}
-
-  - version: 1.6.0
-    mcp_version: 0.5.3
-    branch: release/1.6.0
-    ships: 2026-12-01
-    freeze: 2026-11-27
-    theme: "integration + security + omnistudio to bar; BACKLOG RESEARCH rows resolved"
-    items:
-      - id: R3-01
-        title: "Depth wave: integration, security, omnistudio remainder (omnistudio has no PDF: industries_reference JSON pages only; mark UNVERIFIED, never invent)"
-        size: L
-        owner_model: opus
-        status: todo
-        target: 95
-        floor: 60
-      - id: R3-02
-        title: "Top-up wave: at-bar default-version skills in integration/security/omnistudio"
-        size: M
-        owner_model: opus
-        status: todo
-        target: 60
-      - id: R3-03
-        title: "BACKLOG.yaml: verdict on the 100 RESEARCH rows (TODO or DUPLICATE); dashboard regenerated"
-        size: M
-        owner_model: sonnet
-        status: todo
-      - id: R3-04
-        title: "Scenario check + eval grader run"
-        size: S
-        owner_model: sonnet
-        status: todo
-      - id: R3-05
-        title: "Release 1.6.0 / 0.5.3"
-        size: S
-        owner_model: fable
-        status: todo
-    measured: {}
-
-  - version: 1.7.0
-    mcp_version: 0.5.4
-    branch: release/1.7.0
-    ships: 2026-12-15
-    freeze: 2026-12-11
-    theme: "architect + agentforce to bar"
-    items:
-      - id: R4-01
-        title: "Depth wave: architect (Well-Architected fundamentals via plain curl, Metadata API, LDV PDF; xml 'Not applicable' per style § 4) and agentforce (developer.salesforce.com/docs/ai/agentforce)"
-        size: L
-        owner_model: opus
-        status: todo
-        target: 95
-        floor: 60
-      - id: R4-02
-        title: "Top-up wave: at-bar default-version skills in architect/agentforce"
-        size: M
-        owner_model: opus
-        status: todo
-        target: 60
-      - id: R4-03
-        title: "Scenario check + eval grader run"
-        size: S
-        owner_model: sonnet
-        status: todo
-      - id: R4-04
-        title: "Release 1.7.0 / 0.5.4"
-        size: S
-        owner_model: fable
-        status: todo
-    measured: {}
-
-  - version: 1.8.0
-    mcp_version: 0.5.5
-    branch: release/1.8.0
-    ships: 2026-12-29
-    freeze: 2026-12-23
-    theme: "admin + apex + flow + lwc remainder begins; hygiene"
-    items:
-      - id: R5-01
-        title: "Depth wave: admin, apex, flow, lwc by score (remainder continues in R6/R7 — corpus at bar is an R7 outcome at measured pace)"
-        size: L
-        owner_model: opus
-        status: todo
-        target: 95
-        floor: 60
-      - id: R5-02
-        title: "Top-up wave: at-bar default-version skills in admin/apex/flow/lwc"
-        size: M
-        owner_model: opus
-        status: todo
-        target: 60
-      - id: R5-03
-        title: "Hygiene: dated measurement docs re-measured (docs/agent-invocation-modes.md first); build_plugin --measure back under budget; MASTER_QUEUE.md reduced to a pointer; dist/ zips out of the tree; stale local branches listed for the owner"
-        size: M
-        owner_model: sonnet
-        status: todo
-      - id: R5-04
-        title: "Scenario check + eval grader run"
-        size: S
-        owner_model: sonnet
-        status: todo
-      - id: R5-05
-        title: "Release 1.8.0 / 0.5.5"
-        size: S
-        owner_model: fable
-        status: todo
-    measured: {}
-
+- version: 1.4.0
+  mcp_version: 0.5.1
+  branch: release/1.4.0
+  ships: 2026-10-30
+  freeze: 2026-10-28
+  theme: Gate, loop, test hygiene, clarifier coverage for data/devops/integration/security
+  items:
+  - id: R1-01
+    title: 'Test hygiene: pytest tests runs in one process; no test writes a tracked file'
+    size: S
+    owner_model: sonnet
+    status: done
+    evidence: 'exit 137 not reproduced: one-process suite peaks 414 MB RSS; tracked-file writer was tests/framework/test_validate_framework.py
+      via scripts/validate_framework.py RECONCILE_REPORT -> --report-out; pytest tests -q: 769 passed before index rebuild'
+    notes: exit 137 locally on `python3 -m pytest tests`; a tests/product run rewrote docs/product-v2/migration-reconciliation.md.
+      Root-cause (diagnosing-bugs), fix with tmp_path / marker, failing test first.
+  - id: R1-02
+    title: No-regression gate for new skills + scorer fixes + version pattern
+    size: M
+    owner_model: sonnet
+    status: done
+    evidence: 'pipelines/validators.py validate_depth_gate; tests/test_depth_gate.py 28 cases; pytest test_depth_gate+test_validators+test_frontmatter:
+      148 passed; at_bar 350->382 after scorer fix; 20 version strings fixed; version pattern added to config/skill-frontmatter.schema.json
+      (rejects the stray-quote shape and TODO)'
+    notes: 'validate_repo: NEW skill (SKILL.md absent from `git ls-tree HEAD`, or version 1.0.0 with updated >= 2026-10-19)
+      -> ERROR if score_skill() < 10; ERROR if no exact `## Questions to Ask Before Configuring` heading with header row `Ask
+      | Why it matters | What a good answer adds`. CHANGED skill in --changed-only -> ERROR if score < score at HEAD. No new
+      WARNs for untouched skills. Scorer: todos counts SKILL.md + references/ only; extras requires >= 500 bytes; add unverified_n
+      column. Schema: salesforce-version pattern ^(Spring|Summer|Winter) ''\d{2}\+(\W.*)?$ ; fix the 20 trailing-quote values.
+      new_skill.py scaffold writes salesforce-version: "TODO" (forces a real value); gotchas 3->5, triggers 3->5 in the scaffold.
+      Two literal ValidationIssue("ERROR"/"WARN") calls (generate_validation_index.py reads literals). tests/test_depth_gate.py
+      covers new / regressed / padded-empty / old-untouched. Re-baseline at_bar in this file in the same commit.'
+  - id: R1-03
+    title: release_gate.sh + eval grader fail-closed + grader wrapper + tests/test_releases.py
+    size: M
+    owner_model: sonnet
+    status: done
+    evidence: 'scripts/release_gate.sh (10 steps, GATE_ONLY), scripts/eval_grader.sh, run_evals.grade fails closed; tests/test_releases.py
+      + tests/test_run_evals.py: 44 passed 1 skipped; gate steps 6+9 PASS'
+    notes: 'scripts/release_gate.sh: skill_sync --all --skip-embeddings; build_plugin.py; build_plugin.py --check; validate_repo.py
+      --all; python -m pytest tests -q; mcp suite via the CI command verbatim (unittest discover); check_doc_counts.py; check_release_versions.py;
+      check_routing_acceptance.py; run_heldout.py --check with the previous release''s --min-hit1/--min-hit3; run_model_routing.py;
+      run_evals.py --structure; run_evals.py with --grader-cmd (claude -p headless) over the 30 P0 cases; git diff --exit-code
+      on generated files (publish-mcp.yml does this). evals/scripts/run_evals.py grade(): a grader error must FAIL the case,
+      never `continue` into [PASS] (L163-171). Failing test first. tests/test_releases.py: schema, ships >= 14 days apart,
+      freeze < ships, every done item has evidence, every item has size.'
+  - id: R1-04
+    title: 'Roster gloss fix: ''agent script'' term reaches the shipped gloss of agentforce/agent-script-dsl'
+    size: S
+    owner_model: sonnet
+    status: todo
+    notes: check_gloss_coverage.py reports CLIPPED 189/220; substitute the term into the description Triggers clause (not
+      an add-only trigger). Verbatim before/after; zero fixture regression.
+  - id: R1-05
+    title: 'Stale generated reports: drop checker-findings.md from git; regenerate duplicate-candidates.md and docs/queue-progress.md'
+    size: S
+    owner_model: fable
+    status: done
+    evidence: 'correction: docs/reports/ is gitignored on main, so no stale report ever shipped; docs/queue-progress.md regenerates
+      byte-identical (its date is BACKLOG.yaml''s last change); local checker-findings.md moved out of the tree'
+  - id: R1-06
+    title: 'Research screen: Agentforce Voice, Scale Center (no owner skill today)'
+    size: S
+    owner_model: sonnet
+    status: todo
+    notes: 'research skill, official sources only (developer.salesforce.com/docs/ai/agentforce JSON endpoint; help.salesforce.com
+      is not fetchable). Verdict per topic: real gap / covered elsewhere / not groundable. New skills, if any, are R2 items
+      via new_skill.py --strict.'
+  - id: R1-07
+    title: 'Depth wave: full rewrites, lowest score first across data, devops, integration, security'
+    size: L
+    owner_model: opus
+    status: running
+    target: 40
+    floor: 40
+    domains:
+    - data
+    - devops
+    - integration
+    - security
+    notes: 'Writers in isolated worktrees, 10 skills each, 2 writers + 1 adversarial reviewer. Corpus: scratchpad/corpus/*.txt
+      (Summer ''26 PDFs). Every touched skill: Questions table in the exact format, salesforce-version from the cited guide,
+      UNVERIFIED net count not up.'
+  - id: R1-08
+    title: 'Top-up wave: Questions table + version on at-bar skills lacking a table (85 today), data/devops first'
+    size: M
+    owner_model: opus
+    status: todo
+    target: 40
+    domains:
+    - data
+    - devops
+  - id: R1-09
+    title: 'Scenario check: re-run clarifier Steps 2-3 on examples/builds/tier2-webhook requirement; record tier + question
+      count'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R1-10
+    title: 'Release: CHANGELOG [Plugin 1.4.0] + [0.5.1], versions, gate, merge main, push, ls-remote verify, tag mcp-v0.5.1,
+      watch publish, fresh-clone bootstrap --verify-only'
+    size: S
+    owner_model: fable
+    status: todo
+  - id: R1-11
+    title: 'Committed orchestrator: rewrite agents/orchestrator (reads RELEASES.yaml, /start-building resumes from file+git),
+      new agents/backlog-intake (/add-to-backlog sizes and slots an ask), scripts/release_plan.py (next/add/set-status/measure)
+      with tests'
+    size: M
+    owner_model: sonnet
+    status: done
+    notes: 'Owner correction 2026-10-19: the loop must be a reusable repo agent anyone starts with one command, not a session
+      timer. Jumps the queue.'
+    evidence: agents/orchestrator/AGENT.md v2.0.0 + agents/backlog-intake + commands/start-building.md + commands/add-to-backlog.md;
+      scripts/release_plan.py 57 tests; check_doc_counts 99 agents OK; validate --agents 0 errors
+  measured: {}
+- version: 1.5.0
+  mcp_version: 0.5.2
+  branch: release/1.5.0
+  ships: 2026-11-13
+  freeze: 2026-11-11
+  theme: data + devops to bar; remaining top-ups; R1-screen skills
+  items:
+  - id: R2-01
+    title: 'Depth wave: full rewrites — data and devops remainder, lowest first (replan count from R1 measured cost)'
+    size: L
+    owner_model: opus
+    status: todo
+    target: 95
+    floor: 60
+  - id: R2-02
+    title: 'Top-up wave: remaining at-bar skills without Questions table; then at-bar skills still on default version (data/devops)'
+    size: M
+    owner_model: opus
+    status: todo
+    target: 60
+  - id: R2-03
+    title: New skills from R1-06 verdicts (<= 3), via new_skill.py --strict — gate forces the bar
+    size: M
+    owner_model: opus
+    status: todo
+  - id: R2-04
+    title: Golden eval added for every flagship skill touched this release (repo rule); grader run recorded
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-05
+    title: Scenario check on one scenario whose domains this release touched
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-06
+    title: Release 1.5.0 / 0.5.2
+    size: S
+    owner_model: fable
+    status: todo
+  measured: {}
+- version: 1.6.0
+  mcp_version: 0.5.3
+  branch: release/1.6.0
+  ships: 2026-12-01
+  freeze: 2026-11-27
+  theme: integration + security + omnistudio to bar; BACKLOG RESEARCH rows resolved
+  items:
+  - id: R3-01
+    title: 'Depth wave: integration, security, omnistudio remainder (omnistudio has no PDF: industries_reference JSON pages
+      only; mark UNVERIFIED, never invent)'
+    size: L
+    owner_model: opus
+    status: todo
+    target: 95
+    floor: 60
+  - id: R3-02
+    title: 'Top-up wave: at-bar default-version skills in integration/security/omnistudio'
+    size: M
+    owner_model: opus
+    status: todo
+    target: 60
+  - id: R3-03
+    title: 'BACKLOG.yaml: verdict on the 100 RESEARCH rows (TODO or DUPLICATE); dashboard regenerated'
+    size: M
+    owner_model: sonnet
+    status: todo
+  - id: R3-04
+    title: Scenario check + eval grader run
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R3-05
+    title: Release 1.6.0 / 0.5.3
+    size: S
+    owner_model: fable
+    status: todo
+  measured: {}
+- version: 1.7.0
+  mcp_version: 0.5.4
+  branch: release/1.7.0
+  ships: 2026-12-15
+  freeze: 2026-12-11
+  theme: architect + agentforce to bar
+  items:
+  - id: R4-01
+    title: 'Depth wave: architect (Well-Architected fundamentals via plain curl, Metadata API, LDV PDF; xml ''Not applicable''
+      per style § 4) and agentforce (developer.salesforce.com/docs/ai/agentforce)'
+    size: L
+    owner_model: opus
+    status: todo
+    target: 95
+    floor: 60
+  - id: R4-02
+    title: 'Top-up wave: at-bar default-version skills in architect/agentforce'
+    size: M
+    owner_model: opus
+    status: todo
+    target: 60
+  - id: R4-03
+    title: Scenario check + eval grader run
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R4-04
+    title: Release 1.7.0 / 0.5.4
+    size: S
+    owner_model: fable
+    status: todo
+  measured: {}
+- version: 1.8.0
+  mcp_version: 0.5.5
+  branch: release/1.8.0
+  ships: 2026-12-29
+  freeze: 2026-12-23
+  theme: admin + apex + flow + lwc remainder begins; hygiene
+  items:
+  - id: R5-01
+    title: 'Depth wave: admin, apex, flow, lwc by score (remainder continues in R6/R7 — corpus at bar is an R7 outcome at
+      measured pace)'
+    size: L
+    owner_model: opus
+    status: todo
+    target: 95
+    floor: 60
+  - id: R5-02
+    title: 'Top-up wave: at-bar default-version skills in admin/apex/flow/lwc'
+    size: M
+    owner_model: opus
+    status: todo
+    target: 60
+  - id: R5-03
+    title: 'Hygiene: dated measurement docs re-measured (docs/agent-invocation-modes.md first); build_plugin --measure back
+      under budget; MASTER_QUEUE.md reduced to a pointer; dist/ zips out of the tree; stale local branches listed for the
+      owner'
+    size: M
+    owner_model: sonnet
+    status: todo
+  - id: R5-04
+    title: Scenario check + eval grader run
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R5-05
+    title: Release 1.8.0 / 0.5.5
+    size: S
+    owner_model: fable
+    status: todo
+  measured: {}
 inbox: []

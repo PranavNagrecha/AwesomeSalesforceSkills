@@ -11,7 +11,7 @@ three things at once:
    `list_named_credentials`, `list_approval_processes`, `tooling_query`, and
    `validate_against_org`.
 3. **Run-time agents** (70 active runtime agents across developer, admin,
-   strategic, vertical/governance, and orchestration tiers, plus 14 build-time agents and
+   strategic, vertical/governance, and orchestration tiers, plus 15 build-time agents and
    14 deprecation stubs that redirect via `list_deprecated_redirects`) that
    compose the skill library + live-org tools into concrete deliverables —
    via `list_agents` and `get_agent`.

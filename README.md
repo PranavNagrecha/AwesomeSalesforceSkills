@@ -192,7 +192,7 @@ of a run that took about 170 (`reports/drivers-log.md`).
 
 ## What's in it
 
-**1,040 skills · 98 agents (70 run-time, 14 build-time, 14 deprecated redirect stubs) · 92 slash
+**1,040 skills · 99 agents (70 run-time, 14 build-time, 14 deprecated redirect stubs) · 92 slash
 commands · 50 MCP tools · 7 decision trees.**
 
 ### Skills by domain
@@ -219,7 +219,7 @@ automation, flow pattern, Agentforce capability, async, integration pattern, sha
 
 ### Agents by tier
 
-**Run-time (70)** agents do Salesforce work in your codebase or org. **Build-time (14)** agents
+**Run-time (70)** agents do Salesforce work in your codebase or org. **Build-time (15)** agents
 maintain the library. Fourteen more are deprecated stubs whose commands redirect to `/audit-router`.
 
 | Tier | Example commands |

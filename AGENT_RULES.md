@@ -395,7 +395,7 @@ separately in `vector_index/query-fixtures.json`; do not duplicate.
 status come from frontmatter (`class:`, `status:`), which is the canonical
 source — `scripts/check_doc_counts.py` derives every quoted count from it.
 
-1. **Build-time (14)** — `orchestrator`, `task-mapper`, `content-researcher`,
+1. **Build-time (15)** — `orchestrator`, `task-mapper`, `content-researcher`,
    the 6 skill-builders (`admin`, `dev`, `devops`, `data`, `architect`,
    `security`), `code-reviewer`, `validator`, `currency-monitor`,
    `org-assessor`, `release-planner`. These produce the library.

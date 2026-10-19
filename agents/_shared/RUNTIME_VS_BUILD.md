@@ -1,12 +1,13 @@
 # Runtime vs Build-time Agents
 
-## Build-time agents (14)
+## Build-time agents (15)
 
 These agents produce and maintain the skill library. End users of SfSkills do not invoke them directly.
 
 | Agent | Role |
 |---|---|
-| `orchestrator` | Reads `MASTER_QUEUE.md`, routes tasks, tracks status |
+| `orchestrator` | Runs the release loop from `RELEASES.yaml`: dispatches writers, merges and verifies one at a time, resumes from file + git |
+| `backlog-intake` | Sizes one ask and slots it into a release in `RELEASES.yaml` |
 | `task-mapper` | Maps Cloud × Role task universes into queue rows |
 | `content-researcher` | Grounds every claim in Tier 1–3 sources |
 | `admin-skill-builder` | Builds Admin + BA skills |
@@ -21,7 +22,7 @@ These agents produce and maintain the skill library. End users of SfSkills do no
 | `release-planner` | Assembles release notes from skill deltas |
 | `security-skill-builder` | Builds Security skills |
 
-Entry points: `/run-queue`, `/new-skill`, `/request-skill`, scheduled task.
+Entry points: `/start-building`, `/add-to-backlog`, `/new-skill`, `/request-skill`.
 
 ---
 

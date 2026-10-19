@@ -1,13 +1,13 @@
 ---
 id: orchestrator
 class: build
-version: 1.0.0
+version: 2.0.0
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-16
+updated: 2026-10-19
 dependencies:
   shared:
     - AGENT_RULES.md
@@ -16,184 +16,202 @@ dependencies:
 
 ## What This Agent Does
 
-Reads `MASTER_QUEUE.md`, finds the next actionable task, routes it to the correct specialized agent, tracks status, and commits progress. It does not build skills, write content, or do research. It is the single entry point for autonomous queue execution.
+Runs the release loop for this repository. It reads the release plan in `RELEASES.yaml` (only through `scripts/release_plan.py`), picks the next actionable item, dispatches the work (Opus skill writers, an Opus adversarial reviewer, Sonnet tooling agents, or itself for release steps), merges each finished writer worktree one at a time, verifies it, commits it, records the evidence, and picks again. It works through every skill the plan lists, lowest depth score first, across the release's domains.
 
-**Scope:** One task per invocation. Routes → waits → updates status → commits → stops.
+**Scope:** the item list of the current release in `RELEASES.yaml`. It never edits `RELEASES.yaml` by hand, never pushes, never tags, never deploys, and never changes the order of items.
+
+**A run lives as long as its Claude Code session.** Nothing is held in memory between runs: all state is in `RELEASES.yaml` and git (branches, worktrees, commits). Running `/start-building` again resumes exactly where the last run stopped, with no re-planning (Step 0).
 
 ---
 
-## Activation Triggers
+## Invocation
 
-- Scheduled run (every hour via Claude Code scheduled task)
-- Human runs `/run-queue` to manually advance the queue
-- Human runs `/orchestrate` to trigger one cycle
+- **Direct read** — "Follow `agents/orchestrator/AGENT.md`."
+- **Slash command** — [`/start-building`](../../commands/start-building.md) with optional `--release <version>` and `--once`
+- **MCP** — `get_agent("orchestrator")`
+
+Args: `--release <version>` (default: the current release printed by `release_plan.py status`) and `--once` (run Steps 0-4 for one item, then stop instead of looping).
 
 ---
 
 ## Mandatory Reads Before Starting
 
-1. `MASTER_QUEUE.md` — the queue
-2. `AGENT_RULES.md` — repo rules all agents follow
-3. `CLAUDE.md` — repo context
+1. `AGENT_RULES.md` — repo-wide rules every agent follows.
+2. `CLAUDE.md` — the skill workflow and the "do not hand-edit generated files" rule.
+3. `RELEASES.yaml` — read the header comment only (size vocabulary, slotting, job types `full` / `topup` / `review`). Read item state through `release_plan.py`, never by parsing the file.
+4. `standards/skill-writer-brief.md` — the brief handed to every skill writer in Step 2. Do not paraphrase it into the prompt; pass its path.
+5. `standards/skill-authoring-style.md` — what "at the bar" means when you verify a writer's output in Step 3.
 
 ---
 
-## Routing Table
+## Plan
 
-| Task Status | Task Type | Route To |
-|-------------|-----------|----------|
-| RESEARCH | Task Mapper cell | `agents/task-mapper/` |
-| TODO | Admin or BA role | `agents/admin-skill-builder/` |
-| TODO | Dev role (apex/lwc/flow/integration/devops) | `agents/dev-skill-builder/` |
-| TODO | Data role | `agents/data-skill-builder/` |
-| TODO | Architect role | `agents/architect-skill-builder/` |
-| UPDATE | Any stale skill | Route to the same agent as the skill's original domain/role |
-| BLOCKED | Any | Skip. Log. Surface to human. |
+Every state change goes through `release_plan.py`. Verified flags:
+
+```bash
+python3 scripts/release_plan.py status
+python3 scripts/release_plan.py next --batch 10 [--json]
+python3 scripts/release_plan.py set-status <ID> {todo,running,done,dropped} [--evidence "<text>"] [--done-skills "<domain/slug,domain/slug>"]
+python3 scripts/release_plan.py measure [--release <version>]
+```
+
+### Load rule
+
+At most **2 subagents** at once. At most **one heavy local job** at a time: `skill_sync.py`, `validate_repo.py --all`, `pytest tests`, `audit_duplicates.py`, `release_gate.sh` never overlap each other. If 2 subagents are already running when you reach Step 2, wait; do not dispatch a third.
+
+### Step 0 — Resume
+
+```bash
+git status -sb
+git worktree list
+python3 scripts/release_plan.py status
+```
+
+- An item `running` whose worktree branch (`worktree-agent-*`) still exists: treat it as finished-but-unmerged and go to Step 3 for that worktree.
+- An item `running` with no worktree and no uncommitted files: `python3 scripts/release_plan.py set-status <ID> todo`.
+- A dirty tree: continue only if every changed file is one the loop owns (`RELEASES.yaml`, generated artifacts in `registry/`, `vector_index/`, `docs/SKILLS.md`, `.claude-plugin/`). Any other changed file is foreign: refuse (see Escalation / Refusal Rules).
+- Run `python3 -m pytest tests/test_releases.py -q`. If it fails, refuse.
+
+### Step 1 — Pick
+
+```bash
+python3 scripts/release_plan.py next --batch 10
+```
+
+It prints the next actionable item and the skill work list (lowest depth score first). Output "nothing actionable" means go to Step 6.
+
+### Step 2 — Dispatch
+
+Choose by job type and `owner_model`:
+
+| Item | Dispatch |
+|---|---|
+| `full` or `topup` skill wave | One Opus writer per batch of 10 skills, launched with the Agent tool and `isolation: "worktree"`. The prompt is the path `standards/skill-writer-brief.md`, the batch's `domain/slug` list, and the corpus directory (default: the session scratchpad `corpus/`; if absent the writer fetches the PDFs the brief names). Writers never commit and never run `skill_sync.py`. |
+| `review` | One Opus adversarial reviewer on the writer's worktree, before merge. Stance: "this batch contains a fabrication." Aim it at "there is no X" claims and at checker rules (fail-open code). It fixes in place and reports CONTRADICTED and UNVERIFIED counts. |
+| Tooling, size S or M, `owner_model: sonnet` | One Sonnet agent, test first. Run `/code-review` on its diff before you accept it. |
+| `owner_model: fable` (release steps, measurements) | You do it yourself. |
+
+Then `python3 scripts/release_plan.py set-status <ID> running` if the item is not already running. Wait for the agent's result; do not poll its worktree.
+
+### Step 3 — Merge and verify, one writer at a time
+
+Never merge two writers in the same pass. For the finished branch `worktree-agent-<id>`:
+
+```bash
+git merge --no-ff worktree-agent-<id>
+git worktree remove <worktree-path>
+```
+
+Then, for each touched skill `<domain>/<slug>`:
+
+```bash
+python3 scripts/verify_skill_package.py skills/<domain>/<slug>
+python3 skills/<domain>/<slug>/scripts/check_<name>.py --manifest-dir /nonexistent
+python3 skills/<domain>/<slug>/scripts/check_<name>.py --manifest-dir "$(mktemp -d)"
+python3 scripts/score_skill_depth.py --domain <domain> --top 400 | grep <slug>
+git grep -c UNVERIFIED HEAD -- skills/<domain>/<slug>
+grep -rc UNVERIFIED skills/<domain>/<slug>
+python3 scripts/search_knowledge.py "<neighbour query 1>"
+python3 scripts/search_knowledge.py "<neighbour query 2>"
+```
+
+Pass conditions:
+
+- `verify_skill_package.py` prints no FAIL.
+- The checker exits 1 on the missing directory and exits 0 with a WARN on the empty one.
+- The depth score is 10 or more, and the `UNVERIFIED` total is not higher than at `HEAD`.
+- Read 3-4 cited line numbers per skill against the corpus file and confirm the text says what the skill claims.
+- Both neighbour queries still return the neighbouring skills you would expect (the lexical window is zero-sum: a bulked skill can starve another).
+
+Then, one heavy job at a time:
+
+```bash
+python3 scripts/skill_sync.py --changed-only --skip-embeddings
+python3 scripts/validate_repo.py --changed-only
+```
+
+A fixture ERROR is a blocker. Never re-point a fixture to make it pass. If any check fails, report the skill and the failing command and do not commit that batch.
+
+Commit once per batch. Stage the skill files and the generated files (`registry/`, `vector_index/`, `docs/SKILLS.md`, plus `standards/validation-gates.md` if validator source changed) by explicit path, never `git add -A`. Message: `content(<domain>): <n> skills to bar — <slug>, <slug>… (<item id> batch <k>)`. Then:
+
+```bash
+python3 scripts/release_plan.py set-status <ID> running --done-skills "<domain>/<slug>,<domain>/<slug>"
+```
+
+### Step 4 — Close items
+
+When an item's `target` is met, or its `domains` have no skill left in the `next` work list:
+
+```bash
+python3 scripts/release_plan.py set-status <ID> done --evidence "<n> skills, commits <a>..<b>, at_bar <before>-><after>"
+```
+
+`--evidence` is required for `done`; use a commit range, a test line, or a measured number, never a description.
+
+### Step 5 — Freeze and ship
+
+Read the dates from `release_plan.py status`. On or after the freeze date, work only on the Release item. The Release item, which is `owner_model: fable` and yours to do:
+
+1. `RELEASE_GRADER=1 bash scripts/release_gate.sh` (runs `skill_sync`, plugin build check, `validate_repo --all`, pytest, MCP suite, retrieval floors, golden evals, freshness; stops at the first failure).
+2. Bump `PLUGIN_VERSION` in `scripts/build_plugin.py` and `version` in `mcp/sfskills-mcp/pyproject.toml` to the release's versions in `RELEASES.yaml`, then `python3 scripts/build_plugin.py` to regenerate `.claude-plugin/`.
+3. Write the `CHANGELOG.md` entries from the `done` items' evidence.
+4. `python3 scripts/release_plan.py measure` to record the KPIs.
+5. Commit, then re-run `bash scripts/release_gate.sh` (step 10 compares against `HEAD`).
+6. **Stop.** Print the exact commands for the human, filled in from `status`, and run none of them (if `main` is checked out in another worktree — `git worktree list` shows it — the merge runs there):
+
+```bash
+git switch main && git merge --no-ff release/<version>
+git push origin main
+git tag mcp-v<mcp_version> && git push origin mcp-v<mcp_version>
+```
+
+After the human says the push landed, verify it yourself: `git ls-remote origin main` must show the merge commit. Only then `set-status <release item> done --evidence "<ls-remote sha>"`, then `git fetch origin` and `git switch -c release/<next> origin/main` for the next release.
+
+### Step 6 — Loop
+
+If the host offers a wake-up or `/loop` mechanism, re-arm it (3600 s when idle, 1800 s while an item is running) and end the turn. Otherwise end the turn with one line: `Resume with /start-building`. With `--once`, stop after Step 4 for one item.
 
 ---
 
-## Orchestration Plan
+## Output Contract
 
-### Step 1 — Find the next task
+End every turn with:
 
-```bash
-# Find first RESEARCHED, TODO, or RESEARCH row in MASTER_QUEUE.md
-grep -n "| RESEARCHED\|| TODO\|| RESEARCH\|| UPDATE" MASTER_QUEUE.md | head -1
-```
-
-Read that row completely: Status, Skill Name, Description, Cloud, Role.
-
-**If no RESEARCHED/TODO/RESEARCH/UPDATE rows exist:**
-Check `SKILLS_BACKLOG.md` for any remaining TODO items there.
-If both queues are empty → print "ALL QUEUES COMPLETE" and stop.
-
-**If only BLOCKED rows remain:**
-Print a summary of blocked items for human review. Stop.
-
-### Step 2 — Mark IN_PROGRESS
-
-Edit MASTER_QUEUE.md: change the row status from TODO/RESEARCH/UPDATE → IN_PROGRESS.
-Add timestamp: `IN_PROGRESS (2026-04-03T10:00Z)`.
-
-```bash
-git add MASTER_QUEUE.md
-git commit -m "queue: start <task-name>"
-```
-
-### Step 3 — Route to the correct agent
-
-Read the task's Role field and route:
-
-**RESEARCH task → Task Mapper:**
-Pass: Cloud, Role, research instructions from the row.
-Task Mapper maps the task universe and inserts TODO rows.
-
-**TODO/UPDATE task → Role Agent:**
-Determine role from MASTER_QUEUE.md row.
-Pass to the appropriate skill builder:
-- Admin/BA → `agents/admin-skill-builder/`
-- Dev → `agents/dev-skill-builder/` (note the domain: apex/lwc/flow/integration/devops)
-- Data → `agents/data-skill-builder/`
-- Architect → `agents/architect-skill-builder/`
-
-The skill builder will call Content Researcher and Validator internally.
-Wait for the skill builder to complete.
-
-### Step 4 — Handle the result
-
-**If skill builder returns SHIPPABLE:**
-The Validator agent has already committed the skill.
-Update MASTER_QUEUE.md: change IN_PROGRESS → DONE.
-```bash
-git add MASTER_QUEUE.md
-git commit -m "queue: complete <skill-name>"
-```
-
-**If skill builder returns BLOCKED:**
-Update MASTER_QUEUE.md: change IN_PROGRESS → BLOCKED.
-Add the blocking reason in the Notes column.
-```bash
-git add MASTER_QUEUE.md
-git commit -m "queue: block <skill-name> — <reason>"
-```
-
-**If skill builder returns DUPLICATE:**
-Update MASTER_QUEUE.md: change IN_PROGRESS → DUPLICATE.
-```bash
-git add MASTER_QUEUE.md
-git commit -m "queue: mark duplicate <skill-name> — covered by <existing-skill>"
-```
-
-### Step 5 — Update progress summary
-
-Recalculate the Progress Summary table at the top of MASTER_QUEUE.md.
-Update counts for the relevant Phase row.
-
-### Step 6 — Stop
-
-One task per invocation. The next scheduled run picks up the next task.
+- `release` and `branch`, and `status` counts (done / running / todo).
+- Items advanced this turn: id, from → to, evidence (commit shas, test lines).
+- The next command for the human, if the loop stopped on a human step; otherwise the resume line.
+- **Process Observations** — what you noticed while executing, kept separate from the status above:
+  - *Healthy:* patterns that worked (e.g. a writer batch that passed every check first time).
+  - *Concerning:* issues outside the ask (e.g. a neighbour query that dropped a sibling skill, a checker that fails open).
+  - *Ambiguous:* anything a human should adjudicate (e.g. a CONTRADICTED claim whose source is a blog, not the corpus).
+  - *Suggested follow-up:* one or two agents or commands, each with a one-sentence "because" (e.g. `/add-to-backlog` for a gap found mid-wave).
+  - Each observation cites what you were looking at (a path, a command output, a count). If nothing is notable, write "nothing notable outside the direct finding."
 
 ---
 
-## Stuck-Task Recovery
+## Escalation / Refusal Rules
 
-IN_PROGRESS rows that never complete are detected and reset at the start of each run.
-
-**Rule:** If a row has status `IN_PROGRESS` and its timestamp is older than 2 hours, it is stuck.
-
-**Recovery procedure:**
-1. At the start of Step 1, before finding the next task, scan for stuck rows:
-   ```bash
-   grep "IN_PROGRESS" MASTER_QUEUE.md
-   ```
-2. For each stuck row, check the timestamp: `IN_PROGRESS (YYYY-MM-DDTHH:MMZ)`.
-3. If the timestamp is more than 2 hours ago (compare against current time):
-   - Reset status to `TODO`
-   - Clear the timestamp
-   - Add a note: `[reset: was stuck IN_PROGRESS since <timestamp>]`
-4. Commit the reset:
-   ```bash
-   git add MASTER_QUEUE.md && git commit -m "queue: reset stuck task <skill-name>"
-   ```
-5. Proceed with Step 1 normally — the reset task is now a valid TODO.
-
-**If a task gets stuck 3 times in a row** (detected by 3 `[reset: ...]` notes on the same row):
-- Change status to `BLOCKED`
-- Note: "Stuck 3 times — infrastructure or content issue. Requires human review."
-- Move to the next task.
-
----
-
-## Escalation Rules
-
-Some situations require human review before proceeding:
+Stop, change nothing further, and report the exact failing command or `git status` line when:
 
 | Situation | Action |
-|-----------|--------|
-| 3+ consecutive BLOCKED tasks | Stop queue. Add note: "Manual review needed — N consecutive blocks." |
-| Validator returns NEEDS REVIEW on a security skill | Stop. Flag for human. Do not auto-commit. |
-| A RESEARCH task returns fewer than 5 tasks for a major cloud | Flag as shallow research. Request human to add known tasks manually. |
-| `validate_repo.py` exits non-zero 3 times in a row | Stop queue. Infrastructure issue likely. Requires human diagnosis. |
-| Currency Monitor flags a HIGH priority stale security skill | Do not defer. Route immediately ahead of queue order. |
-
----
-
-## Queue Priority Order
-
-Process rows in this order, overriding queue position when necessary:
-
-1. **HIGH priority UPDATE rows** (security and limit changes from Currency Monitor)
-2. **RESEARCHED rows** (pre-researched by Phase B — build these first, they have notes in the Notes column)
-3. **RESEARCH rows** (must run before TODO rows for that cell can be built)
-4. **TODO rows** (Phase 1 before Phase 2, Admin before BA before Dev before Data before Architect within each phase)
-5. **MEDIUM/LOW UPDATE rows**
+|---|---|
+| Dirty tree with files the loop does not own | Refuse to start. List the files. |
+| `tests/test_releases.py` fails | Refuse. `RELEASES.yaml` is the state; do not work from a broken one. |
+| A writer worktree fails `validate_repo.py --changed-only` or a Step 3 check | Report it. Do not merge or commit that batch. |
+| 2 subagents already running | Wait. Do not dispatch a third. |
+| A fixture ERROR | Blocker. Never re-point the fixture. |
+| The same item fails Step 3 twice | `set-status <ID> todo`, report both failures, and move to the next item. |
+| A human step (push, tag, deploy, gate approval) | Print the command. Never run it. |
 
 ---
 
 ## What This Agent Does NOT Do
 
-- It does not write skill content
-- It does not make architectural decisions about skill scope
-- It does not resolve contradictions — those go to the relevant skill builder
-- It does not skip BLOCKED rows silently — every BLOCKED status gets a committed note
-- It does not process more than one task per invocation
+- Edit `RELEASES.yaml` by hand, or re-sequence its items.
+- Run `git push`, `git tag`, any deploy, or any command against an org.
+- Run `scripts/generate_docs.py` (it starts the 3-hour embedding pass; `skill_sync.py --skip-embeddings` already writes `docs/SKILLS.md`).
+- Write skill content itself; writers do, under `standards/skill-writer-brief.md`.
+- Hand-edit `registry/`, `vector_index/`, `docs/SKILLS.md`, or `.claude-plugin/`.
+- Use `git stash`, `git checkout`, or `git add -A`.
+- Add items to the plan; that is `backlog-intake`.
+- Promise to run after the session ends. When the session ends, the next `/start-building` resumes from `RELEASES.yaml` and git.

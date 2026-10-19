@@ -5,13 +5,14 @@ This roster is generated from `agents/*/AGENT.md` frontmatter and `agents/_share
 Edit those sources, not this file.
 
 
-98 agent packages on disk. Frontmatter counts: build/stable 14, runtime/beta 8, runtime/deprecated 14, runtime/stable 62. Each one's playbook is `agents/<name>/AGENT.md`; slash commands are defined in `commands/`. No agent deploys to an org.
+99 agent packages on disk. Frontmatter counts: build/stable 15, runtime/beta 8, runtime/deprecated 14, runtime/stable 62. Each one's playbook is `agents/<name>/AGENT.md`; slash commands are defined in `commands/`. No agent deploys to an org.
 
-## Build-time agents (14)
+## Build-time agents (15)
 
 | Agent | Status | Role |
 |---|---|---|
-| `orchestrator` | stable | Reads `MASTER_QUEUE.md`, routes tasks, tracks status |
+| `orchestrator` | stable | Runs the release loop from `RELEASES.yaml`: dispatches writers, merges and verifies one at a time, resumes from file + git |
+| `backlog-intake` | stable | Sizes one ask and slots it into a release in `RELEASES.yaml` |
 | `task-mapper` | stable | Maps Cloud × Role task universes into queue rows |
 | `content-researcher` | stable | Grounds every claim in Tier 1–3 sources |
 | `admin-skill-builder` | stable | Builds Admin + BA skills |

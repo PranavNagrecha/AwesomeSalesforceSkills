@@ -79,7 +79,7 @@ If the user says *"validate my code"* → ask: do you mean library structure (sk
 
 ## Axis 5: "Orchestrator" does NOT mean "orchestrate this ad-hoc work"
 
-`agents/orchestrator/` is the **queue orchestrator**. It reads `MASTER_QUEUE.md`, picks the next row, and dispatches to the right skill-builder.
+`agents/orchestrator/` is the **release-loop orchestrator**. It reads the release plan in `RELEASES.yaml` (via `scripts/release_plan.py`), picks the next item, and dispatches writers, reviewers, and tooling agents.
 
 It does **not**:
 
