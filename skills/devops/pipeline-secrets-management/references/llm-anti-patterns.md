@@ -8,10 +8,11 @@ All secret values below are `[REDACTED]`. Never print a real one, in a skill or 
 
 ## Anti-Pattern 1: Authorising with an SFDX auth URL
 
-The generated default, because it is one line and works immediately. A `force://` auth URL
-embeds a **refresh token**. Anyone who can read the value can mint access tokens for that
-org indefinitely, from anywhere, with no further interaction. It is not a password — it is
-strictly worse than a password, because it does not expire on a schedule anybody watches.
+The generated default, because it is one line and works immediately. The Salesforce DX
+Developer Guide does document `sf org login sfdx-url` for CI, and describes the URL as
+containing all the information needed to authorize the org. That is the problem: the value
+alone is the credential, so anyone who can read it can authorize the org from anywhere, and
+nothing about it is tied to a certificate you can swap.
 
 **Wrong** — a permanent org credential in an environment variable:
 
@@ -26,7 +27,7 @@ strictly worse than a password, because it does not expire on a schedule anybody
 ```
 
 **Right** — the JWT bearer flow, where the long-lived artefact is a private key you control
-and can revoke by replacing one certificate:
+and can revoke by replacing one certificate on the app:
 
 ```yaml
 - name: Authenticate to production
@@ -52,15 +53,17 @@ decrypted private key on the runner's disk, and self-hosted runners are reused.
 
 Source: Authorize an Org Using the JWT Flow — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_jwt_flow.htm
 
-## Anti-Pattern 2: Running `sf org display --verbose` to "check the connection"
+## Anti-Pattern 2: Printing credentials to "check the connection"
 
-The single most effective way to leak an org. `--verbose` prints the **Sfdx Auth Url**, and
-CI logs are far more widely readable than the secret store — visible to anyone with repo
-read on many providers, retained for months, and frequently forwarded into chat. The masking
-that hides `${{ secrets.* }}` does not apply, because this value was never a declared
-secret; the CLI derived it.
+Older material says `sf org display --verbose` shows the auth URL, so assistants either add it
+as a debug step or reach for its replacement. Current CLI behaviour: `sf org display` and
+`sf org list` hide secrets, and the dedicated `sf org auth show-access-token`,
+`show-sfdx-auth-url`, and `show-user-password` commands print them. With `--json` or
+`--no-prompt` they skip the confirmation prompt, which is exactly how they would run in CI;
+`SF_TEMP_SHOW_SECRETS=true` brings the old `sf org display` output back. CI logs are far more
+widely readable than the secret store, and provider masking only covers declared secrets.
 
-❌ `sf org display --target-org prod --verbose` as a debug step.
+❌ `sf org auth show-access-token --target-org prod --json` or `SF_TEMP_SHOW_SECRETS=true` in a pipeline step.
 ✅ Assert connectivity without printing a credential:
 
 ```yaml
@@ -71,8 +74,8 @@ secret; the CLI derived it.
                     print('connected as', d['username'], 'to', d['instanceUrl'])"
 ```
 
-If a human genuinely needs `--verbose`, that is a local action on their own machine, never a
-pipeline step. Treat any generated workflow containing `--verbose` as a finding.
+If a human genuinely needs a token, that is a local action on their own machine, never a
+pipeline step. Treat any generated workflow containing `org auth show-` as a finding.
 
 ## Anti-Pattern 3: One Connected App and one integration user for every environment
 
@@ -124,10 +127,10 @@ failure lands as a broken release on the day of the release.
 ❌ Generate a self-signed certificate with a multi-year validity, upload it, move on.
 ✅ Two independent controls. Track the certificate's expiry date and alert with enough lead
 time to run the swap, and put the rotation itself on a schedule rather than on the expiry.
-Rotation means: generate a new key pair, upload the new certificate to the connected app,
-update the CI secret, confirm a real login with the new key, and only then remove the old
-certificate. Doing it in that order means a failed rotation is recoverable instead of an
-outage.
+Rotation means proving the new key before the old one stops working. `rotation-runbook.md`
+does that with a second ("idle") app per environment: upload the new certificate there, log
+in with it, switch the CI secrets, then retire the old certificate. A failed rotation is then
+a retry instead of an outage, without assuming an app can hold two certificates at once.
 
 ## Anti-Pattern 6: Echoing the failure
 
@@ -149,13 +152,14 @@ value rather than the value:
 ```
 
 Most JWT auth failures are one of three things, none of which need the key printed: the
-consumer key does not match the connected app, the integration user is not pre-authorised
-for the app, or the certificate on the app is not the pair of this key.
+consumer key does not match the app, the integration user is not pre-authorised for the
+app, or the certificate on the app is not the pair of this key. A fourth is environmental: an
+org that requires high assurance sessions blocks headless JWT login entirely.
 
 ## Anti-Pattern 7: No detection, so a leak is found by the person who exploits it
 
 Prevention is the only control most generated pipelines have, and prevention fails. Nothing
-in the repo notices a committed `force://` URL, a `.sfdx/` directory or a PEM block, so the
+in the repo notices a committed `force://` URL, a `.ecaGlblOauth` file or a PEM block, so the
 window between a leak and its discovery is unbounded.
 
 ❌ Rely on review to catch a credential in a diff.
@@ -171,7 +175,7 @@ if git diff --cached -U0 | grep -qE '(force://|BEGIN [A-Z ]*PRIVATE KEY)'; then
   exit 1
 fi
 if git diff --cached --name-only | grep -qE '(^|/)\.sfdx/|(^|/)\.sf/'; then
-  echo "refusing commit: CLI auth state directory" >&2
+  echo "refusing commit: local CLI state directory (belongs in .gitignore)" >&2
   exit 1
 fi
 ```

@@ -1,14 +1,30 @@
 #!/usr/bin/env python3
-"""Validate SKILL.md and work template structure for code-review-checklist-salesforce.
+"""Pre-review scan of Apex source for the code-review-checklist-salesforce skill.
 
-Ensures required sections exist, description scope exclusion is present, enough
-triggers for routing metadata, and the template checklist mirrors SKILL.
+Walks a source directory (an SFDX package directory such as force-app, or a
+Metadata API retrieve) and reports the mechanical findings a reviewer should
+not have to hunt for by eye. Comments and string literals are blanked before
+any rule runs, so a commented-out query never raises a finding.
 
-Uses stdlib only — no pip dependencies.
+ERROR (blocking, exit 1):
+  - WITH SECURITY_ENFORCED in a class or trigger whose -meta.xml apiVersion is
+    67.0 or later (the clause is not allowed from API 67.0).
+
+WARN (review prompt, exit 0 unless --strict):
+  - WITH SECURITY_ENFORCED on a pre-67.0 file (migrate to WITH USER_MODE).
+  - a non-test class with SOQL/DML but no with/without/inherited sharing keyword
+    (its default flips at 67.0: with sharing; before that it depends on callers).
+  - SOQL or DML inside a for-loop body.
+  - SOQL or DML written directly in a trigger body (logic belongs in a handler).
+  - @IsTest(SeeAllData=true).
+  - a test class with no Assert.* / System.assert* call.
+  - a .cls/.trigger with no -meta.xml or no apiVersion.
+
+Stdlib only.
 
 Usage:
-    python3 check_code_review_checklist_salesforce.py
-    python3 check_code_review_checklist_salesforce.py --skill-dir path/to/skills/devops/code-review-checklist-salesforce
+    python3 check_code_review_checklist_salesforce.py --manifest-dir force-app
+    python3 check_code_review_checklist_salesforce.py --manifest-dir force-app --strict
 """
 
 from __future__ import annotations
@@ -16,198 +32,166 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
-
-REQUIRED_SKILL_HEADINGS = (
-    "## Before Starting",
-    "## Core Concepts",
-    "## Recommended Workflow",
-    "## Review Checklist",
-    "## Salesforce-Specific Gotchas",
-    "## Output Artifacts",
-)
-
-REQUIRED_TEMPLATE_HEADINGS = (
-    "## Scope",
-    "## Context Gathered",
-    "## Approach",
-    "## Checklist",
-    "## Notes",
-)
-
-SKILL_NAME = "code-review-checklist-salesforce"
+NS = "{http://soap.sforce.com/2006/04/metadata}"
+SOQL_RE = re.compile(r"\[\s*select\b", re.I)
+DML_RE = re.compile(r"(?<![\w.])(insert|update|upsert|delete|undelete|merge)\s+(as\s+(user|system)\s+)?[a-z_]\w*\s*;", re.I)
+DB_RE = re.compile(r"\bDatabase\.(insert|update|upsert|delete|undelete|merge|query)\s*\(", re.I)
+SHARING_RE = re.compile(r"\b(with|without|inherited)\s+sharing\b", re.I)
+SEC_ENF_RE = re.compile(r"\bWITH\s+SECURITY_ENFORCED\b", re.I)
+SEEALL_RE = re.compile(r"seealldata\s*=\s*true", re.I)
+ISTEST_RE = re.compile(r"@istest\b", re.I)
+ASSERT_RE = re.compile(r"\b(Assert\.\w+|System\.assert\w*)\s*\(", re.I)
+FOR_RE = re.compile(r"\bfor\s*\(", re.I)
 
 
-def parse_args() -> argparse.Namespace:
-    default_dir = Path(__file__).resolve().parent.parent
-    parser = argparse.ArgumentParser(
-        description="Validate Salesforce code review checklist skill package files.",
-    )
-    parser.add_argument(
-        "--skill-dir",
-        type=Path,
-        default=default_dir,
-        help="Path to skills/devops/code-review-checklist-salesforce (default: beside this script).",
-    )
-    return parser.parse_args()
+def _child(elem: ET.Element, tag: str) -> ET.Element | None:
+    """Return a namespaced or bare child; never `find(a) or find(b)` (leaf elements are falsy)."""
+    found = elem.find(NS + tag)
+    if found is not None:
+        return found
+    return elem.find(tag)
 
 
-def _read_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8")
-
-
-def _parse_frontmatter(skill_md: str) -> dict[str, str] | None:
-    if not skill_md.startswith("---"):
-        return None
-    end = skill_md.find("\n---\n", 4)
-    if end == -1:
-        return None
-    block = skill_md[4:end]
-    data: dict[str, str] = {}
-    current_key: str | None = None
-    current_list: list[str] = []
-    for raw_line in block.splitlines():
-        line = raw_line.rstrip()
-        if not line.strip():
-            continue
-        if re.match(r"^[\w-]+:\s*", line) and not line.strip().startswith("- "):
-            if current_key == "triggers" and current_list:
-                data["triggers"] = "\n".join(current_list)
-                current_list = []
-            m = re.match(r"^([\w-]+):\s*(.*)$", line)
-            if not m:
-                continue
-            key, rest = m.group(1), m.group(2).strip()
-            current_key = key
-            if rest in ("[]", "") and key in ("triggers", "tags", "inputs", "outputs"):
-                data[key] = ""
-            elif rest and key not in ("triggers", "tags", "inputs", "outputs", "well-architected-pillars"):
-                data[key] = rest.strip('"')
-            elif rest and key in ("tags", "inputs", "outputs", "well-architected-pillars"):
-                data[key] = rest
-        elif line.strip().startswith("- ") and current_key == "triggers":
-            item = line.strip()[2:].strip().strip('"')
-            if item:
-                current_list.append(item)
-    if current_key == "triggers" and current_list:
-        data["triggers"] = "\n".join(current_list)
-    return data
-
-
-def _extract_review_checklist_body(skill_md: str) -> str:
-    start = skill_md.find("## Review Checklist")
-    if start == -1:
-        return ""
-    rest = skill_md[start + len("## Review Checklist") :]
-    next_h2 = re.search(r"\n## ", rest)
-    if next_h2:
-        return rest[: next_h2.start()]
-    return rest
-
-
-def _checkbox_lines(section: str) -> list[str]:
-    lines = []
-    for line in section.splitlines():
-        stripped = line.strip()
-        if stripped.startswith("- [ ]"):
-            lines.append(stripped)
-    return lines
-
-
-def check_code_review_checklist_salesforce(skill_dir: Path) -> list[str]:
-    """Return actionable issue strings; empty means OK."""
-    issues: list[str] = []
-
-    if not skill_dir.is_dir():
-        issues.append(f"Skill directory not found: {skill_dir}")
-        return issues
-
-    skill_md_path = skill_dir / "SKILL.md"
-    if not skill_md_path.is_file():
-        issues.append(f"Missing SKILL.md at {skill_md_path}")
-        return issues
-
-    skill_md = _read_text(skill_md_path)
-
-    for heading in REQUIRED_SKILL_HEADINGS:
-        if heading not in skill_md:
-            issues.append(f"SKILL.md missing required section heading: {heading}")
-
-    fm = _parse_frontmatter(skill_md)
-    if fm is None:
-        issues.append("SKILL.md: could not parse YAML frontmatter (expected --- blocks).")
-    else:
-        if fm.get("name") != SKILL_NAME:
-            issues.append(
-                f"Frontmatter name must be '{SKILL_NAME}', got {fm.get('name')!r}."
-            )
-        if fm.get("category") != "devops":
-            issues.append(f"Frontmatter category must be 'devops', got {fm.get('category')!r}.")
-        desc = fm.get("description", "")
-        if "not for" not in desc.lower():
-            issues.append('Frontmatter description must include a scope exclusion ("NOT for ...").')
-        triggers = [t for t in fm.get("triggers", "").splitlines() if t.strip()]
-        if len(triggers) < 3:
-            issues.append(
-                f"Frontmatter must list at least 3 triggers (natural-language routes); found {len(triggers)}."
-            )
-        for t in triggers:
-            if len(t) < 10:
-                issues.append(f"Trigger phrase too short (<10 chars): {t!r}")
-
-    body = skill_md.split("---", 2)[-1] if skill_md.startswith("---") else skill_md
-    word_tokens = re.findall(r"[A-Za-z]+(?:'[A-Za-z]+)?", body)
-    if len(word_tokens) < 300:
-        issues.append(
-            f"SKILL.md body should be at least 300 words for repo validation; approximate word count: {len(word_tokens)}."
-        )
-
-    checklist_section = _extract_review_checklist_body(skill_md)
-    skill_boxes = _checkbox_lines(checklist_section)
-    if len(skill_boxes) < 5:
-        issues.append(
-            f"## Review Checklist should have at least 5 checkbox items; found {len(skill_boxes)}."
-        )
-
-    template_path = skill_dir / "templates" / f"{SKILL_NAME}-template.md"
-    if not template_path.is_file():
-        issues.append(f"Missing work template: {template_path}")
-    else:
-        template_text = _read_text(template_path)
-        for heading in REQUIRED_TEMPLATE_HEADINGS:
-            if heading not in template_text:
-                issues.append(f"Template missing required heading: {heading}")
-        tmpl_start = template_text.find("## Checklist")
-        if tmpl_start == -1:
-            issues.append("Template missing ## Checklist section.")
+def strip_code(src: str) -> str:
+    """Blank comments and string literals in one pass, keeping newlines and length."""
+    out = []
+    i, n = 0, len(src)
+    while i < n:
+        if src.startswith("//", i):
+            j = src.find("\n", i)
+            j = n if j < 0 else j
+            out.append(" " * (j - i))
+            i = j
+        elif src.startswith("/*", i):
+            j = src.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            out.append("".join(c if c == "\n" else " " for c in src[i:j]))
+            i = j
+        elif src[i] == "'":
+            j = i + 1
+            while j < n and src[j] != "'":
+                j += 2 if src[j] == "\\" else 1
+            j = min(j + 1, n)
+            out.append("'" + " " * max(j - i - 2, 0) + ("'" if j - i >= 2 else ""))
+            i = j
         else:
-            tmpl_section = template_text[tmpl_start:]
-            next_h2 = re.search(r"\n## ", tmpl_section[len("## Checklist") :])
-            if next_h2:
-                tmpl_section = tmpl_section[: len("## Checklist") + next_h2.start()]
-            tmpl_boxes = _checkbox_lines(tmpl_section)
-            if skill_boxes and tmpl_boxes != skill_boxes:
-                issues.append(
-                    "Template ## Checklist checkboxes must exactly match SKILL.md ## Review Checklist "
-                    f"(SKILL has {len(skill_boxes)} items, template has {len(tmpl_boxes)})."
-                )
-
-    return issues
+            out.append(src[i])
+            i += 1
+    return "".join(out)
 
 
-def main() -> int:
-    args = parse_args()
-    skill_dir: Path = args.skill_dir
-    issues = check_code_review_checklist_salesforce(skill_dir)
+def api_version(source: Path) -> float | None:
+    meta = source.with_name(source.name + "-meta.xml")
+    if not meta.is_file():
+        return None
+    try:
+        root = ET.parse(meta).getroot()
+    except ET.ParseError:
+        return None
+    node = _child(root, "apiVersion")
+    if node is None or not (node.text or "").strip():
+        return None
+    try:
+        return float(node.text.strip())
+    except ValueError:
+        return None
 
-    if not issues:
-        print(f"OK: skill package at {skill_dir} passes structure checks.")
+
+def _block_end(code: str, start: int) -> int:
+    """Index just past the statement or brace block that starts at `start`."""
+    i = start
+    while i < len(code) and code[i].isspace():
+        i += 1
+    if i < len(code) and code[i] == "{":
+        depth = 0
+        for j in range(i, len(code)):
+            if code[j] == "{":
+                depth += 1
+            elif code[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    return j + 1
+        return len(code)
+    j = code.find(";", i)
+    return len(code) if j < 0 else j + 1
+
+
+def loop_bodies(code: str) -> list[tuple[int, str]]:
+    bodies = []
+    for m in FOR_RE.finditer(code):
+        depth, j = 0, m.end() - 1
+        while j < len(code):
+            if code[j] == "(":
+                depth += 1
+            elif code[j] == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        # only the body is scanned: `for (X x : [SELECT ...])` runs its query once
+        end = _block_end(code, j + 1)
+        bodies.append((code.count("\n", 0, m.start()) + 1, code[j + 1:end]))
+    return bodies
+
+
+def scan_file(path: Path, findings: list[tuple[str, str]]) -> None:
+    raw = path.read_text(encoding="utf-8", errors="ignore")
+    code = strip_code(raw)
+    ver = api_version(path)
+    is_trigger = path.suffix == ".trigger"
+    is_test = bool(ISTEST_RE.search(code))
+    has_db = bool(SOQL_RE.search(code) or DML_RE.search(code) or DB_RE.search(code))
+
+    if ver is None:
+        findings.append(("WARN", f"{path}: no -meta.xml apiVersion found; the access-mode default cannot be determined"))
+    if SEC_ENF_RE.search(code):
+        if ver is not None and ver >= 67.0:
+            findings.append(("ERROR", f"{path}: WITH SECURITY_ENFORCED on an API {ver} file; not allowed from 67.0, use WITH USER_MODE"))
+        else:
+            findings.append(("WARN", f"{path}: WITH SECURITY_ENFORCED (API {ver}); migrate to WITH USER_MODE before the next version bump"))
+    if not is_trigger and not is_test and has_db and not SHARING_RE.search(code):
+        findings.append(("WARN", f"{path}: database operations but no sharing keyword; default is with sharing at 67.0+, caller-dependent before (API {ver})"))
+    if is_trigger and has_db:
+        findings.append(("WARN", f"{path}: SOQL/DML in the trigger body; move logic to a handler class"))
+    for line, body in loop_bodies(code):
+        if SOQL_RE.search(body) or DML_RE.search(body) or DB_RE.search(body):
+            findings.append(("WARN", f"{path}:{line}: SOQL or DML inside a for-loop body; collect ids and query/DML once"))
+    if SEEALL_RE.search(code):
+        findings.append(("WARN", f"{path}: @IsTest(SeeAllData=true); prefer created test data or Test.getStandardPricebookId()"))
+    if is_test and not ASSERT_RE.search(code):
+        findings.append(("WARN", f"{path}: test class without any Assert.* or System.assert* call"))
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Scan Apex source for code-review checklist findings.")
+    parser.add_argument("--manifest-dir", required=True, type=Path,
+                        help="Source directory to scan (e.g. force-app or a retrieve's unpackaged/).")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on WARN as well as ERROR.")
+    args = parser.parse_args(argv)
+
+    root = args.manifest_dir
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    sources = sorted(p for p in root.rglob("*") if p.is_file() and p.suffix in (".cls", ".trigger"))
+    if not sources:
+        print(f"WARN: no .cls or .trigger files under {root}; nothing to review")
         return 0
 
-    for issue in issues:
-        print(f"ERROR: {issue}", file=sys.stderr)
-    return 1
+    findings: list[tuple[str, str]] = []
+    for src in sources:
+        scan_file(src, findings)
+    for level, msg in findings:
+        print(f"{level}: {msg}")
+    errors = sum(1 for lvl, _ in findings if lvl == "ERROR")
+    warns = len(findings) - errors
+    print(f"Scanned {len(sources)} file(s): {errors} error(s), {warns} warning(s).")
+    if errors or (args.strict and warns):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

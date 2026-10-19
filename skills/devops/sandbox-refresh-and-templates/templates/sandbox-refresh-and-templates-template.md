@@ -13,8 +13,8 @@ Use this template to plan and document a sandbox refresh. Fill in every section 
 | Refresh initiated by | _(name and role)_ |
 | Target refresh date | YYYY-MM-DD |
 | Last refresh completed | YYYY-MM-DD |
-| Refresh interval for this type | 1 day / 5 days / 29 days |
-| Next eligible date (last refresh + interval) | YYYY-MM-DD |
+| Next available refresh date (from Setup > Sandboxes) | YYYY-MM-DD |
+| Definition file in source control | `config/<name>-sandbox-def.json` / none |
 
 **Eligibility check:** Is today on or after the next eligible date?
 - [ ] Yes — proceed
@@ -22,7 +22,7 @@ Use this template to plan and document a sandbox refresh. Fill in every section 
 
 ---
 
-## Sandbox Template (Partial Copy Only)
+## Sandbox Template (required for Partial Copy, optional for Full)
 
 Skip this section if the sandbox type is Developer, Developer Pro, or Full.
 
@@ -34,11 +34,11 @@ Skip this section if the sandbox type is Developer, Developer Pro, or Full.
 
 **Objects in this template:**
 
-| Object | Record Count Cap | Purpose |
-|---|---|---|
-| _(Object API name)_ | _(number or "All")_ | _(why this object is included)_ |
-| | | |
-| | | |
+| Object | Purpose |
+|---|---|
+| _(Object API name)_ | _(why this object is included)_ |
+| | |
+| | |
 
 **Template gaps identified:**
 _(List any objects or reference data not in the template that current test scenarios require.)_
@@ -55,8 +55,8 @@ _(List any objects or reference data not in the template that current test scena
 | Class version-controlled in repo | Yes / No |
 
 **What the class automates:**
-- [ ] Updates custom settings with new org ID from `context.organizationId()`
-- [ ] Aborts all scheduled CronTrigger records
+- [ ] Sets environment values from `context.sandboxName()` / `context.organizationId()`
+- [ ] Schedules the jobs this sandbox needs (scheduled jobs are not copied on refresh)
 - [ ] Updates integration endpoint URLs to sandbox equivalents
 - [ ] Masks or scrubs PII fields (list objects below)
 - [ ] Other: _(describe)_
@@ -72,7 +72,7 @@ These steps cannot be automated via Apex and must be completed by a human after 
 
 | Step | Owner | Completed |
 |---|---|---|
-| Re-enter Named Credential secrets for: _(list each)_ | _(name)_ | [ ] |
+| Verify Named/External Credential authentication for: _(list each)_ | _(name)_ | [ ] |
 | Re-authorize OAuth connected apps: _(list each)_ | _(name)_ | [ ] |
 | Set email deliverability to: _(System Email Only / All Email)_ | _(name)_ | [ ] |
 | Update external system config pointing at sandbox URL: _(list each system)_ | _(name)_ | [ ] |
@@ -85,10 +85,10 @@ These steps cannot be automated via Apex and must be completed by a human after 
 
 Confirm all of the following before clicking Refresh:
 
-- [ ] Refresh interval has elapsed
+- [ ] Next available refresh date confirmed in Setup
 - [ ] All sandbox users have been notified that work will be lost
 - [ ] No active uncommitted work exists in the sandbox (or it has been committed/backed up)
-- [ ] Sandbox template is attached and current (Partial Copy only)
+- [ ] `templateId` set for Partial Copy (and for Full if used); checker passes
 - [ ] SandboxPostCopy class is registered and up to date in production
 - [ ] Manual runbook has been assigned to owners
 
@@ -101,8 +101,8 @@ Confirm all of the following before clicking Refresh:
 Complete after the sandbox status shows "Active":
 
 - [ ] SandboxPostCopy class execution confirmed — no errors in sandbox debug logs for Automated Process user
-- [ ] Custom settings reflect new org ID
-- [ ] All scheduled jobs aborted or confirmed sandbox-safe
+- [ ] No stored production org ID or URL remains in configuration
+- [ ] Required scheduled jobs exist in `CronTrigger`
 - [ ] Named Credentials reconfigured
 - [ ] At least one integration smoke test passed
 - [ ] Email deliverability verified

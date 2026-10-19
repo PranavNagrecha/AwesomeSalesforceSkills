@@ -3,11 +3,11 @@
 ## Example 1: Splitting one force-app into three packages without splitting the shared object
 
 **Context:** A single `force-app` directory with roughly 800 metadata files, three teams,
-and one Account object that all three had extended.
+and one shared custom object, `Customer_Profile__c`, that all three had extended.
 
 **Problem:** Every deploy was all-or-nothing and every PR touched files three teams cared
 about. The first split attempt made it worse: each team's package got its own partial
-`objects/Account/` folder, the object definition ended up in whichever package happened to
+`objects/Customer_Profile__c/` folder, the object definition ended up in whichever package happened to
 be created first, and installs into a clean org started failing depending on order — a
 failure invisible in development, because every scratch org had all three sets of source
 pushed into it.
@@ -20,12 +20,12 @@ repo/
 ├── packages/
 │   ├── base-utils/                       <- owns shared objects and cross-cutting Apex
 │   │   └── main/default/
-│   │       ├── objects/Account/          <- the object definition lives HERE, once
+│   │       ├── objects/Customer_Profile__c/   <- the object definition lives HERE, once
 │   │       └── classes/                  <- TriggerHandler, logging, security utils
 │   ├── sales-core/
-│   │   └── main/default/objects/Account/fields/   <- extension fields only
+│   │   └── main/default/objects/Customer_Profile__c/fields/   <- extension fields only
 │   └── service-core/
-│       └── main/default/objects/Account/fields/
+│       └── main/default/objects/Customer_Profile__c/fields/
 ├── tools/                                <- NOT a packageDirectory: seeders, one-offs
 ├── config/
 │   └── project-scratch-def.json
@@ -76,16 +76,16 @@ repo/
 ```
 
 **Why it works:** exactly one directory carries `default: true`, which is the documented
-rule — with several paths you have to nominate one, and more than one is rejected. The
+rule — there can be only one package directory with the default set to true. The
 shared object has a single owner, so install order stops being luck: both feature packages
 declare a dependency on `base-utils`, and the platform enforces the order rather than a
 runbook.
 
-**Why the default is `base-utils` specifically:** the default directory is where retrieved
-metadata lands when no destination is given. Pointing it at the base package means an
+**Why the default is `base-utils` specifically:** a retrieve updates components that already
+exist locally in their own directory and copies new ones into the default directory. Pointing it at the base package means an
 accidental `sf project retrieve start` files the component somewhere every reviewer is
-watching, rather than quietly into a feature team's package. It does not remove the need to
-retrieve with `--output-dir`; it makes the mistake visible.
+watching, rather than quietly into a feature team's package. It does not remove the need for
+targeted retrieves (`--source-dir`, `--metadata`); it makes the mistake visible.
 
 **Why `tools/` is outside `packages/`:** everything under a `packageDirectories` path is
 package content and ships to every org that installs it. Seed data scripts and migration

@@ -24,263 +24,148 @@ outputs:
   - Post-refresh runbook for manual steps the Apex class cannot automate
   - Sandbox template configuration recommendations
 triggers:
-  - my sandbox data is stale and I need to bring it back in line with production
-  - how do I automate user setup and org settings after a sandbox refresh
-  - my SandboxPostCopy class is not running after the sandbox is refreshed
-  - what data gets copied into a Partial Copy sandbox and how do I control it
-  - integrations are broken in the sandbox after refresh and Named Credentials are missing
+  - "my sandbox data is stale and I need to bring it back in line with production"
+  - "how do I automate user setup and org settings after a sandbox refresh"
+  - "my SandboxPostCopy class is not running after the sandbox is refreshed"
+  - "what data gets copied into a Partial Copy sandbox and how do I control it"
+  - "integrations are broken in the sandbox after refresh and Named Credentials are missing"
   - "sandbox refresh SandboxPostCopy automation"
   - "sandbox refresh isn't working"
+  - "refresh a sandbox from the CLI with a definition file and a post-copy class"
+  - "reschedule Apex jobs after a sandbox refresh"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-19
 ---
 
 # Sandbox Refresh and Templates
 
-This skill activates when a practitioner needs to run, plan, or troubleshoot a sandbox refresh — including how to configure sandbox templates for Partial Copy sandboxes, automate post-refresh setup using the SandboxPostCopy Apex interface, and handle data safely during the refresh process. It does not cover choosing which sandbox type to use (see `admin/sandbox-strategy` for that).
-
----
-
-## Trigger Scenarios
-
-- "my sandbox data is stale and I need to bring it back in line with production"
-- "how do I automate user setup and org settings after a sandbox refresh"
-- "my SandboxPostCopy class is not running after the sandbox is refreshed"
-- "what data gets copied into a Partial Copy sandbox and how do I control it"
-- "integrations are broken in the sandbox after refresh — Named Credentials are missing"
-- "scheduled jobs are not running in the sandbox after we refreshed it"
-- "I need to scrub PII data automatically when the sandbox copies from production"
+This skill activates when a practitioner needs to run, plan, or troubleshoot a sandbox refresh — configuring sandbox templates, automating post-refresh setup with the `SandboxPostCopy` Apex interface, and handling data and integrations safely afterwards. It does not cover choosing which sandbox type to use (see `admin/sandbox-strategy`).
 
 ---
 
 ## Before Starting
 
-Gather this context before working in this domain:
+- Know the sandbox type: Developer and Developer Pro sandboxes get metadata only; Partial Copy and Full also get data.
+- Find the `SandboxPostCopy` class, if any (search for `implements SandboxPostCopy`), and which sandboxes name it.
+- List the scheduled Apex jobs the sandbox needs — they are not copied on refresh.
+- List integrations, Named Credentials, and External Credentials that point at external systems.
+- Search code, custom settings, and custom metadata for stored org IDs and production URLs.
 
-- Know the sandbox type — refresh interval, data scope, and template availability differ by type.
-- Confirm whether a SandboxPostCopy class already exists in the production org (search for classes implementing `SandboxPostCopy`).
-- Identify all integrations and Named Credentials that point at external systems — these reset on refresh and require manual reconfiguration or SandboxPostCopy logic.
-- Identify all active scheduled jobs that should not execute in the sandbox against production endpoints.
-- Confirm whether any hardcoded org IDs exist in custom settings, metadata, or code.
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which scheduled jobs must run in this sandbox after refresh? | Scheduled jobs from the source org aren't copied on refresh; they must be rescheduled (gotcha 2). | A reschedule list the post-copy class or runbook executes. |
+| What must the post-copy class do, and does the Automated Process user have access to those objects? | The class runs as an Automated Process user that can't access all objects and features (gotcha 4). | A scoped task list, a test that runs as that user, and a manual fallback. |
+| Is this a Partial Copy sandbox, and which template does it use? | `templateId` is required for Partial sandboxes, optional for Full, and not available for Developer or Developer Pro (gotcha 5). | A named template with the objects the tests need. |
+| Does any data copied into the sandbox contain personal data? | Partial Copy and Full sandboxes receive production data (gotcha 6). | A masking step in the post-copy class (or a dedicated masking product) before users get access. |
+| Which external endpoints and credentials does the sandbox call? | Copied configuration points at production systems until it is changed (gotcha 3). | Endpoint and credential changes owned by the post-copy class or a runbook line. |
+| Where are org IDs or production URLs stored as values? | A sandbox is its own org; values copied from production are wrong there (gotcha 1). | Code that reads the org ID at runtime instead of storing it. |
+| Who refreshes, how, and when is the next window? | Options such as the template are chosen per refresh, and a CLI refresh can change them through a definition file; refresh intervals limit how often you can retry (gotcha 7). | A refresh owner, a definition file in source control, and a calendar. |
+
+A proper refresh setup adds a tested post-copy class, a template that matches the tests, and a short manual runbook, where "just clicking Refresh" produces a sandbox with no scheduled jobs, production endpoints, and unmasked customer data.
 
 ---
 
 ## Core Concepts
 
-### Refresh Intervals by Sandbox Type
+### What a refresh copies
 
-Salesforce enforces mandatory minimum intervals between sandbox refreshes. A sandbox cannot be refreshed again until the interval has elapsed since the previous refresh completion.
-
-| Sandbox Type | Refresh Interval | Data Copied |
+| Sandbox type | Copied from source | Template |
 |---|---|---|
-| Developer | 1 day | Metadata only — no production data |
-| Developer Pro | 1 day | Metadata only — no production data |
-| Partial Copy | 5 days | Metadata + subset of data defined by sandbox template |
-| Full | 29 days | Metadata + all production data (storage mirrors production) |
+| Developer | Metadata | Not available |
+| Developer Pro | Metadata | Not available |
+| Partial Copy | Metadata + data for the objects the template selects | Required (`templateId`) |
+| Full | Metadata + data | Optional (`templateId`) |
 
-Developer and Developer Pro sandboxes are configuration-only copies. They receive no production records. Full sandboxes are exact replicas including all records. Partial Copy sandboxes receive a data subset controlled by a sandbox template.
+Refreshing updates a sandbox's metadata from the source org; if the sandbox is a clone or uses a template, the refresh also updates its data. A sandbox template lets you select which objects to copy. Scheduled jobs are not copied.
 
-### Sandbox Templates (Partial Copy Sandboxes Only)
+Refresh intervals: Developer and Developer Pro 1 day, Partial Copy 5 days, Full 29 days. UNVERIFIED (2026-10-19): these intervals are published in Salesforce Help ("Sandbox Licenses and Storage Limits by Type"), which does not fetch; confirm in Setup > Sandboxes before planning a calendar around them.
 
-Sandbox templates define which objects and how many records are copied into a Partial Copy sandbox. Templates are configured in Production under Setup > Sandbox Templates before the sandbox is created or refreshed.
+### The SandboxPostCopy interface
 
-Key behaviors:
-- Templates are only available for Partial Copy sandboxes. Developer, Developer Pro, and Full sandboxes do not use templates.
-- Each template specifies objects and an optional record count cap per object.
-- If no template is specified, a Partial Copy sandbox copies a default subset of records.
-- Templates do not filter by field value or relationship — they select records by count across the whole object.
-- Related records (parent lookups) are followed automatically to maintain referential integrity, which can cause the actual record count to exceed template caps.
-- Templates must be created and attached before the sandbox refresh is initiated; they cannot be applied retroactively.
-
-### SandboxPostCopy Interface
-
-The `SandboxPostCopy` interface is a System namespace Apex interface that runs automatically at the end of sandbox creation or refresh. It is the only supported mechanism for automating post-refresh configuration inside the sandbox itself.
-
-**Interface definition:**
-```apex
-global interface SandboxPostCopy {
-    void runApexClass(SandboxContext context);
-}
-```
-
-**SandboxContext methods available inside `runApexClass`:**
-- `context.organizationId()` — returns the sandbox org's 18-character org ID
-- `context.sandboxId()` — returns the sandbox record ID from the production org
-- `context.sandboxName()` — returns the sandbox name (e.g., `UAT`, `QA`)
-
-**How to register the class:**
-When creating or refreshing a sandbox via Setup UI, specify the Apex class name in the "Apex Class" field on the sandbox create/refresh form. The class must exist in the production org (not the sandbox), must be global, and must implement `SandboxPostCopy`.
-
-**Execution context:**
-The class runs under the Automated Process user in the new sandbox. This user does not have access to all objects and features. Any DML or callouts must be authorized under that user's permission set. Use `@future` or Queueable if the work needs to run asynchronously after the initial post-copy script completes.
-
-**What SandboxPostCopy can automate:**
-- Resetting user passwords or activating sandbox users
-- Inserting or updating custom settings to point at sandbox endpoints
-- Deactivating scheduled jobs or triggers that should not fire in a sandbox
-- Scrubbing or masking sensitive field values on records
-- Creating test data or reference records that the sandbox requires
-
-### Org ID Changes on Refresh
-
-Every time a sandbox is refreshed, the sandbox org receives a new organization ID. Any code, custom setting, or metadata that stores the org ID as a hardcoded value will be stale after the refresh. The SandboxContext object provides the new org ID via `context.organizationId()` and should be used to update any stored org ID values inside the post-copy script.
-
----
-
-## Mode 1: Plan and Execute a Sandbox Refresh
-
-Use this mode when preparing for an upcoming refresh or executing one for the first time with proper automation.
-
-### Step 1 — Confirm refresh eligibility
-
-Check when the sandbox was last refreshed. The refresh option in Setup is greyed out until the interval has elapsed. The interval resets from the moment the previous refresh completed (not when it was initiated).
-
-### Step 2 — Check or create a sandbox template (Partial Copy only)
-
-If the target is a Partial Copy sandbox, review the template attached to it under Setup > Sandbox Templates. Confirm it includes the objects your team needs for testing. Attach or update the template before initiating the refresh.
-
-### Step 3 — Write or update the SandboxPostCopy class in production
-
-The class must live in production and must be global. Minimum pattern:
+`System.SandboxPostCopy` has one method, `runApexClass(System.SandboxContext context)`; the context gives `context.organizationId()`, `context.sandboxId()`, and `context.sandboxName()`. You specify the class when creating or refreshing the sandbox (Setup's Apex Class field, or `apexClassName` / `apexClassId` in a CLI sandbox definition file). The class needs a no-arg constructor, because that is the constructor the copy process uses. It runs at the end of the copy as a special Automated Process user that isn't visible in the org and doesn't have access to all objects and features; if the script fails, run it after activation as a user with the right permissions.
 
 ```apex
 global class SandboxSetup implements SandboxPostCopy {
-    global void runApexClass(SandboxContext context) {
-        String sandboxName = context.sandboxName();
-        String orgId = context.organizationId();
+    global SandboxSetup() {}   // the copy process uses the no-arg constructor
 
-        // Update custom settings with the sandbox org ID
+    global void runApexClass(SandboxContext context) {
         Sandbox_Config__c cfg = Sandbox_Config__c.getOrgDefaults();
-        cfg.Org_ID__c = orgId;
-        cfg.Environment_Name__c = sandboxName;
+        cfg.Environment_Name__c = context.sandboxName();
+        cfg.Endpoint_Base_URL__c = 'https://sandbox-api.example.com';
         upsert cfg;
 
-        // Deactivate any scheduled jobs that should not run in sandbox
-        for (CronTrigger ct : [SELECT Id FROM CronTrigger WHERE State = 'WAITING']) {
-            System.abortJob(ct.Id);
-        }
-
-        // Reset integration endpoint to sandbox URL in custom metadata
-        // (use a Queueable for callouts or DML that needs async context)
+        // Scheduled jobs are not copied on refresh: schedule the ones this sandbox needs.
+        System.schedule('Nightly sync (sandbox)', '0 0 2 * * ?', new NightlySyncSchedulable());
     }
 }
 ```
 
-### Step 4 — Register the class on the sandbox record
+Test it with `Test.testSandboxPostCopyScript(script, orgId, sandboxId, sandboxName, true)` — the overload whose last argument runs the test with the Automated Process user's permissions, which Salesforce recommends over the four-argument version.
 
-In Setup > Sandboxes, click Refresh next to the target sandbox. In the refresh form, enter the name of the `SandboxPostCopy` class in the "Apex Class" field.
+### Refreshing from the CLI
 
-### Step 5 — Initiate the refresh
+```json
+{
+  "sandboxName": "uat",
+  "licenseType": "Partial",
+  "templateId": "1psXXXXXXXXXXXX",
+  "apexClassName": "SandboxSetup",
+  "autoActivate": true
+}
+```
 
-Submit the refresh. Monitor status under Setup > Sandboxes. A Full sandbox refresh can take hours to days depending on data volume. Developer sandboxes typically complete in minutes.
-
-### Step 6 — Run the post-refresh manual runbook
-
-Document and execute any steps the SandboxPostCopy class cannot handle:
-- Re-enter Named Credential passwords and OAuth tokens (these are blanked on refresh)
-- Re-authorize connected apps that use user-agent OAuth flows
-- Update any external system configuration that points at the old sandbox URL
-- Verify email deliverability settings if the sandbox should not send outbound email
-
----
-
-## Mode 2: Review or Audit Post-Refresh State
-
-Use this mode on an existing sandbox to assess whether refresh automation is adequate or identify drift from production.
-
-1. Check whether a SandboxPostCopy class is registered on the sandbox record in production Setup. If none, all post-refresh setup is manual and error-prone.
-2. Search the production org for any Apex classes implementing `SandboxPostCopy`. Confirm only one active class is registered per sandbox.
-3. Audit custom settings and custom metadata for hardcoded org IDs — query `Organization.Id` and compare against stored values.
-4. List active scheduled jobs in the sandbox (`SELECT Id, CronJobDetail.Name, State FROM CronTrigger`). Flag any that point at production endpoints.
-5. Review Named Credentials — any that require password/OAuth reconfiguration after refresh should be documented in the manual runbook.
-6. For Partial Copy sandboxes, verify the sandbox template includes all objects needed for current test scenarios. Templates should be reviewed before each refresh cycle.
-7. Check whether email deliverability is set to "System Email Only" or "All Email" in the sandbox — most sandboxes should be on "System Email Only" to prevent test emails reaching real users.
+`sf org refresh sandbox --name uat --target-org prodOrg --definition-file config/uat-sandbox-def.json` refreshes with that configuration; `--name` is the sandbox name, not its alias, and the name itself can't change on refresh. `sandboxName` is alphanumeric, 10 characters or fewer.
 
 ---
 
-## Mode 3: Troubleshoot Refresh Issues
+## Recommended Workflow
 
-Use this mode when a refresh has failed, the SandboxPostCopy class did not run, or the sandbox is in an unexpected state after refresh.
-
-### SandboxPostCopy class did not execute
-
-- Confirm the class name was entered correctly in the Apex Class field on the refresh form (case-sensitive).
-- Confirm the class is global and implements `System.SandboxPostCopy` (not a custom interface with the same name).
-- Confirm the class exists in production, not only in a sandbox.
-- Check debug logs in the sandbox for errors thrown by the Automated Process user during post-copy execution. Enable logging for the Automated Process user before the next refresh.
-- If the class throws an unhandled exception, Salesforce marks the post-copy script as failed but the sandbox itself is still usable. The error will appear in the sandbox's status details.
-
-### Refresh is stuck or taking unexpectedly long
-
-- Full sandbox refreshes can take 24–72 hours for large orgs. This is expected.
-- Check Salesforce Trust (https://status.salesforce.com) for active incidents affecting sandbox operations.
-- If stuck beyond expected duration, contact Salesforce Support — do not attempt to cancel and restart unless support advises it.
-
-### Data from the template is not what was expected (Partial Copy)
-
-- Re-examine the template definition. Related parent records pulled in for referential integrity may inflate counts.
-- The template record count is a cap, not a guarantee — if the object has fewer records than the cap, all records are copied.
-- Records are selected pseudo-randomly unless the object's ID ordering produces a deterministic set. Do not rely on specific records being in a Partial Copy sandbox.
+1. Answer the Questions table; record the refresh owner, sandbox type, template, and post-copy class in `templates/sandbox-refresh-and-templates-template.md`.
+2. Write or update the `SandboxPostCopy` class in production with a no-arg constructor, job scheduling, endpoint changes, and masking; cover it with a `Test.testSandboxPostCopyScript(..., true)` test.
+3. Keep the sandbox definition file in `config/` and run `python3 skills/devops/sandbox-refresh-and-templates/scripts/check_sandbox_refresh.py --manifest-dir .` — it ERRORs on a Partial definition without `templateId`, a template on Developer types, a post-copy class with no no-arg constructor, and conflicting definition options.
+4. Refresh (Setup or `sf org refresh sandbox --definition-file ...`), then confirm the post-copy work landed: config values, scheduled jobs in `CronTrigger`, masked fields.
+5. Run the manual runbook for what the class could not do (credentials, external system callbacks, email deliverability), and re-run the class as an admin if it failed.
 
 ---
 
 ## Decision Guidance
 
-| Situation | Recommended Approach | Reason |
+| Situation | Approach | Reason |
 |---|---|---|
-| Need to automate user passwords and org settings after refresh | Implement SandboxPostCopy class in production | Only supported automated hook for post-copy setup inside the sandbox |
-| Need to control which records land in a Partial Copy sandbox | Define a sandbox template in production before refresh | Templates are the only supported mechanism for Partial Copy data scoping |
-| Need specific records in a sandbox, not just a random subset | Use Developer sandbox + data loading scripts post-refresh | Partial Copy templates cannot filter by specific record criteria |
-| Named Credentials must be reconfigured after every refresh | Document in manual runbook; consider SandboxPostCopy to set placeholder values | Named Credential secrets cannot be set via Apex — manual entry required |
-| Scheduled jobs must not fire in sandbox | Abort all CronTrigger records in SandboxPostCopy class | Jobs are copied from production in an active state and will fire unless explicitly aborted |
-| Org ID is stored in custom settings or code | Read new org ID from SandboxContext in SandboxPostCopy and update stored values | Org ID changes on every refresh — stale IDs cause downstream failures |
-
----
-
-
-## Recommended Workflow
-
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+| Repeatable setup after every refresh | `SandboxPostCopy` class named on the sandbox | Runs automatically at the end of the copy |
+| Control which objects land in Partial Copy | Sandbox template (`templateId`) | Required for Partial sandboxes; selects objects |
+| Need specific records, not a sample | Developer sandbox + scripted data load | A template selects objects, not individual records |
+| Jobs needed in the sandbox | `System.schedule` in the post-copy class or a runbook step | Scheduled jobs aren't copied on refresh |
+| Credentials for sandbox endpoints | Sandbox-specific Named/External Credentials; `ConnectApi.NamedCredentials.createCredential` where the running user has access | Production credentials should not be reused |
+| Org ID needed by code | `UserInfo.getOrganizationId()` at runtime | Stored IDs copied from production are wrong in the sandbox |
 
 ---
 
 ## Review Checklist
 
-Run through these before marking a refresh cycle complete:
-
-- [ ] Refresh interval has elapsed for the sandbox type (1 day / 5 days / 29 days)
-- [ ] SandboxPostCopy class is registered on the sandbox record in production
-- [ ] SandboxPostCopy class ran successfully — check debug logs for the Automated Process user in the sandbox
-- [ ] All scheduled jobs have been aborted or confirmed as sandbox-safe
-- [ ] Named Credentials have been reconfigured with sandbox-appropriate credentials
-- [ ] Custom settings and custom metadata no longer contain the previous org ID
-- [ ] Email deliverability is set to the appropriate level for this sandbox
-- [ ] Sandbox template (Partial Copy only) includes the objects needed for current test scenarios
-- [ ] External systems that integrate with the sandbox have been pointed at the new sandbox URL
+- [ ] The post-copy class has a no-arg constructor, implements `SandboxPostCopy`, and is named on the sandbox
+- [ ] A test calls `Test.testSandboxPostCopyScript(..., true)` and asserts the post-copy results
+- [ ] Every scheduled job the sandbox needs is rescheduled after refresh
+- [ ] Partial Copy sandboxes have a `templateId`; Developer types have none
+- [ ] Personal data is masked before users are given access
+- [ ] Endpoints and credentials point at sandbox systems
+- [ ] No org ID or production URL is stored as a literal
+- [ ] The checker exits 0 on the project
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full list in `references/gotchas.md`. The two that surprise teams most:
 
-1. **Org ID changes on every refresh** — The sandbox receives a new organization ID each time it is refreshed. Hardcoded org IDs in custom settings, custom metadata, Apex constants, or remote site settings will be stale immediately after refresh. Use `context.organizationId()` in SandboxPostCopy to update any stored values.
-
-2. **Scheduled jobs are active in the sandbox immediately after refresh** — All CronTrigger records are copied from production with their `WAITING` state preserved. If those jobs make callouts or DML against production data endpoints, they will fire in the sandbox. Always abort or reschedule CronTrigger records in SandboxPostCopy.
-
-3. **Named Credentials lose their secrets on refresh** — Named Credentials are copied to the sandbox but their passwords and OAuth tokens are blanked. Any integration that uses Named Credentials will fail silently until secrets are re-entered manually. There is no Apex API to set Named Credential secrets, so this step is always manual.
-
-4. **SandboxPostCopy runs as Automated Process user, not an admin** — The Automated Process user does not have access to all objects. DML against certain objects will throw a permissions error. Assign a permission set to the Automated Process user before the refresh if the class needs access to custom objects, or use `System.runAs()` in test coverage.
-
-5. **Partial Copy template record counts are not exact** — Salesforce follows parent lookups to maintain referential integrity, which can pull in significantly more records than the template cap specifies. Template counts are a request, not a hard limit.
+1. **Scheduled jobs are not copied** — the sandbox starts with none of production's scheduled Apex.
+2. **The post-copy user is limited** — the Automated Process user can't reach every object; plan a manual re-run.
 
 ---
 
@@ -288,13 +173,25 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Refresh readiness checklist | Pre-refresh and post-refresh checklist covering interval, template, SandboxPostCopy registration, and manual runbook steps |
-| SandboxPostCopy Apex class | Global Apex class implementing the SandboxPostCopy interface, registered in production for automated post-refresh configuration |
-| Sandbox template recommendation | List of objects and record count caps for a Partial Copy sandbox template aligned to the team's testing needs |
-| Manual post-refresh runbook | Ordered list of manual steps for credentials, Named Credentials, and external system configuration that cannot be automated |
+| Refresh readiness checklist | Interval, template, post-copy class, owner |
+| `SandboxPostCopy` class + test | Scheduling, endpoints, masking; tested as the Automated Process user |
+| Sandbox definition file | `config/<name>-sandbox-def.json` with `templateId` and `apexClassName` |
+| Manual post-refresh runbook | Credentials, external callbacks, email deliverability |
+
+---
+
+## Reference Files
+
+| File | Use it for |
+|---|---|
+| `references/examples.md` | Post-copy class, Partial Copy template design, PII masking |
+| `references/gotchas.md` | Seven refresh behaviours with avoidance steps |
+| `references/llm-anti-patterns.md` | Refresh advice AI assistants get wrong |
+| `references/well-architected.md` | Pillar framing and the guide lines behind each claim |
+| `references/cli-refresh-runbook.md` | CLI create/refresh with definition files and a post-refresh verification query set |
 
 ---
 
 ## Related Skills
 
-- `admin/sandbox-strategy` — Use for choosing sandbox types, defining environment topology, and setting refresh ownership. This skill picks up where strategy leaves off.
+- `admin/sandbox-strategy` — choosing sandbox types, environment topology, and refresh ownership. This skill picks up where strategy leaves off.

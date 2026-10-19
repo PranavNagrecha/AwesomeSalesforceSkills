@@ -2,7 +2,7 @@
 name: devops-center-pipeline
 description: "Use when setting up, managing, or troubleshooting a Salesforce DevOps Center pipeline — including pipeline stages, work items, bundles, promotions, conflict resolution, and GitHub connectivity. Trigger keywords: DevOps Center, work item, pipeline stage, promote changes, bundle. NOT for CLI-based deployment or SFDX commands — use devops/salesforce-cli-automation. NOT for change sets — use devops/change-set-deployment. NOT for unlocked packages — use devops/unlocked-package-development."
 category: devops
-salesforce-version: "Spring '25+"
+salesforce-version: "Summer '26+"
 well-architected-pillars:
   - Operational Excellence
   - Security
@@ -15,6 +15,8 @@ triggers:
   - "should I bundle my work items before promoting to QA"
   - "two work items are modifying the same metadata component and conflicting"
   - "DevOps Center versus SFDX CLI deployment which should I use for my admin team"
+  - "query why a DevOps Center promotion or back sync is stuck"
+  - "migrate from the DevOps Center managed package to the next-generation DevOps Center"
 tags:
   - devops-center
   - pipeline
@@ -36,14 +38,14 @@ outputs:
   - "GitHub repository and branch strategy recommendations"
   - "Review checklist before first production promotion"
 dependencies: []
-version: 1.0.0
+version: 1.1.0
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-19
 ---
 
 # DevOps Center Pipeline
 
-This skill activates when a practitioner needs to set up, operate, or troubleshoot a Salesforce DevOps Center pipeline — the point-and-click release management tool built natively in Salesforce. It covers pipeline design, work item lifecycle, bundle promotion, GitHub integration, and conflict resolution. It does NOT cover SFDX CLI deployments, unlocked packages, or change sets.
+This skill activates when a practitioner needs to set up, operate, or troubleshoot a Salesforce DevOps Center pipeline — the point-and-click release management tool built natively in Salesforce. It covers pipeline design, work item lifecycle, bundle promotion, source control connectivity, and conflict resolution. It does NOT cover SFDX CLI deployments, unlocked packages, or change sets.
 
 ---
 
@@ -51,11 +53,27 @@ This skill activates when a practitioner needs to set up, operate, or troublesho
 
 Gather this context before working on anything in this domain:
 
-- **DevOps Center is enabled in the org** — it is a managed package installed via AppExchange and must be enabled in Setup before any pipeline work. Confirm the package is installed and the user has the DevOps Center Admin or DevOps Center User permission set.
-- **GitHub repository exists and is accessible** — DevOps Center uses GitHub as its source control back-end. A repository (public or private) must exist before pipeline stages can be created. The org connects via a GitHub OAuth app or a Connected App with Named Credentials.
-- **Source tracking is available for every pipeline org** — DevOps Center requires source tracking. This limits eligible org types to Developer sandboxes, scratch orgs, and (since Summer '22) Partial Copy and Full sandboxes with source tracking enabled. Regular sandboxes without source tracking are not supported.
-- **The common wrong assumption** — practitioners often assume DevOps Center is a wrapper around `sf deploy`. It is not. DevOps Center uses the Metadata API under the hood and manages its own branch-per-work-item model in GitHub. You cannot mix SFDX CLI deployments into the same pipeline and expect them to stay in sync.
-- **Pipeline stage limits** — a single pipeline supports up to 15 stages. Each stage maps to exactly one Salesforce org and one branch in the repository.
+- **Which DevOps Center the org runs.** There are two. The DevOps Center managed package is enabled by the Dev Hub setting `enableDevOpsCenterGA` (API 56.0+), which the Metadata API guide now calls "an older version of DevOps Center". The next-generation DevOps Center is enabled by `enableALMDevopsCorePref` (API 65.0+) and stores its pipeline, stages, work items, and requests as standard objects (`DevopsPipeline`, `DevopsPipelineStage`, `WorkItem`, `DevopsRequestInfo`, API 66.0–67.0). Migration between them (`enableDevopsCenterMigrationPref`, API 67.0) is a developer preview. Everything below about objects and field values is the next-generation data model.
+- **Development environments have source tracking.** Developer and Developer Pro sandboxes with source tracking, and scratch orgs, are the supported development environments; Developer Edition orgs have no source tracking and can't be used as development environments in DevOps Center.
+- **A source control repository exists.** The next-generation provider record (`SourceCodeRepoProvider`) supports `GITHUB` (default) and `BITBUCKET`, and names the Named Credential DevOps Center uses to connect.
+- **Who administers the pipeline and who only works items.** Decide the two groups before setup and assign DevOps Center access from what Setup lists for the edition in use; do not copy permission set names from older guides.
+- **The common wrong assumption** — practitioners often assume DevOps Center is a wrapper around `sf project deploy start`. It records its own work items, branches, promotions, and deployments, so out-of-band deploys to the same orgs leave its records and branches out of step with the org.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the org on the DevOps Center managed package or the next-generation DevOps Center? | The two are enabled by different Dev Hub settings and only the next-generation one exposes the `Devops*` / `WorkItem` objects this skill queries (gotcha 8). | The right troubleshooting path and data model from the first step. |
+| Which org is each developer's development environment, and does it have source tracking? | Only source-tracked Developer/Developer Pro sandboxes and scratch orgs qualify; enabling the setting affects sandboxes created or refreshed afterwards (gotcha 3). | A development-environment list that will actually capture changes. |
+| Which source control provider and account own the repository? | The provider is GitHub or Bitbucket and the connection runs through a Named Credential; a personal account breaks the pipeline when that person leaves (gotcha 5). | A service-owned provider connection and a named repository. |
+| Which stage should start bundling work items together? | Bundling is a per-stage flag (`IsBundled`); deciding late reshuffles promotions already in flight (gotcha 4). | One agreed bundling stage and a release cadence for it. |
+| Which test level must each stage's deployment run? | The default test level runs no tests in sandboxes and all local tests in production, so QA promotions can pass untested (gotcha 7). | An explicit `TestLevel` per stage and the test list for `RunSpecifiedTests`. |
+| Does anyone deploy to pipeline orgs outside DevOps Center (CLI, change sets, Setup edits in stage orgs)? | Out-of-band changes leave stage branches behind the org; DevOps Center's back sync and rebase operations exist to bring environments back in step (gotcha 2). | A rule that every change to a pipeline org enters as a work item, with back sync as the documented recovery. |
+| Who reads failed operations, and where? | Promotion and commit failures are recorded on `DevopsRequestInfo` with `Status = ERROR` and `ErrorDetails`; nobody looking there means stalled promotions sit unnoticed (gotcha 1). | A named owner and the query in Recommended Workflow step 5. |
+
+A proper pipeline setup adds a written stage map, a bundling decision, and a test level per stage before the first work item exists, where "just clicking through the wizard" produces a pipeline whose QA stage runs no tests and whose failures nobody can find.
 
 ---
 
@@ -63,40 +81,31 @@ Gather this context before working on anything in this domain:
 
 ### Work Items
 
-A Work Item is DevOps Center's unit of work — analogous to a user story or task. When a Work Item is started, DevOps Center automatically creates a feature branch in the connected GitHub repository. All metadata changes tracked in that org are associated with the Work Item's branch. Work Items move through pipeline stages one at a time and carry their changes forward. Each Work Item has a status: In Progress, Ready to Promote, Promoted, or Merged.
-
-Key constraints:
-- One Work Item maps to one feature branch.
-- A Work Item can only be in one stage at a time.
-- Metadata changes made outside DevOps Center (e.g., via Setup UI changes tracked by source tracking) are still captured and attributed to the active Work Item in that org.
+A work item is a logical unit of work — a user story, task, or bug — that tracks metadata and configuration-data changes until the work is complete and part of the release pipeline. Each work item has its own branch in the repository (the object reference's example branch name is `feature/WI-000001`). In the next-generation data model, `WorkItem.Status` moves through `NEW`, `IN_PROGRESS`, `IN_REVIEW` (changes committed and a pull request created for review), `READY_TO_PROMOTE`, `PROMOTED`, and finally `CLOSED` when the work is promoted through the entire pipeline. Two exception states matter for troubleshooting: `MERGE_CONFLICT` (conflicts must be resolved before promotion) and `COMBINED` (merged into another work item to resolve conflicts or dependencies). `NEVERED` marks an inactive item that won't be promoted.
 
 ### Pipeline Stages
 
-A pipeline stage represents one environment in the release path. Each stage is associated with:
-- A Salesforce org (scratch org, Developer sandbox, Partial Copy, Full sandbox, or production)
-- A Git branch in the connected repository
+A `DevopsPipelineStage` connects a pipeline, an environment (`DevopsEnvironment`, currently always a Salesforce org), and the source control branch used for that stage. Stages are linked through `NextStageId`; the production stage has a null `NextStageId`. Promotions move work forward along that chain — a regression found in UAT is fixed by a new work item that starts in development, not by promoting backwards. The repository's default branch (typically `main` in GitHub) holds the changes you plan to release.
 
-The typical stage sequence is: Development → QA → UAT → Staging → Production. Stages are ordered and promotions flow in one direction only — you promote forward, never backward. If a regression is found in UAT, you fix it in a new Work Item starting from Development.
+### Bundling and Promotion
 
-DevOps Center creates and manages these branches automatically. The production stage's branch is typically `main`. Intermediate stage branches are created and managed by DevOps Center; practitioners should not rename or delete them manually.
+A stage promotion (`DevopsPipelnStgProm`) moves one or more work items to the next stage, and `DevopsPipelnStgPromWkItem` records the merge of each work item into the target stage branch, including the pull request reference. Bundling is configured per stage: `DevopsPipelineStage.IsBundled` (default false) indicates that work items in that stage are bundled together for promotion. The design decision is therefore *which stage bundles*, not "create a bundle object".
 
-### Bundles and Promotion
+### Conflicts, Combine, Rebase, and Back Sync
 
-Before changes are promoted from one stage to the next, they must be packaged into a Bundle. A Bundle is a snapshot of one or more Work Items selected for joint promotion. Bundling serves two purposes:
+When two work items change the same component, the later one reaches `MERGE_CONFLICT`. The recovery operations DevOps Center records on `DevopsRequestInfo.OperationType` are `REBASE`, `REBASE_AND_COMBINE`, and `BACK_SYNC`; combining leaves the absorbed work item in `COMBINED`. A back sync brings changes from a pipeline stage (`BackSyncStageId`) back into a development environment so developers stop building on stale metadata. The merge itself is recorded per work item on `DevopsPipelnStgPromWkItem`, whose `MergeRemoteReference` holds the provider's pull request reference.
 
-1. It groups related Work Items that share metadata components, reducing the risk of conflicts between separate feature branches.
-2. It creates an auditable promotion unit — a single deployment from one stage to the next that can be tracked, approved, and rolled back as a group.
+### Deployments and Test Levels
 
-**Individual vs. bundled promotion:** A single Work Item can be promoted individually, or multiple Work Items can be combined into one Bundle before promotion. Combining Work Items merges their feature branches before the promotion, which surfaces and resolves merge conflicts in GitHub before the deployment runs.
+Each deployment to a stage environment is a `DevopsEnvDeployment` record with a `TestLevel` (`Default` — no tests in sandboxes, all local tests in production; `NoTestRun`; `RunLocalTests`; `RunAllTestsInOrg`; `RunSpecifiedTests` with the class list in `RunTests`) and an `IsFullDeploy` flag (deploy everything in the branch instead of just the changes). Validate-only deployment is not supported in the next-generation DevOps Center.
 
-### Conflict Detection and Resolution
-
-When two Work Items modify the same metadata component in different feature branches, DevOps Center detects the conflict when a promotion or bundle merge is attempted. Conflicts appear in the DevOps Center UI and must be resolved in GitHub — DevOps Center itself does not provide an in-app merge editor.
-
-Resolution path:
-1. DevOps Center flags the conflict during the bundle/promotion step.
-2. The practitioner opens the pull request in GitHub and resolves the conflict there.
-3. Once the PR is merged in GitHub, the promotion can proceed in DevOps Center.
+```soql
+SELECT Name, OperationType, Status, Message, ErrorDetails, RequestCompletionDate
+FROM DevopsRequestInfo
+WHERE Status IN ('ERROR', 'INTERRUPTED')
+ORDER BY CreatedDate DESC
+LIMIT 20
+```
 
 ---
 
@@ -104,45 +113,36 @@ Resolution path:
 
 ### Mode 1: Simple Linear Pipeline (Admin Team)
 
-**When to use:** A small admin team with a single Dev sandbox and a production org. Minimal parallel work. Moving from change sets to a source-tracked workflow.
+**When to use:** A small admin team with one source-tracked Developer sandbox and production. Minimal parallel work. Moving from change sets to a source-tracked workflow.
 
 **How it works:**
-1. Install DevOps Center from AppExchange and assign the DevOps Center Admin permission set to the admin.
-2. Connect to GitHub via the Setup wizard (OAuth). DevOps Center creates a new repository or connects to an existing one.
-3. Create a pipeline with two stages: Development (mapped to the Developer sandbox) and Production (mapped to production).
-4. Create a Work Item for each change. Start the Work Item — DevOps Center creates the feature branch.
-5. Make metadata changes in the Development org. DevOps Center tracks them via source tracking.
-6. Mark the Work Item as Ready to Promote.
-7. Promote the Work Item directly to Production (no bundle needed for single items).
-8. DevOps Center opens a pull request in GitHub, runs the deployment, and merges the PR when successful.
+1. Turn on source tracking for sandboxes in production (`SourceTrackingSettings.enableSourceTrackingSandboxes`) and refresh or create the Developer sandbox afterwards.
+2. Enable DevOps Center, connect the source control provider through its Named Credential, and create or connect the repository.
+3. Create a pipeline with two stages: Development and Production (production's `NextStageId` is empty).
+4. Create a work item per change; it gets its own branch.
+5. Make the change in the development environment, commit it to the work item, and move it to `READY_TO_PROMOTE`.
+6. Promote it; check the resulting `DevopsRequestInfo` record if the promotion does not reach `SUCCESS`.
 
-**Why not change sets:** Change sets have no version history, no rollback capability, and no conflict detection. DevOps Center provides all three while remaining fully point-and-click.
+**Why not change sets:** Change sets have no version history and no conflict detection; DevOps Center records every change against a work item and a branch while staying point-and-click.
 
-### Mode 2: Multi-Stage Pipeline with Bundled Promotions (Mid-Size Team)
+### Mode 2: Multi-Stage Pipeline with a Bundling Stage (Mid-Size Team)
 
-**When to use:** A team running parallel sprints with multiple developers working in separate Work Items that share overlapping metadata components (e.g., shared page layouts, permission sets, or flows).
+**When to use:** A team running parallel sprints whose work items share components (page layouts, permission sets, flows).
 
 **How it works:**
-1. Set up a pipeline with stages: Dev → QA → UAT → Production, each mapped to a different sandbox.
-2. Each developer creates and works on their own Work Items.
-3. At the end of the sprint, a release manager creates a Bundle in the QA stage containing all Work Items ready for QA.
-4. DevOps Center merges all feature branches into the QA stage branch. Any conflicts appear as GitHub pull request conflicts to resolve before the promotion proceeds.
-5. The Bundle is promoted through QA → UAT → Production as a unit.
-6. Each promotion creates a GitHub pull request. DevOps Center merges it and deploys the metadata to the target stage org.
+1. Stages Dev → QA → UAT → Production, each a different environment.
+2. Developers promote individual work items into QA as they finish.
+3. Set `IsBundled` on the stage where the release is assembled (commonly UAT), so items there promote onward together.
+4. Set an explicit test level for every stage deployment; do not rely on `Default` for QA and UAT.
+5. After each promotion into a shared stage, back sync development environments that build on it.
 
-**Why bundling matters:** Without bundling, two Work Items modifying the same Apex class will conflict when promoted separately. Bundling forces conflict resolution before deployment, not during it.
+**Why bundling matters:** Without a bundling stage, two items that touch the same flow promote separately and the second one hits `MERGE_CONFLICT` at whichever stage it reaches last.
 
 ### Mode 3: Combining Work Items to Manage Dependencies
 
-**When to use:** Two Work Items have metadata dependencies — e.g., a new custom object (Work Item A) and a new flow that references it (Work Item B). Promoting B before A would cause a deployment error.
+**When to use:** Work item B depends on work item A (a flow that references A's new field), so promoting B alone fails.
 
-**How it works:**
-1. In the DevOps Center pipeline view, select both Work Items.
-2. Use the Combine Work Items action. DevOps Center merges Work Item B's branch into Work Item A's branch.
-3. The combined Work Item now carries both sets of changes and can be promoted as one unit, eliminating the dependency ordering problem.
-4. The original Work Item B is closed; its changes live in the combined item.
-
-**Why not promote in order:** Manual ordering works once, but as parallel work increases, maintaining promotion order by hand becomes error-prone and blocks unrelated work items that happen to share a component.
+**How it works:** Combine the items (recorded as `REBASE_AND_COMBINE`); the absorbed item moves to `COMBINED` and its changes travel with the surviving item. Confirm both are on the same release schedule first — the combined item promotes as one unit.
 
 ---
 
@@ -150,26 +150,24 @@ Resolution path:
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Single developer, two orgs, no parallel work | Individual Work Item promotion, no bundles | Bundles add overhead with no benefit when there is no parallelism |
-| Multiple developers, shared metadata components | Bundle all Work Items before QA promotion | Forces conflict resolution before deployment; audit trail per release |
-| Work Items have a metadata dependency | Combine Work Items before promoting | Ensures dependent components travel together; avoids deployment failures |
-| Conflict detected during promotion | Resolve in GitHub PR, then retry promotion | DevOps Center delegates conflict resolution to GitHub; UI flags the state |
-| Scratch orgs needed instead of sandboxes | Supported but requires Dev Hub and scratch org definitions; map each stage to a scratch org | Scratch orgs are short-lived; ensure the stage org is refreshed before promoting |
-| Team also uses SFDX CLI deployments alongside DevOps Center | Separate the workflows completely — do not mix | CLI deployments to the same org will diverge the DevOps Center source tracking state |
-| Need rollback after a bad production promotion | Create a new Work Item that reverts the change, promote through all stages | DevOps Center has no native rollback button; revert via a new forward promotion |
+| Single developer, two orgs, no parallel work | Individual work item promotion, no bundling stage | Bundling adds overhead with no benefit when there is no parallelism |
+| Multiple developers, shared metadata components | Set `IsBundled` on the release-assembly stage | Work items in that stage promote together; one deployment per release |
+| Work items have a metadata dependency | Combine them before promoting | The dependent components travel in one item |
+| Promotion stuck or failed | Query `DevopsRequestInfo` for `ERROR` / `INTERRUPTED`, read `ErrorDetails` | The request record is the documented place to troubleshoot stalled operations |
+| Development environment is behind the stage it builds on | Back sync from that stage | `BackSyncStageId` names the stage changes flow back from |
+| Team also uses SFDX CLI deployments alongside DevOps Center | Separate the orgs completely — do not mix (team practice) | CLI deploys leave stage branches and work item records describing a different org |
+| Need rollback after a bad production promotion | Create a new work item that reverts the change and promote it through all stages (team practice) | Keeps the branch history and the org in step |
 
 ---
 
-
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Identify the DevOps Center edition from `settings/DevHub.settings-meta.xml` (`enableDevOpsCenterGA` vs `enableALMDevopsCorePref`) and confirm source tracking for development sandboxes from `settings/SourceTracking.settings-meta.xml`.
+2. Fill in `templates/devops-center-pipeline-template.md`: stage map (environment, branch, next stage), bundling stage, and test level per stage; answer every row of the Questions table above.
+3. Export the stages with `sf data query -o <devops-center-org-alias> -q "SELECT Id, Name, DevopsPipelineId, NextStageId, IsBundled, DevOpsEnvironmentId FROM DevopsPipelineStage" --json > devops/stages.json` and run `python3 skills/devops/devops-center-pipeline/scripts/check_devops_center_pipeline.py --manifest-dir .` over the project; fix every ERROR (no production stage, a cycle in `NextStageId`).
+4. Run a first work item end to end through every stage before onboarding the team; record the `DevopsEnvDeployment` test level that actually ran.
+5. For any stuck promotion, run the `DevopsRequestInfo` query in Core Concepts and act on `ErrorDetails`; for `MERGE_CONFLICT`, rebase or combine, then back sync affected development environments.
+6. Re-run the checker and the Review Checklist before the first production promotion.
 
 ---
 
@@ -177,26 +175,25 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 Run through these before marking work in this area complete:
 
-- [ ] DevOps Center managed package is installed and the correct permission sets are assigned (DevOps Center Admin, DevOps Center User)
-- [ ] GitHub repository is connected and DevOps Center can read/write branches and pull requests
-- [ ] Each pipeline stage maps to an org with source tracking enabled (Developer sandbox, scratch org, Partial Copy, or Full sandbox)
-- [ ] Pipeline stage branch names in GitHub have not been manually renamed or deleted
-- [ ] All Work Items intended for the current release are either bundled together or combined where metadata dependencies exist
-- [ ] All conflict-flagged pull requests in GitHub are resolved before attempting promotion
-- [ ] Production promotion is gated by a manual approval step (if the team requires change management sign-off)
-- [ ] No SFDX CLI deployments or Metadata API direct deploys are targeting the same orgs managed by DevOps Center
+- [ ] The DevOps Center edition (managed package or next-generation) is recorded, and only one is in active use for the project
+- [ ] The source control provider (GitHub or Bitbucket) is connected through a service-owned Named Credential
+- [ ] Every development environment is a source-tracked Developer/Developer Pro sandbox or a scratch org
+- [ ] Exactly one stage has an empty `NextStageId` (production) and the `NextStageId` chain has no cycle
+- [ ] The bundling stage is decided and `IsBundled` is set only where intended
+- [ ] Every stage deployment has an explicit test level; QA/UAT do not rely on `Default`
+- [ ] Stage branches are protected in the provider against deletion and force pushes (team practice)
+- [ ] No SFDX CLI deployments or direct Metadata API deploys target orgs managed by the pipeline
+- [ ] A named owner monitors `DevopsRequestInfo` records in `ERROR` or `INTERRUPTED`
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Full list in `references/gotchas.md`. The three that cost the most time:
 
-1. **Source-tracking drift from out-of-band changes** — If a developer makes changes directly in a DevOps Center-managed org using Setup UI actions that DevOps Center is not tracking (e.g., activating a flow, modifying a profile setting), source tracking will capture the change but it may be attributed to the wrong Work Item or become untracked. Always ensure changes are associated with an active Work Item before editing in the org.
-
-2. **Stage branch deletion breaks the pipeline** — Pipeline stage branches in GitHub (e.g., `stage/qa`, `stage/uat`) are managed by DevOps Center. If a developer deletes or force-pushes to these branches outside DevOps Center, the pipeline enters an inconsistent state that requires manual recovery. Protect these branches in GitHub with branch protection rules.
-
-3. **DevOps Center is NOT the SFDX Metadata API deploy path** — Practitioners accustomed to `sf project deploy start` expect a command-line deploy log. DevOps Center deploys via the Metadata API internally but surfaces only a simplified status in its UI. Detailed deployment errors appear in the Deployment Status page in Salesforce Setup, not in DevOps Center itself — this is a common source of confusion when debugging failed promotions.
+1. **Failures live on the request record** — `DevopsRequestInfo.ErrorDetails` holds the error for a failed promotion, commit, or back sync.
+2. **`Default` test level skips tests in sandboxes** — a QA stage on `Default` promotes without running Apex tests.
+3. **Validate-only deployments are not supported** in the next-generation DevOps Center — plan check-only runs outside it.
 
 ---
 
@@ -204,18 +201,31 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Pipeline stage design | Mapping of pipeline stages to orgs, branch names, and promotion sequence |
-| Work Item workflow guide | Step-by-step for creating, progressing, and promoting Work Items |
-| Bundle strategy | Decision on individual vs. bundled promotion with rationale |
-| Conflict resolution runbook | Steps for resolving GitHub PR conflicts flagged by DevOps Center |
-| Pre-production promotion checklist | Verification steps before pushing a Bundle to production |
+| Pipeline stage design | Mapping of pipeline stages to environments, branches, next stage, bundling flag, and test level |
+| Work item workflow guide | Status path from `NEW` to `CLOSED`, including `MERGE_CONFLICT` and `COMBINED` handling |
+| Bundling decision | Which stage bundles and why |
+| Troubleshooting query | `DevopsRequestInfo` query and the owner who runs it |
+| Pre-production promotion checklist | Verification steps before promoting to production |
+
+---
+
+## Reference Files
+
+| File | Use it for |
+|---|---|
+| `references/examples.md` | Change-set-to-DevOps Center migration, a bundling-stage sprint, and the CLI-mixing anti-pattern |
+| `references/gotchas.md` | Eight platform behaviours with avoidance steps |
+| `references/llm-anti-patterns.md` | Answers AI assistants get wrong about DevOps Center |
+| `references/well-architected.md` | Pillar framing and the corpus lines behind each claim |
+| `references/metadata-examples.md` | Dev Hub and source tracking settings XML, stage export JSON, and troubleshooting SOQL |
 
 ---
 
 ## Related Skills
 
 - `devops/change-set-deployment` — Legacy change set workflow; use when migrating a team from change sets to DevOps Center or when DevOps Center is not available
-- `devops/scratch-org-management` — Managing scratch org definitions and Dev Hub; needed when pipeline stages use scratch orgs instead of sandboxes
-- `devops/cicd-pipeline-setup` — Full CI/CD automation with GitHub Actions or other CI tools; use when the team needs automated test runs, approval gates, or deployment automation beyond what DevOps Center provides natively
+- `devops/scratch-org-management` — Managing scratch org definitions and Dev Hub; needed when development environments are scratch orgs
+- `devops/github-actions-for-salesforce` — Full CI/CD automation with GitHub Actions; use when the team needs automation beyond what DevOps Center provides natively
+- `devops/bitbucket-pipelines-for-salesforce` — The same for teams whose repository lives in Bitbucket
 - `admin/sandbox-strategy` — Sandbox type selection, refresh scheduling, and data masking; use alongside this skill when planning the org topology for pipeline stages
 - `admin/change-management-and-deployment` — Release planning, approval gates, and rollback planning at the process level

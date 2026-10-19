@@ -66,7 +66,7 @@ private class MyService_Test {
 
 ## Anti-Pattern: Elevating SOQL without documenting why
 
-**What practitioners do:** Use `without sharing` and `ACCESS_LEVEL.SYSTEM_MODE` everywhere for convenience.
+**What practitioners do:** Use `without sharing`, `WITH SYSTEM_MODE`, and `AccessLevel.SYSTEM_MODE` on `Database` methods everywhere for convenience.
 
 **What goes wrong:** Subscribers or internal users see data their profile should block; security review and customer trust issues follow.
 

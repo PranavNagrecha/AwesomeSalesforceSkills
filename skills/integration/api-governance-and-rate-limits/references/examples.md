@@ -35,7 +35,7 @@ public with sharing class EtlGuard {
 
         // /limits is documented as accurate within five minutes of consumption, so
         // leave a margin rather than spending down to the last reported call.
-        Integer usable = remaining - Math.max(1000, (Integer) (maxCalls * 0.05));
+        Integer usable = remaining - Math.max(1000, (maxCalls * 0.05).intValue());
 
         if (estimatedCalls > usable) {
             throw new LimitBreach(

@@ -19,9 +19,9 @@ Use this template when setting up a new pipeline, planning a release promotion, 
 
 | Property | Value |
 |---|---|
-| DevOps Center package version installed | (check Setup > Installed Packages) |
-| GitHub organization / repository URL | |
-| GitHub connection type | OAuth (personal) / OAuth (service account) / GitHub App |
+| DevOps Center edition | Managed package (`enableDevOpsCenterGA`) / Next-generation (`enableALMDevopsCorePref`) |
+| Source control provider / repository URL | GitHub / Bitbucket — |
+| Named Credential and the account behind it | (service account, not personal) |
 | Branch protection rules active on stage branches? | Yes / No / Not yet configured |
 | Production org type | Production / Developer Edition |
 
@@ -29,17 +29,15 @@ Use this template when setting up a new pipeline, planning a release promotion, 
 
 ## Pipeline Stage Map
 
-Fill in one row per stage. Every stage must have a unique org and a unique branch.
+Fill in one row per stage. Every stage has its own environment and branch; exactly one stage (production) has no next stage.
 
-| Stage # | Stage Name | Org Name | Org Type | GitHub Branch Name | Notes |
-|---|---|---|---|---|---|
-| 1 | Development | | Developer Sandbox / Scratch Org | `stage/development` | |
-| 2 | QA | | Developer Sandbox | `stage/qa` | |
-| 3 | UAT | | Partial Copy / Full Sandbox | `stage/uat` | |
-| 4 | Staging | | Full Sandbox | `stage/staging` | |
-| 5 | Production | | Production | `main` | |
+| Stage # | Stage Name | Environment (org) | Branch | Next Stage | IsBundled | Test Level |
+|---|---|---|---|---|---|---|
+| 1 | QA | | | UAT | false | RunLocalTests / RunSpecifiedTests |
+| 2 | UAT | | | Production | true / false | |
+| 3 | Production | | (repository default branch, typically `main`) | — | false | RunLocalTests |
 
-(Delete rows for stages not in use. Add rows if more than 5 stages are needed — max 15.)
+Development environments (source-tracked Developer/Developer Pro sandboxes or scratch orgs): ______________________
 
 ---
 
@@ -49,7 +47,7 @@ List the Work Items included in this release or being diagnosed.
 
 | Work Item Name | Status | Stage | Metadata Components Changed | Ready to Promote? |
 |---|---|---|---|---|
-| | In Progress / Ready to Promote / Promoted | | | Yes / No |
+| | NEW / IN_PROGRESS / IN_REVIEW / READY_TO_PROMOTE / PROMOTED / MERGE_CONFLICT / COMBINED / CLOSED | | | Yes / No |
 | | | | | |
 | | | | | |
 
@@ -58,8 +56,7 @@ List the Work Items included in this release or being diagnosed.
 ## Bundle Strategy
 
 - [ ] Promote all Work Items as individual items (no bundling needed — no shared metadata components)
-- [ ] Bundle all Work Items into one Bundle before QA promotion
-- [ ] Bundle subset (list items that share components): ___________________________
+- [ ] Bundling stage (IsBundled = true): ___________________________
 - [ ] Combine Work Items with dependencies before promoting: ___________________________
 
 **Rationale:**
@@ -69,7 +66,7 @@ List the Work Items included in this release or being diagnosed.
 
 ## Conflict Status
 
-| Work Item | Conflicting Item | Conflicting Component | GitHub PR URL | Resolution Status |
+| Work Item | Conflicting Item | Conflicting Component | Pull request reference | Resolution (rebase / combine / back sync) |
 |---|---|---|---|---|
 | | | | | Open / Resolved / N/A |
 
@@ -80,18 +77,17 @@ List the Work Items included in this release or being diagnosed.
 Complete all items before promoting to the next stage.
 
 ### Before any stage promotion
-- [ ] DevOps Center package is installed and up to date
-- [ ] GitHub repository is reachable and OAuth connection is active
-- [ ] All Work Items in scope are marked Ready to Promote
-- [ ] No unresolved conflicts flagged in the DevOps Center promotion view
-- [ ] All conflicted GitHub PRs are merged
+- [ ] The provider connection (Named Credential) is active
+- [ ] All Work Items in scope are READY_TO_PROMOTE or PROMOTED to the current stage
+- [ ] No Work Item in scope is in MERGE_CONFLICT
+- [ ] `check_devops_center_pipeline.py --manifest-dir .` exits 0 on the current stage export
 
 ### Before production promotion specifically
 - [ ] All Work Items have passed QA and UAT in their respective stage orgs
 - [ ] Change management approval obtained (if required by org change policy)
 - [ ] Deployment window confirmed with stakeholders
 - [ ] Rollback plan documented: if the production promotion fails, which Work Items need to be reverted and in what order?
-- [ ] Deployment Status page (Setup > Environments > Deploy > Deployment Status) bookmarked for monitoring
+- [ ] Owner named for the `DevopsRequestInfo` ERROR / INTERRUPTED query during the promotion window
 - [ ] No SFDX CLI deployments or Metadata API direct deploys scheduled to the same production org during the promotion window
 
 ---
@@ -100,8 +96,8 @@ Complete all items before promoting to the next stage.
 
 **Promotion outcome:** Success / Failure / Partial
 
-**Deployment Status page error log (if failed):**
-(paste the component error message from Setup > Environments > Deploy > Deployment Status)
+**DevopsRequestInfo error (if failed):**
+(paste `OperationType`, `Status`, `Message`, and `ErrorDetails` from the failed request record)
 
 **Resolution taken:**
 

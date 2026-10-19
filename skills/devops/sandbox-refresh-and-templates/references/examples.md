@@ -4,71 +4,68 @@
 
 ## Example 1: Automating Post-Refresh Setup with SandboxPostCopy
 
-**Context:** A mid-size org has a Full sandbox used for UAT. After every refresh, the release manager spends 2–3 hours manually resetting custom settings, aborting scheduled batch jobs, and updating integration endpoints. The process is undocumented and error-prone, and twice in the past year a scheduled job has fired against production data from the sandbox.
+**Context:** A mid-size org has a Full sandbox used for UAT. After every refresh the release manager spends hours resetting custom settings, re-creating the scheduled jobs UAT depends on, and updating integration endpoints. The steps are undocumented.
 
-**Problem:** There is no SandboxPostCopy class registered on the sandbox. All post-refresh work is manual and depends on whoever initiates the refresh remembering all the steps. Scheduled jobs copied from production run in the sandbox and have caused duplicate records in a connected external system.
+**Problem:** No `SandboxPostCopy` class is named on the sandbox, so all post-refresh work depends on memory. The team also believed production's scheduled jobs were copied and would "fire against production"; in fact scheduled jobs aren't copied on refresh, so UAT simply ran without its nightly jobs for a week.
 
 **Solution:**
 
-Create a global SandboxPostCopy class in production that handles the repeatable steps:
-
 ```apex
 global class UAT_SandboxSetup implements SandboxPostCopy {
+    global UAT_SandboxSetup() {}   // the copy process uses the no-arg constructor
 
     global void runApexClass(SandboxContext context) {
-        String sandboxName = context.sandboxName();
-        String orgId      = context.organizationId();
-
-        // 1. Update org-wide custom settings with new sandbox org ID
+        // 1. Environment values for this sandbox
         Integration_Config__c cfg = Integration_Config__c.getOrgDefaults();
-        cfg.Org_Id__c            = orgId;
-        cfg.Environment__c       = sandboxName;
+        cfg.Environment__c       = context.sandboxName();
         cfg.Endpoint_Base_URL__c = 'https://sandbox-api.example.com';
         upsert cfg;
 
-        // 2. Abort all scheduled jobs — none should run against production endpoints
-        List<CronTrigger> jobs = [
-            SELECT Id FROM CronTrigger WHERE State IN ('WAITING', 'ACQUIRED')
-        ];
-        for (CronTrigger ct : jobs) {
-            System.abortJob(ct.Id);
-        }
-
-        // 3. Set email deliverability to system-only to prevent outbound test emails
-        // (Email deliverability cannot be set via Apex — document this as a manual step)
+        // 2. Scheduled jobs are not copied on refresh: schedule what UAT needs
+        System.schedule('UAT nightly sync', '0 0 2 * * ?', new NightlySyncSchedulable());
     }
 }
 ```
 
-Register `UAT_SandboxSetup` in the Apex Class field when initiating the refresh from Setup > Sandboxes.
+```apex
+@IsTest
+private class UAT_SandboxSetup_Test {
+    @IsTest
+    static void setsEnvironmentAndSchedulesJob() {
+        Test.startTest();
+        Test.testSandboxPostCopyScript(new UAT_SandboxSetup(), UserInfo.getOrganizationId(),
+            UserInfo.getOrganizationId(), 'uat', true);   // true = run as the Automated Process user
+        Test.stopTest();
+        Assert.areEqual('uat', Integration_Config__c.getOrgDefaults().Environment__c, 'environment set');
+        Assert.areEqual(1, [SELECT COUNT() FROM CronTrigger WHERE CronJobDetail.Name = 'UAT nightly sync'], 'job scheduled');
+    }
+}
+```
 
-**Why it works:** The `runApexClass` method is the only Salesforce-supported hook that fires automatically inside the sandbox at the end of copy. By running under the sandbox's own execution context, it can perform DML against sandbox records without affecting production. The `SandboxContext` object provides the new org ID so stored values are always current after refresh.
+Name `UAT_SandboxSetup` in the Apex Class field when refreshing from Setup, or as `apexClassName` in the sandbox definition file.
+
+**Why it works:** `runApexClass` runs automatically at the end of the copy, inside the sandbox. The test uses the overload Salesforce recommends, which runs with the Automated Process user's permissions, so an object that user can't access fails in CI instead of during the refresh.
 
 ---
 
 ## Example 2: Sandbox Template for a QA Partial Copy Sandbox
 
-**Context:** A QA team uses a Partial Copy sandbox for regression testing. After each refresh the sandbox sometimes contains Accounts and Contacts from unrelated industries, making test scenarios hard to follow. The team has also hit issues where required parent records (PricebookEntry, Product2) were missing because they were not included in the random sample.
+**Context:** A QA team uses a Partial Copy sandbox for regression testing. Order-related tests fail after refresh because Product2, Pricebook2, and PricebookEntry rows are missing.
 
-**Problem:** No sandbox template was defined. The Partial Copy sandbox selects records at random, producing a data set that does not represent the team's test scenarios and breaks referential integrity for order-related tests.
+**Problem:** The template selected Account, Contact, and Opportunity but not the catalog objects the order tests depend on.
 
-**Solution:**
+**Solution:** Edit the sandbox template in production so it selects every object the test suites read, then refresh with that template:
 
-Define a sandbox template in Production under Setup > Sandbox Templates before the next refresh:
+| Object | Why it is in the template |
+|---|---|
+| Account, Contact | Parents for most test scenarios |
+| Opportunity | Sales pipeline tests |
+| Product2, Pricebook2, PricebookEntry | Order and quote tests need the catalog |
+| Case | Service regression scenarios |
 
-| Object | Record Count Cap | Notes |
-|---|---|---|
-| Account | 500 | Core object — parent for most test scenarios |
-| Contact | 1000 | Child of Account — referential integrity followed automatically |
-| Opportunity | 500 | Sales pipeline tests |
-| Product2 | All | Small catalog — take all records to avoid broken PricebookEntry refs |
-| Pricebook2 | All | Required for Order/Quote tests |
-| PricebookEntry | All | Junction between Pricebook and Product |
-| Case | 300 | Service cloud regression scenarios |
+Record the template's `1ps` ID in `config/qa-sandbox-def.json` as `templateId`, so every refresh uses it.
 
-Attach this template to the QA sandbox before clicking Refresh.
-
-**Why it works:** The template instructs Salesforce which objects to sample and caps the number of records per object, providing a predictable data set. Including the full Product2, Pricebook2, and PricebookEntry objects removes broken-reference failures on Opportunity and Order tests. Salesforce follows parent lookups automatically, so Contacts will pull their parent Accounts even if the Account count cap would otherwise exclude them.
+**Why it works:** A sandbox template selects which objects to copy into the sandbox; the failure was an object-selection gap, not a data-volume problem. Keeping the template ID in the definition file stops a refresh from running with a different template by accident.
 
 ---
 
@@ -112,14 +109,14 @@ public class MaskContactDataQueueable implements Queueable {
 }
 ```
 
-**Why it works:** Using a Queueable from inside `runApexClass` avoids the synchronous row-limit constraints of the post-copy execution context. The masked email domain (`@example-sandbox.invalid`) is an invalid TLD, so even if a workflow fires it will not deliver. This pattern should be applied to all objects containing PII that flows into sandboxes below Full isolation.
+**Why it works:** Using a Queueable from inside `runApexClass` moves the volume work into its own asynchronous transaction with its own limits. The masked email domain (`@example-sandbox.invalid`) is an invalid TLD, so even if a workflow fires it will not deliver. This pattern should be applied to all objects containing PII that is copied into Partial Copy and Full sandboxes.
 
 ---
 
 ## Anti-Pattern: Storing Org ID as a Hardcoded String
 
-**What practitioners do:** Hard-code the sandbox org ID in a custom setting, flow variable, or Apex constant so integrations can identify which environment they are running in.
+**What practitioners do:** Hard-code an org ID in a custom setting, flow variable, or Apex constant so integrations can identify which environment they are running in.
 
-**What goes wrong:** The org ID changes on every sandbox refresh. After refresh, every check against the hardcoded ID fails. Integration routing breaks silently. The issue is non-obvious and typically only surfaces when an integration test fails and someone traces it back to an env-detection mismatch.
+**What goes wrong:** Values stored in production are copied into the sandbox, where they describe the wrong org. Environment checks pass or fail for the wrong reason, and integration routing breaks silently until someone traces it back to an env-detection mismatch.
 
-**Correct approach:** Use the `SandboxPostCopy` class to read the new org ID from `context.organizationId()` and write it into a custom setting or custom metadata record on every refresh. Consumer code reads the environment from that custom setting rather than from a hardcoded value.
+**Correct approach:** Read the org ID at runtime with `UserInfo.getOrganizationId()`. Where a stored environment marker is genuinely needed, write it in the `SandboxPostCopy` class from `context.organizationId()` and `context.sandboxName()`.

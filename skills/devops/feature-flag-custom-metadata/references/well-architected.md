@@ -36,9 +36,15 @@ list is expected to exist in a year, it is a permission.
 
 ## Official Sources Used
 
-- Apex Governor Limits — the explicit SOQL exemption for custom metadata types — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
-- Custom Metadata Type Methods — `getAll()` / `getInstance()`, the application cache, and the 255-character field truncation — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_metadata_types.htm
-- Retrieving and Deploying Metadata in Apex — `Metadata.Operations.enqueueDeployment()` and its asynchronous behaviour — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_metadata_retrieve_deploy.htm
-- Metadata.CustomMetadata class — the `fullName`, `label` and `values` shape used to build a deployment — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Metadata_CustomMetadata.htm
-- Custom Metadata Types (CustomObject) in the Metadata API — how the records are represented in source — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_custommetadatatypes.htm
-- Custom Metadata Allocations and Usage Calculations — the per-org limits that bound how many flags you can have — https://help.salesforce.com/s/articleView?id=platform.custommetadatatypes_limits.htm&type=5
+Corpus: Summer '26 (API 67.0) PDFs; line numbers are `grep -n` positions in the `pdftotext -layout` text.
+
+- Apex Developer Guide (`salesforce_apex_developer_guide.txt`) L19616–19617 — the SOQL query limit doesn't apply to custom metadata types; unlimited SOQL against them in one transaction (Performance pillar, SKILL.md Core Concepts).
+- Apex Reference Guide (`salesforce_apex_reference_guide.txt`) L204514–204516 — custom metadata is exposed in the application cache and available to formula fields, validation rules, flows, Apex, and SOAP API; L204570–204571 — `getAll()` / `getInstance()` return only the first 255 characters of any field (gotcha 4, Security pillar).
+- Metadata API Developer Guide (`api_meta.txt`) L41316–41320 — Apex can edit custom metadata records in memory but not upsert or delete them, and deploys them but not via DML (gotchas 5 and 7).
+- Apex Developer Guide L28195 and Apex Reference Guide L174164 — `Metadata.Operations.enqueueDeployment` queues an asynchronous deployment and returns an `Id` (examples.md Example 2, gotcha 5).
+- Metadata API Developer Guide L41451–41470 and L41556–41566 — `CustomMetadata` records: `.md` suffix, `customMetadata` folder, `label` / `protected` / `values`, the `xsi:type` sample (SKILL.md XML fence).
+- Metadata API Developer Guide L41716–41749 — valid `xsi:type` values per field type (no multi-select; `xsd:int` for scale-0 Number, `xsd:double` otherwise) (gotcha 4, SKILL.md XML fence).
+- Metadata API Developer Guide L41750–41757 — `xsi:nil` clears a value; an omitted `<values>` element leaves an updated record's field at its previous value (gotcha 6).
+- Metadata API Developer Guide L41298–41402 — custom metadata types as `CustomObject` with `__mdt`, `visibility` values, sample `.object` file (metadata-examples.md).
+- Apex Developer Guide L13505 and L13514–13516 — custom settings data lives in the application cache, is copied into sandboxes, and is treated as data for Apex test isolation (Operational Excellence pillar, anti-pattern 1).
+- Apex Reference Guide L215454 — `FeatureManagement.checkPermission(String apiName)` (examples.md Example 2, anti-pattern 7).

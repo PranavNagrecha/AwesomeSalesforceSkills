@@ -11,8 +11,8 @@ covers the layout and the failures the layout causes.
 The rule is exact and the failure is immediate: **you can have only one default path**. With
 a single path the default is assumed and the key can be omitted entirely; with multiple
 paths you must nominate one. Assistants generating a multi-package file copy the
-single-package example once per package, `default: true` included, and produce a project the
-CLI refuses to read.
+single-package example once per package, `default: true` included, and produce a project that
+breaks the documented rule that only one package directory can be the default.
 
 **Wrong** — every directory claiming to be the default:
 
@@ -55,8 +55,9 @@ Source: Salesforce DX Project Configuration — "You can have only one default p
 
 ## Anti-Pattern 2: Not knowing what the default directory actually decides
 
-Because the key looks decorative, its consequence gets missed: metadata retrieved from an
-org without an explicit destination lands in the default directory. In a monorepo that means
+Because the key looks decorative, its consequence gets missed: a retrieve updates components
+that already exist locally in their own directory, and copies every component it can't match
+into the default directory. In a monorepo that means
 a `sf project retrieve start` after a Setup change silently files a Flow into `base-utils`,
 and the next version create ships it in the wrong package — where it is now the wrong team's
 problem, and removing it from a package is considerably harder than adding it.
@@ -75,27 +76,28 @@ sf project retrieve start \
 Then check the diff before committing. A file appearing under a package that nobody in the
 PR owns is the signal, and it only shows up if someone is looking.
 
-## Anti-Pattern 3: Splitting one object's fields across packages by accident
+## Anti-Pattern 3: Splitting a custom object's files across packages without a dependency
 
-The defect unique to a Salesforce monorepo. Two packages both add fields to `Account`, which
-is legal, but the object's own definition can only live in one of them — and each package's
-directory ends up with a partial `Account/` folder. Assistants generate the layout by
-feature and never notice, because in a development scratch org with everything pushed it
-works perfectly.
+The defect unique to a Salesforce monorepo. The DX guide allows a field to live in a different
+package directory from its object — its own example puts `MyObject` in the default directory
+and `MyField` in an "extension" directory. What it relies on is the object existing first.
+Assistants generate the layout by feature, give two directories partial
+`objects/Customer_Profile__c/` folders, and never declare which one owns the object.
 
-❌ `packages/sales-core/.../objects/Account/fields/Sales_Region__c.field-meta.xml` and
-`packages/service-core/.../objects/Account/fields/Support_Tier__c.field-meta.xml` with no
-declared relationship between the two packages.
-✅ Decide an owner for every shared object and make the extension packages depend on it:
+❌ `packages/sales-core/.../objects/Customer_Profile__c/fields/Sales_Region__c.field-meta.xml`
+with the object definition in `packages/service-core/...` and no dependency from `sales-core`
+on `service-core`.
+✅ Decide an owner for every shared custom object and make the extension packages depend on it:
 
 ```text
-packages/base-utils/main/default/objects/Account/        <- owns the object, shared fields
-packages/sales-core/main/default/objects/Account/fields/ <- extension fields only, depends on base-utils
-packages/service-core/main/default/objects/Account/fields/
+packages/base-utils/main/default/objects/Customer_Profile__c/          <- owns the object
+packages/sales-core/main/default/objects/Customer_Profile__c/fields/   <- fields only; depends on base-utils
+packages/service-core/main/default/objects/Customer_Profile__c/fields/ <- fields only; depends on base-utils
 ```
 
-The dependency is what makes install order deterministic. Without it the packages install in
-whatever order someone chose, and the one that arrives first defines what the others get.
+The dependency is what makes install order deterministic. The checker reports an object
+definition owned by two directories as an ERROR, and fields whose object lives in a
+directory the package does not depend on as a WARN.
 
 ## Anti-Pattern 4: Shipping tooling to production because it sat inside a package directory
 

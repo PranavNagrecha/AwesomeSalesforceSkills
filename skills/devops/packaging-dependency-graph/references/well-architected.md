@@ -36,10 +36,14 @@ promoted to managed-released state can be named as an ancestor.
 
 ## Official Sources Used
 
-- Project Configuration File for Unlocked Packages — the `dependencies` array shape, `packageAliases`, and the `LATEST` / `NEXT` build keywords — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_pkg_config_file.htm
-- Unlocked Packaging Keywords — what each keyword resolves to — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_pkg_config_keywords.htm
-- Considerations for Promoting Packages with Dependencies — why promotion runs bottom-up — https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/dev2gp_considerations_pkg_dependency.htm
-- Which Package Types Can Your Package Depend On? — the legal edges in the graph — https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_dependency_overview.htm
-- Specify a Package Ancestor in the Project File — `ancestorId` / `ancestorVersion`, the managed-released rule, and `HIGHEST` — https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/sfdx_dev_dev2gp_config_ancestors.htm
-- Salesforce CLI Reference — unified `package` commands (confirms `sf package version displaydependencies`; there is no `sf package dependencies` topic; verified 2026-08-01) — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_package_commands_unified.htm
-- package Commands — `sf package version create`, `promote`, `install`, `version list` — https://developer.salesforce.com/docs/platform/salesforce-cli-reference/guide/cli_reference_package.html
+Corpus: Summer '26 (API 67.0) PDFs fetched from resources.docs.salesforce.com/262 and converted with `pdftotext -layout`; line numbers are `grep -n` positions. `sfdx_dev.txt` = Salesforce DX Developer Guide, `pkg2_dev.txt` = Second-Generation Managed Packaging Developer Guide.
+
+- `sfdx_dev.txt` L14708–14722 — `calculateTransitiveDependencies`: list direct dependencies only when true; enables `package version displaydependencies` (SKILL.md Core Concepts, gotcha 3).
+- `sfdx_dev.txt` L14750–14826 — `dependencies` syntax: alias form, name + `versionNumber`, outside-Dev-Hub form, `0Ho`/`04t` IDs, list in order of installation (SKILL.md JSON fence, checker).
+- `sfdx_dev.txt` L14995–15058 — Unlocked Packaging Keywords: `LATEST`, `NEXT`, `RELEASED`, `HIGHEST`, `NONE` (existing customers can't upgrade) (keyword table, anti-patterns 2–3).
+- `sfdx_dev.txt` L16170–16201 — Considerations for Promoting Packages with Dependencies: skip validation, promote base then use `RELEASED`, `LATEST` vs `RELEASED` mapping with the 1.0.0.2/1.0.0.3 example (gotchas 1–2, worked-example.md).
+- `sfdx_dev.txt` L15102–15190 — `SubscriberPackageVersion.Dependencies` (Tooling API) returns dependency 04t IDs in install order (gotcha 4, worked-example.md).
+- `sfdx_dev.txt` L15713, L16136–16138, L16237 — release status can't be changed by update; no new versions on a promoted MAJOR.MINOR.PATCH; promote permission in the Dev Hub (gotcha 5).
+- `sfdx_dev.txt` L16522–16540 — deletion: unlocked beta and released versions deletable, released 2GP managed not; deletion permanent; check it isn't a dependency first (gotcha 7).
+- `pkg2_dev.txt` L19465–19485 — 2GP ancestor must be the highest promoted version; `HIGHEST` keyword recommended (anti-pattern 3).
+- `sfdx_dev.txt` L15882–15893 and `api_rest.txt` L8057 — `Package2VersionCreates` daily limit, visible with `sf limits api display` (CI job sizing).

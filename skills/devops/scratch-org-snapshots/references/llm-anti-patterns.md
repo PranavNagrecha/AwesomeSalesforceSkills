@@ -17,11 +17,11 @@ unconfigured, and the tests that fail are callout tests, which everyone assumes 
 ✅ Treat credentials as a post-create step that runs every time, on top of the snapshot:
 
 ```bash
-sf org create scratch --snapshot ci-base --alias pr-check --duration-days 1 --wait 10
+sf org create scratch --snapshot cibase --alias pr-check --duration-days 1 --wait 10
 
 # Snapshots do not carry these. Recreate them on every org, from CI secrets.
-sf project deploy start --metadata ExternalCredential,NamedCredential \
-  --target-org pr-check --source-dir config/credentials
+sf project deploy start --source-dir config/credentials --target-org pr-check
+# (credential metadata only; the secret values themselves are set per org from CI secrets)
 ```
 
 The corollary is a security property worth stating: because credential metadata does not
@@ -38,7 +38,7 @@ per Dev Hub **by edition** — a Developer Edition Dev Hub gets 3, an Enterprise
 Unlimited and Performance 100. And they are not permanent: **snapshots expire after 90 days**,
 with the associated data deleted afterwards.
 
-❌ `sf org create snapshot --name "snap-${GITHUB_SHA}"` on every push, against a Developer
+❌ `sf org create snapshot --name "snap${GITHUB_SHA:0:7}"` on every push, against a Developer
 Edition Dev Hub with an allocation of 3.
 ✅ A small number of long-lived, named snapshots refreshed on a schedule, with the name
 reused rather than accumulated. Check the allocation for your Dev Hub's edition before
@@ -53,24 +53,24 @@ seems obvious: you cannot create a snapshot from a scratch org that was **itself
 from a snapshot**, and you cannot create one from a **namespaced** scratch org. Namespaced
 orgs can be created *from* a snapshot — the restriction is on the source, not the target.
 
-❌ A nightly job that spins up an org from `ci-base`, pushes the day's changes, and snapshots
-that org back over `ci-base`.
+❌ A nightly job that spins up an org from `cibase`, pushes the day's changes, and snapshots
+that org back over `cibase`.
 ✅ Rebuild the source org from scratch each time, from the definition file and the install
 list, then snapshot that. The rebuild is the slow path you were trying to avoid — but it runs
 once nightly rather than once per PR, which is the whole point of the pattern.
 
 ## Anti-Pattern 4: A snapshot name the command will reject
 
-Small and specific: the snapshot name has a maximum length of 15 characters. Assistants
-generate descriptive names — `nightly-base-with-packages` — and the failure looks like a
-permissions or Dev Hub problem to anyone who has not hit it.
+Small and specific: the snapshot name has a maximum length of 15 characters and can contain
+only alphanumeric characters — no hyphens or spaces, even in quotes. Assistants generate
+descriptive names — `nightly-base-with-packages`, `ci-base` — and the command rejects them.
 
 ❌ `--name nightly-base-with-packages`
-✅ `--name ci-base` and put the description where the length is not constrained:
+✅ `--name cibase` and put the description where the length is not constrained:
 
 ```bash
 sf org create snapshot \
-  --name ci-base \
+  --name cibase \
   --source-org snapshot-source \
   --target-dev-hub my-dev-hub \
   --description 'CI base: 3 managed packages + baseline metadata, rebuilt nightly'
@@ -78,9 +78,9 @@ sf org create snapshot \
 
 ## Anti-Pattern 5: Treating creation as synchronous
 
-`sf org create snapshot` starts an asynchronous process. The snapshot's status goes to
-`InProgress` and only later becomes `Active`, and a scratch org created against a snapshot
-that is not yet active fails. Generated pipelines run create-then-consume in consecutive
+`sf org create snapshot` starts an asynchronous process. The request is initially
+`InProgress`, and the guide says you can use the snapshot to create scratch orgs after the
+status changes to `Active`. Generated pipelines run create-then-consume in consecutive
 steps and produce an intermittent failure that reproduces only when the org is large.
 
 ❌ Create the snapshot and immediately create an org from it in the next step.
@@ -88,14 +88,20 @@ steps and produce an intermittent failure that reproduces only when the org is l
 until the new one is confirmed:
 
 ```bash
-sf org create snapshot --name ci-base-new --source-org snapshot-source \
+sf org create snapshot --name cibasenew --source-org snapshot-source \
   --target-dev-hub my-dev-hub --description 'nightly rebuild'
 
 # Wait for Active. Do not swap consumers over until this returns.
-until sf data query --target-org my-dev-hub \
-        --query "SELECT Status FROM ScratchOrgSnapshot WHERE SnapshotName='ci-base-new'" \
-        --json | grep -q '"Status":"Active"'; do
-  echo "snapshot still building"
+status() {
+  sf data query --target-org my-dev-hub --json \
+    --query "SELECT Status FROM OrgSnapshot WHERE SnapshotName='cibasenew'" \
+    | python3 -c "import json,sys; r=json.load(sys.stdin)['result']['records']; print(r[0]['Status'] if r else 'Missing')"
+}
+for _ in $(seq 1 60); do
+  s="$(status)"; echo "status: $s"
+  [ "$s" = "Active" ] && break
+  [ "$s" = "Error" ] && exit 1
+  sleep 30
 done
 ```
 
@@ -119,11 +125,11 @@ modes are real — expiry, a Dev Hub allocation exhausted, a rebuild that failed
 Pipelines that can only create from a snapshot stop entirely, and the outage looks like a
 platform incident rather than a configuration one.
 
-❌ `sf org create scratch --snapshot ci-base` as the only path, with no alternative.
+❌ `sf org create scratch --snapshot cibase` as the only path, with no alternative.
 ✅ Keep the definition-file path working and fall back to it, accepting the slower bring-up:
 
 ```bash
-sf org create scratch --snapshot ci-base --alias pr-check --duration-days 1 --wait 10 \
+sf org create scratch --snapshot cibase --alias pr-check --duration-days 1 --wait 10 \
   || {
     echo "snapshot unavailable, falling back to a full build"
     sf org create scratch --definition-file config/project-scratch-def.json \
