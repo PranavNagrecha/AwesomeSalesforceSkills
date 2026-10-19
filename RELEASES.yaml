@@ -306,14 +306,19 @@ releases:
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: running
+    status: done
     parent: R2-01
+    evidence: 'GRADE RIGHT-BUT-NOISY. F1/H1/H3/recall/design-gap CORRECT against metadata; H2 PARTLY (AdminOnly also allows
+      Modify All Records on the object, api_meta L23184-23188); percent-as-fraction and sysadmin-doesnt-bypass UNVERIFIABLE
+      in corpus; UAT citation and muting claim were padding. Missed: owner-only submit (AP:5-7), blank Manager fails submit
+      (decisions.md:1256), record access (UserRecordAccess.HasEditAccess) as the first hypothesis, products VR also fires
+      at Closed Won (VR:14). Admin would act correctly on the core answer.'
   - id: R2-01-3
     title: 'Agent proof: /build-flow (flow-builder) on a real input — a requirement line from examples/builds/case-onboarding/requirement.md;
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: todo
+    status: running
     parent: R2-01
   - id: R2-01-4
     title: 'Agent proof: /analyze-field-impact (field-impact-analyzer) on a real input — a field in examples/builds/northwind-sales/artefacts;
@@ -420,6 +425,11 @@ releases:
     size: S
     owner_model: opus
     status: todo
+  - id: R2-15
+    title: 'access-path-explainer: record access as H0; submitter eligibility check before an approval remedy; AdminOnly wording'
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -520,5 +530,11 @@ inbox:
     Discount__c changes after approval (deal approved at 21% can close at 40%; VR line 15 satisfied; panel disables resubmit
     while Approved). Add the ''approval does not re-fire on later field change'' gotcha + a clearing automation pattern to
     admin/approval-processes, and fix the build (flow or VR) as a scenario finding'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'From agent proof R2-01-2: access-path-explainer should always test record access first (UserRecordAccess.HasEditAccess
+    / ownership) and, when the remedy is ''submit for approval'', check submitter eligibility (owner-only submit, Manager
+    field populated) before recommending it; also cite AdminOnly as Modify All Data OR Modify All Records (api_meta L23184-23188)'
   size: S
   slotted_into: 1.5.0
