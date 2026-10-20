@@ -517,7 +517,12 @@ releases:
     title: 'Approval invalidation on later discount change: gotcha in admin/approval-processes + northwind-sales build fix'
     size: S
     owner_model: opus
-    status: todo
+    status: done
+    evidence: 'approval-processes 1.1.1: gotcha ''Approval Does Not Re-Arm Itself'' — finalApprovalActions stamp once (api_meta
+      264 L25191-25192), finalApprovalRecordLock default false (L25194-25195), recallActions pending-only (L25227-25228),
+      recordEditability (L25230-25247), before-save at save-order step 3 (apexdev 264 L15643-15645); 2 UNVERIFIED; verify
+      12/12. Build fix split out: build is done so amend-step/set-plan are refused until a human rejects the plan gate — filed
+      as a separate human-gated item plus a build_plan.py state-machine item'
   - id: R2-15
     title: 'access-path-explainer: record access as H0; submitter eligibility check before an approval remedy; AdminOnly wording'
     size: S
@@ -759,6 +764,18 @@ releases:
       fixture matrices in scratchpad r233fx/r234fx; 22 checkers across flow/integration/omnistudio/apex/admin/data/devops;
       Fable re-ran 7 + 7 fixture cases: all match; connectapi SeeAllData rule removed (apexdev 264 L26331-26332); wrapper
       Questions header fixed; $Record-as-collection and 1M/333k caps UNVERIFIED'
+  - id: R2-37
+    title: 'northwind-sales: re-arm approval on later Discount__c change (HUMAN GATE FIRST: owner rejects gate plan, then
+      set-plan adds a before-save reset-flow step)'
+    size: S
+    owner_model: opus
+    status: todo
+  - id: R2-38
+    title: 'build_plan.py: refuse set-status documented->running on a build whose status is done (or move the build back to
+      building)'
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -1114,5 +1131,21 @@ inbox:
     script only checks its own layout (not a checker); flow/flow-get-records-optimization gotcha 3 states 1,000,000 / 333,333
     row caps found only in a 2013 blog — ground or mark UNVERIFIED; email-service-inbound and attachment-to-files checkers
     exit 2 on missing path; omnistudio-scalability checker message still says fire-and-forget does not escape SOQL limits.'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'From R2-14 part 2 (opus, 2026-10-20): defect confirmed in examples/builds/northwind-sales — M3-S02 finalApprovalRecordLock=false,
+    Approved stamped by Set_Approval_Status_Approved, M2-S03 VR only checks NOT Approved, nothing resets Approval_Status__c
+    when Discount__c changes after approval, so a second edit bypasses approval. Build status is done: amend-step and set-plan
+    are both refused by build_plan.py until a human rejects the plan gate. Then: set-plan adds a metadata-builder step (before-save
+    flow clearing Approval_Status__c on ISCHANGED(Discount__c) when prior = Approved), decision line narrowing D3 ''VR not
+    Flow'', new verify round; gates to re-sign: plan, milestone:M2 (if VR changes), M3, M4 (workbook/traceability/UAT/deploy
+    order). Owner''s re-approval policy answer needed (Q60 open).'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by R2-14 part 2: on a scratch copy of northwind-sales (status done, all 16 steps documented), set-status M2-S03
+    running exits 0 and the step runs while the build status stays done; amend-step and set-plan correctly refuse. The state
+    machine should refuse the transition or flip the build to building with a logged reason; add a test in tests/test_build_plan*.py.'
   size: S
   slotted_into: 1.5.0

@@ -36,6 +36,7 @@
     "342fa848a346878a18e3",
     "354dc871340195485d43",
     "355204bc3af134b398c9",
+    "36640ef0d8f922c69855",
     "3742dc70c3f5529f9c6f",
     "388d7d88a21b4f888282",
     "3b3db3daa7f4e3f2a7b4",
@@ -57,6 +58,7 @@
     "5c4f909bd75cb996017d",
     "5e29e57b4922c53d5fe0",
     "64f83265bb21510c9991",
+    "66276e87d156dcf648ad",
     "6a47541895f23ab9b48e",
     "6a4ec4d6df4f410877da",
     "6aa0df31e44e3ccce215",
@@ -77,6 +79,7 @@
     "867b7bc737b1c86bad75",
     "86dbb0b5201dd6980b64",
     "89dbba78c052a7cce995",
+    "8a8635510fac696701cf",
     "8c4a177b72c315252f9f",
     "8d4487a962c4a8b7b4e6",
     "8f377e8c70ec85d8e611",
@@ -122,6 +125,7 @@
     "cb0a031a56da35575fae",
     "cbf9ce1bb0cf475ea56c",
     "ccdb72bbbb19bff86bd0",
+    "ce609e7adeb752315a3c",
     "cf6ee687ffbe20cfe856",
     "d6205c32787f28a045df",
     "d6905ad996d1afc280b2",
@@ -129,6 +133,7 @@
     "d79d657c3dde2b675cd6",
     "d89d7c6620524340adda",
     "dc897687ee3f3540aa53",
+    "dd631d00ce0f5a8341f2",
     "df3ed28651d47007c1d3",
     "dfcc71a59e6bc52a619f",
     "e16361926d2b510aa90c",
@@ -150,7 +155,7 @@
     "fa1646b9b2f9404d5e45",
     "ffbd07ff13bbc7cb298c"
   ],
-  "content_hash": "71476204c2eb1c15a1b6f922751fb25ec93dbbccf42ddaec1b6269cb4b63d8a3",
+  "content_hash": "be3831c5d11355b371ad006b8bc96cb7e2323b281e48a79b5a9950674ace5804",
   "dependencies": [],
   "description": "Design, review, or troubleshoot Salesforce Approval Processes. Triggers: 'submit for approval', 'approver', 'record locked', 'recall approval', 'approval step', 'discount approval', 'approvalProcess metadata', 'ProcessInstanceWorkitem', 'recordEditability', 'process order', 'no approver found', 'pending approval'. NOT for submitting or acting on approvals from Apex - use admin/approval-process-apex-patterns. NOT for CPQ Advanced Approvals (SBAA rules and chains) - use admin/cpq-approval-workflows. NOT for multi-stage cross-object orchestration with SLAs - use flow/orchestration-flows.",
   "file_location": "skills/admin/approval-processes",
@@ -202,7 +207,7 @@
   "templates": [
     "skills/admin/approval-processes/templates/approval-design-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

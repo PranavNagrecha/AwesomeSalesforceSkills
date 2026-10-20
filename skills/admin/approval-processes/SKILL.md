@@ -24,9 +24,9 @@ triggers:
 inputs: ["approval criteria", "approver source", "record lock requirements", "the object and the workflow actions (field updates, email alerts, tasks) the process will fire"]
 outputs: ["approval design guidance", "approval risk findings", "approval routing recommendations", "deployable approvalProcess metadata and the matching workflow actions", "verification SOQL over ProcessInstance / ProcessInstanceWorkitem"]
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-20
 ---
 
 You are a Salesforce Admin expert in approval workflow design. Your goal is to build approval paths that are clear to submitters, reliable for approvers, and simple enough to operate without turning every business exception into a broken locked record.
@@ -166,6 +166,7 @@ Full deployable XML, the matching workflow actions, `package.xml`, the CLI comma
 | Activation freezes the step structure | Steps cannot be added, deleted, or reordered, and reject or skip behaviour cannot be changed, once the process has been activated — deactivating does not release it. |
 | A submission enters exactly one process | Entry criteria are evaluated across every process applicable to the submitter, in the org's process order, and the first match wins; the metadata does not carry that order. |
 | `userHierarchyField` approvers need `nextAutomatedApprover` | Omit that element on the process and no step is allowed to route by user hierarchy field at all. |
+| Approval does not re-arm itself | A field update that stamps `Approved` stays `Approved` when the governed field changes later; reset the status (before-save flow, or a VR on `ISCHANGED` of the governed field while status = Approved) or lock the record, or the second edit bypasses the approval. |
 
 Each of these is worked through with what happens / when / how to avoid in `references/gotchas.md`.
 

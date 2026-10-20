@@ -175,3 +175,24 @@ SELECT Id, ActorId, OriginalActorId, ProcessInstance.TargetObjectId
 FROM ProcessInstanceWorkitem
 WHERE ProcessInstance.Status = 'Pending'
 ```
+
+---
+
+## Approval Does Not Re-Arm Itself When the Governed Field Changes Later
+
+**What happens:** Approval does not re-arm itself. A field update in `finalApprovalActions` stamps a status field `Approved` once, and that value stays put. Edit the governed field afterwards (raise `Discount__c` from 25% to 40%) and the status still reads `Approved`. So a validation rule or component that trusts the status lets the second, unapproved value through. The Metadata API defines `finalApprovalActions` as the workflow actions "to execute when all required approvals have been given for a record" (api_meta 264 L25191-25192), a one-time event. `recallActions` covers only "a pending approval request" being withdrawn (L25227-25228), so recall can't reopen a finished approval. `finalApprovalRecordLock` defaults to `false` (L25194-25195), so by default the record unlocks on approval and the governed field can be edited again. UNVERIFIED (2026-10-20): the corpus lists the type's elements but never says outright that nothing re-evaluates `entryCriteria` or reverses `finalApprovalActions` after approval. The type has no element for that; the behaviour was not observed in an org.
+
+**When it bites you:** Any gate of the form "X above a threshold needs approval" where the gate reads a stamped status, not the approved value. That covers a discount cap that blocks Closed Won until `Approval_Status__c = Approved`, and a submit button disabled while the status is `Approved`. The first edit is governed and every later edit is not.
+
+**How to avoid it:** Reset the status, or block the change, whenever the governed field moves after approval:
+- **Reset (preferred when a re-submission path must stay open):** a before-save record-triggered flow on update that clears the status, or sets it to `Pending`/blank, when the governed field changed and the prior status was `Approved`. Before-save flows run at step 3 of the save order, before custom validation rules at step 5 (apexdev 264 L15643-15645), so the threshold rule sees the cleared status in the same save. A before-save assignment needs no Update element (`flow/record-triggered-flow-patterns/references/gotchas.md`, "A Before-Save Assignment Persists With No Update Element At All"). The prior value comes from `$Record__Prior` (same file, "`$Record__Prior` Only Helps If The Logic Actually Uses It"). Condition the reset on the governed field changing. The approval's own `Approved` field update then can't trip it, because that save does not change the governed field.
+- **Block:** a validation rule erroring on `ISCHANGED(Discount__c)` while `ISPICKVAL(Approval_Status__c, "Approved")` (guard `NOT(ISNEW())` as in `admin/validation-rules/references/gotchas.md`, "PRIORVALUE Does Not Work on Insert"). This holds the approved value as a ceiling, but it leaves the rep no way to re-submit if the status field is read-only to them and the submit control is disabled while `Approved`. Name who clears the status.
+- **Lock:** `finalApprovalRecordLock = true` keeps the record locked after approval (L25194-25195). While a record is pending, only Modify All Data or the object's Modify All Records holders (plus, under `AdminOrCurrentApprover`, the current approver) can edit it (L25230-25247). UNVERIFIED (2026-10-20): the corpus describes `recordEditability` for records *pending* approval. It does not say the same editability applies to the post-approval lock, or that the lock alone stops the record owner from editing the governed field. Test it in a sandbox before relying on the lock instead of a reset.
+
+**Example:**
+```text
+Discount__c 25% -> submitted -> Approved (field update stamps Approval_Status__c = Approved, record unlocks)
+Rep edits Discount__c 25% -> 40%           Approval_Status__c still Approved
+VR "Closed Won needs Approved above 20%"   passes -> 40% closes with a 25% approval
+Fix: before-save flow, ISCHANGED(Discount__c) AND prior status Approved -> clear status; VR now blocks; rep re-submits
+```
