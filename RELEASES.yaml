@@ -330,7 +330,7 @@ releases:
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: todo
+    status: running
     parent: R2-01
   - id: R2-01-5
     title: 'Agent proof: /architect-perms (permission-set-architect) on a real input — personas in examples/builds/case-onboarding/CLARIFICATIONS.md;
@@ -467,6 +467,11 @@ releases:
     size: M
     owner_model: opus
     status: todo
+  - id: R3-04
+    title: 'Winter ''27 (264 / API 68.0) corpus: fetch, diff vs 262, delta list for writers, re-ground future waves'
+    size: M
+    owner_model: sonnet
+    status: todo
   - id: R3-02
     title: Release 1.6.0 / 0.5.3 — content set by R3-01
     size: S
@@ -570,3 +575,11 @@ inbox:
     API guide on before-save behaviour; reconcile against api_meta Flow section'
   size: S
   slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Owner 2026-10-20: the skills being improved are grounded on Summer ''26 (release 262 / API 67.0); Winter ''27 PDFs
+    (release 264) are now published at resources.docs.salesforce.com/264/. Move the writer corpus to 264, extract the API
+    68.0 Versioned Behavior Changes + new/changed metadata types + new/removed object fields vs 262 into a delta list writers
+    must consult, update standards/skill-writer-brief.md and the docs-fetching memory, and queue skills whose claims the delta
+    contradicts'
+  size: M
+  slotted_into: 1.6.0
