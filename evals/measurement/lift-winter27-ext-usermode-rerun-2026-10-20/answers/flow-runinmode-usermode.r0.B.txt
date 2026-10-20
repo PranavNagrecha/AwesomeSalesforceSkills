@@ -1,0 +1,21 @@
+Yes. From API 68.0 (Winter '27), the Flow metadata `runInMode` enum has a fourth value: **`UserMode`**. Flow Builder labels it "User Context—Enforces User Permissions."
+
+**What it does**
+- The flow runs with the running user's security context explicitly enforced: their object permissions, field-level security, and sharing.
+- It does not inherit sharing from whatever called it, so the calling context can't loosen or change the access the flow runs with.
+
+**How it differs from the other three**
+- `DefaultMode`: the launch context decides whether the flow runs in user or system context.
+- `SystemModeWithSharing`: record sharing is respected, but object and field permissions are not.
+- `SystemModeWithoutSharing`: the flow can access all data (API 49.0+).
+- `UserMode` (API 68.0+): user permissions are enforced explicitly, whatever the launch context.
+
+At 67.0 and earlier only the first three exist. Getting user context then depended on `DefaultMode` and on how the flow was launched.
+
+**Governance implications**
+- `UserMode` is the least-privilege choice, so put it on the `runInMode` allow-list for 68.0 flows by name.
+- A policy or checker that only knows the three older values will wrongly reject a valid 68.0 flow. Update the enum.
+- The checker should also reject `UserMode` on any flow whose `apiVersion` is below 68.0, since the value doesn't exist there.
+- `SystemModeWithoutSharing` is the one to review closely. It is a single line in a large XML file that release reviews rarely read, so keep a named-exception list for it that gets a security review.
+
+The above comes from the skill package's reading of the Winter '27 Metadata API guide (`api_meta.txt` 264, L70907–L70927). I haven't re-checked it against the live docs.

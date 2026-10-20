@@ -1,0 +1,16 @@
+I can't confirm a fourth value. The three I know of for `runInMode` on `Flow` are:
+
+- **DefaultMode**: the flow runs in the context of how it was launched. Record-triggered flows run in system context, and screen flows run in user context.
+- **SystemModeWithSharing**: the flow runs in system mode but enforces sharing rules for the running user.
+- **SystemModeWithoutSharing**: the flow runs in system mode and ignores sharing rules.
+
+API 68.0 corresponds to Winter '27, which is after my knowledge cutoff (June 2026). A new enum value could have been added in that release without my knowing. I won't guess at a name or behavior, and I won't infer one from other features. For example, Apex `WITH USER_MODE` and `AccessLevel.USER_MODE` are a separate mechanism and don't tell us what Flow's `runInMode` accepts.
+
+To check quickly:
+
+1. Look up `Flow` in the Winter '27 Metadata API Developer Guide, under `runInMode`, and read the valid-values list.
+2. Check the Winter '27 release notes under Flow, for any change to "run in" or "system context" settings.
+3. Try it in a sandbox or scratch org on 68.0. Retrieve a flow, set `<runInMode>` to the candidate value, and deploy. An invalid enum value fails with a clear parse error that lists the accepted values.
+4. Check the Metadata API WSDL or XSD for 68.0 and look at the `FlowRunInMode` simple type, which is the authoritative list.
+
+If you find a fourth value and paste its doc text, I can help work out the implications, such as sharing and FLS behavior or how it interacts with record-triggered flows.

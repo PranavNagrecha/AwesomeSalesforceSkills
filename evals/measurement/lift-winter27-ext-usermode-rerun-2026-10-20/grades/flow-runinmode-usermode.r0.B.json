@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "Yes. From API 68.0 (Winter '27), the Flow metadata `runInMode` enum has a fourth value: **`UserMode`**.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058820000000000004,
+    "duration_s": 1.939,
+    "input_tokens": 7186,
+    "output_tokens": 67
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"Yes. From API 68.0 (Winter '27), the Flow metadata `runInMode` enum has a fourth value: **`UserMode`**.\"}",
+  "prompt_sha": "67c83f2d89b85518"
+}

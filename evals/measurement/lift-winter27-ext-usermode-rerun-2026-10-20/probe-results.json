@@ -1,0 +1,85 @@
+{
+  "answer_model": "sonnet",
+  "grader_model": "opus",
+  "repeats": 1,
+  "probes": [
+    {
+      "id": "flow-runinmode-usermode",
+      "skill": "flow/flow-governance",
+      "source": "api_meta.txt L70923-70927",
+      "runs": [
+        {
+          "A": {
+            "answer": "I can't confirm a fourth value. The three I know of for `runInMode` on `Flow` are:\n\n- **DefaultMode**: the flow runs in the context of how it was launched. Record-triggered flows run in system context, and screen flows run in user context.\n- **SystemModeWithSharing**: the flow runs in system mode but enforces sharing rules for the running user.\n- **SystemModeWithoutSharing**: the flow runs in system mode and ignores sharing rules.\n\nAPI 68.0 corresponds to Winter '27, which is after my knowledge cutoff (June 2026). A new enum value could have been added in that release without my knowing. I won't guess at a name or behavior, and I won't infer one from other features. For example, Apex `WITH USER_MODE` and `AccessLevel.USER_MODE` are a separate mechanism and don't tell us what Flow's `runInMode` accepts.\n\nTo check quickly:\n\n1. Look up `Flow` in the Winter '27 Metadata API Developer Guide, under `runInMode`, and read the valid-values list.\n2. Check the Winter '27 release notes under Flow, for any change to \"run in\" or \"system context\" settings.\n3. Try it in a sandbox or scratch org on 68.0. Retrieve a flow, set `<runInMode>` to the candidate value, and deploy. An invalid enum value fails with a clear parse error that lists the accepted values.\n4. Check the Metadata API WSDL or XSD for 68.0 and look at the `FlowRunInMode` simple type, which is the authoritative list.\n\nIf you find a fourth value and paste its doc text, I can help work out the implications, such as sharing and FLS behavior or how it interacts with record-triggered flows.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "neither",
+              "quote": "",
+              "quote_found": false
+            },
+            "grade_error": null,
+            "cost_usd": 0.0700932,
+            "duration_s": 10.373,
+            "tokens": {
+              "input": 13297,
+              "output": 965
+            }
+          },
+          "B": {
+            "answer": "Yes. From API 68.0 (Winter '27), the Flow metadata `runInMode` enum has a fourth value: **`UserMode`**. Flow Builder labels it \"User Context\u2014Enforces User Permissions.\"\n\n**What it does**\n- The flow runs with the running user's security context explicitly enforced: their object permissions, field-level security, and sharing.\n- It does not inherit sharing from whatever called it, so the calling context can't loosen or change the access the flow runs with.\n\n**How it differs from the other three**\n- `DefaultMode`: the launch context decides whether the flow runs in user or system context.\n- `SystemModeWithSharing`: record sharing is respected, but object and field permissions are not.\n- `SystemModeWithoutSharing`: the flow can access all data (API 49.0+).\n- `UserMode` (API 68.0+): user permissions are enforced explicitly, whatever the launch context.\n\nAt 67.0 and earlier only the first three exist. Getting user context then depended on `DefaultMode` and on how the flow was launched.\n\n**Governance implications**\n- `UserMode` is the least-privilege choice, so put it on the `runInMode` allow-list for 68.0 flows by name.\n- A policy or checker that only knows the three older values will wrongly reject a valid 68.0 flow. Update the enum.\n- The checker should also reject `UserMode` on any flow whose `apiVersion` is below 68.0, since the value doesn't exist there.\n- `SystemModeWithoutSharing` is the one to review closely. It is a single line in a large XML file that release reviews rarely read, so keep a named-exception list for it that gets a security review.\n\nThe above comes from the skill package's reading of the Winter '27 Metadata API guide (`api_meta.txt` 264, L70907\u2013L70927). I haven't re-checked it against the live docs.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "Yes. From API 68.0 (Winter '27), the Flow metadata `runInMode` enum has a fourth value: **`UserMode`**.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1337902,
+            "duration_s": 8.927,
+            "tokens": {
+              "input": 24099,
+              "output": 678
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "skills": {
+      "flow/flow-governance": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      }
+    },
+    "overall": {
+      "correct_a": 0,
+      "correct_b": 1,
+      "wrong_a": 0,
+      "wrong_b": 0,
+      "neither_a": 1,
+      "neither_b": 0,
+      "paired": 1,
+      "errors": 0,
+      "probes": 1,
+      "quotes_not_found": 1,
+      "pct_correct_a": 0.0,
+      "pct_correct_b": 100.0,
+      "pct_wrong_a": 0.0,
+      "pct_wrong_b": 0.0,
+      "pct_neither_a": 100.0,
+      "pct_neither_b": 0.0
+    },
+    "cost_usd": 0.2038834,
+    "call_seconds": 19.299999999999997,
+    "input_tokens": 37396,
+    "output_tokens": 1643,
+    "elapsed_s": 22.62987237500056
+  }
+}
