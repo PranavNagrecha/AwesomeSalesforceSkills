@@ -22,7 +22,11 @@ Scans .cls and .trigger files for four anti-patterns:
       per file rather than per method, so trigger bodies are covered.
 
 Exit code 1 if any P0 or P1 issue is found. Exit 0 otherwise. P2 issues are
-reported as warnings but do not change the exit code.
+reported as warnings but do not change the exit code (--strict promotes them).
+
+Comments and string literals are blanked before any pattern is matched
+(mask_non_code), so a clause named in a `//` or block comment, or inside a
+string, is not a finding. Line numbers are unchanged.
 
 Usage:
     python3 check_apex_stripinaccessible_and_fls_enforcement.py [--manifest-dir path]
@@ -58,6 +62,47 @@ USER_SUPPLIED_NAMES = re.compile(
 )
 
 
+def mask_non_code(text: str) -> str:
+    """Blank `//` comments, `/* */` comments and string literals, keeping offsets.
+
+    Every masked character becomes a space (newlines are kept), so a match offset
+    or line number computed on the result is the same one in the original text.
+    Apex strings are single-quoted with backslash escapes. A clause named only
+    inside a string literal (a message, a log line) is not a clause in the code.
+    """
+    out = list(text)
+    n = len(text)
+    i = 0
+
+    def blank(a: int, b: int) -> None:
+        for k in range(a, b):
+            if out[k] != "\n":
+                out[k] = " "
+
+    while i < n:
+        two = text[i : i + 2]
+        if two == "//":
+            j = text.find("\n", i)
+            j = n if j == -1 else j
+            blank(i, j)
+            i = j
+        elif two == "/*":
+            j = text.find("*/", i + 2)
+            j = n if j == -1 else j + 2
+            blank(i, j)
+            i = j
+        elif text[i] == "'":
+            j = i + 1
+            while j < n and text[j] != "'" and text[j] != "\n":
+                j += 2 if text[j] == "\\" else 1
+            j = min(j + 1, n)
+            blank(i, j)
+            i = j
+        else:
+            i += 1
+    return "".join(out)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Check Apex for stripInaccessible / FLS anti-patterns.",
@@ -66,6 +111,11 @@ def parse_args() -> argparse.Namespace:
         "--manifest-dir",
         default=".",
         help="Root directory of Salesforce metadata (default: current directory).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat WARN (P2) findings and an empty scan as failures (exit 1).",
     )
     return parser.parse_args()
 
@@ -219,15 +269,19 @@ def check_apex(root: Path) -> tuple[list[str], list[str]]:
     for path in files:
         try:
             text = path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
+        except OSError as exc:
+            blocking.append(f"P0 {path}: could not read file ({exc.__class__.__name__}) — not scanned")
             continue
         try:
             rel = str(path.relative_to(root))
         except ValueError:
             rel = str(path)
         version = api_version_of(path)
-        found = scan_security_enforced(text, rel, version)
-        for name, body, line_no in extract_method_bodies(text):
+        # Every scan below reads the masked text: comments and string literals
+        # are not code, and masking keeps offsets so line numbers stay true.
+        code = mask_non_code(text)
+        found = scan_security_enforced(code, rel, version)
+        for name, body, line_no in extract_method_bodies(code):
             found.extend(analyze_method(name, body, line_no, rel))
         for issue in found:
             if issue.startswith("P0") or issue.startswith("P1"):
@@ -246,6 +300,10 @@ def main() -> int:
 
     blocking, warning = check_apex(root)
 
+    if not any(root.rglob("*.cls")) and not any(root.rglob("*.trigger")):
+        print(f"WARN: no .cls or .trigger files under {root}; nothing was scanned", file=sys.stderr)
+        return 1 if args.strict else 0
+
     if not blocking and not warning:
         print("No stripInaccessible / FLS anti-patterns detected.")
         return 0
@@ -255,7 +313,7 @@ def main() -> int:
     for issue in blocking:
         print(f"ISSUE: {issue}", file=sys.stderr)
 
-    if blocking:
+    if blocking or (args.strict and warning):
         return 1
     return 0
 

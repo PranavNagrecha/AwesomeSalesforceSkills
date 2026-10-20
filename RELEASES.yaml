@@ -436,17 +436,23 @@ releases:
     title: Comment-aware fix for stripinaccessible + soql-security checkers (false P0/CRITICAL on a comment)
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'mask_non_code() in both checkers (comments + strings blanked, line numbers kept); soql-security no-access-mode
+      rule requires a real DB op; tier2-webhook: strip P0 1->0, soql 3->0; fixtures comment/string 1->0, real code/P0/P1 1->1,
+      missing 1, empty WARN 0; --strict/--manifest-dir added where missing; verify no FAIL; validate --changed-only 0 errors'
   - id: R2-11
     title: Fix trigger access-mode contradiction in apex-stripinaccessible-and-fls-enforcement (67.0 user mode)
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'Already corrected by R2-12''s writer+reviewer (90f6edae2): apex-stripinaccessible-and-fls-enforcement SKILL.md
+      L54 now states triggers run in an implicit without sharing context but their DB operations run in user mode at 67.0+
+      unless system mode is specified, citing Apex Dev Guide L4881-4884; verified by sed on 2026-10-21'
   - id: R2-13
     title: 'Sharing checker: cover ''as system'' DML; fix inherited-sharing-from-batch nuance in apex-security-patterns'
     size: S
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R2-14
     title: 'Approval invalidation on later discount change: gotcha in admin/approval-processes + northwind-sales build fix'
     size: S

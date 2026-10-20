@@ -55,6 +55,68 @@ SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW":
 SECURITY_ENFORCED_REMOVED_IN = 67.0
 USER_MODE_GA_IN = 57.0
 
+QUERY_LIKE_STRING = re.compile(
+    r"\bSELECT\b.*\bFROM\b|\b(ORDER|GROUP)\s+BY\b|^\s*(WITH|WHERE|ORDER\s+BY|GROUP\s+BY|LIMIT|FROM|AND|OR)\b",
+    re.IGNORECASE | re.DOTALL,
+)
+TRIGGER_HEADER_RE = re.compile(r"\btrigger\s+\w+\s+on\s+\w+\s*\([^)]*\)", re.IGNORECASE)
+
+
+def mask_non_code(text: str, keep_query_strings: bool = False) -> str:
+    """Blank `//` comments, `/* */` comments and string literals, keeping offsets.
+
+    Every masked character becomes a space (newlines are kept), so a match offset
+    or line number computed on the result is the same one in the original text.
+    Apex strings are single-quoted with backslash escapes. With
+    keep_query_strings=True a string literal that reads as SOQL/SOSL text (it has
+    SELECT ... FROM or ORDER BY in it, or starts with a clause keyword such as
+    WITH or WHERE) is kept, because dynamic SOQL in a string is a real query; prose that merely
+    names a clause is still blanked.
+    """
+    out = list(text)
+    n = len(text)
+    i = 0
+
+    def blank(a: int, b: int) -> None:
+        for k in range(a, b):
+            if out[k] != "\n":
+                out[k] = " "
+
+    while i < n:
+        two = text[i : i + 2]
+        if two == "//":
+            j = text.find("\n", i)
+            j = n if j == -1 else j
+            blank(i, j)
+            i = j
+        elif two == "/*":
+            j = text.find("*/", i + 2)
+            j = n if j == -1 else j + 2
+            blank(i, j)
+            i = j
+        elif text[i] == "'":
+            j = i + 1
+            while j < n and text[j] != "'" and text[j] != "\n":
+                j += 2 if text[j] == "\\" else 1
+            j = min(j + 1, n)
+            body = text[i + 1 : j - 1]
+            if not (keep_query_strings and QUERY_LIKE_STRING.search(body)):
+                blank(i, j)
+            i = j
+        else:
+            i += 1
+    return "".join(out)
+
+
+def has_database_operation(code: str) -> bool:
+    """True when masked Apex holds a SOQL/SOSL/DML statement.
+
+    The trigger header (`trigger T on Case (after update)`) names DML events but
+    is not a statement, so it is blanked first; a trigger that only calls a
+    handler method has no database operation of its own.
+    """
+    return bool(DB_OP_RE.search(TRIGGER_HEADER_RE.sub(lambda m: " " * len(m.group(0)), code)))
+
 
 def class_api_version(path: Path) -> float | None:
     """apiVersion from the sibling `<Class>.cls-meta.xml`, or None.
@@ -111,10 +173,17 @@ def audit_file(path: Path) -> list[str]:
     if path.suffix.lower() not in TEXT_SUFFIXES:
         return findings
 
-    text = path.read_text(encoding="utf-8", errors="ignore")
+    raw_text = path.read_text(encoding="utf-8", errors="ignore")
+    raw_lines = raw_text.splitlines()
+    # Comments and string literals are not code. `code` blanks both; `soql_text`
+    # blanks comments and prose strings but keeps strings that read as dynamic
+    # SOQL, which is a real query. Offsets are preserved, so line numbers match.
+    code = mask_non_code(raw_text)
+    text = mask_non_code(raw_text, keep_query_strings=True)
     lines = text.splitlines()
+    code_lines = code.splitlines()
 
-    if WITHOUT_SHARING_RE.search(text):
+    if WITHOUT_SHARING_RE.search(code):
         findings.append(f"HIGH {path}: class uses without sharing; verify and document intentional system context")
 
     # `WITH SECURITY_ENFORCED` is a FINDING, never a pass. Treating its presence
@@ -153,11 +222,11 @@ def audit_file(path: Path) -> list[str]:
     # so it counts for nothing — but there user mode is the default anyway.
     enforces_below_67 = (
         USER_MODE_RE.search(text)
-        or STRIP_RE.search(text)
+        or STRIP_RE.search(code)
         or (SECURITY_ENFORCED_RE.search(text)
             and (api_version is None or api_version < SECURITY_ENFORCED_REMOVED_IN))
     )
-    if AURA_OR_REST_RE.search(text) and not enforces_below_67:
+    if AURA_OR_REST_RE.search(code) and not enforces_below_67:
         # At 67.0+ user mode is the default, so an unqualified query is already
         # enforced and the absence of a keyword is not itself a defect.
         if api_version is None or api_version < SECURITY_ENFORCED_REMOVED_IN:
@@ -165,7 +234,7 @@ def audit_file(path: Path) -> list[str]:
 
     if (path.suffix.lower() == ".trigger" and api_version is not None
             and api_version >= SECURITY_ENFORCED_REMOVED_IN
-            and DB_OP_RE.search(text) and not EXPLICIT_MODE_RE.search(text)):
+            and has_database_operation(code) and not EXPLICIT_MODE_RE.search(text)):
         findings.append(
             f"LOW {path}: trigger saved at apiVersion {api_version:g} has database operations with no explicit "
             f"access mode. At 67.0+ they run in user mode (sharing applies in the trigger body); the Apex "
@@ -174,10 +243,13 @@ def audit_file(path: Path) -> list[str]:
 
     for line_number, raw_line in enumerate(lines, start=1):
         line = raw_line.strip()
-        if DATABASE_QUERY_RE.search(line) and STRING_CONCAT_RE.search(line):
+        code_line = code_lines[line_number - 1].strip() if line_number <= len(code_lines) else ""
+        # The allowlist acknowledgement is itself a comment, so read it raw.
+        original_line = raw_lines[line_number - 1] if line_number <= len(raw_lines) else raw_line
+        if DATABASE_QUERY_RE.search(code_line) and STRING_CONCAT_RE.search(code_line):
             findings.append(f"CRITICAL {path}:{line_number}: dynamic SOQL call appears to use string concatenation")
         if ("ORDER BY" in line.upper() and STRING_CONCAT_RE.search(line)
-                and not ALLOWLIST_NOTE_RE.search(raw_line)):
+                and not ALLOWLIST_NOTE_RE.search(original_line)):
             findings.append(f"HIGH {path}:{line_number}: dynamic ORDER BY detected; confirm allowlist protection")
 
     return findings
@@ -213,18 +285,35 @@ def main() -> int:
     )
     parser.add_argument("paths", nargs="*", help="Files or directories to inspect")
     parser.add_argument("--self-test", action="store_true", help="Run the bundled fixtures and exit.")
+    parser.add_argument(
+        "--manifest-dir",
+        action="append",
+        default=[],
+        help="Directory of Salesforce metadata to scan (same as a positional path; repeatable).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat an empty scan (no .cls or .trigger files found) as a failure (exit 1).",
+    )
     args = parser.parse_args()
     if args.self_test:
         return self_test()
-    if not args.paths:
-        parser.error("pass at least one file or directory, or --self-test")
+    paths = args.paths + args.manifest_dir
+    if not paths:
+        parser.error("pass at least one file or directory, --manifest-dir, or --self-test")
 
-    files = iter_files(args.paths)
-    if not files:
-        return emit_result(
-            ["HIGH no Apex files matched the provided paths"],
-            "Scanned 0 Apex files; no matching .cls or .trigger files were found.",
-        )
+    for raw in paths:
+        if not Path(raw).exists():
+            print(f"ERROR: path not found: {raw}", file=sys.stderr)
+            sys.exit(1)
+
+    files = iter_files(paths)
+    apex_files = [f for f in files if f.suffix.lower() in TEXT_SUFFIXES]
+    if not apex_files:
+        print("WARN: no .cls or .trigger files found; nothing was scanned", file=sys.stderr)
+        print(json.dumps({"score": 100, "findings": [], "summary": "Scanned 0 Apex files; nothing to check."}, indent=2))
+        return 1 if args.strict else 0
 
     findings: list[str] = []
     scanned = 0
@@ -234,8 +323,6 @@ def main() -> int:
         scanned += 1
         findings.extend(audit_file(path))
 
-    if scanned == 0:
-        findings.append("HIGH no Apex files matched the provided paths")
     summary = f"Scanned {scanned} Apex file(s); {len(findings)} finding(s) detected."
     return emit_result(findings, summary)
 
