@@ -18,10 +18,10 @@ incident a day later, after the data has left.
 2. Transaction Security Policy:
      IF EventType = ReportEvent
         AND RowsProcessed > 5000
-        AND TimeOfDay BETWEEN 22:00 AND 06:00 (user local time)
-     THEN Action = Require MFA + Notify Security
+        AND TimeOfDay BETWEEN 22:00 AND 06:00 (user local time)   # UNVERIFIED (2026-10-20): not a ReportEvent condition (secguide 262 L6419-6433)
+     THEN Action = Require MFA + Notify Security   # in Lightning the MFA action is upgraded to Block (secguide 262 L6434-6437; api_meta 264 L138715-138717)
      ELSE log only.
-3. PSG-level High Assurance: required for the "ExportLargeReports" PSG.
+3. PSG-level High Assurance: required for the "ExportLargeReports" PSG.   # UNVERIFIED (2026-10-20): Help-level, see SKILL.md leg 1
 4. Login Flow: read Azure AD device-state claim;
      if device is not "compliant", deny session.
 5. Quarterly review of TSP firings; tune thresholds.
@@ -49,7 +49,7 @@ ordinary work surface and reps disable everything.
 
 **Solution:** Move the SSN field-level read permission into a dedicated
 Permission Set, group it into a "ViewSSN" PSG, and configure the PSG's
-**Session Settings** to require High Assurance. Default users do not
+**Session Settings** to require High Assurance (UNVERIFIED (2026-10-20): Help-level, not in the corpus). Default users do not
 have the PSG; a JIT-grant Apex Flow assigns the PSG when a rep opens a
 case for a customer who has consented to SSN review, and revokes it
 after 30 minutes.

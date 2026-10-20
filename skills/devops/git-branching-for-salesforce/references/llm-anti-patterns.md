@@ -6,7 +6,7 @@ Common mistakes AI coding assistants make when generating or advising on Git bra
 
 **What the LLM generates:** A full GitFlow model with `develop`, `release/*`, `hotfix/*`, and `feature/*` branches for a small Salesforce team with 3-5 developers using scratch orgs.
 
-**Why it happens:** GitFlow is heavily represented in training data as "the" enterprise branching model. LLMs default to it because it appears authoritative and comprehensive. However, Salesforce DX documentation explicitly names trunk-based development as the first recommended model for source-driven projects.
+**Why it happens:** GitFlow is heavily represented in training data as "the" enterprise branching model. LLMs default to it because it appears authoritative and comprehensive. UNVERIFIED (2026-10-20): the earlier claim that Salesforce DX documentation names trunk-based development as the first recommended model is not in the corpus (no "trunk" hit in sfdx_dev or pkg2_dev).
 
 **Correct pattern:**
 
@@ -25,17 +25,19 @@ Default recommendation for source-driven Salesforce teams:
 
 **What the LLM generates:** A branching model where each feature branch creates its own unlocked package version for testing, with versions merged together later.
 
-**Why it happens:** LLMs treat package versions like Docker images — independently buildable and composable. They do not model the linear ancestry constraint where each new version must descend from the highest promoted version.
+**Why it happens:** LLMs treat package versions like Docker images — independently buildable and composable. They do not model that the ancestor must be the highest promoted version for managed 2GP (pkg2_dev 264 L18256-18258), that ancestry defines the upgrade path (sfdx_dev 264 L15084-15086), or that only one version per major.minor.patch can be promoted and released (sfdx_dev 264 L16033-16034).
 
 **Correct pattern:**
 
 ```text
-Package versions are created ONLY from the main or packaging branch.
-Feature branches test using scratch org deploys, NOT package installs.
-Version ancestry: v1.0 → v1.1 → v1.2 (linear, never forked).
+Package versions are PROMOTED only from the main or packaging branch.
+Feature branches test using scratch org deploys; if they build versions at
+all, tag them with --branch (sfdx_dev 264 L15993-15995) and never promote them.
+Ancestry defines the upgrade path; managed 2GP allows abandoning a version and
+branching (pkg2_dev 264 L584-586), so "linear, never forked" is not a platform rule.
 ```
 
-**Detection hint:** Output includes `sf package version create` in a feature branch CI workflow.
+**Detection hint:** Output includes `sf package version create` in a feature branch CI workflow without `--branch`, or promotes a feature-branch version.
 
 ---
 
@@ -51,7 +53,7 @@ Version ancestry: v1.0 → v1.1 → v1.2 (linear, never forked).
 After merging branches that touch the same metadata types (profiles,
 permission sets, custom labels), validate the merge by deploying to
 a scratch org: sf project deploy start --source-dir force-app
-Standard git mergetool cannot detect Salesforce-specific XML ordering issues.
+Standard git mergetool cannot detect Salesforce-specific XML ordering issues (UNVERIFIED (2026-10-20): the ordering-failure claim is not in the corpus).
 ```
 
 **Detection hint:** Merge conflict advice that does not mention deploying to a scratch org or sandbox for validation.
@@ -62,12 +64,12 @@ Standard git mergetool cannot detect Salesforce-specific XML ordering issues.
 
 **What the LLM generates:** A branching model that assigns a unique sandbox to each feature branch, integration branch, and release branch — recommending 8-12 sandboxes.
 
-**Why it happens:** LLMs overfit on the concept that branches need org backing. They do not account for sandbox license limits by Salesforce edition. Enterprise Edition typically includes 1 Full Copy, 5 Developer Pro, and limited Partial Copy sandboxes.
+**Why it happens:** LLMs overfit on the concept that branches need org backing. They do not account for sandbox license limits by Salesforce edition. Enterprise Edition typically includes 1 Full Copy, 5 Developer Pro, and limited Partial Copy sandboxes (UNVERIFIED (2026-10-20): sandbox allotments are Help-only; sfdx_dev 264 L12195 and L12551 only point to the Help article "Sandbox Licenses and Storage Limits by Type").
 
 **Correct pattern:**
 
 ```text
-Feature branches → scratch orgs (ephemeral, no license limit beyond Dev Hub)
+Feature branches → scratch orgs (ephemeral; the Dev Hub caps daily creation and active orgs, e.g. six per day and three active for a trial or Developer Edition Dev Hub, sfdx_dev 264 L932)
 Integration branch → 1 Developer Pro sandbox
 UAT/release branch → 1 Partial Copy sandbox
 Production → main branch
@@ -103,7 +105,7 @@ Hotfix workflow:
 
 **What the LLM generates:** "Always rebase feature branches on main before merging to keep a clean linear history."
 
-**Why it happens:** Rebase is standard Git hygiene advice. But in Salesforce DX projects, rebasing rewrites commit history, which breaks scratch org source tracking. The scratch org still tracks the old commits and will produce incorrect push/pull results.
+**Why it happens:** Rebase is standard Git hygiene advice. But in Salesforce DX projects, rebasing rewrites commit history, which breaks scratch org source tracking. The scratch org still tracks the old commits and will produce incorrect push/pull results. (UNVERIFIED (2026-10-20): not in the corpus.)
 
 **Correct pattern:**
 

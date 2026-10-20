@@ -10,7 +10,7 @@ wrong or missing.
 or a class with no doc block at all compiles and deploys cleanly.
 
 **When it occurs:** always — the Apex compiler enforces ordinary comment syntax but does not
-enforce ApexDoc syntax or check that a comment matches the code beneath it.
+enforce ApexDoc syntax or check that a comment matches the code beneath it (apexdev 264 L13825-13826).
 
 **How to avoid:** treat documentation accuracy as a review-and-CI responsibility. Run the
 skill's checker; make coverage a code-review gate. Never assume "it compiled" means "it's
@@ -24,7 +24,7 @@ documented correctly."
 that element.
 
 **When it occurs:** the block opens with a single asterisk (`/*`). That's an ordinary
-multiline comment; documentation generators only recognize `/**`.
+multiline comment; ApexDoc comments "begin with /** and end with */" (apexdev 264 L13830-13832).
 
 **How to avoid:** always open ApexDoc with `/**` and end with `*/`. The checker flags
 declarations whose only preceding comment is a `/*` block.
@@ -36,12 +36,14 @@ declarations whose only preceding comment is a `/*` block.
 **What happens:** a perfectly-formed ApexDoc block is ignored and the declaration reads as
 undocumented.
 
-**When it occurs:** something sits between the block and the declaration — a blank line, a
-statement, or an annotation placed *above* the comment instead of below it.
+**When it occurs:** something sits between the block and the declaration — "No other code or
+comments are between the ApexDoc comment block and the element" (apexdev 264 L13833-13834).
+UNVERIFIED (2026-10-20): that a blank line or an annotation placed *above* the comment also
+detaches it is not in the corpus.
 
 **How to avoid:** the block must **immediately precede** the class/method/constructor/property.
-Place annotations (`@AuraEnabled`, `@isTest`) between the doc block and the declaration, not
-above the block.
+Place annotations (`@AuraEnabled`, `@isTest`) between the doc block and the declaration, as the
+guide's examples do (apexdev 264 L14388-14389, L14475-14476, L14755-14756).
 
 ---
 
@@ -53,7 +55,8 @@ the signature; reviewers stop trusting the block.
 **When it occurs:** a `@return` is added to a `void` method or a constructor, or omitted from a
 non-`void` method.
 
-**How to avoid:** `@return` belongs on non-`void` methods only. Void methods and constructors
+**How to avoid:** `@return` belongs on non-`void` methods only ("Don't use the @return tag for
+void methods or constructors", apexdev 264 L13889-13890). Void methods and constructors
 get a description plus `@param`/`@throws` as needed — never `@return`.
 
 ---
@@ -65,7 +68,7 @@ conventions, and code, tooling, and new hires fight it.
 
 **When it occurs:** the standard is authored from personal preference rather than the official
 Apex conventions (capital-first classes, lowercase verb-first methods, meaningful variables,
-Java standards otherwise).
+Java standards otherwise; apexdev 264 L6699-6700).
 
 **How to avoid:** adopt the official conventions verbatim as the baseline and layer only
 genuinely org-specific additions (prefixes, object naming) on top.
@@ -79,5 +82,5 @@ genuinely org-specific additions (prefixes, object naming) on top.
 **When it occurs:** a maturity label is pattern-filled onto what is actually a documentation
 convention and coding guideline, not a licensed or version-gated feature.
 
-**How to avoid:** describe ApexDoc as a comment convention. Do not state GA/Beta/Pilot — the
+**How to avoid:** describe ApexDoc as a comment convention (apexdev 264 L13798-13802). Do not state GA/Beta/Pilot — the
 official docs don't.

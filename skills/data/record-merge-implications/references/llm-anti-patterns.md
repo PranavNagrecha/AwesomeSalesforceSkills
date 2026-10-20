@@ -28,7 +28,7 @@ Database.merge(masterAccount, losingId);
 
 **What the LLM generates:** A SOQL query for Lead merge candidates without a `IsConverted = false` filter.
 
-**Why it happens:** LLMs do not know that converted Leads are excluded from merge operations and generate generic Lead queries without this filter.
+**Why it happens:** LLMs do not know that converted Leads are excluded from merge operations (UNVERIFIED (2026-10-20): the exclusion is Help-only, not in the corpus) and generate generic Lead queries without this filter.
 
 **Correct pattern:**
 ```apex
@@ -47,7 +47,7 @@ List<Lead> duplicates = [SELECT Id FROM Lead WHERE Email = :email AND IsConverte
 
 **What the LLM generates:** Instructions telling the user to "select the correct Owner from the merge screen" to preserve the losing record's owner.
 
-**Why it happens:** LLMs describe the UI merge field selection screen as if all fields are selectable, without knowing that `OwnerId` is always taken from the master record.
+**Why it happens:** LLMs describe the UI merge field selection screen as if all fields are selectable, without knowing that `OwnerId` is always taken from the master record (UNVERIFIED (2026-10-20): UI rule is Help-only).
 
 **Correct pattern:** OwnerId is non-selectable in the merge UI. To set the correct owner on the merged record, update the master record's Owner before initiating the merge, not during the merge screen. Document this limitation when advising on merge procedures.
 
@@ -59,9 +59,9 @@ List<Lead> duplicates = [SELECT Id FROM Lead WHERE Email = :email AND IsConverte
 
 **What the LLM generates:** A suggestion to "undo the merge" or "restore the original records" after a mistaken merge using a standard Salesforce feature.
 
-**Why it happens:** LLMs apply general "undo" patterns without knowing that Salesforce merges are permanent and irreversible through standard features.
+**Why it happens:** LLMs apply general "undo" patterns, and the opposite error is just as common: telling users a merge can never be recovered.
 
-**Correct pattern:** There is no native undo for a record merge in Salesforce. Recovery requires either a full org restore from a sandbox backup, manual recreation of the deleted records from exported data, or (for contacts) using Data Loader to re-insert records with the old data. Always advise pre-merge data export as a mandatory step before any bulk merge operation.
+**Correct pattern:** There is no one-click unmerge, but the guide says "You can undelete records that were deleted as the result of a merge. However, the merge reparents the child objects, and that reparenting can't be undone" (apexdev 264 L8444-8445). Undelete the losing record, then move its children back by hand using a pre-merge export. An earlier version of this pattern said recovery needed a sandbox restore; that was wrong. Always advise pre-merge data export as a mandatory step before any bulk merge operation.
 
 **Detection hint:** Any recommendation to "undo," "reverse," or "rollback" a Salesforce merge.
 
@@ -71,7 +71,7 @@ List<Lead> duplicates = [SELECT Id FROM Lead WHERE Email = :email AND IsConverte
 
 **What the LLM generates:** A statement that "all child records from the losing record are moved to the master record" without qualifying exceptions.
 
-**Why it happens:** The general re-parenting behavior is correct for most objects, but LLMs miss the exceptions: Campaign Members are deduplicated (one per Campaign per Contact/Lead), and some system objects may behave differently.
+**Why it happens:** The general re-parenting behavior is correct for most objects (apexdev 264 L8173-8174), but LLMs miss the exceptions: Campaign Members are deduplicated (one per Campaign per Contact/Lead; UNVERIFIED (2026-10-20): Help-level, not in the corpus), and some system objects may behave differently.
 
 **Correct pattern:** Most child records (Opportunities, Cases, Activities, Notes) are re-parented to the master record. However, duplicate Campaign Members on the same Campaign are deduplicated — one is kept, one is deleted, and the deleted one's response data is lost. Always verify Campaign Member counts before and after merging Contacts with Campaign history. Include explicit Campaign Member verification in any merge checklist.
 

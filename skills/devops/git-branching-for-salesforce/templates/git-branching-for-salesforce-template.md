@@ -94,7 +94,7 @@ hotfix/* ──► main AND ___
 - [ ] Branch protection rules configured for main and integration branches
 - [ ] Merge direction documented
 - [ ] Hotfix path defined and does not block on normal release train
-- [ ] Package versioning aligned to single linear branch (if applicable)
+- [ ] Package versions promoted from a single controlled branch (if applicable; one promoted version per major.minor.patch, sfdx_dev 264 L16033-16034)
 - [ ] Destructive changes process documented
 - [ ] Branch naming conventions enforced by CI or hooks
 

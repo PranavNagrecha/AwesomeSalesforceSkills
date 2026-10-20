@@ -3,9 +3,16 @@
 
 Analyzes a Salesforce DX project repository for branching strategy hygiene:
 - Checks for branch protection indicators (.github/ or .gitlab/ configs)
-- Validates sfdx-project.json package ancestor consistency
+- Validates sfdx-project.json package ancestor settings: ancestorId takes a 04t ID or a
+  package alias (pkg2_dev 264 L18679-18680, L18760-18761); it is required once a version of
+  a managed 2GP package has been promoted (pkg2_dev 264 L18674-18676)
 - Detects long-lived branches that may indicate branching model issues
 - Checks for destructive changes manifests without CI integration
+
+Every finding is WARN or INFO: the corpus holds no deploy-blocking rule for these. Exit
+codes: ERROR (missing --project-dir, unparseable sfdx-project.json) exits 1 always; WARN and
+INFO exit 0 unless --strict is given. A directory with no sfdx-project.json, CI files or
+destructive manifests prints one WARN and exits 0.
 
 Uses stdlib only — no pip dependencies.
 
@@ -32,6 +39,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--project-dir",
+        "--manifest-dir",
+        dest="project_dir",
         default=".",
         help="Root directory of the Salesforce DX project (default: current directory).",
     )
@@ -39,6 +48,11 @@ def parse_args() -> argparse.Namespace:
         "--check-branches",
         action="store_true",
         help="Query git for branch information (requires git repo).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Promote WARN and INFO findings to exit 1 (ERROR always exits 1).",
     )
     return parser.parse_args()
 
@@ -50,7 +64,7 @@ def check_sfdx_project_json(project_dir: Path) -> list[str]:
 
     if not project_file.exists():
         issues.append(
-            f"No sfdx-project.json found at {project_dir}. "
+            f"INFO: No sfdx-project.json found at {project_dir}. "
             "Cannot validate package configuration."
         )
         return issues
@@ -59,17 +73,18 @@ def check_sfdx_project_json(project_dir: Path) -> list[str]:
         with open(project_file, "r", encoding="utf-8") as f:
             project_data = json.load(f)
     except (json.JSONDecodeError, OSError) as e:
-        issues.append(f"Failed to parse sfdx-project.json: {e}")
+        issues.append(f"ERROR: Failed to parse sfdx-project.json: {e}")
         return issues
 
     package_dirs = project_data.get("packageDirectories", [])
     if not package_dirs:
         issues.append(
-            "sfdx-project.json has no packageDirectories. "
+            "INFO: sfdx-project.json has no packageDirectories. "
             "If using packages, define at least one package directory."
         )
         return issues
 
+    aliases = project_data.get("packageAliases", {}) or {}
     for pkg_dir in package_dirs:
         pkg_name = pkg_dir.get("package", pkg_dir.get("path", "unknown"))
         version_number = pkg_dir.get("versionNumber", "")
@@ -81,20 +96,27 @@ def check_sfdx_project_json(project_dir: Path) -> list[str]:
             # Only flag if this looks like it's not the first version
             if version_number and not version_number.startswith("1.0.0"):
                 issues.append(
-                    f"Package '{pkg_name}' has versionNumber '{version_number}' "
-                    "but no ancestorId or ancestorVersion. "
-                    "Package versions after 1.0.0 should specify an ancestor "
-                    "to maintain linear version ancestry."
+                    f"INFO: Package '{pkg_name}' has versionNumber '{version_number}' "
+                    "but no ancestorId or ancestorVersion. For managed 2GP one of them is "
+                    "required once a version has been promoted (pkg2_dev 264 L18674-18676); "
+                    "for unlocked packages it is optional and ancestry defines the upgrade "
+                    "path (sfdx_dev 264 L15084-15086)."
                 )
 
         # Check for HIGHEST keyword (recommended practice)
         if ancestor_version == "HIGHEST":
             pass  # This is the recommended practice, no issue
-        elif ancestor_id and not ancestor_id.startswith("04t"):
+        elif ancestor_id and not (ancestor_id.startswith("04t") or "@" in ancestor_id or ancestor_id in aliases):
             issues.append(
-                f"Package '{pkg_name}' has ancestorId '{ancestor_id}' "
-                "which does not start with '04t'. "
-                "Ancestor IDs should be SubscriberPackageVersion IDs (04t prefix)."
+                f"WARN: Package '{pkg_name}' has ancestorId '{ancestor_id}' "
+                "which is neither a 04t ID nor a package alias (name@version). "
+                "ancestorId takes the 04t of the package version or an alias "
+                "(pkg2_dev 264 L18679-18680)."
+            )
+        elif ancestor_version == "NONE":
+            issues.append(
+                f"INFO: Package '{pkg_name}' sets ancestorVersion NONE; an existing customer "
+                "can't upgrade to that package version (sfdx_dev 264 L15084-15086)."
             )
 
     return issues
@@ -145,19 +167,19 @@ def check_branch_protection_config(project_dir: Path) -> list[str]:
 
     if not has_ci_workflows and not has_gitlab_ci:
         issues.append(
-            "No CI workflow files found (.github/workflows/*.yml or .gitlab-ci.yml). "
+            "INFO: No CI workflow files found (.github/workflows/*.yml or .gitlab-ci.yml). "
             "Branch protection without CI enforcement is incomplete. "
             "Add CI workflows that validate deploys on pull requests to main."
         )
     elif has_ci_workflows and not ci_checks_main:
         issues.append(
-            "CI workflows exist but none appear to run on the main/master branch. "
+            "INFO: CI workflows exist but none appear to run on the main/master branch. "
             "Ensure at least one workflow triggers on pull_request to main."
         )
 
     if not has_codeowners and has_github:
         issues.append(
-            "No CODEOWNERS file found. Consider adding one to enforce "
+            "INFO: No CODEOWNERS file found. Consider adding one to enforce "
             "review requirements for critical paths (sfdx-project.json, "
             "destructive changes, permission sets)."
         )
@@ -206,10 +228,12 @@ def check_destructive_changes(project_dir: Path) -> list[str]:
     if not ci_handles_destructive:
         files_str = ", ".join(str(f.relative_to(project_dir)) for f in destructive_files[:3])
         issues.append(
-            f"Destructive change manifests found ({files_str}) but CI config "
-            "does not reference destructive changes. Deletions will not be "
-            "applied on deploy. Add --pre-destructive-changes or "
-            "--post-destructive-changes flags to your deploy commands."
+            f"WARN: Destructive change manifests found ({files_str}) but CI config "
+            "does not reference destructive changes. Deletions are made with a "
+            "destructiveChanges.xml manifest in a deployment (api_meta 264 L4707, L4746), "
+            "so make sure your deploy commands include it. (The CLI flag names "
+            "--pre-destructive-changes and --post-destructive-changes are UNVERIFIED "
+            "2026-10-20: not in the corpus.)"
         )
 
     return issues
@@ -229,11 +253,11 @@ def check_git_branches(project_dir: Path) -> list[str]:
         )
         if result.returncode != 0:
             issues.append(
-                "Could not list git branches. Ensure this is a git repository."
+                "INFO: Could not list git branches. Ensure this is a git repository."
             )
             return issues
     except (FileNotFoundError, subprocess.TimeoutExpired):
-        issues.append("git command not available or timed out.")
+        issues.append("INFO: git command not available or timed out.")
         return issues
 
     lines = result.stdout.strip().split("\n")
@@ -271,9 +295,10 @@ def check_git_branches(project_dir: Path) -> list[str]:
         branch_list = ", ".join(stale_branches[:5])
         suffix = f" (and {len(stale_branches) - 5} more)" if len(stale_branches) > 5 else ""
         issues.append(
-            f"Stale feature branches detected: {branch_list}{suffix}. "
-            "Feature branches older than 2 weeks accumulate merge debt. "
-            "Consider merging or deleting them."
+            f"INFO: Stale feature branches detected: {branch_list}{suffix}. "
+            "Feature branches older than 2 weeks accumulate merge debt (rule of thumb, "
+            "UNVERIFIED (2026-10-20)). Scratch orgs expire after 1-30 days, default 7 "
+            "(sfdx_dev 264 L9970). Consider merging or deleting them."
         )
 
     # Check for main/master branch existence
@@ -284,7 +309,7 @@ def check_git_branches(project_dir: Path) -> list[str]:
     )
     if not has_main:
         issues.append(
-            "No main or master branch found. "
+            "WARN: No main or master branch found. "
             "A primary branch is required as the production source of truth."
         )
 
@@ -298,7 +323,18 @@ def check_git_branching_for_salesforce(
     issues: list[str] = []
 
     if not project_dir.exists():
-        issues.append(f"Project directory not found: {project_dir}")
+        issues.append(f"ERROR: Project directory not found: {project_dir}")
+        return issues
+
+    if not (
+        (project_dir / "sfdx-project.json").exists()
+        or (project_dir / ".github").exists()
+        or (project_dir / ".gitlab-ci.yml").exists()
+        or any(project_dir.rglob("destructiveChanges*.xml"))
+    ):
+        issues.append(
+            f"WARN: no sfdx-project.json, CI files or destructive manifests under {project_dir}; nothing to check"
+        )
         return issues
 
     issues.extend(check_sfdx_project_json(project_dir))
@@ -323,9 +359,11 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"ISSUE: {issue}")
+        print(issue)
 
-    return 1 if issues else 0
+    if any(i.startswith("ERROR:") for i in issues):
+        sys.exit(1)
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

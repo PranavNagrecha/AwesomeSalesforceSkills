@@ -45,25 +45,26 @@ failed to recompile when the deployed class was updated. The fix is to:
 
 ---
 
-## Anti-Pattern 3: Claiming rollbackOnError Defaults to True in All Orgs
+## Anti-Pattern 3: Asserting One rollbackOnError Default (the Guide States Both)
 
 **What the LLM generates:** "Don't worry about partial deploys — Salesforce rolls back all changes if any component fails."
 
-**Why it happens:** Most documentation and tutorials describe production deployment behavior where rollbackOnError is true by default. LLMs generalize this to all org types.
+**Why it happens:** Most documentation and tutorials describe production deployment behavior where rollbackOnError must be true. LLMs generalize this to every deployment.
 
 **Correct pattern:**
 
 ```
-rollbackOnError behavior differs by org type:
-- Production: defaults to TRUE (atomic rollback on failure)
-- Sandbox: defaults to FALSE (partial deploy on failure)
-- Scratch org: defaults to FALSE
+rollbackOnError must be TRUE for production deployments (api_meta 264
+L4385-4389). The documented default is not tied to the org type and is
+stated both ways (false: api_meta 264 L3252-3255, L4388; true: L3454,
+L7684-7688). Earlier text said production TRUE, sandbox FALSE, scratch org
+FALSE; UNVERIFIED (2026-10-20) for the sandbox and scratch-org halves.
 
-In sandboxes, a failed deployment leaves successfully-deployed
-components in place, creating a partially-applied state.
+With rollbackOnError false (in any org), a failed deployment leaves the
+successfully-deployed components in place (api_meta 264 L4387-4388).
 ```
 
-**Detection hint:** If the advice assumes atomic rollback without checking the org type, it may be incorrect for sandbox or scratch org deployments.
+**Detection hint:** Advice that assumes atomic rollback without checking the `rollbackOnError` value actually sent (or whether `--ignore-errors` was passed) may be wrong for that deploy.
 
 ---
 
@@ -79,8 +80,9 @@ components in place, creating a partially-applied state.
 RunSpecifiedTests: 75% coverage required PER DEPLOYED CLASS, calculated
 only from the specified test classes. Org-wide coverage is irrelevant.
 
-RunLocalTests: 75% coverage required ORG-WIDE across all local tests.
-Individual classes can be below 75% if the aggregate meets the threshold.
+RunLocalTests: overall coverage of at least 75% across all local tests, with
+triggers having some coverage (api_meta 264 L3582). Individual classes can be
+below 75% if the aggregate meets the threshold.
 
 A class at 50% coverage passes RunLocalTests (if org average is 82%)
 but FAILS RunSpecifiedTests.
@@ -99,15 +101,16 @@ but FAILS RunSpecifiedTests.
 **Correct pattern:**
 
 ```
-The sf CLI does not expose --rollback-on-error for source deploys.
-To force atomic behavior in a sandbox:
-- Use --test-level RunLocalTests (which implicitly enforces full validation)
-- Or use the Metadata API deploy() call directly with rollbackOnError=true
-- Or use sf project deploy start --manifest with a SOAP-based deploy
-  where the option can be set programmatically
+The sf CLI reference is not in the corpus, so "--rollback-on-error does not
+exist" is UNVERIFIED (2026-10-20). The documented CLI control is the opposite
+flag: --ignore-errors deploys regardless of errors and is not recommended for
+production (sfdx_dev 264 L13626-13627); omit it to keep rollback on.
+To set the option explicitly, use the Metadata API deploy() call with
+rollbackOnError=true (api_meta 264 L4521).
+No corpus line says --test-level RunLocalTests gives atomic behavior.
 ```
 
-**Detection hint:** Check for `--rollback-on-error` in any `sf project deploy start` command — this flag does not exist in the CLI.
+**Detection hint:** Check for `--rollback-on-error` in any `sf project deploy start` command — it is not a flag the Developer Guide documents (UNVERIFIED (2026-10-20) that it does not exist).
 
 ---
 
@@ -120,6 +123,8 @@ To force atomic behavior in a sandbox:
 **Correct pattern:**
 
 ```
+(UNVERIFIED (2026-10-20): this pattern's claim is Help-level; the corpus says only
+that deploys recompile dependents, apexdev 264 L43228-43235.)
 Compile All Classes in Setup is a useful diagnostic step but not a
 reliable fix for deployment-time compilation errors. The deployment
 engine recompiles classes in the context of the new code being deployed,
@@ -139,7 +144,7 @@ If Compile All succeeds but the deployment still fails:
 
 **What the LLM generates:** "Assign the Waive Multi-Factor Authentication for Exempt Users permission to your integration and automated-test users," or "your SSO users are covered by the IdP, so Salesforce MFA is not in scope for them."
 
-**Why it happens:** Both statements were true and heavily documented for years, so the training corpus is saturated with them. Years of runbooks, org configs and forum answers encode the waiver as *the* exemption mechanism, which keeps the advice reading as verifiable long after it stopped producing the effect being claimed.
+**Why it happens:** (UNVERIFIED (2026-10-20): this whole pattern rests on Help articles, not the corpus; api_meta 264 L129780-129785 still describes the waiver overriding `enableMFADirectUILoginOptIn`.) Both statements were true and heavily documented for years, so the training corpus is saturated with them. Years of runbooks, org configs and forum answers encode the waiver as *the* exemption mechanism, which keeps the advice reading as verifiable long after it stopped producing the effect being claimed.
 
 **Correct pattern:**
 
@@ -182,6 +187,7 @@ lower (see Gotcha 6).
 | Winter '26 | 65.0 |
 | Spring '26 | 66.0 |
 | Summer '26 | 67.0 |
+| Winter '27 | 68.0 (api_meta 264 L2) |
 
 Note the seasons run ahead of the calendar: Winter '25 shipped in 2024. Three releases per year, +1 version each.
 

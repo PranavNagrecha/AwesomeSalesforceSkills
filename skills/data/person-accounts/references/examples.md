@@ -45,7 +45,7 @@ List<Account> consumers = [
 
 **Context:** An FSC org uses Person Accounts to represent individual financial advisory clients. Each client (Person Account) needs associated Financial Account records. A developer is building a Lightning component that displays a client's portfolio summary.
 
-**Problem:** A developer new to FSC queried `Contact` to find the client record and got `PersonContact` records back — then tried to use the Contact Id to query `FinancialAccount__c`. The relationship on `FinancialAccount__c` is to Account (not Contact), so the query returned no results and the component showed an empty portfolio.
+**Problem:** (UNVERIFIED (2026-10-20): the FSC object and field names below, `FinServ__FinancialAccount__c` and `FinServ__PrimaryOwner__c`, are not in the corpus.) A developer new to FSC queried `Contact` to find the client record and got `PersonContact` records back — then tried to use the Contact Id to query `FinancialAccount__c`. The relationship on `FinancialAccount__c` is to Account (not Contact), so the query returned no results and the component showed an empty portfolio.
 
 **Solution:**
 
@@ -90,7 +90,7 @@ public class ClientPortfolioController {
 
 **What practitioners do:** After enabling Person Accounts, a developer writes a script to create an individual customer by first inserting a Business Account named "John Doe" and then inserting a Contact with `LastName = 'Doe'` and `AccountId = [the Business Account Id]`. When they realize a Person Account should have been used, they try to re-link the Contact to the Person Account instead by updating `AccountId` to the Person Account Id.
 
-**What goes wrong:** Salesforce throws an error when you attempt to save a Contact record with its `AccountId` pointing to a Person Account:
+**What goes wrong:** Salesforce throws an error when you attempt to save a Contact record with its `AccountId` pointing to a Person Account (UNVERIFIED (2026-10-20): the behaviour and the exact error text are Help-only and not in the corpus; `FIELD_INTEGRITY_EXCEPTION` is a real status code, api_meta 264 L144857):
 ```
 FIELD_INTEGRITY_EXCEPTION: You can't link a contact to a Person Account.
 ```
@@ -104,7 +104,7 @@ Person Accounts are individuals — they do not have child Contacts. The attempt
 
 **What practitioners do:** An integration queries `SELECT Id, Email FROM Contact WHERE AccountId = :personAccountId` to retrieve the email address for a Person Account customer.
 
-**What goes wrong:** The query may return the PersonContact record with its Email field populated — but this is fragile. In mixed orgs, the AccountId-on-Contact query may unexpectedly return no results if the Contact table behavior differs between API versions, or the result includes PersonContact records that should not be directly consumed. Additionally, some integration platforms cache Contact schema that does not include person account fields.
+**What goes wrong:** The query may return the PersonContact record with its Email field populated — but this is fragile. (UNVERIFIED (2026-10-20): the API-version-difference claim in this paragraph is not in the corpus.) In mixed orgs, the AccountId-on-Contact query may unexpectedly return no results if the Contact table behavior differs between API versions, or the result includes PersonContact records that should not be directly consumed. Additionally, some integration platforms cache Contact schema that does not include person account fields.
 
 **Correct approach:** Always access person-specific fields via the Account object using `PersonEmail`, `PersonPhone`, etc.:
 ```soql

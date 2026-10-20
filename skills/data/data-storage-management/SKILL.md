@@ -33,9 +33,9 @@ outputs:
   - "Large text area field optimization strategy"
   - "Storage monitoring and alerting plan"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-20
 ---
 
 # Data Storage Management
@@ -49,9 +49,25 @@ This skill activates when an org is approaching storage limits, receiving storag
 Gather this context before working on anything in this domain:
 
 - Navigate to **Setup > Storage Usage** and note the current data storage usage (GB used / GB allocated) and file storage usage separately. Export or screenshot the per-object breakdown.
-- Confirm the org edition. Enterprise orgs receive 10 GB base data storage + 20 MB per user license and 10 GB base file storage + 2 GB per user license. Unlimited orgs receive more generous per-user additions.
-- Check whether a large delete or data load ran recently. Storage is recalculated asynchronously, so the Storage Usage page may simply not have caught up. The Recycle Bin is not a contributor: records in it do not count against storage, so do not budget for reclaiming anything by emptying it.
-- Confirm whether Big Objects are in use. Big Objects have their own separate storage allocation and do NOT consume regular data storage quota.
+- Confirm the org edition. Enterprise orgs receive 10 GB base data storage + 20 MB per user license and 10 GB base file storage + 2 GB per user license. Unlimited orgs receive more generous per-user additions. UNVERIFIED (2026-10-20): the allocation figures are Salesforce Help only; a grep of all 14 corpus files for them returns nothing, and sfdx_dev 264 L3750-3751 only points to the Help article "Data and File Storage Allocations". Read the real numbers from Setup > Storage Usage.
+- Check whether a large delete or data load ran recently. Storage is recalculated asynchronously, so the Storage Usage page may simply not have caught up (UNVERIFIED (2026-10-20): the asynchronous recalculation is Salesforce Help only; no corpus file states it). The Recycle Bin is not a contributor: "items in the Recycle Bin don't count against an org's storage usage" (salesforce_large_data_volumes_bp 264 L736-737), so do not budget for reclaiming anything by emptying it.
+- Confirm whether Big Objects are in use. Big Objects have their own separate storage allocation and do NOT consume regular data storage quota. UNVERIFIED (2026-10-20): the separate Big Object allocation is Help-only; salesforce_large_data_volumes_bp 264 L94-95 and object_reference 264 L3605-3610 describe big objects as the home for archived and massive data but state no allocation.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which pool is at the threshold, data or file, and what does Setup > Storage Usage show per object? | Gotcha 1 and Anti-pattern 2: the two pools are separate and the fix differs | The pool, the top five consumers, and the screenshot to diff against after cleanup |
+| Did a large delete or load run in the last day or two? | Gotcha 1: Help says storage recalculates asynchronously, so the number may still be settling | Rules out a false alarm before anyone deletes more data |
+| Is anyone proposing to empty the Recycle Bin or run a hard delete to "free space"? | Gotcha 1: bin records do not count against storage (ldv L736-737) and hard delete cannot be undone | Stops an irreversible step that frees nothing |
+| Do tracked-history objects appear in the top consumers, and was that assumed to be the cause? | Gotcha 4: field history data does not count against data storage (secguide 262 L4555-4556) | Removes a wrong suspect and points the investigation at the real consumers |
+| Which file pattern is in use: Attachment, ContentDocument, or Chatter files? | Pattern: Preventing Duplicate File Storage; Attachments duplicate binaries per parent | Migration candidates and an estimate of duplicate bytes |
+| Does the user running the orphan query hold Query All Files? | The orphan subquery is unfiltered (object_reference 264 L77253-77254) | Whether the cleanup query can run at all, and as whom |
+| Who owns the Limits API alert, and at what remaining percentage does it fire? | Workflow step 6: built-in alerts are a lagging safety net (the alert levels themselves are UNVERIFIED) | A named owner, a threshold, and a place the alert lands |
+
+A proper configuration adds a monitored threshold, a retention rule per high-volume object and a cleanup runbook that names the irreversible steps, instead of reacting to the next alert email.
 
 ---
 
@@ -61,15 +77,15 @@ Gather this context before working on anything in this domain:
 
 Salesforce measures two distinct pools of storage:
 
-**Data storage** counts every standard and custom object record. The platform allocates roughly 2 KB per record on average, though records with many Long Text Area fields can consume significantly more. Every record in every object — including junction objects, history tracking records, feed items, and task/event records — contributes to the data storage total.
+**Data storage** counts every standard and custom object record. The platform allocates roughly 2 KB per record on average, though records with many Long Text Area fields can consume significantly more. Every record in every object — including junction objects, feed items, and task/event records — contributes to the data storage total. UNVERIFIED (2026-10-20): the 2 KB average and the list of contributing objects are Help-only (grep "2 KB" across the corpus finds no storage figure). **Field history tracking data is the exception, and an earlier version of this skill had it backwards:** "Field history tracking data doesn't count against your data storage limits" (secguide 262 L4555-4556; repeated at secguide 262 L4634-4635 and, with Field Audit Trail, L4755-4756).
 
-**File storage** counts the binary content of files: ContentDocument (Salesforce Files), legacy Attachment records, Documents in the Documents tab, and Chatter post attachments. Each ContentVersion (a version of a File) contributes its full byte size to file storage. Thumbnail previews and renditions generated by Salesforce also consume file storage.
+**File storage** counts the binary content of files: ContentDocument (Salesforce Files), legacy Attachment records, Documents in the Documents tab, and Chatter post attachments. Each ContentVersion (a version of a File) contributes its full byte size to file storage. Thumbnail previews and renditions generated by Salesforce also consume file storage. UNVERIFIED (2026-10-20): which record types count toward file storage, and that renditions count, are Help-only; no corpus file says either (grep "rendition" finds only the Connect API preview samples, apexdev 264 L24584-24613).
 
 For Enterprise edition:
 - Data storage: **10 GB base + 20 MB per user license**
 - File storage: **10 GB base + 2 GB per user license**
 
-These allocations are org-wide shared pools. There is no per-user or per-object quota.
+These allocations are org-wide shared pools. There is no per-user or per-object quota. (UNVERIFIED (2026-10-20): same Help-only source as the figures above.)
 
 ### Monitoring Storage Usage
 
@@ -77,13 +93,13 @@ The canonical monitoring path is **Setup > Storage Usage**. This page shows:
 - Total data storage used vs allocated, broken down by object type
 - Total file storage used vs allocated, broken down by ContentDocument, Attachment, Document, etc.
 
-For programmatic monitoring, use the **Limits API** (`GET /services/data/vXX.0/limits/`) which returns `DataStorageMB` and `FileStorageMB` with `Max` and `Remaining` values. This is the recommended approach for automated alerting pipelines.
+For programmatic monitoring, use the **Limits API** (`GET /services/data/vXX.0/limits/`, api_rest 264 L7917) which returns `DataStorageMB` and `FileStorageMB` (api_rest 264 L8191, L8193; the API user needs the Manage Users permission) with `Max` and `Remaining` values (api_rest 264 L2163-2174). This is the recommended approach for automated alerting pipelines.
 
-Salesforce sends automated email alerts to system administrators at **75%, 90%, and 100%** of storage capacity for both data and file storage pools independently.
+Salesforce sends automated email alerts to system administrators at **75%, 90%, and 100%** of storage capacity for both data and file storage pools independently. UNVERIFIED (2026-10-20): the alert thresholds are Help-only; the only corpus hit for "75%" is Apex test coverage.
 
 ### ContentDocument (Files) vs Attachments
 
-The legacy `Attachment` sObject is tied one-to-one to a parent record. If the same file needs to be associated with multiple records, it must be duplicated — each copy consuming full file storage. Attachments cannot be shared.
+The legacy `Attachment` sObject is tied one-to-one to a parent record. If the same file needs to be associated with multiple records, it must be duplicated — each copy consuming full file storage. Attachments cannot be shared. The one-parent shape is grounded: Attachment "represents a file that a User has uploaded and attached to a parent object" (object_reference 264 L43853); "cannot be shared" is UNVERIFIED (2026-10-20) (Help-only).
 
 `ContentDocument` (Salesforce Files) with `ContentDocumentLink` is the modern replacement. A single ContentDocument can be linked to multiple records via ContentDocumentLink records without duplicating the binary content. This is a critical distinction for orgs that attach the same reference documents (contracts, product specs) to many records.
 
@@ -91,20 +107,20 @@ Prefer ContentDocument for all new file upload patterns. Migrate Attachments to 
 
 ### Large Text Area Fields and Data Storage
 
-Long Text Area and Rich Text Area fields count toward data storage based on their actual content length, not the field's maximum size. An empty Long Text Area field on a record does not consume the maximum 131,072 characters of storage. However, records with dense Rich Text Area content (embedded base64 images, heavy formatting markup) can push individual record sizes well above the 2 KB average.
+Long Text Area and Rich Text Area fields count toward data storage based on their actual content length, not the field's maximum size. An empty Long Text Area field on a record does not consume the maximum 131,072 characters of storage. However, records with dense Rich Text Area content (heavy formatting markup) can push individual record sizes well above the 2 KB average. UNVERIFIED (2026-10-20): length-based accounting and the 131,072-character Long Text Area maximum are Help-only — the only corpus hit for 131072 is the Bulk API "maximum number of characters in a field" (cheatsheet 264 L403), which is a Bulk API limit, not the field-type maximum.
 
-Rich Text Area fields that store embedded images actually move those image bytes into file storage, not data storage — the field stores a reference. This is a non-obvious split that can cause confusion when diagnosing storage usage.
+Rich Text Area fields that store embedded images move those image bytes into file storage, not data storage — the field stores a reference. This is a non-obvious split that can cause confusion when diagnosing storage usage. UNVERIFIED (2026-10-20): Help-only; no corpus file describes where inline rich-text images are stored.
 
 ### Recycle Bin and Storage Reclamation
 
-Two claims circulate about this and both are wrong. Check them against Salesforce Help before acting on a storage incident.
+Two claims circulate about this and both are wrong. Check them against the Large Data Volumes guide before acting on a storage incident.
 
-- **Standard delete puts records in the Recycle Bin for 15 days**, during which they can be restored. Records in the Recycle Bin **do not count against the org's storage usage** ("Records in the Recycle Bin don't count against your Salesforce org's storage usage" — *Manage the Recycle Bin*), and there is no cap on how many deleted records the bin holds. So emptying the bin is not a storage-reclamation lever; it is a *recoverability* decision, and an irreversible one.
-- **Bulk API hard delete does not go to the Recycle Bin at all.** That is the definition of the operation: records bypass the bin and are immediately and permanently gone. There is no 30-day (or any) window in which a hard delete can be undone. Anyone told otherwise will authorise a hard-delete job believing it is reversible.
+- **Standard delete puts records in the Recycle Bin for 15 days**, during which they can be restored (salesforce_large_data_volumes_bp 264 L738). Records in the Recycle Bin **do not count against the org's storage usage** ("items in the Recycle Bin don't count against an org's storage usage", salesforce_large_data_volumes_bp 264 L736-737), and there is no cap on how many deleted records the bin holds (L737). So emptying the bin is not a storage-reclamation lever; it is a *recoverability* decision, and an irreversible one.
+- **Bulk API hard delete does not go to the Recycle Bin at all.** That is the definition of the operation: "the deleted records aren't stored in the Recycle Bin. Instead, they become immediately eligible for deletion" (api_asynch 264 L1630-1632), so there is no bin copy to restore. There is no 30-day (or any) window in which a hard delete can be undone. Anyone told otherwise will authorise a hard-delete job believing it is reversible. The "Bulk API Hard Delete" permission is disabled by default and an administrator must enable it (api_asynch 264 L1633-1634).
 
-Why storage still looks unchanged after a mass delete: **storage is recalculated asynchronously.** Salesforce Help states that after adding or removing a large number of records or files, "the change in your org's storage usage isn't reflected immediately." Wait and re-check Setup > Storage Usage rather than reaching for the Recycle Bin.
+Why storage still looks unchanged after a mass delete: **storage is recalculated asynchronously.** Salesforce Help states that after adding or removing a large number of records or files, "the change in your org's storage usage isn't reflected immediately." (UNVERIFIED (2026-10-20): Help-only quote, no corpus file holds it.) Wait and re-check Setup > Storage Usage rather than reaching for the Recycle Bin.
 
-Programmatic reclamation: use `Database.emptyRecycleBin(List<Id>)` in Apex or the REST API `DELETE /services/data/vXX.0/sobjects/{SObjectType}/{id}?allOrNone=false` to permanently delete specific records. For bulk reclamation, use the Bulk API with hardDelete operation.
+Programmatic reclamation: `Database.emptyRecycleBin(List<Id>)` in Apex permanently removes records from the bin (you can "manually empty the Recycle Bin by using the UI, the API, or Apex", salesforce_large_data_volumes_bp 264 L738-739; example call at apexdev 264 L17676). A plain REST `DELETE /services/data/vXX.0/sobjects/{SObjectType}/{id}` is an ordinary delete — the record goes to the bin like any other (an earlier version of this skill said it permanently deletes with `?allOrNone=false`; `allOrNone` belongs to Composite and sObject Collections requests, api_rest 264 L5900-5901, not to the single-record DELETE). For bulk reclamation, use the Bulk API with the hardDelete operation (api_asynch 264 L1630-1632).
 
 ---
 
@@ -118,7 +134,7 @@ Programmatic reclamation: use `Database.emptyRecycleBin(List<Id>)` in Apex or th
 1. Open Setup > Storage Usage. Note the top 5 objects by data storage consumption.
 2. For each high-volume object, check whether records in it have a defined retention need. Common candidates for cleanup: Task/Event records older than 2 years, ContentVersion records from deleted parent records (orphaned files), EmailMessage records.
 3. Rule out asynchronous recalculation before diagnosing further — if a large delete or load ran recently, the page may not have caught up. Do not reach for the Recycle Bin: bin records do not count against storage, so emptying it frees nothing and destroys the 15-day restore window.
-4. Query orphaned ContentDocuments: `SELECT Id FROM ContentDocument WHERE Id NOT IN (SELECT ContentDocumentId FROM ContentDocumentLink)`. These files have no linked records and can be safely deleted.
+4. Query orphaned ContentDocuments: `SELECT Id FROM ContentDocument WHERE Id NOT IN (SELECT ContentDocumentId FROM ContentDocumentLink)`. The subquery has no filter on `ContentDocumentId`, `LinkedEntityId` or `Id`, so from API 59.0 it needs the Query All Files permission, which itself requires View All Data (object_reference 264 L77253-77254). Files this finds have no linked records and can be deleted after review.
 5. For large Attachment volumes, evaluate migration to ContentDocument to enable deduplication via ContentDocumentLink.
 
 **Why not skip the triage:** Deleting records from the wrong object or time range can break business processes. Triage first, delete second.
@@ -143,10 +159,10 @@ Programmatic reclamation: use `Database.emptyRecycleBin(List<Id>)` in Apex or th
 | New file upload feature for user documents | ContentDocument (Files) | Reusable across records via ContentDocumentLink, supports versioning, previews, sharing |
 | Existing Attachment volume causing file storage alert | Audit for duplicates, migrate to ContentDocument | ContentDocumentLink eliminates binary duplication |
 | Data storage alert, top object is Task/Event | Archive or delete old activity records | Activities accumulate rapidly; 2+ year old records rarely queried |
-| Data storage alert, top object is custom log/audit table | Evaluate Big Object migration for append-only history | Big Objects do not consume regular data storage |
+| Data storage alert, top object is custom log/audit table | Evaluate Big Object migration for append-only history | Big Objects do not consume regular data storage (UNVERIFIED (2026-10-20), Help-only; see Before Starting) |
 | Need to check storage programmatically in a CI pipeline | Query Limits API (`/services/data/vXX.0/limits/`) | Returns DataStorageMB and FileStorageMB with Max/Remaining |
 | Records deleted but storage not freed | Wait and re-check Setup > Storage Usage | Storage is recalculated asynchronously; Recycle Bin records do not count against storage, so emptying it will not move the number |
-| Rich Text Area fields suspected of high storage usage | Audit for embedded base64 images in field content | Embedded images bloat data storage; prefer ContentDocument links |
+| Rich Text Area fields suspected of high storage usage | Audit for embedded base64 images in field content | Dense markup and inline images inflate the record; prefer ContentDocument links (where inline images are stored is UNVERIFIED (2026-10-20), see Core Concepts) |
 
 ---
 
@@ -182,11 +198,11 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Recycle Bin records do NOT count toward storage, and hard delete is not recoverable** — Two widely-repeated beliefs, both wrong. Per Salesforce Help, records in the Recycle Bin don't count against the org's storage usage and the bin has no record-count cap; the 15-day figure is a *restore* window, not a storage-accounting window. And Bulk API hard delete bypasses the bin entirely — immediate, permanent, no undo, no 30-day grace. Storage that hasn't dropped after a mass delete is almost always asynchronous recalculation, which resolves on its own.
-2. **Big Objects do NOT consume regular data storage** — Practitioners planning to migrate log or audit records to Big Objects to "free up" storage will succeed — Big Objects have their own separate, larger allocation and are entirely independent of the standard data storage pool.
-3. **ContentVersion renditions consume file storage** — When a ContentDocument is uploaded, Salesforce auto-generates preview thumbnails and PDF renditions. These renditions are stored as additional ContentVersion records and count toward file storage. An org with millions of small uploaded files can see file storage inflated 2–3x by renditions alone.
-4. **Field History Tracking records count toward data storage** — Every tracked field change creates a FieldHistory (or similar history sObject) record. Orgs with many tracked fields on high-volume objects can accumulate millions of history records. History records are stored for 18 months and then deleted by Salesforce, but current records count toward storage.
-5. **Chatter attachments count toward file storage, not data storage** — Files attached directly to Chatter posts (FeedAttachment) are stored as ContentDocument records and count against file storage. They are not counted in data storage. Orgs with heavy Chatter usage should monitor file storage, not just data storage.
+1. **Recycle Bin records do NOT count toward storage, and hard delete is not recoverable** — Two widely-repeated beliefs, both wrong. Records in the Recycle Bin don't count against the org's storage usage and the bin has no record-count cap (salesforce_large_data_volumes_bp 264 L736-737); the 15-day figure is a *restore* window, not a storage-accounting window. And Bulk API hard delete bypasses the bin entirely — immediate, permanent, no undo, no 30-day grace. Storage that hasn't dropped after a mass delete is almost always asynchronous recalculation, which resolves on its own (UNVERIFIED (2026-10-20): Help-only, no corpus line).
+2. **Big Objects do NOT consume regular data storage** — Practitioners planning to migrate log or audit records to Big Objects to "free up" storage will succeed — Big Objects have their own separate, larger allocation and are entirely independent of the standard data storage pool. UNVERIFIED (2026-10-20): Help-only, see Before Starting.
+3. **ContentVersion renditions consume file storage** — When a ContentDocument is uploaded, Salesforce auto-generates preview thumbnails and PDF renditions. These renditions are stored as additional ContentVersion records and count toward file storage. An org with millions of small uploaded files can see file storage inflated 2–3x by renditions alone. UNVERIFIED (2026-10-20): renditions as counted ContentVersion records and the 2–3x figure are Help/field experience only; no corpus file states either.
+4. **Field History Tracking records do NOT count toward data storage** — Every tracked field change creates a history record, and high-volume objects can accumulate millions of them, but "field history tracking data doesn't count against your data storage limits" (secguide 262 L4555-4556, L4634-4635). Retention without Field Audit Trail is up to 18 months in the UI and up to 24 months via the API (secguide 262 L4553-4554). Do not list history objects as a storage-reclamation target; see data/field-history-tracking.
+5. **Chatter attachments count toward file storage, not data storage** — Files attached directly to Chatter posts (FeedAttachment) are stored as ContentDocument records and count against file storage. They are not counted in data storage. Orgs with heavy Chatter usage should monitor file storage, not just data storage. UNVERIFIED (2026-10-20): which pool Chatter files count against is Help-only; no corpus line assigns FeedAttachment or Chatter files to a storage pool.
 
 ---
 

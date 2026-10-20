@@ -8,7 +8,7 @@ Common mistakes AI coding assistants make when generating or advising on Data St
 
 **Why it happens:** The LLM models storage reclamation after typical database behavior where DELETE immediately frees space.
 
-Note the *over*-correction that follows once a model learns the Recycle Bin exists: it then asserts that bin records keep consuming storage for 15 days, and that Bulk API hard delete has its own 30-day bin window. Both are fabrications built on a real 15-day number. The 15 days is a **restore** window; hard delete has **no** window at all, because bypassing the bin is what the operation *is*.
+Note the *over*-correction that follows once a model learns the Recycle Bin exists: it then asserts that bin records keep consuming storage for 15 days, and that Bulk API hard delete has its own 30-day bin window. Both are fabrications built on a real 15-day number (salesforce_large_data_volumes_bp 264 L736-738). The 15 days is a **restore** window; hard delete has **no** window at all, because bypassing the bin is what the operation *is* (api_asynch 264 L1630-1632).
 
 **Correct pattern:**
 
@@ -22,7 +22,8 @@ Hard delete      -> bypasses the Recycle Bin. Immediate. Permanent.
 Why Setup > Storage Usage did not move after your mass delete:
   storage is recalculated ASYNCHRONOUSLY. Per Salesforce Help, after a
   large add or remove "the change in your org's storage usage isn't
-  reflected immediately." Wait and re-check.
+  reflected immediately." Wait and re-check. (UNVERIFIED (2026-10-20):
+  Help-only quote, not in the corpus.)
 
 Emptying the Recycle Bin is a RECOVERABILITY decision, not a storage
 lever. It frees no storage and destroys the 15-day restore window.
@@ -49,6 +50,9 @@ Salesforce maintains two completely separate storage pools:
 2. FILE STORAGE: binary content of files
    ContentDocument (Files), Attachments, Documents, Chatter attachments
    Enterprise: 10 GB base + 2 GB per user license
+
+(UNVERIFIED (2026-10-20): the 2 KB and the allocations are Help-only; field
+ history data is NOT part of data storage, secguide 262 L4555-4556.)
 
 An org can be at 95% data storage and 5% file storage simultaneously.
 Monitoring and remediation must target the correct pool.
@@ -102,8 +106,8 @@ insert link;
 
 ```text
 Big Objects have their own SEPARATE storage allocation, completely independent
-of standard data storage. Migrating records from a standard custom object to
-a Big Object:
+of standard data storage (UNVERIFIED (2026-10-20): Help-only, no corpus line).
+Migrating records from a standard custom object to a Big Object:
 - REDUCES standard data storage usage (removes records from the standard pool)
 - DOES NOT reduce the Big Object allocation (they have separate, larger limits)
 
@@ -130,8 +134,9 @@ SOQL (no aggregates without indexing, no relationship queries).
 Do NOT store binary content in Long Text Area or Rich Text Area fields.
 
 Problems with the anti-pattern:
-- Long Text Area max = 131,072 characters. A 100 KB PDF base64-encodes to ~133 KB
-  — already over the limit.
+- Long Text Area max = 131,072 characters (UNVERIFIED (2026-10-20): Help-only; the
+  corpus figure at cheatsheet 264 L403 is the Bulk API field limit). A 100 KB PDF
+  base64-encodes to ~133 KB — already over that limit.
 - Even smaller files inflate the record size far beyond the 2 KB average, rapidly
   consuming data storage.
 - No deduplication, versioning, preview generation, or sharing controls.
@@ -157,7 +162,8 @@ the field limit).
 ```text
 Salesforce automatically generates preview renditions (thumbnails, PDF previews)
 for each ContentVersion upload. Renditions are stored as additional ContentVersion
-records and count toward file storage.
+records and count toward file storage. (UNVERIFIED (2026-10-20): Help/field
+experience only; no corpus file says this, nor the 1.5x-2x multiplier.)
 
 Storage projection formula:
   Effective file storage = raw upload size × rendition multiplier

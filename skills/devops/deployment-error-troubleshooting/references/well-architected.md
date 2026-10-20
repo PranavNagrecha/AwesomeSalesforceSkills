@@ -2,12 +2,12 @@
 
 ## Relevant Pillars
 
-- **Reliability** — Deployment failures are the primary risk to release reliability. Atomic rollback behavior (production default) protects against partial deployments, but sandbox defaults leave orgs vulnerable to inconsistent metadata states. A reliable deployment practice treats sandbox deploys with the same rigor as production: checkOnly validation first, atomic rollback enabled, and full package re-deployment after any failure.
+- **Reliability** — Deployment failures are the primary risk to release reliability. Atomic rollback (required for production, api_meta 264 L4385-4389) protects against partial deployments, but a deployment with rollbackOnError false leaves orgs in inconsistent metadata states (the claim that sandbox defaults are false is UNVERIFIED (2026-10-20)). A reliable deployment practice treats sandbox deploys with the same rigor as production: checkOnly validation first, atomic rollback enabled, and full package re-deployment after any failure.
 - **Operational Excellence** — Systematic error diagnosis reduces mean time to recovery for failed deployments. Operational excellence requires that deployment errors are classified, resolved by root cause, and documented in a runbook rather than resolved ad hoc. Teams should maintain a catalog of previously-encountered deployment errors and their resolutions to accelerate future troubleshooting.
 
 ## Architectural Tradeoffs
 
-**RunSpecifiedTests speed vs. RunLocalTests safety:** `RunSpecifiedTests` is faster because it runs only named tests, but its per-class 75% coverage requirement is stricter per component. `RunLocalTests` runs all non-managed tests (slower) but uses org-wide aggregate coverage (more forgiving per class). The tradeoff is deployment speed vs. coverage granularity. Teams with strong per-class test coverage benefit from `RunSpecifiedTests`; teams with uneven coverage across the codebase should use `RunLocalTests` until coverage gaps are closed.
+**RunSpecifiedTests speed vs. RunLocalTests safety:** `RunSpecifiedTests` is faster because it runs only named tests, but its per-class 75% coverage requirement is stricter per component. `RunLocalTests` runs all tests except those from installed managed and unlocked packages (api_meta 264 L3286-3288) (slower) but uses org-wide aggregate coverage (more forgiving per class). The tradeoff is deployment speed vs. coverage granularity. Teams with strong per-class test coverage benefit from `RunSpecifiedTests`; teams with uneven coverage across the codebase should use `RunLocalTests` until coverage gaps are closed.
 
 **checkOnly validation vs. direct deploy:** CheckOnly (dry-run) deployments add a round trip but prevent partial deploys and qualify the package for Quick Deploy. Direct deploys are faster but risk leaving an org in a broken state on failure, especially in sandboxes. Production deployments should always validate first; sandbox deploys can skip validation for low-risk declarative-only changes but should validate whenever Apex is involved.
 
@@ -23,6 +23,7 @@
 
 ## Official Sources Used
 
+- Corpus citations used by this skill: api_meta 264 L1289-1315 (supported and retired API versions, `UNSUPPORTED_API_VERSION`), L3252-3290 and L4385-4389 (rollbackOnError, test levels), L3579-3592 (quick deploy conditions), L7589-7590 (`details`); apexdev 264 L43228-43235 (compile on deploy), L45121-45123 (compile results, API 68.0); sfdx_dev 264 L13626-13627 (`--ignore-errors`), L14339-14372 (validate, quick deploy).
 - Metadata API Developer Guide — DeployResult and DeployMessage: https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_deploy_result.htm
 - Salesforce Help — Troubleshoot Deployment Failures: https://help.salesforce.com/s/articleView?id=sf.code_deploy_troubleshoot.htm
 - Salesforce Help — Dependent Class Is Invalid: https://help.salesforce.com/s/articleView?id=000382702

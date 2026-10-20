@@ -76,14 +76,14 @@ trigger AccountTrigger on Account (before insert, before update) {
 }
 ```
 
-**Why it happens:** The LLM sees `IsPersonAccount` used everywhere in Person Account code examples and assumes it is always populated. It does not distinguish trigger contexts where formula fields are not yet resolved.
+**Why it happens:** The LLM sees `IsPersonAccount` used everywhere in Person Account code examples and assumes it is always populated. It does not distinguish trigger contexts where the value may not yet be set (UNVERIFIED (2026-10-20): that `IsPersonAccount` is a formula field or null in `before insert` is not in the corpus; it is read-only and defaulted on create, object_reference 264 L12855-12861).
 
 **Correct pattern:**
 ```apex
 trigger AccountTrigger on Account (before insert, before update) {
     Set<Id> personRtIds = PersonAccountUtils.getPersonAccountRecordTypeIds();
     for (Account a : Trigger.new) {
-        // In before insert, IsPersonAccount is null — check RecordTypeId instead
+        // In before insert, IsPersonAccount may not be set (UNVERIFIED (2026-10-20)) — check RecordTypeId instead
         Boolean isPerson = (Trigger.isInsert)
             ? personRtIds.contains(a.RecordTypeId)
             : a.IsPersonAccount;
@@ -109,7 +109,7 @@ List<Contact> contacts = [
 ];
 // processes all contacts, including PersonContacts
 ```
-Or a batch class that iterates over all Contacts without filtering out PersonContact records.
+Or a batch class that iterates over all Contacts without filtering out PersonContact records. (Contact has its own `IsPersonAccount` field, object_reference 264 L71925, so the filter can be `WHERE IsPersonAccount = false`. A Contact trigger needs no such guard: person account DML fires Account triggers, not Contact triggers, apexdev 264 L15724.)
 
 **Why it happens:** The LLM generates standard Contact queries that are correct in a non-Person-Account org. It does not automatically add Person Account awareness because it does not know whether the target org has Person Accounts enabled.
 
@@ -122,10 +122,10 @@ List<Contact> contacts = [
     AND Account.IsPersonAccount = false  // exclude PersonContact records
 ];
 ```
-Or, if processing both types is required, explicitly branch after querying:
+Or, if processing both types is required, select Contact's own `IsPersonAccount` (object_reference 264 L71925) and branch after querying:
 ```apex
-for (Contact c : contacts) {
-    if (c.Account.IsPersonAccount) {
+for (Contact c : [SELECT Id, IsPersonAccount FROM Contact WHERE AccountId IN :accountIds]) {
+    if (c.IsPersonAccount) {
         // handle PersonContact — usually skip or redirect to Account logic
         continue;
     }
@@ -147,7 +147,7 @@ Or: "Enabling Person Accounts is low risk — it just adds a new record type opt
 **Why it happens:** LLMs tend to soften irreversibility warnings or are not trained on the specific Salesforce policy that Person Account enablement is permanent. The LLM may also conflate "adding a feature" with "a reversible configuration change."
 
 **Correct pattern:**
-Person Account enablement is **permanent and irreversible**. Salesforce Support will not disable Person Accounts once enabled in a production org. The correct guidance is:
+Person Account enablement is **permanent and irreversible** (UNVERIFIED (2026-10-20): Help-only, not in the corpus). Salesforce Support will not disable Person Accounts once enabled in a production org. The correct guidance is:
 1. Enable only in developer sandbox first.
 2. Run full test suite and integration tests in sandbox.
 3. Make the production enablement decision deliberately, with full stakeholder sign-off.
@@ -165,7 +165,7 @@ Person Account enablement is **permanent and irreversible**. Salesforce Support 
 **Why it happens:** In a standard B2B org, creating a Contact with `AccountId = [Account Id]` is the normal data entry pattern. The LLM generalizes this pattern to Person Accounts without knowing that Person Accounts prohibit child Contacts.
 
 **Correct pattern:**
-Person Accounts cannot have child Contact records. Attempting to insert a Contact with `AccountId` pointing to a Person Account causes:
+Person Accounts cannot have child Contact records (UNVERIFIED (2026-10-20): Help-only). Attempting to insert a Contact with `AccountId` pointing to a Person Account causes (UNVERIFIED (2026-10-20): exact text not in the corpus):
 ```
 FIELD_INTEGRITY_EXCEPTION: You can't link a contact to a Person Account.
 ```

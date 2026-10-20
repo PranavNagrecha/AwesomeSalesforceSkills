@@ -173,7 +173,7 @@ rules, and it closes the enforcement gap the compiler leaves open.
 public Account createAccount(String accountName) { /* ... */ }
 ```
 
-**What goes wrong:** documentation generators skip the block entirely, so the code looks
+**What goes wrong:** the block is an ordinary comment, not ApexDoc (apexdev 264 L13830-13832), so documentation generators can be expected to skip it, so the code looks
 documented in the editor but produces empty generated docs — and the compiler says nothing.
 
 **Correct approach:** open ApexDoc blocks with `/**` (two asterisks) and end with `*/`.

@@ -4,7 +4,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Enablement Is Permanent — There Is No Off Switch
 
-**What happens:** Once Person Accounts is enabled in a Salesforce org, it cannot be disabled. The `IsPersonAccount` field becomes permanently available on Account, the Person Account record type designation persists, and any Person Account records in the org remain as-is. Salesforce Support will not reverse Person Account enablement.
+**What happens:** UNVERIFIED (2026-10-20): the irreversibility below is Help-only and not in the corpus (the only related line is api_meta 264 L100870-100871, "to request person accounts, contact Salesforce"). Once Person Accounts is enabled in a Salesforce org, it cannot be disabled. The `IsPersonAccount` field becomes permanently available on Account, the Person Account record type designation persists, and any Person Account records in the org remain as-is. Salesforce Support will not reverse Person Account enablement.
 
 **When it occurs:** Organizations sometimes enable Person Accounts in a sandbox to evaluate the feature, then inadvertently enable it in production without full impact analysis — or enable it under time pressure without properly assessing AppExchange package compatibility or existing code.
 
@@ -18,7 +18,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 2: Apex `IsPersonAccount` Is Null in `before insert` Context
 
-**What happens:** In a `before insert` trigger on the Account object, the `IsPersonAccount` field is not yet populated by the platform. It evaluates to `null`, not `false`. Any logic that checks `if (acc.IsPersonAccount)` in a `before insert` trigger silently does nothing for newly inserted Person Accounts.
+**What happens:** UNVERIFIED (2026-10-20): the null-versus-false behaviour is not in the corpus; `IsPersonAccount` is documented as read-only and defaulted on create (object_reference 264 L12855-12861). Treat the following as field experience and prefer the `RecordTypeId` check. In a `before insert` trigger on the Account object, the `IsPersonAccount` field is not yet populated by the platform. It evaluates to `null`, not `false`. Any logic that checks `if (acc.IsPersonAccount)` in a `before insert` trigger silently does nothing for newly inserted Person Accounts.
 
 **When it occurs:** Trigger code that needs to initialize or validate Person Account-specific fields (PersonEmail format, PersonBirthdate ranges, etc.) during insert. The developer tests in `before update` where `IsPersonAccount` is already set, but the `before insert` path is never triggered correctly.
 
@@ -48,23 +48,15 @@ SELECT Id, FirstName, LastName, Email, AccountId
 FROM Contact
 WHERE Account.IsPersonAccount = false
 ```
-In Apex triggers on Contact, add a guard at the start of the trigger:
-```apex
-List<Contact> regularContacts = new List<Contact>();
-for (Contact c : Trigger.new) {
-    if (!c.Account.IsPersonAccount) {
-        regularContacts.add(c);
-    }
-}
-if (regularContacts.isEmpty()) return;
-```
-Note: accessing `Account.IsPersonAccount` in a trigger requires the Account to be in the trigger query context (not always available in `before insert`).
+Or filter on the Contact's own field: `WHERE IsPersonAccount = false` (object_reference 264 L71925).
+
+A guard in an Apex trigger on Contact is not needed for person records: "Inserts, updates, and deletes on person accounts fire Account triggers, not Contact triggers" (apexdev 264 L15724). The earlier version of this gotcha showed a Contact-trigger loop on `c.Account.IsPersonAccount`; it never receives person contacts, and relationship fields are not populated on `Trigger.new` records.
 
 ---
 
 ## Gotcha 4: AppExchange Packages That Assume All Accounts Have Child Contacts
 
-**What happens:** Many AppExchange packages were built before Person Accounts were widely adopted. These packages often iterate over Contacts by querying with `AccountId` filters, assume that Account records always have at least one child Contact, or attempt to insert Contact records linked to Account records. When these packages encounter Person Account records, they either throw exceptions (attempting to insert a Contact with a Person Account's AccountId) or silently skip records, producing incomplete data.
+**What happens:** UNVERIFIED (2026-10-20): package behaviour is Help-only. Many AppExchange packages were built before Person Accounts were widely adopted. These packages often iterate over Contacts by querying with `AccountId` filters, assume that Account records always have at least one child Contact, or attempt to insert Contact records linked to Account records. When these packages encounter Person Account records, they either throw exceptions (attempting to insert a Contact with a Person Account's AccountId) or silently skip records, producing incomplete data.
 
 **When it occurs:** Any time an installed package executes its logic against Account or Contact records in an org that has Person Accounts enabled. Common culprits: CPQ packages, marketing automation integrations, data quality tools, and field service add-ons.
 
@@ -78,7 +70,7 @@ Note: accessing `Account.IsPersonAccount` in a trigger requires the Account to b
 
 **When it occurs:** Orgs that enable Person Accounts without updating their existing Duplicate Rules. Also occurs when Duplicate Rules are built without an `Is Person Account` condition, causing cross-type false positives.
 
-**How to avoid:** Create separate Duplicate Rules for Person Accounts and Business Accounts:
+**How to avoid:** The MatchingRule metadata type supports the Person Account object from API 39.0, file `PersonAccount.matchingRule` (api_meta 264 L89963-89965), and a DuplicateRule's `duplicateRuleFilter` excludes records from the match (api_meta 264 L58425-58427). (The `isPersonAccount = true` `searchFilter` example at api_meta 264 L83132-83133 belongs to IdentityVerificationProcDtl, not to duplicate rules.) Create separate Duplicate Rules for Person Accounts and Business Accounts:
 - For Person Accounts: match on `PersonEmail`, `PersonPhone`, `FirstName + LastName + PersonBirthdate`.
 - For Business Accounts: match on `Name`, `BillingCity`, `Phone`, `Website`.
 - Add a `Record Type` or `Is Person Account` filter condition to each rule so that Business Account rules do not fire on Person Account records and vice versa.
@@ -87,7 +79,7 @@ Note: accessing `Account.IsPersonAccount` in a trigger requires the Account to b
 
 ## Gotcha 6: Merging Person Accounts with Business Accounts Is Blocked
 
-**What happens:** Salesforce prevents merging a Person Account with a Business Account. The merge UI and the `merge` DML statement in Apex both enforce this constraint. If a data quality process identifies duplicates across account types (one Person Account and one Business Account representing the same person), the merge tool cannot resolve the duplication automatically.
+**What happens:** UNVERIFIED (2026-10-20): no corpus line states a person-account merge rule (the Apex merge section only lists leads, contacts, cases and accounts as mergeable, apexdev 264 L8347). Salesforce prevents merging a Person Account with a Business Account. The merge UI and the `merge` DML statement in Apex both enforce this constraint. If a data quality process identifies duplicates across account types (one Person Account and one Business Account representing the same person), the merge tool cannot resolve the duplication automatically.
 
 **When it occurs:** In mixed B2B+B2C orgs where an individual exists both as a Person Account (created correctly) and as a Business Account (created incorrectly, perhaps before a Person Account was set up). Automated deduplication tools may flag these as duplicates but be unable to merge them.
 

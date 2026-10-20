@@ -80,7 +80,7 @@ Which pattern from SKILL.md applies? Why?
 Copy the relevant checklist items from SKILL.md and tick them as you complete them:
 
 **Enablement prerequisites:**
-- [ ] No private Contacts exist (query confirmed count = 0)
+- [ ] No private Contacts exist (query confirmed count = 0) — prerequisite is UNVERIFIED (2026-10-20), Help-only
 - [ ] At least one Account Record Type designated as Person Account type
 - [ ] Salesforce Support case submitted (for production enablement)
 

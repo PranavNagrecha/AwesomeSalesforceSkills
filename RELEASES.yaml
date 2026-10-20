@@ -841,6 +841,15 @@ releases:
     - apex/visualforce-fundamentals
     - architect/metadata-coverage-and-dependencies
     - architect/solution-design-patterns
+    - architect/zero-trust-salesforce-patterns
+    - data/data-storage-management
+    - data/field-history-tracking
+    - data/person-accounts
+    - data/record-merge-implications
+    - data/sharing-recalculation-performance
+    - devops/deployment-error-troubleshooting
+    - devops/development-documentation-standards
+    - devops/git-branching-for-salesforce
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'
@@ -849,6 +858,12 @@ releases:
     status: todo
   - id: R2-40
     title: '<apex:remoteAction> does not exist: fix apex/pdf-generation-patterns (6 sites + checker) and security/visualforce-security-and-modernization'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-41
+    title: 'Batch 4 out-of-batch contradictions: field-audit-trail ''10 years'', transaction-security-policies eventType vs
+      eventName, apex-managed-sharing-patterns custom-only without the 68.0 gate, bulk-api Defer Sharing path'
     size: S
     owner_model: sonnet
     status: todo
@@ -1248,5 +1263,16 @@ inbox:
     annotation (apexdev 264 L6245-6246). Sites: skills/apex/pdf-generation-patterns references/gotchas.md:7, llm-anti-patterns.md:29,46,
     well-architected.md:21, examples.md:7,154, scripts/check_pdf_generation_patterns.py:75-78; skills/security/visualforce-security-and-modernization/SKILL.md:70.
     These two skills are also on the never-audited list — fold into their audit batch or fix standalone.'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by R3-06 batch 4 (Sonnet writer): skills/security/field-audit-trail/SKILL.md L25/L49/L58/L69 say ''up to 10
+    years'' / ''18-month limit'' — corpus: retained until deleted, archiveRetentionYears is a reminder (api_meta 264 L46335-46337;
+    secguide 262 L4554-4555); skills/security/transaction-security-policies/SKILL.md L150/L240/L258 ''verify the eventType
+    field'' — eventType is Legacy-only, modern policies use eventName (16 values, api_meta 264 L138737-138822); skills/security/apex-managed-sharing-patterns
+    (SKILL L299, gotchas L17, examples L10, well-architected L41) ''only available for custom objects'' without the 68.0 standard-object
+    gate (api_meta 264 L47650-47651; apexdev 264 L12881-12882); skills/data/bulk-api-and-large-data-loads/references/examples.md
+    L18 ''Setup > Defer Sharing Calculation'' — it is a permission (ldv 264 L598). All four skills are on the never-audited
+    list: fold into their audit batch or fix standalone.'
   size: S
   slotted_into: 1.5.0

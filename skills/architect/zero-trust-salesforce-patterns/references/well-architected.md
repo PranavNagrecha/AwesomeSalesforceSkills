@@ -19,7 +19,7 @@
 
 ## Architectural Tradeoffs
 
-- **High-Assurance Session at Profile vs PSG.** Profile-level forces
+- **High-Assurance Session at Profile vs PSG** (Profile lever: `ProfileSessionSetting` `requiredSessionLevel`, api_meta 264 L101471; UNVERIFIED (2026-10-20): the PSG-level setting and the step-up grain are Help-level, not in the corpus). Profile-level forces
   step-up too aggressively and breaks routine work. PSG-level fires
   step-up only when the user exercises the high-blast right. PSG-level
   is the right grain for almost every real case.
@@ -39,7 +39,7 @@
   counterpart, consumed by Login Flow. Both are needed; neither alone
   is enough.
 - **Synchronous block vs detect-and-respond.** TSPs offer synchronous
-  blocking on supported RTEM events; for unsupported events
+  blocking on supported RTEM events (api_meta 264 L138737-138798; notify-only for the anomaly stores, secguide 262 L6144, L6194, L6470, L6492); for unsupported events
   (`IdentityVerificationEvent`, `MobileEmailEvent`) the only option is
   detect-and-respond via Apex/Flow subscribers. The architect must
   document which threats fall in each category.
@@ -63,6 +63,7 @@
 ## Official Sources Used
 
 - Salesforce Well-Architected — Trusted (Secure) — https://architect.salesforce.com/well-architected/trusted/secure
+- Corpus citations used by this skill: api_meta 264 L138737-138798 (TSP `eventName`), L138877-138880 (`endSession` legacy), L37959-37970 and L67866-67871 (session level), L98032-98034 (`hasActivationRequired`); secguide 262 L5218-5220, L6051-6090, L6144, L6194, L6419-6437, L6470, L6492 (actions per event); platform_events 264 L20250-20256, L24528-24535.
 - Enhanced Transaction Security Policy Types — https://developer.salesforce.com/docs/atlas.en-us.securityImplGuide.meta/securityImplGuide/security_etm_event_types.htm
 - Real-Time Event Monitoring — https://developer.salesforce.com/docs/atlas.en-us.real_time_monitoring.meta/real_time_monitoring/rtem_intro.htm
 - Require High-Assurance Session Security — https://help.salesforce.com/s/articleView?id=sf.security_auth_require_ha_session.htm

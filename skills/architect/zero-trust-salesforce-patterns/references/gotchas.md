@@ -5,11 +5,18 @@ a zero-trust posture in Salesforce. Each entry is **what / when / how**.
 
 ## 1. Not every RTEM event type supports Transaction Security Policy enforcement
 
-**What:** `IdentityVerificationEvent` and `MobileEmailEvent` are
-notification-only RTEM events. TSPs cannot block, require MFA, or end
-session on them. Other event types (`LoginEvent`, `ApiAnomalyEvent`,
-`SessionHijackingEvent`, `CredentialStuffingEventStore`, `ReportEvent`,
-`ListViewEvent`, `BulkApiEvent`, etc.) do support enforcement.
+**What:** `IdentityVerificationEvent` and `MobileEmailEvent` are not valid
+`eventName` values for a Transaction Security Policy (api_meta 264
+L138737-138798); the guide's TSP list is the same (secguide 262
+L6051-6090). The valid names are `LoginEvent`, `LoginAsEvent`, `ApiEvent`,
+`ReportEvent`, `ListViewEvent`, `FileEventStore`, `BulkApiResultEventStore`,
+`PermissionSetEventStore`, `AdminSetupEvent` and the anomaly stores. Note
+the names: `ApiAnomalyEventStore`, `SessionHijackingEventStore`,
+`CredentialStuffingEventStore` (the earlier text said `ApiAnomalyEvent`,
+`SessionHijackingEvent` and a non-existent `BulkApiEvent`). The anomaly,
+credential stuffing and session hijacking policies allow Notifications
+only (secguide 262 L6144, L6194, L6470, L6492). `endSession` is
+Legacy Transaction Security only (api_meta 264 L138877-138880).
 
 **When:** It bites when an architect builds a TSP design doc that
 relies on `IdentityVerificationEvent` to enforce step-up after an
@@ -24,7 +31,7 @@ login). Confirm against the latest Enhanced TSP docs every release.
 
 ## 2. High-Assurance Session at the Profile level breaks routine work
 
-**What:** Setting Session Security Level to High Assurance on a
+**What:** (Profile-level High Assurance is in the corpus (`ProfileSessionSetting` `requiredSessionLevel` `HIGH_ASSURANCE`, api_meta 264 L101471, L101529; MFA meets HIGH_ASSURANCE, L101498-101499), as are the connected-app and external-client-app session levels, api_meta 264 L37959-37970, L67866-67871. UNVERIFIED (2026-10-20): the PSG-level setting and the every-page step-up behaviour below are Help-level, not in the corpus.) Setting Session Security Level to High Assurance on a
 **Profile**'s Session Settings forces step-up MFA on every page-load
 that touches the profile, not just the high-assurance operation.
 
@@ -54,7 +61,7 @@ covers admission, RTEM covers in-session enforcement.
 
 ## 4. Muting Permission Sets do not mute Profile-granted permissions
 
-**What:** Muting Permission Sets (the negative grants used in Permission
+**What:** (UNVERIFIED (2026-10-20): the Profile limit is not in the corpus; object_reference 264 L138455-138488 describes muting only against the permission set in the same group.) Muting Permission Sets (the negative grants used in Permission
 Set Groups) only suppress permissions granted via Permission Sets, not
 permissions granted by the Profile.
 
@@ -71,8 +78,8 @@ skill.
 ## 5. Mobile Security policies cover only the Salesforce mobile app
 
 **What:** "Salesforce Mobile Security" is the trade name for policies
-applied to the Salesforce mobile app: jailbreak detection, app
-integrity, geolocation policy, biometric requirements. None of these
+applied to the Salesforce mobile app (UNVERIFIED (2026-10-20): jailbreak detection, app
+integrity, geolocation and biometric requirements are not named in the corpus; Enhanced Mobile Security events are platform_events 264 L24528-24535, L24681-24684): None of these
 apply to the desktop browser session.
 
 **When:** It bites when an architect writes "device trust = Mobile
@@ -85,7 +92,7 @@ SAML/OIDC and consumed by Login Flow**. Document both.
 
 ## 6. CAEP is not natively consumed by Salesforce
 
-**What:** Continuous Access Evaluation Profile (the IETF / Microsoft
+**What:** (UNVERIFIED (2026-10-20): CAEP is not mentioned anywhere in the corpus.) Continuous Access Evaluation Profile (the IETF / Microsoft
 standard for cross-vendor risk-signal propagation) lets Azure AD
 revoke a session for risk in M365 in real time. Salesforce sessions are
 NOT subject to CAEP — Azure AD's risk-revoke does not propagate.
@@ -95,8 +102,7 @@ expects "the IdP can kill any session anywhere". They cannot, on
 Salesforce, today.
 
 **How:** Document CAEP as a residual gap. Mitigate with shorter session
-timeouts (so the next Login Flow fires sooner) and aggressive RTEM-based
-session-end TSPs on suspicious events.
+timeouts (so the next Login Flow fires sooner) and RTEM-based TSPs that block or require MFA on the events that allow it (end session is Legacy Transaction Security only, api_meta 264 L138877-138880).
 
 ## 7. JIT grant of a high-assurance PSG without revocation is a slow leak
 
@@ -109,8 +115,7 @@ ViewSSN PSG.
 the same atomic transaction as the assign — typically because the
 unassign was a "we'll add that later" comment.
 
-**How:** Always pair the assignment with a `Database.Schedule`-able
-unassign job in the same Apex transaction, OR with a Flow that uses
+**How:** Always pair the assignment with a scheduled unassign job (a `Schedulable` started with `System.schedule`, as in apexdev 264 L16836-16846; `Database.Schedule` is not an API) in the same Apex transaction, OR with a Flow that uses
 the Pause element. Set the timeout to the shortest plausible
 window (15–60 minutes for SSN view; 24 hours for break-glass).
 Audit JIT-PSG assignments in the quarterly zero-trust review.

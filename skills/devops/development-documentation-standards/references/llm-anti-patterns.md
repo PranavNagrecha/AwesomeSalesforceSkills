@@ -36,7 +36,7 @@ set rather than the Apex-specific subset.
 
 **Correct pattern:** use the ApexDoc vocabulary only — block tags `@param @return @throws
 @author @deprecated @example @group @see @since @version`; inline tags `{@code} {@link}
-{@literal} {@hidden}`. Use `@throws`, not `@exception`.
+{@literal} {@hidden text}` (apexdev 264 L13872-13950). Use `@throws`, not `@exception`.
 
 **Detection hint:** any tag outside that list — especially `@exception`, `@inheritDoc`,
 `{@value}`, `@serial` — is JavaDoc bleed.
@@ -96,7 +96,7 @@ ApexDoc parser," attaching a maturity label to a documentation convention.
 like a platform feature.
 
 **Correct pattern:** describe ApexDoc as a standardized *comment convention and coding
-guideline*. State no GA/Beta/Pilot status — the official docs don't give one.
+guideline* (apexdev 264 L13798-13802). State no GA/Beta/Pilot status — the official docs don't give one.
 
 **Detection hint:** any "Generally Available", "Beta", "Pilot", or "introduced in <release>"
 claim about ApexDoc without a release-notes citation.

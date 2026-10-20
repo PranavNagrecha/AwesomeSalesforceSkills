@@ -77,7 +77,7 @@ Org Mapping:
 
 **Context:** A team maintains 4 unlocked packages: `core-model`, `sales-automation`, `service-extensions`, and `analytics-dashboards`. Each package releases independently. The team uses trunk-based development as the base model.
 
-**Problem:** Creating package versions from feature branches produces orphan versions that cannot be promoted because they break the linear ancestry chain.
+**Problem:** Creating package versions from feature branches produces versions that compete for the single promoted release per major.minor.patch (sfdx_dev 264 L16033-16034) and blur which version is the ancestor (managed 2GP allows branches and abandoning versions, pkg2_dev 264 L584-586, so this is a process risk, not a hard block).
 
 **Solution:**
 
@@ -106,7 +106,7 @@ CI pipeline (on merge to main):
   6. Tag main with package version
 ```
 
-**Why it works:** Package versions are only created from `main`, preserving the linear ancestry chain. Feature branches develop and test in scratch orgs without creating package versions. The CI pipeline detects which packages changed and only versions those.
+**Why it works:** Package versions are only created from `main`, so the ancestor is always the highest promoted version (pkg2_dev 264 L18256-18258). Feature branches develop and test in scratch orgs without creating package versions. The CI pipeline detects which packages changed and only versions those.
 
 ---
 

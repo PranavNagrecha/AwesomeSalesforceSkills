@@ -18,6 +18,8 @@ Before changing OWD on [Object]:
   will trigger a full background recalculation that can run for several hours.
 - If count > 100,000 and direction is tightening (more restrictive), plan for
   30–90+ minutes of recalculation time depending on sharing rule complexity.
+  (UNVERIFIED (2026-10-20): both thresholds and durations are rules of thumb; the
+  corpus only says OWD changes trigger an automatic recalculation, apexdev 264 L13049.)
 - Enable Defer Sharing Calculations first if making multiple OWD changes.
 - Verify all Apex sharing reasons on this object have a registered batch recalculation class.
 ```
@@ -61,9 +63,11 @@ global class TerritoryShareRecalculation implements Database.Batchable<SObject> 
     global void finish(Database.BatchableContext bc) {}
 }
 
-// Step 2 (non-code): Register in Setup:
-// Object Manager > Opportunity > Apex Sharing Reasons > Custom_Territory__c
-// > Edit > Recalculation Apex Class: TerritoryShareRecalculation
+// Step 2 (non-code): associate the class with the object in its Apex Sharing
+// Recalculations related list (apexdev 264 L13054-13055, L13346-13351), or in
+// metadata: <sharingRecalculations><className>TerritoryShareRecalculation</className>
+// </sharingRecalculations> (api_meta 264 L47714-47733). Sharing reasons on a
+// standard object such as Opportunity need API 68.0+ (api_meta 264 L47650-47651).
 ```
 
 **Detection hint:** Any Apex managed sharing implementation that inserts rows with a custom `RowCause` but does not include a `Database.Batchable` recalculation class and a Setup registration step is incomplete.
@@ -82,8 +86,10 @@ global class TerritoryShareRecalculation implements Database.Batchable<SObject> 
 When multiple sharing structure changes are needed:
 1. Enable Defer Sharing Calculations (Setup > Defer Sharing Calculations)
 2. Apply all structural changes (OWD edits, sharing rule additions, role changes)
-3. Disable Defer Sharing Calculations — Salesforce triggers a single collapsed
-   recalculation job instead of N separate jobs.
+3. Resume sharing calculation, then manually initiate ONE full sharing rule
+   recalculation (secguide 262 L3533-3534; the Recalculate button is disabled
+   while calculations are deferred, L3545). Clearing deferral does not by
+   itself collapse the changes into one job.
 
 When a single ad-hoc recalculation is needed (e.g., suspected data integrity issue):
 - Proceed with the Recalculate button, but only during off-peak hours if the
@@ -137,14 +143,14 @@ If criteria-based rule is required:
 Defer Sharing Calculations should be used as a time-bounded maintenance operation:
 1. Enable at the start of a maintenance window.
 2. Apply all planned structural changes.
-3. Disable at the end of the maintenance window to trigger a single
-   collapsed recalculation job.
+3. Resume at the end of the maintenance window and manually initiate a full
+   sharing rule recalculation (secguide 262 L3533-3534).
 
 Do NOT leave Defer Sharing Calculations enabled indefinitely:
 - Users will have stale, inconsistent access while deferral is active.
 - Every structural change made during the deferral window accumulates in the
   pending queue — the longer it stays enabled, the larger and less predictable
-  the collapsed job becomes when cleared.
+  the full recalculation becomes afterwards.
 - Security audits may flag indefinitely deferred sharing as a compliance gap.
 ```
 

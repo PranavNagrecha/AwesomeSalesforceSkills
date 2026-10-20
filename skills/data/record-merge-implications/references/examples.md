@@ -29,7 +29,7 @@ Database.merge(masterAccount, losingId);
 
 **Fix:** Add an entry condition to the Flow: `ISCHANGED(Email) AND CreatedDate = TODAY` — or more robustly, check a custom field `Welcome_Email_Sent__c` as a guard to prevent duplicate sends. Alternatively, exclude merge contexts by checking if the record's `IsMerged__c` (if a tracking field exists) is true before proceeding.
 
-**Note:** There is no native `$Record.IsMerge` variable in Flow — the merge is indistinguishable from a normal update at the Flow execution level. Defensive entry criteria are the correct mitigation.
+**Note:** UNVERIFIED (2026-10-20): that a Record-Triggered Flow fires on a merge, and that Flow has no merge variable, are not in the corpus (the guide documents only Apex trigger behaviour: one update event for the winner, apexdev 264 L15564-15566). Treat this example as a sandbox-test prompt and use defensive entry criteria.
 
 ---
 
@@ -37,7 +37,7 @@ Database.merge(masterAccount, losingId);
 
 **Scenario:** A sales ops user merges two duplicate Leads. The losing Lead's owner is the correct sales rep for this prospect, but the master Lead belongs to a different rep. During the UI merge, the user assumes they can select the losing Lead's Owner from the field selection screen. After merge, the master Lead's original owner remains — the selection for Owner had no effect.
 
-**Root cause:** `OwnerId` is a non-user-selectable field in the merge UI. Salesforce always retains the master record's `OwnerId` regardless of what appears on the merge screen. The Owner field may appear in the UI but its value cannot be overridden by selecting the losing record's value.
+**Root cause:** `OwnerId` is a non-user-selectable field in the merge UI (UNVERIFIED (2026-10-20): UI behaviour is Help-only; in Apex the main record's values always supersede, apexdev 264 L8349-8350). Salesforce always retains the master record's `OwnerId` regardless of what appears on the merge screen. The Owner field may appear in the UI but its value cannot be overridden by selecting the losing record's value.
 
 **Fix:** Before initiating the merge, update the master Lead's `OwnerId` to the desired owner:
 ```apex

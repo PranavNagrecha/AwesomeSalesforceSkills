@@ -110,14 +110,14 @@ LIMIT 200
 
 ```bash
 curl -H "Authorization: Bearer {ACCESS_TOKEN}" \
-  https://{INSTANCE}.salesforce.com/services/data/v62.0/limits/ \
+  https://{INSTANCE}.salesforce.com/services/data/v68.0/limits/ \
   | python3 -c "import json,sys; d=json.load(sys.stdin); ds=d['DataStorageMB']; fs=d['FileStorageMB']; print(f'Data: {ds[\"Remaining\"]}/{ds[\"Max\"]} MB remaining ({100*ds[\"Remaining\"]//ds[\"Max\"]}%)'); print(f'File: {fs[\"Remaining\"]}/{fs[\"Max\"]} MB remaining ({100*fs[\"Remaining\"]//fs[\"Max\"]}%)')"
 ```
 
 **Alert thresholds configured?**
 - [ ] Alert when data storage remaining < 25%
 - [ ] Alert when file storage remaining < 25%
-- [ ] Salesforce built-in alerts (75%, 90%, 100%) verified as reaching correct recipients
+- [ ] Salesforce built-in alert emails verified as reaching correct recipients (the 75/90/100% levels are UNVERIFIED (2026-10-20), Help-only)
 
 ---
 

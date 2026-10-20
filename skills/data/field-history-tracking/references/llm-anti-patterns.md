@@ -30,10 +30,10 @@ Custom objects:
   My_Object__c -> My_Object__History
 
 Key query fields:
-  SELECT Id, ParentId, Field, DataType, OldValue, NewValue, CreatedDate, CreatedById
+  SELECT Id, AccountId, Field, DataType, OldValue, NewValue, CreatedDate, CreatedById
   FROM AccountHistory
-  WHERE ParentId = :recordId
-  ORDER BY CreatedDate DESC
+  WHERE AccountId = :recordId     -- standard history uses <Object>Id (object_reference 264 L4628)
+  ORDER BY CreatedDate DESC       -- CreatedDate/CreatedById: UNVERIFIED (2026-10-20), see SKILL.md Concept 2
 ```
 
 **Detection hint:** Flag History SOQL queries that use `__History` suffix on standard objects or omit `__` prefix on custom object history names. Regex: standard object names followed by `__History`.
@@ -49,14 +49,18 @@ Key query fields:
 **Correct pattern:**
 
 ```text
-Field types that CANNOT be tracked with Field History Tracking:
+Field types that CANNOT be tracked with Field History Tracking (secguide 262 L4797-4803):
 - Formula fields
 - Roll-Up Summary fields
 - Auto-number fields
-- Long Text Area fields (over a certain size)
-- Rich Text Area fields
-- Multi-select picklist fields (tracked as a single value change,
-  but the old/new values may be truncated)
+- Created By / Last Modified By, AI Prediction fields, Expected Revenue on opportunities
+
+Trackable only as "Track changes only" (no old/new values; secguide 262 L4793-4794, L4656):
+- Multi-select picklist fields
+- Large text fields (over 255 characters)
+
+(Rich Text Area: UNVERIFIED (2026-10-20), not named in the corpus. Field Audit Trail
+archives exclude long text and multi-select fields, secguide 262 L4890-4891.)
 
 Field types that CAN be tracked:
 - Text, Number, Currency, Percent, Date, DateTime
@@ -65,7 +69,8 @@ Field types that CAN be tracked:
 - Lookup and Master-Detail relationship fields
 - Email, Phone, URL
 
-Maximum 20 fields per object (standard or custom).
+Maximum 20 fields per object (standard or custom) without Field Audit Trail;
+events and tasks: 6 (secguide 262 L4700).
 ```
 
 **Detection hint:** Flag field history tracking recommendations that include formula fields, roll-up summaries, rich text areas, or auto-number fields.
@@ -81,16 +86,17 @@ Maximum 20 fields per object (standard or custom).
 **Correct pattern:**
 
 ```text
-Field History Tracking retention:
-- Standard retention: 18 months (records older than 18 months are deleted)
-- After 18 months: data is permanently gone (no recovery)
-- Salesforce may retain data slightly longer in some cases, but 18 months
-  is the documented and contractual limit
+Field History Tracking retention (secguide 262 L4553-4555):
+- Without Field Audit Trail: up to 18 months in the UI, up to 24 months via the API
+  (Data Loader or queryAll() reach the 18-24 month rows, L4655)
+- Beyond that the data is gone
+- With Field Audit Trail: retained until you delete it
 
 For longer retention:
-- Shield Field Audit Trail: up to 10 years (requires Shield license)
-  - Data stored in FieldHistoryArchive object
-  - Separate retention policy configuration per field
+- Field Audit Trail (Shield): archived data stored in the FieldHistoryArchive big
+  object; the retention policy is a HistoryRetentionPolicy on the object,
+  archiveAfterMonths 1-18 (api_meta 264 L46329-46332). "Up to 10 years" and
+  "contractual limit" are UNVERIFIED (2026-10-20): not in the corpus.
 
 When querying field history, always include a CreatedDate filter:
   WHERE CreatedDate >= :eighteenMonthsAgo
@@ -111,13 +117,17 @@ When querying field history, always include a CreatedDate filter:
 
 ```text
 When field history tracking does NOT capture changes:
-- Mass Transfer tool (mass owner changes)
-- Lead conversion (some field changes during conversion are not tracked)
-- Record merges (field changes during merge may not all be tracked)
-- Direct SQL updates by Salesforce support (back-end patches)
-- Some system-initiated updates (sharing recalculation, formula recalc)
+- Changes by Process Builder, Apex or Flow on an object the current user cannot
+  edit: "Field history honors the permissions of the current user and doesn't
+  record changes that occur in the system context" (secguide 262 L4687-4689)
+- Changes made before tracking was turned on (secguide 262 L4653-4654)
+- Time fields (secguide 262 L4657)
+- Recurring and child events: "doesn't track all changes" (secguide 262 L4703)
+- UNVERIFIED (2026-10-20) (no corpus line): Mass Transfer, lead conversion field
+  changes, record merges, back-end patches, sharing recalculation, formula recalc
 
-When field history tracking DOES capture changes:
+When field history tracking DOES capture changes (UNVERIFIED (2026-10-20) as a list;
+the guide confirms automation changes are tracked when the user can edit the field):
 - Standard UI edits
 - REST/SOAP API updates
 - Apex DML operations
@@ -159,7 +169,8 @@ Do NOT track:
 - Fields better tracked by Event Monitoring or custom audit triggers
 
 If 20 fields is not enough:
-- Shield Field Audit Trail supports up to 60 fields per object
+- Field Audit Trail: up to 200 fields per object (secguide 262 L4836); the scratch-org
+  feature description says 60 total (sfdx_dev 264 L4606-4607)
 - Custom audit trigger: write to a custom Audit_Log__c object
 ```
 

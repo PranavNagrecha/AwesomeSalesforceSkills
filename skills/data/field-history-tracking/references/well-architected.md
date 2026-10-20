@@ -2,9 +2,9 @@
 
 ## Relevant Pillars
 
-- **Security** — Field History Tracking is a primary mechanism for meeting audit and data governance requirements. Tracking who changed sensitive fields (e.g., financial values, PII, status fields), when, and from what value to what value provides an immutable platform-generated audit log. This directly supports access accountability and principle of least privilege verification — if a user changed a field they should not have, the history record surfaces it. Well-Architected guidance emphasizes implementing audit controls proportionate to data sensitivity.
+- **Security** — Field History Tracking is a primary mechanism for meeting audit and data governance requirements. Tracking who changed sensitive fields (e.g., financial values, PII, status fields), when, and from what value to what value provides a platform-generated audit log (not immutable: delete() on history objects can be enabled from API 42.0, object_reference 264 L4618, and Field Audit Trail data can be deleted by you, secguide 262 L4554-4555). This directly supports access accountability and principle of least privilege verification — if a user changed a field they should not have, the history record surfaces it. Well-Architected guidance emphasizes implementing audit controls proportionate to data sensitivity.
 
-- **Reliability** — The 18-month rolling retention window and automatic deletion of history for hard-deleted records are reliability risks for audit-dependent processes. A reliable configuration documents these limits explicitly, communicates them to stakeholders, and establishes an escalation path (Shield Field Audit Trail or custom logging) before data loss occurs. Treating retention as an assumed-infinite behavior is a known failure mode.
+- **Reliability** — The 18-month (UI) and 24-month (API) retention window (secguide 262 L4553-4554) and the cascade that deletes history with a deleted record (secguide 262 L4895-4896) are reliability risks for audit-dependent processes. A reliable configuration documents these limits explicitly, communicates them to stakeholders, and establishes an escalation path (Shield Field Audit Trail or custom logging) before data loss occurs. Treating retention as an assumed-infinite behavior is a known failure mode.
 
 ## Architectural Tradeoffs
 
@@ -12,7 +12,7 @@
 Standard FHT is zero-maintenance, platform-generated, and queryable via standard SOQL and Report Builder. Custom logging via Apex triggers or Flow is more flexible (no field-type restrictions, configurable retention, initial values at creation) but requires ongoing maintenance and does not benefit from platform optimization. For most audit requirements within the 18-month window, standard FHT is the correct choice. Custom logging should be additive, not a replacement.
 
 **Field Selection Tradeoffs:**
-The 20-field-per-object limit forces deliberate triage. Tracking more fields than necessary adds storage overhead and makes history queries noisier. Tracking too few fields creates compliance gaps. The correct approach is to align tracked fields directly to documented compliance requirements and remove fields from tracking when the requirement lapses.
+The 20-field-per-object limit forces deliberate triage. Tracking more fields than necessary makes history queries noisier (it does not add data storage: field history data doesn't count against data storage limits, secguide 262 L4555-4556). Tracking too few fields creates compliance gaps. The correct approach is to align tracked fields directly to documented compliance requirements and remove fields from tracking when the requirement lapses.
 
 **Reporting vs. SOQL:**
 History sObjects are available in Salesforce Report Builder, making them accessible to non-technical stakeholders. For large-scale extractions or cross-object joins, SOQL via Data Loader or Workbench is more appropriate. Design the audit workflow to match the consumer — reports for operational users, SOQL exports for compliance teams delivering to external auditors.
@@ -27,6 +27,8 @@ History sObjects are available in Salesforce Report Builder, making them accessi
 
 ## Official Sources Used
 
+- Security Implementation Guide 262 L4553-4556, L4632-4635 (18/24-month retention, no storage charge), L4653-4657 and L4687-4689 (considerations), L4774-4803 (20-field limit, ineligible fields), L4836-4838 and L4881-4897 (Field Audit Trail, retention policy default, delete cascade). Cite as `secguide 262`.
+- Object Reference 264 L4604-4660 (StandardObjectNameHistory fields), L195716-195781 (OpportunityFieldHistory) and L195800-195926 (OpportunityHistory); Metadata API 264 L44320-44323 (`enableHistory`), L45893-45898 (`trackHistory`), L46329-46332 (`archiveAfterMonths` 1-18).
 - Salesforce Help — Track Field History: https://help.salesforce.com/s/articleView?id=sf.tracking_field_history.htm
 - Salesforce Object Reference — AccountHistory Object: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accounthistory.htm
 - Salesforce Object Reference — OpportunityFieldHistory Object: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_opportunityfieldhistory.htm

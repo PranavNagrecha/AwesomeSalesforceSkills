@@ -33,9 +33,9 @@ outputs:
   - "Package versioning alignment notes (if using unlocked or 2GP packages)"
   - "Branch protection and review gate recommendations"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-20
 ---
 
 # Git Branching For Salesforce
@@ -54,25 +54,43 @@ Gather this context before recommending or reviewing a branching strategy:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is development org-based or source-driven? | Before Starting: org-based teams have no source-of-truth repo by default | Whether scratch-org feature branches are even possible |
+| Which package type is in use: none, unlocked, or managed 2GP? | Core Concepts and Gotcha 2: ancestry and branch tagging differ by type (pkg2_dev 264 L584-586; sfdx_dev 264 L15993-16034) | A packaging path that matches the type |
+| Which branch builds package versions, and are they tagged with `--branch` and `--tag`? | Gotcha 4: `--branch` is a name; the commit id belongs in `--tag` (pkg2_dev 264 L18448-18449) | A reproducible version-to-commit trail |
+| Which sandboxes and scratch org definitions exist? | Branch-to-Org Mapping: every long-lived branch needs an org | A branch-to-org table; scratch org lifetime is 1-30 days, default 7 (sfdx_dev 264 L9970) |
+| Do profiles or permission sets change on many branches? | Gotcha 1: Profile is not a decomposable type; permission sets and custom labels can be (Beta) (sfdx_dev 264 L1568-1625) | A decision on decomposition and on permission sets over profiles |
+| How are metadata deletions deployed? | Gotcha 3: deletions need `destructiveChanges.xml` (api_meta 264 L4707) | A documented destructive-change path in CI |
+| Who refreshes sandboxes, and what redeploys the mapped branch afterwards? | Gotcha 4 below: UNVERIFIED sandbox-refresh behaviour needs a post-refresh deploy step | A post-refresh runbook line |
+
+A proper configuration adds a documented branch-to-org map, a single promotion path for package versions, and a tested hotfix and destructive-change path, instead of copying a generic Git model onto a Salesforce org.
+
+---
+
 ## Core Concepts
 
 ### Branch-to-Org Mapping
 
 Every Salesforce branch model must answer the question: which org backs which branch? Unlike standard web development where any branch can deploy to any identical server, Salesforce orgs accumulate state. A sandbox configured for UAT should map to a specific integration or release branch. Scratch orgs are ephemeral and pair naturally with feature branches. Long-lived sandboxes pair with long-lived branches (main, develop, release).
 
-### Package Version Ancestry Is Linear
+### Package Version Ancestry Defines the Upgrade Path
 
-For unlocked packages and managed 2GP, the package version ancestry forms a linear chain. When you create a new package version, you must specify an ancestor that is the highest promoted version. You cannot create parallel version lineages from separate branches and later merge them. This means the branching model must funnel all package-relevant changes through a single promotion path. Feature branches can exist for development, but the packaging branch must be linear.
+Ancestry is the package upgrade path: "Ancestry defines package upgrade paths. If the package ancestor is set to NONE, an existing customer can't upgrade to that package version" (sfdx_dev 264 L15084-15086, in the Unlocked Packages chapter, with `HIGHEST` as the keyword for the highest promoted and released version, L15081-15082). For managed 2GP, "When you create a package version, you must also specify which package version is the ancestor" (pkg2_dev 264 L1081), the ancestor must be "the highest promoted package version number for that package" (pkg2_dev 264 L18256-18258), and `ancestorId` or `ancestorVersion` is required once a version of the package has been promoted (pkg2_dev 264 L18674-18676). An earlier version of this skill said ancestry is a strictly linear chain and that parallel lineages from separate branches cannot exist; the guides say otherwise: managed 2GP flexible versioning lets you abandon a version and "select a previous package version as the ancestor", and "allows you to use branches and do parallel package development" (pkg2_dev 264 L584-586). Branches are documented for unlocked packages too: tag a version with `sf package version create --branch featureA` (any alphanumeric name up to 240 characters), version numbers increment within each branch, and "there can be only one promoted and released package version for a given major.minor.patch" (sfdx_dev 264 L15993-16034). So the constraint is on promotion and on the upgrade path, not on creating branch-tagged versions: funnel promotion through one controlled path.
 
 ### Metadata Merge Conflicts Are Structural, Not Textual
 
-Salesforce metadata in XML format creates merge problems that differ from typical code merges. A single custom object file (`Account.object-meta.xml`) can accumulate hundreds of field references. Two developers adding fields to the same object will produce a valid Git merge but potentially an invalid metadata deploy if the merge reorders elements. Decomposed source format (SFDX) mitigates this by storing each field as a separate file, but profiles, permission sets, and custom labels still produce frequent structural conflicts.
+Salesforce metadata in XML format creates merge problems that differ from typical code merges. A single custom object file (`Account.object-meta.xml`) can accumulate hundreds of field references. Two developers adding fields to the same object will produce a valid Git merge but potentially an invalid metadata deploy if the merge reorders elements (UNVERIFIED (2026-10-20): the reorder-invalidates-deploy claim is not in the corpus). Decomposed source format mitigates the conflict surface: by default a DX project decomposes custom objects and custom object translations, and permission sets, custom labels, sharing rules and workflows can optionally be decomposed with `sf project convert source-behavior`, a pilot or beta service (sfdx_dev 264 L1568-1625). Profile is not in that list. Profiles and, unless you opt in, permission sets and custom labels therefore remain large single files with frequent conflicts.
 
 ---
 
 ## Common Patterns
 
 ### Trunk-Based Development (Recommended for Most Teams)
+
+UNVERIFIED (2026-10-20): the recommendation and every team-size, branch-lifetime and cadence threshold in this skill (2-15 and 15+ developers, under 2 days, under 5 days) are rules of thumb; a grep of sfdx_dev and pkg2_dev finds no "trunk", "GitFlow" or branching-model recommendation, only the package branch-tagging guidance cited above.
 
 **When to use:** Teams of 2-15 developers doing source-driven development with scratch orgs. Works best with continuous delivery or frequent releases.
 
@@ -106,11 +124,11 @@ Salesforce metadata in XML format creates merge problems that differ from typica
 **How it works:**
 1. `main` branch contains all packages in their released state.
 2. Feature branches follow `feature/<package-name>/<story>` naming.
-3. A `packaging/<package-name>` branch (or CI job on `main`) handles version creation with `sf package version create`.
-4. Package ancestry is tracked through `sfdx-project.json` on the packaging branch.
-5. After promotion (`sf package version promote`), changes merge to `main` and a release tag is applied.
+3. A `packaging/<package-name>` branch (or CI job on `main`) handles version creation with `sf package version create`, tagged with `--branch` and, for traceability, `--tag` set to the commit id (pkg2_dev 264 L18448-18449).
+4. Package ancestry is tracked through `sfdx-project.json` (`ancestorId` or `ancestorVersion`) on the packaging branch.
+5. After promotion (`sf package version promote`, sfdx_dev 264 L16300-16301), changes merge to `main` and a release tag is applied.
 
-**Why not the alternative:** Without package-aligned branches, teams risk creating package versions from branches that include unfinished work from other packages. The linear ancestry requirement means a bad version in the chain blocks future versions.
+**Why not the alternative:** Without package-aligned branches, teams risk creating package versions from branches that include unfinished work from other packages. Only one version per major.minor.patch can be promoted and released (sfdx_dev 264 L16033-16034), and the ancestor must be the highest promoted version (pkg2_dev 264 L18256-18258), so a bad promoted version has to be handled with ancestry (abandon and choose an earlier ancestor in managed 2GP, pkg2_dev 264 L584-585).
 
 ---
 
@@ -120,7 +138,7 @@ Salesforce metadata in XML format creates merge problems that differ from typica
 |---|---|---|
 | Small team (2-8), scratch orgs, continuous delivery | Trunk-based development | Low merge friction, fast feedback, scratch orgs handle isolation |
 | Large team, multiple release trains, compliance gates | Environment branching (GitFlow variant) | Provides release isolation and approval checkpoints |
-| Multiple unlocked packages with independent release cadences | Package-aligned branching on top of trunk-based | Linear ancestry requires controlled packaging path |
+| Multiple unlocked packages with independent release cadences | Package-aligned branching on top of trunk-based | One promoted version per major.minor.patch and ancestry-defined upgrade paths need a controlled packaging path |
 | Org-based development with change sets, no scratch orgs | Simplified trunk-based with sandbox-mapped branches | Branching complexity should match automation maturity |
 | Hotfix-heavy production with infrequent releases | Environment branching with dedicated hotfix branch | Hotfixes must bypass the normal release train |
 
@@ -135,7 +153,7 @@ Step-by-step instructions for an AI agent or practitioner designing a branching 
 3. **Select a branching model.** Use the decision guidance table above. Default to trunk-based development unless the team has a specific constraint that requires environment branching or package-aligned branching.
 4. **Define branch naming conventions.** Standardize names: `feature/<story-id>-<short-desc>`, `release/<version>`, `hotfix/<ticket>`. Enforce conventions through branch protection rules and CI validation.
 5. **Configure branch protection and merge rules.** Require pull request reviews, passing CI checks (Apex tests, deploy validation to a scratch org or sandbox), and no direct pushes to `main` or `develop`.
-6. **Align package versioning (if applicable).** If using unlocked or 2GP packages, ensure `sfdx-project.json` ancestor fields are updated only on the packaging path. Do not create package versions from feature branches.
+6. **Align package versioning (if applicable).** If using unlocked or 2GP packages, ensure `sfdx-project.json` ancestor fields are updated only on the packaging path, tag any feature-branch version with `--branch` (sfdx_dev 264 L15993-15995), and promote only from the packaging path.
 7. **Document and validate.** Record the branch model, naming conventions, and merge rules in the repository README or a CONTRIBUTING guide. Validate by walking through a feature, a release, and a hotfix scenario end-to-end.
 
 ---
@@ -145,11 +163,11 @@ Step-by-step instructions for an AI agent or practitioner designing a branching 
 Run through these before marking a branching strategy complete:
 
 - [ ] Every long-lived branch maps to a specific Salesforce org (sandbox or scratch org definition)
-- [ ] Feature branches have a maximum lifespan policy (recommend < 5 days)
+- [ ] Feature branches have a maximum lifespan policy (recommend < 5 days; rule of thumb, UNVERIFIED (2026-10-20))
 - [ ] Branch protection rules enforce PR reviews and passing CI on `main` and `develop`
 - [ ] Merge direction is documented (feature -> develop -> release -> main, or feature -> main)
 - [ ] Hotfix path is defined and does not require waiting for the next release train
-- [ ] Package versioning (if applicable) flows through a single linear branch path
+- [ ] Package promotion (if applicable) flows through a single controlled branch path; feature-branch versions are tagged with `--branch`
 - [ ] Destructive changes (field deletes, type changes) have a documented branch and deployment process
 - [ ] Branch naming conventions are enforced by CI or pre-commit hooks
 
@@ -159,10 +177,10 @@ Run through these before marking a branching strategy complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Profile and permission set merge conflicts** — Profiles in metadata format are monolithic XML files. Two developers adding field permissions on different objects still produce merge conflicts because the profile file includes all FLS entries. Use decomposed source format and consider permission sets over profiles to reduce conflict surface.
-2. **Package version ancestry blocks parallel branches** — If two branches each create an unlocked package version, only one can be promoted as the ancestor of the next version. The other branch's version becomes a dead end. Always create package versions from a single controlled branch.
-3. **Scratch org expiry invalidates long-lived feature branches** — Scratch orgs expire after 1-30 days (default 7). A feature branch that outlives its scratch org requires re-creating the org and re-pushing source, which may reveal deploy errors that were masked by incremental pushes.
-4. **Declarative changes made in sandboxes drift from source** — If a developer or admin makes changes directly in a sandbox that maps to a branch, those changes are not in Git until explicitly pulled. This "sandbox drift" causes the branch to diverge from the org it supposedly represents.
+1. **Profile and permission set merge conflicts** — Profiles in metadata format are monolithic XML files (Profile is not a decomposable type, sfdx_dev 264 L1613-1625). Two developers adding field permissions on different objects still produce merge conflicts because the profile file includes all FLS entries (UNVERIFIED (2026-10-20): the conflict mechanism is not in the corpus). Consider permission sets over profiles, and optionally decompose permission sets with `sf project convert source-behavior --behavior decomposePermissionSetBeta2` (Beta; sfdx_dev 264 L1596).
+2. **Only one version per major.minor.patch can be promoted** — Branches can each build tagged versions (version numbers increment within each branch, so two beta versions can share a number), but "there can be only one promoted and released package version for a given major.minor.patch" (sfdx_dev 264 L16030-16034). The other branch's version cannot be released under the same number. Promote from a single controlled path. An earlier version said parallel branches are blocked by ancestry; for managed 2GP the guide says flexible versioning allows branches and parallel development (pkg2_dev 264 L584-586).
+3. **Scratch org expiry invalidates long-lived feature branches** — Scratch orgs expire after 1-30 days (default 7; sfdx_dev 264 L3712-3713, L9970), and after expiry you can't restore them. A feature branch that outlives its scratch org requires re-creating the org and re-pushing source, which may reveal deploy errors that were masked by incremental pushes.
+4. **Declarative changes made in sandboxes drift from source** (UNVERIFIED (2026-10-20): drift is a process observation, not a corpus fact; source tracking can be enabled in Developer and Developer Pro sandboxes, sfdx_dev 264 L1012-1022) — If a developer or admin makes changes directly in a sandbox that maps to a branch, those changes are not in Git until explicitly pulled. This "sandbox drift" causes the branch to diverge from the org it supposedly represents.
 
 ---
 

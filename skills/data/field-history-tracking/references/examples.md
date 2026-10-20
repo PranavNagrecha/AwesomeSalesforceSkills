@@ -4,7 +4,7 @@
 
 **Context:** A sales operations manager needs to audit which sales reps changed `StageName` on Opportunities during the previous quarter. The org has had Field History Tracking enabled on `StageName` for over a year.
 
-**Problem:** The manager wants to produce a list of all stage changes during Q1 2025, including the previous stage value, the new stage value, the user who made the change, and the timestamp — but the built-in Opportunity History report type only shows up to 2,000 rows and lacks the field-level filtering the manager needs.
+**Problem:** The manager wants to produce a list of all stage changes during Q1 2025, including the previous stage value, the new stage value, the user who made the change, and the timestamp — but the built-in Opportunity History report type only shows up to 2,000 rows and lacks the field-level filtering the manager needs (UNVERIFIED (2026-10-20): the 2,000-row report cap is not in the corpus).
 
 **Solution:**
 
@@ -31,7 +31,7 @@ ORDER BY CreatedDate ASC
 LIMIT 10000
 ```
 
-Export results via Data Loader or Workbench for analysis in Excel or BI tools.
+Export results via Data Loader or Workbench for analysis in Excel or BI tools. UNVERIFIED (2026-10-20): `CreatedById`, `CreatedDate` and the `CreatedBy` relationship are not in the Object Reference field table for `OpportunityFieldHistory` (object_reference 264 L195716-195800); confirm with `describeSObject`.
 
 **Why it works:** `OpportunityFieldHistory` stores one row per tracked field change. Filtering on `Field = 'StageName'` isolates only stage transitions. `CreatedBy.Name` provides the user's full name via a relationship traversal. The `CreatedDate` bounds scope the result to the desired quarter and avoid full-table scans.
 
@@ -51,7 +51,7 @@ Work through the troubleshooting checklist in sequence:
 
 ```bash
 # Check metadata for the object
-sfdx force:source:retrieve -m "CustomObject:Contract__c" && grep -i "enableHistory" force-app/main/default/objects/Contract__c/Contract__c.object-meta.xml
+sf project retrieve start --metadata "CustomObject:Contract__c" --target-org my-org && grep -i "enableHistory" force-app/main/default/objects/Contract__c/Contract__c.object-meta.xml
 ```
 
 Expected output: `<enableHistory>true</enableHistory>`
@@ -80,7 +80,7 @@ ORDER BY CreatedDate DESC
 LIMIT 50
 ```
 
-5. If no rows are returned for the expected change date, verify the change was made via the UI or API — history tracking does not capture changes made directly via Data Loader in `--no-trigger` mode or via certain metadata-level bulk operations.
+5. If no rows are returned for the expected change date, check who made the change: "Field history honors the permissions of the current user and doesn't record changes that occur in the system context" when the user cannot edit the field (secguide 262 L4687-4689). An earlier version blamed a Data Loader `--no-trigger` mode; no such mode appears in the Data Loader guide or anywhere in the corpus.
 
 **Why it works:** Metadata retrieval confirms whether `trackHistory` is set at the field level, which is the most common root cause of missing history. The SOQL probe confirms whether rows exist at all for the record. Separating object-level enablement from field-level selection is critical — both must be true for history to be captured.
 
@@ -113,6 +113,6 @@ WHERE Id = 'a01XXXXXXXXXXXX'
 
 **What practitioners do:** An admin enables Field History Tracking on `AnnualRevenue` on Account to satisfy a compliance requirement that financial field changes be retained for 5 years. The admin marks the task complete and informs the compliance team that audit history is captured.
 
-**What goes wrong:** Salesforce automatically purges Field History records older than 18 months on a rolling basis. After 18 months, all history rows for `AnnualRevenue` changes that occurred before the rolling window are silently deleted. When auditors request a 5-year history record three years later, the data no longer exists. This is not a bug — it is documented platform behavior. The compliance gap creates regulatory exposure.
+**What goes wrong:** Without Field Audit Trail, Salesforce retains field history for up to 18 months in the UI and up to 24 months via the API (secguide 262 L4553-4554). Past that window the `AnnualRevenue` rows are gone. When auditors request a 5-year history record three years later, the data no longer exists. This is not a bug — it is documented platform behavior. The compliance gap creates regulatory exposure.
 
-**Correct approach:** For retention requirements exceeding 18 months, use Shield Field Audit Trail (see `field-audit-trail` skill). Alternatively, implement a custom logging pattern at write time using an Apex before-update trigger that writes changes into a custom `FieldChangeLog__c` object. This custom log is not subject to the platform retention purge and can be retained indefinitely. Document which approach is in use and communicate the limitation proactively during requirements gathering — not after a compliance incident.
+**Correct approach:** For retention requirements exceeding 24 months, use Field Audit Trail (see `security/field-audit-trail` skill), which keeps archived history until you delete it (secguide 262 L4554-4555). Alternatively, implement a custom logging pattern at write time using an Apex before-update trigger that writes changes into a custom `FieldChangeLog__c` object. This custom log is not subject to the platform retention purge and can be retained indefinitely. Document which approach is in use and communicate the limitation proactively during requirements gathering — not after a compliance incident.

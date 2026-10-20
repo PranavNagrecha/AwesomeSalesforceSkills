@@ -27,16 +27,16 @@ outputs:
   - "A written, centrally-stored naming + documentation standard for the project"
   - "A documentation-coverage audit that flags undocumented public surfaces and tag gaps"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-10-20
 ---
 
 # Development Documentation Standards
 
 This skill activates when a practitioner wants to document Salesforce code the way the platform prescribes — chiefly **ApexDoc**, Salesforce's standardized, JavaDoc-derived comment format read by humans, documentation generators, and AI agents — and to codify the naming and design conventions that make an org maintainable. It covers the code-level convention (ApexDoc tags, comment placement, naming rules) and the org-level framing (a written design/documentation standard stored in one central location).
 
-Maturity note: Salesforce documents ApexDoc as a **comment convention and coding guideline**, not as a licensed or version-gated feature. The official docs do not stamp it GA, Beta, or Pilot — do not assert a maturity level the docs don't state. Crucially, the Apex compiler enforces ordinary comment syntax but **does not** enforce ApexDoc syntax or check that a comment matches the code it sits above. Correctness here is a team/review responsibility, not a compiler guarantee.
+Maturity note: Salesforce documents ApexDoc as a **comment convention and coding guideline** ("We recommend using ApexDoc comments", apexdev 264 L13799-13802), not as a licensed or version-gated feature. The Apex Developer Guide section "Document Your Apex Code" carries no GA, Beta or Pilot stamp (apexdev 264 L13798-13806) — do not assert a maturity level the docs don't state. Crucially, "the Apex compiler enforces existing Apex comment syntax ... it doesn't enforce the ApexDoc syntax or check comment accuracy in relation to corresponding Apex code" (apexdev 264 L13825-13826). Correctness here is a team/review responsibility, not a compiler guarantee.
 
 ---
 
@@ -46,8 +46,24 @@ Gather this context before working on anything in this domain:
 
 - **Decide the scope: code-level or org-level.** Code-level work is ApexDoc comments plus Apex naming conventions on specific classes. Org-level work is a written *design standards* document — naming conventions for every customization plus how docs are created, maintained, and centrally stored. They reinforce each other but are different deliverables.
 - **Know that nothing here is compiler-enforced.** ApexDoc is a convention. The compiler will happily accept a `@param` that names a parameter that no longer exists, a `@return` on a `void` method, or a class with no doc block at all. Accuracy is caught in code review and by a checker, not at compile time.
-- **Use the right delimiter.** An ApexDoc block starts with `/**` and ends with `*/`. A block that opens with `/*` (one asterisk) is an ordinary comment and is **not** treated as ApexDoc by doc generators — a single missing asterisk silently drops the block from generated docs.
-- **Anchor naming rules to the official conventions.** Salesforce prescribes: classes start with a capital letter, methods start with a lowercase verb, variable names are meaningful, and Apex otherwise follows Java standards. These are the conventions your documentation should describe, not house preferences invented from scratch.
+- **Use the right delimiter.** An ApexDoc block starts with `/**` and ends with `*/`. A block that opens with `/*` (one asterisk) is an ordinary comment and is **not** treated as ApexDoc: "ApexDoc comments begin with /** and end with */" while other multiline comments use `/*` (apexdev 264 L13830-13832). That doc generators then skip it is an inference, not a corpus statement.
+- **Anchor naming rules to the official conventions.** Salesforce prescribes: "classes start with a capital letter, methods start with a lowercase verb, and variable names should be meaningful", following Java standards (apexdev 264 L6699-6700). These are the conventions your documentation should describe, not house preferences invented from scratch.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the ask code-level ApexDoc or an org-level standard? | Before Starting: they are different deliverables | Scope: classes to document, or a standards document to write |
+| Does anyone assume the compiler checks ApexDoc? | Gotcha 1: it enforces comment syntax only (apexdev 264 L13825-13826) | A review gate and CI checker plan |
+| Do existing blocks open with `/**`? | Gotcha 2: `/*` is an ordinary comment (apexdev 264 L13830-13832) | A list of blocks the checker will flag |
+| Where do annotations sit relative to the block? | Gotcha 3: the guide places them between the block and the declaration | A consistent layout the checker accepts |
+| Which methods are void, and which have constructors? | Gotcha 4: no `@return` on those (apexdev 264 L13889-13890) | Corrected tags per signature |
+| Which naming conventions does the team follow today? | Gotcha 5: the official ones are in apexdev 264 L6699-6700 | A standard that adopts them verbatim |
+| Is anyone asserting a maturity label for ApexDoc? | Gotcha 6: the docs state none | Output with no GA, Beta or Pilot claim |
+
+A proper configuration adds a gated, checker-backed standard that adopts the official conventions, instead of one-off comment clean-ups that decay.
 
 ---
 
@@ -55,13 +71,13 @@ Gather this context before working on anything in this domain:
 
 ### ApexDoc: what it is and who reads it
 
-ApexDoc is a standardized comment format, based on the JavaDoc standard and tailored to Apex and Salesforce. Salesforce positions it for three audiences at once: **human developers, documentation generators, and AI agents**. Its stated purpose is to *facilitate code collaboration and increase long-term code maintainability* — not merely to make code readable in the editor. That framing matters for AI-assisted work: an accurate ApexDoc block is the primary signal an agent uses to understand a method's contract without re-reading the whole implementation.
+ApexDoc is a standardized comment format, based on the JavaDoc standard and tailored to Apex and Salesforce. Salesforce positions it for three audiences at once: **human developers, documentation generators, and AI agents** (apexdev 264 L13799-13800). Its stated purpose is to *facilitate code collaboration and increase long-term code maintainability* — not merely to make code readable in the editor. That framing matters for AI-assisted work: an accurate ApexDoc block is the primary signal an agent uses to understand a method's contract without re-reading the whole implementation.
 
-An ApexDoc comment is a main description followed by tags. It **immediately precedes** the class, interface, enum, method, constructor, or property it documents — a blank line or unrelated statement between the block and the declaration breaks the association.
+An ApexDoc comment is a main description followed by tags. It **immediately precedes** the class, interface, enum, method, constructor, or property it documents: "No other code or comments are between the ApexDoc comment block and the element that it describes" (apexdev 264 L13833-13834). The guide's own examples put an annotation (`@Deprecated`, `@IsTest`, `@AuraEnabled(cacheable=true)`) between the block and the declaration (apexdev 264 L14388-14389, L14475-14476, L14755-14756). UNVERIFIED (2026-10-20): that a blank line breaks the association is not stated in the corpus.
 
 ### The tag vocabulary
 
-ApexDoc defines a fixed set of **block tags** (begin with `@`, on their own line, after the main description) and **inline tags** (`{@tag ...}` inside prose):
+ApexDoc defines a fixed set of **block tags** (begin with `@`, on their own line, after the main description) and **inline tags** (`{@tag ...}` inside prose); the tag table is apexdev 264 L13872-13950 ("Table 3: ApexDoc Tags"):
 
 | Block tag | Documents |
 |---|---|
@@ -76,17 +92,17 @@ ApexDoc defines a fixed set of **block tags** (begin with `@`, on their own line
 | `@since` | Version or date the element was introduced |
 | `@version` | Version of the class/interface/enum |
 
-Inline tags: `{@code ...}` (inline code / examples), `{@link ...}` (inline cross-reference), `{@literal ...}` (render text literally, no HTML), `{@hidden}` (suppress the element from generated docs).
+Inline tags: `{@code text}` (inline code / examples), `{@link reference}` (inline cross-reference), `{@literal text}` (render text literally, no HTML), `{@hidden text}` (prevents an element from appearing in generated docs; the guide writes it with text, apexdev 264 L13929, L14036-14037). The applicable elements differ by tag: `@author` and `@version` apply to class, interface and enum only; `@param` and `@throws` to methods and constructors; `@return` to methods; `@group` to class, interface, enum, method, property and variable; `@deprecated`, `@example`, `@see` and `@since` to all (apexdev 264 L13874-13930).
 
-The rule that bites in review: `@param` order and names must track the signature, `@return` must be present on non-`void` methods and absent on `void` ones, and every declared checked-path exception belongs in a `@throws`.
+The rule that bites in review: `@param` order and names must track the signature ("It must match the parameter order and name", apexdev 264 L13886-13887), `@return` is not used for void methods or constructors (apexdev 264 L13889-13890) and is expected where a value is returned ("For methods that return values, use the @return block tag", apexdev 264 L14126), and `@throws` should list "all significant checked and unchecked exceptions that the method can explicitly throw" (apexdev 264 L14129-14130).
 
 ### Naming conventions as documentation
 
-Naming is documentation's cheapest form. Salesforce's Apex conventions — capitalized class names, lowercase verb-first method names (`createAccount`, not `AccountCreation`), meaningful variable names — mean the signature already tells most of the story before a single tag is written. A documentation standard should *encode these rules*, not restate arbitrary style. Consistent, convention-following names also make the ApexDoc read correctly: a verb-first method name plus a `@return` reads as a sentence.
+Naming is documentation's cheapest form. Salesforce's Apex conventions (apexdev 264 L6699-6700) — capitalized class names, lowercase verb-first method names (`createAccount`, not `AccountCreation`), meaningful variable names — mean the signature already tells most of the story before a single tag is written. A documentation standard should *encode these rules*, not restate arbitrary style. Consistent, convention-following names also make the ApexDoc read correctly: a verb-first method name plus a `@return` reads as a sentence.
 
 ### Org-level design standards
 
-Beyond Apex, Salesforce Architects' Design Standards Template frames documentation as an org-wide discipline: conventions for how *every* customization is named (objects, fields, automations, integrations, permission sets), plus a rule that development and configuration documents are created, maintained, and kept in **one central location**. The value is having a single agreed standard rather than per-developer habits; scattered or absent standards are what this addresses. (The architect.salesforce.com resource pages can be access-restricted to direct fetch — verify the template loads in a browser before citing it as your team's authority.)
+Beyond Apex, Salesforce Architects' Design Standards Template frames documentation as an org-wide discipline (UNVERIFIED (2026-10-20): the Architects resource is not in the corpus; everything in this section is Help/Architects-level): conventions for how *every* customization is named (objects, fields, automations, integrations, permission sets), plus a rule that development and configuration documents are created, maintained, and kept in **one central location**. The value is having a single agreed standard rather than per-developer habits; scattered or absent standards are what this addresses. (The architect.salesforce.com resource pages can be access-restricted to direct fetch — verify the template loads in a browser before citing it as your team's authority.)
 
 ---
 
@@ -149,7 +165,7 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 Run through these before marking work in this area complete:
 
-- [ ] Every public/global class, method, and constructor has an ApexDoc block that **immediately precedes** it (no blank line or statement between)
+- [ ] Every public/global class, method, and constructor has an ApexDoc block that **immediately precedes** it (no other code or comments between, apexdev 264 L13833-13834)
 - [ ] Every block opens with `/**` (two asterisks), not `/*`
 - [ ] `@param` tags match the parameter names and order; no stale params
 - [ ] `@return` is present on non-`void` methods and **absent** on `void` methods and constructors
@@ -166,9 +182,9 @@ Run through these before marking work in this area complete:
 Non-obvious platform behaviors that cause real production problems:
 
 1. **The compiler never validates ApexDoc** — a `@param oldName` for a parameter you renamed, a `@return` on a `void` method, or a class with zero docs all compile and deploy cleanly. The lie ships. Only review and the checker catch it, which is why an un-gated standard rots.
-2. **`/*` vs `/**` silently changes meaning** — a block opened with one asterisk is an ordinary comment; doc generators skip it entirely. The code looks documented in the editor yet produces empty generated docs.
-3. **Detached blocks document nothing** — an ApexDoc block must sit *immediately* above the declaration. A blank line, an annotation placed above the comment, or an intervening statement breaks the association and the block is treated as free-floating.
-4. **Architect resource pages can 403 on direct fetch** — the Design Standards Template on architect.salesforce.com may block scripted access; confirm it loads in a browser before treating it as your cited authority.
+2. **`/*` vs `/**` silently changes meaning** — a block opened with one asterisk is an ordinary comment, not ApexDoc (apexdev 264 L13830-13832); that doc generators then skip it is an inference, not a corpus statement. The code looks documented in the editor yet produces empty generated docs.
+3. **Detached blocks document nothing** — an ApexDoc block must sit *immediately* above the declaration: "No other code or comments are between the ApexDoc comment block and the element that it describes" (apexdev 264 L13833-13834). An intervening statement or comment breaks the association. UNVERIFIED (2026-10-20): that a blank line or an annotation placed above the comment does so is not in the corpus; the guide's examples show annotations between the block and the declaration (apexdev 264 L14388-14389, L14755-14756), which is the form the checker accepts.
+4. **Architect resource pages can 403 on direct fetch** (UNVERIFIED (2026-10-20): an environment observation, not a corpus fact) — the Design Standards Template on architect.salesforce.com may block scripted access; confirm it loads in a browser before treating it as your cited authority.
 
 ---
 

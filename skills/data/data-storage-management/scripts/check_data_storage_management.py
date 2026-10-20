@@ -4,8 +4,13 @@
 Analyzes Salesforce org metadata to surface storage management issues:
 - Objects with Long Text Area or Rich Text Area fields (potential data storage inflation)
 - Attachment usage (prefer ContentDocument migration)
-- Field History Tracking enabled on high-volume-risk objects
+- Field History Tracking enabled on high-volume-risk objects (INFO: history data
+  does not count against data storage, secguide 262 L4555-4556)
 - ContentDocument / ContentVersion patterns
+
+Exit codes: ERROR findings (unparseable metadata, missing --manifest-dir) exit 1
+always; WARN and INFO findings exit 0 unless --strict is given. An empty
+directory prints one WARN and exits 0.
 
 Uses stdlib only — no pip dependencies.
 
@@ -31,6 +36,7 @@ import xml.etree.ElementTree as ET
 SALESFORCE_NS = "http://soap.sforce.com/2006/04/metadata"
 
 # Field types that can inflate data storage beyond the 2 KB average
+# (the 2 KB average is UNVERIFIED (2026-10-20): Help-only, not in the corpus)
 LARGE_FIELD_TYPES = {"LongTextArea", "Html", "Textarea", "EncryptedText"}
 
 # Field types that are not storage-concerning
@@ -50,7 +56,7 @@ HIGH_VOLUME_RISK_OBJECTS = {
 MAX_LARGE_TEXT_FIELDS = 5
 
 # Maximum field length (chars) before flagging as extra-large
-EXTRA_LARGE_FIELD_THRESHOLD = 65536  # 64K chars — half the platform max
+EXTRA_LARGE_FIELD_THRESHOLD = 65536  # 64K chars; arbitrary review threshold, not a platform limit
 
 
 # ---------------------------------------------------------------------------
@@ -92,7 +98,7 @@ def check_custom_objects(manifest_dir: Path) -> list[str]:
         try:
             tree = ET.parse(xml_file)
         except ET.ParseError as exc:
-            issues.append(f"XML parse error in {xml_file.name}: {exc}")
+            issues.append(f"ERROR: XML parse error in {xml_file.name}: {exc}")
             continue
 
         root = tree.getroot()
@@ -117,16 +123,16 @@ def check_custom_objects(manifest_dir: Path) -> list[str]:
 
         if len(large_text_fields) > MAX_LARGE_TEXT_FIELDS:
             issues.append(
-                f"{object_name}: has {len(large_text_fields)} large text/rich text fields "
+                f"WARN: {object_name}: has {len(large_text_fields)} large text/rich text fields "
                 f"({', '.join(f[0] for f in large_text_fields[:3])}...). "
                 f"More than {MAX_LARGE_TEXT_FIELDS} large text fields can significantly inflate "
-                f"data storage beyond the 2 KB average per record."
+                f"data storage beyond the 2 KB average per record (UNVERIFIED (2026-10-20): Help-only figure)."
             )
 
         for field_name, field_type, length in large_text_fields:
             if length >= EXTRA_LARGE_FIELD_THRESHOLD:
                 issues.append(
-                    f"{object_name}.{field_name}: {field_type} field with length {length} chars "
+                    f"WARN: {object_name}.{field_name}: {field_type} field with length {length} chars "
                     f"(>={EXTRA_LARGE_FIELD_THRESHOLD}). Extra-large text fields on high-volume "
                     f"objects can cause severe data storage inflation. "
                     f"Consider whether this content could be stored as a ContentDocument instead."
@@ -134,12 +140,14 @@ def check_custom_objects(manifest_dir: Path) -> list[str]:
 
         if history_tracking_fields and object_name in HIGH_VOLUME_RISK_OBJECTS:
             issues.append(
-                f"{object_name}: field history tracking enabled on "
+                f"INFO: {object_name}: field history tracking enabled on "
                 f"{len(history_tracking_fields)} field(s) "
                 f"({', '.join(history_tracking_fields[:5])}). "
-                f"High-volume objects with tracking generate large numbers of history records "
-                f"that count toward data storage. Disable tracking on low-value fields or "
-                f"evaluate Field Audit Trail."
+                f"High-volume objects with tracking generate many history records, but "
+                f"field history data does not count against data storage limits "
+                f"(secguide 262 L4555-4556), so this is not a storage lever. Review the "
+                f"tracked-field list for volume and retention (up to 18 months in the UI, "
+                f"24 via the API, without Field Audit Trail; secguide 262 L4553-4554)."
             )
 
     return issues
@@ -169,7 +177,7 @@ def check_for_attachment_usage(manifest_dir: Path) -> list[str]:
 
     if attachment_files:
         issues.append(
-            f"Apex classes reference the Attachment sObject in DML "
+            f"WARN: Apex classes reference the Attachment sObject in DML "
             f"({', '.join(attachment_files[:5])}{'...' if len(attachment_files) > 5 else ''}). "
             f"Attachments are legacy and create binary duplicates per parent record. "
             f"Migrate to ContentVersion + ContentDocumentLink to enable deduplication "
@@ -198,10 +206,11 @@ def check_content_document_links(manifest_dir: Path) -> list[str]:
         # Detect AllUsers visibility on ContentDocumentLink — potential security exposure
         if "contentdocumentlink" in content.lower() and "'allusers'" in content.lower():
             issues.append(
-                f"{apex_file.name}: ContentDocumentLink created with Visibility = 'AllUsers'. "
-                f"Verify this is intentional — 'AllUsers' exposes the file to all internal users "
-                f"regardless of record sharing. Use 'InternalUsers' or 'SharedUsers' if "
-                f"restricted access is needed."
+                f"WARN: {apex_file.name}: ContentDocumentLink created with Visibility = 'AllUsers'. "
+                f"Verify this is intentional — 'AllUsers' makes the file available to all users "
+                f"who have permission to see the file, including external users "
+                f"(object_reference 264 L77397-77398, L77409). Use 'InternalUsers' or 'SharedUsers' "
+                f"if restricted access is needed."
             )
 
     return issues
@@ -224,10 +233,10 @@ def check_storage_monitoring(manifest_dir: Path) -> list[str]:
 
     if apex_files and not has_limits_check:
         issues.append(
-            "No Apex code found that references DataStorageMB or FileStorageMB from the "
+            "WARN: No Apex code found that references DataStorageMB or FileStorageMB from the "
             "Limits API. Consider implementing automated storage monitoring that alerts "
             "when remaining storage drops below 25% of allocation. "
-            "Salesforce built-in alerts (75%/90%/100%) are a lagging safety net, "
+            "Built-in alert emails are a lagging safety net, "
             "not a proactive monitoring strategy."
         )
 
@@ -243,7 +252,12 @@ def check_data_storage_management(manifest_dir: Path) -> list[str]:
     issues: list[str] = []
 
     if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
+        issues.append(f"ERROR: Manifest directory not found: {manifest_dir}")
+        return issues
+
+    if not (list(manifest_dir.rglob("*.object-meta.xml")) or list(manifest_dir.rglob("*.object"))
+            or list(manifest_dir.rglob("*.cls"))):
+        issues.append(f"WARN: no .object-meta.xml, .object or .cls files under {manifest_dir}; nothing to check")
         return issues
 
     issues.extend(check_custom_objects(manifest_dir))
@@ -267,6 +281,11 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Promote WARN and INFO findings to exit 1 (ERROR always exits 1).",
+    )
     return parser.parse_args()
 
 
@@ -279,12 +298,14 @@ def main() -> int:
         print("No storage management issues found.")
         return 0
 
-    print(f"Found {len(issues)} storage management issue(s):\n")
+    print(f"Found {len(issues)} storage management finding(s):\n")
     for i, issue in enumerate(issues, start=1):
-        print(f"ISSUE {i}: {issue}")
+        print(f"{i}. {issue}")
         print()
 
-    return 1
+    if any(issue.startswith("ERROR:") for issue in issues):
+        return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

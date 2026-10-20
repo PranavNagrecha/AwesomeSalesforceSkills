@@ -39,9 +39,9 @@ outputs:
   - "Migration approach for converting existing Contact-only records to Person Accounts"
   - "Integration guidance for external systems consuming Person Account data"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-20
 ---
 
 # Person Accounts
@@ -54,11 +54,27 @@ This skill activates when a practitioner needs to enable, configure, build on, o
 
 Gather this context before working on anything in this domain:
 
-- **Enablement state**: Is Person Accounts already enabled in this org? Check Setup > Account Settings. Enablement is permanent and one-directional — once enabled it cannot be reversed. If not yet enabled, confirm prerequisites are met before proceeding.
+- **Enablement state**: Is Person Accounts already enabled in this org? Check Setup > Account Settings. Person accounts "aren't enabled by default" and are requested by contacting Salesforce (api_meta 264 L100870-100871); the person account fields appear on Account only when enabled (object_reference 264 L13419). UNVERIFIED (2026-10-20): that enablement is permanent and cannot be reversed, and the Setup > Account Settings path, are Help-only claims — grep of both corpus directories finds no statement either way. If not yet enabled, confirm prerequisites are met before proceeding.
 - **Org model type**: Is the org B2C-only, B2B-only, or mixed? Mixed B2B+B2C orgs carry the most complexity — Person Accounts and Business Accounts coexist and must be kept clearly separated in all logic, reports, and integrations.
-- **Existing data state**: If enablement is being planned (not yet done), check whether any Contacts without an AccountId exist. Contacts with no AccountId (private contacts) block Person Account enablement.
-- **Common wrong assumption**: Practitioners frequently assume the underlying Contact record for a Person Account can be used directly via the Contact object in SOQL or API calls, the same way a standard contact is used. It cannot — the Person Contact is a system-managed record that must be accessed through the Account object or through the PersonContactId field.
-- **Key limits in play**: Person Accounts cannot have child Contact records. Person Accounts cannot be the AccountId on an Opportunity in the same way a Business Account can — however Opportunities can be associated to a Person Account using the standard AccountId field. Some AppExchange packages do not support Person Accounts.
+- **Existing data state**: If enablement is being planned (not yet done), check whether any Contacts without an AccountId exist. Contacts with no AccountId (private contacts) block Person Account enablement. UNVERIFIED (2026-10-20): Help-only; the private-contact prerequisite is not in the corpus.
+- **Common wrong assumption**: Practitioners frequently assume the underlying Contact record for a Person Account can be used directly via the Contact object in SOQL or API calls, the same way a standard contact is used. Treat the Person Contact as a system-managed record reached through the Account object or the `PersonContactId` field ("the ID for the contact associated with this person account", object_reference 264 L13481-13487). Two corpus facts matter here: the person account fields "are the subset of person account fields that are contained in the child person contact record" (object_reference 264 L13415-13416), and Contact itself carries a read-only `IsPersonAccount` field (object_reference 264 L71925-71929). UNVERIFIED (2026-10-20): "it cannot be used directly" is Help-only.
+- **Key limits in play**: Person Accounts cannot have child Contact records. Opportunities are associated to a Person Account through the standard AccountId field. Some AppExchange packages do not support Person Accounts. UNVERIFIED (2026-10-20): all three statements are Help-only; the corpus has no line on child Contacts, Opportunity association or package compatibility, and an earlier sentence here saying Person Accounts cannot be the Opportunity AccountId "in the same way" contradicted the next clause and was removed.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the org B2C-only, B2B-only or mixed? | Gotcha 3 and Gotcha 5: mixed orgs need branching in every query, rule and report | Whether every code path needs an `IsPersonAccount` branch |
+| Is Person Accounts already enabled, and who requested it? | Gotcha 1: enablement is requested from Salesforce (api_meta 264 L100870-100871); reversal is UNVERIFIED | A sandbox-first enablement plan with named sign-off |
+| Does any Apex trigger run on Contact? | Gotcha 3: inserts, updates and deletes on person accounts fire Account triggers, not Contact triggers (apexdev 264 L15724) | A list of Contact triggers that will never see person records |
+| Which integrations read Contact, and which write Account with a person record type? | Gotcha 3 and the creation pattern: `LastName` on Account creates a person account (apexdev 264 L7413-7415) | Payload mappings to `Person`-prefixed fields |
+| Which installed packages touch Account or Contact? | Gotcha 4: package support is UNVERIFIED, so each vendor must confirm | A package inventory with a vendor answer per package |
+| Do duplicate or matching rules filter on `IsPersonAccount`? | Gotcha 5: the matching rule type supports Person Account from API 39.0 (api_meta 264 L89963) | Separate rules per account model |
+| Are cross-type duplicates (a person stored as a Business Account) expected? | Gotcha 6: cross-type merge is UNVERIFIED, so plan a manual path | A decision to merge, rebuild or leave |
+
+A proper configuration adds an `IsPersonAccount` branch in every Account and Contact code path, separate record types and duplicate rules, and a tested integration contract, instead of enabling the feature and discovering the splits in production.
 
 ---
 
@@ -68,23 +84,23 @@ Gather this context before working on anything in this domain:
 
 A Person Account is a single Salesforce record that simultaneously represents both an Account and a Contact for an individual person (a consumer). When you view a Person Account in the UI or via API, the record is stored as an Account sObject. Behind the scenes, Salesforce automatically creates and maintains a shadow Contact record — called the **PersonContact** — that is linked to the Account record via the `PersonContactId` field.
 
-The `IsPersonAccount` Boolean field on the Account sObject distinguishes Person Accounts from Business Accounts. When `IsPersonAccount = true`, the record is a person account; when `false` (or absent), it is a business account.
+The `IsPersonAccount` Boolean field on the Account sObject is read-only and "indicates whether this account has a record type of Person Account (true) or not (false)" (object_reference 264 L12855-12861). When `IsPersonAccount = true`, the record is a person account; when `false`, it is a business account. If the person-contact fields hold values you can't change `IsPersonAccount` to false (object_reference 264 L13781).
 
-Person Account-specific fields (such as `PersonEmail`, `PersonPhone`, `PersonBirthdate`, `PersonMailingCity`) are surfaced on the Account object but are actually stored on the underlying PersonContact. These fields map to the standard Contact fields (`Email`, `Phone`, `Birthdate`, `MailingCity`) on the PersonContact record.
+Person Account-specific fields (such as `PersonEmail`, `PersonPhone`, `PersonBirthdate`, `PersonMailingCity`) are surfaced on the Account object but are actually stored on the underlying PersonContact. These fields map to the standard Contact fields (`Email`, `Phone`, `Birthdate`, `MailingCity`) on the PersonContact record. When `IsPersonAccount` is false they are null and can't be modified (object_reference 264 L13417-13418).
 
-**Person Accounts are designed for B2C use cases** — retail customers, insurance policyholders, healthcare patients, financial services clients — where the customer is an individual person, not an organization.
+**Person Accounts are designed for B2C use cases** — retail customers, insurance policyholders, healthcare patients, financial services clients — where the customer is an individual person, not an organization. (UNVERIFIED (2026-10-20): the use-case framing is Help-only.)
 
 ### Enabling Person Accounts
 
-Enabling Person Accounts is a **one-way, permanent operation**. Once enabled in an org, it cannot be disabled. This makes the decision consequential for org design.
+Enabling Person Accounts is treated here as a **one-way, permanent operation**: UNVERIFIED (2026-10-20) — the corpus says only that person accounts are requested by contacting Salesforce (api_meta 264 L100870-100871) and that `personAccountDefault` has no impact "when Person Accounts is disabled" (api_meta 264 L100867-100868), which describes a disabled state without saying whether it can be returned to. Plan as if it cannot be undone.
 
-Prerequisites before contacting Salesforce to enable:
+Prerequisites before contacting Salesforce to enable (UNVERIFIED (2026-10-20): the whole list is Help-only):
 1. The org must be Enterprise Edition or higher (or a supported industry cloud edition).
 2. All Contacts in the org must have an AccountId — there must be no "private contacts" (Contacts with no parent Account). Run `SELECT Id FROM Contact WHERE AccountId = null` to verify.
 3. At least one Account Record Type must exist or be created, which will be designated as the Person Account record type.
 4. Review all existing Apex, Flows, integrations, and AppExchange packages for Person Account compatibility.
 
-The actual enablement is performed by Salesforce Support (a support case in production orgs) or via Setup > Account Settings in some sandbox environments. After enablement, at least one Account Record Type must be designated as a Person Account record type in Setup > Account Settings.
+The actual enablement is requested from Salesforce (api_meta 264 L100870-100871); the sandbox Setup > Account Settings route is UNVERIFIED (2026-10-20): Help-only. After enablement, at least one Account Record Type must be designated as a Person Account record type in Setup > Account Settings.
 
 **After enablement, you cannot go back.** If your org has B2B records, those Business Accounts will remain Business Accounts — but you now have both models coexisting.
 
@@ -93,11 +109,11 @@ The actual enablement is performed by Salesforce Support (a support case in prod
 When Person Accounts is enabled:
 
 - Person Accounts are created via the **Account** sObject in the API — not via Contact.
-- To create a Person Account via API, specify `RecordTypeId` of a Person Account record type; do not include a LastName on a Contact record separately.
+- To create a Person Account in Apex, use `LastName` (a person account) rather than `Name` (a business account): "If your code creates a new account using name, a business account is created. If your code uses LastName, a person account is created" (apexdev 264 L7413-7415). Specifying the `RecordTypeId` of a Person Account record type is the other route used in the examples. Once the record type is Person Account, the `Name` field can't be modified with DML (apexdev 264 L9185).
 - The `PersonContactId` field on the Account record holds the Id of the automatically-created PersonContact.
 - Contact-like fields (PersonEmail, PersonPhone, PersonMobilePhone, PersonBirthdate, PersonMailingStreet, PersonMailingCity, etc.) are accessible directly on the Account record when `IsPersonAccount = true`.
-- **SOQL on Contacts returns PersonContact records** — a `SELECT Id FROM Contact` will include the system-managed PersonContact records. Filters that need to exclude them should use `WHERE IsPersonAccount = false` on Account queries, or be aware that Contact queries may include person account contacts.
-- Person Accounts are **not accessible via Contact Id** in standard API calls the same way a regular Contact is — the canonical Id is the Account Id.
+- **SOQL on Contacts returns PersonContact records** — a `SELECT Id FROM Contact` will include the system-managed PersonContact records. Filters that need to exclude them can use `WHERE IsPersonAccount = false` directly on Contact (the field exists on Contact, object_reference 264 L71925) or `Account.IsPersonAccount = false`.
+- The canonical Id is the Account Id; `PersonContactId` points at the child contact (object_reference 264 L13481-13487). UNVERIFIED (2026-10-20): that Person Accounts are "not accessible via Contact Id" is Help-only.
 
 ### Record Types and the Person Account Record Type
 
@@ -106,21 +122,24 @@ After enablement, at least one Account Record Type must be designated as a Perso
 - Determines which Account records can be created as Person Accounts.
 - Cannot be un-designated once Person Account records exist with that record type.
 
-Separate Record Type sets are required for Person Accounts and Business Accounts — fields, picklist values, and page layouts differ significantly between the two models.
+Separate Record Type sets are required for Person Accounts and Business Accounts — fields, picklist values, and page layouts differ significantly between the two models. (UNVERIFIED (2026-10-20): the designation rules above, including "cannot be un-designated", and this separate-set requirement are Help-only. Related grounded points: Metadata API does not retrieve custom picklist values on person account record types when the picklist exists on a contact, api_meta 264 L47344-47345; `personAccountDefault` on a profile's record type visibility, api_meta 264 L100866-100868.)
 
 ### Limitations of Person Accounts
 
 | Limitation | Detail |
 |---|---|
-| No child Contacts | Cannot create a Contact with AccountId pointing to a Person Account. Person Accounts are individuals. |
-| No Contact Roles on Opportunities through PersonContact | Standard OCR works, but the PersonContactId (not a new Contact) is used. |
-| AppExchange compatibility | Many packages assume standard Account+Contact structure and don't handle `IsPersonAccount = true`. Verify before enabling. |
-| Merge behavior | Different merge rules than Business Accounts. Person Accounts can only merge with other Person Accounts. |
+| No child Contacts | Cannot create a Contact with AccountId pointing to a Person Account. Person Accounts are individuals. (UNVERIFIED (2026-10-20): Help-only) |
+| Contact Roles on Opportunities through PersonContact | Standard OCR works, but the PersonContactId (not a new Contact) is used. (UNVERIFIED (2026-10-20): Help-only) |
+| AppExchange compatibility | Many packages assume standard Account+Contact structure and don't handle `IsPersonAccount = true`. Verify before enabling. (UNVERIFIED (2026-10-20): Help-only) |
+| Merge behavior | Different merge rules than Business Accounts. Person Accounts can only merge with other Person Accounts. (UNVERIFIED (2026-10-20): the Apex merge section lists which objects merge, apexdev 264 L8347, but no person-account rule) |
+| Contact triggers | Inserts, updates and deletes on person accounts fire Account triggers, not Contact triggers (apexdev 264 L15724); update triggers don't fire when a record type changes between business and person (apexdev 264 L15748-15749). |
+| Schema tokens | Field tokens aren't available for person accounts; `Schema.Account.fieldname` throws, so name the field as a string (apexdev 264 L11034-11035). |
 | SOQL contact queries | `SELECT Id FROM Contact` returns PersonContact records mixed with regular Contacts unless filtered. |
 
 ### Reporting Impact
 
 Enabling Person Accounts changes the behavior of Contact-based reports:
+UNVERIFIED (2026-10-20): the report-type behaviour in this section is Help-only — no corpus file describes standard report types with person accounts.
 - Standard **Contacts & Accounts** reports will include Person Account records, since each Person Account has an underlying PersonContact.
 - Reports that are intended for B2B contacts will need filters to exclude Person Account contacts: filter on `Account: Is Person Account = False`.
 - Reports intended only for Person Accounts should filter on `Account: Is Person Account = True`.
@@ -128,7 +147,7 @@ Enabling Person Accounts changes the behavior of Contact-based reports:
 
 ### Health Cloud and Financial Services Cloud
 
-Health Cloud and Financial Services Cloud (FSC) extensively use Person Accounts to represent individual patients, clients, and policyholders. In these industry clouds:
+Health Cloud and Financial Services Cloud (FSC) extensively use Person Accounts to represent individual patients, clients, and policyholders. UNVERIFIED (2026-10-20): this whole section is Help-only; a grep for `HealthCloudGA__`, `FinServ__` and `EhrPatient` across both corpus directories returns nothing, so the object names below are unverified too. In these industry clouds:
 - Person Account enablement is typically mandatory or strongly recommended.
 - Industry-specific objects (e.g., `HealthCloudGA__EhrPatient__c`, FSC `FinancialAccount`) relate to Person Accounts via AccountId.
 - Standard identity and relationship management features (Household model in FSC, Care Program in Health Cloud) are built on top of Person Accounts.
@@ -158,7 +177,7 @@ trigger AccountTrigger on Account (before insert, before update) {
 }
 ```
 
-Note: `IsPersonAccount` is a formula field on Account. In `before insert` triggers it may not yet be set — check if a Person Account Record Type Id is being assigned instead.
+Note: `IsPersonAccount` is read-only and "defaulted on create" (object_reference 264 L12855-12861). UNVERIFIED (2026-10-20): whether it is already set inside a `before insert` trigger, and that it is a formula field, are not stated in the corpus — check the `RecordTypeId` being assigned instead, which is documented as the thing it reflects.
 
 **Why not skip the check:** Business Account logic often accesses child Contacts (which Person Accounts cannot have), and Person Account logic accesses Person-prefixed fields (which are null on Business Accounts). Mixing the two without branching causes null pointer errors and data corruption.
 
@@ -197,18 +216,11 @@ FROM Contact
 WHERE Account.IsPersonAccount = false
 ```
 
-Or in Apex trigger on Contact, skip PersonContact records:
+Or filter directly on the Contact field: `WHERE IsPersonAccount = false` (object_reference 264 L71925).
 
-```apex
-for (Contact c : Trigger.new) {
-    if (c.Account.IsPersonAccount) {
-        continue; // skip Person Account system contacts
-    }
-    // standard Contact logic
-}
-```
+No Apex trigger guard is needed on Contact for person records: "Inserts, updates, and deletes on person accounts fire Account triggers, not Contact triggers" (apexdev 264 L15724). An earlier version of this pattern showed a Contact trigger that skipped PersonContacts via `c.Account.IsPersonAccount`; that loop never sees person contacts and also reads a relationship field that `Trigger.new` does not populate. Put the `IsPersonAccount` branch in the Account trigger, and in batch or queueable code that queries Contact.
 
-**Why this matters:** Without this filter, automations that iterate over Contacts will process PersonContact records — which are system-managed and should not be directly modified or deleted by custom logic.
+**Why this matters:** Without this filter, automations that iterate over Contacts by query will process PersonContact records — which are system-managed and should not be directly modified or deleted by custom logic.
 
 ---
 
@@ -224,7 +236,7 @@ for (Contact c : Trigger.new) {
 | Org runs Health Cloud or FSC | Enable Person Accounts (required or strongly recommended by industry cloud) | Industry cloud relationships are built on Person Account model |
 | AppExchange package does not support Person Accounts | Evaluate package compatibility before enablement; contact ISV if needed | Some packages break when `IsPersonAccount = true` records exist |
 | Need to report on consumers only (no business accounts) | Add `Account: Is Person Account = True` filter to all relevant reports | Without this filter, Business Accounts appear in consumer reports |
-| Need to convert existing individual Contacts to Person Accounts | Plan a data migration; there is no automatic conversion | No out-of-box tool converts Business Account+Contact pairs to Person Accounts |
+| Need to convert existing individual Contacts to Person Accounts | Plan a data migration; there is no automatic conversion | No out-of-box tool converts Business Account+Contact pairs to Person Accounts (UNVERIFIED (2026-10-20): a "no tool exists" claim, Help-only) |
 
 ---
 
@@ -263,17 +275,17 @@ Run through these before marking Person Accounts work complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Person Account enablement is permanent and irreversible** — Once enabled, Person Accounts cannot be disabled. If the org later decides the B2C model is not needed, there is no rollback. All related data, record types, and code changes persist. This decision must be made deliberately with full stakeholder alignment.
+1. **Person Account enablement is permanent and irreversible** (UNVERIFIED (2026-10-20): no corpus line states it; see Before Starting) — Once enabled, Person Accounts cannot be disabled. If the org later decides the B2C model is not needed, there is no rollback. All related data, record types, and code changes persist. This decision must be made deliberately with full stakeholder alignment.
 
 2. **SOQL on Contact includes PersonContact records** — Any existing `SELECT ... FROM Contact` query will silently include the system-managed PersonContact records for each Person Account. Automations or integrations that process Contact query results will encounter these records and may behave incorrectly — updating, deleting, or re-syncing system-managed records they were not designed to handle.
 
-3. **Person Accounts cannot have child Contacts** — A common mistake when migrating a B2C org is trying to link a Contact to a Person Account via `AccountId`. Salesforce blocks this with an error. Person Accounts represent individual people and do not model an organization with employees.
+3. **Person Accounts cannot have child Contacts** (UNVERIFIED (2026-10-20): Help-only) — A common mistake when migrating a B2C org is trying to link a Contact to a Person Account via `AccountId`. Salesforce blocks this with an error. Person Accounts represent individual people and do not model an organization with employees.
 
-4. **IsPersonAccount is null (not false) in before insert context** — In a `before insert` trigger on Account, `IsPersonAccount` has not yet been set by the platform. Do not rely on this field in `before insert` logic; instead check whether the `RecordTypeId` being assigned is a Person Account record type.
+4. **IsPersonAccount may not be usable in before insert context** (UNVERIFIED (2026-10-20): the null-versus-false behaviour is not in the corpus; the field is read-only and defaulted on create, object_reference 264 L12855-12861) — In a `before insert` trigger on Account, `IsPersonAccount` has not yet been set by the platform. Do not rely on this field in `before insert` logic; instead check whether the `RecordTypeId` being assigned is a Person Account record type.
 
 5. **AppExchange packages silently fail or error on Person Account records** — Many older AppExchange packages were built before Person Accounts were common and assume all Accounts have child Contacts. When these packages run actions on Person Accounts, they may throw errors, silently skip records, or corrupt data by creating orphan Contacts attached to Person Accounts (which then fails the platform constraint).
 
-6. **Merging Person Accounts with Business Accounts is blocked** — Salesforce only allows merging records of the same type. You cannot merge a Person Account with a Business Account. Duplicate detection rules need to be segmented separately for Person Accounts and Business Accounts to avoid false merge suggestions.
+6. **Merging Person Accounts with Business Accounts is blocked** (UNVERIFIED (2026-10-20): no merge rule for person accounts is in the corpus) — Salesforce only allows merging records of the same type. You cannot merge a Person Account with a Business Account. Duplicate detection rules need to be segmented separately for Person Accounts and Business Accounts to avoid false merge suggestions.
 
 ---
 
@@ -288,7 +300,8 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- `data-model-design-patterns` — use for general object relationship design decisions (lookup vs master-detail, junction objects) that apply to B2B models or to objects related to Person Accounts
-- `record-types-and-page-layouts` — use when configuring the separate Record Types and page layouts required for Person Account vs Business Account records
-- `data-migration-planning` — use when planning the conversion of an existing Contact-only B2C model to Person Accounts, including data transformation and cutover strategy
-- `soql-query-optimization` — use when debugging slow SOQL queries on Account or Contact objects in orgs with large Person Account volumes
+- `data/data-model-design-patterns` — use for general object relationship design decisions (lookup vs master-detail, junction objects) that apply to B2B models or to objects related to Person Accounts
+- `admin/record-types-and-page-layouts` — use when configuring the separate Record Types and page layouts required for Person Account vs Business Account records
+- `data/data-migration-planning` — use when planning the conversion of an existing Contact-only B2C model to Person Accounts, including data transformation and cutover strategy
+- `data/duplicate-rule-person-account-edge-cases` — use when duplicate and matching rules must treat person accounts and business accounts separately
+- `data/soql-query-optimization` — use when debugging slow SOQL queries on Account or Contact objects in orgs with large Person Account volumes

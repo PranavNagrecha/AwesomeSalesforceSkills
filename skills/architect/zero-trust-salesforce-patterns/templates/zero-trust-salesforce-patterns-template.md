@@ -33,7 +33,7 @@ List the operations/objects that should require step-up MFA at access time:
 | Leg | Salesforce control | Specific config | Owner |
 |---|---|---|---|
 | Verify explicitly (session start) | Login Flow + IdP claim | | |
-| Verify explicitly (operation level) | High-Assurance Session on PSG | | |
+| Verify explicitly (operation level) | High-Assurance Session on PSG (UNVERIFIED (2026-10-20): Help-level; grounded lever is connected-app `sessionLevel`) | | |
 | Least privilege | PSG + Muting PS, JIT grants | | |
 | Continuous verification | RTEM + TSP | | |
 | Device awareness | Mobile Security + IdP device-state claim | | |
@@ -48,21 +48,21 @@ For each enabled event, mark whether TSP enforcement applies:
 | Event | TSP supported? | Action chosen | Notes |
 |---|---|---|---|
 | LoginEvent | yes | | |
-| ApiAnomalyEvent | yes | | |
-| SessionHijackingEvent | yes | | |
-| ReportEvent | yes | | |
-| BulkApiEvent | yes | | |
+| ApiAnomalyEventStore | yes, Notifications only | | secguide 262 L6144 |
+| SessionHijackingEventStore | yes, Notifications only | | secguide 262 L6492 |
+| ReportEvent | yes (MFA becomes Block in Lightning) | | secguide 262 L6419-6437 |
+| BulkApiResultEventStore | yes, Block + Notifications | | secguide 262 L5953 |
 | IdentityVerificationEvent | **no — detect only** | (Apex / Flow subscriber) | per gotcha #1 |
 | MobileEmailEvent | **no — detect only** | (Apex / Flow subscriber) | per gotcha #1 |
 
-(Re-confirm against the latest Enhanced TSP docs every release.)
+(Re-confirm against the latest Enhanced TSP docs every release. Valid `eventName` values: api_meta 264 L138737-138798.)
 
 ## Phased Rollout
 
 | Phase | Window | Change | Soak metric |
 |---|---|---|---|
 | 1 | wk 0–2 | New TSPs in **Notify** mode | false-positive rate |
-| 2 | wk 2–4 | Promote to **Require MFA** | step-up tickets |
+| 2 | wk 2–4 | Promote to **Require MFA** (not for Notifications-only events) | step-up tickets |
 | 3 | wk 4–6 | Promote to **Block** | help-desk volume |
 | 4 | wk 6+ | Add muting PSs, JIT grants | drift watch |
 
@@ -70,7 +70,7 @@ For each enabled event, mark whether TSP enforcement applies:
 
 | Risk | Mitigation | Owner |
 |---|---|---|
-| CAEP not consumed → IdP risk-revoke does not propagate | shorter session timeouts, RTEM session-end TSP | |
+| CAEP not consumed → IdP risk-revoke does not propagate | shorter session timeouts, RTEM TSP (block / MFA where the event allows) | |
 | In-session device-trust polling not supported | shorter session timeouts | |
 | TSP unsupported event types | detect-and-respond via Apex/Flow | |
 | Profile minimization is multi-quarter work | parallel workstream | |

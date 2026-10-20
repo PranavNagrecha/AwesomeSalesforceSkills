@@ -22,7 +22,12 @@ positives on ordinary Apex, not full-grammar parsing.
 Usage:
     python3 check_development_documentation_standards.py [--manifest-dir path] [--require-return]
 
-Exit code 0 = no issues, 1 = issues found (or bad input).
+Exit codes: ERROR (missing --manifest-dir, unreadable file) exits 1 always; WARN and INFO
+findings exit 0 unless --strict is given. A directory with no .cls files prints one WARN and
+exits 0. Rules follow apexdev 264 L13821-13935 (structure and tags), L6699-6700 (naming).
+Annotations between the block and the declaration are accepted, as in the guide's examples
+(apexdev 264 L14388-14389). Missing blocks on private members are INFO, since the guide asks
+for documentation of public or global API (apexdev 264 L14135).
 """
 
 from __future__ import annotations
@@ -76,6 +81,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Also flag non-void methods that are missing a @return tag.",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Promote WARN and INFO findings to exit 1 (ERROR always exits 1).",
+    )
     return parser.parse_args()
 
 
@@ -84,15 +94,14 @@ def _preceding_doc_block(lines: list[str], decl_idx: int) -> tuple[list[str] | N
     precedes the declaration at decl_idx, skipping only annotation lines (@Foo) which are
     allowed to sit between the block and the declaration. (None, False) if no block."""
     i = decl_idx - 1
-    # Skip annotation lines directly above the declaration (e.g. @AuraEnabled, @isTest).
-    while i >= 0 and lines[i].strip().startswith("@") and "*/" not in lines[i]:
+    # Skip annotation lines and blank lines directly above the declaration. The guide
+    # forbids only "other code or comments" between block and element (apexdev 264
+    # L13833-13834) and its examples put annotations there (L14388-14389); whether a
+    # blank line detaches the block is UNVERIFIED (2026-10-20), so it is not treated as
+    # detaching here.
+    while i >= 0 and (lines[i].strip() == "" or (lines[i].strip().startswith("@") and "*/" not in lines[i])):
         i -= 1
-    if i < 0 or lines[i].strip() != "" and not lines[i].rstrip().endswith("*/"):
-        # The line immediately above must be the end of a comment block; a blank line or
-        # code means the declaration is undocumented / detached.
-        if not lines[i].rstrip().endswith("*/"):
-            return None, False
-    if not lines[i].rstrip().endswith("*/"):
+    if i < 0 or not lines[i].rstrip().endswith("*/"):
         return None, False
     end = i
     # Walk up to the block opener.
@@ -141,10 +150,11 @@ def _check_declaration(
         if kind == "class" and not name[:1].isupper():
             issues.append(f"{loc}: class '{name}' should start with a capital letter (naming convention).")
         if block is None:
-            issues.append(f"{loc}: {kind} '{name}' has no ApexDoc block immediately preceding it.")
+            sev = "INFO: " if "private" in line.lower().split("class")[0] else ""
+            issues.append(f"{sev}{loc}: {kind} '{name}' has no ApexDoc block immediately preceding it.")
         elif not opened_double:
             issues.append(
-                f"{loc}: {kind} '{name}' doc block opens with '/*' — use '/**' or generators skip it."
+                f"{loc}: {kind} '{name}' doc block opens with '/*' — ApexDoc comments begin with '/**' (apexdev 264 L13830-13832)."
             )
         return
 
@@ -169,11 +179,12 @@ def _check_declaration(
     block, opened_double = _preceding_doc_block(lines, idx)
     label = "constructor" if is_constructor else "method"
     if block is None:
-        issues.append(f"{loc}: {label} '{name}' has no ApexDoc block immediately preceding it.")
+        sev = "INFO: " if re.match(r"^\s*private\b", line, re.IGNORECASE) else ""
+        issues.append(f"{sev}{loc}: {label} '{name}' has no ApexDoc block immediately preceding it.")
         return
     if not opened_double:
         issues.append(
-            f"{loc}: {label} '{name}' doc block opens with '/*' — use '/**' or generators skip it."
+            f"{loc}: {label} '{name}' doc block opens with '/*' — ApexDoc comments begin with '/**' (apexdev 264 L13830-13832)."
         )
 
     tags = _tags_in_block(block)
@@ -214,17 +225,17 @@ def _check_declaration(
 def check(manifest_dir: Path, require_return: bool) -> list[str]:
     issues: list[str] = []
     if not manifest_dir.exists():
-        return [f"Manifest directory not found: {manifest_dir}"]
+        return [f"ERROR: Manifest directory not found: {manifest_dir}"]
 
     cls_files = sorted(manifest_dir.rglob("*.cls"))
     if not cls_files:
-        return [f"No Apex classes (*.cls) found under {manifest_dir} — nothing to check."]
+        return [f"WARN: No Apex classes (*.cls) found under {manifest_dir} — nothing to check."]
 
     for path in cls_files:
         try:
             text = path.read_text(encoding="utf-8")
         except OSError as exc:
-            issues.append(f"{path}: could not read ({exc})")
+            issues.append(f"ERROR: {path}: could not read ({exc})")
             continue
         lines = text.splitlines()
         for idx in range(len(lines)):
@@ -239,8 +250,11 @@ def main() -> int:
         print("No issues found.")
         return 0
     for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
-    return 1
+        prefixed = issue if issue.startswith(("ERROR:", "WARN:", "INFO:")) else f"WARN: {issue}"
+        print(prefixed, file=sys.stderr)
+    if any(i.startswith("ERROR:") for i in issues):
+        return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

@@ -5,6 +5,11 @@ Scans a Salesforce metadata project directory for common deployment-error
 risk factors: API version mismatches, missing test classes for deployed Apex,
 and deployment script mistakes.
 
+Every finding is WARN or INFO (heuristics; the corpus holds no deploy-blocking rule
+for them). Exit codes: ERROR (missing --manifest-dir) exits 1 always; WARN and INFO
+exit 0 unless --strict is given. A directory with no metadata, Apex or script files
+prints one WARN and exits 0.
+
 Stdlib only — no pip dependencies required.
 
 Usage:
@@ -32,6 +37,11 @@ def parse_args() -> argparse.Namespace:
         "--manifest-dir",
         default=".",
         help="Root directory of the Salesforce project (default: current directory).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Promote WARN and INFO findings to exit 1 (ERROR always exits 1).",
     )
     return parser.parse_args()
 
@@ -62,10 +72,12 @@ def check_api_version_consistency(root: Path) -> list[str]:
             for v, files in sorted(versions.items())
         )
         issues.append(
-            f"API version inconsistency: found {len(versions)} different API versions "
+            f"INFO: API version inconsistency: found {len(versions)} different API versions "
             f"across {len(meta_files)} metadata files: {version_summary}. "
-            "Mixed API versions can cause UNSUPPORTED_API_VERSION errors when deploying "
-            "to an org on an older release. Standardize all -meta.xml files to one version."
+            "Mixed versions are not an error by themselves. UNSUPPORTED_API_VERSION is "
+            "documented for retired API versions (api_meta 264 L1314-1315; 21.0-30.0 retired, "
+            "31.0-40.0 retired from Summer '28), so check the oldest version against that table "
+            "(a too-new version causing it is UNVERIFIED (2026-10-20))."
         )
 
     # Check against sfdx-project.json if present
@@ -78,7 +90,7 @@ def check_api_version_consistency(root: Path) -> list[str]:
                 meta_versions = set(versions.keys())
                 if source_api not in meta_versions and meta_versions:
                     issues.append(
-                        f"sfdx-project.json sourceApiVersion ({source_api}) does not match "
+                        f"INFO: sfdx-project.json sourceApiVersion ({source_api}) does not match "
                         f"the API version(s) in metadata files ({', '.join(sorted(meta_versions))}). "
                         "This mismatch can cause unexpected deployment behavior."
                     )
@@ -129,14 +141,15 @@ def check_apex_test_coverage(root: Path) -> list[str]:
         names = ", ".join(uncovered[:10])
         suffix = "..." if len(uncovered) > 10 else ""
         issues.append(
-            f"No test class found for {len(uncovered)} Apex class(es): "
+            f"WARN: No test class found for {len(uncovered)} Apex class(es): "
             f"{names}{suffix}. "
-            "Missing test coverage will cause deployment failures with RunSpecifiedTests "
-            "(per-class 75%) or RunLocalTests (org-wide 75% + trigger 1%)."
+            "Missing test coverage can fail deployments with RunSpecifiedTests "
+            "(per-class 75%, api_meta 264 L3271-3275) or RunLocalTests (overall 75% and "
+            "triggers with some coverage, api_meta 264 L3582)."
         )
     elif uncovered:
         issues.append(
-            f"No test class found for {len(uncovered)} Apex class(es). "
+            f"WARN: No test class found for {len(uncovered)} Apex class(es). "
             "This is a deployment risk — coverage failures are the most common "
             "cause of blocked production deployments."
         )
@@ -173,18 +186,20 @@ def check_deploy_scripts(root: Path) -> list[str]:
         # Check for nonexistent --rollback-on-error flag
         if rollback_flag_pattern.search(content):
             issues.append(
-                f"[{rel}] WARNING: Uses --rollback-on-error flag which does not exist "
-                "in sf CLI. The rollbackOnError option is a Metadata API parameter, "
-                "not a CLI flag. This command will fail."
+                f"WARN: [{rel}] uses --rollback-on-error, which the Developer Guide does not "
+                "document (the documented CLI control is --ignore-errors, sfdx_dev 264 "
+                "L13626-13627; that the flag does not exist is UNVERIFIED (2026-10-20)). "
+                "rollbackOnError is a Metadata API parameter (api_meta 264 L4385-4389)."
             )
 
         # Check for NoTestRun targeting production (heuristic)
         if no_test_prod_pattern.search(content):
             if "production" in content.lower() or "prod" in str(rel).lower():
                 issues.append(
-                    f"[{rel}] WARNING: Deploy command uses NoTestRun in what appears to be "
-                    "a production deployment context. Production deployments containing Apex "
-                    "require at least RunLocalTests."
+                    f"WARN: [{rel}] deploy command uses NoTestRun in what appears to be "
+                    "a production deployment context. NoTestRun \"applies only to deployments to "
+                    "development environments\" (api_meta 264 L3268-3270); RunLocalTests is the "
+                    "default for production deployments with Apex (api_meta 264 L3286-3288)."
                 )
 
     return issues
@@ -195,7 +210,17 @@ def check_deployment_error_troubleshooting(manifest_dir: Path) -> list[str]:
     issues: list[str] = []
 
     if not manifest_dir.exists():
-        issues.append(f"Project directory not found: {manifest_dir}")
+        issues.append(f"ERROR: Project directory not found: {manifest_dir}")
+        return issues
+
+    if not (
+        any(manifest_dir.rglob("*-meta.xml"))
+        or any(manifest_dir.rglob("*.cls"))
+        or any(manifest_dir.rglob("*.sh"))
+        or any(manifest_dir.rglob("*.yml"))
+        or any(manifest_dir.rglob("*.yaml"))
+    ):
+        issues.append(f"WARN: no metadata, Apex or script files under {manifest_dir}; nothing to check")
         return issues
 
     issues.extend(check_api_version_consistency(manifest_dir))
@@ -215,10 +240,12 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"ISSUE: {issue}")
+        print(issue)
 
-    print(f"\n{len(issues)} issue(s) found.")
-    return 1
+    print(f"\n{len(issues)} finding(s).")
+    if any(i.startswith("ERROR:") for i in issues):
+        sys.exit(1)
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

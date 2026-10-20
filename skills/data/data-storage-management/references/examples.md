@@ -2,7 +2,7 @@
 
 ## Example 1: Diagnosing a 90% Data Storage Alert
 
-**Context:** An Enterprise org with 200 users (10 GB base + 200 × 20 MB = 14 GB allocated) has received a 90% storage alert. The admin opens Setup > Storage Usage and sees the top consumers are: Task (3.1 GB), ContentDocument (0.8 GB in data storage for metadata records), and a custom object `Support_Log__c` (2.2 GB).
+**Context:** An Enterprise org with 200 users (10 GB base + 200 × 20 MB = 14 GB allocated; the allocation formula is UNVERIFIED (2026-10-20), Help-only) has received a 90% storage alert. The admin opens Setup > Storage Usage and sees the top consumers are: Task (3.1 GB), ContentDocument (0.8 GB in data storage for metadata records), and a custom object `Support_Log__c` (2.2 GB).
 
 **Problem:** The admin does not know which pool (data vs file) is at 90%, which objects are safe to clean, or whether a recent load simply hasn't been recalculated yet.
 
@@ -82,6 +82,6 @@ insert links;
 
 **What practitioners do:** Store base64-encoded file content (PDFs, images, CSVs) directly in a Long Text Area or Rich Text Area field because it avoids building a file upload UI.
 
-**What goes wrong:** Long Text Area fields have a maximum of 131,072 characters. A 100 KB binary file base64-encodes to ~133 KB — already over the field limit. Even at smaller sizes, each record with populated fields can exceed the 2 KB average record size by 10–100x, rapidly inflating data storage. Rich Text Area fields store embedded images in file storage, but the field metadata record still consumes data storage for the reference overhead. Neither approach benefits from ContentDocument deduplication, versioning, or preview generation.
+**What goes wrong:** Long Text Area fields have a maximum of 131,072 characters (UNVERIFIED (2026-10-20): Help-only; cheatsheet 264 L403 gives that figure only as the Bulk API field limit). A 100 KB binary file base64-encodes to ~133 KB — already over that limit. Even at smaller sizes, each record with populated fields can exceed the 2 KB average record size by 10–100x, rapidly inflating data storage. Rich Text Area fields store embedded images in file storage, but the field metadata record still consumes data storage for the reference overhead. Neither approach benefits from ContentDocument deduplication, versioning, or preview generation.
 
 **Correct approach:** Use ContentVersion + ContentDocumentLink for all binary file storage. Use the Long Text Area field only for genuine text content (notes, descriptions, structured text data). If a binary payload must be stored on-record for integration reasons, evaluate whether the integration can be refactored to reference a ContentDocumentId instead of carrying the payload inline.

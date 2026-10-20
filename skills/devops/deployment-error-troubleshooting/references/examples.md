@@ -2,7 +2,7 @@
 
 ## Example 1: Fixing a "Dependent class is invalid" Error
 
-**Context:** A developer deploys an updated `AccountService` class to a sandbox. The deployment fails with: "Dependent class is invalid and needs recompilation: LegacyAccountHelper — line 42, column 1: Method does not exist or incorrect signature: void processAccount(Account, Boolean)."
+**Context:** A developer deploys an updated `AccountService` class to a sandbox. The deployment fails with: "Dependent class is invalid and needs recompilation: LegacyAccountHelper — line 42, column 1: Method does not exist or incorrect signature: void processAccount(Account, Boolean)." (UNVERIFIED (2026-10-20): illustrative message text, not in the corpus.)
 
 **Problem:** The developer assumes the error is in `AccountService` and spends time reviewing the deployment package. In reality, `LegacyAccountHelper` — a class already in the target org but not in the package — was broken before the deployment. It references a method signature in `AccountService` that was changed in a previous partial deploy but never reconciled.
 
@@ -15,7 +15,7 @@
 5. Re-deploy the full package including both `AccountService` and the fixed `LegacyAccountHelper`.
 
 ```bash
-# Validate the fix with a dry run first
+# Validate the fix with a dry run first (--dry-run form: api_meta 264 L4114)
 sf project deploy start --dry-run \
   --source-dir force-app/main/default/classes/AccountService.cls \
   --source-dir force-app/main/default/classes/LegacyAccountHelper.cls \
@@ -35,7 +35,7 @@ sf project deploy start --dry-run \
 
 **Solution:**
 
-1. Check the deploy result JSON for `codeCoverageWarnings` to see which classes are under-covered.
+1. Check the deploy result JSON for `codeCoverageWarnings` to see which classes are under-covered (`codeCoverageWarnings` is "an array of one or more code coverage warnings for the test run", api_meta 264 L7946-7949).
 2. Understand that `RunSpecifiedTests` evaluates each deployed class individually against 75%.
 3. Add test methods to `OpportunityValidatorTest` to cover the missing lines, or add another test class that exercises `OpportunityValidator` to the `--tests` list.
 
@@ -54,11 +54,11 @@ sf project deploy start --dry-run \
 
 ## Example 3: Diagnosing an API Version Mismatch
 
-**Context:** A team develops on a sandbox that was upgraded to Summer '25 (API v64.0). They set `sourceApiVersion` to `64.0` in `sfdx-project.json`. When deploying to production, which is still on Spring '25 (API v63.0), the deployment fails with `UNSUPPORTED_API_VERSION`.
+**Context:** A team develops on a sandbox that was upgraded to Summer '25 (API v64.0). They set `sourceApiVersion` to `64.0` in `sfdx-project.json`. When deploying to production, which is still on Spring '25 (API v63.0), the deployment fails. UNVERIFIED (2026-10-20): the error code named in the earlier text, `UNSUPPORTED_API_VERSION`, is documented only for retired API versions (api_meta 264 L1314-1315); the error for a too-new version is not in the corpus, so this example illustrates the downgrade steps, not the error name.
 
 > Release-to-version anchors, because getting these wrong is how the mismatch is misdiagnosed: Spring '24 = 60.0, Summer '24 = 61.0, Winter '25 = 62.0, Spring '25 = 63.0, Summer '25 = 64.0, Winter '26 = 65.0, Spring '26 = 66.0, Summer '26 = 67.0.
 
-**Problem:** The error message is terse and does not explain that the issue is the gap between the source metadata API version and the target org's release version.
+**Problem:** The error message is terse and does not explain the cause (UNVERIFIED (2026-10-20): the gap-between-versions explanation is Help-level).
 
 **Solution:**
 

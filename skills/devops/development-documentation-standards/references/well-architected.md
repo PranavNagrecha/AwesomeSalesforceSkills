@@ -36,8 +36,9 @@
 
 ## Official Sources Used
 
+- Apex Developer Guide 264 L13798-13950 and L14040-14300 (Document Your Apex Code: structure, tag table, constructs, annotations), L6694-6700 (naming conventions), L2629 (comments tip).
 - Apex Developer Guide — ApexDoc Introduction — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_doc_intro.htm
 - Apex Developer Guide — ApexDoc Format (tag vocabulary, delimiters, compiler note) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_doc_format.htm
 - Apex Developer Guide — ApexDoc Examples — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_doc_examples.htm
 - Apex Developer Guide — Naming Conventions — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_naming_conventions.htm
-- Salesforce Architects — Design Standards Template (org-wide naming + central documentation; architect.salesforce.com may 403 on direct fetch — verify in a browser) — https://architect.salesforce.com/resources/design-standards-template
+- Salesforce Architects — Design Standards Template (UNVERIFIED (2026-10-20): not in the corpus; org-wide naming + central documentation; architect.salesforce.com may 403 on direct fetch — verify in a browser) — https://architect.salesforce.com/resources/design-standards-template

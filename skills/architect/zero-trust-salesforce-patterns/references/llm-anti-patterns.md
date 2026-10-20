@@ -26,15 +26,17 @@ does not mention RTEM, Transaction Security Policies, or Login Flow.
 
 **What the LLM generates:** A Transaction Security Policy design that
 fires "Block" or "Require MFA" actions on `IdentityVerificationEvent`
-or `MobileEmailEvent`.
+or `MobileEmailEvent`, or "Block" on an anomaly or session hijacking store.
 
 **Why:** The RTEM event-type list is long and most events do support
 TSP enforcement. LLMs generalize to "all RTEM events support TSP" and
 miss the documented exceptions.
 
 **Correct pattern:** Build the explicit support matrix at design time.
-`IdentityVerificationEvent` and `MobileEmailEvent` are notification-only;
-TSPs do NOT block on them. For these events, subscribe via Apex / Flow
+`IdentityVerificationEvent` and `MobileEmailEvent` are not valid TSP
+`eventName` values (api_meta 264 L138737-138798); the anomaly, credential
+stuffing and session hijacking stores allow Notifications only (secguide
+262 L6144, L6194, L6470, L6492). For these events, subscribe via Apex / Flow
 on the underlying Platform Event and take non-synchronous action.
 
 **Detection:** A TSP design document that includes
@@ -51,7 +53,7 @@ recommendations.
 Salesforce. LLMs default to Profile when the right answer is
 Permission Set Group.
 
-**Correct pattern:** Set High-Assurance Session on the **Permission
+**Correct pattern:** (Profile-level High Assurance is in the corpus (`ProfileSessionSetting` `requiredSessionLevel` `HIGH_ASSURANCE`, api_meta 264 L101471, L101529; MFA meets HIGH_ASSURANCE, L101498-101499); UNVERIFIED (2026-10-20): the PSG-level setting is Help-level, not in the corpus.) Set High-Assurance Session on the **Permission
 Set Group** that holds the high-blast-radius permission. Step-up fires
 only when the user exercises that permission, not on every page-load.
 
@@ -82,8 +84,8 @@ Profile to remove Modify All Data, View All, and similar
 high-blast-radius rights.
 
 **Why:** Profile is the most prominent permission container; LLMs
-default to it. The fact that Profiles cannot be muted from PSGs is an
-operational nuance underrepresented in the corpus.
+default to it. The fact that Profiles cannot be muted from PSGs (UNVERIFIED (2026-10-20): not in the corpus) is an
+operational nuance.
 
 **Correct pattern:** Profile minimization is real but is a separate
 workstream. The least-privilege leg of zero trust uses **PSG + Muting
@@ -102,9 +104,9 @@ session in real time when the user's risk level rises."
 documented. The Salesforce side does not consume CAEP; LLMs miss the
 boundary.
 
-**Correct pattern:** Document CAEP as a residual gap. Mitigate with
+**Correct pattern:** Document CAEP as a residual gap (UNVERIFIED (2026-10-20): CAEP is not in the corpus). Mitigate with
 shorter session timeouts (so the next Login Flow firing sees the new
-risk state) and aggressive RTEM-based session-end TSPs.
+risk state) and RTEM-based TSPs that block or require MFA (end session is Legacy Transaction Security only, api_meta 264 L138877-138880).
 
 **Detection:** Any output that asserts cross-vendor real-time session
 revocation works for Salesforce.
