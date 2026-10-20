@@ -28,9 +28,9 @@ outputs:
   - Retry / durability story
   - Monitoring hook
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # Flow Transaction Finalizer Patterns
@@ -45,6 +45,20 @@ two common failures: "email sent but record rolled back," or "record saved
 but downstream never notified." This skill codifies the patterns Flow
 designers should use for reliable post-transaction behavior, and when to
 escalate to Apex Queueable with a Finalizer.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Must this work run only if the record commits?" | Flow has no finalizer, and a fault path runs inside the transaction it guards (gotchas 1, 9) | The pattern choice: asynchronous path, platform event, or Queueable with Finalizer |
+| "Is the flow before-save or after-save?" | The asynchronous path exists only on after-save flows (gotcha 3) | Whether Pattern A is available at all |
+| "If a platform event carries it, what is the event's publish behaviour?" | Publish Immediately fires even when the transaction rolls back (gotcha 4) | Publish After Commit on the event definition |
+| "Does the invocable Apex this flow calls enqueue its own async work?" | Otherwise it runs in, and rolls back with, the calling transaction (gotcha 5) | An explicit enqueue inside the invocable |
+| "How many retries are acceptable, and what happens after the last one?" | Finalizer re-enqueue stops after five attempts (gotcha 6) | A dead-letter record and an owner for it |
+| "What business key makes a replay safe?" | Re-enqueue replays the whole Queueable body, and the interview GUID changes per run (gotchas 7, 8) | An idempotency key derived from the record, not the interview |
+| "Does the post-commit work touch setup objects, or rely on the record still holding its saved values?" | Mixed DML follows work into the asynchronous path, and `$Record` can change before it runs (gotchas 10, 12) | A re-query at the top of the path and a setup/non-setup split |
+
+A proper configuration decides where post-commit work lives and how it retries, instead of learning it from the first rolled-back record that still sent an email.
 
 ## Recommended Workflow
 
@@ -97,7 +111,8 @@ that rolled back. Add a fault connector to a log record — it is the only evide
 the path ran.
 
 Subject to the asynchronous per-transaction Apex limits (200 SOQL, 60,000 ms CPU,
-12 MB heap): higher than synchronous, not absent. Queued entries are visible on
+25 MB heap — `apexdev.txt` 264 L19747, L19780–19782; the heap figure is a
+Winter '27 release-level change for every org, not an API-version gate; Summer '26 was 12 MB): higher than synchronous, not absent. Queued entries are visible on
 the Time-Based Workflow page in Setup.
 
 ### Pattern B: Platform Event For Fan-Out

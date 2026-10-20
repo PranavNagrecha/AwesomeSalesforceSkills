@@ -59,7 +59,8 @@ record-triggered flows.
 **What it does not give you:** a time. You cannot schedule an asynchronous path
 the way you schedule a scheduled path — it runs when it runs. And it is subject to
 the asynchronous per-transaction Apex limits, so the higher ceilings apply (200
-SOQL, 60,000 ms CPU, 12 MB heap) but ceilings still apply.
+SOQL, 60,000 ms CPU, 25 MB heap from the Winter '27 release — 12 MB through
+Summer '26) but ceilings still apply.
 
 **Where to watch it:** asynchronous paths queue on the Time-Based Workflow page
 in Setup, alongside scheduled paths.

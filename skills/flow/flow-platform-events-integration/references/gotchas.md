@@ -42,26 +42,27 @@ Avoid it:
 - Do not build inter-subscriber sequences on shared events. Each subscriber is independent.
 - If sequence is required, chain via a second event: Subscriber A publishes `Stage_1_Complete__e`, Subscriber B listens for that.
 
-## 6. Platform-Event-Triggered Flow Runs As Automated Process User
+## 6. Platform-Event-Triggered Flow Runs As The Publisher, Not Automated Process
 
-By default the subscriber flow runs as the Automated Process user, which has different sharing visibility from the publishing user. A subscriber that queries records may see fewer (or more) rows than expected.
+Debug logs for a platform event–triggered flow appear under the Automated Process user, but each interview "runs in the context of the user who published the event message", and records it creates or updates show that publisher in `CreatedById` and `LastModifiedById` (`platform_events.txt` 264 L2190–2192). A design that assumes Automated Process access — because that is whose log it reads — sees different rows depending on who published.
 
 Avoid it:
-- Set explicit Run-As context on the PE-triggered flow when sharing matters.
-- Document the running user in the design doc.
-- Prefer dedicated integration users with scoped permission sets for sensitive subscribers.
+- Test the subscriber as each publishing persona (integration user, internal user, site user).
+- Document the publishing users in the design doc.
+- Do not reach for `PlatformEventSubscriberConfig`: it sets the running user of a platform event Apex trigger (`api_meta.txt` 264 L99118). UNVERIFIED (2026-10-19): the corpus documents no equivalent for a flow. If the subscriber needs one fixed least-privilege identity, subscribe with an Apex trigger configured that way.
 
 ## 7. High-Volume Events Do Not Support Publish-After-Commit In The Same Way
 
-High-Volume platform events are delivered to the durable bus quickly; they do not hold for a current DML's commit in the same way Standard-Volume events do for classic publish-after-commit semantics. If publish-after-commit is critical, confirm the event's volume type and publish mode in the definition.
+High-Volume platform events are delivered to the durable bus quickly; they do not hold for a current DML's commit in the same way Standard-Volume events do for classic publish-after-commit semantics. UNVERIFIED (2026-10-20): the corpus sets publish behavior per event definition with no volume restriction (`api_meta.txt` 264 L44509–44519; `platform_events.txt` 264 L270–272), and new custom events have been high volume by default since API 45.0 (L237–238). If publish-after-commit is critical, confirm the event's `publishBehavior` in the definition.
 
 Avoid it:
 - Read the event definition's `PublishBehavior` setting and the Salesforce release notes for the current behavior.
 - When in doubt, test explicitly: publish, force a rollback, and see whether the subscriber ran.
 
-## 8. Bulk Subscriber Delivery Batches Up To 2,000 Events
+## 8. Bulk Subscriber Delivery Batches Up To 200 Events
 
-A High-Volume Platform-Event-Triggered flow can receive up to 2,000 events in one invocation. A flow that loops and does per-event DML will exhaust limits.
+A platform event–triggered flow can receive "a batch of event messages at once, up to a maximum of 200 event messages" (`platform_events.txt` 264 L2185). 2,000 is the batch size of a platform event Apex trigger (`apexdev.txt` 264 L20065), not of a flow. A flow that does one Create Records per event in a 200-event batch issues 200 DML statements against the 150 ceiling (`apexdev.txt` 264 L19757).
+UNVERIFIED (2026-10-19): the corpus says a flow receives a batch but not whether `$Record` exposes it as a collection or as one event per interview.
 
 Avoid it:
 - Treat the subscriber's `$Record` as a COLLECTION.

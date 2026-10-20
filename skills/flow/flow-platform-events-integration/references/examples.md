@@ -47,7 +47,7 @@ Step-by-step elements:
 
 Name: `Fulfill_Opportunity_Won`
 Type: Platform-Event-Triggered on `Opportunity_Won__e`
-Run-as: Automated Process User (default; acceptable here because Fulfillment_Request__c has OWD Public Read/Write)
+Running user: whoever published `Opportunity_Won__e` (`platform_events.txt` 264 L2190–2192) — acceptable here because Fulfillment_Request__c has OWD Public Read/Write
 
 Step-by-step elements:
 
@@ -66,7 +66,7 @@ Step-by-step elements:
 - Uniqueness derived from `(opportunityId, closedAt)`. Even if the subscriber runs twice, the second run finds the existing request and exits.
 - To make this robust against concurrent duplicate events, add a unique external-id index on `Source_Opportunity_Id__c` (unique across the org). Then a concurrent duplicate Create Records fails with a DUPLICATE_VALUE error that the fault path catches.
 
-**Bulk behavior:** the platform may batch up to 2,000 events into one flow invocation. The flow receives `$Record` as a COLLECTION of events. The Get Records filter should be reworked to `Source_Opportunity_Id__c IN :{!allOpportunityIdsFromBatch}` for bulk-safety:
+**Bulk behavior:** the platform may batch up to 200 event messages into one flow invocation (`platform_events.txt` 264 L2185). The flow receives `$Record` as a COLLECTION of events. The Get Records filter should be reworked to `Source_Opportunity_Id__c IN :{!allOpportunityIdsFromBatch}` for bulk-safety:
 
 ```text
 [Start: PE-Triggered on Opportunity_Won__e]
@@ -116,9 +116,9 @@ Subscribes via Pub/Sub API:
 
 Name: `Analytics_Snapshot_Order_Placed`
 Type: Platform-Event-Triggered on `Order_Placed__e`
-Run-as: dedicated integration user with FLS on the analytics object.
+Running user: whoever published `Order_Placed__e` (`platform_events.txt` 264 L2190–2192) — every publishing persona needs FLS on the analytics object; no flow run-as override is documented.
 Elements:
-1. Loop over `$Record` batch (up to 2,000 events).
+1. Loop over `$Record` batch (up to 200 events, `platform_events.txt` 264 L2185).
 2. Build a collection of `Analytics_Snapshot__c` records in memory.
 3. One Create Records DML at the end.
 4. Fault path to error log.

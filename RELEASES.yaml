@@ -646,6 +646,21 @@ releases:
     - apex/dynamic-apex
     - apex/long-running-process-orchestration
     - apex/apex-blob-and-content-version
+    - flow/flow-large-data-volume-patterns
+    - flow/flow-loop-element-patterns
+    - flow/flow-platform-events-integration
+    - flow/flow-transaction-finalizer-patterns
+    - integration/dataweave-for-apex
+    - lwc/file-upload-patterns
+    - flow/flow-testing
+    - flow/subflows-and-reusability
+    - flow/record-triggered-flow-patterns
+  - id: R2-33
+    title: flow-loop + flow-testing checkers exit 1 on WARN-only; PE flow $Record batch shape UNVERIFIED; DataWeave checker
+      .resource-meta.xml detection
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -896,5 +911,13 @@ inbox:
   ask: architect/limits-and-scalability-planning checker check_limits_plan.py exits 1 on an empty directory (expects a file);
     checker rules say empty dir = WARN exit 0 (exit 1 only with --strict); also the 10 mb/25 mb pattern can match non-heap
     figures — scope it to heap context
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by reviewer F (R3-05 batch F): check scripts in flow/flow-loop-element-patterns and flow/flow-testing exit 1
+    on WARN-only findings against the checker brief (pre-existing, left as-is to avoid changing CI gating); flow/flow-platform-events-integration
+    still models $Record as a collection of events (docs say a flow receives a batch of up to 200, not how it is exposed)
+    — ground or rewrite; integration/dataweave-for-apex checker no longer detects a stray .resource-meta.xml (static-resource
+    anti-pattern) after the DataWeaveResource rewrite'
   size: S
   slotted_into: 1.5.0

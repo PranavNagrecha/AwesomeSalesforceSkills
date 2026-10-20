@@ -62,6 +62,7 @@
     "7300e842254deca59f4c",
     "73f261e215339020c8c0",
     "785d7b4281aa56ded650",
+    "7ce11beabdba3a4ac388",
     "7d21f8f28158c5b615f3",
     "7d8c58fbe5870b8988cb",
     "7f472a0a051962df5539",
@@ -145,7 +146,7 @@
     "fab09af665e5d9c86e67",
     "ffa471600abcc4ae6d68"
   ],
-  "content_hash": "bb07ed3783f53e34a9b83d9d827bcdd7b9dec0be127e5eca8946db1bf5a38c7b",
+  "content_hash": "f08e66183f875b5a75357433a1d290c1f9b3dd8bf8e99e0e87e8cd97344a539d",
   "dependencies": [],
   "description": "Use when extracting reusable Flow logic into subflows, defining input and output variables, keeping parent flows maintainable, and sharing common automation contracts across multiple flows. Triggers: 'reuse this flow logic', 'how should subflow variables work', 'too much duplicated flow logic', 'subflow contract design'. NOT for Apex-called Flow execution \u2014 use flow/auto-launched-flow-patterns. NOT for Flow Orchestration process design \u2014 use flow/flow-orchestration-patterns.",
   "file_location": "skills/flow/subflows-and-reusability",
@@ -159,7 +160,7 @@
   "official_sources": [
     "Metadata API Developer Guide, `FlowSubflow` / `FlowSubflowInputAssignment` / `FlowSubflowOutputAssignment` \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (the five-field `FlowSubflow` table with no `faultConnector`; `flowName` cannot carry a version suffix; `assignToReference` names the parent variable while both `name` fields name the child's \u2014 `api_meta.txt` L72625-72684)",
     "Metadata API Developer Guide, `FlowVariable` \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (`isInput`/`isOutput` semantics, their `False` default for API 25.0+, and Salesforce's own warning that disabling access \"can break the functionality of applications and pages that call the flow\" \u2014 L72846-72933)",
-    "Metadata API Developer Guide, `Flow` \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (`processType` `AutoLaunchedFlow`; `runInMode` values and their record-access meaning; `status`; the managed-package and active-flow deployment limitations \u2014 L68025-68440, L68751-68754)",
+    "Metadata API Developer Guide, `Flow` \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (`processType` `AutoLaunchedFlow`; `runInMode` values and their record-access meaning, re-grounded at 264 L70907-70928 with `UserMode` (API 68.0+); `status`; the managed-package and active-flow deployment limitations \u2014 L68025-68440, L68751-68754)",
     "Metadata API Developer Guide, `FlowDefinition` and \"Upgrade Flow Files to API Version 44.0 or Later\" \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (`activeVersionNumber` overriding deployed `status` fields; a flow with no `status` deploys as `Draft` \u2014 L73174-73202, L73920-73945)",
     "Metadata API Developer Guide, `FlowTest` and subtypes \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf (autolaunched flows are testable before activation; `Start`/`Finish` test points; `InputVariable` parameters from API 66.0; `testType` `WithAssertion`; the `.flowtest` suffix \u2014 L73960-74450)",
     "Apex Developer Guide, \"Triggers and Order of Execution\" \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf (before-save flows at step 3, after-save at step 14, commit at step 19, and the recursive-save note that steps 9-17 are skipped \u2014 `apexdev.txt` L15402-15478)",
@@ -193,7 +194,7 @@
   "templates": [
     "skills/flow/subflows-and-reusability/templates/subflows-and-reusability-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "2.1.0"
+  "version": "2.1.1"
 }

@@ -25,18 +25,18 @@ inputs:
   - "the target shape (Apex List<SObject>, Map<String,Object>, output payload format)"
   - "whether the script must be reused across multiple call sites or is a one-off"
 outputs:
-  - "a registered DataWeave static-resource script with explicit input/output MIME types"
+  - "a DataWeaveResource script (dw/<Name>.dwl plus .dwl-meta.xml) with explicit input/output MIME types"
   - "Apex caller using `Dataweave.Script` and `dwscript.execute()`"
   - "test fixture covering the input payload variants and the failure modes (empty input, malformed JSON, oversize payload)"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # DataWeave for Apex
 
-Activate when an Apex method needs to transform between structured formats (CSV ⇄ JSON ⇄ XML ⇄ SObject) and the alternatives — hand-rolled loops over `JSON.deserializeUntyped()`, `Dom.Document` traversal, or pulling in a static-resource library — are producing fragile, hard-to-read code. The skill produces a DataWeave script registered as a static resource, the Apex `Dataweave.Script` caller, and a test fixture; it also rules the feature *out* when the transformation is trivial enough that built-in Apex parsing is the right answer.
+Activate when an Apex method needs to transform between structured formats (CSV ⇄ JSON ⇄ XML ⇄ SObject) and the alternatives — hand-rolled loops over `JSON.deserializeUntyped()`, `Dom.Document` traversal, or pulling in a static-resource library — are producing fragile, hard-to-read code. The skill produces a DataWeave script deployed as `DataWeaveResource` metadata, the Apex `DataWeave.Script` caller, and a test fixture; it also rules the feature *out* when the transformation is trivial enough that built-in Apex parsing is the right answer.
 
 ---
 
@@ -47,7 +47,21 @@ Gather this context before working on anything in this domain:
 - The **source MIME type** and a literal sample of the input payload (3–5 records is enough). Without a sample you cannot author the DataWeave script confidently.
 - The **target MIME type** and the desired output shape, including which fields are required vs optional and whether nested arrays should be flattened.
 - Whether the script will be **invoked from a Queueable / Batch / sync trigger** — DataWeave-for-Apex consumes script-execution heap and CPU like any Apex; bulk transforms inside a synchronous trigger are usually the wrong place.
-- Confirm the org is on **API version 61.0+** (Summer '24 or later). DataWeave-for-Apex went GA in Summer '24 after pilots in earlier releases.
+- Confirm the version floors: `DataWeaveResource` exists from API 58.0 (`api_meta.txt` 264 L52120) and the calling Apex class must be at API 53.0 or later (`apexdev.txt` 264 L26984); the class's API version also selects the DataWeave syntax — 2.5 at 61.0 and earlier, 2.8 at 62.0, 2.9 at 63.0+ (L26905–26908). UNVERIFIED (2026-10-20): the Summer '24 GA date is not stated in the corpus.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What is the largest input payload, and is the caller synchronous, Queueable or Batch?" | DataWeave holds the whole input and its parsed form on the Apex heap before producing output (gotcha 2) | A heap budget per caller, or a decision to paginate or transform off-platform |
+| "Does the source XML use namespace prefixes?" | Undeclared namespaces return an empty result with no error (gotcha 5) | `ns` declarations for every prefix in the raw payload |
+| "Which numeric fields land in Currency or fixed-scale Decimal fields?" | `as Number` keeps the source's scale, not the target field's (gotcha 4) | Explicit `setScale` or a format in the script |
+| "What date/time format does the receiving system expect?" | The default ISO-8601 output may not match it (short list: date/time formatting) | A `format` on every outbound date |
+| "Which source fields are optional, and what should the output carry when one is missing?" | A missing field surfaces as the same `System.DataWeaveScriptException` as every other runtime script error (gotcha 3) | `default` values and a test with the field absent |
+| "What will support see when a transform fails in production?" | `DataWeaveScriptException` collapses many causes into one type (gotcha 3) | Logging of the message and an input excerpt before rethrow |
+| "Does the `dw/` script deploy with the Apex and its tests, in every CI org?" | `createScript` loads only a `.dwl` already deployed to the org as metadata (gotchas 1, 6) | The `dw/` folder in the same source tree and deployment as the class |
+
+A proper configuration fixes the payload ceiling, the type rules and the failure trail before the first production payload, rather than after the first heap exception.
 
 ---
 
@@ -55,7 +69,7 @@ Gather this context before working on anything in this domain:
 
 ### What DataWeave for Apex is, and is not
 
-DataWeave for Apex (`System.Dataweave` / `Dataweave.Script`) is a Salesforce-native, in-platform implementation of the DataWeave 2.0 transformation language. It is not a runtime call to a MuleSoft instance, and the Salesforce org does not need a MuleSoft license to use it. The DataWeave engine runs inside the Apex transaction's resource envelope: heap, CPU, and the standard Apex governor limits all apply. There is no external network call.
+DataWeave for Apex (the `DataWeave` namespace: `DataWeave.Script`, `DataWeave.Result`) is a Salesforce-native, in-platform implementation of the DataWeave 2.0 transformation language. It is not a runtime call to a MuleSoft instance, and the Salesforce org does not need a MuleSoft license to use it. The DataWeave engine runs inside the Apex transaction's resource envelope: heap, CPU, and the standard Apex governor limits all apply. There is no external network call.
 
 It IS:
 - A way to author transformation scripts in DataWeave 2.0 syntax and execute them from Apex.
@@ -68,7 +82,7 @@ It is NOT:
 
 ### Authoring and registering a script
 
-A DataWeave script is a static resource with a `.dwl` suffix and a strict header that declares input/output MIME types:
+A DataWeave script is `DataWeaveResource` metadata — a `.dwl` file in the `dw` folder (`api_meta.txt` 264 L52116), paired with a `.dwl-meta.xml` carrying the required `apiVersion` and optional `isGlobal` (L52129–52138) — and starts with a strict header that declares input/output MIME types:
 
 ```dwl
 %dw 2.0
@@ -82,7 +96,15 @@ payload map (item, idx) -> {
 }
 ```
 
-The static resource's name is what Apex uses to reference it. Cache control should be `Public` so the platform can cache the parsed script across executions.
+The file name is what Apex passes to `createScript()`, which "loads a DataWeave 2.0 script from the .dwl metadata file that is deployed in an org" (262: `apexrefguide.txt` L155951); the platform also generates `DataWeaveScriptResource.<Name>`, usable instead of the string name (`apexdev.txt` 264 L26875–26877). `DataWeaveResource` has no cache-control setting — its fields are `apiVersion`, `isGlobal` and `isProtected` (`api_meta.txt` 264 L52127–52142). An org holds at most 50 scripts of up to 100,000 characters each (`apexdev.txt` 264 L26985–26986).
+
+```xml
+<!-- force-app/main/default/dw/Account_Mapping_DW.dwl-meta.xml — shape from apexdev.txt 264 L26931-26936 -->
+<DataWeaveResource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>68.0</apiVersion>
+    <isGlobal>false</isGlobal>
+</DataWeaveResource>
+```
 
 ### Invoking from Apex
 
@@ -99,7 +121,7 @@ String outputJson = result.getValueAsString();
 
 ### Supported input and output MIME types
 
-DataWeave for Apex supports a subset of the full DataWeave MIME catalog. The reliably-available types are:
+The corpus names three content types DataWeave in Apex does not support — `application/flatfile`, `application/xlsx`, `application/avro` (`apexdev.txt` 264 L26979–26982) — and its own samples use `application/csv`, `application/apex` (L26921–26922), `application/java` and `application/json` (262: `apexrefguide.txt` L155906–155907). Types this package's examples use:
 
 - `application/json`
 - `application/xml`
@@ -108,7 +130,7 @@ DataWeave for Apex supports a subset of the full DataWeave MIME catalog. The rel
 - `application/dw` (DataWeave native — useful for chaining)
 - `text/plain`
 
-Less common DataWeave types (Avro, YAML, Parquet) are not currently supported in Apex. Confirm against the current Apex Reference before assuming.
+UNVERIFIED (2026-10-20): the corpus publishes no positive list of supported types; `application/x-www-form-urlencoded`, `application/dw`, `text/plain`, YAML and Parquet are neither confirmed nor excluded — test them in a scratch org before relying on them.
 
 ---
 
@@ -177,7 +199,7 @@ Apex passes both: `myScript.execute(new Map<String, Object>{ 'accounts' => accou
 | XML with deeply nested structure | DataWeave-for-Apex | DOM traversal in Apex is verbose and brittle to schema drift |
 | CSV → SObject list (large file) | Bulk API 2.0 + ingest, not Apex | Apex CPU and heap are not the right place for >10k-row CSV |
 | Apex Bulk Trigger transformation | Apex (not DataWeave) | Trigger CPU budget is too small to justify script-load overhead per execution |
-| Reusable across many Apex callers | DataWeave script (static resource) | Single source of truth for the mapping spec |
+| Reusable across many Apex callers | DataWeave script (`DataWeaveResource` in `dw/`) | Single source of truth for the mapping spec |
 
 ---
 
@@ -186,10 +208,10 @@ Apex passes both: `myScript.execute(new Map<String, Object>{ 'accounts' => accou
 1. Get a literal sample of the input and a literal sample of the desired output. Without samples, do not write a script.
 2. Decide whether DataWeave is justified — apply the table above. If the Apex equivalent is under ~30 lines and read-once, write Apex.
 3. Author the `.dwl` script in a scratch org's Developer Console or VS Code with the DataWeave extension. Iterate on the sample inputs until the output matches.
-4. Save as a static resource named with a `_DW` suffix (convention) and cache control `Public`.
-5. Wrap the call in an Apex service class so the resource name is in one place: `MyMappingService.transform(inputJson)`. The class should also handle the empty-input, malformed-input, and `Dataweave.ExecuteException` cases.
+4. Save as `force-app/main/default/dw/<Name>_DW.dwl` with its `.dwl-meta.xml` (`apiVersion`, `isGlobal`) — `DataWeaveResource` metadata (`api_meta.txt` 264 L52116), not a static resource.
+5. Wrap the call in an Apex service class so the resource name is in one place: `MyMappingService.transform(inputJson)`. The class should also handle the empty-input, malformed-input, and `System.DataWeaveScriptException` cases (`apexdev.txt` 264 L26887–26888).
 6. Write Apex tests with literal payload strings as fixtures. Assert on the Apex-deserialized output, not on the raw JSON, so structural drift surfaces as a compile error rather than a string mismatch.
-7. Add a check that script-load failures fall back gracefully — `createScript` throws `Dataweave.ScriptException` if the resource is missing or malformed.
+7. Add a check that script-load failures fall back gracefully. UNVERIFIED (2026-10-20): the corpus does not name the exception `createScript` throws for a missing script; prefer the generated `DataWeaveScriptResource.<Name>` class, whose referenced script the platform will not let anyone delete (`apexdev.txt` 264 L26877–26878).
 
 ---
 
@@ -198,28 +220,28 @@ Apex passes both: `myScript.execute(new Map<String, Object>{ 'accounts' => accou
 - The `.dwl` header declares input MIME types matching every key in the Apex `execute` map.
 - The `output` MIME type matches what the Apex caller expects (`getValueAsString()` for text formats).
 - `default` clauses cover every optional field in the source payload — DataWeave's null-handling is strict.
-- The Apex caller catches `Dataweave.ExecuteException` (runtime errors during transformation) separately from `Dataweave.ScriptException` (script-loading errors).
+- The Apex caller catches `System.DataWeaveScriptException`, the documented type for runtime script errors (`apexdev.txt` 264 L26887–26888); `Dataweave.ExecuteException` and `Dataweave.ScriptException` appear nowhere in the Apex guides.
 - Tests cover at minimum: golden-path payload, empty input array, missing optional field, malformed input, and one large (>1MB) input to confirm heap behavior.
-- The static resource cache control is `Public`, not `Private` — the latter forces re-parse on every execution.
+- The script lives in `dw/` as `DataWeaveResource` metadata, not under `staticresources/` (`api_meta.txt` 264 L52116).
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-- **Heap accounting** — DataWeave loads the entire input into memory before processing. A 5MB JSON input plus the parsed AST plus the output can exceed 12MB heap easily; profile under representative volumes before deploying to a synchronous path.
-- **Static resource cache control** — Defaulting to `Private` causes the script to re-parse on every execution, eating CPU. Set `Public` unless there's a documented reason.
+- **Heap accounting** — DataWeave loads the entire input into memory before processing. A 5MB JSON input plus the parsed AST plus the output can exceed the 10 MB synchronous heap easily (25 MB async); DataWeave runs under "the same heap and CPU limits" as the calling Apex (`apexdev.txt` 264 L26823–26824). Those figures are a Winter '27 release-level change for every org, not an API-version gate (`apexdev.txt` 264 L19780; Summer '26 was 6 MB / 12 MB); profile under representative volumes before deploying to a synchronous path.
+- **Not a static resource** — `DataWeaveResource` has no cache-control field (`api_meta.txt` 264 L52127–52142), so the older advice to set a static resource's cache control to `Public` does not apply. The org cap is 50 scripts (`apexdev.txt` 264 L26985).
 - **Numeric type coercion** — DataWeave's `Number` is a single type; the Apex side gets back a Decimal that may have a different scale than the source JSON. Combine with `apex-decimal-arithmetic-precision` rounding when feeding currency fields.
 - **Date/time formatting** — DataWeave's default ISO-8601 output is `2026-05-07T12:00:00Z`; if the receiving system expects `2026-05-07T12:00:00.000+0000`, format explicitly with `as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }`.
-- **Test coverage for static resources** — Apex tests can reference the static resource by name only if it exists in the org. In a fresh CI scratch org without seed data, ensure the resource is in `force-app/main/default/staticresources/`.
-- **`Dataweave.ExecuteException` is the kitchen-sink** — Malformed input, missing required field, MIME-type mismatch, and division-by-zero in the script all surface as the same exception. Inspect `getMessage()` for the specific cause; do not assume a single failure mode.
+- **Tests need the deployed script** — `createScript` loads a `.dwl` already deployed to the org (262: `apexrefguide.txt` L155951); in a fresh CI scratch org, deploy `force-app/main/default/dw/` with the classes.
+- **`System.DataWeaveScriptException` is the kitchen-sink** — runtime script errors are exposed to Apex as this one type (`apexdev.txt` 264 L26887–26888). Malformed input, missing required field, MIME-type mismatch, and division-by-zero in the script all surface as the same exception. Inspect `getMessage()` for the specific cause; do not assume a single failure mode.
 
 ---
 
 ## Output Artifacts
 
-- `force-app/main/default/staticresources/<Name>_DW.dwl` — the script.
-- `force-app/main/default/staticresources/<Name>_DW.resource-meta.xml` — content type `application/dw`, cache control `Public`.
-- `force-app/main/default/classes/<Name>MappingService.cls` — the Apex service that calls `Dataweave.Script.createScript` and exposes a typed result.
+- `force-app/main/default/dw/<Name>_DW.dwl` — the script.
+- `force-app/main/default/dw/<Name>_DW.dwl-meta.xml` — `DataWeaveResource` with `apiVersion` and `isGlobal`.
+- `force-app/main/default/classes/<Name>MappingService.cls` — the Apex service that calls `DataWeave.Script.createScript` (or `new DataWeaveScriptResource.<Name>_DW()`) and exposes a typed result.
 - `force-app/main/default/classes/<Name>MappingServiceTest.cls` — fixture-driven tests over golden-path and failure-mode payloads.
 
 ---

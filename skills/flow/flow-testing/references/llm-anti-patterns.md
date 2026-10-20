@@ -173,7 +173,7 @@ Match the driver to the flow type:
 
 Test with representative user profiles:
 1. In Apex, wrap the interview in `System.runAs(standardUser)`. To have the flow honour that user's record access, the launching class must be declared `with sharing` and run on API version 62.0 or later; then "data access is restricted to the sharing rules of the user that executed the Apex class" (`apexrefguide.txt` L157958-157963).
-2. Set the flow's own `runInMode` deliberately. `DefaultMode` means "how the flow is launched determines whether the flow runs in user context or in system context" (`api_meta.txt` L68374-68380) — a flow tested only through an admin-launched path has never exercised the user-context branch of that sentence.
+2. Set the flow's own `runInMode` deliberately. `DefaultMode` means "how the flow is launched determines whether the flow runs in user context or in system context" (`api_meta.txt` 264 L70908-70911) — a flow tested only through an admin-launched path has never exercised the user-context branch of that sentence. The other values are `SystemModeWithSharing`, `SystemModeWithoutSharing` (API 49.0+) and, from API 68.0, `UserMode` — "The flow runs with the user's security context explicitly enforced, without inheriting sharing settings from the calling context" (L70912-70927). A `UserMode` flow still needs a non-admin `System.runAs` test. UNVERIFIED (2026-10-20): that an admin-run test cannot tell `UserMode` from the system modes is an inference from the admin's broad permissions, not a documented statement.
 3. Verify error handling when the user lacks permissions.
 4. For Experience Cloud flows, test with the Guest User profile.
 

@@ -33,9 +33,9 @@ outputs:
   - Subscriber Flow design with idempotency and error handling
   - Fan-out topology and failure-compensation plan
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-19
 ---
 
 Use this skill when Platform Events are the coordination mechanism between Flow and another component — another Flow, Apex, or an external system. Flow can BOTH publish (by creating records on the event sObject) AND subscribe (via a Platform-Event-Triggered Flow). Both sides have transaction-context, delivery-semantics, and error-handling rules that teams commonly get wrong, producing three recurring defect classes: lost events (publisher succeeded, subscriber never ran), replayed events (subscriber ran twice for one logical message), and out-of-order events (two events delivered in the opposite order from publish).
@@ -53,14 +53,28 @@ Gather if not available:
 - Whether the publisher needs publish-after-commit semantics (most record-triggered publishers do).
 - The replay / idempotency requirement: can the business tolerate a duplicate subscriber execution?
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Should subscribers hear about a change that later rolls back?" | Publish Immediately has already put the event on the bus when the transaction rolls back (gotcha 1) | Publish After Commit on record-change events |
+| "What is the peak publish rate per hour, across every event type in the org?" | The publish allocation is one shared bucket per volume class (gotcha 2) | A rate budget against the edition's allocation |
+| "Who is told when a subscriber faults?" | An unhandled subscriber fault completes the delivery and the event is not redelivered (gotcha 3) | A fault path to a durable error log that someone watches |
+| "What natural key makes a repeated delivery harmless?" | At-least-once delivery runs a subscriber more than once (gotcha 4) | An idempotency key or unique external ID on the target |
+| "Do Apex triggers also subscribe, and does anything depend on their order?" | Flow and Apex subscribers run in an undefined order (gotcha 5) | Independent subscribers, or an explicit second event to chain them |
+| "How many events can one transaction publish?" | Create Records on an event inside a loop is one DML per iteration (gotcha 9) | One collection publish per transaction |
+| "Does Apex already publish this business event?" | Two publishers emit twice per action (gotcha 10) | One named publisher per business event |
+
+A proper configuration names the publisher, the delivery guarantee and the failure owner before the first event ships, instead of discovering them from duplicate records.
+
 ## Recommended Workflow
 
-1. **Classify the event type.** Decide whether the use case fits Standard-Volume (low-rate, transactional publish-after-commit ordering) or High-Volume (high-rate, Pub/Sub API replay-enabled, no transactional publish-after-commit semantics). Most Flow publishers use Standard-Volume unless the integration target requires high-throughput external consumption.
+1. **Classify the event type.** New custom event definitions are high volume by default from API 45.0, and standard-volume custom platform events "will be retired in Summer '27" (`platform_events.txt` 264 L237–239) — design new events as High-Volume and treat a Standard-Volume event as a migration item. Publish timing is a separate, per-event `publishBehavior` choice (step 2).
 2. **Design the publisher Flow.** Choose the Flow type (record-triggered after-save is the default for "publish on record change"), and choose the publish mode. For record-change events, `Publish After Commit` prevents phantom events for rolled-back saves.
 3. **Design the subscriber Flow.** Create a Platform-Event-Triggered flow, define the entry condition, and plan for idempotency: the same event may be delivered more than once under failure, especially for High-Volume.
 4. **Document fan-out.** If multiple subscribers consume the event (Flow + Apex trigger + external), list all of them. Each has independent failure semantics.
 5. **Plan error handling.** Publisher failures (publish-limit exhaustion, field validation) must route to a fault log. Subscriber failures do NOT roll back the publisher. Plan compensation.
-6. **Compute budget.** Publish counts against per-transaction DML. Subscriber flows consume their own async budget per delivery batch.
+6. **Compute budget.** Publish counts against per-transaction DML. Subscriber flows consume their own governor budget per delivery batch of up to 200 event messages (`platform_events.txt` 264 L2185).
 7. **Validate.** Run `python3 scripts/skill_sync.py --skill skills/flow/flow-platform-events-integration` and the repo-level validator.
 
 ## Core Concepts
@@ -70,7 +84,7 @@ Gather if not available:
 | Attribute | Standard-Volume | High-Volume |
 |---|---|---|
 | Publish rate (per hour) | 100,000 org-wide (Enterprise / Performance / Unlimited); 1,000 (Developer, and Professional with API Add-On) | 250,000 org-wide (Enterprise / Performance / Unlimited / Professional with API Add-On); 50,000 (Developer) |
-| Publish-after-commit semantics | Yes — only delivers on successful commit | Event is delivered on publish, not tied to DML commit ordering in the same way |
+| Publish-after-commit semantics | Set per event by `publishBehavior` | Set per event by `publishBehavior` (`api_meta.txt` 264 L44509–44519); UNVERIFIED (2026-10-20): the corpus states no volume-specific difference |
 | Replay / durability | Short-lived buffer | Durable 72-hour event bus with replay via replayId |
 | External consumption | Limited | Designed for Pub/Sub API external consumers |
 | Best for | Internal Flow-to-Flow or Flow-to-Apex coordination | Integration fan-out, external systems, high-throughput telemetry |
@@ -84,7 +98,7 @@ A record-triggered flow that creates a `Price_Change__e` event can choose:
 - **Publish Immediately:** the event is published as soon as the Create Records element runs. If the transaction later rolls back due to a fault, the event has ALREADY been delivered — downstream subscribers act on a change that never happened. This is the source of "phantom event" bugs.
 - **Publish After Commit:** the event is buffered and delivered only if the current DML successfully commits. If the transaction rolls back, the event is discarded. This is the safer default for record-change events.
 
-In Flow Builder, the `Create Records` element on a Platform Event object exposes a "How to Run the Flow After Save" option that controls publish semantics at the flow level (for record-triggered flows). For autolaunched publishers, you set the immediate/after-commit intent at event definition time (some event types only support one mode).
+Publish behavior is set on the platform event definition, not on the flow: the event object's `publishBehavior` field takes `PublishAfterCommit` or `PublishImmediately`, applies to messages published from Flow Builder, Apex and Process Builder, and defaults to `PublishImmediately` when unspecified (`api_meta.txt` 264 L44509–44519; `platform_events.txt` 264 L270–272). Every flow that publishes the event inherits that one setting.
 
 ### Subscribing With Platform-Event-Triggered Flows
 
@@ -92,10 +106,10 @@ A Platform-Event-Triggered flow activates when a message is delivered on its eve
 
 - Runs asynchronously in a NEW transaction. Not part of the publisher's transaction.
 - Receives the event payload as `$Record` with the event's fields.
-- Runs as the Automated Process user by default (configurable to a specific user).
-- Has async governor limits (200 SOQL, 12 MB heap).
+- Runs in the context of the user who published the event message — records it creates or updates carry that user in `CreatedById` / `LastModifiedById` — while its debug logs appear under the Automated Process user (`platform_events.txt` 264 L2190–2192). The running-user override `PlatformEventSubscriberConfig` configures a platform event *Apex trigger*, not a flow (`api_meta.txt` 264 L99118; `platform_events.txt` 264 L2366–2368). UNVERIFIED (2026-10-19): the corpus documents no run-as setting for a platform event–triggered flow.
+- Gets its own, freshly reset governor limits. Which column (sync or async) a platform event–triggered flow draws from is UNVERIFIED (2026-10-19): `platform_events.txt` 264 says only that each interview runs asynchronously in a separate transaction (L2187–2188), while for platform event *triggers* "the synchronous limits apply" (L2338–2339). Budget against the synchronous column — 100 SOQL, 10 MB heap (`apexdev.txt` 264 L19747, L19780). The heap figure is a Winter '27 release-level change for every org, not an API-version gate; Summer '26 was 6 MB sync / 12 MB async.
 - Cannot "reject" the delivery — if the subscriber fails, the platform logs the failure; it does not propagate back to the publisher.
-- Batches multiple events into a single flow run (up to 2,000 per batch for High-Volume).
+- Batches multiple events into a single flow run — "up to a maximum of 200 event messages", order preserved within the batch, possibly from several publishers (`platform_events.txt` 264 L2185–2186). 2,000 is the platform event *Apex trigger* batch size (`apexdev.txt` 264 L20065), not the flow's.
 
 ### Delivery Semantics
 
@@ -130,7 +144,11 @@ Both a Platform-Event-Triggered flow AND an `apex trigger ... on Event__e (after
 
 **Metadata (publisher):**
 ```xml
-<triggerType>RecordAfterSave</triggerType>
+<!-- excerpt: Flow root added so the fragment parses; triggerType is a FlowStart field (api_meta.txt 264 L75233, L75261) -->
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+<start>
+  <triggerType>RecordAfterSave</triggerType>
+</start>
 <recordCreates>
   <name>Publish_Status_Change</name>
   <object>Case_Status_Changed__e</object>
@@ -143,9 +161,10 @@ Both a Platform-Event-Triggered flow AND an `apex trigger ... on Event__e (after
     <value><elementReference>$Record.Status</elementReference></value>
   </inputAssignments>
 </recordCreates>
+</Flow>
 ```
 
-**Why it works:** The Create Records on the event object is the publish action. Because the flow is After-Save and the event supports publish-after-commit, the event is buffered until the current DML commits. If the save rolls back, the event is discarded. No phantom notifications.
+**Why it works:** The Create Records on the event object is the publish action. Because the event definition sets `publishBehavior` to `PublishAfterCommit` (`api_meta.txt` 264 L44509–44517), the event is published only after the transaction commits. If the save rolls back, the event is discarded. No phantom notifications.
 
 **Caveat:** Standard-Volume publishing is allocated 100,000 events per hour org-wide on Enterprise / Performance / Unlimited (1,000 on Developer and Professional-with-API-Add-On), and that bucket is shared across every Standard-Volume event type in the org. A 100,000-record bulk import that publishes one event per record consumes the entire hourly allocation on its own, leaving nothing for any other Standard-Volume publisher — and on Developer or Professional it fails almost immediately. For that cardinality, switch to High-Volume (250,000/hour) or batch the publish. Note that High-Volume publishing is also **org-wide**, not a fresh allocation per event type.
 
@@ -167,9 +186,11 @@ Both a Platform-Event-Triggered flow AND an `apex trigger ... on Event__e (after
 
 **Metadata (subscriber):**
 ```xml
-<triggerType>PlatformEvent</triggerType>
+<!-- excerpt: Flow root added so the fragment parses; PlatformEvent is a FlowStart triggerType value (api_meta.txt 264 L75233, L75258) -->
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
 <start>
   <object>Case_Status_Changed__e</object>
+  <triggerType>PlatformEvent</triggerType>
 </start>
 <recordLookups>
   <name>Lookup_Case</name>
@@ -180,9 +201,10 @@ Both a Platform-Event-Triggered flow AND an `apex trigger ... on Event__e (after
     <value><elementReference>$Record.caseId__c</elementReference></value>
   </filters>
 </recordLookups>
+</Flow>
 ```
 
-**Why it works:** The subscriber runs in its own async transaction. It does not block or interact with the publisher. It has async governor limits and isolated failure.
+**Why it works:** The subscriber runs in its own async transaction. It does not block or interact with the publisher. It has its own governor limits (column UNVERIFIED — see the subscriber bullets above) and isolated failure.
 
 **Idempotency note:** At-least-once delivery means this flow may run twice for the same event. Before writing the Audit_Entry__c, check for an existing entry with the same `(caseId, changedAt)` tuple. The Audit_Entry__c should have a unique index on `(Case__c, ChangedAt__c)` to enforce this.
 
@@ -249,11 +271,11 @@ Alternative: switch the event to High-Volume if the workload demands steady-stat
 Both publish and subscribe have bulk semantics.
 
 - **Publisher bulk:** when a bulk save invokes the publisher flow, the flow is invoked ONCE with a batched `$Record` collection (up to 200 records per batch). A Create Records on the event object inside a Loop — publishing one event per iteration — is safe IF each iteration is a single Create Records call (Salesforce groups them into one DML operation internally in Flow). But a mis-bulkified publisher can still exceed the per-transaction DML statement count and the org-wide publish-per-hour limit.
-- **Subscriber bulk:** the platform batches up to 2,000 events per Flow invocation for High-Volume PEs. Your subscriber flow must be bulk-safe. Specifically:
+- **Subscriber bulk:** the platform batches up to 200 event messages per flow invocation (`platform_events.txt` 264 L2185; 2,000 is the Apex trigger batch, `apexdev.txt` 264 L20065). Your subscriber flow must be bulk-safe. Specifically:
   - The trigger-entry collection ($Record collection) may contain many events.
   - Any Get Records should filter on a Set of input Ids extracted from the event batch, not one event at a time.
   - DML at the end should be against a collection, not per-event.
-- **Combined publisher + subscriber math:** if Publisher A publishes 200 events in one transaction and Subscriber B processes them in one async batch with 3 DML each, that's 600 async DML — within the 10,000-DML-row limit but against the 150-statement limit at 3 DML/event * 200 events if not collection-batched. Always collection-batch the subscriber.
+- **Combined publisher + subscriber math:** if Publisher A publishes 200 events in one transaction and Subscriber B processes them in one batch (200 is the flow's batch ceiling) with 3 DML each, that's 600 DML statements — within the 10,000-DML-row limit but against the 150-statement limit at 3 DML/event * 200 events if not collection-batched. Always collection-batch the subscriber.
 
 ## Error handling
 
@@ -268,7 +290,7 @@ Both publish and subscribe have bulk semantics.
 
 - **Reliability:** Publish-after-commit prevents phantom events. Durable High-Volume events enable external replay. Fault logs on subscribers make at-least-once semantics safe.
 - **Performance:** PEs decouple the save transaction from downstream work, improving user-visible save latency. High-Volume PEs scale horizontally with external consumers.
-- **Security:** Subscriber flows run as Automated Process user by default; set explicit run-as on Platform-Event-Triggered flows if sharing visibility differs from Automated Process.
+- **Security:** Each subscriber interview runs in the context of the user who published the event, not the Automated Process user that owns its debug logs (`platform_events.txt` 264 L2190–2192), so test the subscriber as every publishing persona. UNVERIFIED (2026-10-19): how the flow's `runInMode` combines with the publisher's context is not stated.
 
 ## Review Checklist
 
@@ -278,15 +300,15 @@ Both publish and subscribe have bulk semantics.
 - [ ] Every subscriber flow is designed for idempotency (duplicate delivery handling).
 - [ ] Every subscriber flow has a fault path that writes to a durable error log.
 - [ ] Multiple subscribers (Flow + Apex + external) are enumerated; ordering dependencies (if any) are documented and known to be unreliable.
-- [ ] The subscriber flow is bulk-safe (handles up to 2,000 events per invocation for High-Volume).
-- [ ] The Platform-Event-Triggered flow's run-as context is explicitly chosen.
+- [ ] The subscriber flow is bulk-safe (handles up to 200 event messages per invocation, `platform_events.txt` 264 L2185).
+- [ ] The subscriber is tested as each user who publishes the event, since every interview runs in the publisher's context.
 - [ ] A compensation or replay strategy exists for subscriber failures.
 
 ## Salesforce-Specific Gotchas (short list)
 
 1. Both Standard-Volume and High-Volume publish allocations are ORG-WIDE, not per-event-type — adding a new event type buys no fresh headroom. Standard-Volume: 100,000/hour (Enterprise / Performance / Unlimited), 1,000/hour (Developer, Professional with API Add-On). High-Volume: 250,000/hour (50,000 on Developer).
 2. `Publish Immediately` can deliver events that should have rolled back; always prefer after-commit for record-change triggers.
-3. Subscriber flows run as Automated Process user unless explicitly configured.
+3. Subscriber interviews run in the context of the user who published the event; only their debug logs appear under Automated Process (`platform_events.txt` 264 L2190–2192).
 4. At-least-once delivery means idempotency is mandatory.
 
 See `references/gotchas.md` for the full set.
@@ -297,7 +319,7 @@ See `references/gotchas.md` for the full set.
 - `flow/flow-bulkification` — subscriber flows must be bulk-safe.
 - `flow/fault-handling` — fault connectors and fault paths in publisher and subscriber.
 - `apex/trigger-and-flow-coexistence` — Apex and Flow subscribers on the same event.
-- `integration/platform-events` — deeper integration patterns including Pub/Sub API and CometD.
+- `integration/platform-events-integration` — deeper integration patterns including Pub/Sub API and CometD.
 - `standards/decision-trees/integration-pattern-selection.md` — routing between PE, CDC, REST, Bulk API.
 
 ## Official Sources Used

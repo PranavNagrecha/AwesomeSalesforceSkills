@@ -172,7 +172,8 @@ justification that limits no longer apply.
 connotation of unbounded background work from other platforms.
 
 **Correct pattern:** asynchronous and scheduled paths are subject to the
-asynchronous per-transaction Apex limits — 200 SOQL, 60,000 ms CPU, 12 MB heap.
+asynchronous per-transaction Apex limits — 200 SOQL, 60,000 ms CPU, 25 MB heap
+(Winter '27 release, `apexdev.txt` 264 L19780; 12 MB through Summer '26).
 Roughly a 6× CPU budget and a 2× query budget against synchronous, and still
 ceilings. Work that needs more needs chunking or Batch Apex; see
 `flow/flow-batch-processing-alternatives`.

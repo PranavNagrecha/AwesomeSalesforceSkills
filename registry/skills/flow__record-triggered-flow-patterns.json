@@ -215,7 +215,7 @@
     "fe04425ba47b63437182",
     "fe6930daac9af13fefdb"
   ],
-  "content_hash": "18b8a96d5016c26d2876e9a18e37082fa33500157a776a94774209448c19c1db",
+  "content_hash": "aa40cfd0ab5706697fbe9da81f074eeeb53e6b9c0d72d84b84a8eeeee3e8c58f",
   "dependencies": [],
   "description": "Use when designing or reviewing Salesforce record-triggered Flows, especially before-save vs after-save behavior, entry criteria, recursion avoidance, and when to escalate to Apex. Triggers: 'before save vs after save', '$Record__Prior', 'record-triggered flow', 'order of execution', 'flow recursion', 'triggerOrder', 'doesRequireRecordChangedToMeetCriteria', 'scheduled path', 'RecordBeforeDelete', 'flow-meta.xml', 'FlowTest'. NOT for tracing save order against triggers \u2014 use flow/flow-record-save-order-interaction. NOT for bulk-load failures once the trigger model is right \u2014 use flow/flow-bulkification.",
   "file_location": "skills/flow/record-triggered-flow-patterns",
@@ -230,7 +230,7 @@
     "**Apex Developer Guide \u2014 *Triggers and Order of Execution*** (`apexdev.txt` L15402\u201315490, PDF: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf) \u2014 the 20-step save order: before-save flows at step 3, before triggers at 4, validation at 5, duplicate rules at 6, save at 7, after triggers at 8, after-save flows at 14, commit at 19, asynchronous flow paths at 20. Supports every save-order claim in SKILL.md \u00a7 *Order Of Execution Still Applies*.",
     "**Apex Developer Guide \u2014 recursive-save note** (`apexdev.txt` L15414\u201315415) \u2014 \"During a recursive save, Salesforce skips steps 9 \u2026 through 17.\" Supports `references/gotchas.md` \u00a7 *A Recursive Save Skips Steps 9 Through 17*, which is the one place the flat step list actively misleads.",
     "**Apex Developer Guide \u2014 versioned behaviour** (`apexdev.txt` L15509 and L44657) \u2014 \"In API version 53.0 and earlier, after-save record-triggered flows run after entitlements are executed.\" Supports the gotcha that a flow's own `<apiVersion>` moves it in the save order.",
-    "**Metadata API Developer Guide \u2014 `Flow`** (`api_meta.txt` L68065\u201368470, PDF: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf) \u2014 `apiVersion` (L68075), `runInMode` enum (L68374\u201368390), `status` / `FlowVersionStatus` enum (L68416\u201368424), `triggerOrder` \"from 1 to 2,000\", API 54.0+ (L68438\u201368441). Supports the frontmatter of every flow in `references/metadata-examples.md` and the checker's status/triggerOrder rules.",
+    "**Metadata API Developer Guide \u2014 `Flow`** (`api_meta.txt` L68065\u201368470, PDF: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf) \u2014 `apiVersion` (L68075), `runInMode` enum (re-grounded at 264 L70907\u201370928: four values, `UserMode` API 68.0+), `status` / `FlowVersionStatus` enum (L68416\u201368424), `triggerOrder` \"from 1 to 2,000\", API 54.0+ (L68438\u201368441). Supports the frontmatter of every flow in `references/metadata-examples.md` and the checker's status/triggerOrder rules.",
     "**Metadata API Developer Guide \u2014 `FlowStart`** (`api_meta.txt` L72279\u201372580) \u2014 `doesRequireRecordChangedToMeetCriteria` (L72322\u201372325), `filterFormula` (L72390\u201372392), `recordTriggerType` enum (L72450\u201372457), `FlowTriggerType` enum including `RecordAfterSave` (L72524), `RecordBeforeDelete` (L72536) and `RecordBeforeSave` (L72539) \u2014 and no after-delete value anywhere in it. Supports the entry-criteria and delete-context gotchas.",
     "**Metadata API Developer Guide \u2014 `FlowScheduledPath`** (`api_meta.txt` L71389\u201371425) \u2014 `maxBatchSize` \"from 1 to 200. Default is 200\" (L71397\u201371398), `offsetUnit` values (L71405\u201371411), `pathType` / `AsyncAfterCommit` (L71412\u201371415), `timeSource` (L71420\u201371423). Supports the scheduled path in `references/metadata-examples.md` \u00a7 2 and the batching gotcha.",
     "**Metadata API Developer Guide \u2014 `FlowDefinition` and the API 44.0 upgrade checklist** (`api_meta.txt` L73186\u201373201 and L73920\u201373957) \u2014 \"the active version numbers in the flow definitions override the status fields in the flows\"; \"The `flowDefinitions` directory is empty.\" Supports \u00a7 5 of `references/metadata-examples.md` and the stale-activation gotcha.",
@@ -267,5 +267,5 @@
   ],
   "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "2.2.1"
+  "version": "2.2.2"
 }

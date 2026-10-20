@@ -30,7 +30,7 @@ provide.
 |---|---|
 | Largest raw file to accept (bytes) | |
 | Raw + ~37 % base64 (`object_reference L79833`) | |
-| Heap ceiling for the context (6 MB sync / 12 MB async, `apexdev L19577`) | |
+| Heap ceiling for the context (10 MB sync / 25 MB async, `apexdev 264 L19780`; 6 / 12 MB if a nonproduction org opted back for Winter '27) | |
 | Cap constant in the Apex controller | |
 | Cap constant in the JavaScript guard | |
 | Measured `Limits.getHeapSize()` at the cap | |

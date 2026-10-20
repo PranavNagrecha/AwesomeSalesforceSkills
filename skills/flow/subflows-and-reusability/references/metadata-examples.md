@@ -229,7 +229,8 @@ writes. Side-effect tier "Lookup / derivation" in the SKILL.md reuse-safety tabl
   "Specifies which node to execute if the attempt to get records results in an error"
   (`FlowRecordLookup`, L71120-71122). The child must self-handle because the caller
   cannot: see the parent's notes below.
-- `runInMode` is declared per flow (L68374-68390). `DefaultMode` = "How the flow is
+- `runInMode` is declared per flow (`api_meta.txt` 264 L70907-70928; `UserMode` is a fourth
+  value from API 68.0 — see gotchas). `DefaultMode` = "How the flow is
   launched determines whether the flow runs in user context or in system context." Leave
   the child on `DefaultMode` so it inherits the launch context instead of silently
   widening record access for every caller.

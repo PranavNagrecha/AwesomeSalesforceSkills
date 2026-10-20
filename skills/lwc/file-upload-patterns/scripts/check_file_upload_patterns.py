@@ -18,7 +18,8 @@ Rules implemented, each mapping to a gotcha or anti-pattern in this skill:
              insert in the same class. That file is created and is invisible on
              the record (object_reference L79403-L79405, L76648-L76649).
   R3  WARN   A base64 payload is sent to Apex with no client-side size guard.
-             Apex heap is 6 MB synchronous (apexdev L19577) and base64 inflates
+             Apex heap is 10 MB synchronous (apexdev 264 L19780; 6 MB through
+             Summer '26) and base64 inflates
              the payload by roughly 37% (object_reference L79833).
   R4  ERROR  An ``@AuraEnabled`` upload method marked ``cacheable=true``. "To set
              cacheable=true, a method must only get data, it can't mutate
@@ -202,7 +203,8 @@ def check_bundle(bundle: Path, root: Path) -> list[tuple[str, str]]:
             (
                 "WARN",
                 f"{js_path.relative_to(root)}: a base64 payload is built and sent to Apex with no "
-                "client-side size guard. Apex heap is 6 MB synchronous (apexdev L19577) and "
+                "client-side size guard. Apex heap is 10 MB synchronous (apexdev 264 L19780; 6 MB "
+                "through Summer '26) and "
                 "base64 inflates the payload by about 37% (object_reference L79833).",
             )
         )

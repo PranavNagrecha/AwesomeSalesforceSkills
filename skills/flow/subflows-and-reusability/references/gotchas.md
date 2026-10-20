@@ -172,9 +172,13 @@ documented reason the child exists. `runInMode` is a field on `Flow`, not on
 `FlowSubflow`, and its values are `DefaultMode` ("How the flow is launched determines
 whether the flow runs in user context or in system context"), `SystemModeWithSharing`
 (respects OWD, role hierarchy, sharing rules, manual sharing, teams and territories but
-not object or field permissions) and `SystemModeWithoutSharing` ("The flow can access all
-data", API 49.0+) - all at L68374-68390. Because each flow carries its own value, the
-child's setting is what governs inside the child.
+not object or field permissions), `SystemModeWithoutSharing` ("The flow can access all
+data", API 49.0+) and, from API 68.0, `UserMode` ("The flow runs with the user's security context explicitly enforced, without inheriting sharing settings from the calling context") - all at `api_meta.txt` 264 L70907-70928.
+Because each flow carries its own value, the child's setting is what governs inside the
+child. On paper `UserMode` is the value for a shared child that must never widen access.
+**UNVERIFIED (2026-10-19):** beyond that one sentence the docs do not say how a `UserMode`
+child behaves under a `SystemModeWithoutSharing` parent or an Apex invocable caller;
+prove it with a `System.runAs` test before relying on it.
 
 ---
 

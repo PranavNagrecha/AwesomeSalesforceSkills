@@ -167,9 +167,10 @@ there is no Update element and no second DML.
 - `<runInMode>DefaultMode</runInMode>` — "How the flow is launched determines whether the
   flow runs in user context or in system context." The alternatives are
   `SystemModeWithSharing` (respects OWD, role hierarchy, sharing rules, manual sharing,
-  teams, territories, but **not** object permissions or field-level access) and
-  `SystemModeWithoutSharing` ("can access all data"), API 49.0+ (`api_meta.txt`
-  L68374–68390).
+  teams, territories, but **not** object permissions or field-level access),
+  `SystemModeWithoutSharing` ("can access all data"), API 49.0+, and — from API 68.0 —
+  `UserMode`: "The flow runs with the user's security context explicitly enforced, without inheriting sharing settings from the calling context"; Flow Builder shows it as "User Context—Enforces User
+  Permissions" (`api_meta.txt` 264 L70907–70928).
 - `<status>Draft</status>` — valid values are `Active`, `Draft`, `Obsolete`,
   `InvalidDraft`, `UnderReview` (`api_meta.txt` L68416–68424). "Any flow without a
   `status` value is deployed or retrieved with a `status` value of `Draft`"

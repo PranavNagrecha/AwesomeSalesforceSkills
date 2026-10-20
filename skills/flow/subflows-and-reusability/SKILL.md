@@ -36,9 +36,9 @@ outputs:
   - "review findings for over-coupled or under-specified flow reuse"
   - "guidance on when to keep logic inline versus moving it to subflow or Apex"
 dependencies: []
-version: 2.1.0
+version: 2.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 Use this skill when the same Flow logic keeps appearing in more than one place or when one parent flow is becoming too long to reason about safely. A good subflow is a reusable contract with a narrow purpose, explicit inputs, explicit outputs, and predictable side effects. A bad subflow is just a pile of hidden assumptions moved out of sight.
@@ -107,7 +107,7 @@ Shared across parent and subflow:
 NOT shared:
 - Local variables (each flow has its own variable scope)
 - Record triggers (a subflow can't receive the "triggering record" semantics of the parent unless explicitly passed in)
-- **Record-access mode.** `runInMode` is a field on `Flow`, not on `FlowSubflow` (`api_meta.txt` L68374-68390), so a child set to `SystemModeWithoutSharing` runs that way no matter which caller invoked it
+- **Record-access mode.** `runInMode` is a field on `Flow`, not on `FlowSubflow` (`api_meta.txt` 264 L70907-70928), so a child set to `SystemModeWithoutSharing` runs that way no matter which caller invoked it
 
 ### Side Effects Should Be Deliberate
 

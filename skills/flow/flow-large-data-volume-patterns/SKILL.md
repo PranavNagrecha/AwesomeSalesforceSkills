@@ -31,9 +31,9 @@ outputs:
   - "test plan for production-like volumes"
 dependencies:
   - flow/flow-bulkification
-version: 2.0.0
+version: 2.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-19
 ---
 
 Large data volume (LDV) problems in Flow usually show up as sudden production failures while sandbox tests look fine. The platform still applies the same transactional ceilings as Apex, including the total count of rows returned by SOQL across the whole transaction. A single `Get Records` element that asks for "all" matching rows can return up to the platform query-rows ceiling for that transaction; when related data grows, the same element crosses the line and the interview fails with a query-rows error. This skill focuses on those volume ceilings, how to cap and narrow retrieval, how collections participate in memory pressure, and when Flow should hand off to asynchronous or code-based processing. Pair it with `flow-bulkification` for loop and per-iteration query patterns.
@@ -50,6 +50,20 @@ Gather if not available:
 - Note whether the flow is **before-save or after-save**, **scheduled**, or **autolaunched from bulk paths**; each changes how often the expensive elements run.
 - What's the worst-case related-record count? (`Contact` per `Account` can be 10k+ in some CRM orgs; `Case` per `Account` can be millions in service-heavy orgs.)
 - Does the object use `Indexed Custom Fields` or Skinny Tables? (Affects query performance planning.)
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What is the most rows any one Get Records could return in production, and all of them together in one transaction?" | Returned-row volume, not the count of Get Records elements, fails the interview first (gotcha 1) | A per-element row cap and a transaction row worksheet |
+| "Which sandbox, with what child counts, will this be tested in?" | Small seed data never stresses Get Records; the same metadata fails only at production cardinality (gotcha 2; short list 1) | A volume-test plan on full-copy or seeded data |
+| "What else runs in the same save — other flows, Apex triggers, validation and duplicate rules, managed packages?" | Every participant draws on one governor budget (gotcha 3) | The combined SOQL and row math, with the headroom left |
+| "Can these records arrive in bulk — Data Loader, Bulk API, an integration?" | A flow safe per user save can fail when one transaction carries many records (short list 2) | The batch size the design must survive |
+| "Which fields does the flow actually use from each Get Records?" | Wide field selections raise heap per row (short list 3) | A narrowed field list per element |
+| "Are the filter fields indexed?" | Non-selective filters on non-indexed fields can make the optimizer refuse the query (short list 4) | An indexed filter, or a request for one |
+| "Which users run the invocable Apex this flow calls — guest, external, internal?" | A field the running user cannot read fails the whole query (short list 6) | Confirmed FLS per persona |
+
+A proper configuration writes the row and heap budget down per entry point, so the first bulk load is not the test.
 
 ## Core Concepts
 
@@ -76,7 +90,7 @@ Unbounded retrieval examples:
 
 ### Collections and interview data add memory pressure
 
-Flows store intermediate collections in the interview's working set. Very large collections increase the chance of heap-related failures (6MB sync / 12MB async) and slow element execution even before hard limits. Shaping data early — fewer fields, fewer rows, pre-aggregation in a database-friendly layer — reduces risk.
+Flows store intermediate collections in the interview's working set. Very large collections increase the chance of heap-related failures (10 MB sync / 25 MB async from the Winter '27 release, every org whatever the flow's or class's API version, `apexdev.txt` 264 L19780; 6 MB / 12 MB through Summer '26, and a nonproduction org can pin itself to those lower limits for Winter '27 only with `ApexSettings.enableEnforceSummer26ApexHeapLimit`, `api_meta.txt` 264 L113855–113862) and slow element execution even before hard limits. Shaping data early — fewer fields, fewer rows, pre-aggregation in a database-friendly layer — reduces risk.
 
 **Heap cost per field type (rough):**
 - Text / Phone / Email / URL: ~50-100 bytes per field per record.
@@ -84,7 +98,7 @@ Flows store intermediate collections in the interview's working set. Very large 
 - Reference (lookup): ~18 bytes for the ID.
 - Long Text Area: variable, can be huge.
 
-A collection of 10k records with 10 fields each easily hits 10k × 10 × 100 = 10MB. Past the sync heap limit.
+A collection of 10k records with 10 fields each easily hits 10k × 10 × 100 = 10MB — the entire Winter '27 synchronous heap (`apexdev.txt` 264 L19780) before any other variable, and well past Summer '26's 6 MB. Exceeding it throws an uncatchable `System.LimitException` (264 L19853). UNVERIFIED (2026-10-19): the guide says uncatchable for Apex; that a Flow fault connector cannot route it either is an inference — plan for the whole transaction to fail.
 
 ### Flow is not the right engine for every LDV batch
 

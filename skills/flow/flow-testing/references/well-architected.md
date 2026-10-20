@@ -62,8 +62,11 @@ configuration chosen during the incident decides whether the evidence exists.
   with its version gates, `isUseMockOuput` being reserved, and every XML block in
   `references/metadata-examples.md` §2–§3).
   https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- Metadata API Developer Guide (Winter '27, 264) — `Flow.runInMode`, `api_meta.txt` L70907–70928
+  (the four `FlowRunInMode` values; `UserMode` API 68.0+, `SystemModeWithoutSharing` 49.0+,
+  the field 48.0+). https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/api_meta.pdf
 - Metadata API Developer Guide — `Flow` and `FlowStart`, `api_meta.txt` L68222–68425,
-  L72400–72560, L70955–71180 (supports `triggerType`, `recordTriggerType`, `runInMode`,
+  L72400–72560, L70955–71180 (supports `triggerType`, `recordTriggerType`,
   `FlowVersionStatus`, `faultConnector` and `storeOutputAutomatically` in
   `references/metadata-examples.md` §1 and §4, and Gotcha 10's "no `triggerType` means
   app-launched only").

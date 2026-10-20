@@ -14,12 +14,13 @@ marked `<...>`.
 |---|---|---|
 | File belongs to a record that already exists, and no pre-processing is needed | A | The guide routes this case to `lightning-file-upload`: it is "a file selector for uploading a file that's associated with a record ID" (`lwc_guide base-components-all L4603`) |
 | No record id yet (wizard step 1, unsaved parent), or the bytes must be inspected/transformed before storage | B | The guide's own fallback for "upload a file without a record ID" is `lightning-input` with `type="file"` (`lwc_guide base-components-all L4603`, `L4611`) |
-| File is larger than a couple of megabytes | A | Bundle B is bounded by the Apex heap — 6 MB synchronous / 12 MB asynchronous (`apexdev L19577`) — and base64 inflates the payload by about 37 % (`object_reference L79833`) |
+| File is larger than a couple of megabytes | A | Bundle B is bounded by the Apex heap — 10 MB synchronous / 25 MB asynchronous (`apexdev 264 L19780`; 6 MB / 12 MB through Summer '26) — and base64 inflates the payload by about 37 % (`object_reference L79833`) |
 
 ## Citation key
 
 `lwc_guide <page-slug> L<n>` = line `n` of the crawled Lightning Web Components Developer Guide.
 `object_reference L<n>` / `apexdev L<n>` / `apexrefguide L<n>` = the Summer '26 PDF text extracts.
+`apexdev 264 L<n>` / `api_meta 264 L<n>` = the Winter '27 (264) extracts, used for the heap limits.
 Anything sourced only from the **Lightning Component Library** (every `lightning-file-upload`
 attribute, its event payload, its per-file ceiling) is marked UNVERIFIED — that reference is
 not part of the corpus this package was grounded against.
@@ -274,7 +275,8 @@ import uploadFile from '@salesforce/apex/FileUploadController.uploadFile';
 /*
  * Client-side size guard.
  *
- * Apex total heap is 6 MB synchronous / 12 MB asynchronous (apexdev L19577), and an
+ * Apex total heap is 10 MB synchronous / 25 MB asynchronous (apexdev 264 L19780; 6 MB /
+ * 12 MB through Summer '26), and an
  * @AuraEnabled call from LWC runs synchronously. Salesforce documents the base64
  * conversion as increasing document size "by approximately 37%" (object_reference L79833),
  * so a 2 MB file arrives as roughly 2.74 MB of String.
@@ -536,7 +538,7 @@ private class FileUploadControllerTest {
     static void rejectsAPayloadOverTheServerCap() {
         Account account = newAccount();
         // Lower the cap instead of materialising a multi-megabyte Blob in a test
-        // transaction that shares the same 6 MB heap as production.
+        // transaction that shares the same synchronous heap as production.
         FileUploadController.MAX_RAW_BYTES = 2;
 
         Test.startTest();

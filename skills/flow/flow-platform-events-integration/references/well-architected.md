@@ -20,7 +20,7 @@ Well-Architected Performant asks that work run at the lowest cost and at the cor
 - **Decoupling improves interactive save latency.** Publishing an event shifts heavy downstream work out of the user's save transaction. The user sees a faster page return.
 - **High-Volume PEs scale horizontally.** Multiple external Pub/Sub API consumers can subscribe independently; adding consumers does not add load to Salesforce write-paths.
 - **Publish cost is DML + per-hour.** Each publish is 1 DML statement in the originating transaction. 200 events = 1 DML if published as a collection; 200 DML if published in a loop. Bulk-safe publishing is a direct performance multiplier.
-- **Subscriber batching reduces overhead.** High-Volume subscribers receive up to 2,000 events per flow invocation. A bulk-safe subscriber (collection SOQL + collection DML) processes an entire batch for 1 SOQL + 1 DML.
+- **Subscriber batching reduces overhead.** A platform event–triggered flow receives up to 200 event messages per batch (`platform_events.txt` 264 L2185). A bulk-safe subscriber (collection SOQL + collection DML) processes an entire batch for 1 SOQL + 1 DML.
 - **Publish limits are a performance ceiling.** Standard-Volume is allocated 100,000 publishes/hour org-wide on Enterprise / Performance / Unlimited — but only 1,000/hour on Developer and Professional-with-API-Add-On, which is why designs that pass in a Developer sandbox can be sized wrong for production, and vice versa. High-Volume raises the ceiling to 250,000/hour but is still an org-wide bucket, and its **delivery** allocation is the tighter one: 50,000 (Performance / Unlimited) / 25,000 (Enterprise) / 10,000 (Developer) event deliveries per 24 hours, shared with Change Data Capture. Monitor the Platform Event Usage page. Route high-rate use cases to High-Volume early; retrofitting later requires consumer changes.
 - **Pause is NOT a PE substitute.** A Pause-and-wait design holds a flow interview in storage. PE publish-and-subscribe is stateless per subscriber invocation. For long-running waits on external events, PEs with a PE-triggered resumption flow are usually cheaper than Pause.
 
@@ -28,8 +28,8 @@ Well-Architected Performant asks that work run at the lowest cost and at the cor
 
 Well-Architected Trusted / Secure emphasizes correct running-user context and least-privilege access.
 
-- **Subscriber default is Automated Process user.** The subscriber flow runs as Automated Process by default, which has broad internal access but different sharing visibility from the publishing user. Audit queries and writes in subscribers for sharing correctness.
-- **Run-As is configurable.** Platform-Event-Triggered flows can be set to run as a specific user. For sensitive subscribers, create a dedicated integration user with a scoped permission set — least privilege.
+- **Subscriber runs as the publisher.** Each interview runs in the context of the user who published the event; only its debug logs appear under Automated Process (`platform_events.txt` 264 L2190–2192). Audit subscriber queries and writes against every publishing persona.
+- **No documented flow run-as override.** `PlatformEventSubscriberConfig` sets the running user of a platform event Apex trigger (`api_meta.txt` 264 L99118); UNVERIFIED (2026-10-19): the corpus documents no equivalent for a flow. When a subscriber needs one least-privilege identity, subscribe with an Apex trigger configured with a dedicated integration user.
 - **Event payloads may carry sensitive data.** If the event includes PII (customer name, SSN fragments), the bus becomes a potential data-exposure surface. Consider:
   - Publishing IDs only and letting the subscriber fetch details with proper FLS.
   - Restricting event field visibility via the event definition's FLS.
@@ -53,11 +53,12 @@ Well-Architected Trusted / Secure emphasizes correct running-user context and le
 
 ## Official Sources Used
 
+- Platform Events Developer Guide (Winter '27, 264) — each platform event–triggered flow interview runs asynchronously in a separate transaction (`platform_events.txt` L2187–2188); synchronous limits apply to platform event triggers (L2338–2339); a flow receives at most 200 event messages per batch (L2185); each interview runs in the publishing user's context while debug logs show Automated Process (L2190–2192); `PlatformEventSubscriberConfig` is Apex-trigger-only (`api_meta.txt` 264 L99118). Apex Developer Guide (264) — heap 10 MB sync / 25 MB async (`salesforce_apex_developer_guide.txt` L19780), a release-level change absent from the API 68.0 versioned list (L45118–45129) — https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/platform_events.pdf
 - Salesforce Developer Documentation — "Platform Events Developer Guide": https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_intro.htm
 - Salesforce Help — "Platform Event–Triggered Flow": https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_platform_event.htm
 - Salesforce Developer Documentation — "High-Volume Platform Events Allocations": https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
 - Salesforce Developer Documentation — "Platform Event Allocations" (per-edition publish + delivery figures; verified 2026-08-01): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_event_limits.htm
-- Salesforce Developer Documentation — "Configure the User and Batch Size for Your Platform Event Trigger" (2,000-message maximum and default batch size): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_trigger_config.htm
+- Salesforce Developer Documentation — "Configure the User and Batch Size for Your Platform Event Trigger" (2,000-message maximum and default batch size — Apex triggers only, `platform_events.txt` 264 L2365–2368): https://developer.salesforce.com/docs/atlas.en-us.platform_events.meta/platform_events/platform_events_trigger_config.htm
 - Salesforce Developer Documentation — "Pub/Sub API": https://developer.salesforce.com/docs/platform/pub-sub-api/overview
 - Salesforce Architects — "Well-Architected: Resilient": https://architect.salesforce.com/well-architected/trusted/resilient
 - Salesforce Architects — "Well-Architected: Performant": https://architect.salesforce.com/well-architected/trusted/performant

@@ -239,7 +239,7 @@ Update Records: SaveScore                   <-- DML inside the subflow
   Record: input_Contact
 ```
 
-**Anti-pattern:** The parent flow's Loop runs N iterations × (1 SOQL + 1 DML) inside the subflow. Bulkification fails at iteration 76 (DML cap) or 101 (SOQL cap).
+**Anti-pattern:** The parent flow's Loop runs N iterations × (1 SOQL + 1 DML) inside the subflow. Bulkification fails at iteration 101, where the 101st query passes the 100-query synchronous SOQL cap (`apexdev.txt` 264 L19747) — before the DML cap would bite at iteration 151 (150 DML, L19757).
 
 **Correct approach:** Refactor the subflow to accept a `List<Contact>` input, do ONE Get Records `WHERE WhoId IN :inputContactIds`, build a map in-memory, write back with one Update Records. Then the parent loop disappears entirely — pass `vRelatedContacts` straight to the bulkified subflow.
 

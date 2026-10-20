@@ -3,9 +3,11 @@
 
 Detects three recurring defect classes called out in SKILL.md:
 
-  - Publisher flows that use `recordCreates` against a `__e` sObject without
-    setting `eventPublishingBehavior` — ambiguous publish semantics (Publish
-    After Commit vs. Publish Immediately must be explicit).
+  - Publisher flows that use `recordCreates` against a `__e` sObject whose event
+    definition publishes immediately. Publish behavior lives on the event object
+    (`publishBehavior`, default PublishImmediately — api_meta 264 L44509-44519),
+    not on the flow, so the checker reads `<event>.object-meta.xml` when it is in
+    the scanned tree and WARNs when it is absent or PublishImmediately.
   - Platform-Event-Triggered Flows (`start.object` ending in `__e`) missing a
     fault connector on the first risky DML/action — a subscriber failure
     silently drops the event and there's no compensation path.
@@ -65,7 +67,24 @@ def find_start_object(root: ET.Element) -> str:
     return ""
 
 
-def audit_flow(path: Path) -> list[str]:
+def load_publish_behaviors(paths: list[str]) -> dict[str, str]:
+    behaviors: dict[str, str] = {}
+    for raw in paths:
+        base = Path(raw)
+        if not base.is_dir():
+            continue
+        for obj in base.rglob("*__e.object-meta.xml"):
+            try:
+                root = ET.parse(obj).getroot()
+            except ET.ParseError:
+                continue
+            name = obj.name[: -len(".object-meta.xml")]
+            behaviors[name] = child_text(root, "publishBehavior") or "PublishImmediately"
+    return behaviors
+
+
+def audit_flow(path: Path, behaviors: dict[str, str] | None = None) -> list[str]:
+    behaviors = behaviors or {}
     findings: list[str] = []
     root = ET.parse(path).getroot()
     start_object = find_start_object(root)
@@ -84,11 +103,16 @@ def audit_flow(path: Path) -> list[str]:
             label = child_text(child, "label") or child_text(child, "name") or "<unnamed>"
             if target_obj.endswith("__e"):
                 publisher_element_count += 1
-                behavior = child_text(child, "eventPublishingBehavior")
-                if not behavior:
+                behavior = behaviors.get(target_obj)
+                if behavior is None:
                     findings.append(
-                        f"ISSUE {path}: publisher `{label}` to `{target_obj}` has no eventPublishingBehavior — "
-                        "publish semantics (AfterCommit vs Immediate) must be explicit"
+                        f"WARN {path}: publisher `{label}` publishes `{target_obj}`; its publish behavior is set on the "
+                        "event definition (publishBehavior, api_meta 264 L44509) — include the event object to check it"
+                    )
+                elif behavior != "PublishAfterCommit":
+                    findings.append(
+                        f"WARN {path}: publisher `{label}` publishes `{target_obj}`, defined as {behavior} — "
+                        "a rolled-back save still emits the event (api_meta 264 L44514-44519)"
                     )
 
         if is_pe_triggered and tag in RISKY_ELEMENTS and not has_child(child, "faultConnector"):
@@ -113,8 +137,17 @@ def audit_flow(path: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("paths", nargs="+", help="Flow metadata files or directories")
+    parser.add_argument("paths", nargs="*", help="Flow metadata files or directories")
+    parser.add_argument("--manifest-dir", help="Root directory of Flow metadata (same as passing it as a path).")
     args = parser.parse_args()
+    if args.manifest_dir:
+        args.paths = list(args.paths) + [args.manifest_dir]
+    if not args.paths:
+        parser.error("pass --manifest-dir or at least one path")
+    missing = [p for p in args.paths if not Path(p).exists()]
+    if missing:
+        print(f"ERROR: path not found: {', '.join(missing)}")
+        sys.exit(1)
 
     files = iter_flow_files(args.paths)
     if not files:
@@ -122,9 +155,10 @@ def main() -> int:
         print("WARN: no Flow metadata under provided paths", file=sys.stderr)
         return 0
 
+    behaviors = load_publish_behaviors(args.paths)
     findings: list[str] = []
     for path in files:
-        findings.extend(audit_flow(path))
+        findings.extend(audit_flow(path, behaviors))
 
     summary = f"Scanned {len(files)} Flow metadata file(s); {len(findings)} finding(s)."
     print(json.dumps({"findings": findings, "summary": summary}, indent=2))

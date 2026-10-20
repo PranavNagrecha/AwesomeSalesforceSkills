@@ -86,7 +86,8 @@ behaviour is not usable.
 **Problem:** The first attempt read the whole file with `FileReader`, base64-encoded it and
 posted it to one `@AuraEnabled` method. It worked on the developer's 2 MB sample and hit
 `System.LimitException: Apex heap size too large` on a real document. Apex total heap is
-6 MB synchronous and 12 MB asynchronous (`apexdev L19577`), and Salesforce documents the
+10 MB synchronous and 25 MB asynchronous (`apexdev 264 L19780`; 6 MB / 12 MB through
+Summer '26), and Salesforce documents the
 base64 conversion as increasing document size by approximately 37 %
 (`object_reference L79833`) — so the file size that actually fits is well under the raw heap
 number. UNVERIFIED (2026-09-05): the further assumption that the encoded string and the

@@ -299,13 +299,15 @@ def parse_args() -> argparse.Namespace:
 
 def check_flow_loop_element_patterns(manifest_dir: Path) -> list[str]:
     if not manifest_dir.exists():
-        return [f"Manifest directory not found: {manifest_dir}"]
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
 
     flows = sorted(
         set(manifest_dir.rglob("*.flow-meta.xml")) | set(manifest_dir.rglob("*.flow"))
     )
     if not flows:
-        return [f"No *.flow-meta.xml files found under {manifest_dir}"]
+        print(f"WARN: No *.flow-meta.xml files found under {manifest_dir}; nothing to check.")
+        return []
 
     issues: list[str] = []
     for flow in flows:

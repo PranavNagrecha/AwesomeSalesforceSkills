@@ -2,8 +2,8 @@
 
 **Reliability:** the tier decision is a limits decision, and it should be made from the
 documented ceiling of the target surface rather than from a remembered number. The Apex path
-is bounded by a total heap of 6 MB synchronous and 12 MB asynchronous
-(`apexdev L19577`), and the base64 form of a document is about 37 % larger than the document
+is bounded by a total heap of 10 MB synchronous and 25 MB asynchronous
+(`apexdev 264 L19780`; 6 MB / 12 MB through Summer '26), and the base64 form of a document is about 37 % larger than the document
 (`object_reference L79833`). Choosing the Apex path for "more control" imports that ceiling
 for free, which is why the failure always arrives on the one document the business cares
 about. UNVERIFIED (2026-09-05): the per-file ceiling of `lightning-file-upload` itself is
@@ -87,10 +87,11 @@ attaches a generated document per record can exhaust a sandbox in an afternoon.
   ceiling, and the 200,000 / 2,500 versions-per-24-hours limits by edition
   (`object_reference L76632-L76649`) —
   https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf
-- **Apex Developer Guide, Execution Governors and Limits** — total heap size 6 MB synchronous
-  and 12 MB asynchronous, and `insert as user` for user-mode DML
-  (`apexdev L19577`, `L8050`) —
-  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- **Apex Developer Guide, Execution Governors and Limits** — total heap size 10 MB synchronous
+  and 25 MB asynchronous with an uncatchable `System.LimitException` on overrun
+  (`apexdev 264 L19780, L19853`) — a Winter '27 release-level change for every org, not an API-version gate (absent from the API 68.0 versioned list, `apexdev 264 L45118-L45129`); Summer '26 was 6 MB / 12 MB, and a nonproduction org can pin itself to those for Winter '27 only with `ApexSettings.enableEnforceSummer26ApexHeapLimit` (`api_meta 264 L113855-L113862`) — and `insert as user` for user-mode DML
+  (262: `apexdev L8050`) —
+  https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
 - **Apex Reference Guide** — `EncodingUtil.base64Decode(String)` returning a `Blob`,
   `base64Encode(Blob)`, `convertToHex` / `convertFromHex` for magic-number checks, `Blob.size()`
   in bytes, and `Limits.getHeapSize()` / `getLimitHeapSize()` for measuring the real budget

@@ -42,9 +42,9 @@ outputs:
   - "Recommendation to keep, replace with Collection Filter / Transform / Get-with-criteria, or escalate to invocable Apex"
   - "Worst-case element-execution and CPU-time estimate for the loop"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 # Flow Loop Element Patterns
@@ -107,7 +107,7 @@ To save an edit made inside a loop, the Assignment that sets the field must also
 
 ### 2. Why DML / SOQL / Subflow-with-DML inside a loop is a P0
 
-Salesforce enforces per-transaction governor limits that are **shared across every flow, trigger, and Apex class in the same transaction**: 150 DML statements, 100 synchronous SOQL queries (200 async), 50,000 records retrieved by SOQL, 6 MB heap (12 MB async), and 10,000 ms synchronous CPU time (60,000 ms async) — `apexdev.txt` L19544–L19579. A Loop iterating 200 records with one Update Records inside the body issues 200 DML statements in that transaction, busting the 150 limit on iteration 76 and rolling back the whole thing. Same math for Get Records inside a loop versus the 100-SOQL ceiling. The flow does not "release" budget between iterations — there is one transaction, one budget.
+Salesforce enforces per-transaction governor limits that are **shared across every flow, trigger, and Apex class in the same transaction**: 150 DML statements, 100 synchronous SOQL queries (200 async), 50,000 records retrieved by SOQL, 10 MB heap (25 MB async), and 10,000 ms synchronous CPU time (60,000 ms async) — `apexdev.txt` 264 L19747–19782. The heap pair is a Winter '27 release-level change for every org, not an API-version gate (it is absent from the 68.0 versioned-behaviour list, 264 L45118–45129); Summer '26 was 6 MB / 12 MB, and a nonproduction org can keep those for Winter '27 only via `ApexSettings.enableEnforceSummer26ApexHeapLimit` (`api_meta.txt` 264 L113855–113862). A Loop iterating 200 records with one Update Records inside the body issues 200 DML statements in that transaction, busting the 150 limit on iteration 151 (iterations 1–150 use 150 statements; the 151st is the first over the ceiling, `apexdev.txt` 264 L19757) and rolling back the whole thing. Same math for Get Records inside a loop versus the 100-SOQL ceiling. The flow does not "release" budget between iterations — there is one transaction, one budget.
 
 Subflow-in-loop is the same anti-pattern in disguise. If `LoopOverCases → Subflow_NotifyOwner` calls a subflow whose body contains an Update Records, every iteration executes that subflow's DML — the parent loop bulkifies-fails just as if the DML were inline. Reviewers must inspect every subflow called inside a loop body. Action elements that wrap Apex invocables are equally suspect; the Apex method runs once per iteration unless its `invocableMethod` declaration accepts a `List<>` and the flow passes a collection (the action's bulkified-input contract is what matters, not whether it "looks bulky").
 
@@ -291,7 +291,7 @@ Summary only — `references/gotchas.md` carries the grounding, the line citatio
 - Metadata API Developer Guide, `FlowCollectionProcessor` / `FlowCollectionSortOption` / `FlowCollectionMapItem` (`api_meta.txt` L69927–69996, L70161–70172) — the three `collectionProcessorType` values and their version floors, `conditionLogic` `Formula`, `limit` after sort, `mapItems` and `outputSObjectType` — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
 - Metadata API Developer Guide, `FlowRecordLookup` and `FlowRecordUpdate` (`api_meta.txt` L71091–71292) — "records aren't returned in any particular order" without a sort, `storeOutputAutomatically` vs `outputReference`, the 2–20,000 `limit` (API 63.0+), and both `faultConnector` fields — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
 - Metadata API Developer Guide, `FlowTest` and subtypes (`api_meta.txt` L73960–74340) — `.flowtest` suffix, API 55.0 floor, test points limited to `Start` and `Finish`, `testType` `WithAssertion`, `HasError` and `IsEmpty` operators, and the sample XML this skill's test is shaped from — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
-- Apex Developer Guide, "Execution Governors and Limits" (`apexdev.txt` L19535–19585) — 100 sync / 200 async SOQL, 150 DML, 50,000 rows, 6 MB / 12 MB heap, 10,000 ms / 60,000 ms CPU, all per transaction — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Apex Developer Guide (Winter '27), "Execution Governors and Limits" (`apexdev.txt` 264 L19745–19782) — 100 sync / 200 async SOQL, 150 DML, 50,000 rows, 10 MB / 25 MB heap (6 MB / 12 MB through Summer '26), 10,000 ms / 60,000 ms CPU, all per transaction — https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
 - Apex Developer Guide, "Debug Log Levels" Workflow events (`apexdev.txt` L38715–38900) — `FLOW_LOOP_DETAIL`, `FLOW_BULK_ELEMENT_DETAIL`, `FLOW_INTERVIEW_FINISHED_LIMIT_USAGE`, and the absence of any executed-element event — https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
 - Salesforce KB "Flow Error 'Number of Iterations Exceeded'" — the only source in either direction for the retired 2,000-element limit and its removal in API 57.0; not a developer guide, and not corroborated by any of the above — https://help.salesforce.com/s/articleView?id=000382258&language=en_US&type=1
 - Flow Loop element reference — https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_loop.htm&type=5

@@ -84,7 +84,7 @@ Correct approach:
 
 ## 11. Forgetting That Subscriber Batches Are Bulked
 
-A subscriber designed as if it receives exactly one event per invocation will fail under High-Volume. The assistant should always design the subscriber for a batch of up to 2,000 events.
+A subscriber designed as if it receives exactly one event per invocation will fail under High-Volume. The assistant should always design the subscriber for a batch of up to 200 event messages (`platform_events.txt` 264 L2185; 2,000 is the Apex trigger figure, `apexdev.txt` 264 L20065).
 
 Correct approach:
 - Subscriber flow starts with Assignment elements that collect ids from the `$Record` collection.
@@ -92,10 +92,10 @@ Correct approach:
 
 ## 12. Neglecting Running-User Context on Subscribers
 
-An assistant might write a subscriber flow that queries `ContactAccess__c` records assuming the flow runs as the event publisher. It runs as the Automated Process user. Sharing may yield empty results.
+An assistant might write a subscriber flow that queries `ContactAccess__c` records assuming the flow runs as the Automated Process user — because that is where its debug logs appear — and grant that user access. Each interview actually runs in the context of the user who published the event (`platform_events.txt` 264 L2190–2192), so a publisher without access to `ContactAccess__c` gets empty results.
 
 Correct approach:
-- Explicitly set Run-As or assign a dedicated integration user.
+- Grant every publishing persona the access the subscriber needs, or subscribe with an Apex trigger whose running user is set with `PlatformEventSubscriberConfig` (`api_meta.txt` 264 L99118).
 - Document expected sharing behavior at the subscriber boundary.
 
 ## 13. Suggesting External Publish via Flow Instead of Via Apex

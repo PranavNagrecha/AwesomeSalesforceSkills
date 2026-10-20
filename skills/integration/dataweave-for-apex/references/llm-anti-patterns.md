@@ -11,7 +11,7 @@ These patterns help the consuming agent self-check its own output.
 
 **Correct pattern:**
 
-In Apex, you only need a `.dwl` static resource and `Dataweave.Script`:
+In Apex, you only need a `.dwl` deployed as `DataWeaveResource` in `dw/` and `DataWeave.Script`:
 
 ```apex
 Dataweave.Script script = Dataweave.Script.createScript('My_DW');
@@ -27,7 +27,7 @@ No MuleSoft license. No Anypoint platform. No external runtime.
 
 ## Anti-Pattern 2: Writing the script inline in Apex as a String
 
-**What the LLM generates:** Code that constructs the DataWeave script as an Apex String and tries to execute it without registering a static resource:
+**What the LLM generates:** Code that constructs the DataWeave script as an Apex String and tries to execute it without deploying it as `DataWeaveResource` metadata:
 
 ```apex
 // WRONG — there is no Dataweave.Script.fromString() API
@@ -38,9 +38,9 @@ Dataweave.Script script = Dataweave.Script.fromString('%dw 2.0...');
 
 **Correct pattern:**
 
-The script must be registered as a static resource with content type `application/dw`. The Apex API exposes only the `createScript(String resourceName)` factory. Inline scripts are not supported.
+The script must be deployed as `DataWeaveResource` metadata — a `.dwl` in the `dw` folder (`api_meta.txt` 264 L52116). The `Script` class loads it with `createScript(scriptName)` or `createScript(namespace, scriptName)`, both reading a deployed `.dwl` (262: `apexrefguide.txt` L155940–155943), and the platform generates `DataWeaveScriptResource.<Name>` as an alternative (`apexdev.txt` 264 L26875–26877). Inline scripts are not supported.
 
-**Detection hint:** Look for `fromString`, `compile`, or any call that takes the script body directly. If the example doesn't reference a static resource name, it's wrong.
+**Detection hint:** Look for `fromString`, `compile`, or any call that takes the script body directly. If the example doesn't reference a deployed script name or a `DataWeaveScriptResource` class, it's wrong.
 
 ---
 
@@ -104,6 +104,6 @@ List<Map<String,Object>> mapped = (List<Map<String,Object>>)
 
 **Correct pattern:**
 
-Stick to the supported set in Apex: `application/json`, `application/xml`, `application/csv`, `application/x-www-form-urlencoded`, `application/dw`, `text/plain`. For YAML/Avro/Parquet inputs, convert upstream or use a different tool. Confirm against the current Apex Reference for `Dataweave.Script` before adopting an exotic type.
+Never use the documented unsupported types — `application/flatfile`, `application/xlsx`, `application/avro` (`apexdev.txt` 264 L26979–26982); convert those upstream. UNVERIFIED (2026-10-20): the corpus publishes no positive supported list, so YAML, Parquet and anything not seen in the guide samples (`application/csv`, `application/apex`, `application/java`, `application/json`) needs a scratch-org test first.
 
-**Detection hint:** Any `input` or `output` MIME type outside the six listed above warrants a verification check against the Apex Reference Guide.
+**Detection hint:** An `input` or `output` of `application/flatfile`, `application/xlsx` or `application/avro` is wrong; any other type outside the guide samples warrants a scratch-org check.

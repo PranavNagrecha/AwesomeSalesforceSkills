@@ -90,16 +90,17 @@ record's sharing model checked alongside it.
 
 ---
 
-## Gotcha 5: Base64 costs about 37 %, and the Apex heap is 6 MB — not 6 MB of file
+## Gotcha 5: Base64 costs about 37 %, and the Apex heap is 10 MB — not 10 MB of file
 
 **What happens:** The uploader works on the developer's 2 MB sample and throws
 `System.LimitException: Apex heap size too large` on the first real document.
 
-**When it occurs:** Apex total heap is **6 MB synchronous / 12 MB asynchronous**
-(`apexdev L19577`), and an `@AuraEnabled` call from an LWC runs in the synchronous bucket.
+**When it occurs:** Apex total heap is **10 MB synchronous / 25 MB asynchronous**
+(`apexdev 264 L19780`; 6 MB / 12 MB through Summer '26 — the increase is a Winter '27
+release-level change, not an API-version gate), and an `@AuraEnabled` call from an LWC runs in the synchronous bucket.
 Salesforce documents the base64 conversion as increasing document size "by approximately 37%"
-(`object_reference L79833-L79834`) — not the 33 % the 4/3 arithmetic suggests. So a 4 MB file
-is already about 5.5 MB of `String` before anything decodes it.
+(`object_reference L79833-L79834`) — not the 33 % the 4/3 arithmetic suggests. So a 6 MB file
+is already about 8.2 MB of `String` before anything decodes it.
 UNVERIFIED (2026-09-05): whether the encoded `String` and the decoded `Blob` are resident on
 the heap simultaneously is an inference about Apex memory management, not a documented
 statement; the conservative reading is that they are.
@@ -113,8 +114,9 @@ the answer is `lightning-file-upload` or a direct API upload, not a cleverer chu
 
 ## Gotcha 6: The chunked-append pattern raises the ceiling, it does not remove it
 
-**What happens:** A chunked uploader passes acceptance at 20 MB and fails at 40 MB, and the
-failure is the same heap exception the chunking was supposed to fix.
+**What happens:** A chunked uploader passes acceptance on mid-sized files and fails on the first
+file whose accumulated body nears the heap ceiling in gotcha 5, and the failure is the same heap
+exception the chunking was supposed to fix.
 
 **When it occurs:** The common append implementation re-queries `ContentVersion.VersionData`,
 concatenates the new chunk and updates the record. Heap then grows with the *total* file size,

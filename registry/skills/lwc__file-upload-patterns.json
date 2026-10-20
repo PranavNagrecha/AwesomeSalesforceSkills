@@ -54,9 +54,9 @@
     "4b58e9975f82d8c68076",
     "4b7ee7c0383eb522555d",
     "4c60767a511e1a27f5bb",
-    "4f6a3af5b396b52c0ed9",
     "4f8bc8b9bcdb7eb84907",
     "5119da7674915f23b24c",
+    "520a1171b8f78ba0e6d2",
     "5215707a29935309df86",
     "5825a933d8cb0652d48c",
     "590f8db4ef408e90ef1c",
@@ -97,6 +97,7 @@
     "940291b0b540a961e8a3",
     "94e7c4a3ff68c2c6f43b",
     "9677b31b6f7d57bf9f9d",
+    "9a47fa8612d4cd402c5e",
     "9a4bd769c7c9c4f7fda0",
     "9a6135a3c57dee76cf2d",
     "9fb0239417e9cf1fa903",
@@ -121,7 +122,6 @@
     "d1aa791c1a790fef25b4",
     "d639144cca682db728ef",
     "d6b5c4155fe743a0c162",
-    "da1c8bbaea5a4e4ff91c",
     "db37808dc77377465800",
     "db3f4b9983f5d1fd04f1",
     "db6b1159d25fa7614a76",
@@ -150,7 +150,7 @@
     "fc0b225574b5f935bdc6",
     "ffb82761e3bf1ea603c0"
   ],
-  "content_hash": "80079fab4c1946024a0aa4e71bbcbba0d3285f39005a49d8a79911097464ae4c",
+  "content_hash": "655e7b43e7f66b52b5071ed025855f9b07640ce4a9c6ef02b9323fe77d430878",
   "dependencies": [],
   "description": "Upload files in LWC: lightning-file-upload, manual multipart, large-file chunked upload, and ContentDocument associations. NOT for ContentDocument query patterns \u2014 use data/salesforce-files-architecture. Trigger keywords: file upload, lightning-file-upload, uploadfinished, FileReader, base64, ContentVersion, ContentDocumentLink, ShareType, Visibility, VersionData, FirstPublishLocationId, Apex heap, guest user upload.",
   "file_location": "skills/lwc/file-upload-patterns",
@@ -166,7 +166,7 @@
     "**ContentDocumentLink, Object Reference** \u2014 `ShareType` is Required and its `V` / `C` / `I`",
     "**ContentVersion, Object Reference** \u2014 `VersionData` as base64 with the ~37 % conversion",
     "**ContentDocument, Object Reference** \u2014 no `create()` call, the 30,000,000 published-document",
-    "**Apex Developer Guide, Execution Governors and Limits** \u2014 total heap size 6 MB synchronous",
+    "**Apex Developer Guide, Execution Governors and Limits** \u2014 total heap size 10 MB synchronous",
     "**Apex Reference Guide** \u2014 `EncodingUtil.base64Decode(String)` returning a `Blob`,",
     "**LWC Developer Guide, Base Components Categories** \u2014 the routing rule between",
     "**LWC Developer Guide, Secure Apex Classes** \u2014 Apex class access as a separate grant for",
@@ -201,7 +201,7 @@
   "templates": [
     "skills/lwc/file-upload-patterns/templates/file-upload-patterns-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.2.0"
+  "version": "1.2.1"
 }

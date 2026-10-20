@@ -66,6 +66,7 @@ def check_flow_large_data_volume_patterns(manifest_dir: Path) -> list[str]:
 
     flow_paths = sorted(manifest_dir.rglob("*.flow-meta.xml"))
     if not flow_paths:
+        print(f"WARN: no *.flow-meta.xml files found under {manifest_dir}; nothing to check.")
         return issues
 
     risk_tags = {"recordLookups", "recordCreates", "recordUpdates", "recordDeletes", "actionCalls", "subflows"}

@@ -30,6 +30,7 @@
     "28394c49793537441e96",
     "299081185b39fb9b7781",
     "2b7dabc0f7bf7ccb0b33",
+    "2cee92912e449befd584",
     "2e098c8fdb69d9e7c132",
     "2f349fbebfb6576d3678",
     "2f3c70339a86aea0b1bb",
@@ -38,6 +39,7 @@
     "315b7bbf953371d5e6a2",
     "357f3ee635bbecc945c1",
     "35a171986784b5b016a1",
+    "37d4e0c3b04c31d89bc4",
     "381f710a3780c0ac449c",
     "38a3723e2d9c9bb8524a",
     "38ae3e9bff323203f53d",
@@ -85,6 +87,7 @@
     "7863f7b306657aad6569",
     "7a5ff6693b487a9da770",
     "7aa83e33f51d0a0d9d23",
+    "7c95abd9e118a15c400a",
     "7d04f3bf79c07851594c",
     "7db4c582241331b910c7",
     "7e5e6a2219cb7f5bea4f",
@@ -168,7 +171,7 @@
     "fe3125df4302470b4606",
     "ffb336159214b4c99313"
   ],
-  "content_hash": "07aff817c34c2e405405785a0c1fbc2ca990905931b912808d14334a373325cb",
+  "content_hash": "77f58858dc5867913611f7afbb76c82155120f878eae5b590654947c9d81320b",
   "dependencies": [],
   "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior \u2014 use flow/flow-debugging. Also covers: FlowTest metadata, flowtest-meta.xml, testPoints, Flow.Interview, sf flow run test, flow coverage.",
   "file_location": "skills/flow/flow-testing",
@@ -181,6 +184,7 @@
   "name": "flow-testing",
   "official_sources": [
     "Metadata API Developer Guide \u2014 `FlowTest`, `FlowTestPoint`, `FlowTestAssertion`,",
+    "Metadata API Developer Guide (Winter '27, 264) \u2014 `Flow.runInMode`, `api_meta.txt` L70907\u201370928",
     "Metadata API Developer Guide \u2014 `Flow` and `FlowStart`, `api_meta.txt` L68222\u201368425,",
     "Metadata API Developer Guide \u2014 `DeployResult`, `FlowCoverageResult` and",
     "Metadata API Developer Guide \u2014 `FlowDefinition`, `api_meta.txt` L73919\u201373940 (supports",
@@ -217,7 +221,7 @@
   "templates": [
     "skills/flow/flow-testing/templates/flow-testing-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "2.1.0"
+  "version": "2.1.1"
 }

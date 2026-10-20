@@ -28,6 +28,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--docs-dir",
+        "--manifest-dir",
+        dest="docs_dir",
         default=".",
         help="Directory containing plan markdown files.",
     )
@@ -63,7 +65,7 @@ def main() -> int:
 
     targets = list(root.rglob("*.md"))
     if not targets:
-        print("No plan docs found.")
+        print("WARN: no plan docs (*.md) found; nothing to check.")
         return 0
 
     all_issues: list[str] = []

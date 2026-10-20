@@ -38,7 +38,7 @@ outputs:
   - "review findings for trigger context and recursion risk"
   - "decision on before-save, after-save, or Apex"
 dependencies: []
-version: 2.2.1
+version: 2.2.2
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---

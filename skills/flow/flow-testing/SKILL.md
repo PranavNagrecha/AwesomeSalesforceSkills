@@ -35,9 +35,9 @@ outputs:
   - "review findings for missing test coverage, weak data setup, or manual-only validation"
   - "guidance on combining Flow Tests, debug runs, and component-level tests where needed"
 dependencies: []
-version: 2.1.0
+version: 2.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 Use this skill when a Flow works in a demo but nobody can yet prove it is safe to change. Flow testing is not one tool — it is a test STRATEGY that combines declarative Flow Tests where they fit, focused debug runs for diagnosis, deliberate test data, and extra coverage at custom component or Apex boundaries when the Flow itself is not the whole system.
@@ -65,7 +65,7 @@ Gather if not available:
 | If record-triggered: `Create`, `Update`, `CreateAndUpdate` or `Delete`? | `Update` needs both the before and after record image in the `Start` test point (`api_meta.txt` L74296–74320). Gotcha 8. | Tells you whether the test needs `InputTriggeringRecordUpdated` as well as `InputTriggeringRecordInitial`, and which field must differ between them. |
 | What does each branch leave behind in a named variable or a record field? | Assertions fire only at `Start` and `Finish` (`api_meta.txt` L74143–74150). Gotcha 5. | Gives every branch an assertion target. "Nothing" is a finding: the flow needs a variable added before it can be tested at all. |
 | Does the flow call invocable Apex, an External Service, or send email? | `isUseMockOuput` is "Reserved for future use" (`api_meta.txt` L74152) — nothing in a flow test is mocked. Gotcha 6. | Tells you which org may safely run the tests, and which behaviour has to move behind an invocable method so `HttpCalloutMock` can cover it. |
-| Who runs this in production, and what is `runInMode` set to? | `DefaultMode` means launch context decides user vs system context (`api_meta.txt` L68374–68380); version selection also differs between a flow user and a flow admin (`apexrefguide.txt` L158178–158181). Gotcha 14. | Supplies the `System.runAs` subject and exposes whether the user-context path has ever executed outside an admin session. |
+| Who runs this in production, and what is `runInMode` set to? | `DefaultMode` means launch context decides user vs system context (`api_meta.txt` 264 L70908–70911); from API 68.0 `UserMode` enforces the user's context explicitly instead (L70923–70927); version selection also differs between a flow user and a flow admin (`apexrefguide.txt` L158178–158181). Gotcha 14. | Supplies the `System.runAs` subject and exposes whether the user-context path has ever executed outside an admin session. |
 | Does the flow read configuration from a custom object? | Apex test data isolation "applies to all code running in test context" (`apexdev.txt` L40760–40761). Gotcha 11. | Tells you what `@TestSetup` must create — or that the configuration belongs in Custom Metadata, which the isolation rule exempts. |
 | What does the release gate require today, and does the repo still ship `flowDefinitions/`? | Active version numbers in flow definitions override the `status` field in the flows (`api_meta.txt` L73925–73930). Gotcha 13, and the unsatisfiable-gate anti-pattern in `references/well-architected.md`. | Confirms the version you tested is the version users get, and catches a gate that cannot be met for screen flows. |
 
@@ -251,7 +251,7 @@ Alternative: a scratch-org seed script (SFDX tree export/import) that loads a ca
 3. **Fault handling needs its own test data** — failures rarely prove themselves unless data is arranged to trigger them intentionally.
 4. **A flow can be correct while its boundary dependency is wrong** — orchestration coverage does not replace Apex or component tests.
 5. **Flow Tests do NOT enforce coverage at deploy time** — unlike Apex. A flow can be deployed to production with zero tests. This is a discipline problem, not a tool problem.
-6. **Admin-context testing hides user-context failures** — `System.runAs` plus a `with sharing` launching class on API version 62.0 or later is what makes an Apex-driven flow honour the running user's sharing (`apexrefguide.txt` L157958–157963). **UNVERIFIED (2026-09-05):** the corpus states nothing about which user context a `FlowTest` component executes in.
+6. **Admin-context testing hides user-context failures** — `System.runAs` plus a `with sharing` launching class on API version 62.0 or later is what makes an Apex-driven flow honour the running user's sharing (`apexrefguide.txt` L157958–157963). A flow saved at API 68.0 or later can also declare `runInMode` `UserMode`: "The flow runs with the user's security context explicitly enforced, without inheriting sharing settings from the calling context" (`api_meta.txt` 264 L70923–70927). **UNVERIFIED (2026-10-19):** how `UserMode` combines with a `without sharing` launching class or a system-mode parent flow is not stated beyond that sentence — test it under `System.runAs`. **UNVERIFIED (2026-09-05):** the corpus states nothing about which user context a `FlowTest` component executes in.
 7. **There is no FlowTest for a screen flow at all** — the type covers record-triggered, autolaunched and Data Cloud-triggered flows only (`api_meta.txt` L73961–73962). Jest plus a scripted manual pass is the whole story there.
 8. **A FlowTest exercises one interview** — the `Start` point takes a single `$Record` image per parameter type (`api_meta.txt` L74296–74320), so nothing about bulk behaviour is proven. Use an Apex test that inserts a realistic batch. **UNVERIFIED (2026-09-05):** the often-quoted "200 interviews per 200-record DML" ratio is not stated in `api_meta.txt` or `apexdev.txt`.
 9. **Nothing inside a flow test is mocked** — `isUseMockOuput` is documented as "Reserved for future use" (`api_meta.txt` L74152), so an Apex action, External Services callout or email alert fires for real when the test runs.

@@ -39,9 +39,9 @@ outputs:
   - "ContentVersion / ContentDocumentLink design with explicit ShareType and Visibility"
   - "Jest and Apex test coverage for the upload path"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 # LWC File Upload Patterns
@@ -90,7 +90,7 @@ once the component ships, and each one traces to a gotcha in `references/gotchas
 | Ask | Why it matters | What a good answer adds |
 |---|---|---|
 | "Does the parent record exist when the user picks the file?" | It is the whole tier decision. With a record id the platform does the association; without one you own it | The tier, and for the Apex path the moment at which the link is created (gotcha 1) |
-| "What is the biggest file this has to accept in the next two years?" | Apex heap is 6 MB synchronous (`apexdev L19577`) and base64 adds about 37 % (`object_reference L79833`); past a couple of megabytes the Apex path is not available at any chunk size | A hard cap written into the Apex controller, not only the JavaScript (gotchas 5, 6) |
+| "What is the biggest file this has to accept in the next two years?" | Apex heap is 10 MB synchronous (`apexdev 264 L19780`; 6 MB through Summer '26) and base64 adds about 37 % (`object_reference L79833`); past a couple of megabytes the Apex path is not available at any chunk size | A hard cap written into the Apex controller, not only the JavaScript (gotchas 5, 6) |
 | "Who must be able to open the file once it is stored — internal staff only, or a customer?" | `ShareType` and `Visibility` decide it, and `AllUsers` on a record surfaced externally is how internal documents leak | Explicit values at every `ContentDocumentLink` insert site (gotchas 3, 4) |
 | "Will the file ever need to move to a different parent record?" | `FirstPublishLocationId` is set only on first publish and cannot be changed later | Whether the one-statement form is safe or explicit links are required (gotcha 2) |
 | "Which surface is this component on — Lightning Experience, an LWR site, a standalone app?" | Confirmation UX differs: `lightning/platformShowToastEvent` is not supported in LWR sites or standalone apps (`lwc_guide base-components-patterns L4773`) | The confirmation mechanism, chosen rather than defaulted (gotcha 9) |
@@ -111,8 +111,9 @@ browser cannot bypass it, and the Jest and Apex tests fail when any of those thr
    `uploadfinished` handler, and no Apex at all. Stop here unless something below forces the
    Apex path.
 2. **If the Apex path is forced, size it before writing it.** Take the largest real file, add
-   ~37 % for base64 (`object_reference L79833`), and check it against the 6 MB synchronous
-   heap (`apexdev L19577`). If it does not clear that with margin, the requirement is wrong,
+   ~37 % for base64 (`object_reference L79833`), and check it against the 10 MB synchronous
+   heap (`apexdev 264 L19780`; 6 MB through Summer '26 — size to 6 MB if a nonproduction org
+   has opted back for Winter '27). If it does not clear that with margin, the requirement is wrong,
    not the implementation — go back to step 1 or to a direct API upload.
 3. **Build Bundle B as a pair.** `references/code-examples.md` § B: client size guard →
    `FileReader` → `@AuraEnabled` (never `cacheable=true`) → `ContentVersion` →
@@ -141,7 +142,7 @@ browser cannot bypass it, and the Jest and Apex tests fail when any of those thr
 
 | Fact | Source | Consequence |
 |---|---|---|
-| Apex total heap: 6 MB synchronous, 12 MB asynchronous | `apexdev L19577` | An `@AuraEnabled` upload runs in the synchronous bucket |
+| Apex total heap: 10 MB synchronous, 25 MB asynchronous; overrun is an uncatchable `System.LimitException` | `apexdev 264 L19780, L19853` | An `@AuraEnabled` upload runs in the synchronous bucket. Winter '27 release-level change for every org, not an API-version gate (absent from the API 68.0 versioned list, `apexdev 264 L45118-L45129`); Summer '26 was 6 MB / 12 MB, and a nonproduction org can pin itself to those for Winter '27 only with `ApexSettings.enableEnforceSummer26ApexHeapLimit` (`api_meta 264 L113855-L113862`) |
 | Base64 conversion "increases the document size by approximately 37%" | `object_reference L79833` | The 4/3 arithmetic understates it; budget from the documented figure |
 | Maximum file size uploadable via the SOAP API is 50 MB, measured *after* base64 conversion | `object_reference L79771-L79774` | The API ceiling and the component ceiling are different numbers |
 | `ContentDocumentLink.ShareType` is Required; `C` cannot be created from an Apex trigger | `object_reference L77269`, `L77276-L77277` | Set it at every insert; move trigger-based collaborator links elsewhere |

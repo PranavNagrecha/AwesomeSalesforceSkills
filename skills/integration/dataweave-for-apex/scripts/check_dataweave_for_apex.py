@@ -2,22 +2,32 @@
 """Checker for DataWeave-for-Apex anti-patterns and configuration issues.
 
 Scans:
-  staticresources/*.dwl       — script source
-  staticresources/*.resource-meta.xml — content type and cache control
-  classes/**.cls              — Apex callers
+  **/*.dwl            — script source (DataWeaveResource lives in dw/, api_meta 264 L52116)
+  **/*.dwl-meta.xml   — the DataWeaveResource metadata file (apiVersion required, L52129-52133)
+  **/*.cls            — Apex callers
 
-Flags concrete patterns this skill warns against:
+Rules, each mapped to a gotcha or anti-pattern in this skill:
 
-  W1  Static resource has cacheControl != Public — re-parse on every call
-  W2  Static resource has contentType != application/dw — won't load
-  W3  `.dwl` references `as Number`/`as Date`/`as Boolean` without `default`
-  W4  Apex `Dataweave.Script.createScript(` inside a `for`/`while` loop body
-  W5  `.dwl` declares input/output MIME type outside the supported set
-  W6  Apex catches Dataweave.ExecuteException without referencing getMessage()
+  E1  ERROR  A `.dwl` stored under `staticresources/`. createScript() "loads a DataWeave
+             2.0 script from the .dwl metadata file that is deployed in an org"
+             (262 apexrefguide L155951); scripts are DataWeaveResource metadata in the
+             dw folder (api_meta 264 L52116). Gotcha 1.
+  E2  ERROR  `.dwl` declares a content type DataWeave in Apex does not support:
+             application/flatfile, application/xlsx, application/avro
+             (apexdev 264 L26979-26982). Anti-pattern 5.
+  W2  WARN   A `.dwl` in dw/ with no paired `.dwl-meta.xml` (apiVersion is Required,
+             api_meta 264 L52132). Gotcha 6.
+  W3  WARN   `as Number`/`as Date`/`as Boolean` without `default` on the same line.
+  W4  WARN   `createScript(` inside a `for`/`while` loop body.
+  W6  WARN   A catch of the DataWeave exception that never references getMessage().
+  W7  WARN   Apex names `Dataweave.ExecuteException` / `Dataweave.ScriptException`; the
+             documented type is System.DataWeaveScriptException (apexdev 264 L26887).
+
+Exit codes: 1 on a missing directory or any ERROR; 0 otherwise (WARN included) unless
+--strict, which promotes WARN to a failing exit.
 
 Usage:
-    python3 check_dataweave_for_apex.py
-    python3 check_dataweave_for_apex.py --manifest-dir force-app
+    python3 check_dataweave_for_apex.py --manifest-dir force-app [--strict]
 """
 
 from __future__ import annotations
@@ -26,124 +36,95 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
-SUPPORTED_MIME = {
-    "application/json",
-    "application/xml",
-    "application/csv",
-    "application/x-www-form-urlencoded",
-    "application/dw",
-    "text/plain",
-}
+UNSUPPORTED_MIME = {"application/flatfile", "application/xlsx", "application/avro"}
 
-_RE_RESOURCE_CACHE = re.compile(r"<cacheControl>\s*(\w+)\s*</cacheControl>", re.I)
-_RE_RESOURCE_TYPE = re.compile(r"<contentType>\s*([^<]+?)\s*</contentType>", re.I)
-_RE_DWL_INPUT = re.compile(r"^\s*input\s+\w+\s+(\S+)\s*$", re.M)
-_RE_DWL_OUTPUT = re.compile(r"^\s*output\s+(\S+)\s*$", re.M)
+_RE_DWL_INPUT = re.compile(r"^\s*input\s+\w+\s+(\S+)", re.M)
+_RE_DWL_OUTPUT = re.compile(r"^\s*output\s+(\S+)", re.M)
 _RE_DWL_AS_TYPE = re.compile(r"\bas\s+(?:Number|Date|Boolean|DateTime)\b")
-_RE_DEFAULT_NEAR_AS = re.compile(r"\bdefault\b.{0,80}\bas\s+(?:Number|Date|Boolean|DateTime)\b|\bas\s+(?:Number|Date|Boolean|DateTime)\b.{0,80}\bdefault\b")
-_RE_CREATE_SCRIPT = re.compile(r"Dataweave\.Script\.createScript\(")
+_RE_CREATE_SCRIPT = re.compile(r"\.createScript\s*\(", re.I)
 _RE_LOOP_OPEN = re.compile(r"\b(?:for|while)\s*\(")
-_RE_CATCH_EXEC = re.compile(r"catch\s*\(\s*Dataweave\.ExecuteException\s+(\w+)\s*\)")
+_RE_CATCH_DW = re.compile(
+    r"catch\s*\(\s*((?:System\.)?DataWeaveScriptException|Dataweave\.(?:Execute|Script)Exception)\s+(\w+)\s*\)",
+    re.I,
+)
+_RE_LEGACY_EXC = re.compile(r"\bDataweave\.(ExecuteException|ScriptException)\b", re.I)
 _RE_GET_MESSAGE = re.compile(r"\.getMessage\(\)")
 
+Finding = Tuple[str, str]
 
-def _scan_dwl(path: Path) -> List[str]:
-    out: List[str] = []
+
+def _read(path: Path) -> str | None:
     try:
-        text = path.read_text(encoding="utf-8", errors="replace")
-    except OSError as exc:
-        return [f"{path}: ERROR could not read ({exc})"]
+        return path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return None
 
-    for match in _RE_DWL_INPUT.finditer(text):
-        mime = match.group(1)
-        if mime not in SUPPORTED_MIME:
-            line_no = text[:match.start()].count("\n") + 1
-            out.append(
-                f"{path}:{line_no}: W5  unsupported input MIME '{mime}' — supported: {', '.join(sorted(SUPPORTED_MIME))}"
-            )
-    for match in _RE_DWL_OUTPUT.finditer(text):
-        mime = match.group(1)
-        if mime not in SUPPORTED_MIME:
-            line_no = text[:match.start()].count("\n") + 1
-            out.append(
-                f"{path}:{line_no}: W5  unsupported output MIME '{mime}' — supported: {', '.join(sorted(SUPPORTED_MIME))}"
-            )
+
+def _scan_dwl(path: Path, root: Path) -> List[Finding]:
+    out: List[Finding] = []
+    rel = path.relative_to(root)
+    text = _read(path)
+    if text is None:
+        return [("ERROR", f"{rel}: could not read file")]
+
+    if "staticresources" in {p.lower() for p in rel.parts}:
+        out.append(("ERROR", f"{rel}: E1 DataWeave script stored as a static resource — createScript() loads DataWeaveResource metadata from dw/ (api_meta 264 L52116)"))
+    elif not path.with_name(path.name + "-meta.xml").exists():
+        out.append(("WARN", f"{rel}: W2 no paired {path.name}-meta.xml — DataWeaveResource requires apiVersion (api_meta 264 L52132)"))
+
+    for regex, kind in ((_RE_DWL_INPUT, "input"), (_RE_DWL_OUTPUT, "output")):
+        for match in regex.finditer(text):
+            mime = match.group(1).lower()
+            if mime in UNSUPPORTED_MIME:
+                line_no = text[: match.start()].count("\n") + 1
+                out.append(("ERROR", f"{rel}:{line_no}: E2 {kind} type '{mime}' is not supported by DataWeave in Apex (apexdev 264 L26979-26982)"))
 
     for line_no, raw in enumerate(text.splitlines(), 1):
         if _RE_DWL_AS_TYPE.search(raw) and "default" not in raw:
-            # Soft heuristic — check the surrounding 80 chars in same logical line.
-            out.append(
-                f"{path}:{line_no}: W3  `as <Type>` without `default` — throws on null source"
-            )
+            out.append(("WARN", f"{rel}:{line_no}: W3 `as <Type>` without `default` — throws on a null source"))
     return out
 
 
-def _scan_resource_meta(path: Path) -> List[str]:
-    out: List[str] = []
-    # Only check resources whose paired `.resource` is a `.dwl` script.
-    paired_dwl = path.with_suffix("").with_suffix(".dwl")
-    if not paired_dwl.exists():
-        return out
-    try:
-        text = path.read_text(encoding="utf-8", errors="replace")
-    except OSError as exc:
-        return [f"{path}: ERROR could not read ({exc})"]
-
-    cache = _RE_RESOURCE_CACHE.search(text)
-    if cache and cache.group(1).lower() != "public":
-        out.append(
-            f"{path}: W1  cacheControl='{cache.group(1)}' — DataWeave scripts should be Public to avoid per-call re-parse"
-        )
-
-    ctype = _RE_RESOURCE_TYPE.search(text)
-    if ctype and ctype.group(1).lower() != "application/dw":
-        out.append(
-            f"{path}: W2  contentType='{ctype.group(1)}' — must be application/dw for Dataweave.Script.createScript to load"
-        )
-    return out
-
-
-def _scan_apex(path: Path) -> List[str]:
-    out: List[str] = []
-    try:
-        text = path.read_text(encoding="utf-8", errors="replace")
-    except OSError as exc:
-        return [f"{path}: ERROR could not read ({exc})"]
+def _scan_apex(path: Path, root: Path) -> List[Finding]:
+    out: List[Finding] = []
+    rel = path.relative_to(root)
+    text = _read(path)
+    if text is None:
+        return [("ERROR", f"{rel}: could not read file")]
 
     lines = text.splitlines()
-    loop_depth = 0
-    brace_after_loop_open: List[int] = []
+    loop_stack: List[int] = []
+    depth = 0
     pending_loop = 0
     for line_no, raw in enumerate(lines, 1):
-        # Strip line comments and string literals (rough).
         line = re.sub(r"//.*$", "", raw)
         line = re.sub(r"'(?:\\.|[^'\\])*'", "''", line)
-        # Loop-depth tracking by counting open/close braces after a loop keyword.
-        for _ in _RE_LOOP_OPEN.finditer(line):
-            pending_loop += 1
+        pending_loop += len(_RE_LOOP_OPEN.findall(line))
         for ch in line:
-            if ch == "{" and pending_loop > 0:
-                loop_depth += 1
-                pending_loop -= 1
-                brace_after_loop_open.append(loop_depth)
-            elif ch == "}" and brace_after_loop_open and loop_depth == brace_after_loop_open[-1]:
-                brace_after_loop_open.pop()
-                loop_depth -= 1
-        if loop_depth > 0 and _RE_CREATE_SCRIPT.search(line):
-            out.append(
-                f"{path}:{line_no}: W4  Dataweave.Script.createScript() inside a loop — hoist above; scripts are stateless"
-            )
+            if ch == "{":
+                depth += 1
+                if pending_loop > 0:
+                    loop_stack.append(depth)
+                    pending_loop -= 1
+            elif ch == "}":
+                if loop_stack and loop_stack[-1] == depth:
+                    loop_stack.pop()
+                depth -= 1
+        if loop_stack and _RE_CREATE_SCRIPT.search(line):
+            out.append(("WARN", f"{rel}:{line_no}: W4 createScript() inside a loop — hoist it above; scripts are stateless"))
 
-        m = _RE_CATCH_EXEC.search(line)
+        legacy = _RE_LEGACY_EXC.search(line)
+        if legacy:
+            out.append(("WARN", f"{rel}:{line_no}: W7 Dataweave.{legacy.group(1)} is not a documented type — catch System.DataWeaveScriptException (apexdev 264 L26887)"))
+
+        m = _RE_CATCH_DW.search(line)
         if m:
-            var = m.group(1)
-            window = "\n".join(lines[line_no:line_no + 8])
-            if not _RE_GET_MESSAGE.search(window) and var not in window:
-                out.append(
-                    f"{path}:{line_no}: W6  catch Dataweave.ExecuteException without referencing {var}.getMessage() — diagnostic detail discarded"
-                )
+            var = m.group(2)
+            window = "\n".join(lines[line_no - 1 : line_no + 8])
+            if not re.search(rf"\b{re.escape(var)}\.getMessage\(\)", window) and not _RE_GET_MESSAGE.search(window):
+                out.append(("WARN", f"{rel}:{line_no}: W6 catch {m.group(1)} without {var}.getMessage() — diagnostic detail discarded"))
     return out
 
 
@@ -151,46 +132,37 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Flag DataWeave-for-Apex configuration and call-site issues under the given metadata directory.",
     )
-    parser.add_argument(
-        "--manifest-dir",
-        default="force-app",
-        help="Root directory of Salesforce metadata (default: force-app).",
-    )
+    parser.add_argument("--manifest-dir", default="force-app", help="Root directory of Salesforce metadata (default: force-app).")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings as well as ERROR.")
     args = parser.parse_args()
 
     root = Path(args.manifest_dir)
-    if not root.exists():
-        print(f"Manifest directory not found: {root}", file=sys.stderr)
-        return 2
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
 
-    findings: List[str] = []
-    files_scanned = 0
-    for path in root.rglob("*.dwl"):
-        files_scanned += 1
-        findings.extend(_scan_dwl(path))
-    for path in root.rglob("*.resource-meta.xml"):
-        files_scanned += 1
-        findings.extend(_scan_resource_meta(path))
-    for path in root.rglob("*.cls"):
-        files_scanned += 1
-        findings.extend(_scan_apex(path))
+    findings: List[Finding] = []
+    scanned = 0
+    for path in sorted(root.rglob("*.dwl")):
+        scanned += 1
+        findings.extend(_scan_dwl(path, root))
+    for path in sorted(root.rglob("*.cls")):
+        scanned += 1
+        findings.extend(_scan_apex(path, root))
 
-    if files_scanned == 0:
-        print(f"No DataWeave or Apex files found under {root}", file=sys.stderr)
+    if scanned == 0:
+        print(f"WARN: no .dwl or .cls files found under {root}; nothing to check.")
         return 0
 
-    if not findings:
-        print(f"OK: scanned {files_scanned} files, no DataWeave-for-Apex issues found.")
-        return 0
-
-    for line in findings:
-        print(f"WARN: {line}", file=sys.stderr)
-    print(
-        f"\nWARN: found {len(findings)} DataWeave-for-Apex issue(s) across {files_scanned} file(s).",
-        file=sys.stderr,
-    )
-    sys.exit(1)
+    for level, msg in findings:
+        print(f"{level}: {msg}")
+    errors = sum(1 for level, _ in findings if level == "ERROR")
+    warns = len(findings) - errors
+    print(f"Scanned {scanned} file(s): {errors} error(s), {warns} warning(s).")
+    if errors or (args.strict and warns):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

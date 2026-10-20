@@ -8,7 +8,7 @@
 
 **Solution:**
 
-`force-app/main/default/staticresources/PartnerCsvToAccount_DW.dwl`:
+`force-app/main/default/dw/PartnerCsvToAccount_DW.dwl` (plus its `.dwl-meta.xml`):
 
 ```dwl
 %dw 2.0
@@ -36,7 +36,7 @@ public with sharing class PartnerIngestService {
         Dataweave.Result result;
         try {
             result = script.execute(new Map<String, Object>{ 'payload' => csvBody });
-        } catch (Dataweave.ExecuteException e) {
+        } catch (System.DataWeaveScriptException e) {   // apexdev 264 L26887-26888
             throw new IngestException('CSV transform failed: ' + e.getMessage());
         }
         return (List<Account>) JSON.deserialize(
@@ -60,7 +60,7 @@ public with sharing class PartnerIngestService {
 
 **Solution:**
 
-`force-app/main/default/staticresources/BillingInvoice_DW.dwl`:
+`force-app/main/default/dw/BillingInvoice_DW.dwl`:
 
 ```dwl
 %dw 2.0
@@ -91,7 +91,7 @@ Apex caller hands back parsed JSON via `getValueAsString()`; LWC consumes it dir
 
 **Context:** A REST endpoint receives `{"id": "abc", "value": 42}` and needs to insert `Setting__c(External_Id__c='abc', Value__c=42)`.
 
-**Problem:** Reaching for DataWeave here costs more than it saves. The script needs a static resource, the Apex needs `Dataweave.Script.createScript` and exception handling, and the test needs a fixture. The total file count is 4 files for a transform that is one Apex line.
+**Problem:** Reaching for DataWeave here costs more than it saves. The script needs a `dw/` file and its `-meta.xml`, the Apex needs `DataWeave.Script.createScript` and exception handling, and the test needs a fixture. The total file count is 4 files for a transform that is one Apex line.
 
 **Solution (in Apex, no DataWeave):**
 
@@ -111,6 +111,6 @@ insert new Setting__c(
 
 **What practitioners do:** A trigger handler calls `Dataweave.Script.createScript('Foo_DW')` inside a loop over `Trigger.new`, executing the script per record.
 
-**What goes wrong:** Each `createScript` call hits the script-load path. Even with `Public` cache control, the per-call overhead is non-trivial; in a 200-row trigger this can blow the CPU budget on its own. The transformation is also redundant — the script is the same on every iteration.
+**What goes wrong:** Each `createScript` call hits the script-load path, and the per-call overhead is non-trivial; in a 200-row trigger this can blow the CPU budget on its own. The transformation is also redundant — the script is the same on every iteration.
 
 **Correct approach:** Hoist `createScript` above the loop. If the input shape is per-row, build a single composite payload (one JSON array containing all rows) and execute once. DataWeave is at its best on bulk inputs, not row-by-row.

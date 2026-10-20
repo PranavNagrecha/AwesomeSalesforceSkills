@@ -183,8 +183,9 @@ assumption that limits no longer apply, and it fails on CPU.
 
 **When it occurs:** Asynchronous and scheduled paths are subject to the
 asynchronous per-transaction Apex limits. Those are more generous — 200 SOQL
-queries, 60,000 ms CPU, 12 MB heap against 100 / 10,000 ms / 6 MB synchronous —
-and they are still ceilings.
+queries, 60,000 ms CPU, 25 MB heap against 100 / 10,000 ms / 10 MB synchronous
+(`apexdev.txt` 264 L19747–19782; heap was 12 MB / 6 MB through Summer '26 — a
+Winter '27 release-level change, not API-version-gated) — and they are still ceilings.
 
 **How to avoid:** Treat the move as buying roughly a 6× CPU budget and a 2× query
 budget, not an exemption. If the work needs more than that, it needs Batch Apex

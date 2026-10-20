@@ -99,7 +99,8 @@ https://developer.salesforce.com/docs/platform/lightning-component-reference/gui
 ## Anti-Pattern 3: Ignoring the heap ceiling that forces chunking to exist
 
 When the Apex path is genuinely required, the reason chunked upload exists gets skipped.
-Apex total heap is **6 MB synchronous, 12 MB asynchronous** (`apexdev L19577`), and an
+Apex total heap is **10 MB synchronous, 25 MB asynchronous** (`apexdev 264 L19780`; 6 MB /
+12 MB through Summer '26), and an
 `@AuraEnabled` call from an LWC runs in the synchronous bucket. Salesforce documents the
 base64 conversion as increasing document size **by approximately 37%**
 (`object_reference L79833`) — not the 33 % the 4/3 arithmetic suggests. The request body, the
@@ -146,9 +147,9 @@ the accumulated body each call, so heap grows with total file size — it is a b
 moderate ceiling, not a route to an arbitrarily large file. Past that, the file does not
 belong in an Apex transaction at all.
 
-Sources: Apex Developer Guide, Execution Governors and Limits — total heap size 6 MB
-synchronous / 12 MB asynchronous (`apexdev L19577`) —
-https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf ;
+Sources: Apex Developer Guide, Execution Governors and Limits — total heap size 10 MB
+synchronous / 25 MB asynchronous (`apexdev 264 L19780`) —
+https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf ;
 ContentVersion `VersionData`, ~37 % base64 increase (`object_reference L79833`).
 UNVERIFIED (2026-09-05): whether the encoded String and the decoded Blob are simultaneously
 resident on the heap is an inference about Apex memory management, not a documented statement.
