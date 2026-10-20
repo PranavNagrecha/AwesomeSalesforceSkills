@@ -379,6 +379,12 @@ releases:
     owner_model: opus
     status: todo
     parent: R2-01
+  - id: R2-24
+    title: 'Recipe test step 1: Winter ''27 probe set (facts the model cannot know) in run_lift probe format'
+    size: M
+    owner_model: sonnet
+    status: running
+    notes: Owner-mandated overnight recipe test (2026-10-21); moved from 1.6.0 by the orchestrator.
   - id: R2-02
     title: 'Roster shrink: every runtime agent not proven in R2-01 or by a build scenario -> status: experimental and out
       of the roster docs (slash redirects stay); doc counts regenerated'
@@ -542,11 +548,6 @@ releases:
     size: M
     owner_model: opus
     status: todo
-  - id: R3-05
-    title: 'Recipe test step 1: Winter ''27 probe set (facts the model cannot know) in run_lift probe format'
-    size: M
-    owner_model: sonnet
-    status: running
   - id: R3-02
     title: Release 1.6.0 / 0.5.3 — content set by R3-01
     size: S
