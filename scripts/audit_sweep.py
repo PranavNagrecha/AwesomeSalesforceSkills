@@ -8,6 +8,9 @@ defect classes that reviewers kept finding by hand.
    template, a code comment, a checker docstring). Batches 3-5 of R3-06 had
    18, 16 and 31 such survivals per batch.
 
+3. CITES: every `<guide> 264 L<n>` cite added in the diff is resolved and its corpus line printed;
+   blank or table-of-contents lines are flagged BLANK/TOC (11 such cites in one batch).
+
 2. MARKERS: every `UNVERIFIED (YYYY-MM-DD)` marker the writer ADDED must sit on
    a claim the corpus does NOT hold. For each new marker the sweep extracts the
    claim's key terms and greps BOTH corpus directories; a hit is printed for the
@@ -19,7 +22,7 @@ Usage (inside the writer's worktree, after editing, before reporting):
       --skills skills/admin/formula-fields skills/apex/soql-fundamentals \\
       --corpus /path/corpus264 --corpus /path/corpus
 
-Exit 0 always (it is an aid, not a gate); prints `SWEEP leftovers=<n> marker-hits=<m>`
+Exit 0 always (it is an aid, not a gate); prints `SWEEP leftovers=<n> marker-hits=<m> bad-cites=<b>`
 as its last line so the reviewer can compare the writer's attached output.
 Stdlib only.
 """
@@ -73,11 +76,24 @@ def diff_lines(base: str, path: Path, cwd: Path) -> tuple[list[str], list[str]]:
     return removed, added
 
 
+def _distinctive(t: str) -> bool:
+    """Only tokens a reviewer would call 'the old claim': numbers with units, API versions, dotted/underscored
+    identifiers, XML elements, or quoted phrases of three or more words. Bare words like `inputs`, `Output`,
+    `null` produced 130 false LEFTOVER lines in one batch."""
+    if any(c.isdigit() for c in t):
+        return True
+    if t.startswith("<") and t.endswith(">"):
+        return True
+    if "." in t or "_" in t:
+        return True
+    return len(t.split()) >= 3
+
+
 def tokens(text: str) -> set[str]:
     out = set()
     for m in TOKEN_RE.finditer(text):
         t = m.group(0).strip("`\"'")
-        if len(t) < 4 or any(s in t for s in STOP):
+        if len(t) < 4 or any(s in t for s in STOP) or not _distinctive(t):
             continue
         out.add(t)
     return out
@@ -162,6 +178,54 @@ def marker_hits(path: Path, base: str, cwd: Path, corpora: list[Path]) -> list[t
     return results
 
 
+CITE_RE = re.compile(r"\b(apexdev|api_meta|apexref|secguide|obj|object_reference|lim|ldv|pe|platform_events|sfdx|sfdx_dev|pkg2|pkg2_dev|rest|api_rest|asy|api_asynch|stream|api_streaming|dl|data_loader|salesforce_apex_developer_guide|salesforce_app_limits_cheatsheet|salesforce_large_data_volumes_bp|salesforce_data_loader)(?:\.txt)?\s+(264|262)\s+L(\d+)")
+GUIDE_FILES = {
+    "apexdev": "salesforce_apex_developer_guide.txt", "salesforce_apex_developer_guide": "salesforce_apex_developer_guide.txt",
+    "api_meta": "api_meta.txt", "apexref": "salesforce_apex_reference_guide.txt", "secguide": "salesforce_security_impl_guide.txt",
+    "obj": "object_reference.txt", "object_reference": "object_reference.txt", "lim": "salesforce_app_limits_cheatsheet.txt",
+    "salesforce_app_limits_cheatsheet": "salesforce_app_limits_cheatsheet.txt", "ldv": "salesforce_large_data_volumes_bp.txt",
+    "salesforce_large_data_volumes_bp": "salesforce_large_data_volumes_bp.txt", "pe": "platform_events.txt", "platform_events": "platform_events.txt",
+    "sfdx": "sfdx_dev.txt", "sfdx_dev": "sfdx_dev.txt", "pkg2": "pkg2_dev.txt", "pkg2_dev": "pkg2_dev.txt", "rest": "api_rest.txt",
+    "api_rest": "api_rest.txt", "asy": "api_asynch.txt", "api_asynch": "api_asynch.txt", "stream": "api_streaming.txt",
+    "api_streaming": "api_streaming.txt", "dl": "salesforce_data_loader.txt", "data_loader": "salesforce_data_loader.txt",
+    "salesforce_data_loader": "salesforce_data_loader.txt",
+}
+TOC_RE = re.compile(r"(\. ){4,}|^\s*$")
+
+
+def cite_check(path: Path, base: str, cwd: Path, corpora: list[Path]) -> list[tuple[str, str]]:
+    """Every cite ADDED in the diff, resolved to its corpus line. Flags blank and table-of-contents lines."""
+    _, added = diff_lines(base, path, cwd)
+    by_release = {}
+    for c in corpora:
+        rel = "264" if "264" in c.name else "262"
+        by_release.setdefault(rel, c)
+    out, seen = [], set()
+    for line in added:
+        for m in CITE_RE.finditer(line):
+            guide, rel, n = m.group(1), m.group(2), int(m.group(3))
+            key = (guide, rel, n)
+            if key in seen:
+                continue
+            seen.add(key)
+            cdir = by_release.get(rel)
+            fname = GUIDE_FILES.get(guide)
+            if not cdir or not fname or not (cdir / fname).exists():
+                out.append((f"{guide} {rel} L{n}", "UNRESOLVED: corpus file not available"))
+                continue
+            try:
+                text = (cdir / fname).read_text(encoding="utf-8", errors="ignore").splitlines()
+            except OSError:
+                continue
+            if n < 1 or n > len(text):
+                out.append((f"{guide} {rel} L{n}", "OUT OF RANGE"))
+                continue
+            ln = text[n - 1].strip()
+            flag = "BLANK/TOC " if TOC_RE.search(ln) else ""
+            out.append((f"{guide} {rel} L{n}", f"{flag}{ln[:120]}"))
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--base", required=True, help="commit before the writer's edits (e.g. the merge-base or HEAD)")
@@ -171,7 +235,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     cwd = Path(args.cwd).resolve()
     corpora = [Path(c) for c in args.corpus if Path(c).is_dir()]
-    total_left = total_mark = 0
+    total_left = total_mark = total_bad = 0
     for s in args.skills:
         p = (cwd / s).resolve()
         if not p.is_dir():
@@ -179,14 +243,19 @@ def main(argv: list[str] | None = None) -> int:
             continue
         left = leftovers(p, args.base, cwd)
         marks = marker_hits(p, args.base, cwd, corpora) if corpora else []
-        print(f"== {s}: leftovers={len(left)} marker-hits={len(marks)}")
+        cites = cite_check(p, args.base, cwd, corpora) if corpora else []
+        bad_cites = [c for c in cites if c[1].startswith(("BLANK/TOC", "OUT OF RANGE", "UNRESOLVED"))]
+        print(f"== {s}: leftovers={len(left)} marker-hits={len(marks)} cites={len(cites)} bad-cites={len(bad_cites)}")
+        for c, ln in cites:
+            print(f"  CITE     {c}: {ln}")
         for t, f, i in left[:60]:
             print(f"  LEFTOVER {f}:{i}: old token still present: {t!r}")
         for f, i, terms, cf in marks[:60]:
             print(f"  MARKER   {f}:{i}: corpus file {cf} contains {terms} — open it before keeping this UNVERIFIED")
         total_left += len(left)
         total_mark += len(marks)
-    print(f"SWEEP leftovers={total_left} marker-hits={total_mark}")
+        total_bad += len(bad_cites)
+    print(f"SWEEP leftovers={total_left} marker-hits={total_mark} bad-cites={total_bad}")
     return 0
 
 

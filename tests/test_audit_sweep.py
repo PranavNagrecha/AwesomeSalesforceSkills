@@ -52,10 +52,23 @@ def test_marker_on_corpus_held_claim_is_flagged(tmp_path, capsys):
     assert "marker-hits=1" in out.strip().splitlines()[-1]
 
 
+def test_cite_check_flags_blank_line(tmp_path, capsys):
+    repo = _repo(tmp_path)
+    corpus = tmp_path / "corpus264"
+    corpus.mkdir()
+    (corpus / "salesforce_apex_developer_guide.txt").write_text("line one\n\nTotal heap size 10 MB 25 MB\n")
+    skill = repo / "skills" / "apex" / "demo"
+    (skill / "SKILL.md").write_text("# Demo\n\nHeap is 10 MB (apexdev 264 L3). Old cite (apexdev 264 L2).\nUse `Database.queryWithBinds` from API 55.0.\n")
+    audit_sweep.main(["--base", "HEAD", "--skills", "skills/apex/demo", "--cwd", str(repo), "--corpus", str(corpus)])
+    out = capsys.readouterr().out
+    assert "CITE     apexdev 264 L3: Total heap size" in out and "apexdev 264 L2: BLANK/TOC" in out
+    assert out.strip().splitlines()[-1].endswith("bad-cites=1")
+
+
 def test_clean_correction_reports_zero(tmp_path, capsys):
     repo = _repo(tmp_path)
     skill = repo / "skills" / "apex" / "demo"
     (skill / "SKILL.md").write_text("# Demo\n\nHeap is 10 MB synchronous.\nUse `Database.queryWithBinds` from API 55.0.\n")
     (skill / "references" / "gotchas.md").write_text("## Gotcha 1: Heap is 10 MB synchronous\n\nBody.\n")
     audit_sweep.main(["--base", "HEAD", "--skills", "skills/apex/demo", "--cwd", str(repo)])
-    assert capsys.readouterr().out.strip().splitlines()[-1] == "SWEEP leftovers=0 marker-hits=0"
+    assert capsys.readouterr().out.strip().splitlines()[-1].startswith("SWEEP leftovers=0 marker-hits=0")
