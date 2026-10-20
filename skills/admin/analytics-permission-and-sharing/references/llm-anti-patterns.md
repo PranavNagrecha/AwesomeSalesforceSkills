@@ -1,5 +1,7 @@
 # LLM Anti-Patterns — Analytics Permission and Sharing
 
+UNVERIFIED (2026-10-20) (file-level): the 3,000-record threshold, the five-object sharing-inheritance list, the blank-backup-predicate behaviour, case-sensitive columns and the CRM Analytics Growth licence named below are not in the corpus (Analytics Security Implementation Guide material). App-sharing roles are grounded: View / EditAllContents / Manage, api_meta 264 L77522-77532.
+
 Common mistakes AI coding assistants make when generating or advising on CRM Analytics permissions and row-level security. These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Assuming Salesforce OWD Automatically Controls CRM Analytics Row Visibility

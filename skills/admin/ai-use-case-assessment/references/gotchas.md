@@ -1,5 +1,7 @@
 # Gotchas — AI Use Case Assessment
 
+UNVERIFIED (2026-10-20) (file-level): add-on licence bundling (Gotcha 1), model-training durations, the "Gathering Data" status and the 80/20 threshold (Gotcha 2), and the Setup menu paths named below have no corpus line. Gotcha 3's pipeline is grounded: ingested data lands in data lake objects, is mapped to data model objects, and identity resolution — an optional step — unifies DMOs (obj 264 L3865-3877).
+
 Non-obvious Salesforce platform behaviors that cause real problems during AI use case assessment.
 
 ## Gotcha 1: Edition Bundles Do Not Guarantee Feature Availability

@@ -1,5 +1,7 @@
 # Examples — XSS and Injection Prevention
 
+The Example 2 attack string is illustrative; the guide's own SOQL-injection walk-through is apexdev 264 L13628-13657.
+
 ## Example 1: JSENCODE Missing in Visualforce JavaScript Block
 
 **Context:** A Visualforce page displays an Account record and passes the Account Name to a JavaScript function for a third-party analytics integration. The page has been working fine for standard account names but a security review flagged it.
@@ -21,7 +23,7 @@
 </script>
 ```
 
-**Why it works:** `JSENCODE()` escapes characters that have special meaning in JavaScript string literals (backslash, quotes, newlines, Unicode control characters). The attacker's injected single quote is encoded to `\'`, breaking the escape attempt.
+**Why it works:** `JSENCODE()` inserts escape characters "such as a backslash (\), before unsafe JavaScript characters, such as the apostrophe" (apexdev 264 L13506-13507). The attacker's injected single quote is encoded to `\'`, breaking the escape attempt.
 
 ---
 
@@ -74,6 +76,6 @@ String safe = String.escapeSingleQuotes(userInput);
 Database.query('SELECT Id FROM Account WHERE Name = \'' + safe + '\'');
 ```
 
-**What goes wrong:** `String.escapeSingleQuotes()` only escapes the single-quote character. It does not handle Unicode lookalike characters, multi-byte encoding attacks, or injection patterns that do not rely on single quotes. It also does nothing for SOSL injection, second-order injection, or injection in `ORDER BY` / `LIMIT` clauses where bind variables cannot be used.
+**What goes wrong:** `String.escapeSingleQuotes()` escapes single quotation marks and backslashes only (apexref 262 L235380). It is the guide's named defense for dynamic SOQL and SOSL (apexdev 264 L11679, L11763), but the guide prefers a static query with a bind variable (L13661-13662), and escaping does nothing for injection in `ORDER BY` / `LIMIT` clauses or field names, where the input is not inside a quoted literal. UNVERIFIED (2026-10-20): Unicode-lookalike and multi-byte encoding attacks on `escapeSingleQuotes` are not discussed in the corpus.
 
 **Correct approach:** Use bind variables as the primary defense. If dynamic field names, object names, or operators must be constructed (where bind variables cannot be used), validate them against a whitelist of known-safe values before including them in the query string.

@@ -8,7 +8,7 @@ Common mistakes AI coding assistants make when generating or advising on Visualf
 
 **What the LLM generates:** "Your view state is too large; mark these 14 controller properties as `transient` and the page will work."
 
-**Why it happens:** LLMs treat the 170 KB limit as a fixed input and `transient` as a one-size-fits-all fix. They skip the measurement step because they cannot run the View State Inspector.
+**Why it happens:** LLMs treat the 170 KB limit (lim 264 L748) as a fixed input and `transient` as a one-size-fits-all fix. They skip the measurement step because they cannot run the View State Inspector — view state size is monitored "in the Developer Console or in the footer of a Visualforce page when development mode is enabled" (apexdev 264 L36808-36809).
 
 **Correct pattern:**
 
@@ -41,7 +41,7 @@ public Employee__c getEmployee() {
 }
 ```
 
-**Why it happens:** LLMs default to "the simplest SOQL that returns the record" and treat `with sharing` on the surrounding class as sufficient security. Training data contains many examples of pre-Summer-'23 code that did not have `WITH USER_MODE` available, and the syntax has not propagated.
+**Why it happens:** LLMs default to "the simplest SOQL that returns the record" and treat `with sharing` on the surrounding class as sufficient security. Training data contains many examples of older code that did not have `WITH USER_MODE` available, and the syntax has not propagated (UNVERIFIED (2026-10-20): the release that introduced `WITH USER_MODE` is not in the corpus).
 
 **Correct pattern:**
 
@@ -57,7 +57,7 @@ public Employee__c getEmployee() {
 }
 ```
 
-**Detection hint:** Any SOQL inside a Visualforce custom-controller class that lacks `WITH USER_MODE` or `WITH SECURITY_ENFORCED`. The bundled checker script regexes for this. Resolve the hit against the `apiVersion` in the class's `.cls-meta.xml` before calling it a leak: at 67.0+ (Summer '26) database operations default to user mode, so a *bare* query is already FLS-enforced and the finding is legibility, not exposure. A query carrying `WITH SYSTEM_MODE` is the opposite case — it opts out at every version, so it stays a real exposure finding. See [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
+**Detection hint:** Any SOQL inside a Visualforce custom-controller class that lacks `WITH USER_MODE` (or, below 67.0 only, `WITH SECURITY_ENFORCED` — at 67.0+ that clause can't be used, apexdev 264 L11926). The bundled checker script regexes for this. Resolve the hit against the `apiVersion` in the class's `.cls-meta.xml` before calling it a leak: at 67.0+ (Summer '26) database operations default to user mode, so a *bare* query is already FLS-enforced and the finding is legibility, not exposure. A query carrying `WITH SYSTEM_MODE` is the opposite case — it opts out at every version, so it stays a real exposure finding. See [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 
@@ -67,13 +67,15 @@ public Employee__c getEmployee() {
 
 **Why it happens:** LLMs conflate three distinct security layers — sharing (records), CRUD (objects), FLS (fields) — into one `with sharing` keyword. The semantic distinction is documented but rarely highlighted in training data; many tutorials over-state what `with sharing` does.
 
-**Correct pattern:** Always pair `with sharing` with explicit FLS/CRUD enforcement. The cleanest way is `WITH USER_MODE` on every SOQL query and `Database.insert(records, AccessLevel.USER_MODE)` for DML. State the layered model in the explanation: "`with sharing` enforces record-level visibility; `WITH USER_MODE` enforces field- and object-level access."
+**Correct pattern:** Always pair `with sharing` with explicit FLS/CRUD enforcement. The cleanest way is `WITH USER_MODE` on every SOQL query and `Database.insert(records, AccessLevel.USER_MODE)` for DML. State the layered model in the explanation: "`with sharing` enforces record-level visibility; `WITH USER_MODE` enforces field- and object-level access." The guide says it outright: "Using the with sharing keyword doesn't enforce the user's permissions and field-level security" (apexdev 264 L11982).
 
 **Detection hint:** Any explanation that says "FLS is enforced because the class is `with sharing`" — that is structurally wrong.
 
 ---
 
 ## Anti-Pattern 4: "Fixing" CSRF errors by disabling the protection
+
+UNVERIFIED (2026-10-20): the `csrfProtection` attribute and the "CSRF token mismatch" error text below appear in no corpus guide; the CSRF switches the corpus documents are `ApexPage.confirmationTokenRequired` and `SessionSettings.enableCSRFOnGet` / `enableCSRFOnPost` (api_meta 264 L24635-24639, L129739-129745), and the only CSRF error text it quotes is "The page you submitted was invalid for your session" (apexdev 264 L13601-13602).
 
 **What the LLM generates:**
 
@@ -95,9 +97,9 @@ with the explanation "this fixes the CSRF token mismatch error."
 
 **What the LLM generates:** "Visualforce is the legacy framework. Migrate all 80 of your pages to LWC for a modernization roadmap."
 
-**Why it happens:** LLMs treat newer-is-better as a default and conflate "Visualforce is older than LWC" with "Visualforce is deprecated." Visualforce is supported and continues to receive platform fixes; there is no announced sunset.
+**Why it happens:** LLMs treat newer-is-better as a default and conflate "Visualforce is older than LWC" with "Visualforce is deprecated." Visualforce is supported and continues to receive platform fixes; there is no announced sunset (UNVERIFIED (2026-10-20): the corpus states no support status for Visualforce).
 
-**Correct pattern:** Per-page disposition based on real signals — security findings, LEX-broken UX, controller maintenance burden. Stable internal-only pages stay on VF. PDF generators stay on VF (LWC has no PDF rendering). External-facing pages with security gaps go first to LWC. The `rewrite-lwc` set should be a minority of the inventory, not the default.
+**Correct pattern:** Per-page disposition based on real signals — security findings, LEX-broken UX, controller maintenance burden. Stable internal-only pages stay on VF. PDF generators stay on VF (LWC has no PDF rendering — UNVERIFIED (2026-10-20): not in the corpus). External-facing pages with security gaps go first to LWC. The `rewrite-lwc` set should be a minority of the inventory, not the default.
 
 **Detection hint:** Generated migration plans that propose rewriting more than ~30% of an inventory in one quarter, or that list every VF page as a rewrite candidate without per-page rationale.
 
@@ -119,7 +121,7 @@ with the explanation "this fixes the CSRF token mismatch error."
 <apex:outputField value="{!account.Sensitive_Field__c}"/>
 ```
 
-`<apex:outputField>` enforces FLS when bound to a standard-controller record or a USER_MODE-queried sObject; `<apex:outputText>` does not. Reserve `<apex:outputText>` for controller-computed display strings (calculated labels, formatted numbers from non-sObject sources) — never for sObject field values.
+`<apex:outputField>` enforces FLS when bound to a standard-controller record or a USER_MODE-queried sObject; `<apex:outputText>` does not (UNVERIFIED (2026-10-20): the per-component FLS rule is not in the corpus; it does say `<apex:outputText>` escapes HTML, apexdev 264 L13439-13442). Reserve `<apex:outputText>` for controller-computed display strings (calculated labels, formatted numbers from non-sObject sources) — never for sObject field values.
 
 **Detection hint:** Any `<apex:outputText value="{!record.FieldName__c}"/>` where the value binding references an sObject field. Replace with `<apex:outputField>`.
 
@@ -150,6 +152,18 @@ with the explanation "this fixes the CSRF token mismatch error."
 <apex:commandButton onclick="openTab(); return false;"/>
 ```
 
-The `sforce.one` API survives the iframe-to-host transition in LEX; `window.location` does not. Always include the fallback for Classic and standalone VF page access.
+The `sforce.one` API survives the iframe-to-host transition in LEX; `window.location` does not (UNVERIFIED (2026-10-20): `sforce.one` is not in the corpus). Always include the fallback for Classic and standalone VF page access.
 
 **Detection hint:** Any generated VF page navigation code that uses `window.location` for paths starting with `/lightning/`. Flag and replace with the `sforce.one` pattern.
+
+---
+
+## Anti-Pattern 8: Writing `<apex:remoteAction>` as if remoting were a tag
+
+**What the LLM generates:** "Expose the method with `<apex:remoteAction>`" or a page that declares that element.
+
+**Why it happens:** Visualforce has `<apex:actionFunction>` and `<apex:actionSupport>` tags, so the model invents a matching tag for remoting.
+
+**Correct pattern:** JavaScript remoting is the `@RemoteAction` Apex annotation on a method that must be `static` and either `global` or `public` (apexdev 264 L6245-6248). Every `@RemoteAction` method in the page's controller or extension is callable by anyone who can view the page (L6253-6254), so each one needs its own input validation and access checks.
+
+**Detection hint:** The string `apex:remoteAction` anywhere in generated markup or prose.

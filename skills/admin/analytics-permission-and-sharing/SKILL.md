@@ -35,9 +35,9 @@ outputs:
   - "Validation checklist confirming all three security layers are independently configured"
   - "Documented security architecture with layer-by-layer audit trail"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-13
+updated: 2026-10-20
 ---
 
 # CRM Analytics — Permission and Sharing
@@ -50,9 +50,27 @@ This skill activates when a practitioner needs to configure access control in CR
 
 Gather this context before working on anything in this domain:
 
-- **Verify license assignment first.** Without a CRM Analytics Plus or CRM Analytics Growth permission set license assigned to the user, no amount of sharing configuration will let them open the app. Check Setup > Users > Permission Set License Assignments before diagnosing any other access issue.
+- **Verify license assignment first.** Without a CRM Analytics Plus (a licence the scratch-org feature `EinsteinAnalyticsPlus` provisions, sfdx 264 L4521) or CRM Analytics Growth (UNVERIFIED (2026-10-20): not named in the corpus) permission set license assigned to the user, no amount of sharing configuration will let them open the app. Check Setup > Users > Permission Set License Assignments before diagnosing any other access issue.
 - **The most common wrong assumption is that Salesforce OWD and sharing rules control CRM Analytics row visibility.** They do not. CRM Analytics maintains a completely independent security layer. A user with no Salesforce record access can still see every row in a dataset unless an explicit predicate or sharing inheritance is configured on that dataset.
-- **Platform constraints in play:** Sharing inheritance works only for five standard objects (Account, Case, Contact, Lead, Opportunity). When a user has access to 3,000 or more source records, sharing inheritance is blocked and a backup predicate set to `'false'` (deny-all) must be provided. Security predicates are SAQL filter strings with a hard 5,000-character limit; column names in the predicate are case-sensitive and must match the dataset schema exactly.
+- **Platform constraints in play:** Sharing inheritance works only for five standard objects (Account, Case, Contact, Lead, Opportunity). When a user has access to 3,000 or more source records, sharing inheritance is blocked and a backup predicate set to `'false'` (deny-all) must be provided. Security predicates are SAQL filter strings with a hard 5,000-character limit; column names in the predicate are case-sensitive and must match the dataset schema exactly. UNVERIFIED (2026-10-20): the five-object list, the 3,000-record threshold, the blank-backup-predicate behaviour, the 5,000-character predicate limit, column-name case sensitivity and the `$User.HasViewAllData` variable come from the Analytics Security Implementation Guide, which is not in the corpus. The corpus does show a second sharing-inheritance limit: the number of sharing definitions allowed per record, which a scratch org can raise to 150–1,600 with `MedVisDescriptorLimit` (sfdx 264 L4910-4911), and a sharing-inheritance coverage report (`HoursBetweenCoverageJob`, L4695).
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which users hold a CRM Analytics permission set license today? | Without the licence no sharing setting opens the app (Core Concept 1). | The licence gaps to close before any sharing work. |
+| Should each dataset mirror Salesforce record sharing, and is its source object one sharing inheritance supports? | OWD and sharing rules do not reach Analytics rows on their own (Gotcha 1). | Predicate versus sharing inheritance, per dataset. |
+| Which users could exceed the sharing-inheritance threshold, and what should they see when they do? | Those users get the backup predicate instead (Gotcha 2). | The backup predicate value and who needs a separate grant. |
+| What are the dataset's exact column names after the recipe or dataflow renames? | A wrong-case column returns zero rows with no error (Gotcha 3). | Predicates copied from the schema, not typed from memory. |
+| Can users reach a dataset outside the app — bookmarked lenses or the REST API? | App sharing is not row security (Gotcha 4). | Which datasets need a predicate regardless of app membership. |
+| How will the predicate grow as the role hierarchy or user list grows? | Long enumerated predicates hit the length limit (Gotcha 5). | A join-based predicate whose length does not grow with headcount. |
+| Who should hold Manager on each app? | Manager can change who else has access (`Manage`, api_meta 264 L77531-77532). | A least-privilege share list per app. |
+
+UNVERIFIED (2026-10-20): rows 2–4 and 6 restate the sharing-inheritance object list and record threshold, the backup-predicate fallback, column-name case sensitivity and the predicate length limit, none of which is in the corpus (see Before Starting); row 7 is grounded.
+
+A proper configuration adds a per-dataset record of method, predicate text and test result, so a later reviewer can prove which users see which rows.
 
 ---
 
@@ -62,11 +80,31 @@ Gather this context before working on anything in this domain:
 
 CRM Analytics enforces three distinct security layers. None inherit from each other or from Salesforce object-level security:
 
-1. **Permission Set License (access gate):** The user must hold a CRM Analytics Plus or CRM Analytics Growth permission set license. Without it, the user cannot open any Analytics asset regardless of sharing settings.
-2. **App-Level Sharing (asset access):** Each CRM Analytics app has its own sharing configuration. Roles are: **Viewer** (read-only dashboards and lenses), **Editor** (can modify assets), **Manager** (can share the app and manage membership). Sharing an app does not grant row access — it only controls which assets the user can see in the UI.
-3. **Dataset-Level Row Security (data visibility):** By default, every user with app access sees every row in every dataset in that app. To restrict rows, an admin must configure either a **security predicate** or **sharing inheritance** on the dataset. Both mechanisms are opt-in and must be explicitly enabled.
+1. **Permission Set License (access gate):** The user must hold a CRM Analytics Plus (sfdx 264 L4521) or CRM Analytics Growth (UNVERIFIED (2026-10-20): not named in the corpus) permission set license. Without it, the user cannot open any Analytics asset regardless of sharing settings.
+2. **App-Level Sharing (asset access):** Each CRM Analytics app has its own sharing configuration — in metadata, `WaveApplication.shares` is a `FolderShare` (api_meta 264 L142489, sample L142515-142519). Roles are: **Viewer** (read-only dashboards and lenses), **Editor** (can modify assets), **Manager** (can share the app and manage membership), stored as `accessLevel` `View`, `EditAllContents` and `Manage` ("plus control other users' access", api_meta 264 L77522-77532). Sharing an app does not grant row access — it only controls which assets the user can see in the UI.
+3. **Dataset-Level Row Security (data visibility):** By default, every user with app access sees every row in every dataset in that app. To restrict rows, an admin must configure either a **security predicate** or **sharing inheritance** on the dataset. Both mechanisms are opt-in and must be explicitly enabled. Neither is in the dataset's Metadata API definition: `WaveDataset` carries only `application`, `description`, `masterLabel`, `templateAssetSourceName` and `type` (api_meta 264 L142729-142739), so a retrieved `.wds` file cannot prove a dataset is secured.
 
 All three layers must be independently configured. A gap in any layer is a security defect.
+
+App sharing is the one layer a metadata retrieve shows. A least-privilege `.wapp` (shape from the guide's sample, api_meta 264 L142510-142520; values from FolderShare: `View` / `Manage` at L77522-77532, `Group` at L77539, `User` at L77573) — run `scripts/check_analytics_permission_and_sharing.py --manifest-dir <dir>` over it:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<WaveApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <folder>Sales_Analytics</folder>
+    <masterLabel>Sales Analytics</masterLabel>
+    <shares>
+        <accessLevel>View</accessLevel>
+        <sharedTo>Sales_Reps</sharedTo>
+        <sharedToType>Group</sharedToType>
+    </shares>
+    <shares>
+        <accessLevel>Manage</accessLevel>
+        <sharedTo>analytics.owner@example.com</sharedTo>
+        <sharedToType>User</sharedToType>
+    </shares>
+</WaveApplication>
+```
 
 ### 2. Security Predicates
 
@@ -74,11 +112,11 @@ A security predicate is a SAQL filter string applied to a dataset. When the runn
 
 Key platform constraints:
 - Predicates are set on the dataset, not on the dashboard or the app.
-- Column names in the predicate are **case-sensitive** and must exactly match the field names in the dataset schema (not the Salesforce API name of the source field, but the column name that was created during the dataflow or recipe sync).
-- Maximum predicate length is **5,000 characters**. Complex multi-branch predicates for large hierarchies can hit this limit.
+- Column names in the predicate are **case-sensitive** and must exactly match the field names in the dataset schema (not the Salesforce API name of the source field, but the column name that was created during the dataflow or recipe sync) (UNVERIFIED (2026-10-20), see Before Starting).
+- Maximum predicate length is **5,000 characters** (UNVERIFIED (2026-10-20), see Before Starting). Complex multi-branch predicates for large hierarchies can hit this limit.
 - The predicate runs at query time; it does not filter the dataset during sync.
 - Built-in variables like `"$User.Id"`, `"$User.Username"`, and `"$User.ProfileId"` resolve to the running user at query time.
-- To allow a System Administrator to bypass the predicate, include `OR "$User.ProfileId" == "00eXXXXXXXXXXXXX"` (replace with actual profile ID) or use the `"$User.HasViewAllData"` variable.
+- To allow a System Administrator to bypass the predicate, include `OR "$User.ProfileId" == "00eXXXXXXXXXXXXX"` (replace with actual profile ID) or use the `"$User.HasViewAllData"` variable (UNVERIFIED (2026-10-20): the `$User` predicate variables are not in the corpus).
 
 Example — restrict Opportunity rows to the record owner:
 ```
@@ -95,11 +133,11 @@ Example — restrict rows to the user and their subordinates in the role hierarc
 Sharing inheritance is an alternative to hand-writing a predicate. When enabled on a dataset, CRM Analytics queries the Salesforce sharing infrastructure at runtime to determine which source records the running user can see, and returns only the corresponding rows.
 
 Platform constraints:
-- Supported only for five objects: **Account, Case, Contact, Lead, Opportunity**.
+- Supported only for five objects: **Account, Case, Contact, Lead, Opportunity** (UNVERIFIED (2026-10-20) — this list and every threshold in this section are not in the corpus; see Before Starting).
 - If the running user would have access to **3,000 or more** source records, sharing inheritance is **blocked** for that user and the system falls back to the backup predicate.
 - The backup predicate **must** be set. The recommended fallback for users who breach the 3,000-record threshold is `'false'` (deny all) unless you have a business reason to allow broader access. Leaving the backup predicate empty causes those users to see all rows — the opposite of the intent.
 - Sharing inheritance respects OWD, manual shares, sharing rules, and territory assignments on the source object.
-- Sharing inheritance cannot be combined with a regular security predicate on the same dataset.
+- Sharing inheritance cannot be combined with a regular security predicate on the same dataset (UNVERIFIED (2026-10-20)).
 
 ### 4. Dataset Permissions vs. App Sharing
 
@@ -111,6 +149,8 @@ App sharing and dataset-level security are perpendicular:
 ---
 
 ## Common Patterns
+
+UNVERIFIED (2026-10-20): both patterns rest on claims the corpus does not hold — case-sensitive column names, the five-object sharing-inheritance list, the 3,000-record threshold and the `$User.HasViewAllData` bypass variable (see Before Starting).
 
 ### Pattern A: Owner-Based Row-Level Security
 
@@ -155,11 +195,13 @@ App sharing and dataset-level security are perpendicular:
 | All licensed users should see all rows (intentional, e.g., aggregate-only dashboards) | No predicate required; document explicitly | Default behavior is all-visible; explicit documentation prevents future audit confusion |
 | User reports seeing no data at all | Check three layers in order: license → app sharing → predicate | A deny-all predicate or missing app share blocks all data regardless of license |
 
+UNVERIFIED (2026-10-20): the five-object sharing-inheritance list and the default all-rows-visible behaviour in this table are not in the corpus (see Before Starting).
+
 ---
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner configuring CRM Analytics security:
+Step-by-step instructions for an AI agent or practitioner configuring CRM Analytics security (UNVERIFIED (2026-10-20): the Growth licence, the five-object list, case-sensitive columns and the 3,000-row threshold named in these steps are not in the corpus; see Before Starting):
 
 1. **Confirm license assignment.** In Setup > Users, verify each target user has the CRM Analytics Plus or CRM Analytics Growth PSL. Without this, no other step produces access.
 2. **Configure app-level sharing.** In Analytics Studio, open the app, select Share, and assign Viewer/Editor/Manager roles to the appropriate users or public groups. Use public groups for scalability — avoid assigning individual users when a group exists.
@@ -184,11 +226,15 @@ Run through these before marking work in this area complete:
 - [ ] Row-level security has been tested by logging in as a non-admin user and confirming the lens returns only the expected rows
 - [ ] Security architecture is documented (dataset → method → object/predicate → scope)
 
+UNVERIFIED (2026-10-20): the Growth licence, the 5,000-character limit and column-name case sensitivity in this checklist are not in the corpus (see Before Starting).
+
 ---
 
 ## Salesforce-Specific Gotchas
 
 Non-obvious platform behaviors that cause real production problems:
+
+UNVERIFIED (2026-10-20): items 1–5 below restate Analytics Security Implementation Guide behaviour that is not in the corpus.
 
 1. **Salesforce OWD does not control CRM Analytics row visibility** — Without an explicit predicate or sharing inheritance configuration on the dataset, every CRM Analytics licensed user sees every row. Org-wide defaults, sharing rules, and manual shares have no effect on Analytics row access until sharing inheritance is turned on for a specific dataset.
 2. **Sharing inheritance silently fails for users at the 3,000-row threshold** — If a user has access to 3,000 or more source records, sharing inheritance is bypassed for that user and the backup predicate is applied instead. If the backup predicate is blank (the default), those users see all rows — the opposite of the security intent.
@@ -212,5 +258,5 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- crm-analytics-app-creation — Creating the Analytics app container, connecting data sources, and setting up the initial Viewer/Editor/Manager share before applying dataset-level security
-- analytics-dashboard-design — Dashboard bindings and filters that display user-context values; relies on row-level security being correctly configured upstream
+- admin/crm-analytics-app-creation — Creating the Analytics app container, connecting data sources, and setting up the initial Viewer/Editor/Manager share before applying dataset-level security
+- admin/analytics-dashboard-design — Dashboard bindings and filters that display user-context values; relies on row-level security being correctly configured upstream

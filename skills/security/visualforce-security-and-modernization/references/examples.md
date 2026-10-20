@@ -1,6 +1,6 @@
 # Examples — Visualforce Security And Modernization
 
-Concrete before/after examples for hardening, modernization, and interop. Apply in priority order — fix CSRF and FLS gaps before any rewrite work, because an exposed page does not stop being a problem while it waits for migration.
+Concrete before/after examples for hardening, modernization, and interop. UNVERIFIED (2026-10-20) (file-level): the `csrfProtection` page attribute (Examples 2 and 6), the Lightning Out `$Lightning` API, `ltng:outApp` and the session/isolation claims (Example 3), `sforce.one`, `integration.js` and the `*.visualforce.com` origin (Example 4) appear in no corpus guide. Apply in priority order — fix CSRF and FLS gaps before any rewrite work, because an exposed page does not stop being a problem while it waits for migration.
 
 ---
 
@@ -108,7 +108,22 @@ public with sharing class OrderProcessor {
 
 The `<apex:form>` automatically embeds the anti-CSRF token. A `commandButton` POST submission carries the token; an external `<img>` GET cannot forge one.
 
-**Note:** Do *not* "fix" this by setting `csrfProtection="false"` — that is a regression, not a fix. The form-based pattern shown above is the platform-correct answer.
+The token mechanics are the guide's: a random hidden form field validated before the command runs (apexdev 264 L13568-13570).
+
+**Note:** Do *not* "fix" this by switching CSRF off (`csrfProtection="false"`, see the file-level marker) — that is a regression, not a fix. The form-based pattern shown above is the platform-correct answer.
+
+The org-wide switches that must stay on, as retrieved metadata (the guide's own sample sets both to true, api_meta 264 L130253-130254):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- excerpt: Security.settings-meta.xml, CSRF switches only (SessionSettings, api_meta 264 L129739-129745) -->
+<SecuritySettings xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sessionSettings>
+        <enableCSRFOnGet>true</enableCSRFOnGet>
+        <enableCSRFOnPost>true</enableCSRFOnPost>
+    </sessionSettings>
+</SecuritySettings>
+```
 
 ---
 
@@ -118,7 +133,7 @@ The `<apex:form>` automatically embeds the anti-CSRF token. A `commandButton` PO
 
 **Step 1 — Lightning Out wrapper app** (`c:LegacyShellOutApp.app`):
 
-```xml
+```html
 <aura:application access="GLOBAL" extends="ltng:outApp">
     <aura:dependency resource="c:inventoryTable"/>
 </aura:application>
@@ -215,7 +230,7 @@ sforce.one.navigateToSObject(recordId);
 
 ## Example 5 — Secure view-state-free pattern for a read-heavy page
 
-**Symptom:** A read-heavy reporting Visualforce page hits the 170 KB view state ceiling for users with large data sets. Marking everything `transient` only goes so far — the real fix is to skip view state entirely.
+**Symptom:** A read-heavy reporting Visualforce page hits the 170 KB view state ceiling (lim 264 L748) for users with large data sets. Marking everything `transient` only goes so far — the real fix is to skip view state entirely.
 
 **Before (view-state-bound, hits the ceiling):**
 
@@ -271,7 +286,7 @@ public with sharing class ReportController {
 
 Remote actions execute server-side over their own AJAX channel; no view state is round-tripped. FLS is still enforced via `WITH USER_MODE`. The page never accumulates state in controller properties — every load is a fresh fetch.
 
-**Caveat:** Remote actions do not use the standard CSRF form token. They have their own session-based protection but if the action performs DML, treat it like any authenticated AJAX endpoint and validate inputs server-side. Read-only remote actions like the example above are low risk.
+**Caveat:** Every `@RemoteAction` method in `ReportController` is callable by anyone who can view the page (apexdev 264 L6253-6254). UNVERIFIED (2026-10-20): whether remoting carries the form's anti-CSRF token or a token of its own is not in the corpus. If the action performs DML, treat it like any authenticated AJAX endpoint and validate inputs server-side. Read-only remote actions like the example above are low risk.
 
 ---
 

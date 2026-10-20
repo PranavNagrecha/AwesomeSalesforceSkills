@@ -35,14 +35,16 @@ List all `new PageReference(url)` where the URL is user-derived:
 
 ## HTTP Header Audit
 
-List all `RestContext.response.headers.put(...)` or `HttpResponse.setHeader(...)` calls with user-derived values:
+List all `RestContext.response.headers.put(...)`, `RestContext.response.addHeader(...)` or `HttpResponse.setHeader(...)` calls with user-derived values:
 
 | Location | Header Name | Value Source | CRLF Stripped? | Fixed? |
 |---|---|---|---|---|
 
 ## Code Analyzer Results
 
-Run: `sf scanner run --target force-app/ --format table --engine pmd`
+Run Salesforce Code Analyzer with the PMD engine over `force-app/`, then `python3 scripts/check_xss_and_injection_prevention.py --manifest-dir force-app/`.
+
+UNVERIFIED (2026-10-20): the `sf scanner run` command line and the PMD rule names below are not in the corpus (it names Salesforce Code Analyzer only, sfdx 264 L12804); confirm them against the installed Code Analyzer version.
 
 Key rules to check:
 - [ ] `ApexXSSFromURLParam` — no findings

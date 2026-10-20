@@ -6,21 +6,23 @@ Non-obvious Salesforce platform behaviors that bite teams during Visualforce har
 
 ## Gotcha 1: View state has a 170 KB ceiling that fires only at certain user data scales
 
-**What happens:** A page works for the developer, works for QA users, works for most production users — then suddenly throws `Maximum view state size limit (170KB) exceeded` for a specific user with a large data set or a specific record with many related items. Users without view-state-heavy data never see the issue.
+**What happens:** A page works for the developer, works for QA users, works for most production users — then suddenly throws a view-state-size error for a specific user with a large data set or a specific record with many related items. Users without view-state-heavy data never see the issue.
 
-**When it occurs:** The 170 KB limit is per page request. Page-state size scales with the underlying record's children, picklist values cached in the controller, and the user's custom permissions / sharing footprint (which can pull more rows into a list controller). A user with 800 child records vs the dev's 10 will hit the ceiling that the developer never saw.
+**When it occurs:** "Maximum view state size in a Visualforce page" is 170KB (lim 264 L748). Page-state size scales with the underlying record's children, picklist values cached in the controller, and the user's custom permissions / sharing footprint (which can pull more rows into a list controller). A user with 800 child records vs the dev's 10 will hit the ceiling that the developer never saw.
 
-**How to avoid:** Mark display-only collections `transient` (they are not serialized to view state). Restrict SOQL to fields actually used. For genuinely heavy pages, skip view state entirely — use `<apex:remoteAction>` or JavaScript Remoting and let the client fetch data on demand. Verify with the View State Inspector in Developer Console (Setup → Developer Console → Debug → View State).
+**How to avoid:** Mark display-only collections `transient` — transient variables are not transmitted as part of the view state (apexdev 264 L4770). Restrict SOQL to fields actually used. For genuinely heavy pages, skip view state entirely — use JavaScript remoting (`@RemoteAction` methods, apexdev 264 L6245-6246) and let the client fetch data on demand. Measure before and after: view state size can be monitored in the Developer Console or in the page footer when development mode is enabled (apexdev 264 L36808-36809).
 
 ---
 
 ## Gotcha 2: FLS is not auto-enforced on `<apex:outputField>` when the field is a formula referring to FLS-restricted source fields
 
+UNVERIFIED (2026-10-20): this heading's claim — a formula's value renders for a user who cannot read its source fields — has no corpus line; confirm it in a sandbox as the restricted user before citing it in a finding.
+
 **What happens:** A formula field `Margin__c` is defined as `Revenue__c - Cost__c`. The user has FLS read access to `Margin__c` but not to `Cost__c`. An `<apex:outputField value="{!opp.Margin__c}"/>` happily renders the computed margin even though the user cannot see one of the inputs. The user effectively sees a value derived from data they have no access to.
 
 **When it occurs:** Any formula field that references FLS-restricted source fields. Common with cost/margin formulas, salary band formulas, and any computed sensitive metric.
 
-**How to avoid:** Treat formulas referencing sensitive fields as themselves sensitive — restrict FLS on the formula field itself, not just the source fields. The platform does not propagate FLS through formulas. This is documented behavior; review the FLS posture of all formula fields during the audit.
+**How to avoid:** Treat formulas referencing sensitive fields as themselves sensitive — restrict FLS on the formula field itself, not just the source fields. The platform does not propagate FLS through formulas (see the marker under this heading). Review the FLS posture of all formula fields during the audit.
 
 ---
 
@@ -28,7 +30,7 @@ Non-obvious Salesforce platform behaviors that bite teams during Visualforce har
 
 **What happens:** A page has `<apex:page action="{!processSubmission}">` where `processSubmission()` performs DML. The team assumes "Salesforce has anti-CSRF, we're fine." An attacker creates a page on their own site with `<img src="https://victim.my.salesforce.com/apex/MyPage?id=X">`. A logged-in user visits the attacker's page; their browser auto-loads the VF page; `processSubmission()` fires and mutates data.
 
-**When it occurs:** Whenever a VF page uses the `action` attribute on `<apex:page>` to perform any state-changing operation. The platform's automatic CSRF token works for `<apex:form>` POST submissions only — page-action attributes execute on every GET to the URL.
+**When it occurs:** Whenever a VF page uses the `action` attribute on `<apex:page>` to perform any state-changing operation. A custom action method never reads or validates the anti-CSRF token, and "There are no built-in defenses for such situations" (apexdev 264 L13593-13596).
 
 **How to avoid:** Reserve `<apex:page action>` for read-only data loading (initialize cached state, redirect logic). Move every DML or state-changing call into a `<apex:commandButton>` action inside `<apex:form>`. Audit the codebase for `<apex:page` with `action="{!..}"` and inspect each method for DML.
 
@@ -36,23 +38,23 @@ Non-obvious Salesforce platform behaviors that bite teams during Visualforce har
 
 ## Gotcha 4: `with sharing` does not enforce FLS or CRUD — only record visibility
 
-**What happens:** A controller class is annotated `with sharing`. Code review marks it secure. The class queries `[SELECT Salary__c FROM Employee__c]` and a community user sees the field even though their FLS permission removes read access to `Salary__c`. The reviewer assumed `with sharing` covered FLS — it does not.
+**What happens:** A controller class is annotated `with sharing`. Code review marks it secure. The class queries `[SELECT Salary__c FROM Employee__c]` and a community user sees the field even though their FLS permission removes read access to `Salary__c`. The reviewer assumed `with sharing` covered FLS — it does not (apexdev 264 L11982).
 
 **When it occurs:** Whenever a code reviewer treats `with sharing` / `without sharing` as the security keyword. The keyword only governs which *records* the user can see (sharing rules, role hierarchy, OWD); FLS and CRUD on *fields and objects* are separate enforcement layers.
 
-**How to avoid:** Pair `with sharing` with `WITH USER_MODE` on every SOQL query. `WITH USER_MODE` (Summer '23+, API 57.0) enforces both FLS and CRUD. For DML, use `Database.insert(records, AccessLevel.USER_MODE)`. Treat `with sharing` alone as record-level only — never as a complete security posture.
+**How to avoid:** Pair `with sharing` with `WITH USER_MODE` on every SOQL query. `WITH USER_MODE` enforces both FLS and CRUD and finds all FLS errors in the query (apexdev 264 L12157). UNVERIFIED (2026-10-20): its first-available version (Summer '23 / API 57.0) is a release-note fact with no corpus line. For DML, use `Database.insert(records, AccessLevel.USER_MODE)`. Treat `with sharing` alone as record-level only — never as a complete security posture.
 
-**The leak above requires a class pinned below `apiVersion` 67.0.** At 67.0+ (Summer '26) SOQL, SOSL, DML and `Database` methods default to user mode, so the unqualified query is already FLS-enforced and never reaches the community user with `Salary__c` populated; `WITH SECURITY_ENFORCED` is also removed there and will not compile. What decides which behaviour you get is the `apiVersion` in that class's `.cls-meta.xml`, not the org's release. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
+**The leak above requires a class pinned below `apiVersion` 67.0.** At 67.0+ (Summer '26) SOQL, SOSL, DML and `Database` methods default to user mode, so the unqualified query is already FLS-enforced and never reaches the community user with `Salary__c` populated (apexdev 264 L11928-11929); and at 67.0+ "you can't use the WITH SECURITY_ENFORCED clause" (apexdev 264 L11926). What decides which behaviour you get is the `apiVersion` in that class's `.cls-meta.xml`, not the org's release. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
 ---
 
-## Gotcha 5: `<apex:includeScript>` and `<apex:stylesheet>` are subject to the org-level Content Security Policy
+## Gotcha 5: `<apex:includeScript>` and `<apex:stylesheet>` are limited to CSP Trusted Sites only when the page sets `cspHeader="true"`
 
 **What happens:** A VF page uses `<apex:includeScript value="https://cdn.example.com/lib.js"/>` and the script silently fails to load. The console shows a CSP violation: `Refused to load the script 'https://cdn.example.com/lib.js' because it violates the following Content Security Policy directive`.
 
-**When it occurs:** Any time a Visualforce page loads JS or CSS from a host that is not in the org's CSP Trusted Sites allowlist. The default CSP for Visualforce in modern orgs is restrictive; CDNs need explicit allowlisting via Setup → Security → CSP Trusted Sites.
+**When it occurs:** When a custom Visualforce page that sets `cspHeader="true"` loads JS or CSS from a host that is not a trusted URL: "For custom Visualforce pages, content is restricted to trusted URLs only if the page's cspHeader attribute is set to true" (api_meta 264 L41642-41643). A page without that attribute is not restricted this way, so a blocked script on such a page has another cause.
 
-**How to avoid:** Add the CDN host (and any other external resource origin) to CSP Trusted Sites. Better yet, host the JS/CSS as a Static Resource — `<apex:includeScript value="{!URLFOR($Resource.MyLib)}"/>` is always allowed because the resource is served from the same Salesforce origin. CDN-hosted libraries also create a supply-chain risk; static resources are versioned and reviewed.
+**How to avoid:** Add the CDN host as a `CspTrustedSite` whose `context` is `VisualForce` ("Apply the CSP directives to custom Visualforce pages only", API 55.0+, api_meta 264 L41639-41641) or `All`. Better yet, host the JS/CSS as a Static Resource — `<apex:includeScript value="{!URLFOR($Resource.MyLib)}"/>` (UNVERIFIED (2026-10-20): that a static resource is always allowed under `cspHeader` is not in the corpus). Never bind `includeScript` to request data: the guide's vulnerable example is `<apex:includeScript value="{!$CurrentPage.parameters.userInput}" />` (apexdev 264 L13466-13470). CDN-hosted libraries also create a supply-chain risk; static resources are versioned and reviewed.
 
 ---
 
@@ -70,7 +72,7 @@ Non-obvious Salesforce platform behaviors that bite teams during Visualforce har
 
 **What happens:** A VF page has `<apex:actionFunction name="refreshOpps" rerender="oppList"/>` and a `commandButton` with `rerender="accountSummary"`. JS calls `refreshOpps()` after an action; the team assumes the targeted opps list updates. In practice, view state is shared, the controller property backing `accountSummary` mutates as a side effect of the action, and on the next button press the summary shows stale data.
 
-**When it occurs:** Pages with multiple rerender targets that share controller state. The platform serializes view state on every postback; a partial rerender refreshes the visible markup but the underlying controller properties still mutate based on whatever the action method did.
+**When it occurs:** Pages with multiple rerender targets that share controller state (UNVERIFIED (2026-10-20): rerender and postback serialization semantics are Visualforce Developer Guide material, not in the corpus). The platform serializes view state on every postback; a partial rerender refreshes the visible markup but the underlying controller properties still mutate based on whatever the action method did.
 
 **How to avoid:** Treat rerender as a UI-paint hint, not a state isolation mechanism. Audit action methods to ensure they only mutate the state that the rerendered region depends on. For complex pages, this is a common reason to migrate to LWC, where component boundaries are real isolation rather than DOM hints.
 
@@ -78,8 +80,8 @@ Non-obvious Salesforce platform behaviors that bite teams during Visualforce har
 
 ## Gotcha 8: Controller extension visibility — extension classes inherit the standard controller's record context but not its FLS guarantees
 
-**What happens:** A page declares `<apex:page standardController="Account" extensions="MyExtension">`. The team assumes "standard controller enforces FLS, the extension inherits that." The extension queries Account fields directly (`[SELECT Hidden_Field__c FROM Account WHERE Id = :stdCtrl.getId()]`) and returns them via getters bound to `<apex:outputText>`. FLS is not enforced.
+**What happens:** A page declares `<apex:page standardController="Account" extensions="MyExtension">`. The team assumes "standard controller enforces FLS, the extension inherits that." The extension queries Account fields directly (`[SELECT Hidden_Field__c FROM Account WHERE Id = :stdCtrl.getId()]`) and returns them via getters bound to `<apex:outputText>`. Below `apiVersion` 67.0 FLS is not enforced; at 67.0+ the unqualified query runs in user mode (apexdev 264 L11928-11929).
 
-**When it occurs:** Whenever an extension performs its own SOQL rather than relying on the standard controller's automatic field binding. The standard controller enforces FLS only on fields it manages directly (those bound via `<apex:inputField>` / `<apex:outputField>`). Extension queries are independent Apex and need their own enforcement.
+**When it occurs:** Whenever an extension performs its own SOQL rather than relying on the standard controller's automatic field binding. The standard controller enforces FLS only on fields it manages directly (those bound via `<apex:inputField>` / `<apex:outputField>`) — UNVERIFIED (2026-10-20): this binding rule is not in the corpus. Extension queries are independent Apex and need their own enforcement.
 
 **How to avoid:** In every extension, use `WITH USER_MODE` on extension SOQL. Treat the extension as a separate security boundary — the standard controller's protections do not transitively cover extension code paths. Static analysis tools can flag this; the bundled checker script catches the most common variants.

@@ -14,7 +14,7 @@ Common mistakes AI coding assistants make when generating or advising on AI use 
 Before recommending any use case, score each against data readiness:
 
 Use Case: Einstein Lead Scoring
-- Availability: Are there 1,000+ Lead records with outcome data (converted/not)? Score: ?
+- Availability: Are there enough Lead records with outcome data (converted/not)? Score: ?  (the often-quoted 1,000 is UNVERIFIED (2026-10-20))
 - Quality: Are key signal fields (Industry, Company Size, Lead Source) consistently populated? Score: ?
 - Unification: Is Lead data enriched from any external source in Data Cloud? Score: ?
 - Governance: Is Lead data access controlled per data classification policy? Score: ?
@@ -59,7 +59,8 @@ Implementation guidance belongs in a separate skill activation, not in this outp
 ```
 Technical Feasibility Check — required for each use case:
 1. Confirm base edition (Enterprise/Unlimited/Developer)
-2. Confirm required add-on license present in Setup > Company Information > Permission Set Licenses:
+2. Confirm required add-on license present in Setup > Company Information > Permission Set Licenses
+   (UNVERIFIED (2026-10-20): the menu path and the add-on mapping below are not in the corpus):
    - Einstein for Service: required for Work Summaries, Service Replies
    - Einstein for Sales: required for Lead Scoring, Opportunity Scoring
    - Agentforce: required for all Agentforce agents
@@ -81,7 +82,7 @@ Technical Feasibility Check — required for each use case:
 ```
 ROI Narrative (correct output):
 - Value driver: Reduction in average handle time via Work Summaries
-- Key assumption: Handle time reduction is in the 20-30% range reported by Salesforce customer benchmarks (source: Salesforce Success Stories)
+- Key assumption: Handle time falls by the amount a cited, dated benchmark reports (record the source; never invent a range)
 - Payback period category: < 6 months (high confidence, based on quick-win profile and low activation effort)
 - Risk: Actual handle time reduction depends on agent adoption and quality of Case data — validate with a 30-day pilot
 

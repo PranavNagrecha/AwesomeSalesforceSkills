@@ -3,6 +3,9 @@
 Fill this out before touching Setup. Every row maps to a decision that is expensive to reverse
 once agents are trained on the composer.
 
+UNVERIFIED (2026-10-20): the Help-sourced rows (the Email-to-Case dependency quote in Gate 0, Custom-only template, deliverability / Office 365 / Gmail checks,
+Lightning-threading move precondition, attachment limits) are not in the corpus; see SKILL.md.
+
 ## Scope
 
 **Skill:** `case-feed-send-email-action`

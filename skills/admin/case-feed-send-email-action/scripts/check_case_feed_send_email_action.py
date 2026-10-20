@@ -7,18 +7,21 @@ references/gotchas.md and references/llm-anti-patterns.md. Stdlib only — no pi
 What it checks
 --------------
 QuickAction metadata (`**/quickActions/*.quickAction*`) whose `<type>` is `SendEmail`:
-  * the action carries a `<label>`
-  * no `fieldOverrides` target `AttachmentId` / `ContentDocumentIds` (unsupported)
+  * every `fieldOverrides` entry has its Required `<field>` (api_meta 264 L102984) — ERROR
+  * the action carries a `<label>` (not marked Required in api_meta) — WARN
+  * no `fieldOverrides` target `AttachmentId` / `ContentDocumentIds` (unsupported per Help;
+    UNVERIFIED (2026-10-20) against the corpus)
   * no field is both prepopulated via `fieldOverrides` and marked read-only on the
-    action layout (the value is silently dropped)
+    action layout (the value is silently dropped — documented for HTML Body and Subject in the
+    LWC Developer Guide; UNVERIFIED (2026-10-20) for other fields)
   * the action is referenced by at least one Case page layout (otherwise agents never
     see it in Case Feed). Note: if the *standard* Email action is the one missing, the
     cause is org-level (deliverability access level, Email-to-Case, "Enable Case Feed
     Actions and Feed Items") and lives outside this metadata tree.
 
 Apex classes implementing `QuickAction.QuickActionDefaultsHandler`:
-  * declared `global`
-  * has an empty, parameterless constructor (required by the interface)
+  * declared `global` (the reference example is; apexref 262 L179666 — not stated as required)
+  * has an empty, parameterless constructor (required, apexref 262 L179622)
   * guards the cast with `instanceof QuickAction.SendEmailQuickActionDefaults`
   * filters on `getActionName()` before mutating the payload
   * no direct `defaults[0]` / `defaults.get(0)` indexing
@@ -26,14 +29,17 @@ Apex classes implementing `QuickAction.QuickActionDefaultsHandler`:
 
 Advisories (informational; promoted to failures with --strict):
   * `apex:emailPublisher` in a Visualforce page — the Classic Case Feed surface
-  * `Case.settings-meta.xml` present with no Email-to-Case reference — Email-to-Case must
-    be enabled to use the Send Email quick action on Cases
+  * `Case.settings-meta.xml` present without `<enableEmailToCase>true` (api_meta 264
+    L114974) — Help says Email-to-Case must be enabled for the Send Email action
+    (UNVERIFIED (2026-10-20): that dependency is not in the corpus)
 
 Usage:
     python3 check_case_feed_send_email_action.py --manifest-dir force-app/main/default
     python3 check_case_feed_send_email_action.py --manifest-dir . --strict
 
-Exit code 0 = no issues, 1 = issues found.
+Exit codes: ERROR (missing directory, unparseable XML, a FieldOverride without its Required
+<field>) exits 1 always; WARN exits 0 unless --strict; INFO advisories exit 0 unless --strict;
+a tree with no SendEmail action and no handler class is one WARN, exit 0.
 """
 
 from __future__ import annotations
@@ -135,7 +141,7 @@ def _collect_send_email_actions(manifest_dir: Path, issues: list[str]) -> list[t
                 continue
             root, err = _parse_xml(path)
             if err is not None:
-                issues.append(f"{path}: not valid XML ({err})")
+                issues.append(f"ERROR: {path}: not valid XML ({err})")
                 continue
             if root is None:
                 continue
@@ -166,7 +172,7 @@ def _check_action(path: Path, root: ET.Element, issues: list[str]) -> None:
     for override in _iter_local(root, "fieldOverrides"):
         field = _text(_find_local(override, "field"))
         if not field:
-            issues.append(f"{path}: <fieldOverrides> entry has no <field>")
+            issues.append(f"ERROR: {path}: <fieldOverrides> entry has no <field> (Required, api_meta 264 L102984)")
             continue
         if field.lower() in UNSUPPORTED_OVERRIDE_FIELDS:
             issues.append(
@@ -193,7 +199,7 @@ def _collect_case_layout_action_names(manifest_dir: Path, issues: list[str]) -> 
             layout_count += 1
             root, err = _parse_xml(path)
             if err is not None:
-                issues.append(f"{path}: not valid XML ({err})")
+                issues.append(f"ERROR: {path}: not valid XML ({err})")
                 continue
             if root is None:
                 continue
@@ -236,18 +242,18 @@ def _check_handler(path: Path, source: str, issues: list[str]) -> None:
     if global_match is None:
         issues.append(
             f"{path}: implements QuickAction.QuickActionDefaultsHandler but the class is not "
-            f"declared `global`"
+            f"declared `global` as the reference example is (apexref 262 L179666)"
         )
         name_match = ANY_CLASS_DECL.search(source)
         class_name = name_match.group(1) if name_match else path.stem
     else:
         class_name = global_match.group(1)
 
-    ctor = re.compile(rf"\bglobal\s+{re.escape(class_name)}\s*\(\s*\)", re.IGNORECASE)
+    ctor = re.compile(rf"\b(?:global|public)\s+{re.escape(class_name)}\s*\(\s*\)", re.IGNORECASE)
     if not ctor.search(source):
         issues.append(
-            f"{path}: no empty parameterless `global {class_name}()` constructor — the "
-            f"QuickActionDefaultsHandler interface requires one"
+            f"{path}: no empty parameterless `{class_name}()` constructor — the "
+            f"QuickActionDefaultsHandler interface requires one (apexref 262 L179622)"
         )
 
     if "instanceof QuickAction.SendEmailQuickActionDefaults" not in source:
@@ -258,14 +264,15 @@ def _check_handler(path: Path, source: str, issues: list[str]) -> None:
 
     if "getActionName()" not in source:
         issues.append(
-            f"{path}: does not filter on getActionName() (expected 'Case.Email') before "
-            f"mutating the action payload"
+            f"{path}: does not filter on getActionName() (the standard action's name is "
+            f"'Case.Email', apexref 262 L179532) before mutating the action payload"
         )
 
     if DIRECT_INDEX.search(source):
         issues.append(
-            f"{path}: indexes the defaults array directly (defaults[0] / defaults.get(0)) — "
-            f"loop and filter on instanceof + getActionName() + getActionType() instead"
+            f"{path}: indexes the defaults array directly (defaults[0] / defaults.get(0)) — the "
+            f"array holds one item (apexref 262 L179651), but the reference example still loops and "
+            f"filters on instanceof + getActionName() + getActionType() (L179686-179691)"
         )
 
     if _soql_inside_for_loop(source):
@@ -284,16 +291,8 @@ def check(manifest_dir: Path) -> tuple[list[str], list[str]]:
     issues: list[str] = []
     advisories: list[str] = []
 
-    if not manifest_dir.exists():
-        return [f"Manifest directory not found: {manifest_dir}"], []
-
     actions = _collect_send_email_actions(manifest_dir, issues)
-    if not actions:
-        issues.append(
-            f"No quick action with <type>SendEmail</type> found under {manifest_dir} — "
-            f"nothing to check."
-        )
-        return issues, advisories
+    handlers_seen = 0
 
     referenced, layout_count = _collect_case_layout_action_names(manifest_dir, issues)
 
@@ -323,7 +322,14 @@ def check(manifest_dir: Path) -> tuple[list[str], list[str]]:
                 issues.append(f"{path}: unreadable ({exc})")
                 continue
             if HANDLER_INTERFACE.search(source):
+                handlers_seen += 1
                 _check_handler(path, source, issues)
+
+    if not actions and not handlers_seen:
+        issues.append(
+            f"EMPTY: {manifest_dir} holds no <type>SendEmail</type> quick action and no "
+            f"QuickActionDefaultsHandler class — nothing to check."
+        )
 
     for pages_dir in sorted(manifest_dir.rglob("pages")):
         if not pages_dir.is_dir():
@@ -347,10 +353,11 @@ def check(manifest_dir: Path) -> tuple[list[str], list[str]]:
                 source = path.read_text(encoding="utf-8", errors="replace")
             except OSError:
                 continue
-            if "emailToCase" not in source:
+            if not re.search(r"<enableEmailToCase>\s*true\s*</enableEmailToCase>", source):
                 advisories.append(
-                    f"{path}: no Email-to-Case reference found. Email-to-Case must be enabled "
-                    f"to use the Send Email quick action on the Cases object"
+                    f"{path}: no <enableEmailToCase>true (api_meta 264 L114974). Help says "
+                    f"Email-to-Case must be enabled to use the Send Email quick action on Case "
+                    f"(UNVERIFIED (2026-10-20) against the corpus)"
                 )
 
     return issues, advisories
@@ -358,16 +365,24 @@ def check(manifest_dir: Path) -> tuple[list[str], list[str]]:
 
 def main() -> int:
     args = parse_args()
-    issues, advisories = check(Path(args.manifest_dir))
+    manifest_dir = Path(args.manifest_dir)
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        return 1
+    issues, advisories = check(manifest_dir)
 
     for advisory in advisories:
-        print(f"{'WARN' if args.strict else 'INFO'}: {advisory}", file=sys.stderr)
+        print(f"{'WARN' if args.strict else 'INFO'}: {advisory}")
+    errors = [i for i in issues if i.startswith("ERROR")]
     for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
+        print(issue if issue.startswith("ERROR") else f"WARN: {issue}")
 
-    if issues or (args.strict and advisories):
+    if errors:
         return 1
-    print("No issues found.")
+    if args.strict and (issues or advisories):
+        return 1
+    if not issues and not advisories:
+        print("No issues found.")
     return 0
 
 

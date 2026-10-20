@@ -7,7 +7,7 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** Visualforce code with `{!field}` directly inside a `<script>` block without JSENCODE.
 
-**Why it happens:** LLMs are trained on many VF examples where `{!field}` works correctly — which is true in HTML body contexts. They generalize this pattern without knowing that the JavaScript rendering context is different.
+**Why it happens:** LLMs are trained on many VF examples where `{!field}` works correctly — which is true when a standard `<apex:*>` component renders it, because the component escapes (apexdev 264 L13439); a formula outside a component is not escaped (L13480-13483). They generalize this pattern without knowing that the JavaScript rendering context is different.
 
 **Correct pattern:**
 ```html
@@ -30,7 +30,7 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** Dynamic SOQL with direct string concatenation using user-supplied values, often with `String.escapeSingleQuotes()` as a fix.
 
-**Why it happens:** LLMs learn SQL-style query construction from many languages and apply the concatenation pattern. They may also learn the escapeSingleQuotes() pattern as "the Salesforce fix" without understanding its limitations.
+**Why it happens:** LLMs learn SQL-style query construction from many languages and apply the concatenation pattern. They may also learn the escapeSingleQuotes() pattern as "the Salesforce fix" — the guide does name it for dynamic SOQL (apexdev 264 L13677) — without seeing that its first choice is a static query with a bind (L13661-13662) and that escaping only covers quotes and backslashes (apexref 262 L235380).
 
 **Correct pattern:**
 ```apex
@@ -63,6 +63,8 @@ this.template.querySelector('.container').innerHTML = this.richTextValue;
 // Or use lightning-formatted-rich-text for rich text (which sanitizes)
 ```
 
+UNVERIFIED (2026-10-20): LWC template auto-escaping and `lightning-formatted-rich-text` sanitising are not in the corpus.
+
 **Detection hint:** Any LWC JavaScript that sets `innerHTML` with a value that came from an Apex method or record field.
 
 ---
@@ -79,7 +81,7 @@ A classic `<script>` element is a *raw text* element in the HTML parser. Its con
 
 Note the frequently-repeated claim that "`&amp;` is valid HTML but also valid JS syntax that can form an XSS payload" is **not** the reason. `&` is the bitwise-AND operator in JavaScript and `&amp;` is not an XSS vector. The real reason is the raw-text parsing rule above.
 
-`JSENCODE` inserts JavaScript escape characters (it escapes quotes, backslashes and control characters for a JS string-literal context), which is why it — and only it — is the correct control inside a script block.
+`JSENCODE` inserts JavaScript escape characters "such as a backslash (\), before unsafe JavaScript characters, such as the apostrophe" (apexdev 264 L13506-13507), which is why it is the correct control inside a script block — the guide's own fix is `{!JSENCODE($CurrentPage.parameters.retURL)}` (L13543). For an event-handler attribute use `JSINHTMLENCODE`, which is `JSENCODE(HTMLENCODE(x))` (L13510-13512).
 
 **Correct pattern:**
 ```html
@@ -124,3 +126,15 @@ public PageReference doRedirect() {
 ```
 
 **Detection hint:** `new PageReference(` where the argument is a variable derived from `ApexPages.currentPage().getParameters()` or any user-supplied input without a preceding allowlist check.
+
+---
+
+## Anti-Pattern 6: Getting JSINHTMLENCODE's order backwards
+
+**What the LLM generates:** "`JSINHTMLENCODE` encodes for JavaScript first, then HTML."
+
+**Why it happens:** The name reads JS-in-HTML, so the model assumes JS encoding is applied first.
+
+**Correct pattern:** `JSINHTMLENCODE(x)` is equivalent to `JSENCODE(HTMLENCODE(x))` — HTML-encode first, then JS-encode (apexdev 264 L13510-13512).
+
+**Detection hint:** Any explanation that says "JS first, then HTML" for `JSINHTMLENCODE`.

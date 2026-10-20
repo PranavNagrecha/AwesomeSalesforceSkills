@@ -1,5 +1,7 @@
 # Gotchas — Analytics Permission and Sharing
 
+UNVERIFIED (2026-10-20) (file-level): the dataset-security behaviours in every gotcha below — default all-visible datasets, the 3,000-record fallback and blank backup predicate, case-sensitive columns, the 5,000-character limit and its truncation — come from the Analytics Security Implementation Guide, which is not in the corpus. Retrieved `WaveDataset` metadata has no predicate fields (api_meta 264 L142729-142739), so none of this can be checked from a metadata retrieve.
+
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
 ## Gotcha 1: Salesforce OWD and Sharing Rules Have No Effect on CRM Analytics Row Visibility
@@ -18,7 +20,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Typically affects managers, executives, or territory owners who have broad Salesforce record access. Sharing inheritance is bypassed silently; no error is shown and no log entry is generated. The affected users simply see more data than they should.
 
-**How to avoid:** Always set the backup predicate to `'false'` when enabling sharing inheritance. This produces a deny-all for users who breach the threshold. If those users legitimately need broad Analytics access, grant them the View All Data permission on their permission set rather than relying on a permissive backup predicate. The `'false'` value is a literal SAQL expression that evaluates to false for all rows.
+**How to avoid:** Always set the backup predicate to `'false'` when enabling sharing inheritance. This produces a deny-all for users who breach the threshold. If those users legitimately need broad Analytics access, give them a dataset-specific grant (a predicate branch on a user-map column) rather than a permissive backup predicate; do not hand out the org-wide View All Data permission for Analytics alone (UNVERIFIED (2026-10-20): whether View All Data bypasses Analytics predicates is not in the corpus). The `'false'` value is a literal SAQL expression that evaluates to false for all rows.
 
 ---
 

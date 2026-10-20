@@ -25,10 +25,10 @@ Record the org's current licenses before scoring technical feasibility for any u
 |---|---|---|
 | Sales Cloud | | |
 | Service Cloud | | |
-| Einstein for Sales add-on | | Covers Lead Scoring, Opportunity Scoring |
-| Einstein for Service add-on | | Covers Work Summaries, Service Replies, Case Classification |
-| Agentforce platform license | | Required for all Agentforce agents |
-| Data Cloud | | Required for grounding use cases |
+| Einstein for Sales add-on | | Covers Lead Scoring, Opportunity Scoring (mapping UNVERIFIED (2026-10-20)) |
+| Einstein for Service add-on | | Covers Work Summaries, Service Replies, Case Classification (mapping UNVERIFIED (2026-10-20)) |
+| Agentforce platform license | | Required for all Agentforce agents (UNVERIFIED (2026-10-20)) |
+| Data Cloud | | Required for RAG / Retriever grounding (pkg2 264 L1459-1460) |
 | CRM Analytics / Tableau CRM | | |
 | Other (specify) | | |
 
@@ -145,7 +145,7 @@ Complete for top 3-5 approved use cases only. Do not produce specific dollar amo
 - **Primary value driver:** (cost reduction / revenue increase / risk mitigation / productivity)
 - **Specific mechanism:** (e.g., reduced average handle time via automated case summaries)
 - **Key assumption that must hold:** (e.g., agents will adopt the feature and reduce manual summarization time)
-- **Reference benchmark if available:** (e.g., Salesforce benchmark: 20-30% AHT reduction in similar orgs)
+- **Reference benchmark if available:** (published source, date, and the figure it reports — never an unsourced range)
 - **Payback period category:** < 6 months / 6-18 months / 18+ months
 - **Risk to ROI realization:**
 

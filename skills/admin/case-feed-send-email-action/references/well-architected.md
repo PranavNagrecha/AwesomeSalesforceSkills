@@ -22,7 +22,7 @@
   swallowing the error.
 - **Performance** — the documented attachment limits are the real constraints agents hit, and they
   are scoped to the UI: Lightning Experience allows up to 10 files with a 25 MB total file size;
-  Salesforce Classic allows more than 10 files with an 18 MB total. Design templates with linked,
+  Salesforce Classic allows more than 10 files with an 18 MB total (UNVERIFIED (2026-10-20): both figures are Help material, not in the corpus). Design templates with linked,
   not inlined, imagery, and size the guidance to the UI the support team actually uses.
 
 ## Architectural Tradeoffs
@@ -59,6 +59,13 @@
    with no signal is worse than configuration that fails loudly.
 
 ## Official Sources Used
+
+- `QuickActionType` `SendEmail` (API 31.0+), `targetObject` wording, no template field, `uiBehavior` values, FieldOverride precedence — api_meta 264 L102968, L102932, L102804-102973, L103038-103042, L102979-102981
+- Email-to-Case switch is one-way — api_meta 264 L114974-114976
+- Handler scope, Lightning Experience limits, From Address rule, one-item array, empty constructor — apexref 262 L179586-179613, L179622, L179651
+- `getActionName()` / `getTargetSObject()` values for the standard action — apexref 262 L179532, L179574
+- Inbound 25 MB limits that are NOT the composer's limits — apexdev 264 L20131-20133
+- UNVERIFIED (2026-10-20): the Help and Knowledge pages below are not in the corpus; their figures (10 files / 25 MB / 18 MB) and procedures are unaudited.
 
 - Email Customers in Lightning Experience — https://help.salesforce.com/s/articleView?id=service.cases_email_lex.htm&language=en_US&type=5
 - Create a Send Email Quick Action for Cases — https://help.salesforce.com/s/articleView?id=service.case_interaction_send_email_quick_action_create.htm&language=en_US&type=5

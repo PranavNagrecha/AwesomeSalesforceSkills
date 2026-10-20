@@ -38,9 +38,9 @@ outputs:
 dependencies:
   - ai-ready-data-architecture
   - agentforce-service-ai-setup
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-11
+updated: 2026-10-20
 ---
 
 # AI Use Case Assessment
@@ -53,9 +53,25 @@ This skill activates when a practitioner or organization needs to decide **which
 
 Gather this context before working on anything in this domain:
 
-- **License and edition confirmation:** Many Einstein features require specific add-ons. Einstein for Service generative features (Work Summaries, Service Replies) require the Einstein for Service add-on license; Agentforce requires the Agentforce platform license. Confirm what is purchased before scoring technical feasibility.
-- **Data posture:** The single most common failure mode is assuming that CRM data is AI-ready. Verify whether Data Cloud is licensed and populated, whether key objects (Case, Lead, Opportunity) have sufficient record volume and field completeness for the features being assessed.
+- **License and edition confirmation:** Many Einstein features require specific add-ons. Einstein for Service generative features (Work Summaries, Service Replies) require the Einstein for Service add-on license; Agentforce requires the Agentforce platform license. Confirm what is purchased before scoring technical feasibility. UNVERIFIED (2026-10-20): which add-on license each Einstein or Agentforce feature needs is Salesforce Help / pricing material with no corpus line; the corpus lists feature settings, not licence bundles.
+- **Data posture:** The single most common failure mode is assuming that CRM data is AI-ready. Verify whether Data Cloud (named Data 360 in the Winter '27 Metadata API guide; `CustomerDataPlatformSettings.enableCustomerDataPlatform`, api_meta 264 L11134-11159) is licensed and populated, whether key objects (Case, Lead, Opportunity) have sufficient record volume and field completeness for the features being assessed.
 - **Stakeholder alignment on scope:** Assessment work frequently expands into implementation scoping mid-session. Stay inside the assessment boundary — the outputs of this skill feed an implementation project, not replace one.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which licences and add-ons are provisioned in this org, read from the org rather than from sales material? | Edition alone does not decide feature availability (Gotcha 1). | A technical-feasibility score that will not reverse at activation. |
+| For each predictive use case, how are historical outcomes distributed (won/lost, converted/not)? | A lopsided outcome distribution degrades model training (Gotcha 2). | Which predictive use cases need a data-variance fix first. |
+| Is Data Cloud enabled, and which sources are ingested, mapped to DMOs and identity-resolved? | A licence is not populated data (Gotcha 3). | The unification score per grounding use case. |
+| Is the assessor reading the org's own Setup and metadata, or working from training material? | Course content does not show this org's prerequisites (Gotcha 4). | Evidence attached to every "go" verdict. |
+| Can each use case be stated as one feature on one object producing one measurable output? | Strategic wording inflates impact scores (Gotcha 5). | Scores that compare like with like. |
+| What happens if the AI output is wrong, and who reviews it before it reaches a customer? | High-risk use cases need human review designed in (Core Concept 2, Risk Profile). | The risk tier and the review gate per use case. |
+| Which records and fields does each use case depend on, and how complete are they? | The data readiness gate blocks use cases on sparse data (Pattern 2). | The remediation list and the Blocked set. |
+
+A proper assessment adds a written trail — licence evidence, data scores, risk tier — so the shortlist survives the first implementation review instead of being re-argued.
 
 ---
 
@@ -63,7 +79,7 @@ Gather this context before working on anything in this domain:
 
 ### 1. Impact-Effort Matrix
 
-The Salesforce AI use case framework organizes candidate use cases into four quadrants based on two axes: **business impact** (revenue, cost reduction, customer satisfaction, risk mitigation) and **implementation effort** (technical complexity, data readiness requirements, change management burden).
+The Impact-Effort framework (UNVERIFIED (2026-10-20): attributed to Salesforce's AI use-case identification material, which is not in the corpus) organizes candidate use cases into four quadrants based on two axes: **business impact** (revenue, cost reduction, customer satisfaction, risk mitigation) and **implementation effort** (technical complexity, data readiness requirements, change management burden).
 
 | Quadrant | Impact | Effort | Action |
 |---|---|---|---|
@@ -82,7 +98,35 @@ Each use case is assessed across four dimensions before it can be recommended:
 
 **Operational Feasibility** — Will the business process support AI-generated outputs? Are there human-in-the-loop review steps required? Does the team have the capacity to manage, monitor, and retrain AI models over time?
 
-**Data Readiness** — Salesforce recommends scoring data readiness across four sub-dimensions: availability (does the data exist in the org?), quality (is it clean, consistent, deduplicated?), unification (is it unified across sources in Data Cloud?), and governance (is data access controlled, compliant with privacy regulations, and auditable?). Each sub-dimension can be scored 1 (not ready) to 3 (fully ready). A composite score below 6 typically means the use case should be gated pending data remediation.
+**Data Readiness** — Score data readiness across four sub-dimensions (UNVERIFIED (2026-10-20): the four-part model is attributed to a Salesforce blog, not a corpus guide): availability (does the data exist in the org?), quality (is it clean, consistent, deduplicated?), unification (is it unified across sources in Data Cloud?), and governance (is data access controlled, compliant with privacy regulations, and auditable?). Each sub-dimension can be scored 1 (not ready) to 3 (fully ready). A composite score below 6 typically means the use case should be gated pending data remediation.
+
+**Technical evidence from metadata** — Retrieve the org's AI configuration before scoring Technical Feasibility: agents are `GenAiPlannerBundle` ("a container for all the topics and actions", api_meta 264 L79720-79721), topics are `GenAiPlugin` (L80308), actions are `GenAiFunction` (L78862); Einstein Opportunity Scoring is `OpportunityScoreSettings.enableOpportunityScoring`, default false (L126931-126955); Case Classification lives in `EinsteinAgentSettings` (L117831). Retrieval shows what is configured, not what is licensed.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Assessment probe: retrieve, never deploy. Settings members drop the "Settings" suffix (api_meta 264 L2474-2475). -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>*</members>
+        <name>GenAiPlannerBundle</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>GenAiPlugin</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>GenAiFunction</name>
+    </types>
+    <types>
+        <members>OpportunityScore</members>
+        <members>EinsteinAgent</members>
+        <members>CustomerDataPlatform</members>
+        <name>Settings</name>
+    </types>
+    <version>68.0</version>
+</Package>
+```
 
 **Risk Profile** — What are the failure modes if the AI output is wrong? High-risk use cases (autonomous financial decisions, clinical recommendations in Health Cloud, legally binding communications) require additional governance controls, human review gates, and explicit bias and hallucination mitigation before they can be approved.
 
@@ -117,7 +161,7 @@ The output of assessment is a structured narrative of where value is expected to
 **When to use:** When the org suspects its data is incomplete or ungoverned, before investing time in the full Impact-Effort exercise.
 
 **How it works:**
-1. For each candidate use case, identify the primary data objects it depends on (e.g., Einstein Case Classification needs Case records with populated Subject and Description fields; Einstein Opportunity Scoring needs Opportunity history with stage progressions).
+1. For each candidate use case, identify the primary data objects it depends on (e.g., Einstein Case Classification needs Case records with populated Subject and Description fields; Einstein Opportunity Scoring needs Opportunity history with stage progressions — UNVERIFIED (2026-10-20): these per-feature field requirements are not in the corpus).
 2. Score each data source on the four sub-dimensions (availability, quality, unification, governance) on a 1–3 scale per sub-dimension.
 3. Any use case with a composite data readiness score below 6 out of 12 is flagged as **Data Blocked** and removed from the active shortlist until remediation is confirmed.
 4. Produce a remediation list: which objects need field completion campaigns, which sources need Data Cloud ingestion, which governance policies need to be documented.
@@ -131,10 +175,12 @@ The output of assessment is a structured narrative of where value is expected to
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Org is new to AI and has no existing Data Cloud | Start with Low-Hanging Fruit and Quick Wins that do not require Data Cloud (e.g., Einstein Email Insights, Case Classification on clean Case data) | Builds trust and momentum before committing to Data Cloud investment |
-| Stakeholders want an ROI estimate before approving | Produce a payback period narrative using benchmark ranges from Salesforce research (e.g., "customers report 20–30% reduction in handle time for Service Cloud Einstein Work Summaries") rather than a custom financial model | Avoids false precision; anchors to published Salesforce customer evidence |
+| Stakeholders want an ROI estimate before approving | Produce a payback period narrative using a published, dated benchmark the client can cite rather than a custom financial model | Avoids false precision; anchors to published Salesforce customer evidence |
 | Data readiness score is below 6 for all top use cases | Prioritize data remediation work and route to `ai-ready-data-architecture` skill before re-running assessment | There is no shortcut: AI on bad data produces bad outputs that destroy stakeholder trust |
 | Use case involves autonomous financial or medical decisions | Flag as high-risk; require ethics review and human-in-the-loop design before feasibility is confirmed | Salesforce AI Acceptable Use Policy requires human oversight for high-risk automated decisions |
 | Org has Agentforce licenses but no use case shortlist | Run Pattern 1 (Discovery Workshop) against Salesforce's published Agentforce use case library to seed the brainstorm | Prevents blank-slate paralysis and anchors discussion to feasible, productized capabilities |
+
+UNVERIFIED (2026-10-20): three cells above have no corpus line — that Email Insights and Case Classification need no Data Cloud, any handle-time benchmark range, and an Acceptable Use Policy rule on human oversight. Quote a benchmark only with its published source and date; the earlier "20–30% reduction in handle time" figure had none.
 
 ---
 
@@ -170,9 +216,9 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Einstein feature availability varies by edition AND license add-on** — Enterprise Edition + Sales Cloud does not include Einstein Lead Scoring by default; it requires the Einstein for Sales add-on. Similarly, generative AI features in Service Cloud require the Einstein for Service add-on even if the org has Unlimited Edition. Technical feasibility scores that skip license verification will produce incorrect "go" recommendations.
-2. **Data Cloud is required for many Agentforce grounding use cases** — Agentforce agents that need to retrieve customer context at scale (e.g., "what did this customer buy last quarter") require Data Cloud for real-time unification. Assessing these use cases as feasible without confirming Data Cloud is licensed and populated leads to scoped-out implementations that cannot deliver the assessed value.
-3. **Model training status affects Einstein predictive feature readiness** — Einstein Lead Scoring and Einstein Opportunity Scoring require a minimum record volume (typically 1,000+ records with sufficient outcome variance) before the model can train. An org may have the correct license but still have a feature stuck in "Gathering Data" state for weeks. This delay is not communicated during purchasing and must be included in the effort score.
+1. **Einstein feature availability varies by edition AND license add-on** (UNVERIFIED (2026-10-20): licence bundling is not in the corpus) — Enterprise Edition + Sales Cloud does not include Einstein Lead Scoring by default; it requires the Einstein for Sales add-on. Similarly, generative AI features in Service Cloud require the Einstein for Service add-on even if the org has Unlimited Edition. Technical feasibility scores that skip license verification will produce incorrect "go" recommendations.
+2. **Data Cloud is required for many Agentforce grounding use cases** — the packaging guide says prompt templates that use RAG, Retrievers or BYO LLM need an org with both GenAI and Data Cloud enabled (pkg2 264 L1459-1460). Agentforce agents that need to retrieve customer context at scale (e.g., "what did this customer buy last quarter") depend on it for unification (UNVERIFIED (2026-10-20): the "real-time" claim is not in the corpus). Assessing these use cases as feasible without confirming Data Cloud is licensed and populated leads to scoped-out implementations that cannot deliver the assessed value.
+3. **Model training status affects Einstein predictive feature readiness** — Einstein Lead Scoring and Einstein Opportunity Scoring require a minimum record volume (typically 1,000+ records with sufficient outcome variance) before the model can train. An org may have the correct license but still have a feature stuck in "Gathering Data" state for weeks. UNVERIFIED (2026-10-20): the 1,000-record threshold and the "Gathering Data" status text have no corpus line. This delay is not communicated during purchasing and must be included in the effort score.
 
 ---
 
@@ -190,5 +236,5 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- `ai-ready-data-architecture` — Use when data readiness gaps are identified; covers Data Cloud ingestion, object schema design, and field quality improvement for AI features
-- `agentforce-service-ai-setup` — Use when a Service Einstein use case has been approved and implementation is ready to begin; covers prerequisite verification, license activation, and feature sequencing
+- `architect/ai-ready-data-architecture` — Use when data readiness gaps are identified; covers Data Cloud ingestion, object schema design, and field quality improvement for AI features
+- `agentforce/agentforce-service-ai-setup` — Use when a Service Einstein use case has been approved and implementation is ready to begin; covers prerequisite verification, license activation, and feature sequencing

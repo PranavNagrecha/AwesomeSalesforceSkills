@@ -2,6 +2,8 @@
 
 Use this template when configuring CRM Analytics app sharing, dataset row-level security, or sharing inheritance for an org.
 
+UNVERIFIED (2026-10-20): the Growth licence, the 3,000-row threshold, `$User.HasViewAllData` and the 5,000-character limit in this template are not in the corpus; see SKILL.md Before Starting.
+
 ## Scope
 
 **Skill:** `analytics-permission-and-sharing`

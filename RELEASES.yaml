@@ -812,7 +812,12 @@ releases:
       ''Learned rules'' (orchestrator Step 3b) so new skills follow them. Sample defect rate from R3-05: ~1 in 3 skills. WRITER-TIER
       TRIAL (2026-10-20, batches 1-2, Opus reviewer both): Opus writer 58 defects/9 skills (6.44) with 4 contradictions found;
       Sonnet writer 46/9 (5.11) with 40 contradictions found and 0 wrong fixes. DECISION: writers = Sonnet from batch 4; reviewer
-      stays Opus; Fable orchestrates and spot-checks. KPI ledger: evals/measurement/audit-ledger.jsonl.'
+      stays Opus; Fable orchestrates and spot-checks. KPI ledger: evals/measurement/audit-ledger.jsonl. ESCALATION 2026-10-20
+      ~13:00: ledger NOT FALLING after batch 5 (6.56/skill; batch 6 pre-sweep also 6.56, batch 7 4.11). Remedy: scripts/audit_sweep.py
+      (leftover tokens, marker corpus-grep, cite resolution) made mandatory for writers and reviewers. Trial batch 8 (Opus,
+      5 skills, sweep): 4.0/skill. Decision: continue Opus writers at 5 skills with sweep; re-measure over batches 9-10; the
+      output KPI (probes with audited skills) stays 10/10 in both runs, so writer defects are cost the reviewer absorbs, not
+      end quality.'
     done_skills:
     - admin/configuration-workbook-authoring
     - admin/fit-gap-analysis-against-org
@@ -882,6 +887,11 @@ releases:
     - lwc/lwc-public-api-hardening
     - security/encrypted-field-query-patterns
     - security/guest-user-security-audit
+    - security/visualforce-security-and-modernization
+    - security/xss-and-injection-prevention
+    - admin/ai-use-case-assessment
+    - admin/analytics-permission-and-sharing
+    - admin/case-feed-send-email-action
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'

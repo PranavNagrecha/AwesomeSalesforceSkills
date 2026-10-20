@@ -2,6 +2,8 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
+UNVERIFIED (2026-10-20) (file-level): the Salesforce Help and Knowledge quotes in Gotchas 1, 2, 3, 4, 6 and 7 — the Email-to-Case dependency, the deliverability / Support Settings causes, the Custom-only template rule, the Don't Apply Template Subject checkbox, the 10-file / 25 MB / 18 MB attachment limits and the unsupported predefined fields — are not in the corpus. Corpus-grounded: Email-to-Case is one-way once enabled (api_meta 264 L114974-114976); `FieldOverride.field` is Required (L102984); the Apex handler can't add attachments in Lightning Experience (apexref 262 L179604-179605).
+
 ## Gotcha 1: The outbound composer requires the inbound feature
 
 **What happens:** you go to add a Send Email quick action to Case and the configuration doesn't
@@ -9,6 +11,8 @@ hold, even though the team never intends to receive email into Salesforce.
 
 **When it occurs:** Email-to-Case is off. Salesforce Help states the dependency directly:
 *"Email-to-Case must be enabled to use the Send Email quick action on the Cases object."*
+The metadata switch is `EmailToCaseSettings.enableEmailToCase`, and it can't be turned off again
+(api_meta 264 L114974-114976).
 
 **How to avoid:** treat Email-to-Case enablement as a prerequisite of the outbound composer,
 not as a separate initiative. Confirm it before scoping any Send Email work. Configuring the
@@ -74,13 +78,16 @@ conversation.
 
 ## Gotcha 5: A read-only field on the action layout discards prepopulated values
 
+This heading is documented for HTML Body and Subject only (LWC Developer Guide, *Create an Email as a Quick Action* (`use-quick-actions-email`, fetched 2026-10-20)); UNVERIFIED (2026-10-20): the same behaviour for other fields and for predefined values or the Apex handler is an extrapolation.
+
 **What happens:** predefined field values (or `encodeDefaultFieldValues`, or a value the Apex
 handler wrote onto the draft `EmailMessage`) don't appear. There is no error — the composer
 simply opens with the field blank.
 
 **When it occurs:** the field is Read-Only on the Send Email action's layout. The LWC guide
 warns explicitly that if `HTMLBody` and `Subject` are Read-Only, the draft doesn't include
-pre-populated text for those fields.
+pre-populated text for those fields — for the Send Email *global* action's layout. The metadata
+value is `QuickActionLayoutItem.uiBehavior` = `Readonly` (api_meta 264 L103038-103042).
 
 **How to avoid:** make every field you intend to prepopulate editable on the action layout.
 If a field must be locked, prepopulating it is not the right tool — lock the content in the
@@ -101,8 +108,10 @@ Experience limit — not a universal cap on outbound Salesforce email.
 
 **How to avoid:** budget the attachment total against the limit for the UI the support team
 actually uses, and don't quote 25 MB at a Classic org. Train agents to link to files in Salesforce
-rather than attach them, and to send more than 10 files as a link rather than a second email. No
-official source states a per-attachment size cap, so don't promise one.
+rather than attach them, and to send more than 10 files as a link rather than a second email. The
+corpus states no outbound per-attachment cap; its 25 MB figures are inbound limits (Email
+Services message size and On-Demand Email-to-Case attachment size, apexdev 264 L20131-20133), so
+don't promise either for the composer.
 
 ---
 
@@ -112,7 +121,8 @@ official source states a per-attachment size cap, so don't promise one.
 
 **When it occurs:** `AttachmentId` and `ContentDocumentIds` are used as predefined field values.
 They aren't supported, because they aren't part of the email quick action layout. Only fields
-available on the action are supported. For recipients, use ID fields (such as `Contact.Id`) or
+available on the action are supported (in metadata, each predefined value is a `FieldOverride` whose
+`field` is Required, api_meta 264 L102984). For recipients, use ID fields (such as `Contact.Id`) or
 string fields (such as a custom email field); Contact, lead, and person-account IDs are
 supported.
 

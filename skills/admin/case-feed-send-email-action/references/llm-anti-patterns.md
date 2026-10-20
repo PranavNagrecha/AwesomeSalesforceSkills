@@ -3,6 +3,8 @@
 Common mistakes AI coding assistants make when generating or advising on the Case Feed Send
 Email action. These patterns help the consuming agent self-check its own output.
 
+UNVERIFIED (2026-10-20) (file-level): Help-sourced claims in this file — the Custom-only template rule, the move-email feature and its maturity, the attachment limits, the unsupported predefined fields, and every `apex:emailPublisher` attribute and enum value — are not in the corpus. Grounded: `SendEmail` type at API 31.0+ (api_meta 264 L102968), no template field on `QuickAction` (L102804-102973), the handler's filter and one-item array (apexref 262 L179651, L179687-179691), and the prepopulation field list (LWC Developer Guide, *Create an Email as a Quick Action* (`use-quick-actions-email`, fetched 2026-10-20)).
+
 ## Anti-Pattern 1: Answering the outbound question with Email-to-Case setup
 
 **What the LLM generates:** asked "how do agents email the customer from a case," it produces
@@ -186,13 +188,16 @@ easiest clause to drop.
 **Correct pattern:**
 
 ```text
-No GA / Beta / Pilot label exists for the Send Email quick action or for
-Move Emails to a Different Case. Both are documented as standard features.
+No GA / Beta / Pilot label exists for the Send Email quick action (the Metadata API
+lists SendEmail with no Beta note, api_meta 264 L102968) or for Move Emails to a
+Different Case. Both are documented as standard features.
 
 Attachment limits are documented per UI:
   Lightning Experience — up to 10 files, total file size <= 25 MB
   Salesforce Classic   — more than 10 files, total file size <= 18 MB
-Both are attachment totals. No per-attachment size cap is documented.
+Both are attachment totals. No outbound per-attachment size cap is documented;
+the 25 MB per-attachment figure in the Apex guide is inbound On-Demand
+Email-to-Case (apexdev 264 L20133).
 ```
 
 **Detection hint:** any "GA," "Beta," "Pilot," or "generally available since" claim about these

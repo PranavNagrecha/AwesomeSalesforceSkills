@@ -5,17 +5,22 @@ Scans Salesforce SFDX metadata for the security findings that drive the
 retire-vs-harden-vs-leave-alone decision for legacy Visualforce pages:
 
   - <apex:page csrfProtection="false"> — CSRF protection disabled.
+    UNVERIFIED (2026-10-20): that attribute appears in no corpus guide; the
+    documented switches are SessionSettings enableCSRFOnGet / enableCSRFOnPost
+    (api_meta 264 L129739-129745), which this checker also reads.
   - <apex:page action="{!method}"> — page-action attribute that may trigger
     GET-side state changes; requires manual review of the action method.
   - Apex controllers without `with sharing` / `without sharing` / `inherited
     sharing` — sharing keyword is not declared, so the behaviour depends on
     the class's pinned apiVersion (see below).
-  - Getters returning an sObject from a SOQL query without WITH USER_MODE or
-    WITH SECURITY_ENFORCED — below apiVersion 67.0, or at any version when the
+  - Getters returning an sObject from a SOQL query without WITH USER_MODE (or,
+    below 67.0, WITH SECURITY_ENFORCED, which can't be used at 67.0+ —
+    apexdev 264 L11926) — below apiVersion 67.0, or at any version when the
     query opts out with WITH SYSTEM_MODE, FLS is not enforced for the rendered
     page.
   - <apex:outputText value="{!record.Field}"/> bound to an sObject field —
-    outputText does not enforce FLS; should be outputField.
+    outputText does not enforce FLS; should be outputField (UNVERIFIED
+    (2026-10-20): the per-component FLS rule is not in the corpus).
   - <apex:dynamicComponent componentValue="..."/> — dynamic-component branch
     is hard to security-review and is a strong rewrite candidate.
 
@@ -23,18 +28,18 @@ Two Apex defaults inverted in API 67.0 (Summer '26): database operations run
 in user mode, and a class with no sharing keyword runs `with sharing`. The
 gate is the apiVersion in each class's own `.cls-meta.xml`, not the org's
 release, so the sharing and SOQL findings below are reported against the
-version read from that sibling file. See agents/_shared/AGENT_CONTRACT.md,
+version read from that sibling file (apexdev 264 L11928-11937). See agents/_shared/AGENT_CONTRACT.md,
 "Apex security idiom by API version".
 
 Uses stdlib only — no pip dependencies.
 
-Exit codes:
-  0  — no issues found
-  1  — issues reported
+Every finding is a heuristic WARN. Exit codes:
+  0  — no findings, or WARN findings only (one WARN for an empty directory)
+  1  — ERROR (manifest directory missing), or any WARN with --strict
 
 Usage:
     python3 check_visualforce_security_and_modernization.py [--manifest-dir DIR]
-    python3 check_visualforce_security_and_modernization.py --manifest-dir force-app/main/default
+    python3 check_visualforce_security_and_modernization.py --manifest-dir force-app/main/default --strict
 """
 
 from __future__ import annotations
@@ -111,6 +116,9 @@ _SOQL_SYSTEM_MODE = re.compile(
 # inverted both Apex defaults — database operations run in user mode, and a class
 # with no sharing keyword runs `with sharing` — so the same source line means
 # different things at different pinned versions.
+# SessionSettings CSRF switches (api_meta 264 L129739-129745), in Security.settings-meta.xml
+_CSRF_SETTING_OFF = re.compile(r'<(enableCSRFOn(?:Get|Post))>\s*false\s*</enableCSRFOn(?:Get|Post)>', re.IGNORECASE)
+
 _API_VERSION = re.compile(r'<apiVersion>\s*([0-9.]+)\s*</apiVersion>')
 _DEFAULTS_INVERTED_IN = 67.0
 
@@ -182,7 +190,7 @@ def check_visualforce_pages(pages_dir: Path) -> list[str]:
         if _CSRF_DISABLED.search(markup):
             issues.append(
                 f"[CSRF-DISABLED] {page_file.name}: "
-                f"<apex:page csrfProtection=\"false\"> is set. "
+                f"<apex:page csrfProtection=\"false\"> is set (attribute UNVERIFIED (2026-10-20) — not in the corpus). "
                 f"Re-enable CSRF protection unless there is a written security-review "
                 f"justification. See SKILL.md Concept 1."
             )
@@ -209,7 +217,8 @@ def check_visualforce_pages(pages_dir: Path) -> list[str]:
             issues.append(
                 f"[OUTPUTTEXT-SOBJECT-FIELD] {page_file.name}: "
                 f"<apex:outputText value=\"{{!{binding}}}\"/> binds an sObject field path. "
-                f"<apex:outputText> does NOT enforce FLS. Replace with <apex:outputField>."
+                f"Use <apex:outputField> for sObject fields (SKILL.md Core Concept 2; the per-component "
+                f"FLS rule is UNVERIFIED (2026-10-20) against the corpus)."
             )
 
     return issues
@@ -241,12 +250,12 @@ def check_apex_controllers(apex_dir: Path) -> list[str]:
             class_decl = _CLASS_DECL.search(source)
             if class_decl and not _CLASS_WITH_SHARING.search(source):
                 default_note = (
-                    "runs `with sharing` by default, so its queries enforce record access "
-                    "unless one opts out with WITH SYSTEM_MODE — declare "
+                    "runs `with sharing` by default; a WITH SYSTEM_MODE query in it still "
+                    "follows the class's sharing keyword (apexdev 264 L12138-12140) — declare "
                     "the keyword anyway so the posture is explicit and survives a downgrade"
                     if defaults_inverted
-                    else "runs `without sharing` — declare `with sharing` explicitly for "
-                    "record-level enforcement"
+                    else "runs `without sharing` when it is the entry point (apexdev 264 "
+                    "L11936-11937) — declare `with sharing` explicitly for record-level enforcement"
                 )
                 issues.append(
                     f"[NO-SHARING-KEYWORD] {cls_file.name}: "
@@ -272,7 +281,7 @@ def check_apex_controllers(apex_dir: Path) -> list[str]:
                     consequence = (
                         "database operations already default to user mode, so FLS is enforced — "
                         "add WITH USER_MODE to state the intent, and note that "
-                        "WITH SECURITY_ENFORCED no longer compiles here"
+                        "WITH SECURITY_ENFORCED can't be used here (apexdev 264 L11926)"
                     )
                 else:
                     consequence = (
@@ -282,7 +291,7 @@ def check_apex_controllers(apex_dir: Path) -> list[str]:
                     )
                 issues.append(
                     f"[SOQL-NO-USER-MODE] {cls_file.name}: "
-                    f"SOQL query missing WITH USER_MODE or WITH SECURITY_ENFORCED — "
+                    f"SOQL query missing WITH USER_MODE — "
                     f"snippet: {snippet!r}. At {version_label}, {consequence}."
                 )
 
@@ -331,9 +340,10 @@ def check_visualforce_security_and_modernization(manifest_dir: Path) -> list[str
     """Run all checks across the SFDX metadata layout. Return aggregated issues."""
     issues: list[str] = []
 
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
+    for settings in manifest_dir.rglob("*.settings-meta.xml"):
+        for m in _CSRF_SETTING_OFF.finditer(settings.read_text(encoding="utf-8", errors="replace")):
+            issues.append(f"[CSRF-SETTING-OFF] {settings.name}: <{m.group(1)}>false — org-wide "
+                          f"CSRF protection is off (api_meta 264 L129739-129745).")
 
     # Common SFDX layouts
     page_dirs = [
@@ -371,7 +381,7 @@ def check_visualforce_security_and_modernization(manifest_dir: Path) -> list[str
 
     if not pages_checked and not apex_checked:
         issues.append(
-            f"No .page or .cls files found under {manifest_dir} — "
+            f"EMPTY: {manifest_dir} holds no .page or .cls files — "
             f"verify the --manifest-dir points at SFDX metadata root."
         )
 
@@ -397,12 +407,16 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on any WARN finding.")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        return 1
     issues = check_visualforce_security_and_modernization(manifest_dir)
 
     if not issues:
@@ -410,9 +424,9 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"ISSUE: {issue}")
+        print(f"WARN: {issue}")
 
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

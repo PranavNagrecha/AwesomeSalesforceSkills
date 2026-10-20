@@ -29,6 +29,11 @@
 
 ## Official Sources Used
 
+- App sharing roles and their stored values (View / EditAllContents / Manage) — api_meta 264 L77522-77532; `WaveApplication.shares` is a FolderShare — L142489, L142515-142519
+- `WaveDataset` has no predicate or sharing-inheritance fields — api_meta 264 L142729-142739
+- CRM Analytics Plus licence (scratch-org feature `EinsteinAnalyticsPlus`) — sfdx 264 L4521
+- Sharing-inheritance per-record sharing-definition limit (150–1,600) and coverage report — sfdx 264 L4910-4911, L4695
+- UNVERIFIED (2026-10-20): the 3,000-record threshold, five-object list and 5,000-character limit cited below are from the Analytics guides linked here, not the corpus
 - Analytics Security Implementation Guide (Spring '26) — https://resources.docs.salesforce.com/latest/latest/en-us/sfdc/pdf/bi_admin_guide_security.pdf
 - Add Row-Level Security with a Security Predicate — https://help.salesforce.com/s/articleView?id=sf.bi_security_overview_predicate.htm
 - CRM Analytics REST API Developer Guide Spring '26 — https://developer.salesforce.com/docs/atlas.en-us.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_rest_overview.htm

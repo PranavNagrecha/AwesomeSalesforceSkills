@@ -1,5 +1,7 @@
 # Examples — Analytics Permission and Sharing
 
+UNVERIFIED (2026-10-20) (file-level): `$User.HasViewAllData`, the 3,000-record threshold and the blank-backup-predicate behaviour used in these examples are not in the corpus; whether View All Data bypasses Analytics predicates is also unverified, so confirm before granting it.
+
 ## Example 1: Restricting Opportunity Rows to the Record Owner
 
 **Context:** A Sales Operations team has built a CRM Analytics dashboard showing Opportunity pipeline. The org has 250 sales reps. Each rep should see only their own opportunities. Salesforce OWD for Opportunity is "Private," but the team reports that reps can see all opportunities in the Analytics dashboard.
@@ -45,9 +47,9 @@
 'false'
 ```
 
-   This ensures that any user for whom sharing inheritance is bypassed (3,000+ accessible records) sees zero rows rather than all rows. If those users legitimately need broader access, they should be granted the View All Data permission on the permission set, which causes `"$User.HasViewAllData"` to resolve to `"true"` and bypasses the predicate entirely through a separate mechanism.
+   This ensures that any user for whom sharing inheritance is bypassed (3,000+ accessible records) sees zero rows rather than all rows. If those users legitimately need broader access, give them a dataset-specific grant (a predicate branch on a user-map column) rather than the org-wide View All Data permission (see the file-level marker).
 5. Save and test with a user who has restricted account access. Confirm only their accounts appear in a lens.
-6. If possible, identify a user who owns more than 3,000 accounts in the org and confirm they see zero rows (backup predicate firing), then escalate to grant them View All Data if appropriate.
+6. If possible, identify a user who owns more than 3,000 accounts in the org and confirm they see zero rows (backup predicate firing), then design a dataset-specific grant for them if their role requires it.
 
 **Why it matters:** The 3,000-record threshold is a hard platform limit. Leaving the backup predicate blank is the most common security defect in sharing inheritance configurations — it converts a scoped-access design into an all-visible dataset for high-volume users, which is the opposite of the intended behavior.
 

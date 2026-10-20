@@ -26,9 +26,13 @@
 
 ## Official Sources Used
 
+- Agent, topic and action metadata types for the technical-evidence probe — api_meta 264 L79720-79721 (GenAiPlannerBundle), L80308 (GenAiPlugin), L78862 (GenAiFunction)
+- Einstein Opportunity Scoring and Case Classification settings — api_meta 264 L126931-126955, L117831
+- Data Cloud / Data 360 enablement setting — api_meta 264 L11134-11159
+- Data Cloud pipeline (DLO → DMO → optional identity resolution) — obj 264 L3865-3877
+- RAG / Retriever prompt templates need GenAI and Data Cloud — pkg2 264 L1459-1460
 - Trailhead: Identifying Effective AI Use Cases for Business — https://trailhead.salesforce.com/content/learn/modules/ai-strategy/identify-ai-use-cases
 - Salesforce Agentforce Use Cases — https://www.salesforce.com/agentforce/
 - Salesforce Blog: 5 Ways to Measure Data Readiness for AI — https://www.salesforce.com/blog/data-readiness-for-ai/
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
-- Salesforce AI Acceptable Use Policy — https://www.salesforce.com/  (page retired — see host index for current equivalent)
 - Einstein for Service Setup Guide — https://help.salesforce.com/s/articleView?id=sf.einstein_for_service_setup.htm

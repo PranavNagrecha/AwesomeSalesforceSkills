@@ -1,5 +1,7 @@
 # Examples — AI Use Case Assessment
 
+UNVERIFIED (2026-10-20) (file-level): the licence add-ons, the Data Cloud dependency of the "360 customer view" agent, and the "Model training in progress" status text below are illustrative and have no corpus line.
+
 ## Example 1: Service Cloud org with clean Case data but no Data Cloud
 
 **Context:** A B2C company with 50,000+ Case records per year wants to adopt AI to reduce average handle time in their contact center. They have Service Cloud Enterprise Edition with the Einstein for Service add-on but no Data Cloud license. They come to the assessment with five candidate use cases: Work Summaries, Case Classification, Article Recommendations, Chatbot deflection, and a "360 customer view" agent.

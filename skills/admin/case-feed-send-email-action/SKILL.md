@@ -31,9 +31,9 @@ outputs:
   - "Optional predefined field values (To / CC / BCC / Related To) and/or a `QuickAction.QuickActionDefaultsHandler` Apex class"
   - "A rollout + review checklist covering send limits, layout assignment, and the move-email capability"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-07-08
+updated: 2026-10-20
 ---
 
 # Case Feed Send Email Action
@@ -48,12 +48,30 @@ Inbound routing (routing addresses, thread-ID matching on customer replies, assi
 
 Gather this context before working on anything in this domain:
 
-- **Confirm Email-to-Case is enabled.** Salesforce Help states plainly: *"Email-to-Case must be enabled to use the Send Email quick action on the Cases object."* Without it the outbound action has no supported home on Case. Inbound enablement is a prerequisite for the outbound composer, which surprises most people.
+- **Confirm Email-to-Case is enabled.** Salesforce Help states plainly: *"Email-to-Case must be enabled to use the Send Email quick action on the Cases object."* Without it the outbound action has no supported home on Case. Inbound enablement is a prerequisite for the outbound composer, which surprises most people. The switch is `CaseSettings.emailToCase` → `EmailToCaseSettings.enableEmailToCase`, and "After Email-to-Case is enabled, it can't be disabled" (api_meta 264 L114795, L114974-114976). UNVERIFIED (2026-10-20): the dependency sentence quoted from Help is not in the corpus.
 - **Decide static vs. context-dependent defaults.** Predefined field values on the action are declarative and static per action. Anything that depends on the case (pick template A on a first touch, template B on a reply; BCC an audit mailbox based on Case Reason) needs the Apex `QuickActionDefaultsHandler`. Don't reach for Apex until the declarative path is genuinely insufficient.
-- **Know the attachment limits, and their scope.** Salesforce Knowledge documents these per UI, not platform-wide: in **Lightning Experience**, up to 10 files can be attached to an outbound email and *"the total file size can't exceed 25MB"*; in **Salesforce Classic**, more than 10 files are allowed but *"the total file size can't exceed 18 MB."* Both figures are attachment totals, not whole-message envelopes, and no official source states a per-attachment cap — do not invent one.
-- **Know the three documented reasons the Email action goes missing.** Before debugging a layout, check the org-level causes Salesforce Knowledge lists in *"Email Quick Action Not Available on Case Feed"*: the org's email deliverability access level is **System Email Only** rather than **All email**; Email-to-Case isn't enabled (and once enabled it cannot be disabled); **Enable Case Feed Actions and Feed Items** is unchecked in Support Settings. The same article notes that users sending through Office 365 or Gmail need the matching permission set assigned.
-- **Check the move-email preconditions.** The Winter '25 release note *"Move Emails Easily to the Relevant Case"* scopes the capability to emails created by **Email-to-Case** in orgs whose email threading is set to **Lightning threading**. Confirm both before promising agents the move path.
-- **Do not assert a maturity level.** Salesforce Help documents the Send Email quick action and "Move Emails to a Different Case" as standard Setup / Case Feed features. The docs carry **no GA, Beta, or Pilot label** for either. The Winter '25 release note describes the move capability as shipped, but does not stamp it with a maturity tier. State neither more nor less than that.
+- **Know the attachment limits, and their scope.** Salesforce Knowledge documents these per UI, not platform-wide: in **Lightning Experience**, up to 10 files can be attached to an outbound email and *"the total file size can't exceed 25MB"*; in **Salesforce Classic**, more than 10 files are allowed but *"the total file size can't exceed 18 MB."* Both figures are attachment totals, not whole-message envelopes. UNVERIFIED (2026-10-20): both figures are Knowledge-article material with no corpus line. The corpus's 25 MB figures are different limits — inbound Email Services messages (body and attachments) and the On-Demand Email-to-Case per-attachment size (apexdev 264 L20131-20133) — so never quote them for the outbound composer, and do not invent an outbound per-attachment cap.
+- **Know the three documented reasons the Email action goes missing.** Before debugging a layout, check the org-level causes Salesforce Knowledge lists in *"Email Quick Action Not Available on Case Feed"*: the org's email deliverability access level is **System Email Only** rather than **All email**; Email-to-Case isn't enabled (and once enabled it cannot be disabled); **Enable Case Feed Actions and Feed Items** is unchecked in Support Settings. The same article notes that users sending through Office 365 or Gmail need the matching permission set assigned. UNVERIFIED (2026-10-20): the deliverability access level, the Support Settings label and the Office 365 / Gmail note are Knowledge-article material; the closest corpus setting is `CaseSettings.enableCaseFeed` (api_meta 264 L114797-114798), and the Email-to-Case half is `enableEmailToCase` (L114974).
+- **Check the move-email preconditions.** The Winter '25 release note *"Move Emails Easily to the Relevant Case"* scopes the capability to emails created by **Email-to-Case** in orgs whose email threading is set to **Lightning threading**. Confirm both before promising agents the move path. UNVERIFIED (2026-10-20): the move-email feature and its preconditions are release-note material; the corpus confirms only that Lightning Threading is an org mode (`CaseSettings.enableThreadTokenInSubject` applies "only to orgs using Lightning Threading", api_meta 264 L115028-115031).
+- **Do not assert a maturity level.** Salesforce Help documents the Send Email quick action and "Move Emails to a Different Case" as standard Setup / Case Feed features. The docs carry **no GA, Beta, or Pilot label** for either. The Winter '25 release note describes the move capability as shipped, but does not stamp it with a maturity tier. State neither more nor less than that. The Metadata API agrees for the action itself: `SendEmail` is listed as a `QuickActionType` "available in API version 31.0 and later" with no Beta note, while `Flow` in the same list is marked Beta (api_meta 264 L102962, L102968). UNVERIFIED (2026-10-20): the move-email capability's maturity is not in the corpus.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is Email-to-Case already enabled, and does the team accept that it can't be turned off again? | The outbound composer depends on it (Gotcha 1); `enableEmailToCase` is one-way (api_meta 264 L114974-114976). | A go / no-go before any action is built. |
+| Is the missing action the *standard* Email action or a custom Send Email action? | The two have different root causes — org settings versus layout placement (Gotcha 2). | Which triage path to walk first. |
+| What type is the template you want as the default? | Only Custom-type templates can be the default (Gotcha 3). | Whether the template must be re-authored first. |
+| Is this action for replies, first-touch emails, or both? | The template subject can break a reply's thread (Gotcha 4). | The Don't Apply Template Subject setting, or two actions. |
+| Which fields will be prepopulated, and is any of them read-only on the action layout? | Read-only fields drop prepopulated values (Gotcha 5). | The `uiBehavior` per layout item. |
+| Do agents work in Lightning Experience or Classic, and what do they usually attach? | Attachment limits differ by UI (Gotcha 6). | The limit to train agents on. |
+| Does anyone expect a default attachment on every email? | `AttachmentId` / `ContentDocumentIds` can't be predefined (Gotcha 7). | Whether the content moves into the template instead. |
+
+UNVERIFIED (2026-10-20): rows 1, 3, 4 and 6 restate Help material — the Email-to-Case dependency, the Custom-only template rule, the thread-breaking effect of a template subject and the per-UI attachment limits. Grounded: the one-way `enableEmailToCase` switch (api_meta 264 L114974-114976), and that a template subject replaces the original unless `setIgnoreTemplateSubject(true)` keeps it (apexref 262 L180202-180204).
+
+A proper configuration adds a recorded decision per field and per action, so the composer behaves the same after the next layout swap or org refresh instead of drifting.
 
 ---
 
@@ -61,22 +79,22 @@ Gather this context before working on anything in this domain:
 
 ### The action is a quick action on Case, not an email setting
 
-The composer is created the same way any other quick action is: **Setup → Object Manager → Case → Buttons, Links, and Actions → New Action**, then select **Send Email** in the **Action Type** picklist. In Metadata API terms this is a `QuickAction` with `<type>SendEmail</type>` (available in API version 31.0 and later).
+The composer is created the same way any other quick action is: **Setup → Object Manager → Case → Buttons, Links, and Actions → New Action**, then select **Send Email** in the **Action Type** picklist. In Metadata API terms this is a `QuickAction` with `<type>SendEmail</type>` (available in API version 31.0 and later, api_meta 264 L102968). UNVERIFIED (2026-10-20): the Setup click-path above is Help material.
 
 Two consequences follow, and both are common support tickets:
 
-1. **Creating the action does not surface it.** Salesforce Help carries a separate procedure — *"Add Quick Actions to the Case Page Layout for Lightning Experience"* — because placing the action on the Case page layout is its own step. Note that the org-level troubleshooting article *"Email Quick Action Not Available on Case Feed"* does **not** prescribe a layout change: its documented resolution is to raise the email deliverability access level to **All email**, enable Email-to-Case, and check **Enable Case Feed Actions and Feed Items** in Support Settings. Both surfaces can hide the action, so triage both rather than assuming the layout.
-2. **The action layout is the field contract.** Which of From / To / CC / BCC / Subject / Body / Related To / Attachments an agent sees, and whether each is editable or read-only, is governed by the action's layout. A field that is read-only on the layout silently discards any prepopulated value pushed into it.
+1. **Creating the action does not surface it** (UNVERIFIED (2026-10-20): both Help procedures named in this item are outside the corpus). Salesforce Help carries a separate procedure — *"Add Quick Actions to the Case Page Layout for Lightning Experience"* — because placing the action on the Case page layout is its own step. Note that the org-level troubleshooting article *"Email Quick Action Not Available on Case Feed"* does **not** prescribe a layout change: its documented resolution is to raise the email deliverability access level to **All email**, enable Email-to-Case, and check **Enable Case Feed Actions and Feed Items** in Support Settings. Both surfaces can hide the action, so triage both rather than assuming the layout.
+2. **The action layout is the field contract.** Which of From / To / CC / BCC / Subject / Body / Related To / Attachments an agent sees, and whether each is editable or read-only, is governed by the action's layout — `QuickActionLayoutItem.uiBehavior` is `Edit`, `Required` or `Readonly` (api_meta 264 L103038-103042). A field that is read-only on the layout silently discards any prepopulated value pushed into it: the LWC Developer Guide (*use-quick-actions-email*) says so for HTML Body and Subject; UNVERIFIED (2026-10-20): the same behaviour for other fields is an extrapolation.
 
-The drafted message materializes as an `EmailMessage` record — not a `Messaging.SingleEmailMessage` — and that record is the durable artifact the case feed renders. Be precise about where that is documented. The Metadata API defines `targetObject` generically (*"The object for which the action is created and performed"*) and states no value for `SendEmail`; the `EmailMessage` claim comes from the Apex reference, where `QuickAction.QuickActionDefaults.getTargetSObject()` is *"The target object of the standard Email Action on Case Feed (EmailMessage)."* Verify the type in the handler rather than asserting it from metadata.
+The drafted message materializes as an `EmailMessage` record — not a `Messaging.SingleEmailMessage` — and that record is the durable artifact the case feed renders. Be precise about where that is documented. The Metadata API defines `targetObject` generically (*"The object for which the action is created and performed"*, api_meta 264 L102932) and states no value for `SendEmail`; the `EmailMessage` claim comes from the Apex reference, where `QuickAction.QuickActionDefaults.getTargetSObject()` is *"The target object of the standard Email Action on Case Feed (EmailMessage)."* (apexref 262 L179574). Verify the type in the handler rather than asserting it from metadata.
 
 ### Defaulting a template: Custom type only
 
-The action exposes a **Default Email Template** lookup. Salesforce Help is explicit about the eligible type: *"create an email template of the type **Custom**. Only Custom type templates are supported."* Pointing the field at a Lightning or HTML template is a configuration dead end, not a fallback.
+The action exposes a **Default Email Template** lookup (UNVERIFIED (2026-10-20): this section's Help quotes — the Custom-only rule and the Don't Apply Template Subject checkbox — are not in the corpus). Salesforce Help is explicit about the eligible type: *"create an email template of the type **Custom**. Only Custom type templates are supported."* Pointing the field at a Lightning or HTML template is a configuration dead end, not a fallback.
 
 Alongside the lookup sits the **Don't Apply Template Subject** checkbox. Selecting it suppresses the template's subject line so the composer keeps the subject already in play — the behavior you want on a *reply*, where overwriting the subject breaks the visual thread for the customer.
 
-Note that the Metadata API `QuickAction` documentation does not list a template field, so treat the Default Email Template as a Setup-surface configuration and verify it after any org migration rather than assuming it rode along in a change set.
+Note that the Metadata API `QuickAction` documentation does not list a template field (its fields are `actionSubtype` through `width`, api_meta 264 L102804-102973), so treat the Default Email Template as a Setup-surface configuration and verify it after any org migration rather than assuming it rode along in a change set.
 
 ### Two defaulting mechanisms, two blast radii
 
@@ -85,21 +103,24 @@ Note that the Metadata API `QuickAction` documentation does not list a template 
 | Predefined Field Values | On the quick action, Setup | That one action | No — same value every time |
 | `QuickAction.QuickActionDefaultsHandler` | Apex class | The standard **Email** and **Send Email** case-feed actions org-wide | Yes — sees the case via `getContextId()` |
 
-**Predefined field values** let you set To, CC, or BCC using ID fields (such as `Contact.Id`) or string fields (such as a custom email field on Contact). Contact, lead, and person-account IDs are supported. `AttachmentId` and `ContentDocumentIds` are **not** supported, because they aren't part of the email quick action layout. The `RelatedToId` field preselects the account associated with the case's contact when one is available.
+The handler's scope is the reference's: "the standard Email and Send Email actions in the case feed", usable with custom Email actions on Case too (apexref 262 L179586-179587, L179602-179603). In Lightning Experience "The interface overrides email values set up with predefined IDs" and does not support email attachments, custom email fields, or Visualforce email templates (L179601-179607). Within one action, a predefined value beats a field's default value (api_meta 264 L102979-102981).
+
+**Predefined field values** (UNVERIFIED (2026-10-20): the recipient-field rules in this paragraph are Help material; the metadata is `FieldOverride` with a Required `field`, api_meta 264 L102984) let you set To, CC, or BCC using ID fields (such as `Contact.Id`) or string fields (such as a custom email field on Contact). Contact, lead, and person-account IDs are supported. `AttachmentId` and `ContentDocumentIds` are **not** supported, because they aren't part of the email quick action layout. The `RelatedToId` field preselects the account associated with the case's contact when one is available.
 
 **The Apex handler** implements a single method:
 
 ```apex
+// apexref 262 L179645 lists `public void`; the reference example class is global (L179666, L179681)
 global void onInitDefaults(QuickAction.QuickActionDefaults[] defaults)
 ```
 
-Each element is a `QuickAction.QuickActionDefaults`, exposing `getActionName()` (returns `Case.Email` for the standard case-feed Email action), `getActionType()` (returns `Email`), `getContextId()` (the Case Id), and `getTargetSObject()` (the `EmailMessage` being drafted). Cast to `QuickAction.SendEmailQuickActionDefaults` for the email-specific surface: `getFromAddressList()`, `getInReplyToId()`, `setTemplateId(Id)`, `setInsertTemplateBody(Boolean keepOriginalBodyContent)`, and `setIgnoreTemplateSubject(Boolean useOriginalSubject)`.
+The array "contains only one item of type QuickAction.SendEmailQuickActionDefaults" (apexref 262 L179651). Each element is a `QuickAction.QuickActionDefaults`, exposing `getActionName()` (returns `Case.Email` for the standard case-feed Email action, L179532 — UNVERIFIED (2026-10-20): the value it returns for a *custom* Send Email action on Case is not documented, so log it in a sandbox before filtering a custom action on `Case.Email`), `getActionType()` (returns `Email`), `getContextId()` (the Case Id), and `getTargetSObject()` (the `EmailMessage` being drafted). Cast to `QuickAction.SendEmailQuickActionDefaults` for the email-specific surface: `getFromAddressList()`, `getInReplyToId()`, `setTemplateId(Id)`, `setInsertTemplateBody(Boolean keepOriginalBodyContent)`, and `setIgnoreTemplateSubject(Boolean useOriginalSubject)`.
 
-The interface requires *"an empty parameterless constructor"* and works in both Salesforce Classic and Lightning Experience.
+The interface requires an empty parameterless constructor and works in both Salesforce Classic and Lightning Experience (apexref 262 L179622, L179599). To control the sender, replace the From field on the action layout with From Address and set a verified address in the handler — the current user's, an org-wide address the user can access, or an Email-to-Case routing address (L179609-179613).
 
 ### Moving an email to a different case
 
-Agents misfile email. Salesforce ships a first-class capability for the correction rather than requiring a data fix: an admin turns it on (*"Let Agents Move Emails to a Different Case"*), and the agent moves the email from inside Case Feed (*"Move Emails to a Different Case"*). The Winter '25 release note *"Move Emails Easily to the Relevant Case"* scopes it to emails created by Email-to-Case in orgs using Lightning threading.
+Agents misfile email. UNVERIFIED (2026-10-20): everything in this section is Help and release-note material with no corpus line. Salesforce ships a first-class capability for the correction rather than requiring a data fix: an admin turns it on (*"Let Agents Move Emails to a Different Case"*), and the agent moves the email from inside Case Feed (*"Move Emails to a Different Case"*). The Winter '25 release note *"Move Emails Easily to the Relevant Case"* scopes it to emails created by Email-to-Case in orgs using Lightning threading.
 
 Follow the admin enablement steps as written. Salesforce Help titles that procedure as an admin setting, not as a user permission — no official source describes a permission set or user permission that governs the move. Don't design an access model around one you haven't seen in Setup.
 
@@ -107,11 +128,13 @@ This is a *correction* tool, not a routing tool. If emails routinely land on the
 
 ### The Classic-era publisher is not the Lightning composer
 
-`apex:emailPublisher` is a Visualforce component that renders the Case Feed email publisher. Its field-visibility attributes do not share one enum: `toVisibility`, `ccVisibility`, and `bccVisibility` each take `editable`, `editableWithLookup`, `readOnly`, or `hidden`, while `subjectVisibility` takes only `editable`, `readOnly`, or `hidden` — `editableWithLookup` is not a legal subject value. Body format (`emailBodyFormat`) takes `text`, `HTML`, or `textAndHTML`. The component also exposes `enableQuickText`, `showTemplates`, `showAttachments`, and `showSendButton`, and requires an `entityId` (API 25.0+). It belongs to the Visualforce-era Case Feed customization path. Reach for it only when maintaining that surface — not when building a Lightning composer today.
+`apex:emailPublisher` is a Visualforce component that renders the Case Feed email publisher (UNVERIFIED (2026-10-20): the Visualforce Component Reference is not in the corpus, so every attribute name and value in this paragraph is unaudited). Its field-visibility attributes do not share one enum: `toVisibility`, `ccVisibility`, and `bccVisibility` each take `editable`, `editableWithLookup`, `readOnly`, or `hidden`, while `subjectVisibility` takes only `editable`, `readOnly`, or `hidden` — `editableWithLookup` is not a legal subject value. Body format (`emailBodyFormat`) takes `text`, `HTML`, or `textAndHTML`. The component also exposes `enableQuickText`, `showTemplates`, `showAttachments`, and `showSendButton`, and requires an `entityId` (API 25.0+). It belongs to the Visualforce-era Case Feed customization path. Reach for it only when maintaining that surface — not when building a Lightning composer today.
 
 ---
 
 ## Common Patterns
+
+UNVERIFIED (2026-10-20): the Custom-only template rule, the Don't Apply Template Subject checkbox and the move-email procedure and preconditions used in these patterns are Help and release-note material, not in the corpus.
 
 ### Pattern: declarative reply composer
 
@@ -125,7 +148,7 @@ This is a *correction* tool, not a routing tool. If emails routinely land on the
 
 **When to use:** the template or the BCC audit mailbox depends on the case (`Reason`, `RecordType`, first touch vs. reply), or you must restrict the From list.
 
-**How it works:** implement `QuickAction.QuickActionDefaultsHandler` with an empty parameterless constructor. In `onInitDefaults`, filter the array down to the entry that is a `QuickAction.SendEmailQuickActionDefaults`, whose `getTargetSObject().getSObjectType() == EmailMessage.sObjectType`, whose `getActionName()` is `Case.Email`, and whose `getActionType()` is `Email`. Query the case once by `getContextId()`. Mutate the `EmailMessage` for field defaults (for example `BccAddress`), and use `setTemplateId` / `setInsertTemplateBody` / `setIgnoreTemplateSubject` for template behavior. Branch on `getInReplyToId() == null` to distinguish a first touch from a reply. See `references/examples.md` for a complete class.
+**How it works:** implement `QuickAction.QuickActionDefaultsHandler` with an empty parameterless constructor. In `onInitDefaults`, filter the array down to the entry that is a `QuickAction.SendEmailQuickActionDefaults`, whose `getTargetSObject().getSObjectType() == EmailMessage.sObjectType`, whose `getActionName()` is `Case.Email`, and whose `getActionType()` is `Email` — the reference example's exact filter (apexref 262 L179687-179691), written for the standard action. Query the case once by `getContextId()`. Mutate the `EmailMessage` for field defaults (for example `BccAddress`), and use `setTemplateId` / `setInsertTemplateBody` / `setIgnoreTemplateSubject` for template behavior. Branch on `getInReplyToId() == null` to distinguish a first touch from a reply. See `references/examples.md` for a complete class.
 
 **Why not the alternative:** predefined field values are static; a formula cannot see whether the agent clicked Reply on an existing feed item.
 
@@ -145,7 +168,7 @@ This is a *correction* tool, not a routing tool. If emails routinely land on the
 |---|---|---|
 | Same recipients / template on every send | Predefined field values + Default Email Template | Declarative, no code, no deployment |
 | Template varies by case attribute or reply-vs-first-touch | `QuickAction.QuickActionDefaultsHandler` | Only Apex sees `getContextId()` and `getInReplyToId()` |
-| Need to default `AttachmentId` or `ContentDocumentIds` | Not supported — redesign | Those fields aren't part of the email quick action layout |
+| Need to default `AttachmentId` or `ContentDocumentIds` | Not supported — redesign | Those fields aren't part of the email quick action layout; the Apex handler can't add attachments in Lightning Experience either (apexref 262 L179604-179605) |
 | Reply must keep the customer's subject line | Select **Don't Apply Template Subject** (or `setIgnoreTemplateSubject(true)`) | Overwriting the subject breaks the thread the customer sees |
 | Template is Lightning or HTML type | Re-author it as a **Custom** template | *"Only Custom type templates are supported"* for the action default |
 | Agents report a custom Email action is missing | Add the action to the Case page layout | Creating an action does not place it on a layout |
@@ -153,9 +176,13 @@ This is a *correction* tool, not a routing tool. If emails routinely land on the
 | Email landed on the wrong case | Enable and use the move-email capability | Purpose-built, agent-facing correction path (Email-to-Case + Lightning threading only) |
 | Maintaining a Visualforce Case Feed page | `apex:emailPublisher` attributes | The Lightning composer is configured by action layout, not by VF attributes |
 
+UNVERIFIED (2026-10-20): the Don't Apply Template Subject checkbox, Custom-only template, three-cause troubleshooting and move-email rows restate Help and release-note material that is not in the corpus; the Apex equivalent `setIgnoreTemplateSubject(true)` ("thus using the original subject") is grounded at apexref 262 L180202-180204.
+
 ---
 
 ## Recommended Workflow
+
+UNVERIFIED (2026-10-20): the Email-to-Case prerequisite (step 1), the Setup click-path (step 2), the Custom-only template rule (step 4), the move-email preconditions (step 6) and the 10-file / 25 MB limit (step 7) are Help material, not in the corpus.
 
 1. **Verify the prerequisite and the inventory.** Confirm Email-to-Case is enabled, then list the Case object's existing actions and the Case page layouts assigned to each support persona. An org frequently already has an Email action; a second one confuses agents more than it helps.
 2. **Create the action.** Setup → Object Manager → Case → Buttons, Links, and Actions → New Action → **Action Type = Send Email**. Name it per `templates/admin/naming-conventions.md`.
@@ -181,9 +208,11 @@ Run through these before marking work in this area complete:
 - [ ] No field that is prepopulated (declaratively or by Apex) is read-only on the action layout
 - [ ] Any `QuickActionDefaultsHandler` has an empty parameterless constructor and confirms `getTargetSObject()` is an `EmailMessage` and `getActionName() == 'Case.Email'` before casting
 - [ ] The handler issues bounded SOQL (no query inside a loop) and enforces CRUD/FLS
-- [ ] Agents are trained on the Lightning Experience limits — 10 files per email, 25 MB total file size (Classic differs: more than 10 files, 18 MB total)
+- [ ] Agents are trained on the Lightning Experience limits — 10 files per email, 25 MB total file size (Classic differs: more than 10 files, 18 MB total; both UNVERIFIED (2026-10-20), see Before Starting)
 - [ ] The move-email capability was enabled per the admin procedure, its documented preconditions (Email-to-Case, Lightning threading) hold, and its usage is monitored as a signal of upstream routing defects
 - [ ] No GA / Beta / Pilot claim appears in any artifact — the docs make none
+
+UNVERIFIED (2026-10-20): the Email-to-Case dependency, the three org-level causes, the Custom-only template rule, the Don't Apply Template Subject checkbox and the move-email preconditions in this checklist are Help material, not in the corpus.
 
 ---
 
@@ -191,9 +220,9 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **The outbound composer depends on the inbound feature.** Email-to-Case must be enabled before the Send Email quick action can be used on Case. Teams that only ever send email from cases still have to turn on the inbound channel.
-2. **A created action is an invisible action, but the layout isn't the only culprit.** Nothing places a custom action on a layout for you. The org-level article *"Email Quick Action Not Available on Case Feed"* points somewhere else entirely — deliverability access level, Email-to-Case enablement, and the **Enable Case Feed Actions and Feed Items** setting. Assuming "it's the layout" burns an afternoon when it's the deliverability setting.
-3. **Read-only wins over prepopulation, silently.** A field marked read-only on the action layout drops the value you predefined or set in Apex. There is no error; the composer simply opens with the field blank.
+1. **The outbound composer depends on the inbound feature.** Email-to-Case must be enabled before the Send Email quick action can be used on Case (Help; UNVERIFIED (2026-10-20)), and enabling it is one-way (api_meta 264 L114974-114976). Teams that only ever send email from cases still have to turn on the inbound channel.
+2. **A created action is an invisible action, but the layout isn't the only culprit.** Nothing places a custom action on a layout for you (UNVERIFIED (2026-10-20): the Knowledge-article causes below are not in the corpus). The org-level article *"Email Quick Action Not Available on Case Feed"* points somewhere else entirely — deliverability access level, Email-to-Case enablement, and the **Enable Case Feed Actions and Feed Items** setting. Assuming "it's the layout" burns an afternoon when it's the deliverability setting.
+3. **Read-only wins over prepopulation, silently.** A field marked read-only on the action layout drops the value you predefined or set in Apex (stated for HTML Body and Subject in the LWC Developer Guide; UNVERIFIED (2026-10-20) for other fields). There is no error; the composer simply opens with the field blank.
 
 ---
 

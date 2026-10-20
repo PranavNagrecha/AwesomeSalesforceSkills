@@ -1,18 +1,28 @@
 #!/usr/bin/env python3
 """Checker script for Analytics Permission and Sharing skill.
 
-Validates CRM Analytics security configuration metadata for common issues including:
-- Missing security predicates on datasets
-- Blank backup predicates when sharing inheritance is used
-- Predicate string length exceeding the 5,000-character platform limit
-- References to likely-incorrect column name casing in predicates
-- App sharing metadata sanity checks
+Reads three inputs under --manifest-dir:
+- WaveApplication metadata (*.wapp): every <shares> entry is a FolderShare whose
+  Required accessLevel is View, EditAllContents or Manage (api_meta 264
+  L77522-77532; WaveApplication.shares, L142489). An unknown value is an ERROR;
+  Manage or EditAllContents shared to the whole Organization is a WARN.
+- WaveDataset metadata (*.wds): the type has no predicate or sharing-inheritance
+  fields (api_meta 264 L142729-142739), so each dataset gets one WARN telling you
+  to verify its row security outside the retrieve.
+- Dataset-security JSON exports in this skill's own convention (an object with a
+  "security" / "securityPredicate" / "rowLevelSecurity" key; this is not a
+  Salesforce file format). Other JSON files are skipped.
+  UNVERIFIED (2026-10-20): the 5,000-character predicate limit, the five-object
+  sharing-inheritance list, the 3,000-record backup-predicate fallback and the
+  all-rows-visible default these rules encode are not in the corpus.
+
+Exit codes: ERROR (missing directory, unparseable XML/JSON, invalid accessLevel)
+exits 1 always; WARN exits 0 unless --strict; nothing to check is one WARN, exit 0.
 
 Uses stdlib only — no pip dependencies.
 
 Usage:
-    python3 check_analytics_permission_and_sharing.py [--help]
-    python3 check_analytics_permission_and_sharing.py --manifest-dir path/to/metadata
+    python3 check_analytics_permission_and_sharing.py --manifest-dir path/to/metadata [--strict]
     python3 check_analytics_permission_and_sharing.py --predicate "'OwnerId' == \\"\\$User.Id\\""
 """
 
@@ -21,202 +31,135 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
-# Platform limit for security predicate SAQL string length (characters)
-PREDICATE_MAX_LENGTH = 5000
-
-# Objects supported by sharing inheritance
-SHARING_INHERITANCE_SUPPORTED_OBJECTS = {
-    "Account",
-    "Case",
-    "Contact",
-    "Lead",
-    "Opportunity",
-}
-
-# Common incorrect column name patterns (lowercase field API names used as predicate columns)
-LIKELY_WRONG_CASING_PATTERNS = [
-    "ownerid",
-    "accountid",
-    "contactid",
-    "caseid",
-    "leadid",
-]
+NS = "{http://soap.sforce.com/2006/04/metadata}"
+PREDICATE_MAX_LENGTH = 5000  # UNVERIFIED (2026-10-20), see docstring
+SHARING_INHERITANCE_SUPPORTED_OBJECTS = {"Account", "Case", "Contact", "Lead", "Opportunity"}  # UNVERIFIED (2026-10-20)
+LIKELY_WRONG_CASING = ["ownerid", "accountid", "contactid", "caseid", "leadid"]
+FOLDER_SHARE_LEVELS = {"View", "EditAllContents", "Manage"}
+SECURITY_KEYS = ("security", "securityPredicate", "rowLevelSecurity")
+SKIP_PARTS = ("node_modules", "registry", "vector_index", ".git")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Check CRM Analytics permission and sharing configuration for common issues. "
-            "Scans .json metadata files in the manifest directory for dataset security settings."
-        ),
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce metadata or Analytics JSON exports (default: current directory).",
-    )
-    parser.add_argument(
-        "--predicate",
-        default=None,
-        help="A single security predicate string to validate (length, casing patterns).",
-    )
+    parser = argparse.ArgumentParser(description="Check CRM Analytics app sharing and dataset row-security inputs.")
+    parser.add_argument("--manifest-dir", default=".", help="Directory to scan (default: current directory).")
+    parser.add_argument("--predicate", default=None, help="A single security predicate string to validate.")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on any WARN finding.")
     return parser.parse_args()
 
 
-def check_predicate_string(predicate: str, dataset_name: str = "<unknown>") -> list[str]:
-    """Validate a single security predicate string. Returns a list of issue strings."""
+def _text(el: ET.Element, tag: str) -> str:
+    child = el.find(NS + tag)
+    if child is None:
+        child = el.find(tag)
+    return (child.text or "").strip() if child is not None else ""
+
+
+def check_predicate_string(predicate: str, name: str) -> list[str]:
+    """Length and casing checks for one predicate. Returns WARN strings."""
     issues: list[str] = []
-
-    if not predicate or predicate.strip() == "":
-        issues.append(
-            f"Dataset '{dataset_name}': security predicate is blank. "
-            "If sharing inheritance is enabled, a blank backup predicate grants all-visible access "
-            "to users with 3,000+ source records. Set backup predicate to 'false' to deny those users."
-        )
-        return issues
-
     if len(predicate) > PREDICATE_MAX_LENGTH:
-        issues.append(
-            f"Dataset '{dataset_name}': security predicate is {len(predicate)} characters, "
-            f"exceeding the {PREDICATE_MAX_LENGTH}-character platform limit. "
-            "The predicate may be silently truncated. Refactor using a data-driven join approach."
-        )
-
-    predicate_lower = predicate.lower()
-    for wrong_name in LIKELY_WRONG_CASING_PATTERNS:
-        # Look for the pattern inside single quotes (predicate column reference)
-        if f"'{wrong_name}'" in predicate_lower:
-            # Check if the exact same string with original casing is NOT present
-            # (i.e., the predicate uses lowercase when the column is likely mixed-case)
-            if f"'{wrong_name}'" in predicate and wrong_name not in predicate:
-                # The lowercase version matches but the correct-case version is absent
-                issues.append(
-                    f"Dataset '{dataset_name}': predicate may reference column '{wrong_name}' in all-lowercase. "
-                    "CRM Analytics predicate column names are case-sensitive. "
-                    "Verify the exact column name from the dataset schema (e.g., 'OwnerId' not 'ownerid')."
-                )
-
+        issues.append(f"WARN: {name}: predicate is {len(predicate)} characters, over the "
+                      f"{PREDICATE_MAX_LENGTH}-character limit — refactor to a join-based predicate.")
+    for wrong in LIKELY_WRONG_CASING:
+        if f"'{wrong}'" in predicate:  # case-sensitive: the all-lowercase column name is literally present
+            issues.append(f"WARN: {name}: predicate references column '{wrong}' in all-lowercase; "
+                          f"copy the exact column name from the dataset schema.")
     return issues
 
 
-def check_dataset_json(file_path: Path) -> list[str]:
-    """Check a dataset JSON metadata file for security configuration issues."""
-    issues: list[str] = []
-    dataset_name = file_path.stem
-
+def check_wapp(path: Path) -> list[str]:
     try:
-        with file_path.open() as f:
-            data = json.load(f)
-    except (json.JSONDecodeError, OSError) as exc:
-        issues.append(f"Dataset '{dataset_name}': could not parse JSON — {exc}")
-        return issues
-
-    # Check for security section existence
-    security = data.get("security") or data.get("securityPredicate") or data.get("rowLevelSecurity")
-
-    if security is None:
-        issues.append(
-            f"Dataset '{dataset_name}': no security configuration found in metadata. "
-            "Datasets without a security predicate or sharing inheritance grant all licensed users "
-            "access to all rows by default. If this is intentional, document it explicitly."
-        )
-        return issues
-
-    # Sharing inheritance checks
-    predicate_type = security.get("predicateType") or security.get("type") or ""
-    if predicate_type.lower() in ("sharinginheritance", "sharing_inheritance", "sharing"):
-        sf_object = security.get("inheritedObject") or security.get("salesforceObject") or ""
-        if sf_object and sf_object not in SHARING_INHERITANCE_SUPPORTED_OBJECTS:
-            issues.append(
-                f"Dataset '{dataset_name}': sharing inheritance references object '{sf_object}', "
-                f"which is not in the supported list: {sorted(SHARING_INHERITANCE_SUPPORTED_OBJECTS)}. "
-                "Sharing inheritance only works for Account, Case, Contact, Lead, and Opportunity. "
-                "Use a security predicate instead for this object."
-            )
-
-        backup_predicate = security.get("backupPredicate") or security.get("fallbackPredicate") or ""
-        if not backup_predicate or backup_predicate.strip() == "":
-            issues.append(
-                f"Dataset '{dataset_name}': sharing inheritance is configured but backup predicate is blank. "
-                "Users with access to 3,000 or more source records bypass sharing inheritance and fall back "
-                "to the backup predicate. A blank backup predicate grants those users all-row access. "
-                "Set backup predicate to 'false'."
-            )
-        else:
-            issues.extend(check_predicate_string(backup_predicate, dataset_name + " (backup predicate)"))
-
-    # Regular predicate checks
-    predicate_text = security.get("predicate") or security.get("saqlPredicate") or ""
-    if predicate_text:
-        issues.extend(check_predicate_string(predicate_text, dataset_name))
-
-    return issues
-
-
-def check_manifest_dir(manifest_dir: Path) -> list[str]:
-    """Scan a directory for Analytics metadata JSON files and check each one."""
+        root = ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        return [f"ERROR: {path.name}: not parseable XML — {exc}"]
     issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    # Look for dataset JSON files — common patterns in SFDX and Analytics metadata exports
-    dataset_files = list(manifest_dir.rglob("*.json"))
-
-    if not dataset_files:
-        issues.append(
-            f"No JSON files found under '{manifest_dir}'. "
-            "To use this checker, point --manifest-dir at a directory containing Analytics "
-            "dataset metadata JSON files (e.g., exported via sfdx force:analytics:dataset:list)."
-        )
-        return issues
-
-    checked = 0
-    for f in dataset_files:
-        # Skip package.json, node_modules, registry artifacts, etc.
-        if any(skip in f.parts for skip in ("node_modules", "registry", "vector_index", ".git")):
-            continue
-        if f.name.startswith("."):
-            continue
-        file_issues = check_dataset_json(f)
-        if file_issues:
-            issues.extend(file_issues)
-        checked += 1
-
-    if checked == 0:
-        issues.append(
-            "No dataset metadata JSON files were scanned (all found files were skipped). "
-            "Ensure the manifest directory contains Analytics dataset configuration exports."
-        )
-
+    shares = root.findall(NS + "shares") + root.findall("shares")
+    for share in shares:
+        level, to_type = _text(share, "accessLevel"), _text(share, "sharedToType")
+        if level not in FOLDER_SHARE_LEVELS:
+            issues.append(f"ERROR: {path.name}: shares accessLevel {level!r} is not View, EditAllContents or Manage.")
+        elif to_type == "Organization" and level in ("Manage", "EditAllContents"):
+            issues.append(f"WARN: {path.name}: app shared to the whole Organization with {level} — "
+                          f"grant View org-wide and Manage only to app owners.")
     return issues
+
+
+def check_dataset_json(path: Path) -> list[str]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError, UnicodeDecodeError) as exc:
+        return [f"ERROR: {path.name}: could not parse JSON — {exc}"]
+    if not isinstance(data, dict) or not any(k in data for k in SECURITY_KEYS):
+        return []  # not a dataset-security export
+    name = path.stem
+    security = next((data[k] for k in SECURITY_KEYS if k in data), None)
+    if not security:
+        return [f"WARN: {name}: no row security configured — every licensed app user sees every row; "
+                f"document it if intentional."]
+    if isinstance(security, str):
+        return check_predicate_string(security, name)
+    issues: list[str] = []
+    kind = str(security.get("predicateType") or security.get("type") or "").lower()
+    if kind in ("sharinginheritance", "sharing_inheritance", "sharing"):
+        obj = security.get("inheritedObject") or security.get("salesforceObject") or ""
+        if obj and obj not in SHARING_INHERITANCE_SUPPORTED_OBJECTS:
+            issues.append(f"WARN: {name}: sharing inheritance on {obj!r}, outside "
+                          f"{sorted(SHARING_INHERITANCE_SUPPORTED_OBJECTS)} — use a predicate.")
+        backup = str(security.get("backupPredicate") or security.get("fallbackPredicate") or "").strip()
+        if not backup:
+            issues.append(f"WARN: {name}: sharing inheritance with a blank backup predicate — set it to 'false'.")
+        else:
+            issues.extend(check_predicate_string(backup, name + " (backup predicate)"))
+    predicate = security.get("predicate") or security.get("saqlPredicate") or ""
+    if predicate:
+        issues.extend(check_predicate_string(predicate, name))
+    return issues
+
+
+def check_manifest_dir(manifest_dir: Path) -> tuple[list[str], int]:
+    issues: list[str] = []
+    checked = 0
+    for path in sorted(manifest_dir.rglob("*")):
+        if not path.is_file() or any(p in path.parts for p in SKIP_PARTS):
+            continue
+        if path.suffix == ".wapp":
+            issues.extend(check_wapp(path)); checked += 1
+        elif path.suffix == ".wds":
+            issues.append(f"WARN: {path.name}: WaveDataset metadata has no row-security fields "
+                          f"(api_meta 264 L142729-142739) — verify its predicate or sharing inheritance "
+                          f"in Analytics Studio."); checked += 1
+        elif path.suffix == ".json":
+            issues.extend(check_dataset_json(path)); checked += 1
+    return issues, checked
 
 
 def main() -> int:
     args = parse_args()
-
-    all_issues: list[str] = []
-
-    # Validate a standalone predicate string if provided
-    if args.predicate:
-        predicate_issues = check_predicate_string(args.predicate, "<provided predicate>")
-        all_issues.extend(predicate_issues)
-
-    # Validate the manifest directory
     manifest_dir = Path(args.manifest_dir)
-    all_issues.extend(check_manifest_dir(manifest_dir))
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        return 1
 
-    if not all_issues:
+    issues: list[str] = []
+    if args.predicate is not None:
+        issues.extend(check_predicate_string(args.predicate, "<provided predicate>"))
+    dir_issues, checked = check_manifest_dir(manifest_dir)
+    issues.extend(dir_issues)
+    if checked == 0 and args.predicate is None:
+        issues.append(f"WARN: {manifest_dir} holds no .wapp, .wds or .json files — nothing to check.")
+
+    if not issues:
         print("No issues found.")
         return 0
-
-    for issue in all_issues:
-        print(f"WARN: {issue}", file=sys.stderr)
-
-    return 1
+    for issue in issues:
+        print(issue)
+    if any(i.startswith("ERROR") for i in issues):
+        return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

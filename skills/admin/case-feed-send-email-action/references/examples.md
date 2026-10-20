@@ -5,6 +5,9 @@ Help, Apex Reference, and Metadata API guides. Replace object/field API names, t
 developer names, and mailboxes with your own. Prerequisite for every example: **Email-to-Case
 must be enabled** before the Send Email quick action can be used on Case.
 
+UNVERIFIED (2026-10-20) (file-level): the Help quotes in this file (the Email-to-Case prerequisite above, Custom-only template, deliverability causes, move-email
+release note) are not in the corpus. Example 3 follows the LWC Developer Guide, *Create an Email as a Quick Action* (`use-quick-actions-email`, fetched 2026-10-20).
+
 ## Example 1: Declarative reply composer
 
 **Context:** a support team replies to customers from Case Feed with a branded template.
@@ -210,7 +213,7 @@ export default class CaseEmailLauncher extends NavigationMixin(LightningElement)
 
         this[NavigationMixin.Navigate]({
             type: 'standard__quickAction',
-            attributes: { apiName: 'Case.Email' },
+            attributes: { apiName: 'Global.SendEmail' },  // the guide's documented target; this example used 'Case.Email' before 2026-10-20, which the guide does not document
             state: { recordId: this.recordId, defaultFieldValues: defaults }
         });
     }
@@ -222,7 +225,7 @@ the supported email fields — `ValidatedFromAddress`, `ToAddress`, `CcAddress`,
 `Subject`, `HTMLBody`, and `RelatedToId`.
 
 Two documented constraints bound this pattern: the fields you pass **must not be Read-Only on
-the action's layout** (if `HTMLBody` and `Subject` are read-only, the draft opens without the
+the Send Email global action's layout** (if `HTMLBody` and `Subject` are read-only, the draft opens without the
 prepopulated text), and *"The LWC quick email action isn't supported in Experience Builder
 sites."*
 
