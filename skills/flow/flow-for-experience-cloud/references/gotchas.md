@@ -24,7 +24,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## LWR Limitations Matter For Screen Component Choice
 
-**What happens:** A flow using custom screen components is embedded on an LWR site and then cannot be used the way the team expected.
+**What happens:** (LWR component limits are UNVERIFIED, 2026-10-20: not in either corpus.) A flow using custom screen components is embedded on an LWR site and then cannot be used the way the team expected.
 
 **When it occurs:** Teams choose `lightning-flow` on an LWR site before checking whether the flow includes custom Aura or custom LWC screen components.
 

@@ -28,6 +28,9 @@ Flows that work internally can fail in Experience Cloud due to runtime differenc
 
 ## Official Sources Used
 
-- Experience Cloud Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_intro.htm
+- Experience Cloud Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.communities_dev.meta/communities_dev/communities_dev_intro.htm — not in the corpus; UNVERIFIED (2026-10-20) for site-runtime claims.
+- Metadata API: Flow `runInMode` values and API gates, api_meta 264 L70907-70928; `FlowScreenField.extensionName`, L74393-74395.
+- Security Implementation Guide (Summer '26 copy): guest org-wide defaults Private and fixed, secguide 262 L2868-2869; guest user sharing rules read-only and the only way to grant guest record access, secguide 262 L2986-2987, L3510.
+- Apex Reference Guide (Summer '26 copy): `Flow.Interview` sharing with a `with sharing` caller on API 62.0+, apexref 262 L157958-157962.
 - Flow Builder — https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5
 - LWC `lightning-flow` embedding guide — https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-embed-component.html

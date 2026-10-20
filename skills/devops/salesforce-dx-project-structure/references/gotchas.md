@@ -4,17 +4,17 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: sourceApiVersion Higher Than Target Org
 
-**What happens:** Deployment fails with `UNSUPPORTED_API_VERSION`. The error message references the API version but does not tell you what version the org actually supports.
+**What happens:** UNVERIFIED (2026-10-20): that deployment fails with `UNSUPPORTED_API_VERSION` and that the message hides the org's supported version; the corpus documents that code only as the SOAP API error for a retired API version (api_meta 264 L1314-1315). The documented behaviour is that `sourceApiVersion` "determines the fields retrieved for each metadata type" (sfdx_dev 264 L2430-2431), so a version older than a type's new field makes project commands error (L2432-2434).
 
-**When it occurs:** After a Salesforce release, a developer updates `sourceApiVersion` to the latest (e.g., `"63.0"`), but the target sandbox has not been refreshed and still runs the previous release. Also happens when deploying to orgs on different Salesforce instances that receive releases at different times.
+**When it occurs:** After a Salesforce release, when the source version and the target org's version drift apart. UNVERIFIED (2026-10-20): the sandbox refresh-lag and instance-timing scenarios.
 
-**How to avoid:** Set `sourceApiVersion` to the API version of your lowest-supported target org. Check the org's version with `sf org display --target-org <alias>` before updating the project config. In multi-org environments, pin to the version supported by all target orgs.
+**How to avoid:** Check the org's version with `sf org display --target-org <alias>` (`Api Version` row, sfdx_dev 264 L3489) before changing the project config, and keep source and org versions aligned. UNVERIFIED (2026-10-20): "pin to the lowest common version" as a rule.
 
 ---
 
 ## Gotcha 2: Case-Sensitive Paths in CI but Not Locally
 
-**What happens:** The project works on macOS (case-insensitive filesystem) but fails in Linux-based CI runners (case-sensitive). Errors like "package directory not found" or "source path does not exist" appear only in pipelines.
+**What happens:** UNVERIFIED (2026-10-20): filesystem behaviour, not a corpus statement and the error texts are not in the corpus. The project works on macOS (case-insensitive filesystem) but can fail in Linux-based CI runners (case-sensitive) with a path-not-found error.
 
 **When it occurs:** A developer creates a directory as `Force-App/` but references it as `force-app` in `sfdx-project.json`, or vice versa. macOS silently resolves both; Linux does not.
 
@@ -22,19 +22,19 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 3: Namespace Is Project-Wide, Not Per-Package
+## Gotcha 3: Namespace Scope Across Directories and Projects
 
-**What happens:** A developer adds a `namespace` key expecting it to apply only to one packageDirectory. Instead, the namespace applies to every component in the entire project. Components in other directories unexpectedly get prefixed.
+**What happens:** `namespace` is a top-level key, "the global namespace that is used with a package" (sfdx_dev 264 L2326-2329), placed at top level in every corpus sample (L2314, L14681); the unlocked-package parameter table at L14826 mixes it with top-level keys such as `packageAliases` (L14831), so a per-directory namespace is UNVERIFIED (2026-10-20). "When you specify a package namespace, every component added to a package has the namespace prefixed to the component API name" (pkg2_dev 264 L946-948), and "a single managed 2GP package can't be associated with more than one namespace" (L953-954). UNVERIFIED (2026-10-20): that a project-level namespace is applied to components in unpackaged directories; the earlier text said so, and the corpus describes prefixing only for components added to a package.
 
-**When it occurs:** When trying to develop a managed package alongside an unpackaged extension in the same repo.
+**When it occurs:** Developing a managed package alongside an unpackaged extension in one repo.
 
-**How to avoid:** Understand that `namespace` is a top-level project setting, not per-directory. If you need components without a namespace, either use a second `sfdx-project.json` in a separate repo or ensure unpackaged directories only contain metadata types that ignore namespace (like profiles and permission sets).
+**How to avoid:** "If you work with more than one namespace, we recommend that you set up one project for each namespace" (pkg2_dev 264 L955). UNVERIFIED (2026-10-20): the earlier advice that unpackaged profiles and permission sets "ignore namespace".
 
 ---
 
-## Gotcha 4: Duplicate packageDirectory Paths Are Silently Ignored
+## Gotcha 4: Duplicate packageDirectory Paths (Handling Undocumented)
 
-**What happens:** Two entries in `packageDirectories` point to the same `path`. The CLI uses the first entry and silently skips the second. No error, no warning.
+**What happens:** Two entries in `packageDirectories` point to the same `path`. UNVERIFIED (2026-10-20): that the CLI uses the first entry and silently skips the second with no error or warning; neither corpus describes duplicate-path handling.
 
 **When it occurs:** During a project restructure when someone copies an entry to create a new package but forgets to update the `path`. Also happens in merge conflicts where both sides add a new entry with the same path.
 
@@ -44,7 +44,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 5: sfdcLoginUrl Affects Only Default Login
 
-**What happens:** Setting `sfdcLoginUrl` to `https://test.salesforce.com` does not automatically route all CLI commands to sandbox. It only affects the default login URL used by `sf org login web` when no `--instance-url` flag is provided. Developers who switch between production and sandbox frequently get confused about which org they are authenticating to.
+**What happens:** Setting `sfdcLoginUrl` to `https://test.salesforce.com` does not automatically route all CLI commands to sandbox. It is "the login URL that the org login commands use" and defaults to https://login.salesforce.com (sfdx_dev 264 L2420-2423); when it is unset, or you log in outside the project, you pass `--instance-url` (L2424-2425). Developers who switch between production and sandbox frequently get confused about which org they are authenticating to.
 
 **When it occurs:** When a project targets sandboxes and the developer relies on the config rather than explicit flags.
 
@@ -54,17 +54,17 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 6: Retrieving Metadata Into Wrong Package Directory
 
-**What happens:** Running `sf project retrieve start` without specifying a target directory places retrieved metadata into the `default` packageDirectory. If you intended the metadata for a different package directory, it ends up in the wrong place and may be included in the wrong package version.
+**What happens:** "Salesforce CLI uses the default package directory as the target directory when retrieving changes from the org to the local project" (sfdx_dev 264 L2365-2366). If you intended the metadata for a different package directory, it ends up in the default one and may be included in the wrong package version.
 
-**When it occurs:** In multi-package projects when a developer forgets the `--target-metadata-dir` flag or does not specify the package.
+**When it occurs:** In multi-package projects when a developer retrieves without scoping the retrieve. UNVERIFIED (2026-10-20): the earlier text named a `--target-metadata-dir` flag; that flag is not in the corpus's retrieve examples.
 
-**How to avoid:** In multi-package projects, always specify which package to target: `sf project retrieve start --package-name <PackageName>`. Review retrieved file paths before committing.
+**How to avoid:** Scope the retrieve to a package where one applies: `sf project retrieve start --package-name <PackageName>` (sfdx_dev 264 L2021, L13577). Review retrieved file paths before committing.
 
 ---
 
-## Gotcha 7: Stale "Never Move Files" Advice and the Source Mobility Opt-Out
+## Gotcha 7: Stale "Never Move Files" Advice and the Source Mobility Opt-Out (UNVERIFIED, 2026-10-20: not in either corpus)
 
-**What happens:** Pre-Winter '26 guidance holds that moving a metadata file between package directories makes source tracking see the component as deleted and then recreated, so teams refuse to reorganize `packageDirectories` mid-project or reset tracking afterwards to clear the churn. The Winter '26 CLI release changed the default: "With source mobility you can move source files within your local Salesforce DX project without the source-tracking feature determining that you've deleted and then recreated a metadata component." Source mobility is enabled by default.
+**What happens:** UNVERIFIED (2026-10-20): grep of both corpora finds neither "source mobility" nor `SF_DISABLE_SOURCE_MOBILITY`; this gotcha rests on a blog and a CLI setup page outside the corpus, last checked 2026-08-13. Pre-Winter '26 guidance holds that moving a metadata file between package directories makes source tracking see the component as deleted and then recreated, so teams refuse to reorganize `packageDirectories` mid-project or reset tracking afterwards to clear the churn. The Winter '26 CLI release changed the default: "With source mobility you can move source files within your local Salesforce DX project without the source-tracking feature determining that you've deleted and then recreated a metadata component." Source mobility is enabled by default.
 
 **When it occurs:** Splitting a single `force-app` into multi-package directories, or moving a component out of `unpackaged/` into a packaged directory. The old delete-plus-recreate churn now reappears only when source mobility has been switched off.
 

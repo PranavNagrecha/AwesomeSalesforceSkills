@@ -28,9 +28,9 @@ outputs:
   - "security and runtime review findings"
   - "decision on guest-safe flow exposure and site compatibility"
 dependencies: []
-version: 2.0.0
+version: 2.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-20
 ---
 
 Use this skill when the question is not merely how to build a Flow, but how to expose that Flow safely and predictably inside Experience Cloud. The design has to account for who the user is, what the site runtime supports, and whether Flow is the right mechanism for a public or external-facing interaction at all.
@@ -48,6 +48,22 @@ Gather if not available:
 - Is this site subject to privacy / compliance requirements (GDPR, HIPAA, PCI) that affect what data the Flow can touch?
 - What's the Guest User profile's object/field access set to today? (If unknown, audit BEFORE building.)
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the audience guest, authenticated external or internal-through-site? | Core Concepts: access differs per audience; guest OWD is Private and fixed (secguide 262 L2868-2869) | A per-audience access statement |
+| What `runInMode` will the flow use? | Gotcha 9: the mode decides whose permissions and sharing apply (api_meta 264 L70907-70928) | A named mode and its exposure |
+| How is record access for guests granted? | Gotcha 6: guest user sharing rules are the only way, read-only (secguide 262 L2986-2987) | A rule list or a decision to require login |
+| Is the site Aura or LWR, and which custom screen components does the flow use? | Gotcha 7 and the compatibility table (UNVERIFIED, 2026-10-20); `extensionName` lists them (api_meta 264 L74393-74395) | A component-by-runtime table |
+| Which Apex classes does the flow call, and are they `with sharing`? | Gotcha 1 and the hardening list (apexref 262 L157958-157962) | An Apex review result |
+| Does any element rely on `$User` or `$Record` for a guest? | Gotcha 8 (UNVERIFIED, 2026-10-20) | Elements rewritten or removed |
+| Who tests as the real external user, and in which sandbox site? | Review Checklist: System Admin testing hides access gaps | A named tester and test script |
+
+A proper configuration adds an audience-specific data design and a deliberate running mode; just embedding the flow inherits whatever the launch context gives you.
+
+---
+
 ## Core Concepts
 
 ### Running User Context Changes The Safety Model
@@ -56,15 +72,15 @@ Experience Cloud flows do not run in the abstract; they run in the context of a 
 
 | Audience | Running user | Sharing context | Typical access |
 |---|---|---|---|
-| Guest (anonymous) | `Site Guest User` | Public record sharing via Sharing Sets | Minimal; "need to know" only |
-| Authenticated external | The login user (Customer Community, Partner Community, etc.) | External user's role + Sharing Sets + Account-Contact sharing | Broader but scoped to their own records + shared |
+| Guest (anonymous) | `Site Guest User` (the name is UNVERIFIED (2026-10-20): not in either corpus) | Org-wide defaults are Private for all objects and cannot be changed (secguide 262 L2868-2869); record access only through guest user sharing rules, which are read-only (L2986-2987). The earlier "Sharing Sets" for guests is CONTRADICTED | Minimal; "need to know" only |
+| Authenticated external | The login user (Customer Community, Partner Community, etc.) | External user's role + Sharing Sets + Account-Contact sharing (a sharing set "grants portal or community users access to objects that are associated with their accounts or contacts", api_meta 264 L133928-133930) | Broader but scoped to their own records + shared |
 | Internal user via site | The internal user (treated as internal) | Standard sharing | Full internal access |
 
-An admin who builds the flow while logged in as System Admin sees full access. The flow deploys. The Guest User profile sees 0 records. The flow fails silently. This is the #1 Experience Cloud + Flow failure mode.
+An admin who builds the flow while logged in as System Admin sees full access. The flow deploys. The Guest User profile sees 0 records. The flow fails silently. This is the #1 Experience Cloud + Flow failure mode ("#1" is UNVERIFIED (2026-10-20): not in either corpus). The flow's `runInMode` decides whose security applies: `DefaultMode` means how the flow is launched decides user or system context; `SystemModeWithSharing` respects sharing but not the running user's object or field permissions; `SystemModeWithoutSharing` (API 49.0+) accesses all data; `UserMode` (API 68.0+) enforces the user's security context (api_meta 264 L70907-70928). Choosing one of the system modes for a guest flow removes the Guest profile as a limit, so it is a security decision, not a convenience.
 
 ### `lightning-flow` Is A Site Integration Choice
 
-Embedding a screen flow through `lightning-flow` is a powerful pattern for reusable guided experiences, but it comes with runtime-specific considerations. It is not just a visual embedding choice; it determines how the site launches the interview, passes variables, and handles finish behavior.
+Embedding a screen flow through `lightning-flow` is a powerful pattern for reusable guided experiences, but it comes with runtime-specific considerations (`lightning-flow`, its attributes and the status values used below are UNVERIFIED (2026-10-20): not in either corpus; the Component Reference holds them). It is not just a visual embedding choice; it determines how the site launches the interview, passes variables, and handles finish behavior.
 
 Two embedding paths:
 1. **Flow component on Experience Builder page** — drag the standard Flow component onto a page; configure flow name + input variables. Simple; limited customization.
@@ -72,11 +88,11 @@ Two embedding paths:
 
 ### LWR Compatibility Must Be Checked Early
 
-Experience Builder sites using Lightning Web Runtime have different capabilities from Aura-based sites. In particular, flows that depend on custom Aura or custom LWC screen components need an explicit compatibility review before `lightning-flow` is chosen as the delivery pattern.
+Experience Builder sites using Lightning Web Runtime have different capabilities from Aura-based sites. In particular, flows that depend on custom Aura or custom LWC screen components need an explicit compatibility review before `lightning-flow` is chosen as the delivery pattern. The LWR compatibility table below is UNVERIFIED (2026-10-20): not in either corpus (api_meta mentions LWR only for CMS content types and workspaces, e.g. L9154, L53683). A custom component on a screen is stored in `FlowScreenField.extensionName`, "the name of the Lightning component to display", API 42.0+ (api_meta 264 L74393-74395).
 
 | Custom component type | Aura site | LWR site |
 |---|---|---|
-| Aura screen components | ✅ | ❌ (incompatible) |
+| Aura screen components | ✅ | ❌ (incompatible; UNVERIFIED (2026-10-20): not in either corpus) |
 | LWC screen components (no managed packages) | ✅ | ✅ if built for both; verify `isExposed` / targets |
 | Managed-package LWC screen components | ✅ | ⚠️ depends on package |
 | Standard Flow screen components | ✅ | ✅ |
@@ -87,10 +103,10 @@ Guest users are the highest-risk audience for Flow exposure. Public flows should
 
 **Guest-flow hardening checklist:**
 - Review Guest User profile object/field permissions.
-- Audit Apex classes the flow invokes — are they Guest-accessible? Do they use `with sharing`?
-- Avoid `$User.Id` references in Guest flows (guest users share the Site Guest User record).
-- Avoid `$Record` in Guest flows unless the record is explicitly Guest-accessible via Sharing Set.
-- Rate-limit the flow's public endpoint (Site-level throttling) to mitigate abuse.
+- Audit Apex classes the flow invokes — are they Guest-accessible? Do they use `with sharing`? (On API 62.0+ a flow launched from a `with sharing` Apex class enforces the sharing rules of the user who ran the class, apexref 262 L157958-157962.)
+- Avoid `$User.Id` references in Guest flows (guest users share the Site Guest User record; UNVERIFIED (2026-10-20): not in either corpus).
+- Avoid `$Record` in Guest flows unless the record is explicitly Guest-accessible via a guest user sharing rule (secguide 262 L2986-2987, L3510; the earlier text said Sharing Set).
+- Rate-limit the flow's public endpoint (Site-level throttling) to mitigate abuse (UNVERIFIED (2026-10-20): not in either corpus).
 
 ## Common Patterns
 
@@ -136,7 +152,7 @@ Guest users are the highest-risk audience for Flow exposure. Public flows should
 
 **When to use:** The flow needs to know the external user's identity across Salesforce and another system.
 
-**Structure:** Use the authenticated external user's Contact record as the bridge. Flow reads `{!$User.Contact.ExternalId__c}` (or equivalent) to correlate with the external system. Does NOT store external credentials; uses Named Credentials for external API calls.
+**Structure:** Use the authenticated external user's Contact record as the bridge. Flow reads `{!$User.Contact.ExternalId__c}` (or equivalent; the `$User.Contact` path is UNVERIFIED (2026-10-20): not in either corpus) to correlate with the external system. Does NOT store external credentials; uses Named Credentials for external API calls.
 
 ## Decision Guidance
 
@@ -165,11 +181,12 @@ Guest users are the highest-risk audience for Flow exposure. Public flows should
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. Gather context — confirm the site runtime, audience type, and existing Flow requirements
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Common Patterns above; harden Guest flows per checklist
-4. Validate — run the skill's checker script and verify against the Review Checklist above; test under the actual external user profile
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Name the audience** — guest, authenticated external or internal-through-site, and the site runtime (Aura or LWR); record them in the template.
+2. **Pick the running mode** — choose `runInMode` deliberately (`DefaultMode`, `SystemModeWithSharing`, `SystemModeWithoutSharing`, `UserMode` on API 68.0+, api_meta 264 L70907-70928) and write down what each choice exposes to a guest.
+3. **Design the data path** — for guests, one Create Records and no lookups; grant any read access through a guest user sharing rule, never a broader profile (secguide 262 L2986-2987).
+4. **Check components** — list every `extensionName` on the flow's screens (api_meta 264 L74393-74395) against the site runtime.
+5. **Run the checker** — `python3 scripts/check_flow_for_experience_cloud.py --manifest-dir <project>`; review each REVIEW line.
+6. **Test as the audience** — in a sandbox site as an actual guest or external user, not System Admin; record deviations in the template.
 
 ---
 
@@ -179,12 +196,12 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 2. **`lightning-flow` on LWR sites has component limitations** — screen flows that use custom LWC or Aura components need explicit compatibility checks before choosing this pattern.
 3. **Internal-flow assumptions fail quickly in Experience Cloud** — `$User`, sharing, and profile-based access behave differently for external audiences.
 4. **A flow that works in Flow Builder can still fail in-site** — Experience Cloud runtime, navigation, and exposed resources must be tested in the real site container.
-5. **Guest User profile has NO object access by default** — granting access is a deliberate configuration; forgetting it causes "flow works in sandbox / fails on site launch."
-6. **Sharing Sets differ from Sharing Rules** — Sharing Sets grant record-level access based on the Contact's Account; Sharing Rules use criteria. Audit which one applies.
-7. **Aura components in an LWR site fail at runtime, not at deploy time** — the flow passes deploy validation but throws runtime errors when the LWR site tries to render the Aura.
-8. **`{!$User.Id}` in a Guest flow returns the Site Guest User ID, not the visitor** — visitors are not distinguishable without explicit session correlation (IP + cookies + form tokens).
-9. **External user flows may need `RunInMode` consideration** — some Apex invocables run in user mode vs system mode; ensure the chosen mode respects the external user's boundaries.
-10. **Experience Cloud cache can serve stale flows** — after publishing a flow update, site users may see the old version until CDN cache expires. Plan deploys accordingly.
+5. **Guest User profile has NO object access by default** — guests' org-wide defaults are Private and cannot be changed (secguide 262 L2868-2869); that the profile starts with no object permissions is UNVERIFIED (2026-10-20): not in either corpus. Granting access is a deliberate configuration; forgetting it causes "flow works in sandbox / fails on site launch."
+6. **Guest access comes from guest user sharing rules, not Sharing Sets** — "a guest user sharing rule is a special type of criteria-based sharing rule and the only way to grant record access to unauthenticated guest users", read-only (secguide 262 L2986-2987). Sharing Sets serve authenticated portal or community users: a sharing set "grants portal or community users access to objects that are associated with their accounts or contacts" (SharingSet, api_meta 264 L133928-133930). Audit which one applies to which audience.
+7. **Aura components in an LWR site fail at runtime, not at deploy time** — UNVERIFIED (2026-10-20): not in either corpus; no corpus passage covers LWR rendering of Aura screen components.
+8. **`{!$User.Id}` in a Guest flow returns the Site Guest User ID, not the visitor** — UNVERIFIED (2026-10-20): not in either corpus. Visitors are not distinguishable without explicit session correlation (IP + cookies + form tokens).
+9. **The flow's `runInMode` sets whose access applies** — it is a Flow property, not an Apex invocable's: `DefaultMode`, `SystemModeWithSharing`, `SystemModeWithoutSharing` (API 49.0+) or `UserMode` (API 68.0+), field available from API 48.0 (api_meta 264 L70907-70928). The earlier text attributed user/system mode to Apex invocables, which is CONTRADICTED; ensure the chosen mode respects the external user's boundaries.
+10. **Experience Cloud cache can serve stale flows** — UNVERIFIED (2026-10-20): not in either corpus. Plan deploys accordingly.
 
 ## Proactive Triggers
 

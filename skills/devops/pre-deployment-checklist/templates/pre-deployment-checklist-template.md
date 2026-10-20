@@ -20,7 +20,7 @@ Use this template when preparing a Salesforce metadata deployment for production
 - **Component count:** (number)
 - **Apex test level:** RunLocalTests / RunSpecifiedTests / RunAllTestsInOrg
 - **Destructive changes included:** Yes / No
-- **Target instance:** (e.g., NA45, CS99 -- check trust.salesforce.com)
+- **Target instance:** (e.g., NA45, CS99; check trust.salesforce.com, which shows real-time system performance, secguide 262 L127-129; maintenance listings UNVERIFIED, 2026-10-20)
 
 ## Pre-Deployment Gates
 
@@ -30,7 +30,7 @@ Use this template when preparing a Salesforce metadata deployment for production
 - [ ] Destructive changes (if any) are in a separate manifest with correct ordering
 
 ### 2. Dependency Completeness
-- [ ] MetadataComponentDependency queried via Tooling API for all components
+- [ ] Dependencies of all components reviewed (a MetadataComponentDependency Tooling API query is UNVERIFIED, 2026-10-20)
 - [ ] All transitive dependencies present in target org or included in package
 - [ ] No references to renamed/deleted fields, objects, or classes
 
@@ -47,8 +47,8 @@ Use this template when preparing a Salesforce metadata deployment for production
 - [ ] Code coverage: ____% (aggregate) -- meets 75% threshold
 
 ### 5. Environment Safety
-- [ ] trust.salesforce.com checked -- no maintenance for target instance
-- [ ] No other deploys or validations in progress (Deployment Status page checked)
+- [ ] Target instance status checked for maintenance (trust.salesforce.com, secguide 262 L127-129; maintenance listings UNVERIFIED, 2026-10-20)
+- [ ] No other deploys or validations queued or in progress (Deployment Status page checked; one runs at a time, api_meta 264 L4246-4249)
 - [ ] No batch Apex jobs scheduled during the deployment window
 - [ ] Deployment scheduled outside peak business hours
 

@@ -8,7 +8,7 @@
 
 ## Architectural Tradeoffs
 
-**Speed vs. Safety:** Quick deploys skip test execution entirely, which reduces the production window from hours to minutes. The tradeoff is that any code change made after the validation (even a one-line fix) invalidates the quick-deploy ID and forces a full re-validation. Teams must resist the temptation to make last-minute changes after validation.
+**Speed vs. Safety:** Quick deploys skip test execution (api_meta 264 L4967-4968), which shortens the production window ("hours to minutes" is UNVERIFIED, 2026-10-20). The tradeoff is that a code change made after the validation means the changed package needs a fresh validation (the guide requires the components to be validated within the last 10 days, api_meta 264 L3579; "invalidates the quick-deploy ID" is UNVERIFIED, 2026-10-20). Teams must resist the temptation to make last-minute changes after validation.
 
 **Monolithic vs. Staged Deploys:** A single deployment package is simpler to manage but harder to debug and roll back. Staged deploys (schema, then logic, then presentation, then access) isolate failures but require more coordination and multiple deployment windows. The right choice depends on the release size: under 20 components, monolithic is fine; over 50, staged is safer.
 
@@ -20,13 +20,13 @@
 
 2. **No pre-release backup** -- Without a backup, rollback requires reconstructing the prior state from source control history, which is slow and error-prone (especially for declarative metadata that may not be fully version-controlled). Retrieving the current production state before deploying takes minutes and provides a one-command rollback path.
 
-3. **Ignoring the deployment status queue** -- Starting a validation or deployment while another is in progress causes lock contention failures. Teams that do not check the Deployment Status page waste validation cycles and introduce confusion about which deploy succeeded.
+3. **Ignoring the deployment status queue** -- Only one deployment runs at a time and queued ones are not necessarily run in submitted order (api_meta 264 L4246-4249); "lock contention failures" is UNVERIFIED (2026-10-20). Teams that do not check the Deployment Status page lose track of which deploy ran first.
 
 ## Official Sources Used
 
-- Metadata API Developer Guide -- https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
+- Metadata API Developer Guide -- https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm -- quick-deploy conditions api_meta 264 L4967-4974, test levels L4423-4443, deployment queue L4246-4249, destructive manifests L4749-4758.
 - Salesforce CLI Reference -- https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm
-- Salesforce DX Developer Guide -- https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm
+- Salesforce DX Developer Guide -- https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm -- `sf project deploy validate` and `quick --job-id` at sfdx_dev 264 L14359-14370, 10-day window L14372.
 - Salesforce Help: Deployment Best Practices -- https://help.salesforce.com/s/articleView?id=sf.platform.deploy_best_practices.htm
 - Salesforce Developer Blog: Master Metadata API Deployments with Best Practices (Oct 2025)
-- Salesforce Trust Site -- https://trust.salesforce.com
+- Salesforce Trust Site -- https://trust.salesforce.com -- "real-time information on system performance" (secguide 262 L127-129); per-instance maintenance listings UNVERIFIED (2026-10-20)

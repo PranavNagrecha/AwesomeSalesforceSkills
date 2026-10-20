@@ -9,12 +9,12 @@ These patterns help the consuming agent self-check its own output.
 
 ```apex
 Map<String, Object> inputs = new Map<String, Object>();
-inputs.put('recordid', accountId); // Wrong case — Flow variable names are case-sensitive
+inputs.put('recordid', accountId); // Wrong case — name must match the Flow variable exactly (case sensitivity UNVERIFIED, 2026-10-20)
 Flow.Interview myFlow = new Flow.Interview.My_Auto_Flow(inputs);
 myFlow.start();
 ```
 
-**Why it happens:** LLMs lowercase variable names by convention. Flow input variable names are case-sensitive and must match exactly as defined in the Flow.
+**Why it happens:** LLMs lowercase variable names by convention. UNVERIFIED (2026-10-20): that Flow variable names are case-sensitive; neither corpus says so, so match them exactly as defined in the Flow.
 
 **Correct pattern:**
 
@@ -134,7 +134,7 @@ myFlow.start();
 try {
     Flow.Interview myFlow = new Flow.Interview.My_Auto_Flow(inputs);
     myFlow.start();
-} catch (Flow.Interview.FlowException e) {
+} catch (FlowException e) {
     // Log the error and handle gracefully
     Logger.error('Flow execution failed: ' + e.getMessage());
     // Decide: rethrow, return error, or compensate
@@ -154,7 +154,7 @@ try {
 // This is wrong — Platform Event subscribers run asynchronously
 ```
 
-**Why it happens:** LLMs confuse Platform Event subscribers with synchronous triggers. Platform Events are asynchronous — the subscribing Flow runs in a separate transaction and cannot roll back the publisher's work.
+**Why it happens:** LLMs confuse Platform Event subscribers with synchronous triggers. The subscribing flow runs "asynchronously in a separate transaction" (platform_events 264 L2187-2188) and cannot roll back the publisher's work. `Flow.Interview.FlowException` is not a documented type; the built-in is `FlowException` (apexref 262 L214963).
 
 **Correct pattern:**
 

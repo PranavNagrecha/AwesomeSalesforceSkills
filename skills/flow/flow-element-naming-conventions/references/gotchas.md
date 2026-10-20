@@ -7,7 +7,7 @@ when naming or renaming Flow elements, variables, and outcomes.
 
 ## Gotcha 1: API Name is immutable in the contract sense (post-package-install especially)
 
-**What happens:** Salesforce lets you rename any Flow element or variable in
+**What happens:** (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it for the whole claim that a rename raises no save-time check.) Salesforce lets you rename any Flow element or variable in
 Flow Builder — there is no in-product "find references" check. After the
 rename, every formula reference, fault path, and Subflow caller that
 referenced the old name fails at runtime, not at save time.
@@ -28,9 +28,9 @@ parent flows still call your subflow by API name).
 
 ---
 
-## Gotcha 2: Renaming a Subflow input variable breaks parent flows silently
+## Gotcha 2: Renaming a Subflow input variable breaks parent flows (silent save UNVERIFIED, 2026-10-20)
 
-**What happens:** you rename `inputAccountId` → `inputAcctId` in the subflow
+**What happens:** (error text and "no warning" are UNVERIFIED (2026-10-20): Help-only; neither corpus holds it) you rename `inputAccountId` → `inputAcctId` in the subflow
 and save. Salesforce shows no warning. The next time a parent flow calls the
 subflow, it fails with `The flow couldn't find a referenced variable
 inputAccountId.`
@@ -50,9 +50,9 @@ parent flow is open in another tab will not trigger a warning in either tab.
 
 ---
 
-## Gotcha 3: Spaces and special characters are auto-replaced with underscores
+## Gotcha 3: Spaces and special characters are auto-replaced with underscores (UNVERIFIED, 2026-10-20)
 
-**What happens:** typing `Get Open Cases` as the API Name in Flow Builder
+**What happens:** (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it) typing `Get Open Cases` as the API Name in Flow Builder
 yields an actual API Name of `Get_Open_Cases`. The Label retains the spaces.
 Type `Get-Open-Cases` and you get `Get_Open_Cases` too. Type
 `Get Open Cases (Today)` and you get `Get_Open_Cases_Today_`.
@@ -71,9 +71,9 @@ the author may not notice.
 
 ---
 
-## Gotcha 4: Reserved words shadow built-ins or refuse to save
+## Gotcha 4: Reserved words shadow built-ins or refuse to save (UNVERIFIED, 2026-10-20)
 
-**What happens:** naming a variable `null`, `true`, `false`, `Id`, `Name`,
+**What happens:** (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it; so is the claim that the Flow reserved set is a superset of Apex's) naming a variable `null`, `true`, `false`, `Id`, `Name`,
 or other reserved words causes one of three behaviors:
 1. Save-time error (`Id` as a variable name).
 2. Silent shadowing — `{!null}` resolves to your variable, not the built-in,
@@ -92,9 +92,9 @@ or other reserved words causes one of three behaviors:
 
 ---
 
-## Gotcha 5: Process Builder → Flow auto-conversion leaves ugly auto-generated names
+## Gotcha 5: Process Builder → Flow auto-conversion leaves ugly auto-generated names (UNVERIFIED, 2026-10-20)
 
-**What happens:** the Process Builder → Flow conversion tool produces flows
+**What happens:** (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it) the Process Builder → Flow conversion tool produces flows
 with element API Names like `myWaitEvent_4`, `myDecision_2_A1`,
 `myRule_1_A1`, `myActionCall_3`. These are valid but carry no semantic
 meaning, and the conversion tool does not offer a rename pass.
@@ -111,12 +111,12 @@ metadata diffs, and downstream maintenance burden inherit the auto-names.
 
 ---
 
-## Gotcha 6: 80-character API Name limit truncates silently in some tools
+## Gotcha 6: 80-character API Name limit truncates silently in some tools (UNVERIFIED, 2026-10-20)
 
 **What happens:** Salesforce enforces an 80-character max on Flow element /
-variable API Names. Long verb-object-qualifier names approach this limit
+variable API Names (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it). Long verb-object-qualifier names approach this limit
 fast (`Update_OpportunityStageToClosedWonAndNotifyAccountOwnerByEmail` is
-already 64 chars). Some external tools (Git diff viewers, custom metadata
+already 62 chars). Some external tools (Git diff viewers, custom metadata
 parsers, third-party documentation generators) silently truncate at 60 or
 72 chars and obscure the difference between two similarly-named elements.
 

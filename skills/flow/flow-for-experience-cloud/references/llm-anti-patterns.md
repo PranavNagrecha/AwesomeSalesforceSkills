@@ -33,7 +33,7 @@ creating the Lead record when the guest user submits the form."
 "Add an Apex action that dispatches a ShowToastEvent after the flow completes."
 ```
 
-**Why it happens:** LLMs apply Lightning Experience patterns to Experience Cloud. `ShowToastEvent` does not work in LWR-based Experience Cloud sites — the toast container does not exist.
+**Why it happens:** LLMs apply Lightning Experience patterns to Experience Cloud. `ShowToastEvent` does not work in LWR-based Experience Cloud sites — the toast container does not exist (UNVERIFIED, 2026-10-20: not in either corpus).
 
 **Correct pattern:**
 
@@ -57,13 +57,13 @@ Or use a custom LWC screen component that handles notifications in a site-compat
 "Just drag the flow component onto the Experience Builder page."
 ```
 
-**Why it happens:** LLMs focus on the embedding step and skip the critical security configuration. By default, screen flows in Experience Cloud run in the context of the site user, which may be a guest or external user with limited access.
+**Why it happens:** LLMs focus on the embedding step and skip the critical security configuration. The flow's `runInMode` defaults to `DefaultMode`, where "how the flow is launched determines whether the flow runs in user context or in system context" (api_meta 264 L70908-70911); for a site launch that is the site user, which may be a guest or external user with limited access.
 
 **Correct pattern:**
 
 Explicitly choose the running context:
-- **User or system context**: Set in Flow > Advanced > "Run flow as" configuration
-- For guest-facing flows that create records: consider "System Context Without Sharing" with tight entry validation
+- **User or system context**: the flow's `runInMode` (`DefaultMode`, `SystemModeWithSharing`, `SystemModeWithoutSharing`, `UserMode` on API 68.0+; api_meta 264 L70907-70928); the Flow Builder menu path is UNVERIFIED (2026-10-20)
+- For guest-facing flows that create records: `SystemModeWithoutSharing` "can access all data" (api_meta 264 L70919-70921), so use it only with tight entry validation and one Create Records element
 - For authenticated external users: verify their profile/permission set grants adequate access
 - Always review what data the flow can read, create, update, or delete in that context
 
@@ -80,7 +80,7 @@ Explicitly choose the running context:
 Aura screen component for the file upload step."
 ```
 
-**Why it happens:** LLMs do not distinguish between Aura-based and LWR-based Experience Cloud sites. LWR sites do not support Aura components — flows with Aura screen components will fail.
+**Why it happens:** LLMs do not distinguish between Aura-based and LWR-based Experience Cloud sites. LWR sites do not support Aura components — flows with Aura screen components will fail (UNVERIFIED, 2026-10-20: not in either corpus).
 
 **Correct pattern:**
 

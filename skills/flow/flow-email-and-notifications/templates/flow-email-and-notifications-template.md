@@ -80,8 +80,8 @@ List all Flow variables and record fields referenced in the notification content
 
 | Limit | Value | Estimated Usage | OK? |
 |---|---|---|---|
-| Custom notifications/hour | 1,000 per org | | |
-| Daily email sends (standard org) | 1,000 mass emails/day | | |
+| Notification actions/hour | 10,000 per org (pkg2_dev 264 L5916) | | |
+| Daily external email addresses | 5,000 per licensed org per day (apexdev 264 L20162-20177) | | |
 | Single email size | 5 MB | | |
 
 ---

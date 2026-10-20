@@ -31,9 +31,9 @@ outputs:
   - Subflow input/output rename + version-bump recommendation
   - Audit table of non-conforming element names with proposed replacements
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-10-20
 ---
 
 # Flow Element Naming Conventions
@@ -48,8 +48,8 @@ Gather this context before working on anything in this domain:
 
 - **What naming exists in the org today?** Run `list_flows_on_object(<sObject>)` (or query `FlowDefinitionView`) and pull the Flow XML for one or two representative flows. Look at the element `<name>` values — are they `Get_OpenCases_ByOwner` or `Get_Records_2`? The status quo dictates how much rename work is in front of you.
 - **Is this Flow already deployed to production or referenced in a managed/unlocked package?** Element API names become part of the metadata contract. After a package install, renaming an element that is referenced by formula, fault path, or another flow's subflow call is a breaking change.
-- **Common wrong assumption:** practitioners think "API Name doesn't matter, only Label is shown." False — API Name is what serializes into Flow XML, what shows up in metadata diffs in Git, what appears in fault email subjects, and what every Subflow / formula reference resolves against. The Label is throwaway; the API Name is the contract.
-- **Limits in play:** API Name max 80 characters, must start with a letter, alphanumeric + underscore only (Salesforce auto-replaces spaces and special chars with `_`). Reserved words (`null`, `true`, `false`, `Id`) must not be used as variable API names — they will silently shadow built-ins or refuse to save.
+- **Common wrong assumption:** practitioners think "API Name doesn't matter, only Label is shown." False — API Name is what serializes into Flow XML, what shows up in metadata diffs in Git, what appears in fault email subjects (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it), and what every Subflow / formula reference resolves against. The corpus grounds the identity part: a FlowElement `name` is the "unique name of the flow element" (api_meta 264 L73105) and a FlowSubflow `flowName` must be a flow API name with no appended hyphen and version number (L75370-75372). The Label is throwaway; the API Name is the contract.
+- **Limits in play:** API Name max 80 characters, must start with a letter, alphanumeric + underscore only (Salesforce auto-replaces spaces and special chars with `_`). Reserved words (`null`, `true`, `false`, `Id`) must not be used as variable API names — they will silently shadow built-ins or refuse to save. For the Flow's own API name the corpus holds the character rule: a flow `fullName` "contains only underscores and alphanumeric characters", must "begin with a letter, not include spaces, not end with an underscore, and not contain two consecutive underscores" (api_meta 264 L70669-70672). UNVERIFIED (2026-10-20): Help-only for element and variable names, and for the 80-character cap, the auto-replacement and the reserved words (grep of both corpora finds none of them for Flow element or variable names); the checker therefore reports them as WARN (`W-CHARSET`, `W-LENGTH-80`, `W-RESERVED`), not ERROR.
 
 ---
 
@@ -90,7 +90,7 @@ Every Flow element is a verb acting on a noun. The API Name encodes that:
 
 The verb maps to the element type (Get, Update, Create, Delete, Decision, Loop, Assignment, Screen, Action, Subflow). The noun is the primary record or domain concept. The qualifier disambiguates when more than one element of the same type acts on the same noun in the same flow.
 
-Why this matters: a fault email reads `Element "Get_Records_3" failed.` The on-call admin has to open the flow, find element 3, and reverse-engineer what it was doing. With `Get_OpenCasesByOwner`, the email is self-describing.
+Why this matters (the fault email wording below is UNVERIFIED (2026-10-20): Help-only; neither corpus holds it): a fault email reads `Element "Get_Records_3" failed.` The on-call admin has to open the flow, find element 3, and reverse-engineer what it was doing. With `Get_OpenCasesByOwner`, the email is self-describing.
 
 ### Concept 2 — Resource prefix discipline
 
@@ -121,7 +121,7 @@ Explicit > clever. The reader six months later will thank you.
 
 ### Concept 3 — API Name is immutable in the contract sense
 
-Once a Flow is deployed and referenced, the API Names of its public surface (Flow API name itself, Subflow input/output variables, Choice values bound to picklists) are part of the contract. Renaming them does NOT cause a save-time validation error — Salesforce will let you save the rename and only blow up at runtime in the parent flow that referenced the old name.
+Once a Flow is deployed and referenced, the API Names of its public surface (Flow API name itself, Subflow input/output variables, Choice values bound to picklists) are part of the contract. Renaming them does NOT cause a save-time validation error — Salesforce will let you save the rename and only blow up at runtime in the parent flow that referenced the old name. UNVERIFIED (2026-10-20): Help-only; neither corpus holds it for the "no save-time validation" claim; what the corpus does hold is that a subflow call references the called flow by API name (api_meta 264 L75370-75372) and carries `inputAssignments` / `outputAssignments` by variable name (L75374-75378).
 
 This is the single most expensive naming mistake. Treat the public contract as you would treat a public API method signature: name it deliberately the first time, and bump the Flow version (per `flow-versioning-strategy`) if you must rename.
 
@@ -166,7 +166,7 @@ choiceTaskType          (Choice resource)
 
 ### Pattern 3 — Default Branch Naming
 
-**When to use:** every Decision element. Salesforce requires a Default outcome but lets you leave its name blank — never do this.
+**When to use:** every Decision element. A Decision has a `defaultConnector` for when no rule is true and a `defaultConnectorLabel` string ("Label for the default connector", api_meta 264 L72940-72943); that Salesforce requires a Default outcome yet lets the name stay blank is UNVERIFIED (2026-10-20): Help-only; neither corpus holds it — name it anyway.
 
 **How it works:**
 - Name every outcome with the **affirmative business condition** it represents.
@@ -179,7 +179,7 @@ Decision_HasActiveContract
   └── Default:  NoActiveContract_Default    (no rule — fires when nothing above matched)
 ```
 
-**Why not the alternative:** unnamed default outcomes show up as `myDecision.outcome2` in fault diagnostics and as a blank cell in the Flow XML — and a future editor has to re-read every other outcome to figure out what the default is supposed to catch.
+**Why not the alternative:** unnamed default outcomes show up as `myDecision.outcome2` in fault diagnostics (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it) and as a blank cell in the Flow XML — and a future editor has to re-read every other outcome to figure out what the default is supposed to catch.
 
 ### Pattern 4 — Subflow Input/Output Contract Naming
 
@@ -197,7 +197,7 @@ Subflow:       Account_RollupChildContactsCount
 
 Use the `input` / `output` prefix to make the direction obvious to the parent-flow author. Document the contract at the top of the Flow Description so changes are visible in metadata diffs.
 
-**Why not the alternative:** silently renaming `inputAccountId` → `inputAcctId` saves cleanly in the subflow but breaks every parent flow at runtime with `The flow couldn't find a referenced variable.` See `references/gotchas.md` Gotcha 2.
+**Why not the alternative:** silently renaming `inputAccountId` → `inputAcctId` saves cleanly in the subflow but breaks every parent flow at runtime with `The flow couldn't find a referenced variable.` (error text UNVERIFIED (2026-10-20): Help-only; neither corpus holds it). See `references/gotchas.md` Gotcha 2.
 
 ### Pattern 5 — Fault-Path Target Naming
 
@@ -251,7 +251,7 @@ Known inconsistency: the at-bar sibling skills `flow/record-triggered-flow-patte
    - Subflow input/output variable → high risk (parent flows will break at runtime).
    - Choice variable bound to a Picklist field → medium risk (re-bind required after rename).
    - Internal element with no formula reference → low risk (safe to rename).
-3. **Apply names from the Decision Guidance table.** Use the canonical verb + noun + qualifier shape. Keep API Name <= 80 chars; trim qualifier first if needed.
+3. **Apply names from the Decision Guidance table.** Use the canonical verb + noun + qualifier shape. Keep API Name <= 80 chars (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it); trim qualifier first if needed.
 4. **Rename Decision outcomes.** Replace bare `Yes` / `No` with affirmative condition names. Name every Default outcome explicitly (`Default`, `NoMatch`, or `<NegativeCondition>_Default`).
 5. **For Subflows:** if you must rename a public input/output, bump the Flow version per `flow-versioning-strategy` and update every parent Subflow call. Do NOT rely on save-time validation to catch missed callers — it won't.
 6. **For Process Builder migrations:** auto-generated names like `myWaitEvent_4`, `myDecision_2` are red flags. Plan a rename pass as part of the migration, not "later" — see `process-builder-to-flow-migration`.
@@ -266,20 +266,20 @@ Known inconsistency: the at-bar sibling skills `flow/record-triggered-flow-patte
 - [ ] Every Decision outcome has an explicit, business-readable name; no bare `Yes` / `No`; Default outcome is named (not blank).
 - [ ] Every Subflow input/output uses `input` / `output` prefix and is documented in the Flow Description.
 - [ ] Every fault-path target is named `LogFault_<ParentElementName>` so the route is visually obvious.
-- [ ] No API Name exceeds 80 characters, contains spaces, or uses reserved words (`null`, `true`, `false`, `Id`).
+- [ ] No API Name exceeds 80 characters, contains spaces, or uses reserved words (`null`, `true`, `false`, `Id`) (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it).
 - [ ] Orchestration stages are `Stage_<BusinessProcess>` and steps are `Step_<Stage>_<Action>` — never `S1`, `Step2`.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **API Name is effectively immutable post-deployment.** Salesforce permits the rename in Flow Builder, but every Subflow caller, formula reference, and fault path that referenced the old name will fail at runtime — there is no save-time validation across flow boundaries. Treat public surfaces (Subflow inputs/outputs) as a published contract.
-2. **Max 80 characters for API Names.** Long verb-object-qualifier names get silently truncated by tools that ingest Flow XML. Aim for <= 60 chars in practice.
-3. **Spaces and special chars are auto-replaced with underscores.** Typing `Get Open Cases` as the API Name yields `Get_Open_Cases` — but the Label keeps the spaces. Don't fight the platform; type underscores from the start so the API Name and your intent stay aligned.
-4. **Renamed elements break formulas at runtime, not save time.** A formula resource referencing `{!Get_Records_3.Id}` will save fine after you rename `Get_Records_3` to `Get_OpenCases`, but it will throw `Couldn't find an Element` at the next interview. There is no global rename tool — you must update every formula manually.
-5. **Process Builder → Flow migrations inherit ugly auto-generated names** like `myWaitEvent_4`, `myDecision_2`, `myRule_1_A1`. The migration tool does not rename these. If you skip the rename pass, the resulting flow is harder to maintain than the Process Builder it replaced. Bake the rename into the migration plan.
-6. **Reserved words silently shadow built-ins.** Naming a variable `Id` or `null` causes formulas to behave unexpectedly. Salesforce will sometimes refuse to save and sometimes save and fail at runtime — never rely on the save-time check.
-7. **Decision outcome order matters when names are weak.** If two outcomes are both named `Yes`, the first one matched wins, and a refactor that re-orders outcomes silently changes routing. Strong, distinct outcome names eliminate this class of bug.
+1. **API Name is effectively immutable post-deployment.** Salesforce permits the rename in Flow Builder, but every Subflow caller, formula reference, and fault path that referenced the old name will fail at runtime — there is no save-time validation across flow boundaries (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it). Treat public surfaces (Subflow inputs/outputs) as a published contract.
+2. **Max 80 characters for API Names.** UNVERIFIED (2026-10-20): Help-only; neither corpus holds it (both the cap and the tool truncation). Aim for <= 60 chars in practice as a house rule.
+3. **Spaces and special chars are auto-replaced with underscores.** UNVERIFIED (2026-10-20): Help-only; neither corpus holds it. Typing `Get Open Cases` as the API Name yields `Get_Open_Cases` — but the Label keeps the spaces. Don't fight the platform; type underscores from the start so the API Name and your intent stay aligned.
+4. **Renamed elements break formulas at runtime, not save time.** A formula resource referencing `{!Get_Records_3.Id}` will save fine after you rename `Get_Records_3` to `Get_OpenCases`, but it will throw `Couldn't find an Element` at the next interview (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it). There is no global rename tool — you must update every formula manually.
+5. **Process Builder → Flow migrations inherit ugly auto-generated names** like `myWaitEvent_4`, `myDecision_2`, `myRule_1_A1` (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it). The migration tool does not rename these. If you skip the rename pass, the resulting flow is harder to maintain than the Process Builder it replaced. Bake the rename into the migration plan.
+6. **Reserved words silently shadow built-ins.** UNVERIFIED (2026-10-20): Help-only; neither corpus holds it. Naming a variable `Id` or `null` causes formulas to behave unexpectedly. Salesforce will sometimes refuse to save and sometimes save and fail at runtime — never rely on the save-time check.
+7. **Decision outcome order matters when names are weak.** A Decision's rules "are evaluated in the order that they're listed" and the first true rule's connector runs (api_meta 264 L72945-72946). If two outcomes are both named `Yes`, the first one matched wins, and a refactor that re-orders outcomes silently changes routing. Strong, distinct outcome names eliminate this class of bug.
 
 ---
 

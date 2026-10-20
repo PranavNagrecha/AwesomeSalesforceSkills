@@ -104,7 +104,7 @@ Content-Type: application/json
 | | | Input Only / Input and Output / Output Only | |
 
 - [ ] No variable that should be externally accessible is set to "Private"
-- [ ] Apex variable names match Flow variable API names exactly (case-sensitive)
+- [ ] Apex variable names match Flow variable API names exactly (case sensitivity is UNVERIFIED, 2026-10-20)
 
 ---
 
@@ -117,7 +117,7 @@ For each DML or external-call element in the Flow:
 | | recordCreates / recordUpdates / recordDeletes / actionCalls | Yes / No | Log to Error_Log__c / Send email / Assignment + End |
 
 - [ ] Every DML element has a Fault connector
-- [ ] Fault paths write `{!$Flow.FaultMessage}` to a durable log or notification
+- [ ] Fault paths write the fault message (`{!$Flow.FaultMessage}`: UNVERIFIED (2026-10-20): `$Flow.FaultMessage` is not in either corpus) to a durable log or notification
 - [ ] Apex caller wraps `start()` in try/catch for `System.FlowException`
 
 ---

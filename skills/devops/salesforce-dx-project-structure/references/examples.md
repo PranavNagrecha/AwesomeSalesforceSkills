@@ -4,7 +4,7 @@
 
 **Context:** A solo developer starting a new Salesforce project for a small business. One team, no package versioning needed.
 
-**Problem:** Without a valid `sfdx-project.json`, no `sf` CLI commands work. New developers often create the file manually and miss required fields.
+**Problem:** Without a valid `sfdx-project.json`, the directory is not a DX project (sfdx_dev 264 L2299-2300). New developers often create the file manually and miss required fields; `sf project generate --name` scaffolds it (L1398).
 
 **Solution:**
 
@@ -39,7 +39,7 @@ my-project/
   .gitignore
 ```
 
-**Why it works:** The `packageDirectories` array has exactly one entry with `"default": true`, which satisfies the CLI minimum. The `namespace` is blank (correct for non-managed development). The `sourceApiVersion` matches a known valid API version.
+**Why it works:** The `packageDirectories` array has one entry, which is assumed default (sfdx_dev 264 L2363-2364); `"default": true` is harmless and required once a second entry is added. The `namespace` is blank, as in the guide's sample (L2314). `sourceApiVersion` is a string, as in the guide's sample (L2316).
 
 ---
 
@@ -109,7 +109,7 @@ enterprise-project/
       main/default/flows/
 ```
 
-**Why it works:** Each package has its own directory, version, and explicit dependencies. The CLI builds packages in dependency order. Teams can deploy their package independently once dependencies are satisfied.
+**Why it works:** Each package has its own directory, version, and explicit dependencies. UNVERIFIED (2026-10-20): that the CLI builds packages in dependency order. Directory locations are local only and carry no association with the package in the org (sfdx_dev 264 L2485-2487).
 
 ---
 
@@ -141,16 +141,16 @@ enterprise-project/
 }
 ```
 
-The `config/unpackaged/` directory contains profiles, permission sets, and sample data scripts that deploy via `sf project deploy` but are excluded from `sf package version create`.
+The `config/unpackaged/` directory contains profiles, permission sets, and sample data scripts that deploy via `sf project deploy`. UNVERIFIED (2026-10-20): that it is excluded from `sf package version create` and that the packaging engine ignores a directory with no `package` key.
 
-**Why it works:** The unpackaged directory has no `package` key, so the packaging engine ignores it. But `sf project deploy` still picks it up when you specify that path. This separates product metadata from org configuration cleanly.
+**Why it works:** The guide's own sample includes a plain `unpackaged` path entry (sfdx_dev 264 L2311) and describes package directories as able to hold "unpackaged source files" (L2354), so the entry is valid; deploy it by path with `--source-dir`.
 
 ---
 
-## Anti-Pattern: Hardcoding Build Numbers in versionNumber
+## Anti-Pattern: Hardcoding Build Numbers Without Incrementing Them
 
-**What practitioners do:** Set `versionNumber` to `"1.0.0.4"` with a specific build number instead of using `NEXT`.
+**What practitioners do:** Set `versionNumber` to `"1.0.0.4"` and leave it there across several package version creations.
 
-**What goes wrong:** The `sf package version create` command auto-increments the build number. If you hardcode it, the CLI may reject the version create if that build number already exists, or you get conflicting version numbers across branches.
+**What goes wrong:** "To avoid creating multiple package versions with the same MAJOR.MINOR.PATCH.BUILD number, you must increment the versionNumber before creating a new package version", and the guide advises against creating several versions with the same number (sfdx_dev 264 L14869-14871, L16160). UNVERIFIED (2026-10-20): that the CLI rejects a repeated build number.
 
-**Correct approach:** Always use `NEXT` as the fourth segment: `"1.0.0.NEXT"`. The CLI resolves this to the next available build number at creation time.
+**Correct approach:** Use `NEXT` in the build slot, `"1.0.0.NEXT"`, to take "the next available build for the package" (L14872-14873), or bump the number deliberately.

@@ -128,7 +128,7 @@ rename `inputAccountId` to `inputAcctId` "for brevity", save the active version.
 **What goes wrong:** the rename saves cleanly. Every parent flow that
 previously called this subflow with `inputAccountId = {!varAccountId}` now
 fails at the next interview with `The flow couldn't find a referenced
-variable inputAccountId.` There is no save-time warning, and there is no
+variable inputAccountId.` (error text and "no save-time warning" are UNVERIFIED (2026-10-20): Help-only; neither corpus holds it). There is no save-time warning, and there is no
 global "find references" tool for Flow variables.
 
 **Correct approach:** treat Subflow inputs/outputs as a published API.
@@ -147,7 +147,7 @@ auto-converter, deploy the result with names like `myWaitEvent_4`,
 `myDecision_2`, `myRule_1_A1` intact.
 
 **What goes wrong:** the resulting flow is a maintainability disaster.
-Fault emails reference `myDecision_2`, formula references inside the flow
+Fault emails reference `myDecision_2` (fault-email content UNVERIFIED (2026-10-20): Help-only), formula references inside the flow
 read `{!myRule_1_A1.outcome}`, and the next developer has to open Flow
 Builder to figure out what each element does. The migration "succeeded"
 but technical debt is now baked in.

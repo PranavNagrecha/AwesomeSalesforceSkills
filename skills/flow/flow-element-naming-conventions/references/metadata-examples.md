@@ -322,4 +322,4 @@ $ echo $?
 ```
 
 An empty directory is a WARN (nothing to lint is not itself a naming defect),
-not an ERROR — only a missing/non-directory `--manifest-dir` forces exit 2.
+not an ERROR — only a missing/non-directory `--manifest-dir` is an ERROR, exit 1.

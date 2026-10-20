@@ -850,6 +850,15 @@ releases:
     - devops/deployment-error-troubleshooting
     - devops/development-documentation-standards
     - devops/git-branching-for-salesforce
+    - devops/permission-set-deployment-ordering
+    - devops/pre-deployment-checklist
+    - devops/salesforce-dx-project-structure
+    - flow/auto-launched-flow-patterns
+    - flow/flow-custom-property-editors
+    - flow/flow-element-naming-conventions
+    - flow/flow-email-and-notifications
+    - flow/flow-external-services
+    - flow/flow-for-experience-cloud
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'

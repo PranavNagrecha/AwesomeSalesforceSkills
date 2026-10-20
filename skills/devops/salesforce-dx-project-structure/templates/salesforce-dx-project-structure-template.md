@@ -51,11 +51,11 @@ project-root/
 
 - [ ] `sfdx-project.json` exists at repo root and is valid JSON
 - [ ] `packageDirectories` has at least one entry with a valid `path`
-- [ ] Exactly one packageDirectory has `"default": true`
+- [ ] With more than one packageDirectory, exactly one has `"default": true`
 - [ ] `sourceApiVersion` is set and matches target org
 - [ ] All `path` values point to existing directories
 - [ ] Package dependencies use correct names and version numbers
-- [ ] `versionNumber` uses `MAJOR.MINOR.PATCH.NEXT` format
+- [ ] `versionNumber` uses `MAJOR.MINOR.PATCH.BUILD`, with `NEXT` for auto-increment
 - [ ] `.gitignore` excludes `.sfdx/`, `.sf/`, and auth files
 - [ ] No credentials stored in `sfdx-project.json`
 

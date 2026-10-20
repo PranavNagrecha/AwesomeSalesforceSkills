@@ -38,7 +38,7 @@ Classify each non-conforming name using SKILL.md's three risk tiers:
 ## 3. Proposed Names (step 3)
 
 Apply the Decision Guidance table (`<Verb>_<Object>[_<Qualifier>]` for elements,
-type-token prefixes for resources). Keep API Names <= 80 chars; trim the
+type-token prefixes for resources). Keep API Names <= 80 chars (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it); trim the
 qualifier first if a name runs long.
 
 ## 4. Decision Outcomes (step 4)
@@ -81,7 +81,7 @@ Copy of SKILL.md's Review Checklist — tick each as you confirm it:
 - [ ] Every Decision outcome has an explicit, business-readable name; no bare `Yes`/`No`; Default outcome is named
 - [ ] Every Subflow input/output uses `input`/`output` and is documented in the Flow Description
 - [ ] Every fault-path target is named `LogFault_<ParentElementName>`
-- [ ] No API Name exceeds 80 characters, contains spaces, or uses reserved words (`null`, `true`, `false`, `Id`)
+- [ ] No API Name exceeds 80 characters, contains spaces, or uses reserved words (`null`, `true`, `false`, `Id`) (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it)
 - [ ] Orchestration stages are `Stage_<BusinessProcess>` and steps are `Step_<Stage>_<Action>`
 
 ## Notes

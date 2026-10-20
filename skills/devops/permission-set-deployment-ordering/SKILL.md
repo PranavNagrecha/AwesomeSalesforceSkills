@@ -28,14 +28,14 @@ outputs:
   - "Permission set validation checklist before deployment"
   - "Guidance on handling ConnectedApp permission conflicts"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-20
 ---
 
 # Permission Set Deployment Ordering
 
-Use this skill when deploying permission sets, permission set groups, or profiles and encountering cross-reference errors, silent permission wipeouts, or deployment ordering failures. It covers the full-replace behavior of the Metadata API for permission sets and the correct sequencing rules that prevent data loss in production deployments.
+Use this skill when deploying permission sets, permission set groups, or profiles and encountering cross-reference errors, permission loss, or deployment ordering failures. It covers the overwrite risk the Metadata API guide describes for permission sets (api_meta 264 L97416-97418), the different overlay behaviour of Profiles (L100265-100268), and the sequencing rules that prevent data loss in production deployments.
 
 ---
 
@@ -43,35 +43,51 @@ Use this skill when deploying permission sets, permission set groups, or profile
 
 Gather this context before working on anything in this domain:
 
-- Know whether you are deploying permission sets, permission set groups, or both. PSGs require all constituent permission sets to already exist in the target org before the group can land.
-- Understand that the Metadata API performs a **full-replace** on permission sets (API v40+), not a merge. Any permission not in the deployed XML is silently removed from the target org.
-- Confirm whether your batch includes a ConnectedApp and a permission set or PSG referencing that ConnectedApp — this combination triggers a known cross-reference error when both land in the same deploy transaction.
+- Know whether you are deploying permission sets, permission set groups, or both. PSGs require all constituent permission sets to already exist in the target org before the group can land. UNVERIFIED (2026-10-20): api_meta 264 L98043 only says the `permissionSets` field names "a permission set or permission sets included in the permission set group"; no passage in the 12 Winter '27 guides or the two 262 guides states an existence or ordering rule.
+- Understand that from API version 40.0 a retrieve returns all of a permission set's metadata and "when you deploy a permission set, you must include all of its metadata to avoid accidentally overwriting the permission set's contents" (api_meta 264 L97416-97418). Treat the deployed XML as authoritative, not a merge. Whether the loss raises a warning is not stated: UNVERIFIED (2026-10-20): "silently removed, no warning" is the package's inference from L97418.
+- Confirm whether your batch includes a ConnectedApp and a permission set or PSG that references it. The documented link runs from the app: ConnectedApp has a `permissionSetName` field naming the permission set (API 46.0+, api_meta 264 L37225-37226). A "cross-reference error when both land in the same transaction" is UNVERIFIED (2026-10-20): grep of both corpora finds no such statement.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does each permission set in the package already exist in the target org? | Gotcha 1: the deployed XML must carry all of the set's metadata (api_meta 264 L97417-97418) | A retrieve-first list of existing sets, so nothing is built from scratch |
+| Which org produced the XML, and does it hold fewer objects, fields or classes than the target? | Gotcha 1: a thinner permission set source overwrites grants in the target; Gotcha 3 (references/gotchas.md): a profile retrieve carries FLS only for objects in the same RetrieveRequest (api_meta 264 L100261-100263) | The source-vs-target diff to review before deploy |
+| Are Profiles in the same package? | Gotcha 3: a Profile deploy overlays the target, so removing a permission from the XML does not remove it in the org (api_meta 264 L100265-100268) | A decision to set removals explicitly or manage them in permission sets |
+| Does a ConnectedApp in the package name a package permission set in `permissionSetName`? | Gotcha 2 and Core Concepts: the documented link is ConnectedApp to PS (L37225) | Whether to split the batch as a precaution |
+| Which PSGs are in scope, and do their constituent sets ship in the same release? | SKILL.md Gotcha 3 (PSG after PSets): ordered deploys must be submitted one at a time (api_meta 264 L4246-4249) | The ordered batch list |
+| Does a PSG carry a muting permission set? | Gotcha 4 (references/gotchas.md): the group's `mutingPermissionSets` field names a set of the separate MutingPermissionSet type (api_meta 264 L92411, L98039-98041) | The muting set added to the retrieve and deploy list |
+| Can the pipeline guarantee batch order, or are deploys queued? | Queued deploys are not necessarily run in submitted order (api_meta 264 L4246-4249) | Stage dependencies written into the pipeline |
+
+A proper configuration adds an ordered, retrieve-first plan and a review of every permission about to be overwritten; just deploying the XML gives you neither.
 
 ---
 
 ## Core Concepts
 
-### Full-Replace Semantics (API v40+)
+### Include-All-Metadata Rule (API v40+)
 
-Since API version 40.0, deploying a PermissionSet metadata type completely overwrites the existing record in the target org. If you retrieve a permission set, remove three field permissions from the XML, and deploy it — those three permissions are gone in the target. There is no merge; the deployed XML is authoritative.
+Since API version 40.0, retrieving a permission set returns everything the Metadata API exposes for it, and the guide tells you to include all of that metadata on deploy "to avoid accidentally overwriting the permission set's contents" (api_meta 264 L97416-97418; at API 39.0 and earlier only app and system permissions travel, L97419-97421). If you retrieve a permission set, remove three field permissions from the XML, and deploy it, treat those three permissions as gone in the target: the deployed XML is authoritative. "Completely overwrites" and "no merge" are this package's reading of that sentence: UNVERIFIED (2026-10-20): the guide states the overwrite risk but no field-by-field delete semantics.
 
 This behavior means: **always retrieve the current state from the target org before building a deployment package**. Never deploy a permission set constructed from scratch unless you have confirmed the target org has no existing configuration to preserve.
 
 ### Referenced Objects Must Exist First
 
-Permission sets that grant access to custom objects, custom fields, Apex classes, or Visualforce pages require those components to already exist in the target org before the permission set deploys. If the deploy batch includes both the custom object and the permission set that grants access to it, order matters: the object must land before the permission set.
+Permission sets that grant access to custom objects, custom fields, Apex classes, or Visualforce pages need those components to be retrievable and deployable alongside them: the guide says "when retrieving object or field permissions, you must also retrieve the associated object" (api_meta 264 L2594-2596, package.xml retrieval guidance). UNVERIFIED (2026-10-20): that the object must already exist in the target before the permission set deploys, and that the Metadata API applies a "built-in ordering" that processes objects before permission sets, are not stated in either corpus.
 
-In a Metadata API deployment, objects are processed before permission sets by default because the deployment engine uses a built-in ordering. However, in split deployments (object in one deploy, PS in another), ensure the first deploy completes successfully before starting the second.
+In split deployments (object in one deploy, PS in another), ensure the first deploy completes successfully before starting the second. The guide's own rule: queued deployments "are not necessarily executed in the order in which they were submitted. To execute deployments in a particular order, submit them one at a time after the previous deployment has completed successfully" (api_meta 264 L4246-4249).
 
 ### PSG Constituent Ordering
 
-Permission Set Groups require each constituent Permission Set to already exist in the target org (or be deployed in the same batch before the PSG is evaluated). If a PSG references `PS_A` and `PS_B`, both must be present before `PSG_1` is processed.
+Permission Set Groups (API 45.0+, api_meta 264 L98009) reference constituent Permission Sets through the `permissionSets` field and may carry a muting permission set through `mutingPermissionSets` (API 46.0+, L98039-98041); the individual permissions live in the referenced permission set, not in the group (L98056-98057). UNVERIFIED (2026-10-20): that each constituent must already exist, or precede the PSG inside one batch; the guide states no such rule.
 
-**Safe pattern**: deploy constituent PSets first (separate deploy or earlier in the batch), then deploy the PSG in a subsequent deploy. Do not rely on implicit ordering within a single batch unless you have verified the Metadata API processes them in the correct order.
+**Safe pattern**: deploy constituent PSets first in a separate deploy, wait for it to succeed, then deploy the PSG, which is the one-at-a-time ordering the guide prescribes (api_meta 264 L4246-4249). Do not rely on implicit ordering within a single batch.
 
 ### ConnectedApp Cross-Reference Bug
 
-A known platform bug causes a cross-reference error when a ConnectedApp and a permission set or PSG that references that ConnectedApp are both included in the same deployment batch. The workaround is to deploy the ConnectedApp in a separate deploy from the permission set that grants access to it.
+UNVERIFIED (2026-10-20): a "known platform bug" that raises a cross-reference error when a ConnectedApp and a permission set or PSG that references it share a batch. Neither corpus describes it; treat the isolation pattern below as a precaution, not a documented requirement. What the guide does document: ConnectedApp carries `permissionSetName` (API 46.0+, api_meta 264 L37225-37226, sample at L38057) and `profileName` (L37255-37257), both requiring `isAdminApproved` true on the OAuth config (L37239-37240); a PermissionSet's `applicationVisibilities` is described for "standard and custom apps" (L97467-97471), with no mention of connected apps. Note also: connected app creation is restricted as of Spring '26 (L37161-37163), so an existing app's metadata is what you will usually deploy.
 
 ---
 
@@ -86,7 +102,7 @@ A known platform bug causes a cross-reference error when a ConnectedApp and a pe
 2. Make only the needed changes in the local XML.
 3. Deploy the modified file: `sf project deploy start --metadata "PermissionSet:My_PS"`
 
-**Why not construct from scratch:** A constructed-from-scratch XML only contains the permissions you explicitly added. All permissions already granted in the target org that are not in your XML will be silently removed on deploy.
+**Why not construct from scratch:** A constructed-from-scratch XML only contains the permissions you explicitly added. All permissions already granted in the target org that are not in your XML are at risk of being lost on deploy (api_meta 264 L97417-97418).
 
 ### Sequential Batch Deployment Pattern
 
@@ -96,7 +112,7 @@ A known platform bug causes a cross-reference error when a ConnectedApp and a pe
 1. Deploy 1: `PermissionSet:PS_A`, `PermissionSet:PS_B` — confirms both land and pass tests.
 2. Deploy 2: `PermissionSetGroup:PSG_1` — PSG references PS_A and PS_B, which now exist.
 
-**Why not a single batch:** While the Metadata API often processes PSets before PSGs in a single batch, this is not guaranteed and there is no documented specification. The sequential pattern is explicit and repeatable.
+**Why not a single batch:** The guide gives no ordering specification for components inside one batch, and says ordered deploys must be submitted one at a time after the previous one succeeds (api_meta 264 L4246-4249). The sequential pattern is explicit and repeatable.
 
 ### ConnectedApp Isolation Pattern
 
@@ -106,7 +122,7 @@ A known platform bug causes a cross-reference error when a ConnectedApp and a pe
 1. Deploy 1: `ConnectedApp:My_App`
 2. Deploy 2: `PermissionSet:My_PS` (which grants access to My_App)
 
-**Why not together:** The cross-reference resolution order in the same batch causes a platform error even though both components are present. Separation into sequential deploys resolves it.
+**Why not together:** UNVERIFIED (2026-10-20): the claim that same-batch resolution order causes a platform error is not in either corpus; separation is a precaution that costs one extra deploy.
 
 ---
 
@@ -114,11 +130,11 @@ A known platform bug causes a cross-reference error when a ConnectedApp and a pe
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Updating an existing permission set | Retrieve from target first, edit XML, deploy | Prevents silent permission wipeout |
-| Deploying new PSG to org that doesn't have constituent PSets | Two-step: PSets first, then PSG | PSG validation requires constituent PSets to exist |
-| Deploying ConnectedApp + PS that references it | Two separate deploys | Known platform bug — same batch causes cross-reference error |
+| Updating an existing permission set | Retrieve from target first, edit XML, deploy | Prevents permission loss |
+| Deploying new PSG to org that doesn't have constituent PSets | Two-step: PSets first, then PSG | Ordered deploys go one at a time (api_meta 264 L4246-4249); "PSG validation requires constituent PSets" is UNVERIFIED (2026-10-20) |
+| Deploying ConnectedApp + PS that references it | Two separate deploys | Precaution; the "known platform bug" is UNVERIFIED (2026-10-20) |
 | Deploying permission set to scratch org (fresh) | Single deploy fine | No existing permissions to preserve |
-| CI pipeline deploys entire org metadata | Ensure object metadata deploys before PS in same batch | Referenced objects must exist for PS to validate |
+| CI pipeline deploys entire org metadata | Ensure object metadata deploys before PS in same batch | Retrieve the objects with their permissions (api_meta 264 L2594-2596, package.xml retrieval guidance); "must exist for PS to validate" is UNVERIFIED (2026-10-20) |
 
 ---
 
@@ -131,7 +147,7 @@ Step-by-step instructions for an AI agent or practitioner deploying permission s
 3. **Merge your changes** into the retrieved XML rather than replacing it. Only modify the specific permissions you intend to add, remove, or change.
 4. **Check for ConnectedApp references.** If any PS or PSG in the batch references a ConnectedApp also in the batch, split into two sequential deploys: ConnectedApp first, then the PS/PSG.
 5. **Sequence the deployment batches.** Deploy constituent PSets before PSGs. Deploy custom objects/fields before the PSets that reference them.
-6. **Validate deploy first** (`sf project deploy validate`) before running the actual deploy in production. Review any cross-reference errors in the validation output and resolve them.
+6. **Validate deploy first** (`sf project deploy validate --manifest manifest/package.xml --target-org <alias> --test-level RunLocalTests`, sfdx_dev 264 L14359-14360; `sf project deploy start --dry-run` is the other documented form, api_meta 264 L4114) before running the actual deploy in production. Review any cross-reference errors in the validation output and resolve them.
 7. **Confirm post-deploy** that key permission grants are still intact in the target org. Use `sf project retrieve start` to pull the deployed PS and diff against expectations.
 
 ---
@@ -153,9 +169,9 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Silent permission wipeout on full-replace** — Deploying a PermissionSet that is missing permissions which exist in the target org silently removes those permissions. There is no warning or error. Always retrieve from the target first and perform a diff before deploying.
-2. **ConnectedApp cross-reference error in same batch** — Including a ConnectedApp and a PermissionSet or PSG referencing it in the same deployment batch causes a CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY or cross-reference error. The fix is always a sequential deploy: ConnectedApp first, permission set second.
-3. **PSG validation failure when PSets are missing** — A Permission Set Group deployed to an org where one of its constituent PSets does not yet exist will fail with a validation error referencing the missing set. PSets must be deployed before PSGs that reference them.
+1. **Permission wipeout on full-replace** — The guide says to include all of a permission set's metadata when you deploy, "to avoid accidentally overwriting the permission set's contents" (api_meta 264 L97417-97418). Permissions missing from your XML are at risk; "silently, with no warning or error" is UNVERIFIED (2026-10-20). Always retrieve from the target first and diff before deploying.
+2. **ConnectedApp cross-reference error in same batch** — UNVERIFIED (2026-10-20): the CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY or cross-reference error for a ConnectedApp and a PermissionSet or PSG in one batch is in neither corpus. The precaution is a sequential deploy: ConnectedApp first, permission set second.
+3. **PSG validation failure when PSets are missing** — UNVERIFIED (2026-10-20): the "validation error referencing the missing set" is in neither corpus. Deploy PSets before PSGs that reference them, one deploy at a time (api_meta 264 L4246-4249).
 
 ---
 

@@ -24,16 +24,16 @@ If using RunSpecifiedTests: confirm 75% coverage per Apex class included in the 
 
 **What the LLM generates:** "Be careful when running validation deploys — they may partially update metadata if interrupted" or recommending validation deploys only during off-peak hours due to write risk.
 
-**Why it happens:** LLMs conflate validation deploys with actual deploys. A validation deploy (`checkOnly: true`) never writes metadata to the org. It compiles Apex, resolves dependencies, and runs tests, but commits nothing. It is safe to run at any time.
+**Why it happens:** LLMs conflate validation deploys with actual deploys. A validation deploy (`checkOnly: true`) validates "but not deploy[s]" the components (api_meta 264 L3596) and commits nothing. It still takes the single deployment slot, so it queues behind a running deploy (L4246-4249).
 
 **Correct pattern:**
 
 ```text
 A validation deploy (checkOnly: true / sf project deploy validate) is a zero-write operation.
-It is safe to run during business hours against production. It will not modify any metadata.
+It does not modify metadata; it queues like any deployment, so check the Deployment Status page first.
 ```
 
-**Detection hint:** Any guidance that warns about data loss, partial writes, or timing restrictions specific to validation deploys.
+**Detection hint:** Any guidance that warns about data loss or partial writes from a validation deploy.
 
 ---
 
@@ -53,11 +53,11 @@ sf project deploy quick --job-id 0Af5g00000XXXXX --target-org production
 
 ---
 
-## Anti-Pattern 4: Recommending MetadataComponentDependency Without Tooling API Context
+## Anti-Pattern 4: Recommending a Dependency Query Without Tooling API Context (object UNVERIFIED, 2026-10-20)
 
 **What the LLM generates:** "Run this SOQL query: `SELECT ... FROM MetadataComponentDependency`" without mentioning that this object is only available through the Tooling API, not the standard SOQL API.
 
-**Why it happens:** LLMs treat all SOQL-queryable objects as accessible through the same endpoint. `MetadataComponentDependency` is a Tooling API object and must be queried through `/services/data/vXX.0/tooling/query/` or via the CLI with `sf data query --use-tooling-api`.
+**Why it happens:** LLMs treat all SOQL-queryable objects as accessible through the same endpoint. UNVERIFIED (2026-10-20): `MetadataComponentDependency` as a Tooling API object is in neither corpus. The `--use-tooling-api` flag on `sf data query` is documented (pkg2_dev 264 L19969).
 
 **Correct pattern:**
 
@@ -73,7 +73,7 @@ sf data query --query "SELECT MetadataComponentName, RefMetadataComponentName FR
 
 **What the LLM generates:** "All tests pass in staging, so the deployment is ready for production" or checklists that mark "tests pass in sandbox" as the final test gate.
 
-**Why it happens:** LLMs do not account for environmental differences between sandboxes and production: data volume, managed packages, sharing rules, org-wide defaults, and installed AppExchange packages all differ. Tests that pass in a sandbox can fail in production for reasons unrelated to the code change.
+**Why it happens:** LLMs do not account for environmental differences between sandboxes and production. UNVERIFIED (2026-10-20): the specific differences (data volume, managed packages, sharing rules, org-wide defaults) are this package's reasoning, not corpus statements. Tests that pass in a sandbox can fail in production for reasons unrelated to the code change.
 
 **Correct pattern:**
 
@@ -88,19 +88,19 @@ The release gate is a validation deploy (checkOnly: true) run directly against p
 
 ## Anti-Pattern 6: Omitting the 10-Day Quick-Deploy Expiration
 
-**What the LLM generates:** "Run a validation deploy, then quick-deploy whenever you're ready" without mentioning the 10-day expiration window or the fact that re-validating invalidates prior quick-deploy IDs.
+**What the LLM generates:** "Run a validation deploy, then quick-deploy whenever you're ready" without mentioning the 10-day validation window.
 
-**Why it happens:** Training data mentions quick deploy as a feature but often omits the time constraint. The 10-calendar-day window is a hard cutoff with no warning.
+**Why it happens:** Training data mentions quick deploy as a feature but often omits the time constraint. The window is "within the last 10 days" (api_meta 264 L3579); "hard cutoff with no warning" is UNVERIFIED (2026-10-20).
 
 **Correct pattern:**
 
 ```text
-A successful validation deploy earns a quick-deploy ID valid for 10 calendar days.
-After 10 days, the ID expires silently and you must re-validate.
-Re-validating the same components invalidates any prior quick-deploy ID.
+A successful validation deploy earns a quick-deploy ID usable within 10 days.
+After 10 days the validation no longer qualifies and you must re-validate (UNVERIFIED, 2026-10-20: "expires silently").
+UNVERIFIED (2026-10-20): that re-validating the same components invalidates any prior quick-deploy ID.
 ```
 
-**Detection hint:** Any quick-deploy guidance that does not mention the 10-day window or the invalidation-on-re-validation behavior.
+**Detection hint:** Any quick-deploy guidance that does not mention the 10-day window.
 
 ---
 

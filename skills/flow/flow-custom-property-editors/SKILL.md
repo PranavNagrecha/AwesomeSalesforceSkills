@@ -28,9 +28,9 @@ outputs:
   - "review findings for builder-side contracts and metadata registration"
   - "property-editor design plan aligned to flow builder behavior"
 dependencies: []
-version: 2.0.1
+version: 2.0.2
 author: Pranav Nagrecha
-updated: 2026-07-31
+updated: 2026-10-20
 ---
 
 Use this skill when the Flow-side question is "should this component or action have a custom configuration experience in Flow Builder, and if so, what should that builder contract look like?" The purpose is to keep Flow Builder configuration clear for admins while preventing the runtime component contract and the design-time editor contract from drifting apart.
@@ -48,13 +48,29 @@ Gather if not available:
 - Who will maintain this CPE? (CPEs are LWCs with Flow-builder-specific contracts; maintainers need LWC + Flow expertise.)
 - Is this CPE shipping in a package? (Namespacing + contract stability becomes more important.)
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which inputs does the default property pane handle badly? | Core Concepts: a CPE is a separate LWC to maintain; without a named pain, use the default | A named input list or a decision to skip the CPE |
+| Is the target a screen component or an invocable action? | Registration differs: `targetConfig` attribute versus `@InvocableMethod` modifier (apexdev 264 L5467-5468) | The right registration path |
+| Which events does the editor dispatch for each input? | Gotcha 4: Flow Builder is told only by `configuration_editor_*` events (lwcguide use-flow-custom-property-editor-interface) | An event table per input |
+| Does any input need validation before Done? | `validate()` runs on Done and Flow Builder shows an error count only (lwcguide use-flow-custom-property-editor-interface) | Validation rules and in-editor error text |
+| Is the component generic over sObject? | Pattern 3: `genericTypeMappings` and `typeName` / `typeValue` (lwcguide use-flow-custom-property-editor-interface) | A type-mapping design |
+| Will the editor ship in a managed package? | Gotcha 8: contract stability for consumers (UNVERIFIED, 2026-10-20) | A versioning plan for editor and runtime |
+| Could a partial CPE replace a full one for an action? | Pattern 4: new parameters need no CPE change with partial CPEs (apexdev 264 L27576-27578) | A smaller editor surface |
+
+A proper configuration adds a justified editor, a paired contract and a test that reopens the saved configuration; just building an LWC gives you none of them.
+
+---
+
 ## Core Concepts
 
 ### This Is A Builder Concern First
 
 Flow custom property editors exist to improve Flow Builder configuration, NOT runtime execution. The first design question is whether admins truly need a guided design-time UI. If the builder experience is simple enough with standard property inputs, a custom editor is unnecessary complexity. CPEs add:
 - A separate LWC to maintain (the editor).
-- A `configurationEditor` entry in the target component's `.js-meta.xml`.
+- A `configurationEditor` attribute on the target component's `targetConfig` in `.js-meta.xml` (lwcguide use-flow-custom-property-editor-lwc-example: `<targetConfig targets="lightning__FlowScreen" configurationEditor="c-volume-editor">`), or for an invocable action the `configurationEditor` modifier of `@InvocableMethod`, where omitting it means "Flow Builder uses the standard property editor" (apexdev 264 L5467-5468).
 - A Flow-builder-specific input/output contract.
 - Testing overhead (Flow Builder behavior is hard to test automatically).
 
@@ -66,11 +82,14 @@ The editor reads and writes the component's configuration through builder-side c
 
 | Contract | What it provides | When to use |
 |---|---|---|
-| `@api inputVariables` | Array of existing input values the admin has set | Always — read current state |
-| `@api builderContext` | Flow metadata: variables, constants, formulas in the Flow | When editor needs to pick from Flow resources |
-| `@api automaticOutputVariables` | Output variables the component will produce | Rarely; mostly for complex invocable editors |
-| `@api genericTypeMappings` | Type mappings for generic sObject / collection inputs | When the runtime component is generic (typed at Flow design time) |
-| `FlowAttributeChangeEvent` | Fire when admin changes a field — writes back to Flow | Every change must dispatch this; otherwise changes don't persist |
+| `@api inputVariables` | Name, value and data type of each input variable (lwcguide use-flow-custom-property-editor-interface) | Always — read current state |
+| `@api builderContext` | Data about the flow's elements and resources, for example `variables`, `screens`, `actionCalls` (lwcguide use-flow-custom-property-editor-interface) | When editor needs to pick from Flow resources |
+| `@api automaticOutputVariables` | UNVERIFIED (2026-10-20): not in either corpus or the LWC guide pages read | Do not rely on it |
+| `@api genericTypeMappings` | `typeName` and `typeValue` for each generic sObject input (lwcguide use-flow-custom-property-editor-interface; the name appears in apexdev 264 L27601-27602) | When the runtime component is generic (typed at Flow design time) |
+| `@api elementInfo` and `validate()` | The invoking screen or action element, and custom validation run when the admin clicks Done; Flow Builder shows only the number of errors (lwcguide use-flow-custom-property-editor-interface) | When the editor needs per-instance logic or validation |
+| `configuration_editor_input_value_changed` (also `_deleted`, `configuration_editor_generic_type_mapping_changed`) | `CustomEvent`s, with `bubbles` and `composed` true, that report changes to Flow Builder (lwcguide use-flow-custom-property-editor-interface) | Every change must dispatch one; otherwise Flow Builder is not told |
+
+The earlier text named `FlowAttributeChangeEvent` as the editor's change event: CONTRADICTED by the interface page, which lists the three `configuration_editor_*` events. `FlowAttributeChangeEvent` is not a Flow Builder editor event.
 
 ### Generic And Context-Aware Editors Need Strong Boundaries
 
@@ -99,7 +118,7 @@ The `.js-meta.xml` configuration is not boilerplate. The `configurationEditor` r
 </LightningComponentBundle>
 ```
 
-The `configurationEditor` attribute points to the EDITOR LWC (which is a separate bundle). If that attribute is missing or wrong, Flow Builder falls back to the default property pane — and the custom editor never fires.
+The `configurationEditor` attribute points to the EDITOR LWC (which is a separate bundle); use the `c` namespace unless the org has its own (lwcguide use-flow-custom-property-editor-lwc-example). For invocable actions, "if you don't specify this modifier, Flow Builder uses the standard property editor" (apexdev 264 L5467-5468); the same fallback for a screen component with a missing or wrong attribute is UNVERIFIED (2026-10-20).
 
 ## Common Patterns
 
@@ -107,25 +126,25 @@ The `configurationEditor` attribute points to the EDITOR LWC (which is a separat
 
 **When to use:** The component exposes a small set of values that need better labels, help text, or validation than the default Flow property pane provides.
 
-**Structure:** Register a custom editor, read `inputVariables`, write changes via `FlowAttributeChangeEvent`, keep the UI limited to design-time concerns (labels, help text, validation rules).
+**Structure:** Register a custom editor, read `inputVariables`, report changes by dispatching `configuration_editor_input_value_changed` (lwcguide use-flow-custom-property-editor-interface), keep the UI limited to design-time concerns (labels, help text, validation rules).
 
 ### Pattern 2: Context-Aware Resource Picker
 
 **When to use:** Admins must choose Flow resources, objects, or generic types that depend on builder context.
 
-**Structure:** Use `@api builderContext` to read the Flow's existing variables/constants. Filter them by type. Present as a picklist. Write the admin's selection back as a variable reference (e.g., `{!MyVar}`) — not a raw value.
+**Structure:** Use `@api builderContext` to read the Flow's existing variables/constants. Filter them by type. Present as a picklist. Write the admin's selection back as a variable reference (e.g., `{!MyVar}`) — not a raw value. UNVERIFIED (2026-10-20): the reference syntax; the guide's example builds options from `builderContext.variables` and dispatches the chosen value (lwcguide use-flow-custom-property-editor-interface).
 
 ### Pattern 3: Generic Component Type Mapper
 
 **When to use:** Runtime component accepts generic `@api sobject` input (e.g. "works on any object") — admin needs to specify which object type at Flow design time.
 
-**Structure:** Use `@api genericTypeMappings` in the editor to propagate the selected type to the runtime component's metadata. Validate that the chosen object is accessible + has the required fields.
+**Structure:** Read `@api genericTypeMappings` and report a changed type with `configuration_editor_generic_type_mapping_changed`; `typeName` is the `<property type="{T}">` name for a screen component (`{T[]}` for a collection) and `T__param1` / `U__param1` style for an action's inputs and outputs (lwcguide use-flow-custom-property-editor-interface). Validate that the chosen object is accessible + has the required fields.
 
 ### Pattern 4: Runtime And Editor Contract Pairing
 
 **When to use:** The same component is expected to be reused in many Flows and needs durable design-time governance.
 
-**Structure:** Define a clear input model once (e.g. `MyComponentConfig` DTO), mirror it intentionally in the editor, and treat metadata + editor UI + runtime expectations as one contract. Version the contract together; never change only one side.
+**Structure:** Define a clear input model once (e.g. `MyComponentConfig` DTO), mirror it intentionally in the editor, and treat metadata + editor UI + runtime expectations as one contract. Version the contract together; never change only one side. For an invocable action, a partial CPE lowers this cost: "With partial CPEs, you can add new input parameters to your action without updating the CPE code", while "full CPEs require code updates whenever you modify the action's parameters" (apexdev 264 L27576-27578), and each parameter can belong to only one partial CPE (L27657). The action-side registration is `CpeName` and `ConfiguredBy` in InvocableActionExtension, API 65.0+ (api_meta 264 L84654, L84734-84737).
 
 ## Decision Guidance
 
@@ -143,7 +162,7 @@ The `configurationEditor` attribute points to the EDITOR LWC (which is a separat
 - [ ] The team proved a custom editor is needed instead of default Flow properties.
 - [ ] Metadata targets and `configurationEditor` registration are correct.
 - [ ] Builder-side values map cleanly to the runtime component contract.
-- [ ] The editor dispatches `FlowAttributeChangeEvent` on every change.
+- [ ] The editor dispatches `configuration_editor_input_value_changed` (or `_deleted` / generic-type-mapping) on every change.
 - [ ] Validation is implemented where Flow admins could otherwise save broken configuration.
 - [ ] Generic or context-aware behavior stays builder-only and does not leak runtime assumptions.
 - [ ] CPE and runtime component versioned together.
@@ -153,11 +172,12 @@ The `configurationEditor` attribute points to the EDITOR LWC (which is a separat
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. Gather context — confirm the org edition, runtime component shape, admin UX needs
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Common Patterns above; keep editor scope narrow
-4. Validate — run the skill's checker script and verify against the Review Checklist above
-5. Document — record any deviations from standard patterns; pair the editor + runtime contracts explicitly
+1. **Prove the need** — list the inputs the default property pane handles badly; if there are two scalar inputs, stop and recommend the default pane.
+2. **Pick the surface** — screen component (`configurationEditor` attribute on `targetConfig`), or invocable action (`configurationEditor` modifier, or a partial CPE through InvocableActionExtension `CpeName` / `ConfiguredBy`, api_meta 264 L84734-84737).
+3. **Write the contract table** — each input, its data type, who owns validation (`validate()`) and which event reports it (`configuration_editor_input_value_changed`).
+4. **Review the metadata** — `configurationEditor` points at the editor bundle with the right namespace; `lightning__FlowScreen` or `lightning__FlowAction` is in `targets`.
+5. **Run the checker** — `python3 scripts/check_flow_custom_property_editors.py --manifest-dir <project>`; fix unresolved editors and editors that never dispatch a change event.
+6. **Test in Flow Builder** — configure, save, close, reopen, and run the Flow; record versioning of editor and runtime together.
 
 ---
 
@@ -166,19 +186,19 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 1. **A working runtime component can still have a broken Flow Builder experience** — design-time and runtime are separate surfaces with separate failure modes.
 2. **`configurationEditor` registration is part of the contract** — if metadata is wrong, Flow Builder never invokes the editor no matter how good the LWC code is.
 3. **Builder context is not a runtime API** — editors that assume runtime behavior instead of Flow Builder behavior become fragile fast.
-4. **Visual polish is irrelevant if the editor never emits `FlowAttributeChangeEvent`** — Flow Builder configuration stays stale until the event contract is correct.
-5. **CPEs can't access user data at design time** — they run in the admin's builder context, not in a user context. Don't assume record access; use `builderContext` for Flow metadata only.
-6. **CPE bugs can corrupt Flow metadata** — an editor that writes malformed values can leave the Flow in an unrecoverable state. Test destructive edits in sandbox.
-7. **Flow Builder caches CPE LWC** — changes to the editor may not appear without a hard refresh. Document this for admin testers.
-8. **Namespaced CPE components in packages are opaque to consumers** — if the package is managed, consumers can't customize the editor. Plan the stable contract carefully.
-9. **Lightning Web Security affects CPE DOM access** — modern LWS enforces stricter shadow-DOM boundaries; older CPEs may break silently after LWS rollout.
-10. **The Property Editor view does not auto-resize** — complex editors may overflow the default Flow Builder panel. Use `slds-scrollable_y` and test at multiple screen sizes.
+4. **Visual polish is irrelevant if the editor never dispatches `configuration_editor_input_value_changed`** — Flow Builder configuration stays stale until the event contract is correct (lwcguide use-flow-custom-property-editor-interface).
+5. **CPEs can't access user data at design time** — UNVERIFIED (2026-10-20): not in either corpus or the LWC guide pages read. Treat `builderContext` as Flow metadata only (lwcguide use-flow-custom-property-editor-interface).
+6. **CPE bugs can corrupt Flow metadata** — UNVERIFIED (2026-10-20): not in either corpus or the LWC guide pages read. Test destructive edits in sandbox.
+7. **Flow Builder caches CPE LWC** — UNVERIFIED (2026-10-20): not in either corpus or the LWC guide pages read. Document a hard refresh for admin testers as a precaution.
+8. **Namespaced CPE components in packages are opaque to consumers** — UNVERIFIED (2026-10-20): not in either corpus or the LWC guide pages read. Plan the stable contract carefully.
+9. **Lightning Web Security affects CPE DOM access** — UNVERIFIED (2026-10-20): not in either corpus or the LWC guide pages read. Retest older CPEs after an LWS change.
+10. **The Property Editor view does not auto-resize** — UNVERIFIED (2026-10-20): not in either corpus or the LWC guide pages read. Test complex editors at several panel sizes.
 
 ## Proactive Triggers
 
 Surface these WITHOUT being asked:
 
-- **CPE without `FlowAttributeChangeEvent` dispatch on input changes** → Flag as Critical. Changes don't persist.
+- **CPE without a `configuration_editor_input_value_changed` dispatch on input changes** → Flag as Critical. Flow Builder is never told.
 - **Runtime component changed without updating CPE** → Flag as High. Contract drift invariant violated.
 - **CPE accessing user data at design time** → Flag as High. Wrong lane; CPE lives in builder context.
 - **Default property pane would suffice** → Flag as Medium. Unnecessary complexity; remove the CPE.

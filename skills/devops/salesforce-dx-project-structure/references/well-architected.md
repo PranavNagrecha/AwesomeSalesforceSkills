@@ -3,16 +3,16 @@
 ## Relevant Pillars
 
 - **Operational Excellence** — Project structure directly determines developer ergonomics, CI/CD pipeline simplicity, and deployment reliability. A well-structured project reduces friction in daily development workflows and makes onboarding faster.
-- **Reliability** — Correct `sourceApiVersion` alignment and validated packageDirectory paths prevent deployment failures. Misconfigured projects cause silent metadata omission or outright deploy rejection.
-- **Scalability** — Multi-package directory layouts enable teams to scale from one workstream to many without restructuring the repo. Package dependencies enforce build order and prevent circular references.
+- **Reliability** — Correct `sourceApiVersion` alignment and validated packageDirectory paths prevent deployment failures. Misconfigured projects cause missing fields on retrieve (sfdx_dev 264 L2430-2434) or deploy rejection (UNVERIFIED, 2026-10-20: the rejection mechanics are not in the corpus).
+- **Scalability** — Multi-package directory layouts enable teams to scale from one workstream to many without restructuring the repo. Package dependencies are declared in installation order (sfdx_dev 264 L14813-14814); UNVERIFIED (2026-10-20): that they enforce build order and prevent circular references.
 
 ## Architectural Tradeoffs
 
 1. **Single directory vs. multi-package:** Single directory is simpler to maintain but creates merge conflicts and unclear ownership at scale. Multi-package adds configuration complexity but enables independent versioning, team ownership boundaries, and selective deployment. Choose multi-package only when you have two or more teams or need independent deployment lifecycles.
 
-2. **Pinning sourceApiVersion vs. tracking latest:** Pinning to a lower version ensures all target orgs accept the deploy but may exclude newer metadata types from retrieves. Tracking the latest enables new features but risks deployment failures to orgs that have not received the release yet. Pin to the lowest common denominator across your org fleet.
+2. **Pinning sourceApiVersion vs. tracking latest:** Pinning to a lower version means retrieves return only the fields that version has (sfdx_dev 264 L2430-2434); UNVERIFIED (2026-10-20): that it "ensures all target orgs accept the deploy" or excludes whole types. Tracking the latest enables new features; that it fails deploys to orgs that have not received the release yet is UNVERIFIED (2026-10-20), so pinning to the lowest common version across your org fleet is a convention, not a documented rule.
 
-3. **Namespace vs. no namespace:** Adding a namespace enables managed packaging and intellectual property protection but makes the metadata less portable and harder to test in scratch orgs. Use a namespace only for ISV managed packages; prefer unlocked packages (no namespace) for internal development.
+3. **Namespace vs. no namespace:** Adding a namespace prefixes every component added to the package (pkg2_dev 264 L946-948). UNVERIFIED (2026-10-20): "intellectual property protection", "harder to test in scratch orgs" and the advice to prefer unlocked packages for internal development.
 
 ## Anti-Patterns
 
@@ -20,7 +20,7 @@
 
 2. **Credentials in sfdx-project.json** — Storing `sfdxAuthUrl`, sandbox usernames, or tokens in the project config file. This file is committed to version control and visible to everyone with repo access. Move auth to CI secrets, environment variables, or `sf org login` commands that store credentials in the local `.sfdx/` directory (which must be gitignored).
 
-3. **Ignoring dependency order in multi-package projects** — Creating packages that reference each other without declaring `dependencies` in `sfdx-project.json`. This works locally because all metadata is present, but fails during `sf package version create` because the packaging engine resolves each package in isolation. Always declare dependencies explicitly with minimum version constraints.
+3. **Ignoring dependency order in multi-package projects** — Creating packages that reference each other without declaring `dependencies` in `sfdx-project.json`. UNVERIFIED (2026-10-20): that this fails in `sf package version create` because the engine resolves each package in isolation. Declare dependencies explicitly, with a version, in installation order (sfdx_dev 264 L14804-14814).
 
 ## Official Sources Used
 

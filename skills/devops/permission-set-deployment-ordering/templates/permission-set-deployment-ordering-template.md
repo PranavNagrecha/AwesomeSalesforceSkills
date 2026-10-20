@@ -33,7 +33,7 @@ PSGs that depend on Stage 2:
 - [ ] PermissionSetGroup: ___
 
 ### Stage 4 — Connected App (if applicable, deploy before PSets referencing it)
-> Note: if a ConnectedApp is being deployed AND a PS references it, deploy the ConnectedApp in this stage and move the PS to Stage 5.
+> Note: if a ConnectedApp is being deployed AND a PS references it, deploy the ConnectedApp in this stage and move the PS to Stage 5 (precaution; the same-batch error is UNVERIFIED, 2026-10-20).
 - [ ] ConnectedApp: ___
 
 ### Stage 5 — Permission Sets referencing Connected Apps (if split required)
@@ -51,7 +51,7 @@ For each PS or PSG that already exists in the target org:
 
 - [ ] Retrieved deployed PSets from target org and confirmed expected permissions are present
 - [ ] Verified PSG membership is correct in target org
-- [ ] Verified no field-level security grants were silently removed
+- [ ] Verified no field-level security grants were removed
 
 ## Notes
 

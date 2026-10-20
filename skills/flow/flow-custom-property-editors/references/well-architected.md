@@ -24,6 +24,10 @@ Well-designed property editors reduce support load and improve reuse because the
 
 ## Official Sources Used
 
-- Flow Reference — https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5
+- Flow Reference — https://help.salesforce.com/s/articleView?id=sf.flow_ref.htm&type=5 — Help-only, UNVERIFIED (2026-10-20): not in the corpus.
+- Apex Developer Guide — `configurationEditor` modifier and partial CPEs: apexdev 264 L5467-5468 (registration), L27576-27578 and L27657 (partial vs full CPE).
+- Metadata API Developer Guide — InvocableActionExtension: api_meta 264 L84654 (API 65.0+), L84734-84737 (`CpeName`, `ConfiguredBy`).
+- LWC Developer Guide — Custom Property Editor JavaScript Interface: https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-custom-property-editor-interface.html — `inputVariables`, `builderContext`, `validate()`, `genericTypeMappings` and the three `configuration_editor_*` events.
+- LWC Developer Guide — Screen Component Example: https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-custom-property-editor-lwc-example.html — the `configurationEditor` attribute on `targetConfig`.
 - LWC Best Practices — https://developer.salesforce.com/docs/platform/lwc/guide/get-started-best-practices.html
 - Lightning Component Reference — https://developer.salesforce.com/docs/platform/lightning-component-reference/guide

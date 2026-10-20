@@ -7,7 +7,7 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** Instructions to create a PermissionSet XML from scratch and deploy it directly to any target org, without mentioning that this will overwrite all existing permissions.
 
-**Why it happens:** LLMs model the "add permissions" task as a straightforward write operation, analogous to writing a config file. They are not aware that the Metadata API performs a full-replace rather than a merge.
+**Why it happens:** LLMs model the "add permissions" task as a straightforward write operation, analogous to writing a config file. They are not aware that the guide requires a permission set deploy to "include all of its metadata to avoid accidentally overwriting the permission set's contents" (api_meta 264 L97417-97418); field-by-field replace-versus-merge semantics are UNVERIFIED (2026-10-20).
 
 **Correct pattern:**
 
@@ -29,7 +29,7 @@ sf project deploy start --metadata "PermissionSet:My_PS" --target-org production
 
 **What the LLM generates:** A single `sf project deploy start` command or a package.xml that includes both a ConnectedApp and a PermissionSet referencing it.
 
-**Why it happens:** LLMs optimize for "deploy everything at once" as the simplest instruction. They have no awareness of the platform-specific ConnectedApp cross-reference bug.
+**Why it happens:** LLMs optimize for "deploy everything at once" as the simplest instruction. The ConnectedApp cross-reference bug is itself UNVERIFIED (2026-10-20), so treat the split as a precaution, not a documented requirement.
 
 **Correct pattern:**
 
@@ -52,7 +52,7 @@ sf project deploy start --metadata "PermissionSet:My_PS" --target-org production
 
 **What the LLM generates:** A pipeline definition or deployment script that deploys a PermissionSetGroup without first ensuring its constituent PermissionSets are present in the target org.
 
-**Why it happens:** LLMs assume deployment ordering is handled automatically, similar to how build systems resolve dependencies. The Metadata API does not guarantee this ordering.
+**Why it happens:** LLMs assume deployment ordering is handled automatically, similar to how build systems resolve dependencies. The guide says ordered deploys must be submitted one at a time after the previous one succeeds (api_meta 264 L4246-4249).
 
 **Correct pattern:**
 
@@ -74,17 +74,17 @@ stage_2_deploy_psg:
 
 ---
 
-## Anti-Pattern 4: Treating Profile Deployment Differently from Permission Set Deployment
+## Anti-Pattern 4: Treating Profile Deployment Like Permission Set Deployment
 
-**What the LLM generates:** Advice to deploy profiles freely without the retrieve-first requirement, or vice versa.
+**What the LLM generates:** Advice that a Profile deploy replaces the target's profile the way a PermissionSet deploy is described to, or that removing a permission from profile XML revokes it.
 
 **Why it happens:** LLMs sometimes conflate profiles and permission sets or treat profiles as less risky to overwrite.
 
 **Correct pattern:**
 
-Profiles have the same full-replace behavior as PermissionSets. Both must be retrieved from the target org before deployment to avoid silent data loss. Profile deployments are additionally risky because profiles contain page layout assignments, record type visibility, and login hours — all of which are silently overwritten by a deploy that does not include those settings.
+They differ. A PermissionSet deploy must carry all of the set's metadata "to avoid accidentally overwriting" it (api_meta 264 L97417-97418). A Profile deploy is designed "to overlay the existing Profile settings", so a disabled permission is not exported and stays in the target unless the XML says `<value>false</value>` (L100265-100268); deleting login hours needs an explicit empty `loginHours` tag (L100743-100744).
 
-**Detection hint:** Any instruction that says "deploy a profile" without mentioning that it should be retrieved from the target org first.
+**Detection hint:** Any instruction that calls a Profile deploy a full-replace, or that removes a permission from profile XML and expects the target to lose it.
 
 ---
 
@@ -92,7 +92,7 @@ Profiles have the same full-replace behavior as PermissionSets. Both must be ret
 
 **What the LLM generates:** A deploy command with `--ignore-conflicts` as a general solution for permission set deployment errors, or the claim that this flag prevents permission loss.
 
-**Why it happens:** `--ignore-conflicts` is a flag that handles source-tracking conflicts, not Metadata API full-replace behavior. LLMs confuse the two different failure modes.
+**Why it happens:** `--ignore-conflicts` is a flag that handles source-tracking conflicts (it overwrites the conflicting org or local copy, sfdx_dev 264 L12089-12100), not the overwrite risk the Metadata API guide describes for permission set deploys (api_meta 264 L97417-97418). LLMs confuse the two different failure modes.
 
 **Correct pattern:**
 

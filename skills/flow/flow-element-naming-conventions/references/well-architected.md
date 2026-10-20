@@ -2,7 +2,7 @@
 
 ## Relevant Pillars
 
-- **Operational Excellence** — the on-call admin reading a fault email at
+- **Operational Excellence** (the fault-email wording in this file is UNVERIFIED (2026-10-20): Help-only) — the on-call admin reading a fault email at
   3 AM should be able to identify the failing element from its API Name
   alone, without opening Flow Builder. `Element "Get_Records_3" failed` is
   hostile to operations; `Element "Get_OpenCasesByOwner" failed` is

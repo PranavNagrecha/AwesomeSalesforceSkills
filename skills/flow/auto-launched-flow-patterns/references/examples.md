@@ -63,7 +63,7 @@ public static void routeLoans(List<Loan__c> loans) {
 [END]
 ```
 
-**Why it works:** One `start()` call processes the entire collection in one Flow transaction. No SOQL multiplication occurs because the Flow reads from the input collection rather than querying Salesforce for each record. The fault path is on every DML element to capture `{!$Flow.FaultMessage}` before the exception reaches the Apex caller.
+**Why it works:** One `start()` call processes the entire collection in one Flow transaction. No SOQL multiplication occurs because the Flow reads from the input collection rather than querying Salesforce for each record. The fault path is on every DML element to capture the fault message before the exception reaches the Apex caller (UNVERIFIED (2026-10-20): `$Flow.FaultMessage` is not in either corpus).
 
 ---
 
@@ -158,7 +158,7 @@ Content-Type: application/json
 - Start trigger: Platform Event — `Order_Fulfillment__e`
 - Entry conditions: none (process all events)
 
-*Inside the Flow:*
+*Inside the Flow (`{!$Flow.FaultMessage}` below: UNVERIFIED (2026-10-20): `$Flow.FaultMessage` is not in either corpus):*
 
 ```
 [START: Platform Event — Order_Fulfillment__e]
@@ -174,7 +174,7 @@ Content-Type: application/json
 [END]
 ```
 
-**Why it works:** The Flow runs in a new, separate transaction from the order management system. Its governor limits are fully reset — the order save is not delayed or blocked. The fault path logs `{!$Flow.FaultMessage}` to `Error_Log__c` so failures are visible without requiring the publisher to track them. Platform Event delivery is at-least-once, so the Flow should be idempotent (safe to run more than once for the same event).
+**Why it works:** The Flow runs in a separate transaction from the order management system (platform_events 264 L2187-2188), so the order save is not blocked. "Governor limits are fully reset" is UNVERIFIED (2026-10-20). The fault path logs `{!$Flow.FaultMessage}` to `Error_Log__c` so failures are visible without requiring the publisher to track them. Asynchronous platform event publishing uses the at-least-once model (platform_events 264 L6282), so the Flow should be idempotent.
 
 ---
 

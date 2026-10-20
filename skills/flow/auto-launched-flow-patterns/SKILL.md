@@ -21,7 +21,7 @@ tags:
   - platform-events
   - bulkification
 inputs:
-  - "Flow API name (exact, case-sensitive)"
+  - "Flow API name (exact, copied from Setup)"
   - "Names and data types of Flow input and output variables"
   - "The invocation context: Apex, REST API, Platform Event trigger, or subflow"
   - "Bulk volume expectations (single record vs. batch context)"
@@ -32,9 +32,9 @@ outputs:
   - "Bulkification pattern for calling Flows in batch Apex context"
   - "Review checklist for existing auto-launched Flow configurations"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-20
 ---
 
 # Auto-Launched Flow Patterns
@@ -47,10 +47,26 @@ This skill activates when a practitioner needs to invoke an auto-launched (no-UI
 
 Gather this context before working on anything in this domain:
 
-- **Flow API name:** Confirm the exact API name of the Flow from Setup > Flows. API names are case-sensitive in `Flow.Interview.createInterview()` calls; a mismatch throws a runtime exception.
-- **Variable access settings:** Each Flow variable must have its Input/Output Type set to "Input and Output," "Input Only," or "Output Only" as appropriate. Variables marked "Private" cannot be accessed by the caller — this is the most common mapping failure.
+- **Flow API name:** Confirm the exact API name of the Flow from Setup > Flows. "If the flow doesn't exist in the current org, a TypeException is thrown" (apexref 262 L158086). UNVERIFIED (2026-10-20): that API names are case-sensitive in `createInterview()`; neither corpus says so, so copy the name exactly.
+- **Variable access settings:** Each Flow variable must have its Input/Output Type set to "Input and Output," "Input Only," or "Output Only" as appropriate. In Metadata API terms these are `isInput` and `isOutput`, both false by default for variables created in API 25.0+ (api_meta 264 L75629-75658), so a new variable is Private until you change it. UNVERIFIED (2026-10-20): that this is "the most common mapping failure".
 - **Invocation context:** Know whether the caller is synchronous Apex, a batch Apex job, a Platform Event-triggered process, the REST API, or a parent Flow. Each context has different limit and bulkification implications.
-- **Governor limit budget:** Auto-launched Flows invoked from Apex share the calling transaction's governor limits — every SOQL query and DML statement inside the Flow counts against the transaction's limits. A Flow that is fine in isolation may push a batch transaction over the limit.
+- **Governor limit budget:** "SOQL and DML limits apply during flow execution" (apexref 262 L157938), so every SOQL query and DML statement inside an Apex-invoked Flow counts against the synchronous limits of 100 queries and 150 DML statements (apexdev 264 L19747, L19757). UNVERIFIED (2026-10-20): that CPU time and heap are shared in the same way.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which invoker starts the Flow: Apex, REST, platform event or parent Flow? | Decision Guidance: each has its own limit and error behaviour (platform_events 264 L2187-2188) | One invocation pattern chosen |
+| Which variables does the caller set or read, and are `isInput` / `isOutput` set? | Gotcha 4: a missing or private variable returns null (apexref 262 L158151-158152; api_meta 264 L75629-75658) | A variable contract table |
+| How many records can reach the Flow in one transaction? | Gotcha 1: SOQL and DML limits are shared (apexref 262 L157938) | A collection-input design and a limit budget |
+| What happens when an element fails and who is told? | Gotcha 2: fault paths and `FlowException` (apexref 262 L214963) | A fault connector on each element and a log target |
+| Is the Flow API name copied from Setup, and is it constant in code? | Gotcha 3: a missing flow throws TypeException (L158086) | One constant per Flow name |
+| Does the Flow need to enforce the caller's sharing? | Core Concept 1: `with sharing` on API 62.0+ (apexref 262 L157958-157962) | A sharing decision per call site |
+| Does the publisher need an answer back? | Gotcha 5: platform event flows run in a separate transaction (pe 264 L2187-2188) | Sync Apex or async event chosen on that basis |
+
+A proper configuration adds a variable contract, a limit budget and a fault path before the first call; just wiring `start()` gives you none of them.
 
 ---
 
@@ -65,32 +81,30 @@ The `Flow.Interview` class is the Apex API for invoking auto-launched Flows. The
 3. Call `interview.start()` to execute the Flow.
 4. Call `interview.getVariableValue('outputVarName')` to read output variables after `start()` returns.
 
-`createInterview` and `start()` are both synchronous. The Flow runs to completion (or fault) before `start()` returns. Any unhandled fault in the Flow causes `start()` to throw a `System.FlowException`, which must be caught in the Apex caller.
+`createInterview(flowName, inputVariables)` takes a `Map<String,Object>` of initial input values (apexref 262 L158094-158104; a namespaced overload adds the namespace, L158043-158048), and `start()` is `void` and works only for autolaunched or user provisioning flows (L158161-158177). A flow user runs the active version, falling back to the latest; an admin always runs the latest (L158179-158181). `getVariableValue(name)` returns null when the variable is not found in the running flow, and checks existence only at run time (L158151-158153). The guide recommends `createInterview()` only when you must reuse a method or class, because a packaged class needs the flow added manually and deleting a flow is not checked against it (L157941-157944); the static form is `new Flow.Interview.flowName(inputs)` (L157946-157950, example L157976-157978). `FlowException` is the built-in exception for "any problem with starting flow interviews from Apex", such as no active version (apexref 262 L214963-214964). UNVERIFIED (2026-10-20): that every unhandled Flow fault surfaces from `start()` as `System.FlowException`, that `createInterview` and `start()` are "both synchronous" as a documented guarantee, and the Apex-to-Flow type-mapping table that earlier text listed (neither corpus has one).
 
-**Type mapping:** Apex types map to Flow types as follows — `String` → Text, `Boolean` → Boolean, `Integer`/`Long`/`Decimal`/`Double` → Number or Currency, `Date` → Date, `DateTime` → DateTime, `Id`/`SObject` → Record (use the SObject Id string when mapping). Collection variables map to `List<>` in Apex. If the types do not match, `start()` or `getVariableValue()` throws a runtime exception.
+Sharing: to enforce sharing rules, run the flow or Apex on API 62.0 or later and declare the Apex class `with sharing`; the flow then enforces the sharing rules of the user who executed the class (apexref 262 L157958-157962).
 
 ### Concept 2: REST API Invocation via the Flows Resource
 
 External systems (integration middleware, Experience Cloud pages, third-party apps) can start an auto-launched Flow using the Salesforce REST API:
 
-- **Endpoint:** `POST /services/data/vXX.X/actions/standard/flow` (Invocable Actions endpoint; see also the legacy `/services/data/vXX.X/process/rules` path for older Flows).
-- For the dedicated Flows resource: `POST /services/data/vXX.X/actions/custom/flow/<FlowApiName>` where inputs are passed as a JSON body.
-- The response body contains output variable values as JSON key-value pairs.
+- **Endpoint:** `POST /services/data/vXX.X/actions/custom/flow/<FlowApiName>`; the guide lists `flow` under `/actions/custom` (api_rest 264 L13679) and shows the call with a body `{"inputs": [ { ... } ]}` (L13532-13535). UNVERIFIED (2026-10-20): `/actions/standard/flow` (not in api_rest). `/services/data/vXX.X/process/rules` is not a Flow path at all: it "accesses a list of all active workflow rules" and POST triggers them (api_rest 264 L7623-7625); the earlier text called it a legacy path for older Flows.
+- The response carries `actionName`, `errors`, `isSuccess` and `outputValues` (api_rest 264 L13589-13599).
 
-Authentication requires a valid OAuth access token with the `api` and `flow` scopes. The running user must have the "Run Flows" permission. If the Flow performs DML or SOQL, the user must also have the relevant object-level permissions.
+A flow user invoking an autolaunched flow runs the active version, else the latest (api_rest 264 L13624-13625). "Run Flows" is the user permission for flow calls (object_reference 264 L140566-140567). With the `enableFlowViaRestUsesUserCtxt` setting, a flow run via REST uses the running user's profile and permission sets for object and field access (api_meta 264 L120069-120073, API 54.0+). UNVERIFIED (2026-10-20): the `api` and `flow` OAuth scopes.
 
 ### Concept 3: Platform Event as a Flow Trigger
 
-An auto-launched Flow can be configured with a **Start element that listens for a Platform Event**. When the Platform Event fires, Salesforce starts one Flow interview per event message. This decouples the publisher (e.g., an Apex trigger) from the processing logic (the Flow). Key characteristics:
+An auto-launched Flow can be configured with a **Start element that listens for a Platform Event**. When the Platform Event fires, the flow receives the event messages: "a flow can receive a batch of event messages at once, up to a maximum of 200", in replay-ID order within the batch (platform_events 264 L2184-2186), so it is not one interview per message as earlier text said. This decouples the publisher (e.g., an Apex trigger) from the processing logic (the Flow). Key characteristics:
 
-- The Flow runs asynchronously in a separate transaction from the event publisher.
-- Because it is a separate transaction, governor limits reset — the Flow does not share limits with the publisher's Apex transaction.
-- Flow variables cannot be pre-populated by the caller; the Flow reads fields directly from the `$Record` event payload variables.
-- If the Flow faults, it logs to **Paused and Failed Flow Interviews** but does not propagate the exception back to the publisher.
+- Each platform event-triggered flow "runs asynchronously in a separate transaction from the transaction that published the event message", so there can be a delay (pe L2187-2189). Which limit set applies to that transaction is UNVERIFIED (2026-10-20): the guide does not say, and asynchronous delivery does not by itself imply asynchronous limits.
+- The Flow reads event fields through the `$Record` global variable (pe L2156); the caller does not pre-populate variables.
+- "If an event fails, the flow doesn't start. Because the flow is never triggered, a flow error email isn't sent" (pe L2201-2202). UNVERIFIED (2026-10-20): that a fault inside a started flow logs to Paused and Failed Flow Interviews.
 
 ### Concept 4: Calling an Auto-Launched Flow as a Subflow
 
-A parent Flow can invoke another auto-launched Flow using the **Subflow** element. The parent maps its own variables to the child Flow's input variables and can receive output variables back. This enables modular, reusable logic packages. When the parent calls the subflow, the child Flow runs synchronously in the same transaction, sharing the same governor limit budget.
+A parent Flow can invoke another auto-launched Flow using the **Subflow** element. The parent maps its own variables to the child Flow's input variables and can receive output variables back. This enables modular, reusable logic packages. A FlowSubflow element "references another flow, which it calls at run time" and carries input and output assignments (api_meta 264 L75363-75378). UNVERIFIED (2026-10-20): that the child runs synchronously in the same transaction and shares the parent's governor limit budget; neither corpus states it.
 
 ---
 
@@ -112,14 +126,15 @@ public static void applyPricingDiscount(List<Opportunity> opps) {
         };
 
         Flow.Interview pricingFlow = Flow.Interview.createInterview(
-            'Calculate_Opportunity_Discount',  // exact API name — case-sensitive
+            'Calculate_Opportunity_Discount',  // exact API name, copied from Setup
             inputs
         );
 
         try {
             pricingFlow.start();
         } catch (System.FlowException e) {
-            // Unhandled Flow fault propagates as FlowException
+            // FlowException covers problems starting the interview (apexref 262 L214963);
+            // that every in-flow fault surfaces this way is UNVERIFIED (2026-10-20)
             throw new AuraHandledException('Pricing flow failed: ' + e.getMessage());
         }
 
@@ -205,7 +220,7 @@ Content-Type: application/json
 ]
 ```
 
-The `errors` array is populated if the Flow throws a fault or if input variables do not match. Always check `isSuccess` before reading `outputValues`.
+The response fields are `actionName`, `errors`, `isSuccess`, `outputValues` (api_rest 264 L13589-13599); check `isSuccess` before reading `outputValues`. UNVERIFIED (2026-10-20): when `errors` is populated (fault versus input mismatch).
 
 **Why not Apex REST custom endpoint:** Using the standard Flows REST resource avoids a custom Apex class, reducing the code surface area to maintain.
 
@@ -219,7 +234,7 @@ The `errors` array is populated if the Flow throws a fault or if input variables
 | Apex trigger fires on up to 200 records and Flow does SOQL inside | Collect all records, pass as collection variable, single `start()` call | Prevents per-record SOQL multiplication against governor limits |
 | External system needs to trigger a Flow via HTTP | REST Flows resource (`/actions/custom/flow/<ApiName>`) | No custom Apex endpoint needed; standard auth applies |
 | Publisher needs to fire-and-forget async processing | Platform Event + Flow Start element listening on the event | Separate transaction; publisher does not block or share limits |
-| A complex reusable logic block is needed across multiple Flows | Auto-launched Flow called as a Subflow element | Encapsulates logic; parent maps variables; runs in same transaction |
+| A complex reusable logic block is needed across multiple Flows | Auto-launched Flow called as a Subflow element | Encapsulates logic; parent maps variables (api_meta 264 L75374-75378); same-transaction execution is UNVERIFIED (2026-10-20) |
 | Flow logic must be retried on failure with no data loss | Platform Event + Flow (with fault path that re-publishes or logs) | Async invocation decouples retries from the original transaction |
 
 ---
@@ -229,11 +244,12 @@ The `errors` array is populated if the Flow throws a fault or if input variables
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. **Identify the invoker** — Apex (single record, bulk trigger, batch), REST, platform event or parent Flow, using the Decision Guidance table; copy the Flow API name from Setup > Flows.
+2. **Fix the variable contract** — list each input and output variable with its type and confirm `isInput` / `isOutput` are set for the caller (api_meta 264 L75629-75658); prefix names `input` and `output`.
+3. **Budget the limits** — estimate SOQL and DML per interview times the maximum interviews per transaction against 100 and 150 (apexdev 264 L19747, L19757); pass a collection and call `start()` once when the caller is bulk.
+4. **Wire the failure path** — add a Fault connector to every element that can fail and wrap `start()` in a try/catch (`FlowException` covers start-up problems, apexref 262 L214963).
+5. **Run the checker** — `python3 scripts/check_auto_launched_flow_patterns.py --manifest-dir <project>`; fix loop invocations, missing fault connectors and unmatched API names.
+6. **Test both versions** — confirm which version runs (active, else latest for a flow user; always latest for an admin, apexref 262 L158179-158181) and record deviations in the template.
 
 ---
 
@@ -242,8 +258,8 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 Run through these before marking auto-launched Flow invocation work complete:
 
 - [ ] All Flow input/output variables have the correct Access setting (not "Private") and the Apex or API caller uses the exact variable API name with matching case
-- [ ] Apex callers wrap `interview.start()` in a try/catch for `System.FlowException`; uncaught Flow faults cause unhandled exceptions in the caller
-- [ ] The Flow has a Fault connector on every element that can fail (Get Records, Create Records, Update Records, Delete Records, external calls); the fault path terminates gracefully and logs the `{!$Flow.FaultMessage}` value
+- [ ] Apex callers wrap `interview.start()` in a try/catch for `System.FlowException` (start-up problems, apexref 262 L214963); that uncaught in-flow faults surface in the caller this way is UNVERIFIED (2026-10-20)
+- [ ] The Flow has a Fault connector on every element that can fail (Get Records, Create Records, Update Records, Delete Records, external calls); the fault path terminates gracefully and logs the fault message (`{!$Flow.FaultMessage}` is UNVERIFIED (2026-10-20): `$Flow.FaultMessage` is not in either corpus)
 - [ ] In bulk Apex contexts (triggers, batch jobs), the invocation passes collection variables rather than calling `start()` once per record
 - [ ] SOQL and DML counts inside the Flow have been estimated and verified to stay within the shared governor limit budget of the calling transaction
 - [ ] For REST API invocations, the integration user has the "Run Flows" permission and the required object permissions for any DML the Flow performs
@@ -255,15 +271,15 @@ Run through these before marking auto-launched Flow invocation work complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Auto-launched Flows share the calling Apex transaction's governor limits** — SOQL queries, DML statements, CPU time, and heap space consumed inside the Flow all count against the same 100-SOQL/150-DML limits as the Apex caller. A Flow that is well within limits when called in isolation can push a batch trigger transaction into a LimitException. Always budget Flow resource usage when designing Apex-invoked Flows.
+1. **Auto-launched Flows share the calling Apex transaction's SOQL and DML limits** — "SOQL and DML limits apply during flow execution" (apexref 262 L157938), against 100 queries and 150 DML statements synchronously (apexdev 264 L19747, L19757). UNVERIFIED (2026-10-20): CPU time and heap sharing. A Flow that is well within limits alone can push a batch trigger transaction into a LimitException; budget Flow resource usage when designing Apex-invoked Flows.
 
-2. **`$Flow.FaultMessage` is only available on the Fault path** — If the Flow does not have a Fault connector on a failing element, the error propagates as an unhandled `System.FlowException` in the Apex caller. The fault message is not automatically logged. The best practice is to add a fault path on every DML/SOQL element that writes `{!$Flow.FaultMessage}` to a custom log object or sends an alert email. Without this, debugging production failures requires parsing generic exception messages.
+2. **`$Flow.FaultMessage` and the Fault path** — UNVERIFIED (2026-10-20): `$Flow.FaultMessage` is in neither corpus, nor is its fault-path-only availability, nor that the fault message is not logged automatically. The guide does say `FlowException` signals a problem starting an interview (apexref 262 L214963). Add a fault path on every DML/SOQL element and record the message in a custom log object or alert.
 
-3. **Flow API name is case-sensitive in Apex and REST calls** — `Flow.Interview.createInterview('my_flow', inputs)` and `Flow.Interview.createInterview('My_Flow', inputs)` are different references. Salesforce stores Flow API names exactly as entered. A mismatch causes a runtime exception. Always copy the API name from Setup > Flows rather than typing it by hand.
+3. **Flow API name must match** — if the flow doesn't exist in the org, a TypeException is thrown (apexref 262 L158086). UNVERIFIED (2026-10-20): that `my_flow` and `My_Flow` are different references; always copy the API name from Setup > Flows rather than typing it.
 
-4. **Output variables are `null` if `start()` throws or if the variable is not reachable** — If the Flow execution path never assigns the output variable (e.g., the path was short-circuited by a Decision element), `getVariableValue()` returns `null`. Always null-check output values in Apex before casting or using them.
+4. **Output variables are `null` when the variable is not found** — `getVariableValue()` returns null if the variable can't be found in the running flow (apexref 262 L158151-158152). UNVERIFIED (2026-10-20): the same result when a path never assigns the variable, and when `start()` throws. Null-check output values in Apex before casting.
 
-5. **Platform Event-triggered Flows run asynchronously with reset limits** — Unlike Apex-invoked Flows, Platform Event-triggered Flows run in a new transaction. This means they cannot be controlled or blocked by the publisher, and their failures do not affect the publisher's transaction. However, it also means that any record Ids passed in the event payload must be re-queried inside the Flow — the publisher's in-memory state is not shared.
+5. **Platform Event-triggered Flows run in a separate transaction** — "asynchronously in a separate transaction from the transaction that published the event message" (pe 264 L2187-2188), so the publisher cannot block them and their failures do not roll back the publisher. Record Ids in the event payload must be re-queried inside the Flow. The limit set for that transaction is UNVERIFIED (2026-10-20); do not assume asynchronous limits from the word asynchronous.
 
 ---
 
@@ -274,7 +290,7 @@ Non-obvious platform behaviors that cause real production problems:
 | Apex Flow.Interview invocation snippet | Copy-paste Apex pattern with correct variable mapping, start(), and exception handling |
 | Bulk collection invocation pattern | Apex pattern for passing record collections to a Flow in a trigger or batch context |
 | REST API request/response example | HTTP request structure for calling a Flow from an external system |
-| Fault path design recommendation | Guidance for connecting fault paths and capturing `{!$Flow.FaultMessage}` |
+| Fault path design recommendation | Guidance for connecting fault paths and capturing the fault message (`{!$Flow.FaultMessage}`: UNVERIFIED (2026-10-20): `$Flow.FaultMessage` is not in either corpus) |
 
 ---
 

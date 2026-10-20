@@ -106,7 +106,7 @@ For HTTP Callout action — Transform element or Apex parsing method used? [ ] T
 
 **For HTTP Callout action — Decision element checking `Response_Status_Code >= 400`?** [ ] Yes [ ] N/A (External Services only)
 
-**`$Flow.FaultMessage` captured in a variable?** [ ] Yes — variable name: _______________
+**Fault message captured in a variable? (`$Flow.FaultMessage`: UNVERIFIED (2026-10-20): Help-only; neither corpus holds it)** [ ] Yes — variable name: _______________
 
 **On fault, user sees:** _______________
 
@@ -134,7 +134,7 @@ Copy from SKILL.md Review Checklist and tick as you complete:
 - [ ] Named Credential exists and has Permission Set assigned to the External Credential principal
 - [ ] Flow type is not record-triggered (or async dispatch is in place)
 - [ ] Every External Service action and HTTP Callout action has a fault connector wired
-- [ ] `$Flow.FaultMessage` is captured on the fault path
+- [ ] The fault message is captured on the fault path (`$Flow.FaultMessage`: UNVERIFIED (2026-10-20): Help-only; neither corpus holds it)
 - [ ] HTTP Callout action responses include a Decision element checking `Response_Status_Code >= 400`
 - [ ] No raw API error text is displayed directly to end users
 - [ ] Collection variables for array responses are initialized before loop elements

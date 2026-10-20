@@ -8,11 +8,15 @@ Scans Salesforce Flow metadata XML files for common notification-related issues:
 - HTML tags in custom notification body text
 - Presence of Send SMS or Post Message to Slack without documented license notes
 
+Severity contract: unparseable Flow XML and a missing directory are ERRORs (exit 1 always); every
+other finding is REVIEW and exits 0 unless --strict. A directory with no Flow files is one WARN,
+exit 0. The rules are heuristics: the Help-only premises (HTML ignored in bell bodies, template
+inputs unsupported) are UNVERIFIED (2026-10-20) against both corpora.
+
 Uses stdlib only — no pip dependencies.
 
 Usage:
-    python3 check_flow_email_and_notifications.py [--help]
-    python3 check_flow_email_and_notifications.py --manifest-dir path/to/metadata
+    python3 check_flow_email_and_notifications.py --manifest-dir path/to/metadata [--strict]
 """
 
 from __future__ import annotations
@@ -29,7 +33,7 @@ FLOW_NS = "http://soap.sforce.com/2006/04/metadata"
 # Action names used in Flow metadata XML for notification actions
 CUSTOM_NOTIF_ACTION = "customNotificationAction"
 SEND_EMAIL_ACTION = "emailSimple"
-POST_SLACK_ACTION = "chatterPost"  # varies by org; check actionName contains slack
+POST_SLACK_ACTION = "slackPostMessage"  # FlowActionCall actionType, API 54.0+ (api_meta 264 L71465-71466)
 SMS_ACTION_PATTERN = re.compile(r"send.*sms|messaging.*send", re.IGNORECASE)
 HTML_TAG_PATTERN = re.compile(r"<[a-zA-Z][^>]*>")
 USER_ID_PATTERN = re.compile(r"\{![^}]+\.Id\}")  # merge field ending in .Id
@@ -46,6 +50,7 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on REVIEW/WARN findings too.")
     return parser.parse_args()
 
 
@@ -62,7 +67,7 @@ def check_flow_file(flow_path: Path) -> list[str]:
     try:
         tree = ET.parse(flow_path)
     except ET.ParseError as exc:
-        issues.append(f"[{fname}] XML parse error: {exc}")
+        issues.append(f"ERROR: [{fname}] XML parse error: {exc}")
         return issues
 
     root = tree.getroot()
@@ -105,8 +110,8 @@ def check_flow_file(flow_path: Path) -> list[str]:
                 fault_el = action_call.find(_ns("faultConnector"))
                 if fault_el is None:
                     issues.append(
-                        f"[{fname}] Action '{elem_name}': Send Custom Notification has no fault connector. "
-                        "Add a fault path to handle the 1,000/hour org limit."
+                        f"REVIEW: [{fname}] Action '{elem_name}': Send Custom Notification has no fault connector. "
+                        "Add a fault path (the 10,000 notification-actions/hour cap may not raise a fault)."
                     )
 
             # Check recipientIds input
@@ -123,9 +128,10 @@ def check_flow_file(flow_path: Path) -> list[str]:
                             val = str_val_el.text
                             if "@" in val:
                                 issues.append(
-                                    f"[{fname}] Action '{elem_name}': recipientIds appears to contain an "
-                                    f"email address ('{val}'). Send Custom Notification requires Salesforce "
-                                    "User IDs, not email addresses."
+                                    f"REVIEW: [{fname}] Action '{elem_name}': recipientIds appears to contain an "
+                                    f"email address ('{val}'). Recipients must be IDs that resolve to users (the Apex "
+                                    "counterpart takes User, Account, Opportunity, Group or Queue IDs, apexref 262 L166767-166781), "
+                                    "never an email address."
                                 )
 
             # Check body for HTML
@@ -138,9 +144,9 @@ def check_flow_file(flow_path: Path) -> list[str]:
                         if str_val_el is not None and str_val_el.text:
                             if HTML_TAG_PATTERN.search(str_val_el.text):
                                 issues.append(
-                                    f"[{fname}] Action '{elem_name}': Custom notification body contains "
-                                    "HTML tags. Bell notifications render plain text only — HTML tags "
-                                    "will appear as literal characters."
+                                    f"REVIEW: [{fname}] Action '{elem_name}': Custom notification body contains "
+                                    "HTML tags. This package treats bell bodies as plain text (UNVERIFIED, 2026-10-20: "
+                                    "Help-only), so the tags may show as literal characters."
                                 )
 
         # Detect Send Email core action (emailSimple)
@@ -150,16 +156,17 @@ def check_flow_file(flow_path: Path) -> list[str]:
                 param_name = ip.find(_ns("name"))
                 if param_name is not None and "template" in (param_name.text or "").lower():
                     issues.append(
-                        f"[{fname}] Action '{elem_name}': Send Email action has a 'template' input "
-                        "parameter. The Flow Send Email core action does not support Classic Email "
-                        "Templates — use a Text Template resource for the body instead."
+                        f"REVIEW: [{fname}] Action '{elem_name}': Send Email action has a 'template' input "
+                        "parameter. This package treats Classic Email Templates as unsupported by Send Email "
+                        "(UNVERIFIED, 2026-10-20: Help-only); confirm the input in your org, or use a Text "
+                        "Template resource for the body."
                     )
 
             # Check for fault connector
             fault_el = action_call.find(_ns("faultConnector"))
             if fault_el is None and elem_name not in elements_with_fault:
                 issues.append(
-                    f"[{fname}] Action '{elem_name}': Send Email action has no fault connector. "
+                    f"REVIEW: [{fname}] Action '{elem_name}': Send Email action has no fault connector. "
                     "Email sends can fail due to daily limits or invalid addresses."
                 )
 
@@ -168,16 +175,16 @@ def check_flow_file(flow_path: Path) -> list[str]:
             fault_el = action_call.find(_ns("faultConnector"))
             if fault_el is None and elem_name not in elements_with_fault:
                 issues.append(
-                    f"[{fname}] Action '{elem_name}': Send SMS action has no fault connector. "
+                    f"REVIEW: [{fname}] Action '{elem_name}': Send SMS action has no fault connector. "
                     "SMS actions require Digital Engagement license and can fail if unavailable."
                 )
 
         # Detect Slack actions
-        if "slack" in action_name or "postmessagetoslack" in action_name:
+        if "slack" in action_name or "postmessagetoslack" in action_name or action_type == "slackpostmessage":
             fault_el = action_call.find(_ns("faultConnector"))
             if fault_el is None and elem_name not in elements_with_fault:
                 issues.append(
-                    f"[{fname}] Action '{elem_name}': Post Message to Slack action has no fault "
+                    f"REVIEW: [{fname}] Action '{elem_name}': Post Message to Slack action has no fault "
                     "connector. Slack OAuth tokens can expire or be revoked, causing runtime faults."
                 )
 
@@ -188,18 +195,13 @@ def check_flow_email_and_notifications(manifest_dir: Path) -> list[str]:
     """Scan all Flow XML files in manifest_dir for notification-related issues."""
     issues: list[str] = []
 
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
     # Look for Flow files — typically under force-app/main/default/flows/ or flows/
     flow_files = list(manifest_dir.rglob("*.flow-meta.xml"))
     if not flow_files:
         flow_files = list(manifest_dir.rglob("*.flow"))
 
     if not flow_files:
-        # Not an error — the manifest may not contain any flows
-        return issues
+        return [f"WARN: no Flow metadata found under {manifest_dir}"]
 
     for flow_path in sorted(flow_files):
         issues.extend(check_flow_file(flow_path))
@@ -210,6 +212,9 @@ def check_flow_email_and_notifications(manifest_dir: Path) -> list[str]:
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
     issues = check_flow_email_and_notifications(manifest_dir)
 
     if not issues:
@@ -217,9 +222,11 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"ISSUE: {issue}")
+        print(issue)
 
-    return 1
+    if any(i.startswith("ERROR:") for i in issues):
+        return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

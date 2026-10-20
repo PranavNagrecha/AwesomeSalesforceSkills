@@ -2,9 +2,9 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Record-Triggered Flows Cannot Make Synchronous Callouts
+## Gotcha 1: Record-Triggered Flows Cannot Make Synchronous Callouts (UNVERIFIED for flows, 2026-10-20)
 
-**What happens:** A record-triggered flow (before-save or after-save) that contains an External Service action or HTTP Callout action throws `System.CalloutException: You have uncommitted work pending` at runtime. The flow terminates and the record save may roll back depending on the flow type.
+**What happens:** UNVERIFIED (2026-10-20) for flows (the Apex rule and message are apexdev 264 L8910-8912): a record-triggered flow (before-save or after-save) that contains an External Service action or HTTP Callout action throws `System.CalloutException: You have uncommitted work pending` at runtime. The flow terminates and the record save may roll back depending on the flow type.
 
 **When it occurs:** Any time a callout action is placed directly inside the main interview of a record-triggered flow, including callouts in subflows called from a record-triggered flow. The restriction applies regardless of whether the callout itself would succeed.
 
@@ -15,9 +15,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: HTTP Callout Action Does Not Fault on 4xx/5xx HTTP Responses
+## Gotcha 2: HTTP Callout Action Does Not Fault on 4xx/5xx HTTP Responses (UNVERIFIED, 2026-10-20)
 
-**What happens:** The built-in HTTP Callout core action returns `Response_Status_Code` as a Number variable regardless of the HTTP response. A `400 Bad Request`, `401 Unauthorized`, or `500 Internal Server Error` from the server results in a successful action execution (no fault). The fault connector only activates on network-level failures (connection timeout, DNS failure, SSL error).
+**What happens:** (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it) The built-in HTTP Callout core action returns `Response_Status_Code` as a Number variable regardless of the HTTP response. A `400 Bad Request`, `401 Unauthorized`, or `500 Internal Server Error` from the server results in a successful action execution (no fault). The fault connector only activates on network-level failures (connection timeout, DNS failure, SSL error).
 
 **When it occurs:** Every time an HTTP Callout action is used and the external server returns a non-2xx status. If the developer only wires the fault connector and does not check the status code variable, a failed API call appears to succeed to the flow, and downstream logic (e.g., updating records based on the response) proceeds with bad data.
 
@@ -25,9 +25,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 3: External Services Spec Validation Silently Drops Unsupported Schema Features
+## Gotcha 3: External Services Spec Validation Drops Unsupported Schema Features (silent drop UNVERIFIED, 2026-10-20)
 
-**What happens:** When importing an OpenAPI spec that contains `oneOf`, `anyOf`, `allOf`, recursive `$ref` references, or complex `enum` arrays on request body properties, Salesforce may import the spec successfully (showing no hard error) but silently omit the affected parameters from the generated action signature. At runtime, those fields are simply not available as inputs or outputs in Flow Builder.
+**What happens:** (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it; enum support is current system version 9, api_meta 264 L66709, so the enum case applies to older registrations only.) When importing an OpenAPI spec that contains `oneOf`, `anyOf`, `allOf`, recursive `$ref` references, or complex `enum` arrays on request body properties, Salesforce may import the spec successfully (showing no hard error) but silently omit the affected parameters from the generated action signature. At runtime, those fields are simply not available as inputs or outputs in Flow Builder.
 
 **When it occurs:** Especially common with OpenAPI 3.0 specs from modern REST APIs that use discriminator patterns or polymorphic schemas. Also triggered by specs that use `$ref` within `$ref` chains beyond one level of nesting.
 
@@ -37,7 +37,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 4: External Credential Permission Set Assignment Is Required at Runtime, Not Just at Setup
 
-**What happens:** The HTTP callout fails with a generic authentication error (`Unauthorized` or `forbidden`) even though the Named Credential is correctly configured and the External Service registration completed without errors. The error message does not mention Permission Sets.
+**What happens:** Users assigned to the permission set can make callouts using a named credential that references the external credential (api_meta 264 L97688-97690). The HTTP callout fails with a generic authentication error (`Unauthorized` or `forbidden`; wording UNVERIFIED (2026-10-20): Help-only; neither corpus holds it) even though the Named Credential is correctly configured and the External Service registration completed without errors. The error message does not mention Permission Sets.
 
 **When it occurs:** The running user (or the automated context, such as a scheduled flow) does not have the Permission Set that is assigned to the External Credential principal. This is checked at callout runtime, not at flow activation. Flows that are tested by an admin (who has the Permission Set) pass fine, then fail for regular users in production.
 
@@ -45,19 +45,19 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: Named Credential URL Trailing Slash Produces Double-Slash in Path
+## Gotcha 5: Named Credential URL Trailing Slash Produces Double-Slash in Path (UNVERIFIED, 2026-10-20)
 
-**What happens:** The concatenated request URL contains `//` (double slash) in the resource path, causing the external server to return `404 Not Found` or route the request incorrectly. For example, `https://api.example.com/` + `/v1/orders` becomes `https://api.example.com//v1/orders`.
+**What happens:** (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it) The concatenated request URL contains `//` (double slash) in the resource path, causing the external server to return `404 Not Found` or route the request incorrectly. For example, `https://api.example.com/` + `/v1/orders` becomes `https://api.example.com//v1/orders`.
 
 **When it occurs:** When the Named Credential's URL field ends with `/` and the HTTP Callout action's Path field (or the spec's path definition) begins with `/`. This is extremely common because it is intuitive to end a base URL with a slash.
 
-**How to avoid:** Always configure the Named Credential URL without a trailing slash (e.g., `https://api.example.com`). Paths in HTTP Callout actions and OpenAPI specs should begin with `/`. This is a Salesforce platform-wide convention, not specific to Flow.
+**How to avoid:** Always configure the Named Credential URL without a trailing slash (e.g., `https://api.example.com`). Paths in HTTP Callout actions and OpenAPI specs should begin with `/` (for External Services the `schemaUrl` path "must begin with "/"", api_meta 264 L66664). This is a Salesforce platform-wide convention, not specific to Flow.
 
 ---
 
-## Gotcha 6: Collection Output Variables From External Services Actions Must Be Initialized
+## Gotcha 6: Collection Output Variables From External Services Actions Must Be Initialized (UNVERIFIED, 2026-10-20)
 
-**What happens:** If an External Service action returns an array (list) and the output is mapped to a collection variable, and that collection variable has never been initialized in the flow, the loop element that iterates over it either throws an error or silently processes zero items when the response contains data.
+**What happens:** (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it) If an External Service action returns an array (list) and the output is mapped to a collection variable, and that collection variable has never been initialized in the flow, the loop element that iterates over it either throws an error or silently processes zero items when the response contains data.
 
 **When it occurs:** When flow variables used to receive list outputs from External Service actions are declared but not assigned a default empty collection before the action runs. This is most common in flows built incrementally where variables are added later.
 

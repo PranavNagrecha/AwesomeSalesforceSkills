@@ -67,7 +67,7 @@ makes both mistakes in the same pass):
 ```
 
 **Why it happens:** the model conflates Label (human text, allows spaces)
-with API Name (technical identifier, alphanumeric + underscore only).
+with API Name (technical identifier, alphanumeric + underscore only; UNVERIFIED (2026-10-20): Help-only; neither corpus holds it).
 JavaScript / TypeScript training-data bleed pushes camelCase as the default
 identifier shape.
 
@@ -86,7 +86,7 @@ special characters.
 
 **Detection hint:** any `<name>` value containing a space, a hyphen, or
 ending with an underscore-numeric collision suffix (`_1`, `_2` after
-auto-replacement).
+auto-replacement; UNVERIFIED (2026-10-20): Help-only; neither corpus holds it).
 
 ---
 
@@ -199,6 +199,7 @@ the model has no platform feedback to learn from.
 > change. Salesforce will allow the rename to save with no warning, but
 > every parent flow calling this Subflow will fail at the next interview
 > with `The flow couldn't find a referenced variable inputAccountId.`
+> (UNVERIFIED (2026-10-20): Help-only; neither corpus holds it)
 > Recommended approach:
 > 1. Bump the Flow version per `flow-versioning-strategy`.
 > 2. In the new version, add `inputAcctId` alongside `inputAccountId`.

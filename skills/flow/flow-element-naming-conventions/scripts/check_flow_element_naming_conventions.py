@@ -4,8 +4,9 @@
 Every rule below is transcribed from this skill package -- nothing is invented here.
 The skill documents a full **prefix table** (SKILL.md "Decision Guidance",
 L202-223) plus a resource-prefix table (SKILL.md "Concept 2", L81-91), so both are
-encoded literally. Where a rule is a hard platform constraint (80-char cap,
-alphanumeric + underscore, reserved words) it is an ERROR; where it is this skill's
+encoded literally. A missing <name> or unparseable XML is an ERROR. The 80-char cap,
+character set and reserved words are Help-only premises (UNVERIFIED, 2026-10-20) and so are
+WARN (W-CHARSET, W-LENGTH-80, W-RESERVED); where a rule is this skill's
 house style (the verb prefix on an element, ``LogFault_<Parent>`` on a fault target)
 it is a WARN, because sibling at-bar Flow skills in this repo ship metadata examples
 that are legal, readable, and still diverge from the verb table -- failing a build on
@@ -14,12 +15,8 @@ house style would make the checker unusable across the library.
 Rules encoded
 -------------
 ERROR (platform constraint or an anti-pattern the skill calls out by name)
-  E-CHARSET       API Name has a space/hyphen/other non-``[A-Za-z0-9_]`` char, or does
-                  not start with a letter.        SKILL.md L52; gotchas.md Gotcha 3;
-                  llm-anti-patterns.md AP2 detection hint L78-80.
-  E-LENGTH        API Name > 80 characters.       SKILL.md L52, L257; gotchas.md Gotcha 6.
-  E-RESERVED      API Name is a reserved word (``null``/``true``/``false``/``Id``/``Name``).
-                                                  SKILL.md L52; gotchas.md Gotcha 4.
+  E-NO-NAME       An element or resource has no ``<name>`` (FlowElement ``name`` is the
+                  element's unique name, api_meta 264 L73105).
   E-AUTONAME      API Name ends ``_<digits>`` or is a ``my<Type>_<n>`` PB-migration
                   leftover.                       llm-anti-patterns.md AP1 L42-43;
                   gotchas.md Gotcha 5; well-architected.md L71 ("regex-grep Flow XML
@@ -41,7 +38,13 @@ ERROR (platform constraint or an anti-pattern the skill calls out by name)
                                                   SKILL.md Pattern 3 L151-155;
                   llm-anti-patterns.md AP3 L99, L125-126.
 
-WARN (this skill's house style; never fails a run unless ``--strict``)
+WARN (Help-only premise or this skill's house style; never fails a run unless ``--strict``)
+  W-CHARSET       API Name has a space/hyphen/other non-``[A-Za-z0-9_]`` char, or does
+                  not start with a letter. The rule is documented for the Flow's own
+                  fullName (api_meta 264 L70669-70672), not for element names (UNVERIFIED).
+  W-LENGTH-80     API Name > 80 characters. Help-only cap (UNVERIFIED, 2026-10-20).
+  W-RESERVED      API Name is ``null``/``true``/``false``/``Id``/``Name`` (gotchas.md Gotcha 4;
+                  Help-only, UNVERIFIED 2026-10-20).
   W-VERB-PREFIX   Element API Name does not open with the verb token its element type
                   maps to (``Get_``/``Update_``/``Create_``/``Delete_``/``Decision_``/
                   ``Loop_``/``Assignment_``/``Screen_``/``Action_``/``Subflow_``).
@@ -88,8 +91,11 @@ Not enforceable by this checker (see the skill for the human judgement)
   - Whether an outcome name states the *affirmative* condition its rule tests
     (SKILL.md Pattern 3) -- that requires reading the ``<conditions>`` semantics.
 
-Stdlib only. Exit 0 clean (or WARN/INFO only), 1 on any ERROR, 2 when --manifest-dir
-does not exist.
+Stdlib only. Exit 0 clean (or WARN/INFO only), 1 on any ERROR (including a missing
+--manifest-dir), and 1 on WARN too under --strict. The 80-character cap, character set and
+reserved-word premises of W-LENGTH-80 / W-CHARSET / W-RESERVED are Help-only (UNVERIFIED,
+2026-10-20); api_meta 264 L73105 says only that a FlowElement name is unique, so these are
+WARN, not ERROR.
 
 Usage:
     python3 check_flow_element_naming_conventions.py --manifest-dir path/to/metadata
@@ -106,7 +112,7 @@ from xml.etree import ElementTree as ET
 
 EXIT_OK = 0
 EXIT_ERRORS = 1
-EXIT_BAD_INPUT = 2
+EXIT_BAD_INPUT = 1
 
 # SKILL.md Decision Guidance L202-223 -- element container tag -> canonical verb prefix.
 ELEMENT_VERB_PREFIX: dict[str, str] = {
@@ -270,23 +276,22 @@ def check_api_name_shape(api_name: str, kind: str, path: Path, out: list[Finding
     if not VALID_API_NAME.match(api_name):
         out.append(
             Finding(
-                "ERROR",
-                "E-CHARSET",
+                "WARN",
+                "W-CHARSET",
                 path,
                 f"{kind} API Name `{api_name}` is not alphanumeric-plus-underscore starting "
-                f"with a letter. Flow Builder silently rewrites spaces and special "
-                f"characters to `_` (gotchas.md Gotcha 3), so the saved name stops matching "
-                f"the one you typed.",
+                f"with a letter, the rule api_meta 264 L70669-70672 states for a flow's "
+                f"fullName; for element names it is Help-only (UNVERIFIED, 2026-10-20).",
             )
         )
     if len(api_name) > MAX_API_NAME:
         out.append(
             Finding(
-                "ERROR",
-                "E-LENGTH",
+                "WARN",
+                "W-LENGTH-80",
                 path,
-                f"{kind} API Name `{api_name}` is {len(api_name)} characters; the platform "
-                f"cap is {MAX_API_NAME} (SKILL.md 'Before Starting').",
+                f"{kind} API Name `{api_name}` is {len(api_name)} characters; SKILL.md 'Before "
+                f"Starting' gives a {MAX_API_NAME}-character cap (Help-only, UNVERIFIED 2026-10-20).",
             )
         )
     elif len(api_name) > SOFT_API_NAME:
@@ -303,11 +308,11 @@ def check_api_name_shape(api_name: str, kind: str, path: Path, out: list[Finding
     if api_name.lower() in RESERVED_WORDS:
         out.append(
             Finding(
-                "ERROR",
-                "E-RESERVED",
+                "WARN",
+                "W-RESERVED",
                 path,
-                f"{kind} API Name `{api_name}` is a reserved word. It either refuses to save "
-                f"or silently shadows the built-in (gotchas.md Gotcha 4).",
+                f"{kind} API Name `{api_name}` is on gotchas.md Gotcha 4's reserved list; that "
+                f"it refuses to save or shadows a built-in is Help-only (UNVERIFIED, 2026-10-20).",
             )
         )
     if AUTO_NAME.search(api_name) or PB_AUTO_NAME.match(api_name):
@@ -541,8 +546,8 @@ def check_decision(element: ET.Element, api_name: str, path: Path, out: list[Fin
                 path,
                 f"Decision `{api_name}` has {len(rules)} outcome(s) but a blank or absent "
                 f"<defaultConnectorLabel>. SKILL.md Pattern 3: the Default outcome always gets "
-                f"an explicit name (`Default`, `NoMatch`, `<NegativeCondition>_Default`) or it "
-                f"shows as `outcome2` in fault diagnostics.",
+                f"an explicit name (`Default`, `NoMatch`, `<NegativeCondition>_Default`); "
+                f"`defaultConnectorLabel` is its label (api_meta 264 L72943).",
             )
         )
     elif WEAK_OUTCOME.match(default_label):
@@ -642,7 +647,7 @@ def check_flow_file(path: Path, out: list[Finding]) -> None:
         api_name = child_text(child, "name")
         if not api_name:
             out.append(
-                Finding("ERROR", "E-CHARSET", path, f"<{tag}> element has no <name>.")
+                Finding("ERROR", "E-NO-NAME", path, f"<{tag}> element has no <name>.")
             )
             continue
         check_api_name_shape(api_name, f"<{tag}>", path, out)
@@ -659,7 +664,7 @@ def check_flow_file(path: Path, out: list[Finding]) -> None:
             continue
         api_name = child_text(child, "name")
         if not api_name:
-            out.append(Finding("ERROR", "E-CHARSET", path, f"<{tag}> resource has no <name>."))
+            out.append(Finding("ERROR", "E-NO-NAME", path, f"<{tag}> resource has no <name>."))
             continue
         check_api_name_shape(api_name, f"<{tag}>", path, out)
         check_resource_prefix(child, tag, api_name, path, out)

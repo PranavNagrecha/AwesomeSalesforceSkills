@@ -31,12 +31,12 @@ Source the ID from a User record (Get Records on User object), not from an email
 **Correct pattern:**
 
 ```text
-WRONG: Send Email action → Template: "Case_Confirmation_Template"  (does not exist in this action)
+WRONG: Send Email action → Template: "Case_Confirmation_Template"  (template support in this action is UNVERIFIED (2026-10-20): Help-only)
 CORRECT: Create a Text Template resource in Flow Builder
          → Send Email action → Body: {!myTextTemplate}
 ```
 
-If Classic Template support is required, use an Email Alert invoked from Flow, not the Send Email core action.
+If Classic Template support is required, use an Email Alert invoked from Flow, not the Send Email core action: `emailAlert` "sends an email by referencing a workflow email alert" while `emailSimple` "sends an email by using flow resources" (api_meta 264 L71272-71275). Whether Send Email accepts a template ID at all is UNVERIFIED (2026-10-20): this package's Pattern 2 table lists an `Email Template ID` input, so check the action in your org.
 
 **Detection hint:** Any instruction referencing a "template" parameter, template ID, or template name in the context of the Flow Send Email core action is incorrect.
 
@@ -131,16 +131,16 @@ Before configuring Post Message to Slack in Flow:
 
 **Why it happens:** Two distinct failure modes in one paragraph.
 
-1. **Wrong magnitude.** The documented allocation is **10,000 notification actions per hour per org** — 10x the figure LLMs typically produce. 1,000 is a very common Salesforce round number (it is, among other things, the Developer-edition platform-event publish allocation), so it is the default guess when the real value is not recalled.
-2. **Inverted mechanism — the damaging half.** The model reasons "governor limit → exception → fault path," because that is how nearly every Apex and DML limit behaves. Custom notifications do not work that way. Salesforce's own wording: *"no more notifications are sent in that hour, and all unsent notifications are lost. Notification actions resume in the next hour."* Silent drop, no exception, no rollback. A practitioner following the generated advice builds a fault connector for an exception that is never thrown, then concludes from the absence of faults that the flow is healthy while notifications are quietly being discarded.
+1. **Wrong magnitude.** The documented allocation is **10,000 notification actions per hour per org** (pkg2_dev 264 L5916) — 10x the figure LLMs typically produce. 1,000 is a very common Salesforce round number (it is, among other things, the Developer-edition platform-event publish allocation), so it is the default guess when the real value is not recalled.
+2. **Inverted mechanism — the damaging half.** The model reasons "governor limit → exception → fault path," because that is how nearly every Apex and DML limit behaves. Salesforce Help is quoted as saying *"no more notifications are sent in that hour, and all unsent notifications are lost. Notification actions resume in the next hour."* (UNVERIFIED (2026-10-20): Help-only; neither corpus holds the quote): silent drop, no exception, no rollback. A practitioner following the generated advice builds a fault connector for an exception that is never thrown, then concludes from the absence of faults that the flow is healthy while notifications are quietly being discarded.
 
 The 75-character title figure is a third, unrelated invention: it matches neither the storage limit nor the display truncation point.
 
 **Correct version:**
 
-- 10,000 notification **actions** per hour per org. One action fanned out to many users costs 1 — each notification can target up to 10,000 recipients.
-- Overflow is a **silent drop** for the remainder of the hour; processing resumes on the next hour boundary. Nothing throws.
-- Title: 250 characters stored, ~120 displayed on desktop. Body: 750 stored, ~320 displayed.
-- Org retains the most recent 1,000,000 custom notifications (trimmed at 1,200,000).
+- 10,000 notification **actions** per hour per org (pkg2_dev 264 L5916). That one action fanned out to many users costs 1, and a 10,000-recipient ceiling per notification, are UNVERIFIED (2026-10-20): Help-only; the Apex `send()` takes up to 500 recipient IDs (apexref 262 L166781).
+- Overflow as a **silent drop** for the rest of the hour, with nothing thrown, is UNVERIFIED (2026-10-20): Help-only. Note that the Apex `CustomNotification.send()` "can throw an exception" (apexref 262 L166648).
+- Title: 250 characters, body: 750 (apexref 262 L166708, L166711); ~120 / ~320 displayed on desktop is UNVERIFIED (2026-10-20): Help-only.
+- Org retains the most recent 1,000,000 custom notifications (trimmed at 1,200,000): UNVERIFIED (2026-10-20): Help-only.
 
 **Detection hint:** grep Flow notification guidance for `1,000 custom notification` / `1000 notifications per hour`, and for `75 characters` near `title`. The generalisable structural hint is stronger than either number: **any claim that a limit both "fails silently" and "faults" is self-contradictory** — one of the two is wrong, and for custom notifications it is the fault. Concretely, flag any text that pairs "Send Custom Notification" with "fault connector" as the recommended overflow control; a fault connector cannot detect this limit.

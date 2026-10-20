@@ -26,14 +26,14 @@
 
 6. Display `varTemperature` and `varWeatherDesc` on a screen component.
 
-7. Wire the HTTP Callout action's **fault connector** to a fault screen that shows "Unable to retrieve weather data. Please try again." and logs `$Flow.FaultMessage` to a custom log object.
+7. Wire the HTTP Callout action's **fault connector** to a fault screen that shows "Unable to retrieve weather data. Please try again." and logs the fault message (`$Flow.FaultMessage` is UNVERIFIED (2026-10-20): not in either corpus) to a custom log object.
 
 ```
 HTTP Callout Configuration (Flow Builder):
   Named Credential: OpenWeatherMap_NC
   Method: GET
   Path: /data/2.5/weather?q={!Input_City}&units=metric
-  Response_Body → varResponseBody (Text)
+  Response_Body → varResponseBody (Text)   [output names UNVERIFIED, 2026-10-20: Help-only]
   Response_Status_Code → varStatusCode (Number)
 
 Decision: varStatusCode >= 400 → Error Screen

@@ -65,12 +65,12 @@ sf project deploy start \
 
 **Context:** A developer adds a new custom field `Account.Risk_Score__c` and a validation rule that references it. The validation rule is included in the `package.xml`, but the custom field is accidentally omitted.
 
-**Problem:** The deploy fails in production with: `Error: Field Account.Risk_Score__c does not exist`. The team has already opened the production window and now must scramble.
+**Problem:** The deploy fails in production with a missing-field error (the exact text is UNVERIFIED, 2026-10-20: not in either corpus). The team has already opened the production window and now must scramble.
 
 **Solution:**
 
 ```sql
--- Query MetadataComponentDependency in target org to find missing references
+-- UNVERIFIED (2026-10-20): MetadataComponentDependency is in neither corpus; confirm the object against the Tooling API reference first
 SELECT MetadataComponentName, MetadataComponentType,
        RefMetadataComponentName, RefMetadataComponentType
 FROM MetadataComponentDependency
@@ -88,6 +88,6 @@ Cross-reference the results against the `package.xml` manifest. Any `RefMetadata
 
 **What practitioners do:** Deploy directly to production with `sf project deploy start` during the release window, skipping the validation step entirely. They reason that tests passed in staging, so they will pass in production.
 
-**What goes wrong:** Production has different data volumes, sharing rules, installed packages, and org-wide defaults. Tests that pass in a partial-copy sandbox fail in production due to SOQL query limits, sharing visibility differences, or managed package trigger interactions. The team discovers this during the production window, extending the outage.
+**What goes wrong:** Production may differ in data volumes, sharing rules, installed packages, and org-wide defaults (UNVERIFIED, 2026-10-20: these causes are not stated in the corpus), so tests that pass in a sandbox can fail in production. The team discovers this during the production window, extending the outage.
 
-**Correct approach:** Always run a validation deploy (`checkOnly: true` / `sf project deploy validate`) against production before the release window. This is safe (writes nothing) and reveals production-specific test failures with zero risk. Use the resulting quick-deploy ID during the actual window.
+**Correct approach:** Always run a validation deploy (`checkOnly: true` / `sf project deploy validate`) against production before the release window. This writes nothing (api_meta 264 L3596) and reveals production-specific test failures; it queues like any deployment (L4246-4249). Use the resulting quick-deploy ID during the actual window.

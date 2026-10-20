@@ -2,15 +2,18 @@
 """Checker script for Pre-Deployment Checklist skill.
 
 Scans a Salesforce metadata project directory for common pre-deployment issues:
-- Missing package.xml manifest
-- Destructive changes without a corresponding constructive manifest
-- Apex classes without corresponding test classes
-- Empty or malformed package.xml
+- missing or unparseable package.xml; missing <version> (package.xml sample, api_meta 264 L1437-1444)
+- Apex classes listed without any test class (RunLocalTests is the production default, api_meta 264 L4441-4442)
+- Profiles in the manifest (Profile deploys overlay the target, api_meta 264 L100265-100268)
+- destructive manifests: wildcards unsupported (L4707-4708), package.xml must sit beside them (L4722-4723)
+- no backup directory
 
-Uses stdlib only -- no pip dependencies.
+Severity contract: ERROR (unparseable XML, missing directory) exits 1 always. REVIEW and WARN
+findings exit 0 unless --strict. An empty directory is one WARN, exit 0. Wildcard members in
+package.xml are NOT flagged: the guide documents them for deploys (api_meta 264 L3169-3171).
 
-Usage:
-    python3 check_pre_deployment_checklist.py --manifest-dir path/to/metadata
+Uses stdlib only. Usage:
+    python3 check_pre_deployment_checklist.py --manifest-dir path/to/project [--strict]
 """
 
 from __future__ import annotations
@@ -21,166 +24,118 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-
-METADATA_NS = "http://soap.sforce.com/2006/04/metadata"
-NS = {"md": METADATA_NS}
+NS = {"md": "http://soap.sforce.com/2006/04/metadata"}
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Check pre-deployment readiness of a Salesforce metadata project.",
     )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce project (default: current directory).",
-    )
+    parser.add_argument("--manifest-dir", default=".", help="Root directory of the project (default: .).")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on REVIEW/WARN findings too.")
     return parser.parse_args()
 
 
 def find_package_xml(root: Path) -> Path | None:
-    """Locate the primary package.xml in the project."""
-    candidates = [
-        root / "manifest" / "package.xml",
-        root / "package.xml",
-        root / "src" / "package.xml",
-    ]
-    for c in candidates:
-        if c.exists():
-            return c
+    for candidate in (root / "manifest" / "package.xml", root / "package.xml", root / "src" / "package.xml"):
+        if candidate.exists():
+            return candidate
     return None
 
 
-def parse_package_xml(path: Path) -> dict[str, list[str]]:
-    """Parse package.xml and return {type_name: [member, ...]}."""
-    result: dict[str, list[str]] = {}
+def read_manifest(path: Path) -> tuple[ET.Element | None, str | None]:
     try:
-        tree = ET.parse(path)
-        root_el = tree.getroot()
-        for types_el in root_el.findall("md:types", NS):
-            name_el = types_el.find("md:name", NS)
-            if name_el is None or not name_el.text:
-                continue
-            type_name = name_el.text.strip()
-            members = []
-            for member_el in types_el.findall("md:members", NS):
-                if member_el.text:
-                    members.append(member_el.text.strip())
-            result[type_name] = members
-    except ET.ParseError:
-        pass
+        return ET.parse(path).getroot(), None
+    except ET.ParseError as exc:
+        return None, f"ERROR: could not parse {path.name}: {exc}"
+
+
+def members_by_type(root: ET.Element) -> dict[str, list[str]]:
+    result: dict[str, list[str]] = {}
+    for types_el in root.findall("md:types", NS):
+        name_el = types_el.find("md:name", NS)
+        if name_el is None or not (name_el.text or "").strip():
+            continue
+        members = [(m.text or "").strip() for m in types_el.findall("md:members", NS) if (m.text or "").strip()]
+        result.setdefault(name_el.text.strip(), []).extend(members)
     return result
 
 
-def check_pre_deployment_checklist(manifest_dir: Path) -> list[str]:
-    """Return a list of issue strings found in the project directory."""
-    issues: list[str] = []
+def check_destructive(manifest_dir: Path, reviews: list[str], errors: list[str]) -> list[Path]:
+    files = sorted(manifest_dir.rglob("destructiveChanges*.xml"))
+    for path in files:
+        root, err = read_manifest(path)
+        if err:
+            errors.append(err)
+            continue
+        if any("*" in m for ms in members_by_type(root).values() for m in ms):
+            reviews.append(f"REVIEW: {path.name} uses a wildcard member; destructive manifests do not support wildcards.")
+        if not (path.parent / "package.xml").exists():
+            reviews.append(f"REVIEW: {path.name} has no package.xml in the same directory; the deploy needs one that lists no components.")
+    return files
 
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
 
-    # 1. Check for package.xml
+def scan(manifest_dir: Path) -> tuple[list[str], list[str], list[str]]:
+    errors: list[str] = []
+    reviews: list[str] = []
+    warns: list[str] = []
     pkg_xml = find_package_xml(manifest_dir)
+    destructive = check_destructive(manifest_dir, reviews, errors)
+    has_destructive = bool(destructive)
+
     if pkg_xml is None:
-        issues.append(
-            "No package.xml found. A deployment manifest is required. "
-            "Expected at manifest/package.xml, package.xml, or src/package.xml."
-        )
-        return issues
+        warns.append("WARN: no package.xml at manifest/package.xml, package.xml or src/package.xml (not needed for --source-dir deploys).")
+    else:
+        root, err = read_manifest(pkg_xml)
+        if err:
+            errors.append(err)
+        elif root is not None:
+            components = members_by_type(root)
+            version_el = root.find("md:version", NS)
+            if version_el is None or not (version_el.text or "").strip():
+                warns.append(f"WARN: {pkg_xml.name} has no <version> element.")
+            if not components and not has_destructive:
+                warns.append(f"WARN: {pkg_xml.name} lists no <types>; nothing would be deployed.")
+            if components and any(p.name == "destructiveChanges.xml" for p in destructive):
+                reviews.append(
+                    "REVIEW: destructiveChanges.xml deploys beside additions, so deletions run first by default; use destructiveChangesPre.xml "
+                    "or destructiveChangesPost.xml when a package component still references a deleted one (api_meta 264 L4749-4758)."
+                )
+            apex = components.get("ApexClass", [])
+            test_re = re.compile(r"test", re.IGNORECASE)
+            if [c for c in apex if not test_re.search(c)] and not [c for c in apex if test_re.search(c)]:
+                reviews.append("REVIEW: Apex classes are listed but no test class is; a production deploy with Apex runs RunLocalTests by default.")
+            if components.get("Profile"):
+                reviews.append(
+                    f"REVIEW: {len(components['Profile'])} Profile(s) in the manifest. A Profile deploy overlays the target; a removed "
+                    "permission stays unless the XML sets <value>false</value> explicitly."
+                )
 
-    # 2. Parse and validate package.xml
-    components = parse_package_xml(pkg_xml)
-    if not components:
-        issues.append(
-            f"package.xml at {pkg_xml} is empty or malformed. "
-            "It must contain at least one <types> element with <name> and <members>."
-        )
-        return issues
-
-    # 3. Check for wildcard members in production-bound manifests
-    for type_name, members in components.items():
-        if "*" in members:
-            issues.append(
-                f"Wildcard member '*' found in {type_name}. "
-                "Wildcard deploys retrieve all components of that type, which is risky for production. "
-                "List explicit member names instead."
-            )
-
-    # 4. Check for API version
-    try:
-        tree = ET.parse(pkg_xml)
-        root_el = tree.getroot()
-        version_el = root_el.find("md:version", NS)
-        if version_el is None or not version_el.text:
-            issues.append(
-                "No <version> element in package.xml. "
-                "Always specify the API version to avoid defaulting to an unexpected version."
-            )
-    except ET.ParseError:
-        issues.append(f"Failed to parse {pkg_xml} as valid XML.")
-
-    # 5. Check for destructive changes without constructive manifest
-    destructive_files = list(manifest_dir.rglob("destructiveChanges*.xml"))
-    if destructive_files and not pkg_xml:
-        issues.append(
-            "Destructive changes manifest found without a constructive package.xml. "
-            "Destructive deploys still require a package.xml (even if empty with just a version)."
-        )
-
-    # 6. Check for Apex classes without test classes
-    apex_classes: list[str] = components.get("ApexClass", [])
-    if apex_classes:
-        test_pattern = re.compile(r"(?i)(test|_test$|tests$|test_)", re.IGNORECASE)
-        non_test_classes = [c for c in apex_classes if not test_pattern.search(c)]
-        test_classes = [c for c in apex_classes if test_pattern.search(c)]
-
-        if non_test_classes and not test_classes:
-            issues.append(
-                f"Package includes {len(non_test_classes)} Apex class(es) but no test classes. "
-                "Production deployments require Apex tests. Include test classes in the manifest."
-            )
-
-    # 7. Check for profiles (high-risk component)
-    if "Profile" in components:
-        profile_members = components["Profile"]
-        issues.append(
-            f"Package includes {len(profile_members)} Profile(s): {', '.join(profile_members[:5])}. "
-            "Profile deployments overwrite the entire profile in the target org, not just changed settings. "
-            "Consider using PermissionSet instead unless full profile deployment is intentional."
-        )
-
-    # 8. Check for backup directory
-    backup_dirs = [
-        manifest_dir / "backups",
-        manifest_dir / "backup",
-        manifest_dir.parent / "backups",
-    ]
-    has_backup = any(d.exists() and any(d.iterdir()) for d in backup_dirs if d.exists())
-    if not has_backup:
-        issues.append(
-            "No backup directory found. Before deploying to production, retrieve the current state "
-            "of all components being deployed: "
-            "sf project retrieve start --manifest package.xml --target-org production --output-dir backups/YYYY-MM-DD/"
-        )
-
-    return issues
+    backups = [manifest_dir / "backups", manifest_dir / "backup", manifest_dir.parent / "backups"]
+    if not any(d.is_dir() and any(d.iterdir()) for d in backups):
+        reviews.append("REVIEW: no backup directory found; retrieve the components being deployed first: sf project retrieve start --manifest package.xml --output-dir backups/YYYY-MM-DD/")
+    return errors, reviews, warns
 
 
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
-    issues = check_pre_deployment_checklist(manifest_dir)
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
+    if not any(manifest_dir.iterdir()):
+        print(f"WARN: {manifest_dir} is empty; nothing to check.")
+        return 1 if args.strict else 0
 
-    if not issues:
-        print("Pre-deployment check passed. No issues found.")
-        return 0
-
-    print(f"Found {len(issues)} issue(s):\n")
-    for i, issue in enumerate(issues, 1):
-        print(f"  {i}. {issue}\n")
-
-    return 1
+    errors, reviews, warns = scan(manifest_dir)
+    for line in errors + warns + reviews:
+        print(line)
+    if errors:
+        return 1
+    if warns or reviews:
+        return 1 if args.strict else 0
+    print("Pre-deployment check passed. No issues found.")
+    return 0
 
 
 if __name__ == "__main__":

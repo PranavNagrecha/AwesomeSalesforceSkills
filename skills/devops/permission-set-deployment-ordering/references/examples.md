@@ -1,10 +1,10 @@
 # Examples — Permission Set Deployment Ordering
 
-## Example 1: Silent Permission Loss During Sandbox-to-Sandbox Deployment
+## Example 1: Permission Loss During Sandbox-to-Sandbox Deployment
 
 **Context:** A developer creates a new permission set in a developer sandbox to grant access to three new custom fields. They package the permission set into a deployment package and deploy to a full copy sandbox where the permission set already exists with 25 existing field permissions.
 
-**Problem:** After deployment, users report they can no longer access 22 fields they previously could. The developer only intended to add three new field permissions, but the PermissionSet XML in the deploy package only contained those three fields. The Metadata API performed a full-replace, wiping out the 22 existing permissions silently.
+**Problem:** After deployment, users report they can no longer access 22 fields they previously could. The developer only intended to add three new field permissions, but the PermissionSet XML in the deploy package only contained those three fields. The guide warns that a deploy must include all of the set's metadata "to avoid accidentally overwriting the permission set's contents" (api_meta 264 L97417-97418); here the 22 existing permissions were lost. UNVERIFIED (2026-10-20): that the loss is silent (no warning).
 
 **Solution:**
 
@@ -27,7 +27,7 @@ sf project retrieve start \
   --target-org full-sandbox
 ```
 
-**Why it works:** By retrieving the target org's authoritative state and merging the new permissions into it, the deployed XML is a complete superset. The full-replace now replaces with the complete intended set, preserving all previous grants.
+**Why it works:** By retrieving the target org's authoritative state and merging the new permissions into it, the deployed XML is a complete superset. The deploy now carries all of the set's metadata, as the guide requires (api_meta 264 L97417-97418), so previous grants are preserved.
 
 ---
 
@@ -35,7 +35,7 @@ sf project retrieve start \
 
 **Context:** A DevOps team is releasing a new integration feature. The release package includes: (a) a new ConnectedApp for the integration's OAuth configuration, and (b) a PermissionSet that grants users access to that ConnectedApp. Both are in the same deployment job run via `sf project deploy start`.
 
-**Problem:** The deploy fails with a cross-reference id error on the PermissionSet. This is a known platform bug: when a ConnectedApp and a PermissionSet or PSG referencing it are deployed in the same batch, the reference cannot be resolved during validation.
+**Problem:** The deploy fails with a cross-reference id error on the PermissionSet. UNVERIFIED (2026-10-20): that this is a known platform bug for a ConnectedApp and a PermissionSet or PSG referencing it in one batch; neither corpus describes it, so the split below is a precaution.
 
 **Solution:**
 
@@ -54,7 +54,7 @@ sf project deploy start \
   --wait 30
 ```
 
-**Why it works:** Separating the ConnectedApp into its own deploy allows it to be fully committed before the PermissionSet's reference to it is evaluated. The platform can resolve the cross-reference when the ConnectedApp already exists.
+**Why it works:** UNVERIFIED (2026-10-20): the resolution mechanism is not in either corpus. Deploys submitted one at a time after the previous one succeeds do run in order (api_meta 264 L4246-4249).
 
 ---
 
@@ -62,6 +62,6 @@ sf project deploy start \
 
 **What practitioners do:** Build a PermissionSet XML file from scratch (or use only the permissions they want to add), then deploy it to a target org where that permission set already has other permissions configured.
 
-**What goes wrong:** The Metadata API treats the deployed XML as the complete truth. All permissions in the target org that are not in the deployed XML are silently deleted. This is especially dangerous for PSets with many field-level security grants or object permissions built up over time.
+**What goes wrong:** The deployed XML is meant to carry all of the permission set's metadata (api_meta 264 L97416-97418); permissions in the target that are not in it are lost. UNVERIFIED (2026-10-20): "silently deleted". This is especially dangerous for PSets with many field-level security grants or object permissions built up over time.
 
 **Correct approach:** Always retrieve the current PermissionSet from the target org first. Use the retrieved XML as the base. Add or modify only the permissions you intend to change. Deploy the resulting merged XML.

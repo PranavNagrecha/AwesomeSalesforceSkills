@@ -16,7 +16,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** The editor UI responds to clicks and text entry, but Flow Builder does not persist the values.
 
-**When it occurs:** The editor does not dispatch the documented configuration change event, or it uses the wrong payload shape.
+**When it occurs:** The editor does not dispatch one of the documented `configuration_editor_input_value_changed`, `configuration_editor_input_value_deleted` or `configuration_editor_generic_type_mapping_changed` events with `bubbles` and `composed` true, or its `detail` lacks `name`, `newValue` and `newValueDataType` (lwcguide use-flow-custom-property-editor-interface).
 
 **How to avoid:** Test that Flow Builder saves and reopens the configured values, not just that the editor renders.
 

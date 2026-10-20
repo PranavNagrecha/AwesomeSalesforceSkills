@@ -30,9 +30,9 @@ outputs:
   - pre-release backup manifest and retrieved metadata archive
   - dependency gap report
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-10-20
 ---
 
 # Pre-Deployment Checklist
@@ -49,9 +49,25 @@ Gather this context before working through the checklist:
 
 - What metadata types and specific components are included in this release (Apex classes, flows, custom objects, LWC, permission sets, etc.).
 - Which deployment tool is being used: SF CLI (`sf project deploy`), change sets, DevOps Center, or Metadata API direct.
-- What Apex test level is required -- `RunLocalTests` (75% org-wide), `RunSpecifiedTests` (75% per class in package), or `RunAllTestsInOrg`.
-- Whether a validation deploy has already been run and, if so, when (the quick-deploy window is 10 calendar days).
-- Whether the target org has any scheduled maintenance, active sandbox refreshes, or Trust site advisories.
+- What Apex test level is required -- `RunLocalTests` (overall coverage at least 75% and triggers with some coverage, api_meta 264 L3582), `RunSpecifiedTests` (each class and trigger in the package at least 75% individually, L4433-4434), or `RunAllTestsInOrg` (L4443).
+- Whether a validation deploy has already been run and, if so, when (the components must have been validated "within the last 10 days" to quick-deploy, api_meta 264 L3579).
+- Whether the target org has any scheduled maintenance, active sandbox refreshes, or Trust site advisories. trust.salesforce.com shows "real-time information on system performance" (secguide 262 L127-129); UNVERIFIED (2026-10-20): that it lists scheduled maintenance per instance. The guide's own advice is off-peak deployment (api_meta 264 L4215-4216).
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which test level will the production deploy use? | Gotcha 1: coverage is overall for `RunLocalTests`, per class for `RunSpecifiedTests` (api_meta 264 L3582, L4433-4434) | The coverage gate to verify per class or in aggregate |
+| When was the last successful validation, and what ID did it return? | Gotcha 2: quick deploy needs a validation within the last 10 days (L3579) | A dated ID and a latest-safe quick-deploy date |
+| What else is deploying or queued against the org that day? | Gotcha 3: one deployment runs at a time and the queue is not FIFO (L4246-4249) | A booked slot and a submit-one-at-a-time plan |
+| Did the staging sandbox tests run on production-like data and sharing? | Gotcha 4: sandbox results are not a release gate | A decision to validate directly against production |
+| Does the release delete components, and what still references them? | Gotcha 5: Pre or Post destructive manifests change the order (L4749-4758) | A deletion order that leaves no dangling reference |
+| Does the release change a Flow in production? | Decision Guidance: active-flow deploys need a production preference (L70571-70573) | The preference confirmed and an activation plan |
+| Is a backup of every component being overwritten retrieved? | Pattern 3: the manifest-driven retrieve is the rollback path | A timestamped backup directory and a tested redeploy command |
+
+A proper configuration adds a dated validation, a per-class coverage check, a queue-aware window and a retrieved backup; just deploying gives you none of them.
 
 ---
 
@@ -59,13 +75,13 @@ Gather this context before working through the checklist:
 
 ### Validation Deploy (checkOnly)
 
-A validation deploy executes the full deployment pipeline -- metadata dependency resolution, Apex compilation, and test execution -- without writing any changes to the org. The Metadata API parameter is `checkOnly: true`; the CLI equivalent is `sf project deploy validate`. A successful validation produces a `validatedDeployRequestId` that can be redeemed for a quick deploy within 10 calendar days, skipping the test-run phase entirely. This is the single most effective tool for shrinking a production deployment window.
+A validation deploy runs a deployment without saving it: the Metadata API parameter is `checkOnly: true` (api_meta 264 L4979-4980), the CLI is `sf project deploy validate` (sfdx_dev 264 L14359-14360). A successful validation returns an ID (`validatedDeployRequestId` on the REST resource, api_meta 264 L3600; "job ID" in the CLI, sfdx_dev 264 L14367) that `deployRecentValidation()` or `sf project deploy quick --job-id` redeems to deploy "in less time by skipping the execution of Apex tests" (api_meta 264 L4967-4968). The conditions are: validated for the target within the last 10 days, tests passed, and coverage met (L4969-4974).
 
-Key constraints: the validation must use the same test level you intend for the real deploy. If you validate with `RunSpecifiedTests` but the production deploy policy requires `RunLocalTests`, the quick-deploy ID is not usable. The 10-day window resets from the timestamp of the most recent successful validation -- not the first one.
+UNVERIFIED (2026-10-20): that the validation must use the same test level as the real deploy or the ID is unusable, and that the 10-day window resets from the most recent successful validation. The guide ties the coverage rule to the test level used (L4972-4974) but states neither sentence.
 
 ### Dependency Completeness
 
-Every component in a deployment must have all of its transitive dependencies already present in the target org or included in the same deployment package. The `MetadataComponentDependency` tooling API object is the canonical way to check this programmatically. Common gaps:
+Every component in a deployment must have all of its transitive dependencies already present in the target org or included in the same deployment package. The `MetadataComponentDependency` tooling API object is the canonical way to check this programmatically. UNVERIFIED (2026-10-20): `MetadataComponentDependency` is in neither corpus (grep of all fourteen files finds no hit); verify it against the Tooling API reference before relying on it. Common gaps:
 
 - A Lightning Web Component that imports an Apex class not in the package.
 - A Flow referencing a custom field that was renamed or deleted in the target.
@@ -75,11 +91,11 @@ The Metadata API surfaces these as deploy errors, but catching them before the d
 
 ### Pre-Release Backup
 
-Before deploying, retrieve the current production state of every component you are about to overwrite. Use `sf project retrieve start` with the same `package.xml` used for deployment, storing the output in a timestamped backup directory. This is the fastest rollback path if the deployment introduces a regression: redeploy the backup package rather than reverting code and re-running the full pipeline.
+Before deploying, retrieve the current production state of every component you are about to overwrite. Use `sf project retrieve start --manifest package.xml --output-dir <dir>` (the flags are in sfdx_dev 264 L2045-2053), storing the output in a timestamped backup directory. This is the fastest rollback path if the deployment introduces a regression: redeploy the backup package rather than reverting code and re-running the full pipeline.
 
 ### Deployment Window Safety
 
-Production deployments should avoid Salesforce maintenance windows (check trust.salesforce.com for your instance), batch Apex execution windows, and peak business hours. A deployment that overlaps with a scheduled maintenance can be interrupted mid-deploy, leaving partial metadata in an inconsistent state. Always confirm the instance status before starting.
+The guide's advice is to deploy at off-peak usage time and to limit or postpone changes while a deployment runs, because "the deployment process locks write-access to resources getting deployed until deployment completes" (api_meta 264 L4214-4216). Only one deployment runs at a time; others wait in a queue and "are not necessarily executed in the order in which they were submitted" (L4246-4249). UNVERIFIED (2026-10-20): that a deploy overlapping scheduled maintenance is interrupted and leaves partial metadata, and that trust.salesforce.com lists maintenance; it shows "real-time information on system performance" (secguide 262 L127-129). Note that `rollbackOnError` must be true for a production deploy (L3252-3255), so a failed deploy rolls back completely.
 
 ---
 
@@ -94,7 +110,7 @@ Production deployments should avoid Salesforce maintenance windows (check trust.
 1. Run `sf project deploy validate --target-org production --test-level RunLocalTests` against production during business hours (this is safe -- it writes nothing).
 2. Capture the `validatedDeployRequestId` from the output.
 3. During the scheduled release window, run `sf project deploy quick --job-id <validatedDeployRequestId> --target-org production`.
-4. The quick deploy skips test execution entirely, completing in minutes instead of hours.
+4. The quick deploy skips test execution (api_meta 264 L4967-4968); "minutes instead of hours" is UNVERIFIED (2026-10-20).
 
 **Why not the alternative:** Deploying directly with `sf project deploy start` runs tests during the production window, extending the outage and increasing the risk of timeout or governor limit collisions with live traffic.
 
@@ -108,7 +124,7 @@ Production deployments should avoid Salesforce maintenance windows (check trust.
 2. Validate each wave independently against the target org.
 3. Deploy waves sequentially, confirming each wave succeeds before starting the next.
 
-**Why not the alternative:** A single monolithic deployment with 200+ components is harder to debug when it fails. A single missing dependency in component 187 rolls back all 200 components. Staged deploys isolate failures to a specific wave.
+**Why not the alternative:** A single monolithic deployment with 200+ components is harder to debug when it fails. A single missing dependency in component 187 rolls back all 200 components, because a production deploy must run with `rollbackOnError` true (api_meta 264 L3252-3255). Staged deploys isolate failures to a specific wave.
 
 ### Pattern 3: Backup-Before-Deploy
 
@@ -127,12 +143,12 @@ Production deployments should avoid Salesforce maintenance windows (check trust.
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Standard release with 24+ hours lead time | Validate-then-quick-deploy | Minimizes production window to minutes |
-| Emergency hotfix with < 1 hour lead time | Direct deploy with RunSpecifiedTests targeting only affected classes | Fastest path; RunLocalTests may take hours in large orgs |
+| Standard release with 24+ hours lead time | Validate-then-quick-deploy | Skips Apex tests in the window (api_meta 264 L4967-4968); "minutes" is UNVERIFIED (2026-10-20) |
+| Emergency hotfix with < 1 hour lead time | Direct deploy with RunSpecifiedTests targeting only affected classes | Fastest path; "in orgs with extensive test suites, RunLocalTests causes long deployment times even for minor code changes" (api_meta 264 L2734-2735) |
 | Large release with 50+ components | Staged dependency deploy in 3-4 waves | Isolates failures; easier rollback per wave |
 | First deploy to a newly refreshed sandbox | Run full validation first; do not assume sandbox state matches source | Sandbox refresh may have brought in production data/config that conflicts |
-| Deploy includes destructive changes | Deploy constructive changes first, then destructive in a second deploy | Prevents dependency breaks during the deploy window |
-| Deploy includes Flow changes | Confirm Flow version activation plan is documented separately | Flow activation state may not carry over; manual activation may be required post-deploy |
+| Deploy includes destructive changes | Use `destructiveChangesPre.xml` / `destructiveChangesPost.xml` in one deploy, or split into two deploys | By default deletions run before additions; Pre and Post choose the timing (API 33.0+, api_meta 264 L4749-4755), and the guide's own example uses Post to delete an object after the Apex class that referenced it is updated (L4756-4760) |
+| Deploy includes Flow changes | Confirm Flow version activation plan is documented separately | In production, deploying changes to an active flow needs the "Deploy processes and flows as active" preference (api_meta 264 L70571-70573) |
 
 ---
 
@@ -141,11 +157,11 @@ Production deployments should avoid Salesforce maintenance windows (check trust.
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 1. **Inventory the release** -- confirm the exact list of metadata components, the deployment tool, and the target org. Cross-reference against the source control diff or work-item list.
-2. **Check dependency completeness** -- query `MetadataComponentDependency` in the target org or review the `package.xml` manifest for missing transitive dependencies. Add any gaps.
+2. **Check dependency completeness** -- review the `package.xml` manifest for missing transitive dependencies (querying `MetadataComponentDependency` in the target org is UNVERIFIED, 2026-10-20: not in either corpus). Add any gaps.
 3. **Back up production state** -- retrieve the current production version of every component being deployed. Store in a timestamped backup directory.
 4. **Run a validation deploy** -- execute `sf project deploy validate` (or the equivalent in your tool) against the target org with the correct test level. Capture the `validatedDeployRequestId`.
 5. **Confirm Apex test results** -- verify all tests pass and aggregate code coverage meets or exceeds 75%. If using `RunSpecifiedTests`, confirm each test class individually meets 75%.
-6. **Check the deployment window** -- confirm trust.salesforce.com shows no maintenance for your instance, no batch jobs are scheduled during the window, and the release is scheduled off-peak.
+6. **Check the deployment window** -- confirm no batch jobs are scheduled during the window and the release is scheduled off-peak (api_meta 264 L4215-4216); trust.salesforce.com shows "real-time information on system performance" (secguide 262 L127-129); that it lists scheduled maintenance is UNVERIFIED (2026-10-20).
 7. **Go / No-Go decision** -- walk the Review Checklist below. If any item is unchecked, do not deploy.
 
 ---
@@ -161,7 +177,7 @@ Run through these before any production deployment:
 - [ ] Apex test coverage meets or exceeds 75% in aggregate (and per-class if using RunSpecifiedTests)
 - [ ] No Apex test failures in the validation results
 - [ ] Quick-deploy ID captured and still within the 10-day window (if using validate-then-quick-deploy)
-- [ ] trust.salesforce.com checked -- no maintenance or advisories for the target instance
+- [ ] trust.salesforce.com checked -- no maintenance or advisories for the target instance (the site shows real-time system performance, secguide 262 L127-129; maintenance listings UNVERIFIED, 2026-10-20)
 - [ ] Post-deploy manual steps documented (Flow activation, permission set assignment, data fixes)
 - [ ] Rollback plan defined and tested (backup package ready to redeploy)
 
@@ -171,15 +187,15 @@ Run through these before any production deployment:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **RunSpecifiedTests has stricter per-class coverage** -- Unlike `RunLocalTests` which requires 75% aggregate coverage across the entire org, `RunSpecifiedTests` requires 75% coverage per class included in the deployment package. A class with 60% coverage passes under `RunLocalTests` (if the org average is above 75%) but fails under `RunSpecifiedTests`.
+1. **RunSpecifiedTests has stricter per-class coverage** -- Unlike `RunLocalTests` / all-tests runs, where overall coverage must be at least 75% and triggers need some coverage (api_meta 264 L3582), `RunSpecifiedTests` requires each class and trigger in the package to reach 75% individually (L4433-4434). A class with 60% coverage can pass under `RunLocalTests` (if the overall figure is above 75%) but fails under `RunSpecifiedTests`.
 
-2. **Quick-deploy ID expires silently** -- The 10-day window from a validation deploy is a hard cutoff. There is no warning at day 9. If you attempt a quick deploy on day 11, the API returns an error and you must re-validate from scratch. Track the validation timestamp explicitly.
+2. **Quick-deploy ID expires** -- Components must have been validated "within the last 10 days" (api_meta 264 L3579). UNVERIFIED (2026-10-20): that there is no warning at day 9, that a day-11 attempt returns an error, and that the window is a "hard cutoff" measured from the latest validation. Track the validation timestamp explicitly.
 
-3. **Validation deploy can lock components** -- While a validation deploy does not write metadata, it does acquire compile locks on Apex classes during test execution. Running a validation deploy while another deploy or validation is in progress can cause lock contention errors. Check the Deployment Status page for in-flight deployments before starting a validation.
+3. **Deployments queue; one runs at a time** -- Only one deployment runs at a time; the others wait and "are not necessarily executed in the order in which they were submitted" (api_meta 264 L4246-4249), and a running deploy locks write-access to the resources it deploys (L4214-4216). UNVERIFIED (2026-10-20): that a validation takes compile locks on Apex classes and that a second operation fails with a lock-contention error; the guide describes queuing, not failure. Check the Deployment Status page for in-flight deployments before starting a validation.
 
-4. **Sandbox test results do not predict production** -- Apex tests that pass in a partial-copy sandbox may fail in production due to data volume differences, org-wide defaults, sharing rules, or installed managed packages. Always validate directly against production (using `checkOnly: true`), not just against a staging sandbox.
+4. **Sandbox test results do not predict production** -- UNVERIFIED (2026-10-20): the specific causes (data volume, org-wide defaults, sharing rules, managed packages) are the package's reasoning, not corpus statements. Validate directly against production (`checkOnly: true`), not just against a staging sandbox.
 
-5. **Destructive changes in the same package can break dependencies** -- If your `package.xml` includes both a new field and a `destructiveChangesPost.xml` that deletes an old field referenced by a validation rule, the deploy may fail even though the destructive change is marked as "post." Process constructive and destructive changes in separate deploy operations when dependencies exist between them.
+5. **Destructive changes need ordering when components depend on each other** -- By default deletions are processed before additions; `destructiveChangesPre.xml` and `destructiveChangesPost.xml` (API 33.0+) place them before or after additions, and the guide's example deletes an object after updating the Apex class that referenced it, since "you can't delete it unless you modify the Apex class first" (api_meta 264 L4749-4758). Use Post when a package component still references the deleted one. UNVERIFIED (2026-10-20): that a Post file deleting a field referenced by a validation rule can still fail.
 
 ---
 
