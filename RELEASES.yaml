@@ -384,14 +384,23 @@ releases:
       re-run cold; then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: todo
+    status: running
     parent: R2-01
   - id: R2-24
     title: 'Recipe test step 1: Winter ''27 probe set (facts the model cannot know) in run_lift probe format'
     size: M
     owner_model: sonnet
-    status: running
+    status: done
     notes: Owner-mandated overnight recipe test (2026-10-21); moved from 1.6.0 by the orchestrator.
+    evidence: 'evals/probes/winter27-probes.json: 20 probes, 18 owning skills, every quote verbatim from corpus264; BASELINE
+      (sonnet answers, opus grader, both arms, skills uncorrected): correct 5% / wrong 60% / neither 35% in both arms (cost
+      2.52 USD); 3 delta-doc rows found wrong (replay ID, Pricebook2History, Report.crossFilters already in 262) and 1 naming
+      error (DevHubSettings) -> fix in R2-18 doc'
+  - id: R2-26
+    title: 'Recipe test step 2: correct the 18 owning skills vs Winter ''27 and re-measure the probes'
+    size: M
+    owner_model: opus
+    status: running
   - id: R2-02
     title: 'Roster shrink: every runtime agent not proven in R2-01 or by a build scenario -> status: experimental and out
       of the roster docs (slash redirects stay); doc counts regenerated'
@@ -737,3 +746,10 @@ inbox:
     Account control decide'
   size: S
   slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Recipe test step 2 (owner-mandated): Opus writer corrects the 18 owning skills in evals/probes/winter27-probes.json
+    against corpus264 (bounded: the probed fact, its version gate, any directly contradicted sentence; cites), Opus adversarial
+    reviewer, rsync, sync, validate; then run_lift.py --probes both arms -> the with-skill arm must flip wrong->right. Also
+    fix the 3 wrong rows + DevHubSettings naming in standards/release-delta-winter27.md'
+  size: M
+  slotted_into: 1.6.0

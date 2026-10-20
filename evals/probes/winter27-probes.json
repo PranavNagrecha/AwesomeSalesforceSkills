@@ -1,0 +1,205 @@
+{
+ "_comment": "Winter '27 (release 264, API 68.0) recipe-test probes for evals/scripts/run_lift.py --probes. Each probe is a fact that changed between Summer '26 (262, API 67.0) and Winter '27, taken from standards/release-delta-winter27.md; the answering model's training predates 264, so a correct answer with the skill loaded can only come from the skill (recipe), not memory. wrong_answer = the Summer '26 fact (wrong_source cites the 262 corpus line, or records the absence of the fact there); correct_answer = the Winter '27 fact; source = corpus264 file + line; quote = verbatim text of the 264 line(s). `skill` is the skill that owns the fact: the recipe will correct it next. Extra keys (quote, wrong_source) are ignored by run_lift.py.",
+ "probes": [
+  {
+   "id": "heap-sync",
+   "skill": "apex/governor-limits",
+   "question": "On an org upgraded to Winter '27 with Apex classes at API 68.0, what is the total heap size limit for a synchronous Apex transaction?",
+   "wrong_answer": "6 MB for synchronous Apex.",
+   "correct_answer": "10 MB for synchronous Apex (raised from 6 MB in Winter '27; asynchronous is 25 MB).",
+   "source": "salesforce_apex_developer_guide.txt L19780",
+   "quote": "Total heap size4 10 MB 25 MB",
+   "wrong_source": "salesforce_apex_developer_guide.txt L19577 (262): Total heap size4 6 MB 12 MB"
+  },
+  {
+   "id": "heap-async",
+   "skill": "apex/apex-cpu-and-heap-optimization",
+   "question": "A Queueable job builds a large map of Opportunity data. What is the heap ceiling for asynchronous Apex now, and is it the same as the synchronous ceiling?",
+   "wrong_answer": "12 MB for asynchronous Apex, double the 6 MB synchronous limit.",
+   "correct_answer": "25 MB for asynchronous Apex (raised from 12 MB); synchronous Apex is 10 MB (raised from 6 MB).",
+   "source": "salesforce_apex_developer_guide.txt L19780",
+   "quote": "Total heap size4 10 MB 25 MB",
+   "wrong_source": "salesforce_apex_developer_guide.txt L19577 (262): Total heap size4 6 MB 12 MB"
+  },
+  {
+   "id": "heap-optout",
+   "skill": "admin/salesforce-release-preparation",
+   "question": "We run a regression test in a sandbox that deliberately asserts a heap LimitException near the old heap ceiling. Is there any Metadata API setting that lets a nonproduction org stay on the previous heap limits during the Winter '27 release?",
+   "wrong_answer": "No. Governor limits are fixed platform-wide and cannot be switched per org or per release; the test has to be rewritten for the new ceiling.",
+   "correct_answer": "Yes. ApexSettings.enableEnforceSummer26ApexHeapLimit (API 68.0) pins a nonproduction org to the lower Summer '26 heap limits, but only during Winter '27; Spring '27 enforces the higher limits globally regardless of the setting.",
+   "source": "api_meta.txt L113856-L113862",
+   "quote": "This setting is available only in Winter ’27. In Spring ’27, the higher Apex heap limits are enforced globally regardless of the setting status.",
+   "wrong_source": "corpus/api_meta.txt: 0 hits for enableEnforceSummer26ApexHeapLimit in the 262 Metadata API guide (ApexSettings has no heap field at 67.0)"
+  },
+  {
+   "id": "elastic-batch",
+   "skill": "architect/org-limits-monitoring",
+   "question": "We enabled 'Use elastic limits for asynchronous Apex jobs (Beta)' in production. Do our nightly Batch Apex jobs get the extra capacity above the rolling 24-hour async job limit, or only Queueable and future calls?",
+   "wrong_answer": "Only Queueable Apex and future methods. Batch Apex and scheduled jobs stay capped at the rolling 24-hour asynchronous limit.",
+   "correct_answer": "Batch Apex now counts too: elastic limits apply to Batch Apex, Queueable Apex and future methods (scheduled jobs stay capped). Batch is throttled to one active job at a time once the base limit is exceeded.",
+   "source": "salesforce_apex_developer_guide.txt L20222-L20223",
+   "quote": "Elastic limits for asynchronous Apex jobs (beta) applies to Batch Apex, Queueable Apex, and future methods. Scheduled jobs remain capped",
+   "wrong_source": "salesforce_apex_developer_guide.txt L20020-L20021 (262): applies to only Queueable Apex and future methods"
+  },
+  {
+   "id": "elastic-cap",
+   "skill": "architect/org-limits-monitoring",
+   "question": "With elastic async Apex limits switched on, what is the maximum number of extra asynchronous executions an org can add on top of its rolling 24-hour limit?",
+   "wrong_answer": "Up to 10 million additional executions (the lesser of the licensed daily limit and 10 million).",
+   "correct_answer": "Up to 2 million additional executions: the lesser of the licensed daily limit (250,000 or 200 times the licenses) and 2 million (cap lowered from 10 million).",
+   "source": "salesforce_apex_developer_guide.txt L20226-L20227",
+   "quote": "or 2 million jobs, whichever is less.",
+   "wrong_source": "salesforce_apex_developer_guide.txt L20024-L20025 (262): or 10 million jobs, whichever is less."
+  },
+  {
+   "id": "runinmode-usermode",
+   "skill": "flow/flow-governance",
+   "question": "In the Flow metadata type, which runInMode value makes a flow explicitly run with the user's own permissions and without inheriting sharing from whatever called it? Which values exist?",
+   "wrong_answer": "None. runInMode has only DefaultMode, SystemModeWithSharing and SystemModeWithoutSharing; to run in user context you rely on how the flow is launched (DefaultMode).",
+   "correct_answer": "UserMode (API 68.0 and later): runs with the user's security context enforced, without inheriting sharing from the calling context. It sits beside DefaultMode, SystemModeWithSharing and SystemModeWithoutSharing.",
+   "source": "api_meta.txt L70923-L70927",
+   "quote": "UserMode—The flow runs with the user's security context explicitly enforced, without inheriting sharing settings from the calling context.",
+   "wrong_source": "api_meta.txt L68374-L68392 (262): SystemModeWithoutSharing"
+  },
+  {
+   "id": "api-retire-31-40",
+   "skill": "devops/api-version-management",
+   "question": "Our integrations still call the REST API at v35.0. Which Salesforce Platform API versions are scheduled for deprecation or retirement, and when?",
+   "wrong_answer": "Only versions 21.0 through 30.0 are retired (since Summer '25); versions 31.0 and later are all supported with no retirement date.",
+   "correct_answer": "Versions 31.0 through 40.0 are deprecated and unsupported from Summer '27 and retired from Summer '28; 41.0 through 68.0 stay supported (21.0-30.0 were already retired in Summer '25).",
+   "source": "api_meta.txt L1293-L1295",
+   "quote": "Deprecated and unsupported from Summer ’27. Retired from Summer ’28.",
+   "wrong_source": "api_meta.txt L1187-L1188 (262): Versions 31.0 through 66.0 Supported."
+  },
+  {
+   "id": "apex-compiler-warn-9-19",
+   "skill": "architect/technical-debt-assessment",
+   "question": "Some of our oldest Apex classes are saved at API version 12.0. Does the compiler say anything when we deploy them, and is there a retirement plan for those API versions?",
+   "wrong_answer": "No. Old Apex API versions compile silently and nothing says they will be retired; they stay valid indefinitely.",
+   "correct_answer": "The Apex compiler now warns on compile or deploy for classes and triggers saved at API versions 9.0 through 19.0, which will be retired in a future release.",
+   "source": "salesforce_apex_developer_guide.txt L45124-L45125",
+   "quote": "Apex classes and triggers saved at API versions 9.0 through 19.0 will be retired in a future release.",
+   "wrong_source": "corpus/salesforce_apex_developer_guide.txt: 0 hits for '9.0 through 19.0' or a compiler warning at 67.0"
+  },
+  {
+   "id": "lifecycle-center",
+   "skill": "devops/devops-center-pipeline",
+   "question": "A client asks us to switch on the AI-powered next-generation DevOps Center for change and release management. Which setting enables it, and what is that feature called in the current Metadata API docs?",
+   "wrong_answer": "DevHubSettings.enableALMDevopsCorePref turns on the 'next-generation DevOps Center'.",
+   "correct_answer": "DevHubSettings.enableALMDevopsCorePref (65.0+) enables it, and the current docs call it the Lifecycle Center (renamed from 'next-generation DevOps Center'); enableDevOpsCenterGA still refers to the older DevOps Center managed package.",
+   "source": "api_meta.txt L117302-L117304",
+   "quote": "Indicates whether the Lifecycle Center is enabled: true or false.",
+   "wrong_source": "api_meta.txt L114168-L114171 (262): Indicates whether the next-generation DevOps Center is enabled: true"
+  },
+  {
+   "id": "testlevel",
+   "skill": "apex/tooling-api-patterns",
+   "question": "I'm calling the Test Discovery API at API version 68.0 to list Apex tests. Which request parameter should I use to control which tests come back, and is showAllMethods still the right one?",
+   "wrong_answer": "showAllMethods is the parameter that controls whether all test methods are returned.",
+   "correct_answer": "At 68.0 and later the testLevel parameter replaces showAllMethods; showAllMethods is deprecated and available only in API version 67.0 and earlier.",
+   "source": "salesforce_apex_developer_guide.txt L45119-L45120",
+   "quote": "In API version 68.0 and later, the testLevel parameter replaces the showAllMethods parameter.",
+   "wrong_source": "corpus/salesforce_apex_developer_guide.txt: 0 hits for testLevel; showAllMethods is not mentioned either (it was the only documented parameter at 67.0 per 264 L45120)"
+  },
+  {
+   "id": "apexcompileresults",
+   "skill": "devops/deployment-error-diagnosis",
+   "question": "After an API version bump our org has thousands of Apex classes and a full recompile takes ages. Can I find out which classes and triggers are invalid without recompiling the whole org?",
+   "wrong_answer": "No. Setup's 'Compile all classes' (or a deploy) recompiles the entire org and there is no way to get compile results for only the invalid classes.",
+   "correct_answer": "Yes, at API 68.0 and later you can return compilation results for just the classes and triggers with validation errors, via Setup or the Tooling API apexCompileResults resource.",
+   "source": "salesforce_apex_developer_guide.txt L45121-L45123",
+   "quote": "you can return compilation results for Apex classes and triggers with validation errors, instead of recompiling the entire org.",
+   "wrong_source": "corpus/salesforce_apex_developer_guide.txt: 0 hits for apexCompileResults"
+  },
+  {
+   "id": "debuglevel-metadata",
+   "skill": "apex/debug-logs-and-developer-console",
+   "question": "Can I put a debug level in source control and deploy it with the Metadata API, so every sandbox gets the same log category levels for TraceFlags?",
+   "wrong_answer": "No. DebugLevel exists only as a Tooling API sObject (and a Setup record), not as a Metadata API type, so it cannot be retrieved or deployed.",
+   "correct_answer": "Yes at API 68.0 and later: DebugLevel is a metadata type (suffix .debugLevel, folder debugLevels) representing a set of log category levels assigned to a TraceFlag.",
+   "source": "api_meta.txt L13259-L13269",
+   "quote": "DebugLevel components have the suffix .debugLevel and are stored in the debugLevels folder.",
+   "wrong_source": "salesforce_apex_developer_guide.txt L39544 (262): the TraceFlag and DebugLevel"
+  },
+  {
+   "id": "aiagentdefinition",
+   "skill": "agentforce/agent-script-dsl",
+   "question": "I want to retrieve an Agentforce agent as source on API 68.0, with each agent version as its own component. Which Metadata API type is the agent's top-level definition?",
+   "wrong_answer": "There is no dedicated agent definition type; you retrieve Bot and BotVersion (plus GenAiPlannerBundle) to move an agent.",
+   "correct_answer": "AiAgentDefinition (API 68.0+, files under aiAgents/) represents the agent and the settings shared by all versions; each version is a separate AiAgentDefinitionVersion component.",
+   "source": "api_meta.txt L17518-L17520",
+   "quote": "Represents an Agentforce agent and the settings that apply to all its versions",
+   "wrong_source": "corpus/api_meta.txt: 0 hits for AiAgentDefinition in the 262 Metadata API guide"
+  },
+  {
+   "id": "telephonyprovider",
+   "skill": "admin/service-cloud-voice-setup",
+   "question": "For Bring Your Own Carrier voice, can I manage the telephony provider configuration through the Metadata API in a Winter '27 org? Which type?",
+   "wrong_answer": "No. Telephony provider setup for BYOC exists only in Setup and has no Metadata API type.",
+   "correct_answer": "Yes: the TelephonyProvider metadata type (API 68.0+) represents a telephony provider configuration for BYOC (with companions SecondaryTelephonyProvider and TrustedTelephonyProvider).",
+   "source": "api_meta.txt L136588-L136589",
+   "quote": "Represents a telephony provider configuration that an org uses with Bring Your Own Carrier (BYOC).",
+   "wrong_source": "corpus/api_meta.txt: 0 hits for TelephonyProvider in the 262 Metadata API guide"
+  },
+  {
+   "id": "approvaldelegation-object",
+   "skill": "admin/approval-process-apex-patterns",
+   "question": "Is there a standard object I can query or create to represent an approver delegating their approvals to someone else for a date range?",
+   "wrong_answer": "No. Delegation is only the Delegated Approver field on the User record; there is no standard object for it.",
+   "correct_answer": "Yes. ApprovalDelegation (API 68.0+) represents an approval delegation that transfers a user's approval responsibilities to another user, group, or queue for a specified date range.",
+   "source": "object_reference.txt L35876-L35878",
+   "quote": "Represents an approval delegation that transfers a user's approval responsibilities to another user, group, or queue for a specified date range.",
+   "wrong_source": "corpus/object_reference.txt: 0 hits for ApprovalDelegation in the 262 Object Reference; skills/admin/approval-process-apex-patterns/SKILL.md L497 states the User-field-only model"
+  },
+  {
+   "id": "keep-manual-shares",
+   "skill": "admin/sharing-rules",
+   "question": "When we transfer a record to a new owner, the manual shares disappear. Is there a Metadata API setting to retain manual shares on ownership transfer?",
+   "wrong_answer": "No. Manual shares are always removed when the record owner changes and nothing in SharingSettings changes that.",
+   "correct_answer": "Yes. SharingSettings.enableKeepManualSharesOnTransfer (API 68.0+) controls whether manual shares are retained when a record is transferred to a new owner.",
+   "source": "api_meta.txt L130597-L130599",
+   "quote": "Indicates whether manual shares on a record are retained (true) or not (false) when the record is transferred to a new owner.",
+   "wrong_source": "corpus/api_meta.txt: 0 hits for enableKeepManualSharesOnTransfer in the 262 Metadata API guide"
+  },
+  {
+   "id": "sharingreason-standard",
+   "skill": "security/apex-managed-sharing-patterns",
+   "question": "Can I define an Apex sharing reason (SharingReason metadata) on a standard object like Account, so Apex managed sharing rows get a custom row cause?",
+   "wrong_answer": "No. Apex sharing reasons can be defined only for custom objects; standard objects can't have custom sharing reasons.",
+   "correct_answer": "Yes at API 68.0 and later: sharing reasons for standard objects are supported (objects with a share object such as AccountShare whose OWD is Private or Public Read-Only); custom objects have been supported since 14.0.",
+   "source": "api_meta.txt L47650-L47651",
+   "quote": "Sharing reasons for standard objects are available in API version 68.0 and later.",
+   "wrong_source": "api_meta.txt L45272 (262): indicate why sharing was implemented for a custom object"
+  },
+  {
+   "id": "locationscovered",
+   "skill": "devops/post-deployment-validation",
+   "question": "In a Metadata API deploy result with code coverage, can I see which lines were covered and how many times each executed, or only the uncovered lines?",
+   "wrong_answer": "Only the uncovered code: CodeCoverageResult lists locationsNotCovered plus counts; per-line execution counts are not returned.",
+   "correct_answer": "At API 68.0 and later CodeCoverageResult also has locationsCovered (CodeLocation[]), giving line and column of the tested code and the number of times it executed.",
+   "source": "api_meta.txt L8011-L8014",
+   "quote": "Identifies the code locations for each class or trigger tested. Includes the line and column of the code tested and the number of times the code was executed.",
+   "wrong_source": "api_meta.txt L7628-L7632 (262): locationsNotCovered"
+  },
+  {
+   "id": "aura-staticres-removed",
+   "skill": "admin/salesforce-release-preparation",
+   "question": "Does LightningExperienceSettings still carry enableAuraSecStaticResCRUCPref for the 'Enable Secure Static Resources for Lightning Components' release update on API 68.0?",
+   "wrong_answer": "Yes; the field indicates whether the release update is enforced, serving static resources from the visualforce domain instead of the lightning domain.",
+   "correct_answer": "No. It is removed at API 68.0 and later because the release update was cancelled; since Summer '26 all static resources are served from the lightning domain regardless of API version.",
+   "source": "api_meta.txt L124706-L124709",
+   "quote": "Removed in API version 68.0 and later because the Enable Secure Static Resources for Lightning Components release update was cancelled.",
+   "wrong_source": "api_meta.txt L121395-L121397 (262): Indicates whether the Enable Secure Static Resources for Lightning Components release update is enforced"
+  },
+  {
+   "id": "network-unverified-domain",
+   "skill": "admin/email-deliverability-strategy",
+   "question": "In an Experience Cloud site, emails sent on behalf of users with an unverified email domain keep getting rewritten. Is there a Network metadata setting to send them from the site's own sender address instead?",
+   "wrong_answer": "No. Mail from users with an unverified domain can only go out from the org-wide substitute address or be suppressed; the Network type has no switch for the site sender.",
+   "correct_answer": "Yes: Network.networkOptionsBit (API 68.0+) true sends such mail from the site's emailSenderAddress; false uses the org-wide substitute address if set, otherwise suppresses it.",
+   "source": "api_meta.txt L93705-L93711",
+   "quote": "email messages sent on behalf of users with an unverified email domain are sent from the site’s emailSenderAddress (true).",
+   "wrong_source": "corpus/api_meta.txt: 0 hits for networkOptionsBit in the 262 Metadata API guide"
+  }
+ ]
+}
