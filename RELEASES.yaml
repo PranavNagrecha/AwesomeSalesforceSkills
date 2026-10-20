@@ -785,6 +785,31 @@ releases:
       the remedy: gate milestone:Mk reject returns the build to building); 3 tests added, pytest tests/test_build_plan.py
       245 -> 248 passed (Fable re-ran: 248 passed, 3 skipped); one dated sentence in build-orchestration.md set-status gate
       bullet'
+  - id: R3-06
+    title: 'Claims audit wave: ALL never-audited skills checked claim-by-claim against corpus264 (writer + adversarial reviewer);
+      order: proven-agent-cited -> other agent-cited -> uncited'
+    size: L
+    owner_model: opus
+    status: running
+    target: 679
+    floor: 158
+    domains:
+    - admin
+    - apex
+    - flow
+    - security
+    - devops
+    - data
+    - integration
+    - lwc
+    - agentforce
+    - architect
+    - omnistudio
+    notes: 'Owner 2026-10-20: ''all the skills, start with agent ones first and then keep going for the rest''; 2-3 agents
+      at a time, one heavy local job. Worklist is DERIVED each batch, never stored: never-audited = no ''UNVERIFIED'' and
+      no '' 264 L'' anywhere in the package AND updated < 2026-10-19; order (1) cited in Mandatory Reads of status stable|beta
+      agents, (2) cited by any other agent, (3) uncited; minus done_skills. Each reviewer report feeds standards/skill-writer-brief.md
+      ''Learned rules'' (orchestrator Step 3b) so new skills follow them. Sample defect rate from R3-05: ~1 in 3 skills.'
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -1158,3 +1183,12 @@ inbox:
     machine should refuse the transition or flip the build to building with a logged reason; add a test in tests/test_build_plan*.py.'
   size: S
   slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Owner 2026-10-20 (''add it to backlog and just have the skills being corrected''): audit the 679 never-audited skills
+    in order (1) 158 cited by the 15 stable/beta agents, (2) rest of the 526 agent-cited, (3) 515 uncited get checker + UNVERIFIED
+    or are cut. Sample rate from R3-05: ~1 in 3 skills carries a wrong factual claim; one architect skill had 15. Batches
+    of 9, Opus writer in a worktree -> Opus adversarial reviewer -> rsync/checkout -> sync/validate -> commit; two agents
+    max, slow. Worklist is derived, not stored: skills in Mandatory Reads of status stable|beta agents, minus skills with
+    updated >= 2026-10-19, minus done_skills of this item.'
+  size: L
+  slotted_into: 1.6.0

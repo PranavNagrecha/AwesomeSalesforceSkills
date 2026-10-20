@@ -73,3 +73,29 @@ cite for the skill's core claim, or leave it if nothing in the package is versio
 you also audited the claim. Budget: ≤ 40 net new lines per skill; no restructuring, no new reference files,
 no trigger changes beyond add-only. Bump `version` (patch) and `updated`. Report per skill: rows added,
 version decision and its citation, UNVERIFIED before → after.
+
+## Job type `audit` (never-audited skill: no corpus cite, no UNVERIFIED marker)
+Claims audit, not a rewrite. (1) List every factual claim in the package (limits, API names, metadata element
+names and gates, behaviours, error texts, "removed/deprecated" statements) and check each against the corpus
+with `grep -n`; (2) correct every CONTRADICTED claim in place with the cite, keeping the old figure only as
+labelled history; (3) mark every claim the corpus does not hold `UNVERIFIED (YYYY-MM-DD)` inline — Help-only
+figures, blog figures, product names with no Metadata API row; (4) add the Questions table only if
+`verify_skill_package` FAILs without it (7 rows, traced to existing gotchas); replace template TODOs with the
+package's own checklist text; re-point dead Related Skills to slugs that exist; (5) run the checker on
+bad/good/empty/missing fixtures and report exit codes against the contract (findings 0 unless `--strict`,
+empty WARN 0, missing ERROR 1) — fix the contract, never weaken a rule; (6) bump `version` (patch) and
+`updated` (from `date`). Budget ≤ 60 net lines per skill. Report: claims audited G/C/NF, each CONTRADICTED
+fix as file:line old → new + cite, UNVERIFIED added, checker table, verify line. Always followed by an
+adversarial reviewer that opens every cite.
+
+## Learned rules (append-only; one line per defect class a reviewer found; orchestrator Step 3b writes here)
+- 2026-10-19 (R2-26 A/B): a gate wording in the writer brief propagates verbatim into every skill — state gates with the corpus line that proves them, never from the brief alone.
+- 2026-10-20 (R3-05 A–D): a limit change is API-versioned ONLY if it appears in the guide's versioned-behaviour list (apexdev "Changes to Apex at API version N"); otherwise it is release-level and applies to every class. Example: Winter '27 heap 10/25 MB (L19780) is absent from the 68.0 list (L45116-45131) — never "API 68.0+".
+- 2026-10-20 (R3-05 D): a cite must point at the line that carries the number or name; a cite to the section heading or a neighbouring row is a defect (L38771 vs L38767).
+- 2026-10-20 (R3-05 F): "removed in API N" and "cannot be used at API N and later" are different claims — use the guide's words (WITH SECURITY_ENFORCED, L11926).
+- 2026-10-20 (R3-05 F/H): delivery timing and limit context are independent — "runs asynchronously" does not imply async limits (PE triggers and CDC run on sync limits, pe L2338-2339); and "runs as Automated Process" is about the debug log, not the running user (pe L2190-2191).
+- 2026-10-20 (R3-05 G/H): a comment or checker message that contradicts the corrected prose is a defect of the same weight as the prose — sweep scripts/ and templates/ in the same pass.
+- 2026-10-20 (R3-05 H): test-context claims for platform APIs (ConnectApi SeeAllData, setTest*) come from the API's own test section, never from the generic mocking pattern.
+- 2026-10-20 (R3-05, ext probes): a fact reaches the model only from SKILL.md or references/llm-anti-patterns.md (what run_lift feeds); a correction that lives only in another reference file does not change answers — put the one-line truth in SKILL.md too.
+- 2026-10-20 (R2-31): two limits with the same number are not the same limit (QueryLocator 50M per job vs DailyAsyncApexExecutions 250k/24h); name the limit the guide names.
+- 2026-10-20 (R2-33..36): every checker obeys one contract — findings exit 0 unless `--strict`, empty dir one WARN exit 0, missing path ERROR exit 1 — and a rule that flags the documented pattern (SeeAllData for ConnectApi) is removed, not softened.

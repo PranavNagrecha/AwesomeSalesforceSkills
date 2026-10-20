@@ -1,13 +1,13 @@
 ---
 id: orchestrator
 class: build
-version: 2.0.0
+version: 2.1.0
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-10-19
+updated: 2026-10-20
 dependencies:
   shared:
     - AGENT_RULES.md
@@ -57,7 +57,7 @@ python3 scripts/release_plan.py measure [--release <version>]
 
 ### Load rule
 
-At most **2 subagents** at a time (owner 2026-10-20: "two agents at most"; the laptop is shared, so never a third). At most **one heavy local job** at a time: `skill_sync.py`, `validate_repo.py --all`, `pytest tests`, `audit_duplicates.py`, `release_gate.sh` never overlap each other. If a subagent is already running when you reach Step 2, wait.
+At most **3 subagents** at a time (owner 2026-10-20: "you can run 2/3 agents at times — don't cook my laptop"; two writers and one reviewer is the normal shape; never a fourth). At most **one heavy local job** at a time: `skill_sync.py`, `validate_repo.py --all`, `pytest tests`, `audit_duplicates.py`, `release_gate.sh` never overlap each other. If a subagent is already running when you reach Step 2, wait.
 
 ### Step 0 — Resume
 
@@ -145,6 +145,16 @@ Commit once per batch. Stage the skill files and the generated files (`registry/
 ```bash
 python3 scripts/release_plan.py set-status <ID> running --done-skills "<domain>/<slug>,<domain>/<slug>"
 ```
+
+### Step 3b — Learn from every reviewer (append-only)
+
+Every adversarial reviewer report names defect classes: things writers got wrong that a rule would have prevented
+(a fact gated on the wrong thing, a cite whose line does not carry the number, a figure the corpus never states,
+a checker that fails open). After each batch, before Step 4, append each NEW class as one rule line under
+`## Learned rules` in `standards/skill-writer-brief.md` — dated, with the batch id and one example — and nothing
+else: no rewording of earlier rules, no deletions. Writers and reviewers read that section through the brief, and
+`scripts/new_skill.py` prints its path, so every new skill is held to what the last review learned. If a report
+names no new class, write nothing. Commit the brief change in the same batch commit.
 
 ### Step 4 — Close items
 
