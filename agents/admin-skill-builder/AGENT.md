@@ -1,13 +1,13 @@
 ---
 id: admin-skill-builder
 class: build
-version: 1.0.0
+version: 1.0.1
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-28
+updated: 2026-10-20
 dependencies:
   shared:
     - AGENT_RULES.md
@@ -31,6 +31,8 @@ Builds skills for the **Admin** and **BA** roles across any Salesforce cloud. Sp
 ---
 
 ## Mandatory Reads Before Starting
+
+**First, always:** `standards/skill-writer-brief.md` — the recipe that measurably worked, the job types, the append-only Learned rules (one line per defect class a reviewer has found) and the reviewer brief. No skill built here lands without an adversarial reviewer following that section.
 
 1. `AGENT_RULES.md`
 2. `standards/source-hierarchy.md`

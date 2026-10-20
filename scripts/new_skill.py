@@ -994,6 +994,10 @@ After scaffolding:
     print(f"""
 ┌─ Next steps ─────────────────────────────────────────────────────────┐
 │                                                                      │
+│  STEP 0 — Read standards/skill-writer-brief.md: the recipe that      │
+│           worked, the job types, the Learned rules (append-only     │
+│           defect classes from every review) and the reviewer brief. │
+│                                                                      │
 │  STEP 1 — Read the official docs listed above (non-negotiable).      │
 │           The sources are also pre-seeded in references/             │
 │           well-architected.md for easy reference while you write.    │
@@ -1007,6 +1011,10 @@ After scaffolding:
 │                                                                      │
 │  STEP 4 — Implement scripts/check_{noun}.py            │
 │           (stdlib only — no pip dependencies)                        │
+│                                                                      │
+│  STEP 4b — Hand the package to an adversarial reviewer (brief §      │
+│           Reviewer brief) before you commit: every cite opened,     │
+│           leftovers grepped, checker on bad/good/empty/missing.     │
 │                                                                      │
 │  STEP 5 — Run:                                                       │
 │       python3 scripts/skill_sync.py --skill skills/{domain}/{skill_name}  │

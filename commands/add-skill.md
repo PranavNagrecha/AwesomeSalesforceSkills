@@ -74,6 +74,14 @@ header tells its reader that a `NOT for X - use Y` clause is the most useful thi
 on the line. The Review phase confirms the target exists on disk, because a
 redirect to a package that does not exist sends the reader nowhere.
 
+## The standard every landed skill is held to
+
+`standards/skill-writer-brief.md` is the contract: the recipe that measurably worked (corpus cite per claim,
+bounded writer job, adversarial reviewer who opens every cite, orchestrator spot-check, probe measurement), the
+job types (`full`, `topup`, `winter27`, `audit`), the reviewer brief, and the append-only **Learned rules** —
+one line per defect class a reviewer has ever found. The writer reads it before touching a file; the reviewer
+reads it before judging; a skill that no reviewer has read does not land.
+
 ## Checking a skill afterwards, or any time
 
 ```bash
