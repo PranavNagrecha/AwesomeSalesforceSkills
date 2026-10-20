@@ -2,7 +2,7 @@
 id: fit-gap-analyzer
 class: runtime
 version: 1.0.0
-status: stable
+status: experimental
 requires_org: true
 modes: [single]
 owner: sfskills-core

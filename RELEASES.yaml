@@ -413,8 +413,13 @@ releases:
       of the roster docs (slash redirects stay); doc counts regenerated'
     size: M
     owner_model: sonnet
-    status: running
+    status: done
     notes: 'Honest surface: ~8-16 agents listed, the rest marked experimental until someone proves or asks for them.'
+    evidence: 'runtime stable 62 -> 7 (the eight graded agents'' owners: security-scanner, deployment-failure-triager, access-path-explainer,
+      field-impact-analyzer, object-designer, permission-set-architect, flow-builder), beta 8 (Tier-4, scenario-exercised),
+      experimental 55; RUNTIME_VS_BUILD.md proven roster + experimental section; docs/agents.md regenerated; CLAUDE.md honest-split
+      sentence; schema enum gains experimental; validate --agents 0, parity 0, doc counts consistent (lint counts experimental
+      as active)'
   - id: R2-03
     title: 'Distribution push: list sfskills-mcp + plugin on MCP registries/directories and awesome lists; contributor on-ramp
       — as a measured test: 3 listings, then clones/downloads/stars/issues tracked for 14 days'
@@ -561,6 +566,11 @@ releases:
   - id: R2-27
     title: 'Build-loop fixes from the cold proof: 3.1 vs clarifier Step 4, reject-a-save tree branch, VR template claims,
       custom-permissions --strict'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-28
+    title: 'build_plan.py: WARN when a step owner is an experimental agent'
     size: S
     owner_model: sonnet
     status: todo
@@ -773,5 +783,11 @@ inbox:
     to automation-selection.md; (3) templates/admin/validation-rule-patterns.md: verify or fix ''ISCHANGED fires on insert''
     and the mandatory Integration_Bypass__c custom setting (no skill ships its XML); (4) skills/admin/custom-permissions checker:
     --strict must exit 1 on an empty dir'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Side effect of R2-02: agents/_shared/schemas/agent-frontmatter.schema.json now allows status experimental, and build_plan.py
+    reads that enum, so a plan can assign steps to unproven agents. Add a planner rule: prefer stable/beta owners; WARN (not
+    ERROR) when a step''s owning agent is experimental'
   size: S
   slotted_into: 1.5.0

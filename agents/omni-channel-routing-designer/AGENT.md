@@ -2,7 +2,7 @@
 id: omni-channel-routing-designer
 class: runtime
 version: 1.1.0
-status: stable
+status: experimental
 requires_org: true
 modes: [design, audit]
 owner: sfskills-core

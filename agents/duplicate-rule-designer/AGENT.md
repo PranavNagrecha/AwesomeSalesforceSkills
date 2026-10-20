@@ -2,7 +2,7 @@
 id: duplicate-rule-designer
 class: runtime
 version: 1.2.0
-status: stable
+status: experimental
 requires_org: true
 modes: [single]
 owner: sfskills-core

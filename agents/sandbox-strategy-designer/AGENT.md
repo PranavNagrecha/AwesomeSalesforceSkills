@@ -2,7 +2,7 @@
 id: sandbox-strategy-designer
 class: runtime
 version: 1.1.0
-status: stable
+status: experimental
 requires_org: false
 modes: [design, audit]
 owner: sfskills-core

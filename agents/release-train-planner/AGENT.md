@@ -2,7 +2,7 @@
 id: release-train-planner
 class: runtime
 version: 1.0.0
-status: stable
+status: experimental
 requires_org: false
 modes: [design, audit]
 owner: sfskills-core

@@ -2,7 +2,7 @@
 id: apex-refactorer
 class: runtime
 version: 1.1.0
-status: stable
+status: experimental
 requires_org: false
 modes: [single]
 owner: sfskills-core

@@ -2,7 +2,7 @@
 id: automation-migration-router
 class: runtime
 version: 1.0.0
-status: stable
+status: experimental
 requires_org: true
 modes: [analyze, plan, migrate]
 owner: sfskills-core

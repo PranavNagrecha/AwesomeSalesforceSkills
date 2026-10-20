@@ -2,7 +2,7 @@
 id: custom-metadata-and-settings-designer
 class: runtime
 version: 1.0.0
-status: stable
+status: experimental
 requires_org: true
 modes: [design, audit]
 owner: sfskills-core

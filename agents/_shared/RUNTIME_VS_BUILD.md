@@ -28,86 +28,32 @@ Entry points: `/start-building`, `/add-to-backlog`, `/new-skill`, `/request-skil
 
 ## Run-time agents (70)
 
+70 active run-time agents: 15 proven (7 stable + 8 beta Tier 4 build-loop agents) and 55 experimental. The proven set is the supported roster; the experimental set is listed separately below. Deprecated agents (14) are counted separately.
+
 These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
-### Developer + architecture tier (28)
+### Proven roster — 15 agents (7 stable, 8 beta)
+
+These are the agents with graded, end-to-end evidence behind them: the seven `status: stable` agents below were each run and graded against real scenarios in the 1.5.0 cycle, and the eight Tier 4 build-loop agents are exercised by the five committed scenarios under `examples/builds/`. `AGENT_CONTRACT.md` defines `experimental` as the status for an agent that has not yet earned that evidence; the sections below keep the tier headings (tier sizes are unchanged and sum to 70) and split each tier into proven and experimental rows.
+
+#### Developer + architecture tier (28) — 3 proven (stable)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
-| `apex-refactorer` | Apex | Refactored class + test class + PR-ready patch | `/refactor-apex` |
-| `trigger-consolidator` | Apex | Consolidated TriggerHandler + migration plan | `/consolidate-triggers` |
-| `test-class-generator` | Apex | Bulk-safe test class targeting ≥85% coverage | `/gen-tests` |
-| `soql-optimizer` | Apex / Data | Ranked list of SOQL fixes with before/after | `/optimize-soql` |
 | `security-scanner` | Security | CRUD/FLS/sharing/secret findings report | `/scan-security` |
-| `flow-analyzer` | Flow | Flow-vs-Apex decision + bulkification findings | `/analyze-flow` |
-| `bulk-migration-planner` | Integration / Data | Bulk API 2.0 / PE / Pub-Sub migration plan | `/plan-bulk-migration` |
-| `lwc-builder` | LWC | Full LWC bundle (js/html/css/meta/tests) + optional Apex controller | `/build-lwc` |
-| `lwc-auditor` | LWC | A11y + perf + security findings per bundle | `/audit-lwc` |
-| `lwc-debugger` | LWC | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure | `/debug-lwc` |
-| `deployment-risk-scorer` | DevOps | Risk score + breaking-change list for a change set | `/score-deployment` |
 | `deployment-failure-triager` | DevOps | Evidence-grounded diagnosis of an existing deploy job or CLI JSON fixture | `/triage-deployment` |
-| `apex-test-failure-triager` | Apex / DevOps | Evidence-grounded diagnosis of an existing Apex test run or CLI JSON fixture | `/triage-apex-tests` |
-| `agentforce-builder` | Agentforce | Full action scaffold: Apex + topic + eval | `/build-agentforce-action` || `apex-builder` | Apex | Apex class(es) built from requirements + test class | `/build-apex` |
-| `changeset-builder` | DevOps | Change set manifest + deployment checklist | `/build-changeset` |
-| `flow-orchestrator-designer` | Flow | Flow Orchestrator design + stage / step map | `/design-flow-orchestrator` |
-| `automation-migration-router` | Flow / Apex | Automation inventory → WFR/PB-to-Flow migration plan | `/automation-migration-router` |
 | `access-path-explainer` | Security / Admin | Layered explanation of why a user can or cannot perform an operation | `/why-cant-user` |
-| `change-impact-planner` | Admin / DevOps | Direct and transitive impact of a proposed metadata change | `/plan-metadata-change` |
-| `automation-transaction-profiler` | Flow / Apex | Save-order automation inventory and recursion/DML risk | `/profile-automation` |
-| `release-readiness-reviewer` | DevOps | Evidence-backed go/no-go for an explicit release scope | `/review-release-readiness` |
-| `security-posture-reviewer` | Security | Scoped access/code/session/integration posture findings | `/review-security-posture` |
-| `integration-incident-triager` | Integration | Incident classification from Named Credential and event evidence | `/triage-integration` |
-| `data-migration-reconciler` | Data | Load reject/count reconciliation without writing records | `/reconcile-data-load` |
-| `org-health-assessor-v2` | Architect | Trusted/Easy/Adaptable health roadmap from a snapshot | `/assess-org-health` |
-| `agentforce-quality-engineer` | Agentforce | Agent topics/actions/tests/guardrails review | `/review-agentforce-agent` |
-| `multi-org-drift-analyzer` | Architect / DevOps | Expected vs dangerous differences between two explicit snapshots | `/compare-orgs` |
 
-### Admin accelerators — Tier 1 (14)
+#### Admin accelerators — Tier 1 (14) — 4 proven (stable)
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
 | `field-impact-analyzer` | Admin / Data | Blast-radius report for a field | `/analyze-field-impact` |
 | `object-designer` | Admin / Architecture | Setup-ready sObject design | `/design-object` |
 | `permission-set-architect` | Admin / Security | PS / PSG / Muting design per persona | `/architect-perms` |
-| `flow-builder` | Flow / Admin | Flow design from requirements + tree-based routing | `/build-flow` || `data-loader-pre-flight` | Data | Go/no-go checklist for a data load | `/preflight-load` |
-| `duplicate-rule-designer` | Data / Admin | Matching + Duplicate Rules + post-load hygiene | `/design-duplicate-rule` |
-| `assignment-and-auto-response-rules-designer` | Admin | Assignment rule + auto-response rule design | `/design-assignment-rules` |
-| `business-hours-and-holidays-configurator` | Admin / Service | Business hours + holiday set configuration plan | `/configure-business-hours` |
-| `config-workbook-author` | Admin | Configuration workbook (object / field / automation inventory) | `/author-config-workbook` |
-| `custom-metadata-and-settings-designer` | Admin | CMDT / Custom Settings design + Apex usage patterns | `/design-custom-metadata` |
-| `entitlement-and-milestone-designer` | Admin / Service | Entitlement process + milestone design | `/design-entitlements` |
-| `experience-cloud-admin-designer` | Admin | Experience Cloud site design (member, guest, CMS) | `/design-experience-cloud` |
-| `path-designer` | Admin | Path + guidance + key fields design per object / stage | `/design-path` |
-| `process-flow-mapper` | Admin | Business process → Salesforce automation map | `/map-process-flow` |
+| `flow-builder` | Flow / Admin | Flow design from requirements + tree-based routing | `/build-flow` |
 
-### Strategic — Tier 2 (9)
-
-| Agent | Domain | Primary output | Slash command |
-|---|---|---|---|
-| `data-model-reviewer` | Data / Architecture | Data-model domain review | `/review-data-model` |
-| `integration-catalog-builder` | Integration / Security | Integration catalog + posture scorecard | `/catalog-integrations` |
-| `csv-to-object-mapper` | Data | CSV → sObject mapping + VR collision report | `/map-csv-to-object` |
-| `email-template-modernizer` | Admin | Template classification + migration plan | `/modernize-email-templates` |
-| `audit-router` | Admin / Security | Routes to appropriate single-mode auditor or runs multi-mode audit | `/audit-router` |
-| `fit-gap-analyzer` | Admin | Fit / gap analysis: requirements vs org configuration | `/run-fit-gap` |
-| `story-drafter` | Admin | User stories with Given/When/Then acceptance criteria | `/draft-stories` |
-
-### Vertical + governance — Tier 3 (11)
-
-| Agent | Domain | Primary output | Slash command |
-|---|---|---|---|
-| `omni-channel-routing-designer` | Service | Queue + routing config + presence design | `/design-omni-channel` |
-| `knowledge-article-taxonomy-agent` | Service / Experience | Taxonomy + lifecycle + channel-audience plan | `/design-knowledge-taxonomy` |
-| `sales-stage-designer` | Sales | Stage ladder + forecast + VR gates + Path | `/design-sales-stages` |
-| `lead-routing-rules-designer` | Sales / Marketing | Routing matrix + queues + SLAs | `/design-lead-routing` |
-| `sandbox-strategy-designer` | DevOps | Environment ladder + scratch pools + refresh calendar | `/design-sandbox-strategy` |
-| `release-train-planner` | DevOps | Package + branching + CI/CD + release calendar | `/plan-release-train` |
-| `waf-assessor` | Architecture | Well-Architected scorecard + remediation backlog | `/assess-waf` |
-| `agentforce-action-reviewer` | Agentforce | Per-action A–F scorecard + guardrails gap list | `/review-agentforce-action` || `profile-to-permset-migrator` | Admin / Security | Profile → Permission Set migration plan + PS / PSG design | `/migrate-profile-to-permset` |
-| `user-access-diff` | Admin / Security | Side-by-side access comparison report between users | `/diff-users` |
-| `omnistudio-designer` | OmniStudio / Industries | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit | `/design-omnistudio` |
-
-### Orchestration — Tier 4 (8)
+#### Orchestration — Tier 4 (8) — 8 proven (beta)
 
 `status: beta`. These agents implement the requirement-to-build loop in [`standards/build-orchestration.md`](../../standards/build-orchestration.md): one agent per stage, one human gate between stages, builds tracked under `.sfskills/builds/<build-id>/`. None of them deploys or approves a gate — each stops and prints the next command for a human to run.
 
@@ -123,6 +69,85 @@ These agents use the skill library to do real Salesforce work against a user's o
 | `metadata-builder` | Admin / Metadata | Deploy-ready source-format metadata XML + `package.xml` fragment + deploy-order note for one declarative step, checked against the cited skills' own checkers | `/build-metadata` |
 
 Composite commands that span the whole loop rather than one agent: `/run-build` (every step of one milestone) and `/build-from-requirements` (all five stages, gate by gate).
+
+### Experimental — unproven, slash commands still work (55)
+
+`status: experimental`. These agents follow the contract and their slash commands and `get_agent(name)` still work, but nobody has graded their output end to end yet. Treat results as a draft to review, not a verdict. An agent moves up to `stable` when a graded run is committed as evidence.
+
+#### Developer + architecture tier (28) — 25 experimental
+
+| Agent | Domain | Primary output | Slash command |
+|---|---|---|---|
+| `apex-refactorer` | Apex | Refactored class + test class + PR-ready patch | `/refactor-apex` |
+| `trigger-consolidator` | Apex | Consolidated TriggerHandler + migration plan | `/consolidate-triggers` |
+| `test-class-generator` | Apex | Bulk-safe test class targeting ≥85% coverage | `/gen-tests` |
+| `soql-optimizer` | Apex / Data | Ranked list of SOQL fixes with before/after | `/optimize-soql` |
+| `flow-analyzer` | Flow | Flow-vs-Apex decision + bulkification findings | `/analyze-flow` |
+| `bulk-migration-planner` | Integration / Data | Bulk API 2.0 / PE / Pub-Sub migration plan | `/plan-bulk-migration` |
+| `lwc-builder` | LWC | Full LWC bundle (js/html/css/meta/tests) + optional Apex controller | `/build-lwc` |
+| `lwc-auditor` | LWC | A11y + perf + security findings per bundle | `/audit-lwc` |
+| `lwc-debugger` | LWC | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure | `/debug-lwc` |
+| `deployment-risk-scorer` | DevOps | Risk score + breaking-change list for a change set | `/score-deployment` |
+| `apex-test-failure-triager` | Apex / DevOps | Evidence-grounded diagnosis of an existing Apex test run or CLI JSON fixture | `/triage-apex-tests` |
+| `agentforce-builder` | Agentforce | Full action scaffold: Apex + topic + eval | `/build-agentforce-action` |
+| `apex-builder` | Apex | Apex class(es) built from requirements + test class | `/build-apex` |
+| `changeset-builder` | DevOps | Change set manifest + deployment checklist | `/build-changeset` |
+| `flow-orchestrator-designer` | Flow | Flow Orchestrator design + stage / step map | `/design-flow-orchestrator` |
+| `automation-migration-router` | Flow / Apex | Automation inventory → WFR/PB-to-Flow migration plan | `/automation-migration-router` |
+| `change-impact-planner` | Admin / DevOps | Direct and transitive impact of a proposed metadata change | `/plan-metadata-change` |
+| `automation-transaction-profiler` | Flow / Apex | Save-order automation inventory and recursion/DML risk | `/profile-automation` |
+| `release-readiness-reviewer` | DevOps | Evidence-backed go/no-go for an explicit release scope | `/review-release-readiness` |
+| `security-posture-reviewer` | Security | Scoped access/code/session/integration posture findings | `/review-security-posture` |
+| `integration-incident-triager` | Integration | Incident classification from Named Credential and event evidence | `/triage-integration` |
+| `data-migration-reconciler` | Data | Load reject/count reconciliation without writing records | `/reconcile-data-load` |
+| `org-health-assessor-v2` | Architect | Trusted/Easy/Adaptable health roadmap from a snapshot | `/assess-org-health` |
+| `agentforce-quality-engineer` | Agentforce | Agent topics/actions/tests/guardrails review | `/review-agentforce-agent` |
+| `multi-org-drift-analyzer` | Architect / DevOps | Expected vs dangerous differences between two explicit snapshots | `/compare-orgs` |
+
+#### Admin accelerators — Tier 1 (14) — 10 experimental
+
+| Agent | Domain | Primary output | Slash command |
+|---|---|---|---|
+| `data-loader-pre-flight` | Data | Go/no-go checklist for a data load | `/preflight-load` |
+| `duplicate-rule-designer` | Data / Admin | Matching + Duplicate Rules + post-load hygiene | `/design-duplicate-rule` |
+| `assignment-and-auto-response-rules-designer` | Admin | Assignment rule + auto-response rule design | `/design-assignment-rules` |
+| `business-hours-and-holidays-configurator` | Admin / Service | Business hours + holiday set configuration plan | `/configure-business-hours` |
+| `config-workbook-author` | Admin | Configuration workbook (object / field / automation inventory) | `/author-config-workbook` |
+| `custom-metadata-and-settings-designer` | Admin | CMDT / Custom Settings design + Apex usage patterns | `/design-custom-metadata` |
+| `entitlement-and-milestone-designer` | Admin / Service | Entitlement process + milestone design | `/design-entitlements` |
+| `experience-cloud-admin-designer` | Admin | Experience Cloud site design (member, guest, CMS) | `/design-experience-cloud` |
+| `path-designer` | Admin | Path + guidance + key fields design per object / stage | `/design-path` |
+| `process-flow-mapper` | Admin | Business process → Salesforce automation map | `/map-process-flow` |
+
+#### Strategic — Tier 2 (9) — 9 experimental
+
+| Agent | Domain | Primary output | Slash command |
+|---|---|---|---|
+| `data-model-reviewer` | Data / Architecture | Data-model domain review | `/review-data-model` |
+| `integration-catalog-builder` | Integration / Security | Integration catalog + posture scorecard | `/catalog-integrations` |
+| `csv-to-object-mapper` | Data | CSV → sObject mapping + VR collision report | `/map-csv-to-object` |
+| `email-template-modernizer` | Admin | Template classification + migration plan | `/modernize-email-templates` |
+| `audit-router` | Admin / Security | Routes to appropriate single-mode auditor or runs multi-mode audit | `/audit-router` |
+| `fit-gap-analyzer` | Admin | Fit / gap analysis: requirements vs org configuration | `/run-fit-gap` |
+| `story-drafter` | Admin | User stories with Given/When/Then acceptance criteria | `/draft-stories` |
+| `salesforce-decision-facilitator` | Architect | Decision brief comparing viable options with hard gates, sensitivity and reversibility | `/decide-salesforce` |
+| `salesforce-learning-guide` | Admin / Learning | Cited lesson with practice and knowledge checks for one Salesforce topic | `/learn-salesforce` |
+
+#### Vertical + governance — Tier 3 (11) — 11 experimental
+
+| Agent | Domain | Primary output | Slash command |
+|---|---|---|---|
+| `omni-channel-routing-designer` | Service | Queue + routing config + presence design | `/design-omni-channel` |
+| `knowledge-article-taxonomy-agent` | Service / Experience | Taxonomy + lifecycle + channel-audience plan | `/design-knowledge-taxonomy` |
+| `sales-stage-designer` | Sales | Stage ladder + forecast + VR gates + Path | `/design-sales-stages` |
+| `lead-routing-rules-designer` | Sales / Marketing | Routing matrix + queues + SLAs | `/design-lead-routing` |
+| `sandbox-strategy-designer` | DevOps | Environment ladder + scratch pools + refresh calendar | `/design-sandbox-strategy` |
+| `release-train-planner` | DevOps | Package + branching + CI/CD + release calendar | `/plan-release-train` |
+| `waf-assessor` | Architecture | Well-Architected scorecard + remediation backlog | `/assess-waf` |
+| `agentforce-action-reviewer` | Agentforce | Per-action A–F scorecard + guardrails gap list | `/review-agentforce-action` |
+| `profile-to-permset-migrator` | Admin / Security | Profile → Permission Set migration plan + PS / PSG design | `/migrate-profile-to-permset` |
+| `user-access-diff` | Admin / Security | Side-by-side access comparison report between users | `/diff-users` |
+| `omnistudio-designer` | OmniStudio / Industries | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit | `/design-omnistudio` |
 
 ### Deprecated (14)
 

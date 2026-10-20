@@ -221,6 +221,8 @@ Must:
 
 These are user-facing agents that USE the library to do real Salesforce work — they do not build the library. The full roster is documented in [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md) and source-mapped in [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 
+Of the 70 active run-time agents, 15 are proven (7 `stable` agents graded end to end, plus the 8 Tier 4 build-loop agents at `beta`, exercised by the committed scenarios under `examples/builds/`) and 55 are `experimental`: unproven, slash commands still work. `RUNTIME_VS_BUILD.md` lists the two sets separately; the tier lists below name every agent in a tier regardless of status.
+
 The roster:
 - **Developer + architecture (28)** — `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/build-lwc`, `/audit-lwc`, `/debug-lwc`, `/score-deployment`, `/triage-deployment`, `/triage-apex-tests`, `/build-agentforce-action`, `/build-apex`, `/build-changeset`, `/design-flow-orchestrator`, `/automation-migration-router`, `/why-cant-user`, `/plan-metadata-change`, `/profile-automation`, `/review-release-readiness`, `/review-security-posture`, `/triage-integration`, `/reconcile-data-load`, `/assess-org-health`, `/review-agentforce-agent`, `/compare-orgs`.
 - **Admin accelerators — Tier 1 (14)** — `/analyze-field-impact`, `/design-object`, `/architect-perms`, `/build-flow`, `/preflight-load`, `/design-duplicate-rule`, `/design-assignment-rules`, `/configure-business-hours`, `/author-config-workbook`, `/design-custom-metadata`, `/design-entitlements`, `/design-experience-cloud`, `/design-path`, `/map-process-flow`.

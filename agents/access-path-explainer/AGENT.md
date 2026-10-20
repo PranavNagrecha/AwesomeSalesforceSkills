@@ -7,7 +7,7 @@ requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-08-20
-updated: 2026-10-21
+updated: 2026-10-19
 default_output_dir: "docs/reports/access-path-explainer/"
 output_formats:
   - markdown

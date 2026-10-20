@@ -7,7 +7,7 @@ requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-10-21
+updated: 2026-10-19
 default_output_dir: "docs/reports/field-impact-analyzer/"
 output_formats:
   - markdown

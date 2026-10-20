@@ -2,7 +2,7 @@
 id: org-health-assessor-v2
 class: runtime
 version: 1.0.0
-status: stable
+status: experimental
 requires_org: false
 modes: [single]
 owner: sfskills-core
