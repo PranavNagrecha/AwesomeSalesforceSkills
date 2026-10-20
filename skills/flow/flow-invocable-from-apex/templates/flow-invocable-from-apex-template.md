@@ -1,6 +1,6 @@
 # Flow Invocable From Apex — Work Template
 
-Use this template when working on tasks in this area.
+Use this template when authoring an `@InvocableMethod` for Flow, or when Apex starts a flow.
 
 ## Scope
 
@@ -10,23 +10,31 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Record the answers to the Questions to Ask Before Configuring table in SKILL.md.
 
-- Setting / configuration:
-- Known constraints:
-- Failure modes to watch for:
+- Batch size and calling flow type:
+- Calls an external system (`callout=true`)?:
+- Wrapper field types and visibility:
+- Failure strategy (output field, fault path, rollback):
+- Class `apiVersion` and sharing keyword:
+- Statics or caches in the class:
+- Flow started from Apex: API name, flow type, variables read:
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Which pattern from SKILL.md applies (bulk-safe action, action with a callout, calling a flow from Apex), and why.
 
 ## Checklist
 
-Copy the review checklist from SKILL.md and tick items as you complete them.
-
-- [ ] TODO
-- [ ] TODO
+- [ ] One `List` input parameter; return type `void` or a `List`
+- [ ] Output list has the same size and order as the input list
+- [ ] No SOQL or DML inside a loop over the input list
+- [ ] `@InvocableVariable` members are `public` or `global` fields, no properties
+- [ ] `callout=true` set when the method calls an external system
+- [ ] Sharing keyword declared; `apiVersion` checked against 67.0
+- [ ] Tests: single record, N=200, null, empty, partial failure, non-admin user
+- [ ] `check_flow_invocable_from_apex.py --manifest-dir` run with no ERROR
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Record any deviation from the standard pattern and why.

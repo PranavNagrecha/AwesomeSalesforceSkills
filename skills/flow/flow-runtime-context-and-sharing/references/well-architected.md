@@ -14,17 +14,17 @@ This skill is the canonical **Security** entry point in the `flow/` domain. The 
 
 ### Tradeoff 1 — Default-Safe vs Default-Convenient
 
-The Salesforce platform default for record-triggered flows is convenient (System Context Without Sharing) — automation just works without sharing rules getting in the way. It is not safe — sharing-rule violations are silent.
+The Salesforce platform default for record-triggered flows is convenient (System Context Without Sharing; UNVERIFIED (2026-10-20): the default is not in the corpus) — automation just works without sharing rules getting in the way. It is not safe — sharing-rule violations are silent.
 
 This skill recommends inverting the default at the org-policy level: every flow must explicitly set `<runInMode>`, and the recommended default is `SystemModeWithSharing` for record-triggered flows that don't have a documented bypass requirement. The cost is friction at flow authoring time (every flow needs a thought-out run-mode decision). The benefit is no surprise data-leak findings in audit.
 
 ### Tradeoff 2 — Per-Element Override vs Subflow Boundary
 
 When a User Context flow needs to escalate one operation, there are two patterns:
-- **Per-element `runInMode` override** — minimal change, scoped to one element, easy to audit grep.
-- **System Context Subflow** — cleaner separation of concerns, easier to test in isolation, but introduces a flow boundary that adds debugging complexity.
+- **Per-element `runInMode` override** — CONTRADICTED (2026-10-20): not available; `runInMode` is a Flow-level field (api_meta 264 L70907, sample L76526-76533).
+- **System Context Subflow** — the supported way to escalate one operation: cleaner separation of concerns, easier to test in isolation, but introduces a flow boundary that adds debugging complexity.
 
-Use per-element override when the escalation is a single read of one specific record. Use the subflow pattern when the escalation involves multiple writes or when the escalated logic is reused across multiple parent flows.
+Use a subflow for a single read of one specific record and for multiple writes alike; `UserMode` (API 68.0 and later) is the explicit user-context value for the other direction (api_meta 264 L70923-70927).
 
 ### Tradeoff 3 — Without-Sharing + Audit vs With-Sharing + Granular Shares
 
@@ -42,7 +42,7 @@ Letting flows inherit the API-version default is convenient — one less line of
 
 1. **"It worked in my dev org" without persona testing** — Devs run flows as sysadmin. Sysadmin sees everything. The flow appears to work; in production with a real low-privileged user, it fails or (worse) escalates silently. Always test with the lowest-privileged persona who could trigger the flow.
 2. **Using `$Permission` as a security boundary** — `$Permission` is a feature-toggle merge field, not a security control. It only resolves correctly for human users, can be bypassed by changing the user's permission set, and gives a false sense of safety. The actual security boundary is `<runInMode>`.
-3. **Flipping the entire flow to Without Sharing to make one Get Records work** — collateral damage to every other element. Use per-element override (Pattern 1 in `examples.md`) instead.
+3. **Flipping the entire flow to Without Sharing to make one Get Records work** — collateral damage to every other element. Use a subflow with its own `runInMode` (Example 3 in `examples.md`) instead.
 4. **No audit log on without-sharing writes** — without an audit log, a privileged write is indistinguishable from a malicious one. Auditors will require this control retroactively; cheaper to add it upfront.
 5. **Trusting subflow inheritance of run mode** — there is none. Set `<runInMode>` on every subflow.
 
@@ -74,7 +74,9 @@ This is the compensating control for the bypass. Without it, a without-sharing f
 - Salesforce Help — Configure Flow Run Behavior: https://help.salesforce.com/s/articleView?id=platform.flow_distribute_run_user.htm
 - Salesforce Help — Run-Mode Considerations for Flows: https://help.salesforce.com/s/articleView?id=platform.flow_considerations_run_user.htm
 - Salesforce Help — How Does Flow Security Work?: https://help.salesforce.com/s/articleView?id=sf.flow_distribute_security.htm
-- Salesforce Spring '21 Release Notes — Default Run Mode for Record-Triggered Flows changed.
+- Salesforce Spring '21 Release Notes — Default Run Mode for Record-Triggered Flows changed (UNVERIFIED (2026-10-20): release notes are not in the corpus).
+- Metadata API Developer Guide 264 — Flow `runInMode` values and UI labels, L70907-70927; flow-level sample L76526-76533.
+- Platform Events Developer Guide 264 — platform-event-triggered flows run as the publishing user, L2190-2192.
 - Salesforce Architects — Well-Architected Trusted (Security): https://architect.salesforce.com/well-architected/trusted/secure
 - Salesforce Architects — Least Privilege Principle: https://architect.salesforce.com/
 - Salesforce Developer — Apex Sharing Keywords: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm

@@ -859,6 +859,15 @@ releases:
     - flow/flow-email-and-notifications
     - flow/flow-external-services
     - flow/flow-for-experience-cloud
+    - flow/flow-http-callout-action
+    - flow/flow-invocable-from-apex
+    - flow/flow-performance-optimization
+    - flow/flow-record-locking-and-contention
+    - flow/flow-resource-patterns
+    - flow/flow-rollback-patterns
+    - flow/flow-runtime-context-and-sharing
+    - flow/flow-runtime-error-diagnosis
+    - flow/flow-screen-input-validation-patterns
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'

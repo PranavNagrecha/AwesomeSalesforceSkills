@@ -4,7 +4,7 @@
 
 **What the LLM generates:** Instructions to use Flow Builder's Debug mode to reproduce a `CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY` or `FIELD_INTEGRITY_EXCEPTION` error.
 
-**Why it happens:** LLMs recommend Debug mode as a general-purpose diagnostic tool without knowing that debug mode does not commit DML.
+**Why it happens:** LLMs recommend Debug mode as a general-purpose diagnostic tool without knowing that debug mode does not commit DML (UNVERIFIED (2026-10-20): not in the corpus).
 
 **Correct pattern:** Debug mode is for logic tracing and variable inspection only. DML-related errors (validation rule failures, trigger failures, required field violations) require testing against real data in a sandbox using an actual record scenario, not the Debug runner. Reproduce DML errors by running the flow from the record UI or via test data setup in sandbox.
 
@@ -18,7 +18,7 @@
 
 **Why it happens:** Retry patterns are common in integration and async code. LLMs apply them without knowing that a fault path cannot re-execute the failed element and that loops in fault paths create infinite execution risk.
 
-**Correct pattern:** Fault paths are for graceful failure handling only — display a user-friendly message, log the error, or send a notification. The failed DML is already rolled back when the fault path fires. To handle retryable scenarios, fix the data condition before the DML element (null checks, validation pre-checks) rather than retrying after failure.
+**Correct pattern:** Fault paths are for graceful failure handling only — display a user-friendly message, log the error, or send a notification. The failed DML is already rolled back when the fault path fires (UNVERIFIED (2026-10-20): not in the corpus; SKILL.md Pattern 4 allows one bounded retry). To handle retryable scenarios, fix the data condition before the DML element (null checks, validation pre-checks) rather than retrying after failure.
 
 **Detection hint:** Any fault path connector that leads back to a Loop element or back to the DML element that failed.
 
@@ -40,7 +40,7 @@
 
 **What the LLM generates:** Instructions to open the flow in Flow Builder and check the "active" version, without verifying whether the active version is the same version referenced in the fault email.
 
-**Why it happens:** LLMs assume there is a single active version and that it is the version that ran.
+**Why it happens:** LLMs assume there is a single active version and that it is the version that ran. The guide documents a single `activeVersionNumber` per flow (api_meta 264 L76681), so the email can name an older version.
 
 **Correct pattern:** The fault email specifies the flow version number that ran. If the flow has been updated since the error occurred, the active version may be different. In Flow Builder, use the version dropdown to open the specific version number from the fault email. This is the version that contains the failing element — not necessarily the current active version.
 
@@ -52,7 +52,7 @@
 
 **What the LLM generates:** Adding a fault path to the Get Records element to "handle" the case where Get Records returns no records.
 
-**Why it happens:** Fault paths seem like error handling, and LLMs apply them broadly without knowing that a Get Records element returning no results is not an error — it completes successfully with a null variable. Fault paths on Get Records only fire for infrastructure or SOQL errors, not for empty result sets.
+**Why it happens:** Fault paths seem like error handling, and LLMs apply them broadly without knowing that a Get Records element returning no results is not an error — it completes successfully with a null variable. Fault paths on Get Records only fire for infrastructure or SOQL errors, not for empty result sets. (Documented: `assignNullValuesIfNoRecordsFound` "Specifies that all values are set to null when no record is found", api_meta 264 L73832-73833. UNVERIFIED (2026-10-20): that an empty result never takes the fault path is not in the corpus.)
 
 **Correct pattern:** A Get Records element that returns no records does not trigger its fault path — it returns null and continues on the normal path. To handle the empty-result case, add a Decision element after Get Records that checks whether the variable `is null`. Route the null outcome to a graceful path. Fault paths on Get Records are for INVALID_FIELD errors, SOQL limit errors, and similar platform-level failures.
 

@@ -10,17 +10,18 @@ per flow.
 **Operational Excellence:** the integration becomes admin-owned, which is the point — but
 the schema is derived from a pasted sample, so the sample is effectively the contract.
 Capture it from the live endpoint and prefer a non-ideal response, because fields absent
-from the sample do not exist as flow resources at all.
+from the sample do not exist as flow resources at all (UNVERIFIED (2026-10-20): not described in the corpus).
 
 **Performance:** run callouts from the asynchronous path of a record-triggered flow. On
 the synchronous path the partner's latency becomes the user's save latency, and inside a
 loop the transaction meets the documented 100-callouts-per-transaction limit and the
-120-second cumulative callout timeout — usually the timeout first.
+120-second cumulative callout timeout (apexdev 264 L19766, L19768) — usually the timeout first.
+UNVERIFIED (2026-10-20): the guides print both limits in the Per-Transaction Apex Limits table and do not say a flow's HTTP Callout counts against them.
 
 ## Official Sources Used
 
-- Named Credentials and External Credentials — the credential model the HTTP Callout action requires, including principal access grants — https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm
-- ExternalCredential metadata type — authentication protocol, named principal and auth parameters — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_externalcredential.htm
+- Named Credentials and External Credentials — the credential model the HTTP Callout action requires, including principal access grants (api_meta 264 L97688-97689) — https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm
+- ExternalCredential metadata type — authentication protocol, named principal and auth parameters (api_meta 264 L66186-66197, L66403) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_externalcredential.htm
 - Flow Builder — HTTP Callout actions and schema from a sample response — https://help.salesforce.com/s/articleView?id=platform.flow_build_extend_httpcallout.htm
-- Apex Governor Limits — 100 callouts per transaction and a 120-second cumulative callout timeout, which apply to a flow transaction — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
-- Flow Builder — record-triggered flow run order, including the asynchronous path after the transaction completes — https://help.salesforce.com/s/articleView?id=platform.flow_concepts_trigger_recordchange.htm
+- Apex Governor Limits — 100 callouts per transaction and a 120-second cumulative callout timeout, at apexdev 264 L19766 and L19768; UNVERIFIED (2026-10-20) that they apply to a flow transaction — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- Flow Builder — record-triggered flow run order, including the asynchronous path after the transaction completes (apexdev 264 L15682, L15692) — https://help.salesforce.com/s/articleView?id=platform.flow_concepts_trigger_recordchange.htm

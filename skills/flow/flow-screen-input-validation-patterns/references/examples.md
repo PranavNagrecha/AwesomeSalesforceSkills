@@ -99,27 +99,30 @@ Concrete examples of `<validationRule>` formulas and the corresponding component
 **Solution:**
 
 ```xml
-<!-- StartDate field: no cross-field rule -->
-<fields>
-    <name>StartDate</name>
-    <dataType>Date</dataType>
-    <isRequired>true</isRequired>
-</fields>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: fragment of a screen flow, wrapped so the block parses -->
+    <!-- StartDate field: no cross-field rule -->
+    <fields>
+        <name>StartDate</name>
+        <dataType>Date</dataType>
+        <isRequired>true</isRequired>
+    </fields>
 
-<!-- EndDate field: rule references both -->
-<fields>
-    <name>EndDate</name>
-    <dataType>Date</dataType>
-    <isRequired>true</isRequired>
-    <validationRule>
-        <formulaExpression>AND(
-            NOT(ISNULL({!StartDate})),
-            NOT(ISNULL({!EndDate})),
-            {!EndDate} &gt; {!StartDate}
-        )</formulaExpression>
-        <errorMessage>End Date must be after Start Date.</errorMessage>
-    </validationRule>
-</fields>
+    <!-- EndDate field: rule references both -->
+    <fields>
+        <name>EndDate</name>
+        <dataType>Date</dataType>
+        <isRequired>true</isRequired>
+        <validationRule>
+            <formulaExpression>AND(
+                NOT(ISNULL({!StartDate})),
+                NOT(ISNULL({!EndDate})),
+                {!EndDate} &gt; {!StartDate}
+            )</formulaExpression>
+            <errorMessage>End Date must be after Start Date.</errorMessage>
+        </validationRule>
+    </fields>
+</Flow>
 ```
 
 **Why it works:** When the user clicks Next, both fields are populated. The rule on the second field sees both values and the comparison is well-defined.
@@ -135,21 +138,24 @@ Concrete examples of `<validationRule>` formulas and the corresponding component
 **Solution:**
 
 ```xml
-<fields>
-    <name>Email</name>
-    <dataType>String</dataType>
-    <isRequired>true</isRequired>
-</fields>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: fragment of a screen flow, wrapped so the block parses -->
+    <fields>
+        <name>Email</name>
+        <dataType>String</dataType>
+        <isRequired>true</isRequired>
+    </fields>
 
-<fields>
-    <name>ConfirmEmail</name>
-    <dataType>String</dataType>
-    <isRequired>true</isRequired>
-    <validationRule>
-        <formulaExpression>{!ConfirmEmail} = {!Email}</formulaExpression>
-        <errorMessage>The two email addresses must match.</errorMessage>
-    </validationRule>
-</fields>
+    <fields>
+        <name>ConfirmEmail</name>
+        <dataType>String</dataType>
+        <isRequired>true</isRequired>
+        <validationRule>
+            <formulaExpression>{!ConfirmEmail} = {!Email}</formulaExpression>
+            <errorMessage>The two email addresses must match.</errorMessage>
+        </validationRule>
+    </fields>
+</Flow>
 ```
 
 **Why it works:** Direct boolean comparison; both fields populated at Next.
@@ -309,8 +315,8 @@ export default class IbanInput extends LightningElement {
 ```
 
 ```xml
-<!-- ibanInput.js-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ibanInput.js-meta.xml -->
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
     <isExposed>true</isExposed>

@@ -9,7 +9,7 @@
 Flow API Name: Opportunity_Post_Update
 Version: 5
 Error element: Assign_Primary_Contact_Email (Assignment)
-Error: NullPointerException: Attempt to de-reference a null object
+Error: NullPointerException: Attempt to de-reference a null object   (illustrative; the Apex message text is apexdev 264 L40297 and secguide 262 L7618; UNVERIFIED (2026-10-20) that a flow fault email prints it in this form)
 ```
 
 **Root cause:** The variable `{!varPrimaryContact}` set by Get Records is null when no contact exists. The Assignment element references `{!varPrimaryContact.Email}` without checking for null first.
@@ -32,7 +32,7 @@ Error: NullPointerException: Attempt to de-reference a null object
 Flow API Name: Bulk_Opportunity_Processor
 Version: 2
 Error element: Get_Line_Items_For_Opp (Get Records)
-Error: LIMIT_EXCEEDED: Too many SOQL queries: 101
+Error: LIMIT_EXCEEDED: Too many SOQL queries: 101   (illustrative; UNVERIFIED (2026-10-20): the message text is not in the corpus; the limit is 100, apexdev 264 L19747)
 ```
 
 **Root cause:** Get Records inside a Loop fires one SOQL query per iteration.
@@ -41,7 +41,7 @@ Error: LIMIT_EXCEEDED: Too many SOQL queries: 101
 1. Move `Get_Line_Items_For_Opp` outside the Loop — retrieve all OpportunityLineItems for the entire Opportunity collection in a single Get Records using a filter: `OpportunityId IN {!colOpportunityIds}`.
 2. Inside the Loop, use a Collection Filter or Decision to find line items matching the current iteration's Opportunity ID from the already-retrieved collection.
 
-**Result:** One SOQL query instead of one per record. Flow completes within governor limits regardless of collection size (up to the 50,000 record collection limit).
+**Result:** One SOQL query instead of one per record. Flow completes within the SOQL query count limit regardless of collection size; the rows retrieved by SOQL queries are capped at 50,000 per transaction (apexdev 264 L19749). The earlier text called this a "collection limit", which the guide does not say.
 
 ---
 
@@ -57,7 +57,7 @@ Error element: Get_Accounts_By_Region (Get Records)
 Error: INVALID_FIELD: No such column 'Legacy_Region__c' on entity 'Account'
 ```
 
-**Root cause:** The flow metadata still holds a reference to the deleted field. The flow saved without error when the field was deleted (Salesforce does not cascade-validate flow references on field deletion).
+**Root cause:** The flow metadata still holds a reference to the deleted field. The flow saved without error when the field was deleted (Salesforce does not cascade-validate flow references on field deletion; UNVERIFIED (2026-10-20): not in the corpus).
 
 **Fix:**
 1. Open the flow in Flow Builder (use Ctrl+F to search for `Get_Accounts_By_Region`).
@@ -65,4 +65,4 @@ Error: INVALID_FIELD: No such column 'Legacy_Region__c' on entity 'Account'
 3. Replace with the current field or remove the filter condition entirely.
 4. Save and activate the updated version.
 
-**Prevention:** When deleting custom fields, search for flow references first using Flow Builder's Field Finder or SOQL on `FlowDefinition` and `FlowVersionView` metadata.
+**Prevention:** When deleting custom fields, search for flow references first using Flow Builder's Field Finder or SOQL on `FlowDefinition` and `FlowVersionView` metadata (UNVERIFIED (2026-10-20): "Field Finder" is not in the corpus; `FlowVersionView` is object_reference 264 L145676).

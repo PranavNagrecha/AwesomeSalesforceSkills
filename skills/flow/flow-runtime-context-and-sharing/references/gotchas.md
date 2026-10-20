@@ -6,19 +6,23 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Before-Save Record-Triggered Flows Always Run in System Context
 
+UNVERIFIED (2026-10-20): the "always System Context" and "setting ignored" claims are not in the corpus; before-save flows run at step 3 of the order of execution (apexdev 264 L15643).
+
 **What happens:** A record-triggered flow configured for User Context is opened by a developer, who confirms the run-mode setting in Flow Builder reads "User Context." The flow contains a Get Records on a related object, which the developer expects to fail when the triggering user lacks sharing. In testing, the Get Records succeeds — and updates a child record the user shouldn't be able to touch.
 
 **When it occurs:** Whenever the flow trigger is **Before Save**. Before-save flows execute inline with the triggering DML, before sharing-rule evaluation. The platform does not honor the configured run mode for before-save flows. The setting in Flow Builder is silently ignored.
 
 **How to avoid:**
 - Treat every before-save flow as System Context regardless of the UI setting.
-- For after-save logic where sharing must be enforced, use an after-save flow and set `<runInMode>SystemModeWithSharing</runInMode>` explicitly.
+- For after-save logic where sharing must be enforced, use an after-save flow and set `<runInMode>SystemModeWithSharing</runInMode>` explicitly (a flow-level field, api_meta 264 L70907, L70912-70916).
 - Add a comment in the flow description: "Before-save trigger; ignores runInMode by platform design."
 - During code review, automatically flag any before-save flow whose `<runInMode>` is set to something other than `DefaultMode` — the setting is misleading.
 
 ---
 
 ## Gotcha 2: `$User` Returns the Triggering User in After-Save Flows, Not the Flow Owner
+
+UNVERIFIED (2026-10-20): `$User`, `$Profile`, `$UserRole` and `$Permission` resolution is not described in the corpus.
 
 **What happens:** A record-triggered after-save flow sends a confirmation email to `$User.Email`. During testing, sysadmins receive the email. In production, when end users save records, *they* receive the email — even though the flow author intended the email to go to the flow's "owner" or to a service inbox.
 
@@ -33,6 +37,8 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 ---
 
 ## Gotcha 3: System Context Without Sharing Inherits to Subflows by Coincidence, Not by Design
+
+UNVERIFIED (2026-10-20): subflow inheritance is not described in the corpus; SKILL.md Gotcha 3 states the opposite, and neither is grounded. The only documented statement is that `UserMode` runs "without inheriting sharing settings from the calling context" (api_meta 264 L70923-70925). Set `runInMode` on every subflow and test the pairing.
 
 **What happens:** A parent flow is set to System Context Without Sharing. It calls a subflow. The author assumes the subflow inherits the parent's mode. In a refactor, the subflow's `runInMode` is changed (or is set as a Screen subflow), and suddenly the parent's behavior breaks — Get Records inside the subflow returns fewer records, Update Records fails, audit logs go missing.
 
@@ -53,6 +59,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 **When it occurs:**
 - Send Email Alert respects FLS on merge fields it pulls into the email body.
 - Post to Chatter respects FLS on merge fields.
+- UNVERIFIED (2026-10-20): the Send Email Alert, Post to Chatter and Outbound Message statements are not in the corpus.
 - Apex Action elements enforce FLS per the called Apex class's own declarations: `with sharing` for record access, and the class's query idiom for field access. That idiom is gated by the `apiVersion` in the class's `.cls-meta.xml`, not by the org's release — at **67.0+** SOQL, SOSL, and DML enforce user mode by default (`WITH USER_MODE` states it explicitly on a query; DML says it with `as user`, or `AccessLevel.USER_MODE` on a `Database` method; `WITH SECURITY_ENFORCED` was removed and no longer compiles), at **57.0–66.0** `WITH USER_MODE` is the read idiom, and at **≤ 56.0** it is `WITH SECURITY_ENFORCED` or `Security.stripInaccessible(AccessType.READABLE, records).getRecords()`. A class pinned to 58.0 still enforces the old way inside a Summer '26 org, so read the meta file before judging the action.
 - Outbound Message actions enforce FLS for the field set sent.
 
@@ -64,6 +71,8 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 ---
 
 ## Gotcha 5: API-Version Pinning Determines the Default
+
+UNVERIFIED (2026-10-20): the version-dependent defaults and the Spring '21 (API 52.0) cutover are not in the corpus; the corpus says `DefaultMode` depends on how the flow is launched (api_meta 264 L70908-70909).
 
 **What happens:** Two flows in the same org behave differently. Both rely on the implicit default. One was created in Spring '20 (API 48.0); one in Spring '21 (API 52.0). The first runs as User Context; the second as System Context Without Sharing. Audit findings differ even though the metadata "looks the same."
 
@@ -81,7 +90,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A System Context With Sharing flow does a Get Records, gets 5 records back. A sharing rule is added that should grant the running user access to 5 more records. The next execution of the flow returns 5, not 10 — the sharing recalculation hasn't completed yet.
 
-**When it occurs:** After any sharing-rule change, group membership change, role hierarchy reshuffle, or territory realignment. Sharing recalculation is asynchronous; the flow sees the pre-recalculation state until calculation completes (can take minutes for large orgs, hours for huge orgs).
+**When it occurs:** After any sharing-rule change, group membership change, role hierarchy reshuffle, or territory realignment. The Security Guide: "When you edit groups, roles, and territories, sharing rules are recalculated to add or remove access as needed ... these sharing calculations can take a while to complete" (secguide 262 L2302-2303); for org-wide defaults, a decrease takes effect only "after recalculation is run" (L2799-2800), while an increase takes effect immediately and the asynchronous recalculation only removes redundant access (L2789-2791). The flow sees the pre-recalculation state until calculation completes. UNVERIFIED (2026-10-20): the minutes-to-hours figures are not in the corpus.
 
 **How to avoid:**
 - For flows that depend on freshly granted sharing, queue them after `Database.executeBatch` for the sharing recalculation completes — or add a delay element.
@@ -94,7 +103,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A validation rule fires only when `$User.Profile.Name = 'Standard User'`. A System Context flow updates a record, and the rule fires unexpectedly — even though the flow author thought "system context" would be exempt.
 
-**When it occurs:** All flows fire validation rules regardless of run mode. The `$User` referenced in the rule is the running user (the user whose DML triggered the flow, or the Apex caller's user, or Automated Process). Validation rule logic that assumes "system bypasses me" is wrong.
+**When it occurs:** All flows fire validation rules regardless of run mode (a flow's DML goes through the save procedure, apexdev 264 L15671, which runs custom validation rules at step 5, L15645-15647; UNVERIFIED (2026-10-20): independence from run mode is not stated). The `$User` referenced in the rule is the running user (the user whose DML triggered the flow, or the Apex caller's user, or Automated Process). Validation rule logic that assumes "system bypasses me" is wrong.
 
 **How to avoid:**
 - For validation rules that should not fire during automation, use the `$Setup.Bypass_Validation__c` Custom Setting pattern: the rule checks a bypass flag that flows can set in their session.
@@ -103,15 +112,15 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 8: Per-Element Override Doesn't Exist on Action Elements
+## Gotcha 8: There Is No Per-Element `runInMode` — Not on Actions, and Not on Get/DML Elements Either
 
-**What happens:** A flow runs in User Context. The author wants one specific Apex Action call to escalate to System Context Without Sharing. They look for a `runInMode` setting on the Action element — there isn't one.
+**What happens:** A flow runs in User Context. The author wants one specific element to escalate to System Context Without Sharing. They look for a `runInMode` setting on the element — there isn't one.
 
-**When it occurs:** Per-element `runInMode` is supported on Get Records, Create Records, Update Records, Delete Records. Action elements (Apex actions, Email Alert actions, Submit for Approval, etc.) have their own enforcement model — they cannot be escalated from the flow side.
+**When it occurs:** CONTRADICTED (2026-10-20): the earlier text said per-element `runInMode` is supported on Get Records, Create Records, Update Records and Delete Records. `runInMode` is a field of the Flow (api_meta 264 L70907) and the guide's sample places it at the flow level (L76526-76533); no element type documents it. Action elements (Apex actions, Email Alert actions, Submit for Approval, etc.) have their own enforcement model (UNVERIFIED (2026-10-20): not in the corpus).
 
 **How to avoid:**
 - For Apex actions that must escalate, declare the Apex class as `without sharing` and rely on the class-level enforcement; the flow's run mode does not affect it.
-- For email actions that must reference data the user can't see, pre-load the data via an escalated Get Records (which DOES support per-element override) and pass the assembled values into the email action.
+- For email actions that must reference data the user can't see, pre-load the data in a subflow whose own `runInMode` is `SystemModeWithSharing` and pass the assembled values into the email action.
 - Document the boundary: "This Apex action is `without sharing` independent of the calling flow."
 
 ---
@@ -120,7 +129,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** An Orchestrator stage assigned to a queue references `$User.Email` in its work-item subject. Before any user claims the work item, the subject renders as blank. The customer sees a confused email.
 
-**When it occurs:** Any Orchestrator stage assigned to a Queue (rather than a specific user) where `$User` is referenced before claim. The running user is undefined until claim.
+**When it occurs:** Any Orchestrator stage assigned to a Queue (rather than a specific user) where `$User` is referenced before claim. The running user is undefined until claim. UNVERIFIED (2026-10-20): not in the corpus.
 
 **How to avoid:**
 - Don't reference `$User` in pre-claim stage outputs. Use the queue's display name (looked up via Get Records on Group).
@@ -131,7 +140,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 10: Saving in Flow Builder Bumps API Version Silently
 
-**What happens:** A developer opens a flow created at API 50.0 to fix a typo. They click Save. Flow Builder upgrades `<apiVersion>` to the current release version (e.g., 62.0). No git diff warning, no UI prompt. The flow's default run mode flips from User Context (API 50.0 default) to System Context Without Sharing (API 52.0+ default).
+**What happens:** A developer opens a flow created at API 50.0 to fix a typo. They click Save. Flow Builder upgrades `<apiVersion>` to the current release version (e.g., 62.0). No git diff warning, no UI prompt. The flow's default run mode flips from User Context (API 50.0 default) to System Context Without Sharing (API 52.0+ default). UNVERIFIED (2026-10-20): the upgrade on save and the default flip are not in the corpus.
 
 **When it occurs:** Any time a legacy flow is opened and saved in current Flow Builder. The API version bump is silent. The behavioral change is silent. The audit failure is loud — six months later.
 
@@ -146,7 +155,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A Screen Flow on an Experience Cloud site is set to System Context Without Sharing "to make the customer-facing form work." A guest user (unauthenticated) navigates to it. The flow now reads any record matching its filter, including records from other customers, exposed via the form's confirmation screen.
 
-**When it occurs:** Any flow on an Experience Cloud entry point where the run mode is System Context. Guest users have minimal permissions by design; escalating to System Context defeats that protection.
+**When it occurs:** Any flow on an Experience Cloud entry point where the run mode is System Context. Guest users have minimal permissions by design (guest users' org-wide defaults are Private for all objects, secguide 262 L2868); escalating to System Context defeats that protection.
 
 **How to avoid:**
 - Never set Experience Cloud guest-accessible flows to System Context. Force User Context.
@@ -157,11 +166,11 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 12: Platform Event Flow Subscriber Run-As User
 
-**What happens:** A platform-event-triggered flow references `$User.Profile.Name`. For standard PEs the running user is Automated Process (no profile, returns blank). For high-volume PEs, the running user is whatever's set in the PE's "Subscriber Run As User" — could be a real user with a real profile. The flow's branching behavior differs across PE types.
+**What happens:** CONTRADICTED (2026-10-20): the earlier text said standard PEs run flows as Automated Process and high-volume PEs as a configured "Subscriber Run As User". The guide: "Debug logs for platform event–triggered flows and resumed flow interviews appear under the Automated Process user. But each flow interview runs in the context of the user who published the event message" (platform_events 264 L2190-2192). The configurable running user (`PlatformEventSubscriberConfig.user`) is for platform event Apex triggers (api_meta 264 L99183-99186). A platform-event-triggered flow that references `$User.Profile.Name` therefore sees the publisher's profile.
 
-**When it occurs:** Any flow subscribed to a Platform Event. The running-user identity depends on the PE's subscriber configuration.
+**When it occurs:** Any flow subscribed to a Platform Event. The running-user identity is the publisher's, whatever the event type (UNVERIFIED (2026-10-20): the corpus draws no standard versus high-volume distinction for flows).
 
 **How to avoid:**
-- Check the PE's Subscriber Run As User before designing flow logic that depends on `$User`.
+- Check who publishes the event before designing flow logic that depends on `$User`.
 - Avoid `$User`/`$Profile`/`$Permission` references in PE-triggered flows; use Custom Metadata Type feature flags instead.
 - Document the expected running user in the flow description.

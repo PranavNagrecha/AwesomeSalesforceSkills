@@ -6,6 +6,8 @@ Non-obvious Salesforce platform behaviours that cause real production problems w
 
 ## Gotcha 1: The formula must return BOOLEAN — anything else fails silently or breaks at runtime
 
+UNVERIFIED (2026-10-20): the failure behavior below is not in the corpus. Documented: "If the validation rule evaluates to false, then the specified error message is displayed" (api_meta 264 L73385-73386).
+
 **What happens:** A `<validationRule>` whose `<formulaExpression>` returns a string, number, or null does not behave as the author expects. In some org versions Flow accepts the metadata at design time but the validation never blocks Next; in other versions the user sees a runtime error like `"Validation rule formula returned an invalid type"`.
 
 **When it occurs:** Authors who think of validation as "if invalid, return the message" write `IF(LEN({!Email}) > 5, "", "Too short")` — both branches return Text. The same mistake appears with `IF(cond, 1, 0)` (Number) or `IF(cond, NULL, "Too short")`.
@@ -15,6 +17,8 @@ Non-obvious Salesforce platform behaviours that cause real production problems w
 ---
 
 ## Gotcha 2: `isRequired` does not validate format — only emptiness
+
+UNVERIFIED (2026-10-20): the single-space behavior is not in the corpus. Documented: `isRequired` is "Not supported for DisplayText or boolean inputField" (api_meta 264 L74482-74484).
 
 **What happens:** A field marked `isRequired = true` accepts the string `" "` (a single space) — it is non-empty, so the requirement is satisfied. The user can also enter `asdf` in an Email field marked `isRequired = true` — non-empty, allowed.
 
@@ -36,15 +40,19 @@ Non-obvious Salesforce platform behaviours that cause real production problems w
 
 ## Gotcha 4: Validation re-evaluates on Next, not in real time — unless the component is reactive
 
+UNVERIFIED (2026-10-20): the evaluation timing and the "Pre-Winter '24" boundary below are not in the corpus. Documented: `enableFlowReactiveScreens` lets supported components react to other components on the same screen for flows on API 57.0 and 58.0, default false, and is not applicable at 59.0 and later (api_meta 264 L120052-120058).
+
 **What happens:** The user types `asdf` into Email, tabs away to the next field, types something there, returns to Email — no error appears. The error appears only when they click Next. For long forms this is a frustrating cycle: fix one error, click Next, see the next, click Next, see a third.
 
-**When it occurs:** Pre-Winter '24 orgs, or non-reactive components (some custom LWCs, some legacy components). Even on Winter '24+, components must be explicitly reactive — standard inputs are reactive by default; custom LWCs must implement `FlowAttributeChangeEvent` and `@api validate()`.
+**When it occurs:** Flows on API 57.0 and 58.0 without `enableFlowReactiveScreens`, or non-reactive components (some custom LWCs, some legacy components). Even on Winter '24+, components must be explicitly reactive — standard inputs are reactive by default; custom LWCs must implement `FlowAttributeChangeEvent` and `@api validate()`.
 
 **How to avoid:** For long forms (5+ inputs) or interdependent inputs, use reactive Screen Components. For custom LWCs, implement reactivity (see `examples.md` Example 10). Document in the design that validation is Next-time evaluated unless explicitly reactive.
 
 ---
 
 ## Gotcha 5: Custom LWC screen components do not honour `<validationRule>`
+
+Documented: `validationRule` validates input "when the screen component is of type InputField, LargeTextArea, or PasswordField" (api_meta 264 L74550-74552); a custom component is `ComponentInstance` (L74426-74427). UNVERIFIED (2026-10-20): the silent ignoring and the `@api validate()` contract are not in the corpus.
 
 **What happens:** Author copy-pastes a `<validationRule>` block under a custom LWC's `<extensionName>` element in the flow XML. The metadata saves without error. At runtime the rule is silently ignored — Next is allowed regardless of the formula's value.
 
@@ -68,6 +76,8 @@ The Flow runtime calls `validate()` on Next; returning `{isValid: false}` blocks
 
 ## Gotcha 6: Cross-field rules on the wrong (first) field short-circuit
 
+UNVERIFIED (2026-10-20): the null-comparison result is not in the corpus.
+
 **What happens:** Author places `EndDate > StartDate` on the StartDate component. When the user is filling StartDate first, EndDate is null. The comparison `date > null` is unpredictable — the rule may evaluate to false (blocking the user immediately, before they have a chance to enter EndDate) or throw a runtime error.
 
 **When it occurs:** Whenever a cross-field rule is on the first (independent) field instead of the second (dependent) field.
@@ -77,6 +87,8 @@ The Flow runtime calls `validate()` on Next; returning `{isValid: false}` blocks
 ---
 
 ## Gotcha 7: Object-level Validation Rules still fire on Update Records — even when the flow validation passes
+
+Documented: "When a process or flow executes a DML operation, the affected record goes through the save procedure" (apexdev 264 L15671), which runs custom validation rules (L15645-15647). UNVERIFIED (2026-10-20): how the error surfaces in the flow is not in the corpus.
 
 **What happens:** The flow's screen validation accepts the input. The flow's Update Records / Create Records element runs. The object's record-level Validation Rule rejects the record. The user sees a flow runtime error (often unhelpful) — the message is the Validation Rule's, not the screen's.
 
@@ -88,6 +100,8 @@ The Flow runtime calls `validate()` on Next; returning `{isValid: false}` blocks
 
 ## Gotcha 8: Picklist comparison must use API name, not label
 
+UNVERIFIED (2026-10-20): not in the corpus, and `validationRule` is not documented for picklist-style components (api_meta 264 L74550-74552).
+
 **What happens:** Author writes `{!Status} = "Closed Won"` thinking it compares against the displayed text. In a multilingual org, the user sees "Cerrado Ganado" or "成约" but the variable holds the API name "Closed_Won" — the equality fails for everyone whose locale isn't English.
 
 **When it occurs:** Any picklist used in a `<validationRule>` formula on a multilingual org, or any org where labels diverge from API names.
@@ -97,6 +111,8 @@ The Flow runtime calls `validate()` on Next; returning `{isValid: false}` blocks
 ---
 
 ## Gotcha 9: `REGEX()` syntax differs subtly from JavaScript regex
+
+UNVERIFIED (2026-10-20): the `REGEX()` function, its Java syntax and the double-escaping are not in the corpus (the formula functions are Help-only).
 
 **What happens:** Author copy-pastes a JS regex like `/^\+?[0-9]{10,15}$/` into a `REGEX()` formula. It either fails to compile (the leading `/` is invalid) or doesn't match what the JS version matches.
 
@@ -108,6 +124,8 @@ The Flow runtime calls `validate()` on Next; returning `{isValid: false}` blocks
 
 ## Gotcha 10: Reactive validation triggers cause perceived lag with heavy formulas
 
+UNVERIFIED (2026-10-20): the lag is experience, not a corpus claim.
+
 **What happens:** The screen has 10 reactive inputs, each with a `<validationRule>` that calls `REGEX()` against a long string. Every keystroke re-evaluates all rules. The user perceives lag, especially on mobile.
 
 **When it occurs:** Reactive screens with many components and complex formulas. Worse on mobile devices (slower JS engine).
@@ -117,6 +135,8 @@ The Flow runtime calls `validate()` on Next; returning `{isValid: false}` blocks
 ---
 
 ## Gotcha 11: Standard error message rendering does not translate via Custom Labels by default
+
+UNVERIFIED (2026-10-20): translation behavior and `{!$Label...}` support in `errorMessage` are not in the corpus (the Metadata API lists `FlowInputValidationRuleTranslation`, api_meta 264 L139797-139798, so a translation path exists).
 
 **What happens:** Author hardcodes `<errorMessage>End Date must be after Start Date.</errorMessage>` in English. In a French-locale org, French users see English error text.
 
@@ -128,8 +148,10 @@ The Flow runtime calls `validate()` on Next; returning `{isValid: false}` blocks
 
 ## Gotcha 12: Accessibility — error messages must be programmatically associated with the input
 
+UNVERIFIED (2026-10-20): ARIA behavior of standard and custom components is not in the corpus.
+
 **What happens:** A custom LWC renders an error message in a `<div>` next to the input. Sighted users see the error; screen-reader users don't — the error is not announced because it isn't associated with the input via `aria-describedby`.
 
 **When it occurs:** Custom LWC screen components that render error text without proper ARIA attributes. Standard Salesforce input components handle this automatically.
 
-**How to avoid:** In custom LWCs, use `<lightning-input>` (which handles the association via `message-when-pattern-mismatch` and friends) or manually set `aria-describedby="error-message-id"` on the input and render the error in `<div id="error-message-id" role="alert">`. See `flow-screen-flow-accessibility` for full WCAG 2.1 SC 3.3.1 compliance.
+**How to avoid:** In custom LWCs, use `<lightning-input>` (which handles the association via `message-when-pattern-mismatch` and friends) or manually set `aria-describedby="error-message-id"` on the input and render the error in `<div id="error-message-id" role="alert">`. See `flow/screen-flow-accessibility` for full WCAG 2.1 SC 3.3.1 compliance.

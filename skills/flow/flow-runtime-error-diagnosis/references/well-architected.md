@@ -17,10 +17,13 @@
 
 1. **No fault path on any element** — All flow errors bubble up as raw platform messages to users. Add fault paths to at least all DML elements.
 2. **Routing fault path back to a retry loop** — Fault paths cannot retry a failed DML. Retry loops create infinite execution risk. Use fault paths for graceful failure only.
-3. **Not configuring fault email routing** — Fault emails going to the flow's last modifier are silently lost when that user leaves. Always configure org-level fault email routing.
+3. **Not configuring fault email routing** — Fault emails going to the flow's last modifier (the default, api_meta 264 L120062-120065) are silently lost when that user leaves. Always configure org-level fault email routing (`enableFlowUseApexExceptionEmail`, L120062-120067).
 
 ## Official Sources Used
 
+- Metadata API Developer Guide 264 — FlowSettings `enableFlowUseApexExceptionEmail` L120062-120067, `canDebugFlowAsAnotherUser` L119944-119947; FlowDefinition `activeVersionNumber` L76681
+- Object Reference 264 — FlowInterviewLog and FlowInterviewLogEntry (screen flows) L140750, L140888; FlowInterview.InterviewStatus L140657-140666
+- Apex Developer Guide 264 — per-transaction limits L19747, L19757, L19749; lock wait L9395-9398
 - Salesforce Help — Flow Error Handling — https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_fault.htm
 - Salesforce Help — Troubleshoot Your Flows — https://help.salesforce.com/s/articleView?id=sf.flow_troubleshoot.htm
 - Salesforce Help — Debug a Flow in Flow Builder — https://help.salesforce.com/s/articleView?id=sf.flow_test_debug.htm

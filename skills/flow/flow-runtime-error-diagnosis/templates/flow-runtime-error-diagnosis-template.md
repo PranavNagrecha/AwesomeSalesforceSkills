@@ -37,7 +37,7 @@ Element execution order (stack trace):
 
 ## Error Classification
 
-| Error type from email | Likely cause |
+| Error type from email (the codes `NULL_REFERENCE` and `LIMIT_EXCEEDED` are UNVERIFIED (2026-10-20) in the corpus; see SKILL.md) | Likely cause |
 |---|---|
 | `NULL_REFERENCE` / `NullPointerException` | Variable from Get Records is null — missing null check |
 | `INVALID_FIELD` | Field deleted or renamed — update Get/Create/Update element |

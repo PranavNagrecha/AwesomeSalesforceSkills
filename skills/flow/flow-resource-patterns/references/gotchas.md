@@ -11,10 +11,13 @@ only surface after the first wave of "looks-correct" patterns ship.
 value is `{!$Record.OwnerId}` or `{!recAccount.Name}` and is
 surprised when Flow Builder rejects the value with an error like
 "Enter a literal value." Constants accept ONLY hardcoded literal
-values — a number, a string, a boolean, a date, a `$Label` reference
-in some cases, but never a reference to `$Record`, another flow
-variable, or any merge field that resolves at runtime. They are
-resolved when the flow is *activated*, not when it runs.
+values — a number, a string, a boolean, a date, a time, a currency
+value (api_meta 264 L72913-72919). The guide: the value "can't have merge
+fields, nor can it reference another resource besides
+$GlobalConstant.EmptyString" (api_meta 264 L72921-72923), so a `$Label`
+reference is not allowed either; the earlier text said `$Label` worked
+"in some cases". UNVERIFIED (2026-10-20): the "Enter a literal value."
+error text and "resolved when the flow is activated" are not in the corpus.
 
 **When it occurs:** Practitioners migrating from Apex (where `static
 final` constants can reference any compile-time expression) or from
@@ -46,8 +49,10 @@ six elements inside a Loop body. The Loop iterates 200 times. The
 Formula evaluates 1,200 times — once per reference per iteration.
 The flow runs fine on a 1-record debug test (6 evaluations) and
 horrifically on a 200-record batch (1,200 evaluations). Apex CPU
-time can spike enough to hit the 10,000-ms governor on
-record-triggered flows.
+time can spike enough to hit the 10,000-ms synchronous CPU limit
+(apexdev 264 L19782) on record-triggered flows. UNVERIFIED
+(2026-10-20): that a Formula is re-evaluated per reference, and that
+the limit counts Formula evaluation, are not in the corpus.
 
 **When it occurs:** Any Formula resource referenced more than once
 inside a Loop, or any Decision element with a condition row that
@@ -85,9 +90,11 @@ threshold in detail.
 
 ---
 
-## Gotcha 3: "Available for Input/Output" toggle silently changes a flow's public contract
+## Gotcha 3: "Available for Input/Output" toggle changes a flow's public contract
 
-**What happens:** A Variable defined inside an Auto-launched flow
+**What happens:** The Metadata API flags are `isInput` and `isOutput`, both False by default for variables created in API 25.0 and later, and "Disabling input or output access for an existing variable can break the functionality of applications and pages that call the flow" (api_meta 264 L75629-75655). UNVERIFIED (2026-10-20): the Flow Builder wording and the screen-flow and App Builder behavior in the next paragraphs are not in the corpus.
+
+ A Variable defined inside an Auto-launched flow
 is initially scoped as "private to this flow" (neither Input nor
 Output checked). The flow is invoked from a Process or another flow
 with a single Input — `recordId`. Later, the practitioner enables
@@ -113,10 +120,11 @@ the subflow's side.
    exposes the variable in the App Builder; toggling it off removes
    the attribute from any page/action that already references it,
    which can break the surface silently.
-2. **Subflows.** Both "Input" and "Output" must be checked for the
-   variable to participate in the subflow call's input/output
-   mapping. Renaming or unchecking after the parent is built breaks
-   the contract.
+2. **Subflows.** `isInput` covers "subflow inputs" and `isOutput` covers
+   access "from ... other flows" (api_meta 264 L75629-75631, L75648-75650),
+   so a variable needs the flag for the direction it serves, not both.
+   The earlier text said both must always be checked. Renaming or
+   unchecking after the parent is built breaks the contract.
 
 **How to avoid:** Treat the "Available for Input/Output" toggle as
 a published contract. Once checked and referenced externally,
@@ -132,6 +140,8 @@ treat any change to that contract as a breaking change.
 ---
 
 ## Gotcha 4: Collection Choice Set selections need a stored value variable to survive screen navigation
+
+UNVERIFIED (2026-10-20): this whole gotcha (screen component binding, Previous navigation, the Available-for-Input requirement) is not in the corpus; the corpus documents only that a collection can generate choices (`collectionReference`, api_meta 264 L72976-72977).
 
 **What happens:** A Screen has a Multi-Select Picklist (or Checkbox
 Group) component whose Choice is a Collection Choice Set fed by an
@@ -169,7 +179,9 @@ away on every render.
 
 ---
 
-## Gotcha 5: Picklist Choice Sets cache field metadata — adding picklist values requires flow reactivation
+## Gotcha 5: Picklist Choice Sets may show stale values — UNVERIFIED, and in tension with the guide
+
+UNVERIFIED (2026-10-20): the activation-time snapshot below is not in the corpus. The Metadata API says a `FlowDynamicChoiceSet` "dynamically generates a set of choices at run time" and a picklist choice is generated "based on the available values for a picklist or multi-select picklist field" (api_meta 264 L72965-72966, L72971-72973). Treat the reactivation advice as a workaround for an observed symptom, not a documented rule, and do not use the SKILL.md statement that the Flow follows the field as proof either way.
 
 **What happens:** An admin adds three new picklist values to
 `Opportunity.StageName`. A Screen Flow that uses a Picklist Choice
@@ -187,9 +199,9 @@ that reference the field as a Picklist Choice Set. The same applies
 when the picklist is upgraded from a local picklist to a Global
 Value Set, or when a record type's picklist value subset is changed.
 
-This behavior is intentional — it prevents picklist changes from
-silently breaking running flows — but it's surprising the first time
-you hit it. Record Choice Sets do NOT have this problem (they
+This behavior is described as intentional — it prevents picklist
+changes from silently breaking running flows — but it's surprising the
+first time you hit it (UNVERIFIED (2026-10-20), see above). Record Choice Sets do NOT have this problem (they
 re-query the source object on each flow run), and Choice resources
 hardcoded into the flow definition obviously don't either.
 

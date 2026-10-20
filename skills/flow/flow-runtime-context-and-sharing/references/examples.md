@@ -69,7 +69,7 @@ Auto-launched Subflow `Account_Last_Touch_Bump` (System Context Without Sharing)
 
 **Context:** Quarterly security review needs an inventory of every active flow running in System Context Without Sharing, plus every flow whose default behavior depends on the Spring '21 implicit default.
 
-**Problem:** Flow XML is heterogeneous. Some flows have explicit `<runInMode>`; some rely on the API-version default; some use per-element overrides. A point-in-time audit must surface all three categories.
+**Problem:** Flow XML is heterogeneous. Some flows have explicit `<runInMode>`; some rely on the API-version default (UNVERIFIED (2026-10-20): not in the corpus); some use per-element overrides (CONTRADICTED (2026-10-20): `runInMode` is flow-level only, api_meta 264 L70907). A point-in-time audit must surface the explicit and the missing cases.
 
 **Solution:**
 
@@ -120,11 +120,13 @@ Opportunity_Close_Date_Sync,52.0,SystemModeWithSharing,0,P1_WITH_SHARING
 Legacy_Lead_Router,50.0,IMPLICIT,0,P2_USER_CONTEXT
 ```
 
+Notes on the script (2026-10-20): the `override_count` column counts flow-level `<runInMode>SystemMode` matches, not per-element overrides, which do not exist. The `P0_IMPLICIT_WITHOUT_SHARING` and `P2_USER_CONTEXT` classes for a missing or `DefaultMode` value rest on the Spring '21 default, UNVERIFIED (2026-10-20) and not in the corpus; the guide says `DefaultMode` depends on how the flow is launched (api_meta 264 L70908-70909). `UserMode` (API 68.0 and later, L70923-70927) falls into `UNKNOWN`; classify it P2. `grep -oP` is GNU grep only.
+
 **Why it works:** Every flow is classified deterministically from the XML alone — no org connection required. P0 findings get a Jira ticket; P1 findings get a justification request to the flow owner; P2 findings are filed away for the next quarter. The script is the canonical source for `agents/flow-analyzer/AGENT.md` audit-mode runs.
 
 ---
 
-## Example 3: Per-Element Override on a Single Get Records
+## Example 3: Escalating a Single Read Through a Subflow (replaces the per-element override)
 
 **Context:** A Screen Flow shows a Case-routing UI to a Tier-1 agent. The flow needs to look up the assigned Queue's owner email to display in a confirmation banner — but the agent isn't a member of that queue and can't query Group/User directly.
 
@@ -132,7 +134,7 @@ Legacy_Lead_Router,50.0,IMPLICIT,0,P2_USER_CONTEXT
 
 **Solution:**
 
-Configure the flow as User Context overall, override only the queue lookup:
+CONTRADICTED (2026-10-20): the earlier version of this example set `<runInMode>` inside a `recordLookups` element. The Metadata API documents `runInMode` only on the Flow (api_meta 264 L70907; sample at L76526-76533), so the escalation is a subflow. Configure the screen flow as User Context overall and move only the queue lookup into a subflow:
 
 ```xml
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -143,13 +145,12 @@ Configure the flow as User Context overall, override only the queue lookup:
     <recordLookups>
         <name>Get_Assigned_Queue</name>
         <description>
-            Per-element override: SystemModeWithSharing required because
-            Tier-1 agents are not Group members but need to see the queue
-            owner's display name on the confirmation screen.
-            Reads only DeveloperName + Email; no PII exposure.
+            Lives in the subflow Queue_Owner_Lookup, whose own runInMode is
+            SystemModeWithSharing: Tier-1 agents are not Group members but
+            need to see the queue owner's display name on the confirmation
+            screen. Reads only DeveloperName + Email; no PII exposure.
         </description>
         <object>Group</object>
-        <runInMode>SystemModeWithSharing</runInMode>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -161,7 +162,7 @@ Configure the flow as User Context overall, override only the queue lookup:
 
     <recordLookups>
         <name>Get_Contact_For_Display</name>
-        <!-- No runInMode override - inherits DefaultMode (User Context) -->
+        <!-- In the parent screen flow, runInMode is DefaultMode (User Context) -->
         <object>Contact</object>
         <filters>
             <field>Id</field>
@@ -174,7 +175,7 @@ Configure the flow as User Context overall, override only the queue lookup:
 </Flow>
 ```
 
-**Why it works:** Only the single Group lookup escalates. The Contact lookup stays in User Context, so if the agent doesn't have sharing on the Contact, the lookup correctly returns nothing — failing closed. The override is annotated inline in the element description, so audit scripts that read flow XML can extract the justification.
+**Why it works:** Only the subflow's Group lookup escalates (the subflow's `runInMode` is `SystemModeWithSharing`; UNVERIFIED (2026-10-20): that a subflow keeps its own mode is not stated in the corpus, so test it). The Contact lookup stays in the parent's context, so if the agent doesn't have sharing on the Contact, the lookup correctly returns nothing — failing closed. The justification sits in the subflow's description, where audit scripts that read flow XML can extract it. The XML above shows both lookups side by side for brevity; in a real package `Get_Assigned_Queue` is in the subflow file.
 
 ---
 
@@ -184,7 +185,7 @@ Configure the flow as User Context overall, override only the queue lookup:
 
 **What goes wrong:** Every other element in the flow now bypasses sharing. The Display Field that shows `Account.Annual_Revenue__c` reveals data the user shouldn't see. The Update Records that follows writes to fields the user shouldn't edit. FLS is bypassed, so even fields hidden from the user's profile appear on screen. The bug surfaces during a security audit six months later as "Tier-1 agents have de facto read access to all Accounts in the org."
 
-**Correct approach:** Keep the flow in User Context. Add a per-element `runInMode=SystemModeWithSharing` (or `Without Sharing` if the use case truly requires it) on **only** the one Get Records that needs to escalate. Annotate inline. If the escalated read returns more than a single specific field, design a System Context Subflow (Pattern 1) that takes the record Id as input and returns only the minimum needed fields — never the full record.
+**Correct approach:** Keep the flow in User Context. Move **only** the one Get Records that needs to escalate into a subflow with `runInMode` `SystemModeWithSharing` (or `SystemModeWithoutSharing` if the use case truly requires it; `runInMode` is flow-level, api_meta 264 L70907). Annotate the subflow. If the escalated read returns more than a single specific field, design a System Context Subflow (Pattern 1) that takes the record Id as input and returns only the minimum needed fields — never the full record.
 
 ---
 
@@ -192,13 +193,15 @@ Configure the flow as User Context overall, override only the queue lookup:
 
 **What practitioners do:** A scheduled flow checks `$Permission.Manage_Sensitive_Data` to decide whether to email a summary report. The author assumes "system runs everything, so $Permission will be true."
 
-**What goes wrong:** Scheduled flows run as Automated Process. Automated Process has no profile, no permission set assignments, and `$Permission.X` evaluates to `false` for every X. The decision branch always takes the "false" path; the email is never sent. The bug is silent — no error, no fault email, just missing functionality.
+**What goes wrong:** Scheduled flows run as Automated Process. Automated Process has no profile, no permission set assignments, and `$Permission.X` evaluates to `false` for every X. UNVERIFIED (2026-10-20): the scheduled-flow running user and the `$Permission` result are not in the corpus. The decision branch always takes the "false" path; the email is never sent. The bug is silent — no error, no fault email, just missing functionality.
 
-**Correct approach:** Do not gate flow logic on `$Permission` in any flow whose running user is Automated Process (scheduled, PE-triggered, CDC-triggered). Use a Custom Metadata Type feature flag, or pass the gate value as a subflow input from a context where the running user is real.
+**Correct approach:** Do not gate flow logic on `$Permission` in any flow whose running user is Automated Process (scheduled and CDC-triggered flows, UNVERIFIED (2026-10-20)). A platform-event-triggered flow runs as the user who published the event (platform_events 264 L2190-2192), so `$Permission` there reflects the publisher. Use a Custom Metadata Type feature flag, or pass the gate value as a subflow input from a context where the running user is real.
 
 ---
 
 ## Anti-Pattern: Re-saving a Legacy Flow Without Re-Reviewing Run Mode
+
+UNVERIFIED (2026-10-20): the version-dependent default, the API-version bump on save and the 50.0 → 62.0 flip in this anti-pattern are not in the corpus; `DefaultMode` depends on how the flow is launched (api_meta 264 L70908-70909).
 
 **What practitioners do:** A maintenance ticket asks for a small label change to a record-triggered flow created at API 50.0. The dev opens the flow in Flow Builder, fixes the label, clicks Save. Flow Builder bumps the API version to the current release. The flow originally ran in User Context (the API 50.0 default); it now runs in System Context Without Sharing (the API 62.0 default).
 
@@ -212,6 +215,6 @@ Configure the flow as User Context overall, override only the queue lookup:
 
 **What practitioners do:** A System Context Without Sharing parent flow calls a "shared utility" subflow. The author assumes the subflow runs in the parent's mode.
 
-**What goes wrong:** Each flow's `runInMode` is independent. If the subflow is set to `DefaultMode` and is itself an auto-launched flow, it runs in System Context Without Sharing — coincidentally matching the parent. But if the subflow was authored as a Screen subflow or has `runInMode=SystemModeWithSharing`, it runs in its own mode regardless of the parent. The mismatch surfaces when the subflow's Get Records returns fewer records than the parent expected, or when the subflow's Update Records fails on records the parent could see but the subflow can't.
+**What goes wrong:** Each flow's `runInMode` is independent. If the subflow is set to `DefaultMode` and is itself an auto-launched flow, it runs in System Context Without Sharing — coincidentally matching the parent (UNVERIFIED (2026-10-20): the auto-launched default is not in the corpus). But if the subflow was authored as a Screen subflow or has `runInMode=SystemModeWithSharing`, it runs in its own mode regardless of the parent. The mismatch surfaces when the subflow's Get Records returns fewer records than the parent expected, or when the subflow's Update Records fails on records the parent could see but the subflow can't.
 
 **Correct approach:** Set `<runInMode>` explicitly on every subflow. Treat each flow as a standalone security boundary. Document the contract in the subflow's description: "Expects to be called from a User Context parent; runs in System Context Without Sharing for the privileged write."

@@ -1,12 +1,12 @@
 # LLM Anti-Patterns — Flow Rollback Patterns
 
-## Anti-Pattern 1: Rollback before logging
+## Anti-Pattern 1: Writing the only copy of the failure evidence as a record the rollback cancels
 
-**What the LLM generates:** Fault path that rolls back immediately, then tries to log.
+**What the LLM generates:** Fault path that logs to a custom object with Create Records, then rolls back (or rolls back, then logs, and claims the log is erased).
 
-**Why it happens:** LLMs treat rollback as "the first thing on failure".
+**Why it happens:** LLMs treat "log first, rollback second" as the safe order. Rollback Records "cancels its pending record changes" (api_meta 264 L73986), and a log record created earlier is one of them.
 
-**Correct pattern:** Log first, rollback second. Logging after rollback means the log is itself rolled back.
+**Correct pattern:** Write the evidence to a Publish Immediately platform event, which "can't be rolled back" (platform_events 264 L276-277), before or after the rollback. UNVERIFIED (2026-10-20): whether a Create Records log placed after the rollback persists is not in the corpus. The earlier version of this entry said "Log first, rollback second" and that a log after rollback would itself be rolled back; both sit badly with the documented behavior.
 
 ---
 
@@ -26,7 +26,7 @@
 
 **Why it happens:** LLMs default to explicit deletes from traditional coding.
 
-**Correct pattern:** Rollback Records is cheaper (one element, one action) and atomic. Delete Records can itself fault.
+**Correct pattern:** Rollback Records is cheaper (one element, one action) and atomic. Delete Records can itself fault. UNVERIFIED (2026-10-20): "cheaper" is not in the corpus; Rollback Records is available only in screen flows (api_meta 264 L73987).
 
 ---
 
@@ -66,4 +66,4 @@
 
 **Why it happens:** LLMs add retry logic reflexively.
 
-**Correct pattern:** Rollback failure is almost always a platform issue; retry won't help. Log the rollback failure and escalate.
+**Correct pattern:** Rollback failure is almost always a platform issue; retry won't help. Log the rollback failure and escalate. The Rollback Records element has no fault connector (api_meta 264 L73990-73992), so there is nothing to retry from; UNVERIFIED (2026-10-20): "almost always a platform issue".

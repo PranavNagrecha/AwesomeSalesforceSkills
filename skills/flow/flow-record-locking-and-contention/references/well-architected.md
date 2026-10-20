@@ -2,11 +2,11 @@
 
 ## Relevant Pillars
 
-- **Reliability** — Lock contention is a primary cause of silent data loss in Salesforce orgs. A flow that surfaces UNABLE_TO_LOCK_ROW once a day is corrupting state in a way that's hard to detect (the user thinks the change happened; the database disagrees). Eliminating lock contention through decouple patterns is foundational reliability work — it transforms a flaky, load-dependent flow into one that completes deterministically regardless of concurrent traffic. Adding fault paths and central error logging makes the remaining contention observable, which is the precondition for ongoing reliability improvement.
+- **Reliability** (UNVERIFIED (2026-10-20): the "primary cause", "dominant cause" and "1/N throughput" statements in this section are practitioner judgement, not corpus figures; the documented facts are the 10-second wait and the transaction-length lock, apexdev 264 L9383, L9395-9398) — Lock contention is a primary cause of silent data loss in Salesforce orgs. A flow that surfaces UNABLE_TO_LOCK_ROW once a day is corrupting state in a way that's hard to detect (the user thinks the change happened; the database disagrees). Eliminating lock contention through decouple patterns is foundational reliability work — it transforms a flaky, load-dependent flow into one that completes deterministically regardless of concurrent traffic. Adding fault paths and central error logging makes the remaining contention observable, which is the precondition for ongoing reliability improvement.
 - **Performance** — Lock contention is the dominant cause of latency for high-traffic flows. A synchronous Update Account from an Opportunity flow holds the Account lock for the duration of the entire transaction, serializing every concurrent Opportunity update on the same Account. Under sustained load, throughput on the Account drops to roughly 1/N of its parallel potential, where N is the contention factor. Decoupling via Platform Event releases the lock immediately, restoring parallel throughput on the user-facing transaction.
 - **Operational Excellence** — Contention is observable through `EventLogFile`, fault emails, Background Operations status, and central log queries. A mature ops practice monitors these signals weekly, treats new UNABLE_TO_LOCK_ROW occurrences as a regression, and feeds the data back into flow design reviews. Without monitoring, contention accumulates as invisible technical debt that surfaces only during peak events (quarter-end, marketing campaigns, M&A data loads) when it's hardest to debug.
 
-(Security is not the primary pillar here — contention is a reliability/performance issue, and the decouple patterns themselves do not change the security posture. However, Scheduled Path and Platform Event subscriber flows run as Automated Process user, which has implications for sharing — see gotcha 10.)
+(Security is not the primary pillar here — contention is a reliability/performance issue, and the decouple patterns themselves do not change the security posture. However, the running user of a Scheduled Path is unverified and a platform-event-triggered flow interview runs as the user who published the event, with only the debug log under Automated Process (platform_events 264 L2190-2192) — see gotcha 10.)
 
 ## Architectural Tradeoffs
 
@@ -15,9 +15,9 @@ The decouple patterns each trade off latency, complexity, and observability diff
 | Pattern | User-perceived latency | Complexity | Observability | When it's the right call |
 |---|---|---|---|---|
 | Collect-then-update (single bulk DML) | Same as before (in-line) | Low — restructure existing flow | Same as before | Always — it's a no-cost win for any loop+DML pattern |
-| Platform Event decouple | Near-zero (publisher commits immediately) | Medium — event definition + subscriber flow | Medium — events appear in Event Monitoring | High concurrent traffic on the parent; user can't wait |
+| Platform Event decouple | Near-zero (publisher commits immediately; the subscriber runs asynchronously in a separate transaction, platform_events 264 L2187-2188) | Medium — event definition + subscriber flow | Medium — events appear in Event Monitoring | High concurrent traffic on the parent; user can't wait |
 | Queueable Apex handoff | Near-zero (action enqueues and returns) | Medium-High — requires Apex skill | High — Queueable jobs visible in Apex Jobs | Heavy parent recalc, callouts, or work that needs Apex governor headroom |
-| Scheduled Path | Up to N minutes lag | Low — built into Flow Builder | Low — scheduled paths visible only in setup | Parent update can tolerate latency; off-hours batching desired |
+| Scheduled Path | Up to N minutes lag (`offsetNumber`, api_meta 264 L74126-74146) | Low — built into Flow Builder | Low — scheduled paths visible only in setup | Parent update can tolerate latency; off-hours batching desired |
 | `FOR UPDATE` invocable | Higher (lock held longer) | High — requires Apex | Low | Genuine read-modify-write race; never as a generic contention fix |
 
 The right tradeoff depends on:
@@ -32,21 +32,24 @@ The right tradeoff depends on:
 
 ## Anti-Patterns
 
-1. **Building a Flow-level retry loop for lock contention** — the platform gives each DML attempt a single 10-second lock wait and no automatic retry. A Flow Wait element does not pause the transaction; it ends it and resumes in a new one, so every "retry" restarts the 10-second wait from scratch and multiplies the contention window without resolving the underlying problem. The fix is architectural decoupling, not more attempts.
+1. **Building a Flow-level retry loop for lock contention** — the platform gives each DML attempt a single 10-second lock wait (apexdev 264 L9395-9398) and no automatic retry. A Flow Wait element does not pause the transaction; it ends it and resumes in a new one (UNVERIFIED (2026-10-20): the Wait element's transaction behavior is not in the corpus), so every "retry" restarts the 10-second wait from scratch and multiplies the contention window without resolving the underlying problem. The fix is architectural decoupling, not more attempts.
 
 2. **Using `FOR UPDATE` as a generic contention fix** — `FOR UPDATE` is correct only for read-modify-write race conditions (counter increments, sequence number generation). Used for generic contention, it makes the problem worse by extending the lock-hold duration. Practitioners reach for it because it sounds like a "stronger lock" — it's actually a longer lock.
 
 3. **Synchronous parent update from a high-traffic child flow** — The default flow design pattern (Get → Update parent in the same transaction as the child Update) is a contention bomb on hot parents. Recognize this shape and decouple by default if the parent is high-traffic (>1 transaction/sec sustained).
 
-4. **Master-Detail with frequent reparenting** — Reparenting a Master-Detail child locks both old and new masters. If your data model requires frequent reparenting, switch to Lookup. Master-Detail is for cascading deletes and roll-up summaries; if neither benefit applies, Lookup is cheaper for the lock budget.
+4. **Master-Detail with frequent reparenting** — Reparenting a Master-Detail child locks both old and new masters (UNVERIFIED (2026-10-20): Help-sourced; `reparentableMasterDetail` is api_meta 264 L45820-45822). If your data model requires frequent reparenting, switch to Lookup. Master-Detail is for cascading deletes and roll-up summaries; if neither benefit applies, Lookup is cheaper for the lock budget.
 
-5. **Loop + DML inside the loop** — The single most common contention shape. 200 iterations × 1 DML each = 200 lock acquisitions on the same parent. Always collect and Update once after the loop, even if the body is "trivial" — Flow's Loop+DML is the worst-case shape under contention.
+5. **Loop + DML inside the loop** — The single most common contention shape. 200 iterations × 1 DML each = 200 DML statements, past the 150 limit (apexdev 264 L19757) and, UNVERIFIED (2026-10-20), 200 lock acquisitions on the same parent. Always collect and Update once after the loop, even if the body is "trivial" — Flow's Loop+DML is the worst-case shape under contention.
 
-6. **Ignoring queue Group locks during mass routing** — Bulk inserting Cases into one inbound queue locks the queue's Group row for the duration of the bulk DML. If a sales-ops user is simultaneously updating queue membership, both transactions contend. Queue contention is invisible because the locked row is the Group, not the records.
+6. **Ignoring queue Group locks during mass routing** (UNVERIFIED (2026-10-20): not in the corpus) — Bulk inserting Cases into one inbound queue locks the queue's Group row for the duration of the bulk DML. If a sales-ops user is simultaneously updating queue membership, both transactions contend. Queue contention is invisible because the locked row is the Group, not the records.
 
 ## Official Sources Used
 
-- Salesforce Help — Record Locking Overview: https://help.salesforce.com/s/articleView?id=platform.record_locking_overview.htm
+- Apex Developer Guide 264 — Locking Statements and Locking Considerations: 10-second maximum wait L9395-9398, locks released on transaction completion L9383, `FOR UPDATE` locks released by a callout L9404-9408, parent-before-child lock order L9436-9437
+- Platform Events Developer Guide 264 — flow subscribers run asynchronously in a separate transaction L2187-2188, up to 200 messages per batch L2185, publish behavior L346-351, trigger retries L3258-3271
+- Bulk API 2.0 Developer Guide 264 — operations likely to cause lock contention L2637-2640, job `retries` L1995-1997
+- Salesforce Help — Record Locking Overview (UNVERIFIED (2026-10-20): Help pages are not in the corpus): https://help.salesforce.com/s/articleView?id=platform.record_locking_overview.htm
 - Salesforce Help — What Records Are Locked by an Update: https://help.salesforce.com/s/articleView?id=platform.record_locking_locks.htm
 - Apex Developer Guide — Locking Statements: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_locking_statements.htm
 - Apex Developer Guide — Locking Records: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_locking_records.htm

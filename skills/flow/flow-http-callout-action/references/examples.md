@@ -8,13 +8,15 @@ vendor API before saving.
 **Problem:** the first attempt used an Apex wrapper, which put an admin-owned integration
 behind a deployment. The second attempt used the HTTP Callout action but reused the
 org's existing Named Credential — the one that had been serving Apex callouts for years —
-and it was not selectable in the action's configuration.
+and it was not selectable in the action's configuration. UNVERIFIED (2026-10-20): the corpus does not say the action refuses a `Legacy` credential; that is the reported symptom.
 
 **Solution — the credential first, because nothing else works until it does.**
 
-The HTTP Callout action requires the current Named Credential model: an External
+The HTTP Callout action works with the current Named Credential model: an External
 Credential holding the authentication protocol and principal, referenced by a Named
-Credential holding the URL.
+Credential holding the URL. The element names below follow the guide's NamedCredential
+sample (api_meta 264 L93123-93135): parameters sit in `namedCredentialParameters` and the
+credential link is the `externalCredential` element, not a `parameterValue`.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -40,16 +42,16 @@ Credential holding the URL.
 <NamedCredential xmlns="http://soap.sforce.com/2006/04/metadata">
     <label>Address Verification</label>
     <namedCredentialType>SecuredEndpoint</namedCredentialType>
-    <parameters>
-        <parameterName>Url</parameterName>
+    <namedCredentialParameters>
+        <parameterName>DefaultEndpoint</parameterName>
         <parameterType>Url</parameterType>
         <parameterValue>https://api.addressvendor.example.com</parameterValue>
-    </parameters>
-    <parameters>
-        <parameterName>ExternalCredential</parameterName>
+    </namedCredentialParameters>
+    <namedCredentialParameters>
+        <parameterName>DefaultAuth</parameterName>
         <parameterType>Authentication</parameterType>
-        <parameterValue>Address_Verification</parameterValue>
-    </parameters>
+        <externalCredential>Address_Verification</externalCredential>
+    </namedCredentialParameters>
 </NamedCredential>
 ```
 
@@ -76,7 +78,7 @@ one — here, a partial match where `suite` and `plus4` are absent:
 }
 ```
 
-Fields absent from the sample do not become flow resources at all, so pasting the vendor's
+Fields absent from the sample do not become flow resources at all (UNVERIFIED (2026-10-20): not described in the corpus), so pasting the vendor's
 idealised documentation example produces a flow that cannot reference the fields it will
 actually receive — and one that assumes fields are populated when the real API omits them.
 
@@ -116,7 +118,7 @@ of the object. When the vendor degraded, dispatchers experienced it as Salesforc
 slow. The second build looped a collection and called the endpoint once per appointment —
 a hundred appointments meant a hundred requests inside one transaction, against a
 documented limit of 100 callouts per transaction and a cumulative callout timeout of 120
-seconds for the whole transaction. It failed on elapsed time long before the count.
+seconds for the whole transaction (apexdev 264 L19766, L19768; UNVERIFIED (2026-10-20) that a flow's HTTP Callout counts against the same limits). It failed on elapsed time long before the count.
 
 **Solution:** move the callout off the synchronous path, and batch where the API allows
 it.
@@ -146,7 +148,7 @@ Record-Triggered Flow : ServiceAppointment_Enrich
 **Why it works:** running asynchronously means the callout happens after the transaction
 commits, so the dispatcher's save completes at its normal speed and a slow vendor delays
 an enrichment rather than a save. That is the declarative counterpart of the
-callout-after-DML rule in Apex. The `Weather_Checked__c` flag in the entry conditions is
+callout-after-DML rule in Apex ("You can't make a callout when there are pending operations in the same transaction", apexdev 264 L36340-36342); the asynchronous path is post-commit logic (apexdev 264 L15682, L15692). The `Weather_Checked__c` flag in the entry conditions is
 what stops the update in step 4 from re-triggering the flow — without it this is a
 recursion, and the asynchronous path makes the recursion harder to spot because it does
 not fail in the user's face.

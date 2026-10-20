@@ -36,13 +36,13 @@ Trigger: Opportunity (after-save, Updated)
 
 The lock chain per execution:
 
-1. `Update Opportunity` takes a write lock on the Opportunity row AND on the parent Account row (`001ABC`) AND on the Account's owner User row. Held for the full transaction.
+1. `Update Opportunity` takes a write lock on the Opportunity row AND on the parent Account row (`001ABC`) AND on the Account's owner User row. Held for the full transaction. The corpus says related records are locked with the record (apexdev 264 L9409), that child changes cause parent record-locking conflicts (ldv 264 L894-896), and that locks last until the transaction completes (L9383). UNVERIFIED (2026-10-20): the owner User-row lock is Help-sourced.
 2. `Get Account` does NOT take a lock (Get Records is read-only).
 3. `Update Account` already had the Account locked from step 1, so this DML is "free" — but the lock continues to be held until commit.
 
-With 5 concurrent transactions all touching `001ABC`, the second-through-fifth queue waiting for the first transaction's Account lock. Each waits a maximum of 10 seconds; whichever ones do not get the lock inside that window fault with `UNABLE_TO_LOCK_ROW`. There is no retry after the wait — the wait *is* the whole mechanism. The flow's automatic rollback then discards both the Opportunity update AND the Account update — net data loss.
+With 5 concurrent transactions all touching `001ABC`, the second-through-fifth queue waiting for the first transaction's Account lock. Each waits a maximum of 10 seconds (apexdev 264 L9395-9398); whichever ones do not get the lock inside that window fault with `UNABLE_TO_LOCK_ROW`. There is no retry after the wait — the wait *is* the whole mechanism. The flow's automatic rollback then discards both the Opportunity update AND the Account update — net data loss. UNVERIFIED (2026-10-20): the flow rollback is not described in the corpus.
 
-**Why the legacy Process Builder hid this:** The previous Process Builder serialized via the legacy automation engine, so even on hot Accounts, transactions would queue but rarely surface UNABLE_TO_LOCK_ROW because the parent lock was held for milliseconds, not the full flow duration. Migrating to Flow exposed the latent contention.
+**Why the legacy Process Builder hid this** (UNVERIFIED (2026-10-20): the legacy engine's serialization is not in the corpus):** The previous Process Builder serialized via the legacy automation engine, so even on hot Accounts, transactions would queue but rarely surface UNABLE_TO_LOCK_ROW because the parent lock was held for milliseconds, not the full flow duration. Migrating to Flow exposed the latent contention.
 
 **Solution (intermediate fix — collect-then-update for any bulk path):**
 
@@ -154,9 +154,9 @@ Trigger: Platform Event — Opportunity_Stage_Changed__e
 
 **Why it works:**
 
-- The Opportunity transaction never takes the Account lock. It writes to the Opportunity row, publishes the event (an in-memory + small DB write to the event bus, no parent-object lock), and ends. The Opportunity transaction now completes in <100ms regardless of Account contention.
-- The subscriber flow runs in a separate transaction with its own fresh 10-second lock-wait window and its own governor limits. If two concurrent events hit the same Account, the subscriber usually succeeds inside that window because it is doing nothing else (no other DML, no other locks), so it holds the lock for milliseconds rather than seconds. Platform-event subscribers additionally support an opt-in retry (an Apex subscriber can throw `EventBus.RetryableException`); a subscriber flow does not retry automatically.
-- Event subscribers naturally batch — Salesforce delivers events in batches of up to 2,000 per subscriber invocation. If 50 Opportunity events fire in the same second, the subscriber processes them as one batch with one Account update per affected Account. Bulk pattern emerges for free.
+- The Opportunity transaction never takes the Account lock. It writes to the Opportunity row, publishes the event (an in-memory + small DB write to the event bus, no parent-object lock), and ends. The Opportunity transaction now completes in <100ms regardless of Account contention (an illustrative figure; UNVERIFIED (2026-10-20)).
+- The subscriber flow runs in a separate transaction (platform_events 264 L2187-2188) with its own fresh 10-second lock-wait window and its own governor limits. With the default Publish Immediately the subscriber can start before the publisher commits (platform_events 264 L346-348); set Publish After Commit when it must not (L349-351). If two concurrent events hit the same Account, the subscriber usually succeeds inside that window because it is doing nothing else (no other DML, no other locks), so it holds the lock for milliseconds rather than seconds. Platform-event subscribers additionally support an opt-in retry (an Apex subscriber can throw `EventBus.RetryableException`, platform_events 264 L3258); UNVERIFIED (2026-10-20): the corpus does not say whether a subscriber flow retries.
+- Event subscribers naturally batch — a flow can receive up to 200 event messages at once (platform_events 264 L2185); the earlier text said 2,000 per invocation, which is not the flow limit. If 50 Opportunity events fire in the same second, the subscriber processes them as one batch with one Account update per affected Account. Bulk pattern emerges for free.
 - Failure isolation: if the subscriber fault path fires, the Opportunity update has already committed. The user sees no error; the central log captures the issue for ops review. With the synchronous flow, both updates would have rolled back.
 
 **Verification:**
@@ -197,7 +197,7 @@ The flow is wired to call this invocable before the `Update Account` step, on th
 
 **What goes wrong:**
 
-- `FOR UPDATE` increases the lock-hold duration. The lock is now held from the SOQL query through the rest of the transaction, instead of just from the Update DML through commit. Hold time goes up; contention gets worse.
+- `FOR UPDATE` increases the lock-hold duration. The lock is now held from the SOQL query through the rest of the transaction ("The lock gets released when the transaction completes", apexdev 264 L9383), instead of just from the Update DML through commit. Hold time goes up; contention gets worse.
 - `FOR UPDATE` does not eliminate UNABLE_TO_LOCK_ROW — it just shifts the wait from the Update to the SOQL. The same parallel transactions are still serialized, just with the bottleneck moved.
 - The lock-acquisition wait now happens in the invocable Apex (which has fewer fault-handling options than the Flow's native Update fault path).
 
@@ -209,13 +209,13 @@ The flow is wired to call this invocable before the `Update Account` step, on th
 
 **Context:** A Sales Ops admin uses a screen flow to reassign 2,000 Leads from one queue (`Queue_Inbound_East`) to another (`Queue_Inbound_West`). The flow loops over Leads and calls Update inside the loop.
 
-**Problem:** Every Update Lead with a new OwnerId acquires:
+**Problem:** UNVERIFIED (2026-10-20): the Group-row locks below are not in the corpus (the Bulk API 2.0 guide lists only ownership updates for records with private sharing as a contention source, api_asynch 264 L2638). Every Update Lead with a new OwnerId acquires:
 
 1. Lock on the Lead row.
 2. Lock on the old queue's Group row (`Queue_Inbound_East`).
 3. Lock on the new queue's Group row (`Queue_Inbound_West`).
 
-With 2,000 sequential updates inside a loop, the same two Group rows are locked-released 2,000 times. The first iteration's commit releases the Group lock just in time for the second iteration to grab it — but only if no other transaction (sales rep working a Lead, integration job writing Leads) is also trying to acquire the same Group lock. Under any concurrent activity, UNABLE_TO_LOCK_ROW fires within the first few hundred iterations.
+With 2,000 sequential updates inside a loop (which as written would stop at the 151st DML statement, the synchronous limit of 150, apexdev 264 L19757), the same two Group rows are locked-released 2,000 times. The first iteration's commit releases the Group lock just in time for the second iteration to grab it — but only if no other transaction (sales rep working a Lead, integration job writing Leads) is also trying to acquire the same Group lock. Under any concurrent activity, UNABLE_TO_LOCK_ROW fires within the first few hundred iterations.
 
 **Solution: Bulk update + schedule off-hours.**
 
@@ -233,9 +233,9 @@ With 2,000 sequential updates inside a loop, the same two Group rows are locked-
                                                   ← runs at 2am via scheduled flow
 ```
 
-The single bulk Update locks each Group row exactly once for the duration of the bulk DML (a few seconds, not minutes). Scheduling at 2am eliminates concurrent-user contention entirely.
+The single bulk Update locks each Group row exactly once for the duration of the bulk DML (a few seconds, not minutes). Scheduling at 2am removes most concurrent-user contention (UNVERIFIED (2026-10-20): "entirely" is not a corpus claim).
 
-**Why it works:** Bulk DML acquires the implicit Group locks once per batch, not once per record. Even 2,000 Leads → 2 Group lock acquisitions total. Off-hours scheduling ensures no other transaction is competing for those Group rows.
+**Why it works:** Bulk DML acquires the implicit Group locks once per batch, not once per record (UNVERIFIED (2026-10-20): per-statement lock counts are not in the corpus). Even 2,000 Leads → 2 Group lock acquisitions total. Off-hours scheduling ensures no other transaction is competing for those Group rows.
 
 ---
 
@@ -264,7 +264,7 @@ The single bulk Update locks each Group row exactly once for the duration of the
 
 - Each Flow-level "retry" is a **fresh transaction** that starts its own 10-second lock wait from scratch. Five retries therefore hold a worker for up to 50 seconds of pure waiting while contributing nothing, and extend the contention window dramatically. (Salesforce does *not* retry the DML itself — the 10 seconds is a single wait, not a backoff loop.)
 - The Wait element does not pause the transaction — it ends the transaction and resumes in a new one. Each "retry" is a fresh transaction, which means re-acquiring locks from scratch. The Wait does not relieve contention; it just delays it.
-- Flow Wait elements consume a `Pause` resource and are governed (limited per flow). High-volume retries can hit the Pause limit before the contention clears.
+- Flow Wait elements consume a `Pause` resource and are governed (limited per flow). High-volume retries can hit the Pause limit before the contention clears. UNVERIFIED (2026-10-20): the Pause resource and its limit are not in the corpus.
 - The legitimate fix (decouple via Platform Event or Queueable) is now harder to spot because the retry logic masks the symptom.
 
-**Correct approach:** Do not build a retry loop. The platform gives each attempt a 10-second lock wait and no more; if that is not enough, the contention is severe and requires architectural decoupling, not more attempts. Wire the fault path to an Integration_Log__c entry so the contention is visible, and route the work to a Queueable or Platform Event subscriber where it can run with its own independent retry budget.
+**Correct approach:** Do not build a retry loop. The platform gives each attempt a 10-second lock wait and no more; if that is not enough, the contention is severe and requires architectural decoupling, not more attempts. Wire the fault path to an Integration_Log__c entry so the contention is visible, and route the work to a Queueable or Platform Event subscriber where it runs in its own transaction.

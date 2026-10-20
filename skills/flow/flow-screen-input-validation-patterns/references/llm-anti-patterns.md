@@ -9,19 +9,22 @@ Common mistakes AI coding assistants make when generating or advising on Flow sc
 **What the LLM generates:** A flow XML / design with a screen capturing input, immediately followed by a Decision element checking the input and looping back to the screen on failure.
 
 ```xml
-<screens><name>EmailScreen</name>...</screens>
-<decisions>
-    <name>ValidateEmail</name>
-    <rules>
-        <conditions>
-            <leftValueReference>EmailScreen.Email</leftValueReference>
-            <operator>Contains</operator>
-            <rightValue><stringValue>@</stringValue></rightValue>
-        </conditions>
-        <connector><targetReference>NextScreen</targetReference></connector>
-    </rules>
-    <defaultConnector><targetReference>EmailScreen</targetReference></defaultConnector>
-</decisions>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: fragment of a screen flow, wrapped so the block parses -->
+    <screens><name>EmailScreen</name>...</screens>
+    <decisions>
+        <name>ValidateEmail</name>
+        <rules>
+            <conditions>
+                <leftValueReference>EmailScreen.Email</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue><stringValue>@</stringValue></rightValue>
+            </conditions>
+            <connector><targetReference>NextScreen</targetReference></connector>
+        </rules>
+        <defaultConnector><targetReference>EmailScreen</targetReference></defaultConnector>
+    </decisions>
+</Flow>
 ```
 
 **Why it happens:** LLMs trained on traditional server-side validation patterns (PHP, Rails, classic servlets) default to "validate after submit" thinking. Decision elements are also more visually prominent in flow design materials, so the model reaches for them first.
@@ -98,7 +101,7 @@ The expression is already a boolean. Wrapping it in `IF(_, TRUE, FALSE)` is redu
 <fields>
     <name>IbanInput</name>
     <extensionName>c:ibanInput</extensionName>
-    <validationRule>  <!-- silently ignored -->
+    <validationRule>  <!-- not documented for ComponentInstance (api_meta 264 L74550-74552); silent ignoring UNVERIFIED (2026-10-20) -->
         <formulaExpression>LEN({!IbanInput}) > 15</formulaExpression>
         <errorMessage>IBAN too short.</errorMessage>
     </validationRule>
@@ -177,14 +180,17 @@ Or, with a raw input:
 **What the LLM generates:** A flow with `EndDate > StartDate` placed on the StartDate component rather than EndDate.
 
 ```xml
-<fields>
-    <name>StartDate</name>
-    <validationRule>
-        <formulaExpression>{!EndDate} &gt; {!StartDate}</formulaExpression>  <!-- wrong field -->
-        <errorMessage>End Date must be after Start Date.</errorMessage>
-    </validationRule>
-</fields>
-<fields><name>EndDate</name></fields>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: fragment of a screen flow, wrapped so the block parses -->
+    <fields>
+        <name>StartDate</name>
+        <validationRule>
+            <formulaExpression>{!EndDate} &gt; {!StartDate}</formulaExpression>  <!-- wrong field -->
+            <errorMessage>End Date must be after Start Date.</errorMessage>
+        </validationRule>
+    </fields>
+    <fields><name>EndDate</name></fields>
+</Flow>
 ```
 
 **Why it happens:** Models default to "validate the first field" because that's the order the human is filling them in. They don't reason about which field is the dependent one.
@@ -192,14 +198,17 @@ Or, with a raw input:
 **Correct pattern:** Cross-field rule on the *dependent* (second) field:
 
 ```xml
-<fields><name>StartDate</name></fields>
-<fields>
-    <name>EndDate</name>
-    <validationRule>
-        <formulaExpression>AND(NOT(ISNULL({!StartDate})), NOT(ISNULL({!EndDate})), {!EndDate} &gt; {!StartDate})</formulaExpression>
-        <errorMessage>End Date must be after Start Date.</errorMessage>
-    </validationRule>
-</fields>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: fragment of a screen flow, wrapped so the block parses -->
+    <fields><name>StartDate</name></fields>
+    <fields>
+        <name>EndDate</name>
+        <validationRule>
+            <formulaExpression>AND(NOT(ISNULL({!StartDate})), NOT(ISNULL({!EndDate})), {!EndDate} &gt; {!StartDate})</formulaExpression>
+            <errorMessage>End Date must be after Start Date.</errorMessage>
+        </validationRule>
+    </fields>
+</Flow>
 ```
 
 **Detection hint:** For any cross-field formula referencing two field variables `{!A}` and `{!B}`, identify which field the rule lives under. If it lives under the field appearing later in the formula's logical order (e.g. the formula compares `B > A` but the rule is on `A`), that's the anti-pattern.
@@ -219,7 +228,7 @@ Or, with a raw input:
 **Correct pattern:** Reference a Custom Label so the message localizes per user:
 
 ```xml
-<errorMessage>{!$Label.EndDateAfterStartDateError}</errorMessage>
+<errorMessage>{!$Label.EndDateAfterStartDateError}</errorMessage>  <!-- UNVERIFIED (2026-10-20): $Label in errorMessage is not in the corpus -->
 ```
 
 **Detection hint:** Hardcoded English-text `<errorMessage>` elements in any flow targeting a multilingual org. Recommend wrapping in a Custom Label.
@@ -242,7 +251,7 @@ REGEX({!Phone}, "^\+?[0-9]{10,15}$")  <!-- single backslash, may not work in XML
 
 **Why it happens:** JavaScript regex is the most common pattern in training data; the model uses its syntax by default.
 
-**Correct pattern:** Salesforce `REGEX()` uses Java regex syntax — no leading/trailing slashes, and double-escape backslashes when in XML metadata files:
+**Correct pattern (UNVERIFIED (2026-10-20): `REGEX()` is not in the corpus):** Salesforce `REGEX()` uses Java regex syntax — no leading/trailing slashes, and double-escape backslashes when in XML metadata files:
 
 ```
 REGEX({!Phone}, "^\\+?[0-9]{10,15}$")

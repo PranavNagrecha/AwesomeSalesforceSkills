@@ -29,9 +29,9 @@ outputs:
   - "Specific element and variable that caused the failure"
   - "Fix recommendation or fault path handler configuration"
 dependencies: []
-version: 2.0.0
+version: 2.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-20
 ---
 
 # Flow Runtime Error Diagnosis
@@ -58,7 +58,7 @@ Gather this context before working on anything in this domain:
 
 ### Flow Fault Notification Email
 
-When a Flow encounters an unhandled error, it sends a fault email (if configured in Setup → Process Automation Settings → Send Flow Error Emails). The email contains:
+When a Flow encounters an unhandled error, it sends a fault email. The recipient is set by `FlowSettings.enableFlowUseApexExceptionEmail`, shown as **Send Process or Flow Error Email to** on the Process Automation Settings page: `false` (the default) sends to "The user who last modified the process or flow", `true` to "The addresses set on the Apex Exception Email page in Setup" (api_meta 264 L120062-120067). UNVERIFIED (2026-10-20): the setting name "Send Flow Error Emails" in the earlier text is not in the corpus, and neither is the list of fields the email contains:
 
 | Field | Contents |
 |---|---|
@@ -69,7 +69,7 @@ When a Flow encounters an unhandled error, it sends a fault email (if configured
 | Stack trace of element execution order | Shows which elements ran before the failure |
 | Context variable values | Input variables and selected `$Record` field values at the time of failure |
 
-Reading the element name from the email is the fastest way to navigate directly to the failing element in Flow Builder.
+Reading the element name from the email is the fastest way to navigate directly to the failing element in Flow Builder. UNVERIFIED (2026-10-20): the email layout in the table above (version, element, stack trace, context values) is not described in the corpus.
 
 ### Common Runtime Error Types
 
@@ -86,6 +86,8 @@ Reading the element name from the email is the fastest way to navigate directly 
 | `UNABLE_TO_LOCK_ROW` | Record lock contention from concurrent updates | Retry pattern OR reduce per-interview DML |
 | `QUERY_TIMEOUT` | Flow's Get Records query too expensive or too broad | Add selective filter or index the filter field |
 | `STRING_TOO_LONG` | Assigning a value > field's max length | Truncate or validate input length before assignment |
+
+Corpus check of the status codes above (2026-10-20): `CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY` is a `StatusCode` (apexdev 264 L1779); `INVALID_FIELD` appears as a REST `errorCode` (api_rest 264 L2803); `FIELD_INTEGRITY_EXCEPTION` is a documented status code (api_meta 264 L144857); `STRING_TOO_LONG` is returned when a value exceeds the field length (object_reference 264 L2092); `QUERY_TIMEOUT` is returned when a query exceeds the timeout (app limits 264 L70-71, L436-441); `UNABLE_TO_LOCK_ROW` appears in the Apex Developer Guide only in the parallel-test note (apexdev 264 L41979), while the 10-second lock wait is apexdev 264 L9395-9398. `NUMBER_OUTSIDE_VALID_RANGE` is documented for an OFFSET above 2,000 (object_reference 264 L192005-192006), not for a number exceeding field precision. UNVERIFIED (2026-10-20): `NULL_REFERENCE`, `LIMIT_EXCEEDED` as a code for the SOQL and DML limit errors, `INSUFFICIENT_ACCESS_OR_READONLY`, and the "Too many SOQL queries: 101" message text are not in the corpus. The documented limits are 100 SOQL queries and 150 DML statements per synchronous transaction (apexdev 264 L19747, L19757). For the INSUFFICIENT_ACCESS fix, note that a system-mode flow "doesn't respect object permissions, field-level access, or other permissions of the running user" (api_meta 264 L70912-70916) and `UserMode` exists from API 68.0 (L70923-70927).
 
 ### Fault Paths
 
@@ -105,7 +107,7 @@ Flow Builder's Debug mode (Run → Debug) allows executing the flow with specifi
 
 For Record-Triggered Flows in production, the equivalent is running with debug enabled from a specific record's Flows button (if exposed), or using the Flow Debug Trace in the setup area.
 
-**Debug mode limitations:**
+**Debug mode limitations** (UNVERIFIED (2026-10-20): none of the four bullets below, nor the "Flow Debug Trace" above, is in the corpus; the only debug facts are the setting that lets admins debug flows as other users, `canDebugFlowAsAnotherUser`, api_meta 264 L119944-119947, and mock output values to "debug the step in rollback mode" for stage steps, L74850-74852):
 - Does NOT commit DML (you can't catch failures that only appear with real data).
 - Does NOT run actual Apex triggers on the object (the trigger framework is bypassed in debug).
 - Does NOT send email alerts or Platform Events (actions are simulated).
@@ -134,7 +136,7 @@ For bulk-specific failures, Debug won't reproduce — use sandbox bulk load + Fl
 
 **Steps:**
 1. Look for a Get Records or subflow inside a Loop element in the failing flow.
-2. Get Records inside a loop queries for each iteration — 200 iterations = 200 SOQL queries.
+2. Get Records inside a loop queries for each iteration — 200 iterations = 200 SOQL queries, past the 100-query synchronous limit (apexdev 264 L19747), so a 150-item collection fails at the 101st query.
 3. Fix: Move the Get Records element outside the Loop. Retrieve all needed records once before the loop. Use a Collection Filter within the loop to find the relevant record from the already-retrieved collection.
 4. Cross-reference `flow/flow-bulkification` Pattern 1 (Query-once + reuse).
 
@@ -154,18 +156,18 @@ For bulk-specific failures, Debug won't reproduce — use sandbox bulk load + Fl
 
 **Steps:**
 1. Check what else writes to the same record concurrently (triggers, other flows, external integrations).
-2. The lock is held by whoever opened the save transaction first — your Flow is losing the race.
+2. The lock is held by whoever opened the save transaction first — your Flow is losing the race. A waiting process gives up after a maximum of 10 seconds (apexdev 264 L9395-9398); see `flow/flow-record-locking-and-contention`.
 3. Fix options:
    - Reduce Flow's critical-section time (move work out of the transaction via async).
    - Serialize concurrent writers via Platform Events queue.
-   - Retry pattern (Pattern B from `flow/fault-handling`).
+   - Retry pattern (Pattern B from `flow/fault-handling`). UNVERIFIED (2026-10-20): that a retry helps is not in the corpus; each retry is a new attempt with a new 10-second wait, and Anti-Pattern 2 in `references/llm-anti-patterns.md` warns against retry loops. Keep any retry bounded to one.
    - If contention is from data loads, stagger or batch differently.
 
 ### Pattern 5: The "Works in Debug but Fails in Production" Trap
 
 **When to use:** Flow passes debug mode in Flow Builder but fails in production.
 
-**Cause:** Debug mode runs in simulated context — no real Apex triggers, no real DML commits, system-admin-like access. Production has all of those.
+**Cause:** Debug mode runs in simulated context — no real Apex triggers, no real DML commits, system-admin-like access. Production has all of those. UNVERIFIED (2026-10-20): the simulated-context description is not in the corpus; admins can debug as another user when `canDebugFlowAsAnotherUser` is enabled (api_meta 264 L119944-119947).
 
 **Diagnostic steps:**
 1. Confirm the flow's running user context in production vs debug (System Admin always passes; real users may not).
@@ -202,6 +204,22 @@ For bulk-specific failures, Debug won't reproduce — use sandbox bulk load + Fl
 
 ---
 
+## Questions to Ask Before Configuring
+
+Ask these before diagnosing. Each one maps to a pattern or gotcha above.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Who receives the fault emails, and is that person current?" | The default recipient is the last modifier of the flow (api_meta 264 L120062-120065) (gotcha 1) | The `enableFlowUseApexExceptionEmail` value and the recipient list |
+| "Which flow version does the email name, and which is active?" | The email can name a version that is no longer active (`activeVersionNumber`, api_meta 264 L76681) (gotcha 2) | Both version numbers side by side |
+| "Which flow type failed?" | `FlowInterviewLog` covers screen flows only (object_reference 264 L140750) (gotcha 5) | The right forensic source per flow type |
+| "Is a Get Records or DML element inside a loop?" | 100 SOQL queries and 150 DML statements per synchronous transaction (apexdev 264 L19747, L19757) (Pattern 2) | The element name and the iteration count at failure |
+| "Did a field or object change recently?" | A deleted field fails at run time (Pattern 3; UNVERIFIED (2026-10-20): not in the corpus) | The deployment and the other automation referencing the field |
+| "Is another process writing to the same record?" | A lock wait ends after 10 seconds (apexdev 264 L9395-9398) (Pattern 4) | The competing writers listed |
+| "Does it pass in Debug and fail in production?" | The running user can differ; admins can debug as another user when enabled (api_meta 264 L119944-119947) (Pattern 5) | A reproduction under the real user's profile |
+
+A proper diagnosis adds a named element, a confirmed version and a stated cause before any change, none of which "adding a fault path" provides.
+
 ## Review Checklist
 
 - [ ] Fault notification emails are configured and routing to the admin inbox
@@ -217,16 +235,16 @@ For bulk-specific failures, Debug won't reproduce — use sandbox bulk load + Fl
 
 ## Salesforce-Specific Gotchas
 
-1. **Flow fault emails go to the user who activated the flow, not the admin** — By default, fault emails go to the flow's last modifier. Configure fault email routing in Setup → Process Automation Settings to send to an admin group instead.
-2. **Multiple active flow versions can coexist** — Only one version can be active at a time for a given API name. If the error email references version 3 but you fixed version 4, confirm version 4 is the active version.
-3. **Debug mode does not trigger actual DML** — The Debug run executes the flow logic but does not commit records. This means you cannot rely on debug to catch DML failures that only appear with real data volumes or trigger interactions.
-4. **Debug mode bypasses Apex triggers** — the flow sees a simplified transaction. Trigger-ordering bugs don't reproduce in debug.
-5. **Flow Interview Log is the forensic trail** — for production failures you can't reproduce, check `FlowInterviewLog` + `FlowInterviewLogEntry` via Setup or SOQL.
-6. **Paused flows are a separate failure mode** — `FlowInterview` in `Paused` status isn't an error but is often mistaken for one. Check status before assuming failure.
-7. **Custom exception thrown by invocable Apex shows up as generic Flow error** — don't assume the error message is the Apex exception; check the invocable's log separately.
-8. **"Run flow as System Admin" in debug hides FLS issues** — always test under the real user's profile before declaring the fix done.
+1. **Flow fault emails go to the user who last modified the flow, not the admin** — By default (`enableFlowUseApexExceptionEmail` false), fault emails go to "The user who last modified the process or flow"; set it to true to send them to the Apex Exception Email addresses (api_meta 264 L120062-120067). The earlier heading said "the user who activated the flow", which the guide does not say.
+2. **The fault email can name a version that is no longer active** — The earlier heading said multiple active versions coexist and the body said only one is active at a time; the body is the supported reading (`FlowDefinition` carries a single `activeVersionNumber`, api_meta 264 L76681). If the error email references version 3 but you fixed version 4, confirm version 4 is the active version. UNVERIFIED (2026-10-20): that an older version keeps running for a scheduled flow is not in the corpus.
+3. **Debug mode does not trigger actual DML** (UNVERIFIED (2026-10-20): not in the corpus) — The Debug run executes the flow logic but does not commit records. This means you cannot rely on debug to catch DML failures that only appear with real data volumes or trigger interactions.
+4. **Debug mode bypasses Apex triggers** (UNVERIFIED (2026-10-20): not in the corpus) — the flow sees a simplified transaction. Trigger-ordering bugs don't reproduce in debug.
+5. **Flow Interview Log is the forensic trail for screen flows only** — `FlowInterviewLog` "Represents the logs of a screen flow interview" and `FlowInterviewLogEntry` "the log of a specific element that's executed by a screen flow interview" (object_reference 264 L140750, L140888, API 49.0 and later). A record-triggered or autolaunched flow leaves no such log; the earlier text sent every production failure there. `FlowInterview` itself "Represents a flow interview. A flow interview is a running instance of a flow" (L140558).
+6. **Paused flows are a separate failure mode** — `FlowInterview.InterviewStatus` has the values Completed, Error, Paused, Running and VersionPaused (object_reference 264 L140657-140666, field available in API 50.0 and later); `Paused` means "This flow is paused", distinct from `Error`. Check status before assuming failure.
+7. **Custom exception thrown by invocable Apex shows up as generic Flow error** (UNVERIFIED (2026-10-20): not in the corpus) — don't assume the error message is the Apex exception; check the invocable's log separately.
+8. **"Run flow as System Admin" in debug hides FLS issues** (UNVERIFIED (2026-10-20): the debug behavior is not in the corpus; see `canDebugFlowAsAnotherUser`, api_meta 264 L119944-119947) — always test under the real user's profile before declaring the fix done.
 9. **Managed-package flow errors are opaque** — element names are visible but internals aren't. File a case with the package vendor; don't try to patch the managed flow.
-10. **Error email rate-limiting** — orgs that fire thousands of flow errors per hour may see emails suppressed silently. Check `FlowInterviewLog` counts, not just email volume.
+10. **Error email rate-limiting** — orgs that fire thousands of flow errors per hour may see emails suppressed silently. UNVERIFIED (2026-10-20): the suppression is not in the corpus. `FlowInterviewLog` counts cover screen flows only (object_reference 264 L140750).
 
 ---
 
@@ -239,7 +257,7 @@ Surface these WITHOUT being asked:
 - **Fault email reports a non-active version** → Flag as High. Version management confusion; deploy and activate discipline needed.
 - **Failing element has no fault path** → Flag as High. Even after root-cause fix, add the fault path for future surprises.
 - **Error pattern "works in debug, fails in prod"** → Flag as High. Running-user mismatch; Pattern 5 applies.
-- **`UNABLE_TO_LOCK_ROW` in Flow Interview Log > threshold** → Flag as High. Concurrency problem, not a flow bug.
+- **`UNABLE_TO_LOCK_ROW` repeating in fault emails or the screen-flow log (`FlowInterviewLog` covers screen flows only, object_reference 264 L140750) above a threshold** → Flag as High. Concurrency problem, not a flow bug.
 - **Missing fault-email configuration at org level** → Flag as Critical. All future flow errors will disappear silently.
 - **Post-mortem not documented after a production flow failure** → Flag as Medium. Next incident will take as long to diagnose.
 

@@ -21,14 +21,16 @@ model cannot describe.
 ## Anti-Pattern 2: Pointing the action at a legacy Named Credential
 
 The most common hard failure, and the error message does not say what is wrong. The HTTP
-Callout action requires the current Named Credential model — a Named Credential paired
-with an **External Credential** that carries the authentication protocol and principal.
-An older-style Named Credential with authentication configured directly on it will not be
-selectable, or will fail at runtime.
+Callout action works with the current Named Credential model — a Named Credential paired
+with an **External Credential** that carries the authentication protocol and principal
+(`SecuredEndpoint`, api_meta 264 L92881-92882).
+An older-style `Legacy` credential does not use the Winter '23 schema (api_meta 264
+L92875-92876). UNVERIFIED (2026-10-20): that the action refuses it or fails at runtime is
+not in the corpus.
 
 ❌ Reuse the Named Credential that has been serving Apex callouts for years.
 ✅ Create an External Credential with the authentication protocol and a named principal,
-grant the running user's permission set access to that principal, then create or migrate
+grant the running user's permission set access to that principal (api_meta 264 L97688-97689), then create or migrate
 the Named Credential to reference it. The permission-set grant is the step most often
 missed — without it, authentication fails for everyone except the administrator who built
 it, which is precisely the person who tests it.
@@ -36,7 +38,7 @@ it, which is precisely the person who tests it.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <ExternalCredential xmlns="http://soap.sforce.com/2006/04/metadata">
-    <authenticationProtocol>OAuth</authenticationProtocol>
+    <authenticationProtocol>Oauth</authenticationProtocol>
     <label>Address Verification</label>
     <externalCredentialParameters>
         <parameterName>NamedPrincipal</parameterName>
@@ -55,7 +57,8 @@ The action derives its output schema from a sample response you paste in. Assist
 supply an idealised sample — every field present, every value populated — and the flow
 then depends on a shape the API does not always return. Fields absent from the sample do
 not exist as flow resources at all, and fields the sample showed as populated arrive null
-in the cases that matter.
+in the cases that matter. UNVERIFIED (2026-10-20): the corpus names schema inference only as the
+`SchemaInferred` source (api_meta 264 L66635) and does not describe which fields it keeps.
 
 **Wrong** — the vendor's documentation sample, in which everything is present:
 
@@ -101,7 +104,8 @@ to move to Apex.
 The action's fault path is not optional in practice, and assistants omit it because the
 happy path is what was asked for. Without it, an HTTP failure ends the flow with an
 unhandled error — a screen flow shows the user a raw error, and a record-triggered flow
-rolls the transaction back and emails the flow's error recipient.
+rolls the transaction back and emails the flow's error recipient. UNVERIFIED (2026-10-20):
+the corpus describes none of these unhandled-fault outcomes for the HTTP Callout action.
 
 ❌ Wire the action's success connector and stop.
 ✅ Every callout action gets a fault connector. In a screen flow, route to a message
@@ -115,7 +119,7 @@ per flow.
 The generated flow loops a collection and calls the endpoint once per record. Every one of
 those is a separate HTTP request inside a single transaction, bounded by the documented
 limit of 100 callouts per transaction and by a cumulative callout timeout of 120 seconds
-for the whole transaction — so a hundred-record collection against a slow endpoint fails
+for the whole transaction (apexdev 264 L19766, L19768) — so a hundred-record collection against a slow endpoint fails
 on elapsed time well before it reaches the callout count.
 
 ❌ Loop → HTTP Callout → Assignment, once per record.
@@ -127,19 +131,19 @@ Apex queueable — so a slow endpoint delays a job rather than failing a user's 
 
 A record-triggered flow that performs a callout inherits the platform's ordering
 constraints. Assistants place the callout in a fast-field-update or before-save context,
-where callouts are not permitted at all, or in an after-save path where the callout
+where callouts are not permitted at all (UNVERIFIED (2026-10-20): no corpus guide states this for before-save flows), or in an after-save path where the callout
 extends the user's transaction and its latency becomes the user's save latency.
 
 ❌ HTTP Callout in a before-save record-triggered flow.
 ✅ Run the callout from the asynchronous path of a record-triggered flow, so it executes
 after the transaction commits. That is the declarative equivalent of the
-callout-after-DML rule in Apex, and it also stops a slow partner API from lengthening
+callout-after-DML rule in Apex (apexdev 264 L36340-36342), and it also stops a slow partner API from lengthening
 every save on the object.
 
 ## Anti-Pattern 7: Hand-rolling pagination across flow elements
 
 Assistants build a loop with a page counter, a decision on whether more pages exist, and
-an assignment accumulating results. Flow has no cursor primitive, so this construction is
+an assignment accumulating results. Flow has no cursor primitive (UNVERIFIED (2026-10-20): not in the corpus), so this construction is
 fragile, hard to read, and multiplies the callout count by the page count inside one
 transaction.
 

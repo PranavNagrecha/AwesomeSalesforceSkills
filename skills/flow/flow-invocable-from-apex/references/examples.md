@@ -4,7 +4,7 @@
 
 **Context:** A record-triggered flow on Account needs to look up an industry code from a protected Custom Metadata type and copy it onto the account. The lookup itself is complex enough that it belongs in Apex, but the overall flow should stay declarative.
 
-**Problem:** Admin first wrote the invocable as `static String lookup(String industry)`. Flow refused to use it because the signature doesn't match the bulk contract. Admin switched to `static List<String> lookup(List<String> industries)` — compiles, but when 200 accounts save at once, the invocable still does a SOQL inside a per-request loop and hits 101-SOQL limits.
+**Problem:** Admin first wrote the invocable as `static String lookup(String industry)`. Flow refused to use it because the signature doesn't match the bulk contract. Admin switched to `static List<String> lookup(List<String> industries)` — compiles, but when 200 accounts save at once, the invocable still does a SOQL inside a per-request loop and hits the 100-query limit at the 101st query (apexdev 264 L19747).
 
 **Solution:**
 
@@ -52,15 +52,15 @@ public class IndustryLookupInvocable {
 }
 ```
 
-**Why it works:** Single SOQL regardless of whether 1 or 200 accounts triggered the flow. Output list order matches input list order, so Flow's Loop element can walk both together. Nulls become empty responses instead of exceptions.
+**Why it works:** Single SOQL regardless of whether 1 or 200 accounts triggered the flow. Output list order matches input list order, which is the guide's requirement for bulkified execution (apexdev 264 L5510-5512). Nulls become empty responses instead of exceptions.
 
 ---
 
 ## Example 2: Invocable that calls a vendor API
 
-**Context:** A flow needs to geocode addresses by calling an external vendor. Callouts are not allowed inline from an after-save trigger context.
+**Context:** A flow needs to geocode addresses by calling an external vendor.
 
-**Problem:** Without `callout=true`, Flow won't let the action be used from a trigger-initiated context at all. And the invocable as-written issues a callout per request, blowing the 100-callout limit at the first large bulk save.
+**Problem:** The method calls an external system, so it needs `callout=true` (apexdev 264 L5461-5462). UNVERIFIED (2026-10-20): the earlier text said callouts are not allowed inline from an after-save trigger context and that Flow refuses the action there without the modifier; the corpus does not say either. And an invocable that issues a callout per request blows the 100-callouts-per-transaction limit (apexdev 264 L19766) at the first large bulk save.
 
 **Solution:**
 
@@ -116,9 +116,9 @@ public class GeocodeInvocable {
 }
 ```
 
-Because `callout=true`, the calling flow is forced to be invoked from a `Queueable` or from a Scheduled Path (no inline trigger context). The single batched HTTP call stays under the 100-callout limit regardless of bulk size.
+Because `callout=true`, a screen flow can commit the current transaction and start a new one before the call when its Transaction Control setting lets the flow decide (apexdev 264 L27275-27282). The single batched HTTP call stays under the 100-callout limit regardless of bulk size.
 
-**Why it works:** Vendor-batch endpoint means one HTTP call for N requests. `callout=true` flags the action for the Flow Builder and forces a correct async context.
+**Why it works:** Vendor-batch endpoint means one HTTP call for N requests. `callout=true` tells screen flows the method calls an external system so they can run it safely in the current transaction or a new one.
 
 ---
 
@@ -145,7 +145,7 @@ public class StaleAccountJob implements Schedulable {
 }
 ```
 
-**Why it works:** Admin owns the flow logic; Apex owns the scheduling. The contract is the input/output variable names — flagged as "Available for Input / Output" in the flow.
+**Why it works:** Admin owns the flow logic; Apex owns the scheduling. The contract is the input/output variable names — flagged as input and output in the flow (`isInput` and `isOutput`, api_meta 264 L75629-75655). `start()` works only for autolaunched and user provisioning flows (apexref 262 L158169-158177).
 
 ---
 
@@ -153,7 +153,7 @@ public class StaleAccountJob implements Schedulable {
 
 **What practitioners do:** Skip records that don't match criteria by not adding anything to the output list.
 
-**What goes wrong:** Flow's Loop element walks `inputs` and `outputs` in parallel assuming same length. Skipping records silently shifts every subsequent output onto the wrong input — downstream data corruption.
+**What goes wrong:** The guide requires the i-th output to correspond to the i-th input (apexdev 264 L5510-5512). Skipping records shifts every subsequent output onto the wrong input. UNVERIFIED (2026-10-20): that Flow's Loop element does this walk, and that the corruption is silent, is not in the corpus.
 
 **Correct approach:** Always return exactly `inputs.size()` elements. For skipped records, add an empty response (with all fields null or an explicit `status = 'skipped'`).
 
@@ -163,6 +163,6 @@ public class StaleAccountJob implements Schedulable {
 
 **What practitioners do:** Cache lookup data in a static Map<String, Whatever> to avoid re-querying.
 
-**What goes wrong:** Two flows running in the same transaction share the static map; changes from one leak into the other. Hard to debug because it only manifests under mixed load.
+**What goes wrong:** Two flows running in the same transaction share the static map (a static persists for a single transaction, apexdev 264 L3746-3748); changes from one leak into the other. Hard to debug because it only manifests under mixed load.
 
 **Correct approach:** Build the lookup map as a local variable inside the invocable method. If genuine cross-call caching is needed, use `Platform Cache` with explicit partition + expiry.

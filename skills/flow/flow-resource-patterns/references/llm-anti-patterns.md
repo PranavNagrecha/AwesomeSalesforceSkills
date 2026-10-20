@@ -63,14 +63,16 @@ where `getAccountResult` came from a Get Records that may return nothing.
 
 ```
 A Get Records that finds no match leaves the SObject variable null.
-Referencing a field on null throws at runtime.
+Referencing a field on null throws at runtime. (UNVERIFIED (2026-10-20):
+not in the corpus.)
 
 Guard with:
 - Decision first: ISBLANK({!getAccountResult.Id}) → null branch
 - Or formula: IF(ISBLANK({!getAccountResult.Id}), '', {!getAccountResult.Industry})
 
 Most common in scheduled paths where related records may have been
-deleted between trigger and path execution.
+deleted between trigger and path execution. (UNVERIFIED (2026-10-20):
+experience, not a corpus claim.)
 ```
 
 **Detection hint:** Dot-access on an SObject variable populated by Get Records without a prior ISBLANK/ISNULL check.
@@ -92,8 +94,10 @@ Text Template tt_WelcomeBody (Rich-text):
   Hi {!$Record.FirstName},
   Welcome to {!$Label.CompanyName}. Your account id is {!$Record.Id}.
 
-Reference {!tt_WelcomeBody} as the Email Body. One resource,
-previewable in the builder, merge fields validated at save.
+Reference {!tt_WelcomeBody} as the Email Body. One resource (`text`
+supports merge fields, api_meta 264 L75572), previewable in the
+builder. UNVERIFIED (2026-10-20): "merge fields validated at save" is
+not in the corpus.
 ```
 
 **Detection hint:** Assignment chain concatenating text, producing an email/screen body.
@@ -102,20 +106,22 @@ previewable in the builder, merge fields validated at save.
 
 ## Anti-Pattern 5: Record Choice Set with no filter or limit
 
-**What the LLM generates:** Record Choice Set on Account with no filter — returns all accounts.
+**What the LLM generates:** Record Choice Set on Account with no filter — returns the first accounts up to the limit (200 by default), not all accounts.
 
 **Why it happens:** Model defaults to "get everything."
 
 **Correct pattern:**
 
 ```
-Record Choice Sets respect SOQL limits but loading 5000 accounts
-into a picklist is a terrible UX.
+A Record Choice Set returns at most 200 choices ("Maximum and
+default: 200", api_meta 264 L73017-73018), so it cannot load 5000
+accounts, but 200 unfiltered rows in a picklist is still a poor UX. The
+earlier text assumed 5000 rows.
 
 Always:
 - filter to a relevant subset (active, owned by current user, recent)
 - sort by the label field
-- set a reasonable Maximum (10–50 for UX, 200 absolute ceiling)
+- set a reasonable Maximum (10–50 for UX, 200 absolute ceiling, api_meta 264 L73017-73018)
 
 For >200 active records, switch to a lookup field or a typeahead
 screen component.

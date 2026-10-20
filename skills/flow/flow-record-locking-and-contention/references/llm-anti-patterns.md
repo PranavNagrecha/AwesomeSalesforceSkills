@@ -91,7 +91,7 @@ Subscriber flow on Account_Quote_Approved__e:
 [Update Records: Account — set Last_Quote_Approved__c = NOW()]   ← isolated transaction
 ```
 
-The Account update happens in the subscriber's transaction with its own retry budget and naturally batches across many Quote approvals.
+The Account update happens in the subscriber's transaction (platform_events 264 L2187-2188) and batches across many Quote approvals (up to 200 per flow batch, L2185).
 
 **Detection hint:** A flow that updates more than one object in the same after-save transaction, where the objects are linked by a parent-child chain (Quote → Opportunity → Account, OpportunityLineItem → Opportunity → Account, Case → Account), is at risk. Audit the lock chain explicitly.
 
@@ -112,7 +112,7 @@ The Account update happens in the subscriber's transaction with its own retry bu
 [End]
 ```
 
-**Why it happens:** Owner change is treated as "just another field update" by the LLM. The implicit User-row lock (and Group lock for queues) is invisible in the flow XML — there's no element labeled "Lock User row." The LLM has no surface signal that ownership changes are heavier than other updates.
+**Why it happens:** Owner change is treated as "just another field update" by the LLM. The implicit User-row lock (and Group lock for queues; UNVERIFIED (2026-10-20): not in the corpus, which lists only ownership updates for records with private sharing and user-role updates as contention sources, api_asynch 264 L2637-2639) is invisible in the flow XML — there's no element labeled "Lock User row." The LLM has no surface signal that ownership changes are heavier than other updates.
 
 **Correct pattern:**
 
@@ -146,7 +146,7 @@ public static void preLockAccount(List<Id> acctIds) {
 }
 ```
 
-**Why it happens:** The LLM has read about `FOR UPDATE` in the Apex docs and pattern-matches "lock issue → use locking statement." It does not distinguish between read-modify-write race conditions (the legitimate use case) and parallel-transaction contention (the actual issue 95% of the time).
+**Why it happens:** The LLM has read about `FOR UPDATE` in the Apex docs and pattern-matches "lock issue → use locking statement." It does not distinguish between read-modify-write race conditions (the legitimate use case) and parallel-transaction contention (the actual issue most of the time; UNVERIFIED (2026-10-20): the earlier "95%" was not measured).
 
 **Correct pattern:** Diagnose first. If the contention is from bulk shape (Loop + DML), fix the bulk shape (collect-then-update). If the contention is from parallel transactions on a hot parent, decouple via Platform Event. `FOR UPDATE` is correct ONLY when:
 
@@ -160,7 +160,7 @@ For all other contention scenarios, `FOR UPDATE` extends the lock-hold duration 
 
 ---
 
-## Anti-Pattern 5: Recommending Retries Inside the Flow When Salesforce Already Retries 10 Times
+## Anti-Pattern 5: Recommending Retries Inside the Flow When the Platform Gives Each Attempt One 10-Second Wait
 
 **What the LLM generates:** A fault-path branch that catches UNABLE_TO_LOCK_ROW and retries the same Update up to 5 times with a Wait element between attempts.
 
@@ -193,7 +193,7 @@ For all other contention scenarios, `FOR UPDATE` extends the lock-hold duration 
               Record_Id__c = $Record.AccountId
               │
               ▼
-            [End]   ← the original transaction will rollback per Flow default behavior
+            [End]   ← UNVERIFIED (2026-10-20): flow rollback on an unhandled fault is not in the corpus
 ```
 
 Then refactor the flow itself to decouple via Platform Event or Queueable so contention doesn't recur.
@@ -253,6 +253,6 @@ The `FOR UPDATE` clause is the only way in Apex to prevent the lost-update race.
 
 The dangerous part is not the number, it is the **diagnostic inference** built on it. "One fault email = the 11th attempt = hundreds of invisible retries = severe systemic contention" tells an engineer to go hunting for a platform-wide load problem when the actual finding is narrower and far more actionable: *one specific transaction held one specific row lock for more than ten seconds.* Triage goes to the wrong place.
 
-**Correct version:** A transaction waits a maximum of **10 seconds** to acquire a record lock (the same wait applies to `SELECT ... FOR UPDATE`); if the lock is not released, `UNABLE_TO_LOCK_ROW` is thrown. There is no automatic platform-level retry loop for synchronous DML. A single fault means one transaction waited the full ten seconds and gave up. Severity should be judged from fault frequency and from what held the lock — not from a retry count. Retry semantics that *do* exist: Bulk API batches, and platform-event subscribers via `EventBus.RetryableException` (opt-in; Salesforce recommends staying under nine retries).
+**Correct version:** A transaction waits a maximum of **10 seconds** to acquire a record lock (the same wait applies to `SELECT ... FOR UPDATE`, apexdev 264 L9395-9398); if the lock is not released, `UNABLE_TO_LOCK_ROW` is thrown. There is no automatic platform-level retry loop for synchronous DML. A single fault means one transaction waited the full ten seconds and gave up. Severity should be judged from fault frequency and from what held the lock — not from a retry count. Retry semantics that *do* exist: Bulk API jobs (the `retries` property, api_asynch 264 L1995-1997), and Apex platform-event triggers via `EventBus.RetryableException` (opt-in; a trigger runs up to 10 times, the initial run plus 9 retries, and Salesforce recommends limiting retries to fewer than nine, platform_events 264 L3268-3271).
 
 **Detection hint:** grep locking/contention guidance for `10 retries`, `10-retry`, `retries ... 10 times`, or `exponential backoff` near `UNABLE_TO_LOCK_ROW`. Structural hint that generalises: when a claim pairs a plausible integer with a mechanism, check whether the integer belongs to a **different unit** in the source — seconds relabelled as attempts, records relabelled as batches, characters relabelled as fields. Second hint: "your fault email represents the Nth attempt" — no Salesforce documentation attaches an attempt ordinal to a DML fault email, so any sentence of that shape is reconstructed rather than cited.

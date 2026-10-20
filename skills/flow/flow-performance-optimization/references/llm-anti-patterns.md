@@ -20,13 +20,13 @@
 
 ---
 
-## Anti-Pattern 3: Recommending Scheduled Path for all heavy work
+## Anti-Pattern 3: Recommending an asynchronous path for all heavy work
 
-**What the LLM generates:** "Move the heavy work to a Scheduled Path."
+**What the LLM generates:** "Move the heavy work to an asynchronous path."
 
 **Why it happens:** LLMs treat async as a performance panacea.
 
-**Correct pattern:** Async helps transaction-isolation, not per-record cost. A Scheduled Path with SOQL-in-loop breaks at the same iteration count.
+**Correct pattern:** Async helps transaction-isolation, not per-record cost. An asynchronous path with SOQL-in-loop still meets the SOQL limit (apexdev 264 L19747 gives 100 synchronous, 200 asynchronous), only at a higher count.
 
 ---
 
@@ -46,7 +46,7 @@
 
 **Why it happens:** LLMs default to "just grab everything".
 
-**Correct pattern:** Explicitly list the fields needed. Reduces heap + CPU.
+**Correct pattern:** Explicitly list the fields needed (`queriedFields`, api_meta 264 L73623-73625). UNVERIFIED (2026-10-20): the heap and CPU saving is not quantified in the corpus.
 
 ---
 
@@ -56,7 +56,7 @@
 
 **Why it happens:** Natural accumulation pattern.
 
-**Correct pattern:** Bound collection size; chunk processing at 2000-5000 records.
+**Correct pattern:** Bound collection size; chunk processing at 2000-5000 records. UNVERIFIED (2026-10-20): the 2000-5000 chunk size is a rule of thumb, not a corpus figure.
 
 ---
 
@@ -66,4 +66,4 @@
 
 **Why it happens:** LLMs don't model per-element overhead.
 
-**Correct pattern:** Each Assignment, Decision, Loop has non-zero CPU cost. At high scale, count them.
+**Correct pattern:** Each Assignment, Decision, Loop has non-zero CPU cost. At high scale, count them. UNVERIFIED (2026-10-20): per-element CPU cost is not described in the corpus.

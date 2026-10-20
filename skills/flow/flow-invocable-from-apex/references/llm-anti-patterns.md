@@ -77,7 +77,7 @@ public static List<Response> callVendor(List<Request> rs) {
 }
 ```
 
-**Why it happens:** LLMs see the annotation syntax but don't connect "does HTTP" to the `callout` attribute.
+**Why it happens:** LLMs see the annotation syntax but don't connect "does HTTP" to the `callout` attribute, which "identifies whether the method calls to an external system" (apexdev 264 L5461-5462). Screen flows use it to decide whether the action can run safely in the current transaction (apexdev 264 L27275-27276).
 
 **Correct pattern:**
 
@@ -102,7 +102,7 @@ public class Request {
 }
 ```
 
-**Why it happens:** Java bleed — LLMs default to private fields with getters/setters.
+**Why it happens:** Java bleed — LLMs default to private fields with getters/setters. The guide excludes properties and protected or private variables (apexdev 264 L5774-5778).
 
 **Correct pattern:**
 
@@ -123,12 +123,12 @@ public class Request {
 
 ```apex
 for (Request r : requests) {
-    if (r.skipFlag) continue;   // ← silently shrinks output list
+    if (r.skipFlag) continue;   // ← shrinks the output list
     results.add(process(r));
 }
 ```
 
-**Why it happens:** LLMs apply standard list-filter patterns without understanding Flow's positional index contract.
+**Why it happens:** LLMs apply standard list-filter patterns without understanding the positional contract: "the i-th Output entry must correspond to the i-th Input entry" (apexdev 264 L5510-5512).
 
 **Correct pattern:**
 
@@ -182,7 +182,7 @@ try { ... } catch (Exception e) {
 }
 ```
 
-**Why it happens:** Simple error-handling pattern that works in many languages.
+**Why it happens:** Simple error-handling pattern that works in many languages. UNVERIFIED (2026-10-20): what the flow fault path shows for `Exception` versus `AuraHandledException` is not in the corpus; `AuraHandledException` is documented as returning "a custom error message to a JavaScript controller" (apexref 262 L214924).
 
 **Correct pattern:**
 
@@ -205,7 +205,7 @@ try { ... } catch (Exception e) {
 Flow.Interview flow = Flow.Interview.createInterview('Deactivate Stale Accounts', inputs);
 ```
 
-**Why it happens:** LLMs see the flow label in the spec and use it verbatim.
+**Why it happens:** LLMs see the flow label in the spec and use it verbatim; the parameter is "The flow's API name" (apexref 262 L158101).
 
 **Correct pattern:**
 
@@ -251,7 +251,7 @@ public static List<Response> run(List<Request> requests) {
 }
 ```
 
-**Why it happens:** LLMs assume callers never pass null collections.
+**Why it happens:** LLMs assume callers never pass null collections. UNVERIFIED (2026-10-20): the corpus does not say Flow can pass a null collection; the guard is defensive.
 
 **Correct pattern:**
 

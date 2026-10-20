@@ -35,14 +35,16 @@ A third tradeoff is **explicit per-field rules vs centralised "validation flow"*
 4. **Cross-field rule on the first (independent) field** — When the user fills the first field, the second is null; the comparison short-circuits. Always put cross-field rules on the dependent (later) field.
 5. **Trusting the flow's screen validation as the security boundary** — Anyone with API access bypasses the screen entirely. Always pair with object-level Validation Rules and field-level security. The screen rule is UX; the object rule is the authority.
 6. **Hardcoded error messages in multilingual orgs** — English error text appears for French / Japanese / Spanish users. Use Custom Labels for the error message string where supported, or route through a Display Text fallback.
-7. **`<validationRule>` block under a custom LWC's `<extensionName>`** — Silently ignored. Custom LWCs honour only `@api validate()`. Authors who don't know this ship a "validated" component that doesn't validate.
+7. **`<validationRule>` block under a custom LWC's `<extensionName>`** — Not documented for a custom component (api_meta 264 L74550-74552); silently ignored is UNVERIFIED (2026-10-20). Custom LWCs honour only `@api validate()`. Authors who don't know this ship a "validated" component that doesn't validate.
 
 ## Official Sources Used
 
 - Salesforce Help — Screen Flow Input Components reference: https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screen_input.htm
 - Salesforce Help — Validate Screen Component Input in a Flow: https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_input_validation.htm
 - Salesforce Metadata API Developer Guide — Flow type schema (`<validationRule>` on `<fields>` elements): https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
-- Salesforce Release Notes — Reactive Screen Components (Winter '24): https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_builder_reactive_screens.htm
+- Metadata API Developer Guide 264 — `FlowScreenField.validationRule` L74550-74552, `isRequired` L74482-74484, `FlowInputValidationRule` L73384-73392, `enableFlowReactiveScreens` L120052-120058
+- Apex Developer Guide 264 — a flow's DML runs the save procedure and its validation rules, L15645-15647, L15671
+- Salesforce Release Notes — Reactive Screen Components (Winter '24; UNVERIFIED (2026-10-20): release notes are not in the corpus): https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_builder_reactive_screens.htm
 - Salesforce Developer Guide — Custom LWC Screen Components and `@api validate()`: https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-screen.html
 - WCAG 2.1 SC 3.3.1 (Error Identification): https://www.w3.org/TR/WCAG21/#error-identification
 - Salesforce Architects — Well-Architected Framework: https://architect.salesforce.com/well-architected

@@ -55,9 +55,10 @@ For Screen Flows, the right answer is User Context (DefaultMode for screen flows
 2. If sharing: confirm the user SHOULD have access. If yes, fix the sharing rule.
    If no, the flow is doing the right thing by failing closed.
 3. Only if the user genuinely shouldn't see the record but the flow needs to read it
-   on their behalf, add a per-element runInMode override on JUST that Get Records
-   (preferably SystemModeWithSharing, not Without).
-4. If multiple writes need to escalate, refactor into a System Context Subflow.
+   on their behalf, move JUST that Get Records into a subflow with its own runInMode
+   (preferably SystemModeWithSharing, not Without). runInMode is a Flow-level field
+   (api_meta 264 L70907); the earlier "per-element runInMode" does not exist.
+4. If multiple writes need to escalate, put them in the same System Context Subflow.
 ```
 
 **Detection hint:** Reject any LLM output that suggests changing flow-wide run mode as the first response to "Get Records returned nothing" without first asking "should the user have access at the sharing-rule level?"
@@ -168,14 +169,14 @@ Approach 2 — If feature-flagging is desired separately from security:
 
 > "Record-triggered flows run in User Context by default."
 
-This was true before Spring '21 (API 51.0). It is false for any flow at API 52.0 or higher.
+This was true before Spring '21 (API 51.0). It is false for any flow at API 52.0 or higher. (UNVERIFIED (2026-10-20): the Spring '21 default and the 52.0 cutover are not in the corpus; the guide says `DefaultMode` depends on how the flow is launched, api_meta 264 L70908-70909.)
 
 **Why it happens:** LLM training cutoffs include pre-Spring-'21 documentation. The change isn't always reflected in derivative content (Stack Overflow answers, blog posts) the model trained on.
 
 **Correct pattern:**
 
 ```
-Record-triggered flows default to:
+Record-triggered flows default to (UNVERIFIED (2026-10-20): not in the corpus; the guide says DefaultMode depends on how the flow is launched, api_meta 264 L70908-70909):
    - User Context if apiVersion <= 51.0 (Winter '21 and earlier)
    - System Context Without Sharing if apiVersion >= 52.0 (Spring '21 and later)
 
@@ -199,7 +200,7 @@ Wrong. Each flow's `runInMode` is independent.
 **Correct pattern:**
 
 ```
-Each flow's <runInMode> is independent. There is no inheritance.
+Each flow's <runInMode> is independent. There is no inheritance. (UNVERIFIED (2026-10-20): not in the corpus; see SKILL.md Gotcha 3, which says the opposite. Set it explicitly and test.)
 A subflow with <runInMode>DefaultMode</runInMode> uses the default for its own flow type
 (auto-launched = SystemModeWithoutSharing post-Spring-'21; screen = User Context).
 A subflow with <runInMode>SystemModeWithSharing</runInMode> runs with sharing
@@ -227,8 +228,9 @@ Experience Cloud guest flows MUST run in User Context.
 Use the guest user profile + sharing sets to grant the minimum record access required.
 If the form needs to write a record the guest can't see (e.g., a new Lead), use the
 guest user profile's Create permission on Lead — do not bypass via run mode.
-For lookups the guest legitimately can't see, use a per-element override on a single
-Get Records, never the entire flow.
+For lookups the guest legitimately can't see, use a subflow with its own runInMode for
+that single read, never the entire flow (guest users' org-wide defaults are Private,
+secguide 262 L2868).
 ```
 
 **Detection hint:** Cross-reference any flow recommended for Experience Cloud with its `<runInMode>` setting. P0 alert on any combination of Experience Cloud profile + `SystemModeWithoutSharing`.
@@ -247,7 +249,7 @@ Send Email Alert:
 
 In a scheduled flow.
 
-**Why it happens:** LLMs default to `$User.Email` as the most common recipient pattern. They don't recognize that scheduled flows run as Automated Process, which has no email address — the merge field returns blank, the email fails or sends to no one.
+**Why it happens:** LLMs default to `$User.Email` as the most common recipient pattern. They don't recognize that scheduled flows run as Automated Process, which has no email address — the merge field returns blank, the email fails or sends to no one. UNVERIFIED (2026-10-20): the scheduled-flow running user is not in the corpus.
 
 **Correct pattern:**
 
