@@ -384,9 +384,15 @@ releases:
     title: 'Winter ''27 (264 / API 68.0) corpus: fetch, diff vs 262, delta list for writers, re-ground future waves'
     size: M
     owner_model: sonnet
-    status: running
+    status: done
     notes: 'Moved from 1.6.0 by the orchestrator: the 1.5.0 accuracy wave (R2-04) must not be grounded on a superseded release.
       Fetch into scratchpad/corpus264; keep 262 for comparison.'
+    evidence: 'standards/release-delta-winter27.md (301 lines, 308 cites into corpus264): 5 Apex 68.0 behaviour changes; 14
+      new metadata types; 139 Metadata API + 35 Object Reference 68.0 additions, 14 new objects; heap 6/12 -> 10/25 MB (apexdev
+      L19780; 36 skills state the old number); Flow runInMode UserMode at 68.0 (api_meta L70927; 4 flow skills wrong); API
+      31-40 deprecated Summer ''27 / retired Summer ''28 (api_meta L1289; devops/api-version-management); DevOps Center ->
+      Lifecycle Center rename (2 skills); 7 skills cite removed cheatsheet tables; 33 skills carry 262 line numbers. Apex
+      Reference + Security guides still 262. Brief now points at corpus264. Validate 0 errors.'
   - id: R2-04
     title: 'Accuracy wave (continues R1): full rewrites with claims audit on the next 20 lowest data/devops/integration/security
       skills + adversarial review per batch'

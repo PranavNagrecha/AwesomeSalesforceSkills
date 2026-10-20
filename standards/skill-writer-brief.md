@@ -6,11 +6,13 @@ build_plugin, validate_repo --all, or anything that writes outside skills/<domai
 You are assigned the skills listed at the end. Finish every one; report per skill.
 
 ## Ground truth (cite `grep -n` line numbers from these files — PDF text has form feeds, so Python splitlines() drifts)
-Corpus dir: the `--corpus` path the orchestrator passes (default: the session scratchpad `corpus/`); if absent, fetch the PDFs named below from https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/<name>.pdf and run `pdftotext -layout` on each:
+Corpus dir: the `--corpus` path the orchestrator passes (default: the session scratchpad `corpus264/`, Winter '27 = release 264, API 68.0); if absent, fetch the PDFs named below from https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/<name>.pdf and run `pdftotext -layout` on each:
   api_meta.txt (Metadata API), object_reference.txt, salesforce_apex_developer_guide.txt,
-  salesforce_apex_reference_guide.txt, api_asynch.txt (Bulk API 2.0), api_rest.txt,
+  api_asynch.txt (Bulk API 2.0), api_rest.txt, api_streaming.txt, platform_events.txt,
   salesforce_data_loader.txt, salesforce_large_data_volumes_bp.txt, salesforce_app_limits_cheatsheet.txt,
-  salesforce_security_impl_guide.txt, api_streaming.txt, platform_events.txt — all Summer '26 (API 67.0).
+  sfdx_dev.txt, pkg2_dev.txt — the 12 files in `corpus264/`, all Winter '27 (API 68.0).
+Two guides are NOT published at 264 yet; use the Summer '26 (262, API 67.0) copies in the scratchpad `corpus/` (or .../262/latest/... in the URL above) and cite them as `262:`: salesforce_apex_reference_guide.txt, salesforce_security_impl_guide.txt.
+Consult standards/release-delta-winter27.md before asserting any version gate.
 Also fetchable with plain curl: developer.salesforce.com/docs/get_document_content/<deliverable>/<page>.htm/en-us/262.0 (JSON),
 developer.salesforce.com/docs/platform/lwc/guide/<slug>.html, developer.salesforce.com/docs/ai/agentforce/**.
 NOT corpus: help.salesforce.com (unfetchable), blogs, Trailhead, Component Library, npm READMEs, your memory.
