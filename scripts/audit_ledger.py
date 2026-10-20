@@ -32,7 +32,8 @@ LEDGER = REPO / "evals" / "measurement" / "audit-ledger.jsonl"
 TREND_WINDOW = 5  # batches over which the KPI must fall
 
 
-def load(path: Path = LEDGER) -> list[dict]:
+def load(path: Path | None = None) -> list[dict]:
+    path = LEDGER if path is None else path  # resolved at call time so tests can repoint LEDGER
     if not path.exists():
         return []
     rows = []

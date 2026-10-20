@@ -48,6 +48,7 @@ def test_add_appends_one_json_line_and_report_counts(tmp_path, monkeypatch, caps
         )
     lines = (tmp_path / "ledger.jsonl").read_text().splitlines()
     assert len(lines) == 2 and json.loads(lines[1])["batch"] == 2
+    capsys.readouterr()  # drop the two add() lines
     audit_ledger.main(["report", "--json"])
     out = json.loads(capsys.readouterr().out)
     assert out["skills_audited"] == 18
