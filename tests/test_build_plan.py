@@ -4677,3 +4677,66 @@ def test_validate_sizing_is_a_floor_not_a_vote(tmp_path, fixture_repo, capsys):
     for scale in ("project", None):
         assert "distinct source_skill" not in _sizing_warn(tmp_path, fixture_repo, capsys,
                                                            scale, 12, 12)
+
+
+def test_set_status_refused_on_a_done_build(tmp_path, fixture_repo, capsys):
+    """R2-38: 'done' is terminal. documented -> running under a done build left the
+    build status 'done' with a 'running' step (found re-running northwind-sales
+    M2-S03). set-status now refuses, writes nothing, and names the way back in."""
+    plan = plan_dict([step("M1-S01", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    advance(path, fixture_repo, "M1-S01")
+    assert run("gate", str(path), "milestone:M1", "approve", "--by", "pranav",
+               "--at", "2026-09-05T13:00:00Z", "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["status"] == "done"
+    before = path.read_bytes()
+    capsys.readouterr()
+
+    rc = run("set-status", str(path), "M1-S01", "running", "--repo-root", str(fixture_repo))
+    err = capsys.readouterr().err
+    assert rc == 1
+    assert "build status is 'done'" in err
+    assert "gate" in err and "milestone:M1" in err and "reject" in err
+    assert path.read_bytes() == before
+
+    # The named remedy works: rejecting the milestone gate re-opens the build,
+    # after which the same transition is legal and the status is honest again.
+    assert run("gate", str(path), "milestone:M1", "reject", "--by", "pranav",
+               "--at", "2026-09-05T14:00:00Z", "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["status"] == "building"
+    assert run("set-status", str(path), "M1-S01", "running",
+               "--repo-root", str(fixture_repo)) == 0
+    after = json.loads(path.read_text())
+    assert after["status"] == "building"
+    assert after["steps"][0]["status"] == "running"
+
+
+def test_set_status_still_works_on_a_building_build(tmp_path, fixture_repo):
+    plan = plan_dict([step("M1-S01", "M1"), step("M1-S02", "M1")])
+    path = write_plan_file(tmp_path / "b", plan)
+    open_gates(path, fixture_repo)
+    advance(path, fixture_repo, "M1-S01")
+    assert run("set-status", str(path), "M1-S02", "running",
+               "--repo-root", str(fixture_repo)) == 0
+    assert json.loads(path.read_text())["status"] in {"approved", "building"}
+    # documented -> running (the rebuild edge) is untouched on a live build.
+    assert run("set-status", str(path), "M1-S01", "running",
+               "--repo-root", str(fixture_repo)) == 0
+
+
+def test_amend_step_and_set_plan_still_refuse_a_done_build(tmp_path, fixture_repo):
+    """set-status now joins amend-step and set-plan in refusing a done build."""
+    plan = plan_dict([step("M1-S01", "M1")], status="done")
+    path = write_plan_file(tmp_path / "b", plan)
+    before = path.read_bytes()
+    amendment = write_json(tmp_path / "amend.json",
+                           {"acceptance_tests": [{"type": "xml", "description": "x"}]})
+    assert run("amend-step", str(path), "M1-S01", "--file", str(amendment),
+               "--by", "pranav", "--reason", "late fix", "--repo-root", str(fixture_repo)) == 1
+    body = write_json(tmp_path / "plan-body.json", {"summary": "new"})
+    assert run("set-plan", str(path), "--file", str(body),
+               "--repo-root", str(fixture_repo)) == 1
+    assert run("set-status", str(path), "M1-S01", "running",
+               "--repo-root", str(fixture_repo)) == 1
+    assert path.read_bytes() == before

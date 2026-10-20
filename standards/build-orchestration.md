@@ -174,6 +174,7 @@ Rules:
   step's `human_gate` is true and its `step:<id>` gate is not approved, or when
   the step's milestone is not the current runnable milestone. The two refusals
   share one blocker check, so a step cannot be claimed around either gate.
+  `set-status` of any step is also refused while the build status is `done` (terminal; re-open it by rejecting the covering `milestone:Mk` gate, which returns the build to `building`) — 2026-10-20, R2-38.
 - `gate clarifications approve` is refused while any clarification with
   `kind: blocking` is still `open`.
 - `gate plan approve` is refused unless `plan.status` is `verified` — approval

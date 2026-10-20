@@ -780,7 +780,11 @@ releases:
       building)'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'build_plan.py cmd_set_status refuses any step transition while build status is done (exit 1, message names
+      the remedy: gate milestone:Mk reject returns the build to building); 3 tests added, pytest tests/test_build_plan.py
+      245 -> 248 passed (Fable re-ran: 248 passed, 3 skipped); one dated sentence in build-orchestration.md set-status gate
+      bullet'
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)

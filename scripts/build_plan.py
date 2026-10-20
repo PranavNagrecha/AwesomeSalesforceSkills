@@ -2231,6 +2231,16 @@ def cmd_set_status(args: argparse.Namespace) -> int:
         _die(f"no step {args.step_id!r} in {plan_path}")
     current = step.get("status")
     new = args.status
+    if plan.get("status") == "done":
+        # 'done' is terminal (contract § 3: the last accepted milestone closes the
+        # build). A step flipped under a 'done' build leaves the build status
+        # lying about the work, and nothing silently re-opens it — the human does,
+        # by rejecting the milestone gate (which returns the build to 'building').
+        _die(f"refusing to move {args.step_id} to '{new}' while the build status is 'done' — "
+             f"a done build is closed and nothing under it may be re-run in place; re-open it "
+             f"first by rejecting the milestone gate that covers the step "
+             f"(`build_plan.py gate {args.plan} milestone:{step.get('milestone')} reject "
+             f"--by <who>` sets the build back to 'building'), then set the step status")
     if new not in ALLOWED_TRANSITIONS:
         _die(f"unknown status {new!r}")
     if new not in ALLOWED_TRANSITIONS.get(current, set()):
