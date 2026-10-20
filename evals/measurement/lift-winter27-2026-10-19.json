@@ -1,0 +1,431 @@
+{
+  "measured_on": "2026-10-19",
+  "test": "recipe test \u2014 Winter 27 (API 68.0) facts the answering model cannot know; arm A = question only, arm B = SKILL.md + llm-anti-patterns.md of the owning skill prepended",
+  "probes": "evals/probes/winter27-probes.json",
+  "n": 20,
+  "answer_model": "sonnet",
+  "grader_model": "opus",
+  "baseline_uncorrected_skills": {
+    "skills": {
+      "apex/governor-limits": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 1,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/apex-cpu-and-heap-optimization": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 1,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/salesforce-release-preparation": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 2,
+        "paired": 2,
+        "errors": 0
+      },
+      "architect/org-limits-monitoring": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 0,
+        "wrong_b": 2,
+        "neither_a": 2,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "flow/flow-governance": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 1,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/api-version-management": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 0,
+        "wrong_b": 1,
+        "neither_a": 1,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "architect/technical-debt-assessment": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 1,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/devops-center-pipeline": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 1,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/tooling-api-patterns": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 1,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/deployment-error-diagnosis": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 1,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/debug-logs-and-developer-console": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "agentforce/agent-script-dsl": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 1,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/service-cloud-voice-setup": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 1,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/approval-process-apex-patterns": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 1,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/sharing-rules": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 1,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "security/apex-managed-sharing-patterns": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 1,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/post-deployment-validation": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 1,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/email-deliverability-strategy": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 1,
+        "paired": 1,
+        "errors": 0
+      }
+    },
+    "overall": {
+      "correct_a": 1,
+      "correct_b": 1,
+      "wrong_a": 12,
+      "wrong_b": 12,
+      "neither_a": 7,
+      "neither_b": 7,
+      "paired": 20,
+      "errors": 0,
+      "probes": 20,
+      "quotes_not_found": 14,
+      "pct_correct_a": 5.0,
+      "pct_correct_b": 5.0,
+      "pct_wrong_a": 60.0,
+      "pct_wrong_b": 60.0,
+      "pct_neither_a": 35.0,
+      "pct_neither_b": 35.0
+    },
+    "cost_usd": 2.5182127,
+    "call_seconds": 570.216,
+    "input_tokens": 360075,
+    "output_tokens": 61842,
+    "elapsed_s": 321.1275867910008
+  },
+  "after_recipe_writer_reviewer_gate": {
+    "skills": {
+      "apex/governor-limits": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/apex-cpu-and-heap-optimization": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/salesforce-release-preparation": {
+        "correct_a": 0,
+        "correct_b": 2,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "architect/org-limits-monitoring": {
+        "correct_a": 0,
+        "correct_b": 2,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 2,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "flow/flow-governance": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/api-version-management": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "architect/technical-debt-assessment": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/devops-center-pipeline": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/tooling-api-patterns": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/deployment-error-diagnosis": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/debug-logs-and-developer-console": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "agentforce/agent-script-dsl": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/service-cloud-voice-setup": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/approval-process-apex-patterns": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/sharing-rules": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "security/apex-managed-sharing-patterns": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/post-deployment-validation": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "admin/email-deliverability-strategy": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      }
+    },
+    "overall": {
+      "correct_a": 0,
+      "correct_b": 20,
+      "wrong_a": 13,
+      "wrong_b": 0,
+      "neither_a": 7,
+      "neither_b": 0,
+      "paired": 20,
+      "errors": 0,
+      "probes": 20,
+      "quotes_not_found": 7,
+      "pct_correct_a": 0.0,
+      "pct_correct_b": 100.0,
+      "pct_wrong_a": 65.0,
+      "pct_wrong_b": 0.0,
+      "pct_neither_a": 35.0,
+      "pct_neither_b": 0.0
+    },
+    "cost_usd": 2.4784439000000003,
+    "call_seconds": 498.5170000000001,
+    "input_tokens": 378705,
+    "output_tokens": 52470,
+    "elapsed_s": 306.8473785000024
+  },
+  "recipe_defects_fixed_by_reviewers_before_measurement": {
+    "batch_A": "4 unsupported, 4 consistency, 5 cite slips",
+    "batch_B": "7 contradicted/overclaimed, 3 cite slips, 4 stale, 1 UNVERIFIED"
+  },
+  "caveats": [
+    "transmission test by construction: facts are stated in the loaded skill",
+    "single answer per arm per probe",
+    "grader quotes not found verbatim in 7 answers (grader artefact, verdicts unaffected)"
+  ]
+}

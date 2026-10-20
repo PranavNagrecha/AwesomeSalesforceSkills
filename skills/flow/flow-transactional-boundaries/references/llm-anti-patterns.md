@@ -84,11 +84,11 @@ Correct approach:
 
 ## 11. Claiming Before-Save Handles Related Records "If You're Clever"
 
-There is no clever trick. Before-Save does not support related-record create, update, or delete. An assistant that writes a workaround using invocable Apex inside Before-Save is accurate about feasibility, but the invocable Apex workaround shares the same limits and is not a general recommendation.
+There is no clever trick. Before-Save does not support related-record create, update, or delete. An assistant that writes a workaround using invocable Apex inside Before-Save is proposing an Action element that `skills/flow/record-triggered-flow-patterns` (and its checker) does not allow in a before-save flow; whether the platform itself blocks it is UNVERIFIED (2026-10-19).
 
 Correct approach:
 - State the restriction plainly.
-- Route related-record work to After-Save; reserve invocable-Apex-in-Before-Save for narrowly-scoped performance wins.
+- Route related-record work, and any Action or invocable Apex, to After-Save.
 
 ## 12. Treating All Async Paths as Equivalent
 

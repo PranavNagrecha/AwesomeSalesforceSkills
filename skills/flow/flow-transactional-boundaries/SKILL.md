@@ -34,9 +34,9 @@ outputs:
   - Governor-limit budget per boundary
   - Idempotency + recoverability notes
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # Flow Transactional Boundaries
@@ -60,11 +60,10 @@ Flow can either **join** an existing transaction or **start its own**. The choic
 
 ### Before-Save record-triggered flow
 
-- Joins the triggering DML transaction.
-- **No DML elements allowed.** Can only update the triggering record (via assignments), look up related records, and loop over collections.
-- **No callouts.** Not supported in this context.
-- **No subflows that do DML.** Autolaunched subflows that would do DML are blocked.
-- Runs BEFORE the record is written, so changes to field values are free (no extra DML).
+- Joins the triggering DML transaction. Runs at save-order step 3, before before-triggers (step 4) and before the record is written at step 7 (`apexdev.txt` L15440, L15447); after-save flows run at step 14 (L15470).
+- **No DML, Action or Subflow elements.** Can only update the triggering record (via `$Record` assignments), look up related records (Get Records), and decide/loop over collections. The authoritative element list, with its UNVERIFIED platform-limit caveat, is `skills/flow/record-triggered-flow-patterns` § Before-Save Is For Fast Same-Record Changes.
+- **No callouts.** An Action element is not allowed, so there is nothing to call out with.
+- Runs BEFORE the record is written, so `$Record` assignments are part of that write: free (no extra DML, no Update element).
 - Governor limits are **shared** with the rest of the transaction — but Before-Save is cheap, so the shared cost is usually negligible.
 
 Use when: deriving field values on the same record. Setting `Status__c` from `Amount` + `Stage`. Copying account fields onto a case. Calculating a normalized phone.
@@ -102,7 +101,7 @@ Use when: Apex orchestrates the transaction but needs a declarative subroutine (
 
 - Joins the parent flow's transaction.
 - Shares limits with parent.
-- **A subflow cannot escape the parent's transactional context** — if the parent is Before-Save, the subflow is too.
+- **A subflow cannot escape the parent's transactional context.** (A Before-Save flow itself contains no Subflow element — see `skills/flow/record-triggered-flow-patterns`.)
 
 ### Screen flow (user-facing)
 
@@ -136,6 +135,16 @@ Use when: Apex orchestrates the transaction but needs a declarative subroutine (
 - Stage state persists in the `OrchestrationInstance` record.
 - Work items (human tasks) assigned at stage entry; stage advances only when all work items complete.
 - Ideal for multi-day workflows that would overrun screen-flow session timeouts.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Does the work touch only the record being saved?" | Only then does Before-Save fit; it has no DML, Action or Subflow elements | A Before-Save versus After-Save decision, per `skills/flow/record-triggered-flow-patterns` |
+| "Must the work succeed or fail together with the save?" | Inline work rolls back with the save; a Scheduled Path or Platform Event does not | The chosen boundary and the failure behaviour the business accepts |
+| "Which callouts, long waits or multi-user steps are involved?" | They cannot run inline in a save transaction | A route to Scheduled Path, Platform Event or Orchestration |
+
+What a proper configuration adds over just building the flow: each unit of work sits in a named transaction with a known rollback scope and a limit budget.
 
 ## Recommended Workflow
 
@@ -213,7 +222,7 @@ A single trigger needs to update 5 unrelated objects. Instead of inline After-Sa
 
 ## Error handling
 
-- **Before-Save:** errors bubble as record save errors (user sees the Flow Error message as a save error). No fault path needed; the triggering DML is rolled back.
+- **Before-Save:** assignments and decisions have no `faultConnector` to wire, but a Get Records element does (`FlowRecordLookup.faultConnector`, `api_meta.txt` L71120) — wire it like any other (`skills/flow/record-triggered-flow-patterns`, `templates/flow/FaultPath_Template.md`). To reject a save deliberately, use a Custom Error element (`FlowCustomError` "roll[s] back a change that triggered a flow", `api_meta.txt` L70007). Exactly how an unhandled before-save fault is shown to the user is UNVERIFIED (2026-10-19); the triggering DML is rolled back either way.
 - **After-Save inline:** errors roll back the entire triggering transaction unless wrapped in a fault path that catches + logs. Always wire a Fault connector (see `skills/flow/fault-handling`).
 - **Scheduled Path:** errors end the scheduled-path transaction; the original save is already committed, so no rollback. Salesforce retries the scheduled-path execution up to 3 times with exponential backoff, then marks it failed. Use the Flow runtime error report.
 - **Platform-Event-triggered:** on failure, the event is re-queued (Standard PE) or dropped (High-Volume PE with non-idempotent subscriber). Write subscribers to be idempotent — use an external-id field to dedupe.

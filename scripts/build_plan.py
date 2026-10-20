@@ -386,6 +386,22 @@ def _truthy(value: str | None) -> bool:
     return (value or "").strip().strip('"').strip("'").lower() in {"true", "yes", "1"}
 
 
+# Statuses that make an agent a legal but unproven step owner: validate WARNs
+# (never ERRORs) so the human sees it at the plan gate (R2-28).
+UNPROVEN_AGENT_STATUSES = ("experimental", "alpha")
+
+
+def _agent_unproven_status(agent_id: str, repo_root: Path) -> str | None:
+    """The agent's `status` when it is experimental/alpha, else None."""
+    agent_md = repo_root / "agents" / agent_id / "AGENT.md"
+    try:
+        status = _frontmatter_field(agent_md.read_text(encoding="utf-8", errors="replace"),
+                                    "status")
+    except OSError:
+        return None
+    return status if status in UNPROVEN_AGENT_STATUSES else None
+
+
 def _agent_problem(agent_id: str, repo_root: Path, build_mode: str) -> str | None:
     """Return why `agent_id` may not own a step, or None when it may.
 
@@ -788,6 +804,12 @@ def semantic_issues(plan: dict, repo_root: Path) -> list[tuple[str, str]]:
             problem = agent_cache[agent]
             if problem:
                 issues.append(("ERROR", f"step {sid}: {problem}"))
+            else:
+                unproven = _agent_unproven_status(agent, repo_root)
+                if unproven:
+                    issues.append(("WARN", f"step {sid}: owner '{agent}' has status: {unproven} — "
+                                           f"unproven agent — prefer a stable/beta owner or "
+                                           f"accept explicitly"))
 
         skills = step.get("skills") or []
         for skill in skills:

@@ -407,7 +407,10 @@ releases:
     title: 'Recipe test step 2: correct the 18 owning skills vs Winter ''27 and re-measure the probes'
     size: M
     owner_model: opus
-    status: running
+    status: done
+    evidence: 'RECIPE TEST PASS: 18 skills corrected vs corpus264 by Opus writers (A: 9, B: 9) + Opus adversarial reviewers
+      (29 defects fixed first), gate 0 errors; winter27 probes (20): without skill correct 0% / wrong 65% / unsure 35% ->
+      with recipe-built skill correct 100% / wrong 0% / unsure 0%; cost 2.48 USD; evals/measurement/lift-winter27-2026-10-19.json'
   - id: R2-02
     title: 'Roster shrink: every runtime agent not proven in R2-01 or by a build scenario -> status: experimental and out
       of the roster docs (slash redirects stay); doc counts regenerated'
@@ -521,7 +524,11 @@ releases:
       L77, flow-transactional-boundaries L216)
     size: S
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: record-triggered-flow-patterns 2.2.1 is the authoritative before-save statement (save-order steps 3/4/7/14,
+      apexdev L15440-15470; processType AutoLaunchedFlow + triggerType RecordBeforeSave, api_meta L68222/L72539; Get needs
+      faultConnector L71120; FlowCustomError L70007); flow-deployment-and-packaging 1.0.1 and flow-transactional-boundaries
+      1.0.2 cross-reference it; element-list restriction UNVERIFIED; validate --changed-only 0 errors
   - id: R2-19
     title: 'apex-references-to-field probe: match bare field names (SOQL, map keys), not only Object.Field'
     size: S
@@ -577,7 +584,9 @@ releases:
     title: 'build_plan.py: WARN when a step owner is an experimental agent'
     size: S
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: build_plan.py:391 UNPROVEN_AGENT_STATUSES; validate WARNs 'unproven agent' on experimental owners, deprecated
+      stays ERROR; 248 tests; tier2-webhook 2 steps WARN (apex-builder), northwind-sales 2 (apex-builder, lwc-builder)
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -608,6 +617,12 @@ releases:
     title: 'case-onboarding: escalation scope, Tier 1 peer visibility, billing@ send-as, SuppliedEmail FLS + gotchas in two
       admin skills'
     size: M
+    owner_model: opus
+    status: todo
+  - id: R3-05
+    title: '[split before scheduling] Scale-out wave 1: Winter ''27 corrections across the remaining delta-listed skills (~45),
+      writer+reviewer pairs'
+    size: L
     owner_model: opus
     status: todo
   - id: R3-02
@@ -795,3 +810,11 @@ inbox:
     ERROR) when a step''s owning agent is experimental'
   size: S
   slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Scale-out wave 1 (owner rule: recipe PASSED -> scale with sub-agent pairs): apply the winter27 job to every remaining
+    skill standards/release-delta-winter27.md names as stale — ~34 more skills stating the 6/12 MB heap, 3 flow skills on
+    runInMode, devops/devops-center-advanced rename, 7 skills citing removed cheatsheet tables — in batches of 9: Opus writer
+    (worktree, merge release/1.5.0 first) -> Opus adversarial reviewer -> rsync -> sync/validate -> commit; measure with a
+    10-probe extension of winter27-probes drawn from those skills'
+  size: L
+  slotted_into: 1.6.0

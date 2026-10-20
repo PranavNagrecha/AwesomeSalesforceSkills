@@ -387,6 +387,49 @@ def test_agent_status_enum_is_read_from_the_repo_schema(tmp_path, fixture_repo):
         "a repo whose schema allows 'experimental' must accept the agent"
 
 
+def _allow_experimental(repo: Path) -> None:
+    write_json(repo / "agents" / "_shared" / "schemas" / "agent-frontmatter.schema.json",
+               {"properties": {"status": {"enum": ["stable", "beta", "experimental",
+                                                   "deprecated"]}}})
+
+
+def test_experimental_owner_warns_but_never_errors(tmp_path, fixture_repo, capsys):
+    """R2-28: an unproven owner is a WARN naming the step and the agent, exit 0."""
+    _allow_experimental(fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1", agent="epsilon-unstable")])
+    assert errors_for(plan, fixture_repo) == []
+    warns = [w for w in warns_for(plan, fixture_repo)
+             if "epsilon-unstable" in w]
+    assert len(warns) == 1, warns
+    assert warns[0].startswith("step M1-S01"), warns[0]
+    assert "unproven agent" in warns[0] and "prefer a stable/beta owner or accept explicitly" in warns[0]
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("validate", str(path), "--repo-root", str(fixture_repo)) == 0
+    assert "WARN step M1-S01" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("agent", ["alpha-designer", "beta-flow-builder"])
+def test_stable_and_beta_owners_produce_no_unproven_warn(fixture_repo, agent):
+    _allow_experimental(fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1", agent=agent)])
+    assert not [w for w in warns_for(plan, fixture_repo) if "unproven agent" in w]
+
+
+def test_deprecated_owner_is_still_an_error_not_a_warn(fixture_repo):
+    _allow_experimental(fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1", agent="gamma-legacy")])
+    assert any("is deprecated" in e for e in errors_for(plan, fixture_repo))
+    assert not [w for w in warns_for(plan, fixture_repo) if "unproven agent" in w]
+
+
+def test_unproven_warn_surfaces_in_status_warnings(tmp_path, fixture_repo, capsys):
+    _allow_experimental(fixture_repo)
+    plan = plan_dict([step("M1-S01", "M1", agent="epsilon-unstable")])
+    path = write_plan_file(tmp_path / "b", plan)
+    assert run("status", str(path), "--warnings", "--repo-root", str(fixture_repo)) == 0
+    assert "unproven agent" in capsys.readouterr().out
+
+
 # --------------------------------------------------------------------------
 # build_mode and org eligibility (D1)
 # --------------------------------------------------------------------------

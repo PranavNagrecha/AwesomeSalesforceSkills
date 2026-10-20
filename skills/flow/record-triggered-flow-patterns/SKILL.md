@@ -38,9 +38,9 @@ outputs:
   - "review findings for trigger context and recursion risk"
   - "decision on before-save, after-save, or Apex"
 dependencies: []
-version: 2.2.0
+version: 2.2.1
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-10-19
 ---
 
 Use this skill when the hard part is not "how do I automate" but "what is the right record-triggered pattern for this object and this event?" The purpose is to choose the correct trigger context (before-save vs after-save), control how often the flow runs (entry criteria + prior-value checks), align with Salesforce order-of-execution semantics (so the flow plays well with Validation Rules, Apex triggers, and duplicate rules), and know when the answer is to escalate to Apex rather than force more logic into Flow.
@@ -81,22 +81,23 @@ What a proper configuration adds over just building the flow: the trigger contex
 
 ### Before-Save Is For Fast Same-Record Changes
 
-Before-save record-triggered flows are optimized for updating fields on the record currently being saved. They execute IN THE SAME DML statement as the save — no extra DML, no recursion risk for same-record writes. They should be the default choice when the requirement is enrichment, normalization, or lightweight decisioning on that same record.
+Before-save record-triggered flows are optimized for updating fields on the record currently being saved. They run inside the save procedure of the triggering DML — save-order step 3, before Apex before-triggers (step 4) and before the record is written to the database at step 7 (`apexdev.txt` L15440, L15447) — so a `$Record` assignment is part of that one write: no extra DML, no Update element, no recursion risk for same-record writes. **This section is the authoritative statement of what a before-save flow may contain; `flow/flow-transactional-boundaries` and `flow/flow-deployment-and-packaging` cross-reference it.** They should be the default choice when the requirement is enrichment, normalization, or lightweight decisioning on that same record.
 
 **What before-save can do:**
 - Assign a value to `$Record.<field>` based on other fields on the same record.
 - Assign a value to `$Record.<field>` based on a parent record's fields (if the parent is accessible via relationship — lazy-loaded).
-- Call invocable Apex that returns a value for assignment (but NOT one that performs DML).
+- Use Decision and Loop elements, and Get Records to read other records (the checker does not forbid `recordLookups`; give each Get a `faultConnector`, `api_meta.txt` L71120). Whether Flow Builder allows every Get shape in a before-save flow is UNVERIFIED (2026-10-19) — help.salesforce.com cannot be fetched.
+- Stop a save with a message by using a Custom Error element (`FlowCustomError`, "roll back a change that triggered a flow", `api_meta.txt` L70007).
 - Use `$Record__Prior` to compare against the old value (on update triggers).
 
 **What before-save CANNOT do:**
 - Create, update, or delete related records.
 - Send emails, post to Chatter, publish Platform Events.
-- Call invocable Apex that performs DML.
+- Contain an Action element (`actionCalls`, which includes invocable Apex) or a Subflow — `scripts/check_record_triggered_flow_patterns.py` fails the build on both, as it does on `recordCreates` / `recordUpdates` / `recordDeletes`. That is a design rule; the platform-level block is UNVERIFIED (2026-10-19).
 - Have scheduled paths (before-save is transactional, not time-delayed).
 - Be called from Platform-Event-Triggered contexts.
 
-UNVERIFIED (2026-09-05): the Metadata API guide describes `RecordBeforeSave` as running "to make more updates to that record before it's saved to the database" (`api_meta.txt` L72539–72542) and defines `scheduledPaths` on `FlowStart` without restricting it by `triggerType` (L72465–72466). The prohibitions in that list are Flow Builder's, documented on help.salesforce.com, which cannot be fetched. Treat them as design rules — the checker enforces the DML ones — but confirm in a sandbox before telling a customer the platform blocks a specific one.
+UNVERIFIED (2026-09-05, re-checked 2026-10-19: corpus still silent): the Metadata API guide describes `RecordBeforeSave` as running "to make more updates to that record before it's saved to the database" (`api_meta.txt` L72539–72542) and defines `scheduledPaths` on `FlowStart` without restricting it by `triggerType` (L72465–72466). The prohibitions in that list are Flow Builder's, documented on help.salesforce.com, which cannot be fetched. Treat them as design rules — the checker enforces the DML ones — but confirm in a sandbox before telling a customer the platform blocks a specific one.
 
 ### After-Save Is For Committed Side Effects
 

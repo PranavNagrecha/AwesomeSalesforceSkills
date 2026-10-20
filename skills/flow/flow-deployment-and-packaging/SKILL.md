@@ -36,9 +36,9 @@ outputs:
   - Rollback steps (prior `<status>Active</status>` redeploy or manual reactivation)
   - Permission delivery checklist (FlowAccessPermission, RunFlow system permission)
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-27
+updated: 2026-10-19
 ---
 
 # Flow Deployment And Packaging
@@ -74,7 +74,7 @@ The `<status>` element is the activation control:
 | `Obsolete` | Deactivates whatever version is currently active. Does not create a new version. |
 | `InvalidDraft` | Reserved — a draft that failed validation. You generally do not deploy this status. |
 
-The `<processType>` element is mandatory and not inferred. Common values: `AutoLaunchedFlow`, `Flow` (screen), `RecordBeforeSave`, `RecordAfterSave`, `InvocableProcess` (legacy Process Builder), `CustomEvent` (platform event triggered). Missing `<processType>` causes a deploy error: `Required field is missing: processType`.
+The `<processType>` element is mandatory and not inferred. Common values: `AutoLaunchedFlow`, `Flow` (screen), `InvocableProcess` (legacy Process Builder, invoked by another process), `CustomEvent` (legacy platform-event process), `Workflow` (legacy Process Builder record-change process) (`api_meta.txt` L68222, L68245, L68299, L68331). `RecordBeforeSave` and `RecordAfterSave` are **not** `processType` values: a record-triggered flow is `<processType>AutoLaunchedFlow</processType>` and the before/after-save choice is `<start><triggerType>RecordBeforeSave</triggerType>` or `RecordAfterSave` (`api_meta.txt` L72524, L72539). What a before-save flow may contain is defined once, in `skills/flow/record-triggered-flow-patterns`; deploy and activation behave as for any other flow (`<status>` below) — the corpus says nothing different for before-save, so any claim that they deploy or activate differently is UNVERIFIED (2026-10-19). Missing `<processType>` causes a deploy error: `Required field is missing: processType`.
 
 ### Concept 2 — Versioning on deploy: every Active deploy creates a new Flow Version
 
@@ -187,6 +187,16 @@ Rule of thumb: **default to SFDX source.** Only graduate to Unlocked Package whe
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Should this version run the moment it lands in the target org, or wait for a window?" | `<status>Active</status>` activates on deploy; `Draft` does not (Concept 1 and 3) | The `<status>` value per environment, and the activation step if it is `Draft` |
+| "Is the flow record-triggered, and if so before-save or after-save?" | It is `processType` `AutoLaunchedFlow` plus `start/triggerType`, never a `processType` of `RecordBeforeSave` (`api_meta.txt` L68222, L72539) | The correct `<processType>` and `<triggerType>` pair, and the element rules in `skills/flow/record-triggered-flow-patterns` |
+| "What does the target org already have: active version, dependent fields, subflows, Apex?" | A missing dependency fails the deploy, and the active version is the rollback target | The pre-deploy query result and the bundle list in `package.xml` |
+
+What a proper configuration adds over just deploying: a stated activation intent per environment, a flow that carries the right trigger shape, and a rollback target recorded before the first deploy.
+
 ## Recommended Workflow
 
 1. **Inventory the flow + its dependencies.** Run `sf project retrieve start --metadata Flow:<FlowName>` to pull current state. Open the `.flow-meta.xml` and grep for: `<flowName>` (subflow refs), `<actionName>` with `<actionType>apex</actionType>` (Apex refs), `<object>` and `<field>` (custom field refs), `<value>` inside picklist filters (picklist value refs).
@@ -245,7 +255,7 @@ Rule of thumb: **default to SFDX source.** Only graduate to Unlocked Package whe
 - `devops/unlocked-package-development` — when a Flow + subflow library needs to ship to multiple internal orgs, graduate from SFDX source deploy to 2GP.
 - `flow/flow-versioning-strategy` — naming conventions, version hygiene, and obsolete-version cleanup policy.
 - `flow/flow-rollback-patterns` — detailed rollback playbooks beyond the basic "activate prior version" mechanic.
-- `flow/flow-deployment-activation-ordering` — multi-flow deploys where activation order matters (e.g., a parent flow that depends on a newly-activated subflow).
+- `devops/flow-deployment-activation-ordering` — multi-flow deploys where activation order matters (e.g., a parent flow that depends on a newly-activated subflow).
 - `devops/change-set-deployment` — when you must use Change Sets despite their limitations.
 
 ---
