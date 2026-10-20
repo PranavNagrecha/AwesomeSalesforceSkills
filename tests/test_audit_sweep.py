@@ -62,7 +62,7 @@ def test_cite_check_flags_blank_line(tmp_path, capsys):
     audit_sweep.main(["--base", "HEAD", "--skills", "skills/apex/demo", "--cwd", str(repo), "--corpus", str(corpus)])
     out = capsys.readouterr().out
     assert "CITE     apexdev 264 L3: Total heap size" in out and "apexdev 264 L2: BLANK/TOC" in out
-    assert out.strip().splitlines()[-1].endswith("bad-cites=1")
+    assert "bad-cites=1" in out.strip().splitlines()[-1]
 
 
 def test_clean_correction_reports_zero(tmp_path, capsys):
@@ -72,3 +72,20 @@ def test_clean_correction_reports_zero(tmp_path, capsys):
     (skill / "references" / "gotchas.md").write_text("## Gotcha 1: Heap is 10 MB synchronous\n\nBody.\n")
     audit_sweep.main(["--base", "HEAD", "--skills", "skills/apex/demo", "--cwd", str(repo)])
     assert capsys.readouterr().out.strip().splitlines()[-1].startswith("SWEEP leftovers=0 marker-hits=0")
+
+
+def test_restatement_without_marker_is_listed(tmp_path, capsys):
+    repo = _repo(tmp_path)
+    skill = repo / "skills" / "apex" / "demo"
+    (skill / "references" / "gotchas.md").write_text(
+        "## Gotcha 1: Heap is 6 MB synchronous\n\nBody.\n\n## Gotcha 2\n\nFlow_Limit_500 applies to every ScheduledFlow run.\n"
+    )
+    (skill / "SKILL.md").write_text(
+        "# Demo\n\nHeap is 6 MB synchronous.\nUse `Database.queryWithBinds` from API 55.0.\n"
+        "Flow_Limit_500 applies to every ScheduledFlow run. UNVERIFIED (2026-10-20): not in corpus.\n"
+    )
+    audit_sweep.main(["--base", "HEAD", "--skills", "skills/apex/demo", "--cwd", str(repo)])
+    out = capsys.readouterr().out
+    assert "RESTATEMENT" in out and "gotchas.md:7" in out
+    assert out.strip().splitlines()[-1].endswith("restatements=1")
+

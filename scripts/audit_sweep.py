@@ -11,6 +11,10 @@ defect classes that reviewers kept finding by hand.
 3. CITES: every `<guide> 264 L<n>` cite added in the diff is resolved and its corpus line printed;
    blank or table-of-contents lines are flagged BLANK/TOC (11 such cites in one batch).
 
+4. RESTATEMENTS: for every new UNVERIFIED marker, every other package line that carries the same two key
+   terms with no marker within two lines — the claim restated in a Questions row, checklist or template that
+   the writer never edited (12 of 22 defects in batch 10).
+
 2. MARKERS: every `UNVERIFIED (YYYY-MM-DD)` marker the writer ADDED must sit on
    a claim the corpus does NOT hold. For each new marker the sweep extracts the
    claim's key terms and greps BOTH corpus directories; a hit is printed for the
@@ -22,7 +26,7 @@ Usage (inside the writer's worktree, after editing, before reporting):
       --skills skills/admin/formula-fields skills/apex/soql-fundamentals \\
       --corpus /path/corpus264 --corpus /path/corpus
 
-Exit 0 always (it is an aid, not a gate); prints `SWEEP leftovers=<n> marker-hits=<m> bad-cites=<b>`
+Exit 0 always (it is an aid, not a gate); prints `SWEEP leftovers=<n> marker-hits=<m> bad-cites=<b> restatements=<r>`
 as its last line so the reviewer can compare the writer's attached output.
 Stdlib only.
 """
@@ -226,6 +230,41 @@ def cite_check(path: Path, base: str, cwd: Path, corpora: list[Path]) -> list[tu
     return out
 
 
+def restatements(path: Path, base: str, cwd: Path) -> list[tuple[Path, int, str, str]]:
+    """For every UNVERIFIED marker ADDED in the diff: package lines that carry the same two key terms but no
+    marker within two lines — the restatement in a Questions row, Core Concept, checklist or template that the
+    writer never edited (12 of 22 defects in batch 10; invisible to the diff-based checks above)."""
+    _, added = diff_lines(base, path, cwd)
+    added_set = set(added)
+    marked_terms = []
+    for line in added:
+        if MARKER_RE.search(line):
+            terms = key_terms(MARKER_RE.sub("", line))
+            # need at least one hard term (number / identifier) — two capitalised common words ("Permission + Analytics") match everything
+            if len(terms) >= 2 and any(any(c.isdigit() for c in t) or "_" in t or "." in t for t in terms[:2]):
+                marked_terms.append((terms[0], terms[1], line))
+    if not marked_terms:
+        return []
+    out, seen = [], set()
+    for f, text in package_text(path).items():
+        lines = text.split("\n")
+        for i, line in enumerate(lines):
+            if MARKER_RE.search(line):
+                continue
+            window = "\n".join(lines[max(0, i - 2): i + 3])
+            if MARKER_RE.search(window):
+                continue
+            for a, b, src in marked_terms:
+                if a in line and b in line and line.strip() != src.strip():
+                    key = (f, i + 1)
+                    if key in seen:
+                        break
+                    seen.add(key)
+                    out.append((f.relative_to(cwd), i + 1, f"{a} + {b}", line.strip()[:100]))
+                    break
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--base", required=True, help="commit before the writer's edits (e.g. the merge-base or HEAD)")
@@ -235,7 +274,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     cwd = Path(args.cwd).resolve()
     corpora = [Path(c) for c in args.corpus if Path(c).is_dir()]
-    total_left = total_mark = total_bad = 0
+    total_left = total_mark = total_bad = total_rest = 0
     for s in args.skills:
         p = (cwd / s).resolve()
         if not p.is_dir():
@@ -244,8 +283,11 @@ def main(argv: list[str] | None = None) -> int:
         left = leftovers(p, args.base, cwd)
         marks = marker_hits(p, args.base, cwd, corpora) if corpora else []
         cites = cite_check(p, args.base, cwd, corpora) if corpora else []
+        restated = restatements(p, args.base, cwd)
         bad_cites = [c for c in cites if c[1].startswith(("BLANK/TOC", "OUT OF RANGE", "UNRESOLVED"))]
-        print(f"== {s}: leftovers={len(left)} marker-hits={len(marks)} cites={len(cites)} bad-cites={len(bad_cites)}")
+        print(f"== {s}: leftovers={len(left)} marker-hits={len(marks)} cites={len(cites)} bad-cites={len(bad_cites)} restatements={len(restated)}")
+        for f, i, terms, ln in restated[:80]:
+            print(f"  RESTATEMENT {f}:{i}: carries {terms} with no marker nearby: {ln}")
         for c, ln in cites:
             print(f"  CITE     {c}: {ln}")
         for t, f, i in left[:60]:
@@ -255,7 +297,8 @@ def main(argv: list[str] | None = None) -> int:
         total_left += len(left)
         total_mark += len(marks)
         total_bad += len(bad_cites)
-    print(f"SWEEP leftovers={total_left} marker-hits={total_mark} bad-cites={total_bad}")
+        total_rest += len(restated)
+    print(f"SWEEP leftovers={total_left} marker-hits={total_mark} bad-cites={total_bad} restatements={total_rest}")
     return 0
 
 
