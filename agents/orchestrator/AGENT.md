@@ -1,7 +1,7 @@
 ---
 id: orchestrator
 class: build
-version: 2.1.0
+version: 2.2.0
 status: stable
 requires_org: false
 modes: [single]
@@ -92,6 +92,14 @@ Choose by job type and `owner_model`:
 | `owner_model: fable` (release steps, measurements) | You do it yourself. |
 
 Then `python3 scripts/release_plan.py set-status <ID> running` if the item is not already running. Wait for the agent's result; do not poll its worktree.
+
+### Step 2b — Review (mandatory, before any merge)
+
+When a writer reports, spot-check two of its cites yourself, commit its work in the worktree with `--no-verify`
+(`wip(...)`, unreviewed), and dispatch an **Opus** adversarial reviewer on that worktree with the path of
+`standards/skill-writer-brief.md` and the instruction to follow its `## Reviewer brief` section. Pass the
+writer's "contradictions found but not fixed" list verbatim. Never merge a writer's batch that no reviewer has
+read: every batch of R3-05 had reviewer-found defects.
 
 ### Step 3 — Merge and verify, one writer at a time
 
