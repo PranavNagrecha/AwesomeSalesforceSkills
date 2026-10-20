@@ -185,6 +185,7 @@ Treat "topic" (older `.agent`/GenAiPlugin metadata) and "subagent" (newer Agent 
 
 ```xml
 <!-- Wrong: there is no GenAiSubagent type and no subagent_sequence_match expectation -->
+<excerpt><!-- excerpt: package.xml types and .aiTest expectation side by side -->
 <types>
     <members>MyAgent_Reservations</members>
     <name>GenAiSubagent</name>
@@ -193,6 +194,7 @@ Treat "topic" (older `.agent`/GenAiPlugin metadata) and "subagent" (newer Agent 
 <expectation>
     <name>subagent_sequence_match</name>
 </expectation>
+</excerpt>
 ```
 
 **Why it happens:** The April 2026 rename reached the developer guide and the Builder UI but not the API. An assistant reconciling the two vocabularies assumes the metadata layer simply lags in the docs and "corrects" it. It does not lag — it never renamed. `GenAiPlugin` is still documented as "Represents an agent topic, which is a category of actions related to a particular job to be done by AI agents," and the word *subagent* does not appear on that page at all. `AiEvaluationDefinition` still uses `topic_sequence_match`.
@@ -202,6 +204,7 @@ Treat "topic" (older `.agent`/GenAiPlugin metadata) and "subagent" (newer Agent 
 Keep the API vocabulary exactly as the API defines it, and let the prose use whichever term the audience knows:
 
 ```xml
+<excerpt><!-- excerpt: package.xml types and .aiTest expectation side by side -->
 <types>
     <members>MyAgent_Reservations</members>
     <name>GenAiPlugin</name>
@@ -211,6 +214,20 @@ Keep the API vocabulary exactly as the API defines it, and let the prose use whi
     <name>topic_sequence_match</name>
     <expectedValue>Reservations</expectedValue>
 </expectation>
+</excerpt>
 ```
 
 **Detection hint:** Any identifier containing "subagent" in a `package.xml`, an `sf project retrieve/deploy` `--metadata` flag, or an `AiEvaluationDefinition` expectation name is fabricated. Valid expectation names include `topic_sequence_match`, `action_sequence_match`, `bot_response_rating`, `output_latency_milliseconds`, `string_comparison`, and `numeric_comparison`.
+
+---
+
+## Anti-Pattern 10: Saying There Is No Agent Definition Type at API 68.0
+
+**What the LLM generates:** "An agent has no Metadata API type of its own; its package.xml is the Bot, BotVersion and GenAiPlannerBundle trio," given for a project pinned to 68.0.
+
+**Why it happens:** Through API 67.0 that was the only way to move an agent, and nearly all training text describes the Bot/BotVersion bundle.
+
+**Correct pattern:** At API 68.0 / Winter '27+, the agent is `AiAgentDefinition` (`aiAgents/`, api_meta.txt L17518-17544). It holds the settings shared by every version. Each version is its own `AiAgentDefinitionVersion` component (`MyAgent#1`, L17822-17851). Set `type` explicitly; an agent created without it lands as a `Bot` component (L17643-17645). Keep `AiAuthoringBundle` in the manifest, because the version's `agentScript/` folder is compiled output (L17847).
+
+**Detection hint:** A 68.0 agent retrieve or `package.xml` that never names `AiAgentDefinition` is on the 67.0 model.
+

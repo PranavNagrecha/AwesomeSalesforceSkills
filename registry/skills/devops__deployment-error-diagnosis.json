@@ -3,6 +3,7 @@
   "chunk_ids": [
     "04752a1fea403a2d954b",
     "0855fdce5edeb1b97029",
+    "09352cdfc086aeaee946",
     "0b15a4a183cb8c85954e",
     "1097835e0861b99950db",
     "1939b2555a0a0545640b",
@@ -32,6 +33,7 @@
     "60c44b505106b2a44c0a",
     "66bf241d8b55d140a022",
     "6c0ac5034cd376d636cf",
+    "6c507145a7b1d02decce",
     "76aeabb3f11fe1058c58",
     "775464583380f7558c84",
     "786058c15aa63730a6cb",
@@ -79,7 +81,7 @@
     "f903c0610279a6d3391c",
     "fd51cfab32c4bffc71cd"
   ],
-  "content_hash": "db5e400c9be37a97016d99960ee275f29947ec1b0dcdedbb8df2d5e9c257d67f",
+  "content_hash": "2752b3695fb5d72bcb4a086aa170be8218c7c0d582b8ae44a812148e5dd0506d",
   "dependencies": [],
   "description": "Pattern catalog of Salesforce metadata-deploy error strings and their fixes: `Cannot change type` of field, dependent-metadata ordering, profile / permission set delta issues, INVALID_CROSS_REFERENCE_KEY, missing-reference errors, inactive-flow and picklist component errors, `entity is in use` on field deletion, package.xml-shape mistakes. NOT for sandbox partial deploys, rollbackOnError, or testLevel coverage models \u2014 use devops/deployment-error-troubleshooting. NOT for change set orchestration \u2014 use devops/change-set-deployment.",
   "file_location": "skills/devops/deployment-error-diagnosis",
@@ -130,5 +132,5 @@
   ],
   "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

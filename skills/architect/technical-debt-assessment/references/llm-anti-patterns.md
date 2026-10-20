@@ -209,3 +209,16 @@ cannot write tests inside another publisher's namespace anyway.
 **Correct pattern:** Combine four checks before calling a class dead: zero coverage after a fresh test run, no dependency rows (queried by ID, via Bulk API 2.0 if reports matter), no match in scheduled jobs or Custom Metadata/Custom Settings values, and (if Event Monitoring exists) no Apex Execution or Apex Trigger events. State which checks were possible and mark the finding inferred when any is missing.
 
 **Detection hint:** A deletion recommendation backed by a single query, or one that does not mention dynamic invocation.
+
+---
+
+## Anti-Pattern 9: Treating Old Apex API Versions as Silent and Permanent
+
+**What the LLM generates:** "Apex classes saved at very old API versions such as 12.0 keep compiling with no message, and nothing retires them, so they are low-priority debt."
+
+**Why it happens:** Through API 67.0 the compiler said nothing about old save versions, and the retirement notices models learned were for the REST and SOAP endpoint versions, not for Apex save versions.
+
+**Correct pattern:** At API 68.0 / Winter '27+, the Apex compiler warns on every compile or deploy of a class or trigger saved at API 9.0 through 19.0. Salesforce says those versions "will be retired in a future release" (salesforce_apex_developer_guide.txt L45124-45125). Log each one as a finding with an owner. Re-save it at a current version and run its tests before the retirement release is announced. Separately, integration clients on API 31.0–40.0 lose support from Summer '27 (api_rest.txt L1232-1238).
+
+**Detection hint:** A debt report that queries `ApexClass.ApiVersion` but rates sub-20.0 classes Low, or never mentions the compiler warning, is on the 67.0 model.
+

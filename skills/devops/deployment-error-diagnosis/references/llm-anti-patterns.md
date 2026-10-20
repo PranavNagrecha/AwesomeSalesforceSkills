@@ -121,3 +121,26 @@ surprising deploys.
 
 **Detection hint.** Any package.xml with mixed wildcard + explicit
 for the same type is deploy-time-dependent.
+
+---
+
+## Anti-Pattern 8: Prescribing a Whole-Org Recompile to Find Invalid Classes
+
+**What the LLM generates.** "Run Compile All Classes in Setup (or deploy
+everything) to find which classes are invalid; the platform can't hand
+back errors for a subset."
+
+**Why it happens.** Through API 67.0 there was no resource that returned
+compile errors for only the broken classes (`ApexClass.IsValid` flags
+classes whose dependencies changed, without the errors), and older forum
+answers say so.
+
+**Correct pattern.** At API 68.0 / Winter '27+, read the compilation
+results for only the classes and triggers with validation errors, from
+Setup or the Tooling API `apexCompileResults` resource
+(salesforce_apex_developer_guide.txt L45121-45123). Fix or co-deploy
+exactly those, and keep the full recompile for the case where you need it.
+
+**Detection hint.** A large-org recompile recommendation that never
+mentions `apexCompileResults` is on the 67.0 model.
+

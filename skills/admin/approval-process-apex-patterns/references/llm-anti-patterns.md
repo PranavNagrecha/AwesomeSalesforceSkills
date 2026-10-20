@@ -295,3 +295,23 @@ History related list, so the cleanup is auditable.
 problem. Apex's removal path — `setAction('Removed')` per work
 item, recall permission required (Gotcha 5) — is for targeted
 recalls (Pattern D), not an admin backlog cleanup.
+
+---
+
+## Anti-Pattern 10: "Delegation is only a field on User"
+
+**What the LLM generates.** "Approval delegation has no record of
+its own; put the delegate's Id in the user's delegated-approver lookup."
+
+**Why it happens.** Through API 67.0 that was the whole story, and
+classic Approval Processes still use `User.DelegatedApproverId`.
+
+**Correct pattern.** At API 68.0 / Winter '27+, orgs with Advanced
+Approvals enabled have the standard object `ApprovalDelegation`
+(object_reference.txt L35876-35878): a queryable, insertable record
+that hands one user's approval work to a user, group, or queue for a
+`StartDate`–`EndDate` window (empty end date = no expiry). Ask which
+approval engine the org runs before choosing the delegation surface.
+
+**Detection hint.** An answer about date-bounded or queue-targeted
+delegation that names only `DelegatedApproverId` is on the 67.0 model.

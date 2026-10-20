@@ -38,9 +38,9 @@ outputs:
   - "Query patterns to find pending approval items for a record / user"
   - "Recall pattern when the source record is invalidated mid-approval"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 # Approval Process Apex Patterns
@@ -494,8 +494,10 @@ request to a different approver is plain DML.
 | Approval step's `assignedApprover` type is `adhoc` | Supply the approver with `setNextApproverIds` (single-entry list) | `adhoc` means "the approver for the step must be selected manually" (api_meta.txt L23389-23392); the Apex guide constrains the list to one Id |
 | Need to move a pending request to a different approver | `update` the `ProcessInstanceWorkitem.ActorId` | The field is Updateable and the object supports `update()` — no admin permission needed, unlike recall |
 | Bulk approve as part of a system batch | **Pattern B** shape (find workitems → ProcessWorkitemRequest) | Same DML budget: one statement per call, rows against the 10,000 records-processed limit |
-| User wants to delegate approvals to another user | Standard Delegated Approver field on User; no Apex | Platform handles delegation |
+| User wants to delegate approvals to another user | Classic Approval Process: the `User.DelegatedApproverId` field (object_reference.txt L298087-298092); no Apex. Advanced Approvals, API 68.0 / Winter '27+: the standard object `ApprovalDelegation` (object_reference.txt L35876-35878) | Platform handles delegation; see the delegation note below |
 | Audit trail of who-approved-what | Query `ProcessInstanceStep` | Complete audit history per approval |
+
+**Delegation has two models at API 68.0 / Winter '27+.** For a classic Approval Process the delegate is still the single `DelegatedApproverId` lookup on the delegator's User record. Orgs with Advanced Approvals enabled (Enterprise, Unlimited, Developer; object_reference.txt L35887) also get `ApprovalDelegation`, a standard object you can query and insert (`create()`, `query()`, `update()`, `delete()` supported, L35881-35882). One record moves `DelegatedFromUserId`'s approval responsibilities to `DelegatedToId` — a User, a regular Group, or a Queue (L35899-35932) — between `StartDate` and `EndDate`; an empty `EndDate` keeps it active indefinitely (L35940). History is tracked in `ApprovalDelegationHistory` (L35960). The object is absent from the Summer '26 (API 67.0) Object Reference, so on 67.0 the User field was the only delegation surface.
 
 ---
 

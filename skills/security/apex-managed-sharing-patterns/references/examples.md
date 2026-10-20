@@ -11,8 +11,12 @@ designs people arrive with:
 > for custom objects."
 > — Apex Developer Guide, *Understanding Sharing*
 
-That single sentence means there is no such thing as Apex *managed* sharing on
-Opportunity, Account, Case, or Contact. You can still write rows into
+Through API 67.0 that sentence meant there was no Apex *managed* sharing on
+Opportunity, Account, Case, or Contact. **At API 68.0 / Winter '27+ it no longer
+holds:** standard objects with their own share object and a Private / Public
+Read-Only OWD accept `SharingReason` metadata (api_meta.txt L47631-47651), and the
+264 guide's sharing-reason section says so (L12879-12882, L12919-12920). On 67.0,
+or on an ineligible object, you can still write rows into
 `OpportunityShare` from Apex, but those rows are **user managed (manual) shares**
 with `RowCause = 'Manual'`, and the platform deletes them when the record owner
 changes. Examples 1 and 2 show both halves of that split.
@@ -56,8 +60,8 @@ The equivalent Metadata API source, which is what you actually want in version
 control:
 
 ```xml
-<!-- force-app/main/default/objects/Job__c/sharingReasons/Recruiter.sharingReason-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/objects/Job__c/sharingReasons/Recruiter.sharingReason-meta.xml -->
 <SharingReason xmlns="http://soap.sforce.com/2006/04/metadata">
     <label>Recruiter</label>
 </SharingReason>
@@ -188,17 +192,18 @@ trigger JobTrigger on Job__c (after insert, after update) {
 
 ---
 
-## Example 2: The same requirement on a *standard* object — and why the usual answer is wrong
+## Example 2: The same requirement on a *standard* object — and why the version decides the answer
 
 **Context:** Deal desk wants every user listed on a `Deal_Team_Member__c` junction
 to see the parent Opportunity. OWD on Opportunity is Private.
 
-### WRONG — this does not compile, and the design is not available
+### WRONG below API 68.0, or without a deployed reason — this does not compile
 
 ```apex
-// DOES NOT COMPILE.
-// Schema.OpportunityShare.RowCause has no member Deal_Team__c, because Apex
-// sharing reasons cannot be created on standard objects at all.
+// DOES NOT COMPILE on API 67.0 and earlier, or without a deployed reason.
+// Through 67.0 Apex sharing reasons could not be created on standard objects.
+// At 68.0+ Opportunity is eligible (it has OpportunityShare); deploy the
+// SharingReason first (api_meta.txt L47650-47651). See options A and B.
 public with sharing class DealTeamShareService {
     public static void grant(Id opptyId, Id userOrGroupId) {
         OpportunityShare s = new OpportunityShare(
@@ -212,9 +217,12 @@ public with sharing class DealTeamShareService {
 }
 ```
 
-This is the single most common LLM-generated Salesforce sharing bug. It reads
-correctly, matches the pattern from every Apex-managed-sharing blog post, and
-fails at save time with a compile error on the `RowCause` member.
+Below API 68.0 this is the single most common LLM-generated Salesforce sharing
+bug. It reads correctly, matches the pattern from every Apex-managed-sharing blog
+post, and fails at save time with a compile error on the `RowCause` member. At
+68.0+ the same shape is legitimate once an `Opportunity` `SharingReason` named
+`Deal_Team` is deployed (Opportunity has `OpportunityShare`, so it is eligible —
+api_meta.txt L47631-47651); options A and B remain the answer on older versions.
 
 ### RIGHT — option A: use the built-in Opportunity Team
 
@@ -262,8 +270,10 @@ public with sharing class DealTeamShareService {
     }
 
     /**
-     * Manual shares are removed when the Opportunity owner changes. Re-grant
-     * from the junction after an owner transfer, or access silently disappears.
+     * Manual shares are removed when the Opportunity owner changes (unless the
+     * org sets SharingSettings.enableKeepManualSharesOnTransfer, API 68.0+).
+     * Re-grant from the junction after an owner transfer, or access silently
+     * disappears.
      */
     public static void reconcileAfterOwnerChange(Set<Id> opportunityIds) {
         grant([SELECT Opportunity__c, User__c
@@ -277,8 +287,10 @@ public with sharing class DealTeamShareService {
 shares written from Apex "contain `RowCause="Manual"` by default. Only shares
 with this condition are removed when ownership changes." An owner transfer
 therefore silently revokes every row this class wrote — which is exactly the
-behaviour Apex managed sharing exists to avoid, and exactly why it is
-custom-object-only.
+behaviour Apex managed sharing exists to avoid, and exactly why the 68.0
+standard-object sharing reasons matter. (At 68.0+ an org can also retain manual
+shares on transfer with `SharingSettings.enableKeepManualSharesOnTransfer`,
+api_meta.txt L130597-130599; check that setting before writing the re-grant.)
 
 ---
 

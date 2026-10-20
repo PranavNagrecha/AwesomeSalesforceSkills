@@ -81,8 +81,8 @@ git commit -m "chore: sync agent metadata from DevSandbox UI changes"
 **Solution:**
 
 ```xml
-<!-- force-app/main/default/aiTests/HospitalityServiceAgentTest.aiTest-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/aiTests/HospitalityServiceAgentTest.aiTest-meta.xml -->
 <AiEvaluationDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
     <name>HospitalityServiceAgentTest</name>
     <subjectType>AGENT</subjectType>
@@ -141,8 +141,8 @@ sf project deploy start \
 **Correct approach:** Always deploy the full metadata bundle atomically. Use a named manifest (`package.xml`) that lists all required metadata types together, and enforce this in the CI pipeline:
 
 ```xml
-<!-- manifest/agent-bundle.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- manifest/agent-bundle.xml -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>HospitalityServiceAgent</members>
@@ -180,11 +180,13 @@ sf project deploy start --manifest manifest/agent-bundle.xml --target-org DevSan
 **Correct approach:** Add `AiAuthoringBundle` and raise the manifest version to at least 65.0, the API version at which that type became available:
 
 ```xml
+<Package xmlns="http://soap.sforce.com/2006/04/metadata"><!-- excerpt: add these elements to the manifest above -->
     <types>
         <members>HospitalityServiceAgent</members>
         <name>AiAuthoringBundle</name>
     </types>
     <version>65.0</version>
+</Package>
 ```
 
 The retrieve then produces the bundle directory alongside the runtime metadata:

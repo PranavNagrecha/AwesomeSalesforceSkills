@@ -4,17 +4,22 @@ Non-obvious platform behaviours that cause real production problems when grantin
 row access from Apex. Sourced from the Apex Developer Guide *Understanding Apex
 Managed Sharing* chapter and the Salesforce Security Guide (Summer '26, API 67.0).
 
-## Gotcha 1: There Is No Apex Managed Sharing on Standard Objects
+## Gotcha 1: Apex Managed Sharing on Standard Objects Needs API 68.0 and an Eligible Object
 
 **What happens:** A developer writes `Schema.OpportunityShare.RowCause.Deal_Team__c`
 or `Schema.CaseShare.RowCause.Escalation__c` and the class refuses to save with a
 compile error on the `RowCause` member. There is no Setup screen to fix it — the
-Apex Sharing Reasons related list simply does not exist on standard objects.
+Apex Sharing Reasons related list does not exist on standard objects.
 
-The Apex Developer Guide states it twice in the same chapter:
+Through API 67.0 the Apex Developer Guide stated it twice in the same chapter
+(the 264 guide still carries the note at L12613 and L13057):
 
 > "Apex sharing reasons and Apex managed sharing recalculation are only available
 > for custom objects."
+
+At API 68.0 / Winter '27+ a standard object with its own share object and a Private /
+Public Read-Only OWD accepts `SharingReason` metadata (api_meta.txt L47631-47651; apexdev
+L12916-12920); the compile error then means API < 68.0, no deployed reason, or an ineligible object.
 
 **When it occurs:** Any time the requirement is phrased as "share this
 Opportunity / Account / Case with the people named on it." Standard objects are
@@ -24,7 +29,7 @@ where the business data lives, so this is the *default* shape of the request.
 
 | You need | On a custom object | On a standard object |
 |---|---|---|
-| Access that survives owner change | Apex managed sharing with a custom sharing reason | Not available — use the built-in team (Account Team, Opportunity Team, Case Team) or accept manual-share semantics |
+| Access that survives owner change | Apex managed sharing with a custom sharing reason | API 68.0+ on an eligible object: Apex managed sharing with a sharing reason. Otherwise: the built-in team (Account Team, Opportunity Team, Case Team) or manual-share semantics |
 | Access that may be reclaimed on owner change | Manual share (`RowCause = 'Manual'`) | Manual share (`RowCause = 'Manual'`) |
 | Access driven by field values, granted to a group | Criteria-based sharing rule | Criteria-based sharing rule |
 

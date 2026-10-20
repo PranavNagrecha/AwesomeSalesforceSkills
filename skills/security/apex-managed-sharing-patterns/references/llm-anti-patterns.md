@@ -4,9 +4,12 @@ Mistakes AI coding assistants reliably make when asked to "share this record wit
 that user in Apex." These patterns help the consuming agent self-check its own
 output before it ships.
 
-## Anti-Pattern 1: Inventing an Apex Sharing Reason on a Standard Object
+## Anti-Pattern 1: Getting Standard-Object Sharing Reasons Wrong in Either Direction
 
-**What the LLM generates:**
+**What the LLM generates:** Either of two wrong answers. (a) A flat "Apex sharing
+reasons exist only on custom objects", given for a project on API 68.0. (b) A
+`RowCause = Schema.OpportunityShare.RowCause.Deal_Team__c` reference written with
+no check on the API version, the object's eligibility, or whether the reason is deployed:
 
 ```apex
 OpportunityShare s = new OpportunityShare(
@@ -17,35 +20,31 @@ OpportunityShare s = new OpportunityShare(
 );
 ```
 
-**Why it happens:** Almost every tutorial about Apex managed sharing uses a custom
-object (usually `Job__c`, from the official docs), and the model generalises the
-`Schema.X__Share.RowCause.Y__c` shape to whatever object the user named. Standard
-objects have `__Share` sObjects with `RowCause` fields, so nothing about the shape
-looks wrong.
+**Why it happens:** Through API 67.0 the Apex Developer Guide said reasons and
+recalculation "are only available for custom objects", and most training text
+repeats it. Other tutorials use `Job__c` and the model copies the
+`Schema.X__Share.RowCause.Y__c` shape onto any object.
 
 **Correct pattern:**
 
 ```
-Apex sharing reasons exist ONLY on custom objects. Before generating any
-RowCause reference, check whether the target object name ends in __c.
-
-  Target ends in __c   -> Schema.Target__Share.RowCause.Reason__c is valid,
-                          provided the SharingReason metadata is deployed.
-  Standard object      -> the only RowCause you can set from Apex is 'Manual'
-                          (which is also the default, so omit the field).
-
-For a standard object, first evaluate the built-in team feature:
-  Account     -> AccountTeamMember
-  Opportunity -> OpportunityTeamMember
-  Case        -> CaseTeamMember
-These write platform-maintained share rows with RowCause = 'Team'.
+1. API version < 68.0            -> custom objects only; standard object = 'Manual'
+                                    (the default, so omit RowCause) or a team.
+2. API 68.0+ / Winter '27+        -> standard objects also qualify IF they have their
+   (api_meta.txt L47631-47651)      own share object (AccountShare, OpportunityShare...)
+                                    AND an OWD that can be Private / Public Read-Only.
+                                    Master-detail children never qualify.
+3. Eligible standard object       -> deploy SharingReason via Metadata/Tooling API
+                                    (no UI), max 10 per standard object; recalculation
+                                    is supported (apexdev L12879-12882).
+4. Before writing the RowCause    -> confirm the reason is deployed in the target org.
+For named-user access, still compare the built-in team (AccountTeamMember,
+OpportunityTeamMember, CaseTeamMember; RowCause = 'Team') before writing code.
 ```
 
-**Detection hint:** grep the generated Apex for `RowCause` where the sObject name
-does not contain `__Share` preceded by a `__c`-suffixed object. If the object is
-`AccountShare`, `ContactShare`, `OpportunityShare`, `CaseShare`, `LeadShare`, or
-any other standard share object and `RowCause` is set to anything other than
-`'Manual'`, the code will not compile.
+**Detection hint:** A standard-object `RowCause` reference with no stated API
+version and no `SharingReason` file in the package is unverified. A refusal that
+cites "custom objects only" for a 68.0 project is on the 67.0 model.
 
 ---
 

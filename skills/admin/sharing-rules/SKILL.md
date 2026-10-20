@@ -37,9 +37,9 @@ outputs:
   - "A recalculation plan for structural changes, including when to use deferred sharing maintenance"
   - "Checker-script output listing malformed, over-broad, or non-deployable rules"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-08-15
+updated: 2026-10-19
 ---
 
 # Sharing Rules
@@ -59,6 +59,20 @@ Gather this context before designing or touching any rule:
 - **Is the target group already a real Salesforce group?** Sharing rules can only target things the platform can name: public groups, roles, roles and internal subordinates, managers, queues, territories, portal roles, guest users. If the intended audience is "the people who work on this account," no rule can express that — that is teams or Apex managed sharing.
 - **How many rules does the object already carry?** The Salesforce Security Guide states the cap directly: "You can define up to 300 total sharing rules for each object, including up to 50 criteria-based or guest user sharing rules, if available for the object." The 50 sits *inside* the 300 rather than on top of it, and guest rules draw on the same 50. Treat the count as a budget from the first rule, not something to discover at the ceiling.
 - **What is the record and user volume?** Recalculation cost scales with records × affected group membership. On an object with a few thousand records nobody notices. At millions, a single role move can queue hours of maintenance.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| What is the object's org-wide default? | A rule on a Public Read/Write object grants nothing (Gotcha 10) | Whether a rule is the mechanism at all |
+| Does ownership or a field value decide who should see the record? | Owner rules follow the owner; criteria rules re-evaluate on every edit of the field (Gotchas 2, 4) | The rule shape, and the edit volume it will generate |
+| Do records change owner, and is `enableKeepManualSharesOnTransfer` on (API 68.0+)? | Transfers move records between owner rules, and manual shares are dropped unless that setting is `true` (Gotcha 2) | What access survives a mass transfer |
+| Should records owned by users who can't have a role be included? | `includeRecordsOwnedByAll` can't be edited after creation (Gotcha 3) | The value written once, at design time |
+| For an Account rule, what access do Cases, Contacts, and Opportunities need? | `accountSettings` cascades to all three (Gotcha 5) | Explicit child access instead of an accidental widening |
+| Is the target a queue or guest users? | Queue targets work only on three object families; guest rules are a different type (Gotchas 8, 9) | The right target type before the deploy fails |
+| How many criteria and guest rules does the object already have? | The 50 sits inside the 300 cap (Gotcha 11) | Headroom before the next rule is refused |
+
+A proper configuration settles these before the rule exists; "just doing it" in Setup bakes in a write-once flag, a cascade, and an ownership assumption that each cost a full recalculation to undo.
 
 ---
 
@@ -200,8 +214,8 @@ Deep-dive on the failure modes — the unwatched recalculation, the ownership-ch
 All rules for one object live in a single file. Retrieve the object's existing file and add to it rather than authoring the envelope by hand — a retrieved file already carries the element order the API validates against. `operation` takes a value from the `FilterOperation` enumeration: `equals`, `notEqual`, `lessThan`, `greaterThan`, `lessOrEqual`, `greaterOrEqual`, `contains`, `notContain`, `startsWith`, `includes`, `excludes`.
 
 ```xml
-<!-- force-app/main/default/sharingRules/Account.sharingRules-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/sharingRules/Account.sharingRules-meta.xml -->
 <SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
     <sharingOwnerRules>
         <fullName>West_Reps_To_Services_Desk</fullName>
@@ -305,7 +319,7 @@ The manifest addresses the concrete rule types, not the `SharingRules` container
 Summaries only — the mechanism, the trigger conditions, and the fix for each are in `references/gotchas.md`.
 
 1. **Saving a rule is not granting access.** Recalculation is asynchronous, so "I created it and nothing happened" is usually a timing report, not a bug — track it on Setup → Background Jobs rather than on the rule page.
-2. **Changing the owner rewrites the record's grants.** Manual shares are deleted outright and owner-based rules re-evaluate from the new owner's groups — access can silently disappear from a transfer nobody connected to sharing.
+2. **Changing the owner rewrites the record's grants.** Owner-based rules re-evaluate from the new owner's groups, and manual shares are deleted unless the org keeps them. At API 68.0 / Winter '27+ the `SharingSettings` field `enableKeepManualSharesOnTransfer` decides this: `true` retains manual shares when a record moves to a new owner, `false` drops them (api_meta.txt L130597-130599). On 67.0 the field does not exist and the drop is unconditional. Retrieve `Sharing.settings` before promising either outcome, because access can silently disappear from a transfer nobody connected to sharing.
 3. **`includeRecordsOwnedByAll` is write-once.** Getting it wrong means deleting and recreating the rule, which is a fresh recalculation on the whole object.
 4. **Criteria on a churning field turns every record edit into sharing maintenance.** The rule is correct and the org is slow.
 5. **Account rules cascade to Cases, Contacts, and Opportunities** through `accountSettings`, which is how a "read the account" request becomes pipeline exposure.

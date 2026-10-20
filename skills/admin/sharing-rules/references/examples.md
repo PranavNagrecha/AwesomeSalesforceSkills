@@ -143,8 +143,8 @@ SELECT COUNT(Id) FROM Account WHERE Type = 'Partner' AND Active__c = true
 **Solution:**
 
 ```xml
-<!-- force-app/main/default/sharingRules/Program__c.sharingRules-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/sharingRules/Program__c.sharingRules-meta.xml -->
 <SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
     <sharingGuestRules>
         <fullName>Published_Programs_To_Site_Guest</fullName>
@@ -183,6 +183,7 @@ Verify by loading the site in a private browser window with no session, and by c
 1. Amend the criteria so the unwanted records stop matching:
 
 ```xml
+<sharingCriteriaRules><!-- excerpt: criteria block only -->
 <booleanFilter>1 AND 2</booleanFilter>
 <criteriaItems>
     <field>Type</field>
@@ -194,6 +195,7 @@ Verify by loading the site in a private browser window with no session, and by c
     <operation>notEqual</operation>
     <value>Terminated</value>
 </criteriaItems>
+</sharingCriteriaRules>
 ```
 
 2. Deploy and let recalculation delete the grants itself.

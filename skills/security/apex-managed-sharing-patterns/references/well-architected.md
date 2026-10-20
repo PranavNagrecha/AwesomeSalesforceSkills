@@ -37,10 +37,13 @@
 
 ## Architectural Trade-offs
 
-**Custom object vs standard object.** This is not a preference, it is a hard
+**Custom object vs standard object.** Through API 67.0 this was a hard
 platform boundary: "Apex sharing reasons and Apex managed sharing recalculation
-are only available for custom objects." If the record that needs programmatic
-sharing is an Opportunity, the available options are the built-in Opportunity
+are only available for custom objects." At API 68.0 / Winter '27+ the boundary
+moves to object eligibility: a standard object with its own share object and a
+Private / Public Read-Only OWD can carry sharing reasons (api_meta.txt
+L47631-47651). On 67.0, or for an ineligible object (no share object of its own,
+such as a master-detail child), the available options are the built-in Opportunity
 Team, criteria-based sharing rules, or manual shares that evaporate on owner
 change. Discovering this after the design is signed off is expensive. Ask "which
 object?" before "which mechanism?"
@@ -68,7 +71,7 @@ rather than that code is needed. If "everyone on the deal team sees the
 Opportunity" requires Apex, the alternative is frequently to make the *team
 membership itself* the shared record — a custom object with its own OWD, its own
 sharing rules, and a lookup to the Opportunity. That trades one hard problem
-(programmatic sharing on a standard object, which is not available) for one easy
+(programmatic sharing on a standard object, unavailable before API 68.0 or on an ineligible object) for one easy
 one (declarative sharing on a custom object). Cost the redesign before committing
 to code you now own forever. See
 [`standards/decision-trees/sharing-selection.md`](../../../../standards/decision-trees/sharing-selection.md).

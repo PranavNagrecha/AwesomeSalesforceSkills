@@ -521,7 +521,7 @@ releases:
       L77, flow-transactional-boundaries L216)
     size: S
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R2-19
     title: 'apex-references-to-field probe: match bare field names (SOQL, map keys), not only Object.Field'
     size: S
@@ -577,7 +577,7 @@ releases:
     title: 'build_plan.py: WARN when a step owner is an experimental agent'
     size: S
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)

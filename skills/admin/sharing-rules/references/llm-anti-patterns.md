@@ -48,10 +48,12 @@ produced it.
 ```
 
 ```xml
-<!-- package.xml addresses the concrete rule types, not the container -->
+<!-- package.xml addresses the concrete rule types, not the container (excerpt) -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
 <types><members>Lead.testShareRule</members><name>SharingCriteriaRule</name></types>
 <types><members>*</members><name>SharingOwnerRule</name></types>
 <types><members>Account.*</members><name>SharingTerritoryRule</name></types>
+</Package>
 ```
 
 **Detection hint:** Any occurrence of `CriteriaBasedSharingRule`, `OwnerSharingRule`, or `BaseSharingRule` in generated metadata or a manifest. Also flag any API version below 33.0 in a `<version>` element alongside sharing-rule types.
@@ -218,3 +220,25 @@ referenced.
 ```
 
 **Detection hint:** Extract the integers from `booleanFilter` and compare against the count of sibling `criteriaItems`. Any index above the count is a deploy failure; any unreferenced criterion is a logic bug. `scripts/check_sharing_rules.py` performs exactly this check.
+
+---
+
+## Anti-Pattern 9: Stating That Manual Shares Always Die on Ownership Transfer
+
+**What the LLM generates:** "An ownership transfer wipes every manual share, full stop; schedule a job to rebuild them after each transfer."
+
+**Why it happens:** Through API 67.0 that was the documented behaviour without exception, and most training text predates Winter '27.
+
+**Correct pattern:**
+
+```
+API 68.0 / Winter '27+ (api_meta.txt L130597-130599):
+  settings/Sharing.settings-meta.xml
+    <enableKeepManualSharesOnTransfer>true</enableKeepManualSharesOnTransfer>
+      true  -> manual shares are retained when the record gets a new owner
+      false -> manual shares are deleted on transfer (the 67.0 behaviour)
+Owner-based sharing rules still re-evaluate from the new owner either way.
+```
+
+**Detection hint:** An ownership-transfer answer that never mentions `enableKeepManualSharesOnTransfer`, or that says the drop cannot be configured, is on the 67.0 model. Check the org's retrieved `SharingSettings` before answering.
+

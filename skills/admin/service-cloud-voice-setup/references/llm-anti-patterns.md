@@ -167,3 +167,16 @@ Lambda is appropriate only when:
 ```
 
 **Detection hint:** Lambda function code in Service Cloud Voice setup guidance for scenarios like business hours, simple menus, or queue routing indicates over-engineering. Flag and replace with native Amazon Connect flow block approaches.
+
+---
+
+## Anti-Pattern 7: Calling BYOC Carrier Setup "UI-Only"
+
+**What the LLM generates:** "Bring Your Own Carrier telephony providers are configured only in Setup; there is no Metadata API type, so record the settings in a runbook and repeat them by hand in each org."
+
+**Why it happens:** Through API 67.0 there was no Metadata API type for BYOC carriers, so older answers described the work as manual.
+
+**Correct pattern:** At API 68.0 / Winter '27+, retrieve and deploy the carrier configuration as `TelephonyProvider` (api_meta.txt L136588-136605), plus `TrustedTelephonyProvider`, `SecondaryTelephonyProvider` and `ScndTelephPrvdOtbdDtl` (secondary-provider outbound SIP routing) where those trunks are used. The user needs the Agentforce Contact Center Admin (Salesforce Voice) permission set to access them. These are Agentforce Contact Center BYOC types; the guide never ties them to the Amazon Connect contact center, so do not add them to an Amazon Connect deployment.
+
+**Detection hint:** A BYOC answer that names no `TelephonyProvider` type and tells the admin to rebuild carriers manually per org is on the 67.0 model.
+

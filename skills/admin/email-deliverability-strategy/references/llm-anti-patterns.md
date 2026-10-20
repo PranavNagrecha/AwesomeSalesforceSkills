@@ -129,3 +129,16 @@ For custom templates or custom From configurations:
 ```
 
 **Detection hint:** If a custom template is generated without mention of `List-Unsubscribe-Post` headers, and the send volume exceeds 5,000/day to Gmail or Yahoo recipients, flag it as non-compliant with the 2024 Google/Yahoo requirements.
+
+---
+
+## Anti-Pattern 7: Telling a Site Admin the Only Choices Are Substitute or Suppress
+
+**What the LLM generates:** "Mail sent from your Experience Cloud site on behalf of users with an unverified domain either goes out from the org-wide `sfcustomeremail.com` substitute address or is not sent. There is no site-level setting."
+
+**Why it happens:** Through API 67.0 that was true; the only control was `EmailAuthorizationSettings.enableSubstituteFromAddress` at org level.
+
+**Correct pattern:** At API 68.0 / Winter '27+, set `networkOptionsBit` to `true` in the site's `Network` metadata (api_meta.txt L93706-93715), or **Enable Email Domain Substitution** in the site's Administration Workspace, so that mail goes out from the site's `emailSenderAddress`. Verify that sender address first. With the switch on and an unverified sender, Salesforce drops the email (object_reference.txt L189188-189190).
+
+**Detection hint:** A site-email answer that names only `enableSubstituteFromAddress` and never mentions `networkOptionsBit` or the site's `emailSenderAddress` is answering on the 67.0 model.
+

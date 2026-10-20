@@ -81,7 +81,7 @@ Each gotcha names the official source it rests on. Claims that no fetched source
 
 ## Gotcha 7: Retired API Versions Fail Hard, Not Gradually
 
-**What happens:** Integration debt on old API versions is not a slow decline. The REST API Developer Guide, "API End-of-Life Policy", says versions 7.0 through 20.0 were retired in Summer '22 and versions 21.0 through 30.0 were retired in Summer '25. A request to a retired version returns `410 GONE`. Salesforce supports each version for at least 3 years from first release and gives at least 1 year of notice before support ends.
+**What happens:** Integration debt on old API versions is not a slow decline. The REST API Developer Guide, "API End-of-Life Policy", says versions 7.0 through 20.0 were retired in Summer '22 and versions 21.0 through 30.0 were retired in Summer '25. The Winter '27 edition adds the next wave: versions 31.0 through 40.0 are "deprecated and unsupported from Summer '27" and "retired from Summer '28" (api_rest.txt L1232-1238). A request to a retired version returns `410 GONE`. Salesforce supports each version for at least 3 years from first release and gives at least 1 year of notice before support ends.
 
 **When it occurs:** Middleware, ETL jobs, or Apex callouts to Salesforce endpoints hardcoded to `/services/data/v29.0/` or similar. They work until the retirement release and then fail on every call.
 

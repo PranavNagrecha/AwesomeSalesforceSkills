@@ -155,6 +155,7 @@
     "d936df03de1906779728",
     "d9448ac87e0ee2718f91",
     "da3a5ef04b61d9a046ed",
+    "daea1465af50256b6ea8",
     "daea5517d30f9d3c76c0",
     "db2305d94948291d6bbe",
     "db77395607b88f6a5283",
@@ -182,7 +183,7 @@
     "fddc34f7841728863a9a",
     "fed47307e8bc465678ff"
   ],
-  "content_hash": "eade969bba8b8a9dc1c67281f5482a150adecdd3f650fa38669a0d615cf250ed",
+  "content_hash": "2e71fc99af66aade27b219e3375bba021d5d840a906a3ce027ca37ef6a186ea4",
   "dependencies": [],
   "description": "Programmatically driving Salesforce Approval Processes from Apex \u2014 `Approval.process(ProcessSubmitRequest)` to submit, `ProcessWorkitemRequest` to approve / reject / reassign, recall semantics, querying `ProcessInstance` and `ProcessInstanceWorkitem` to find pending approvals, and the bulk-submit / bulk-action error-row handling. Covers when to use Apex-driven approval (system-initiated submission, batch approvals, custom UIs) vs leaving the platform's standard buttons in place. NOT for the Approval Process metadata definition itself (that's admin / declarative \u2014 see admin/approval-processes), NOT for Flow-based approvals (use flow/flow-orchestration-patterns).",
   "file_location": "skills/admin/approval-process-apex-patterns",
@@ -238,7 +239,7 @@
   "templates": [
     "skills/admin/approval-process-apex-patterns/templates/approval-process-apex-patterns-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

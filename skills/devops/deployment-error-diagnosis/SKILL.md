@@ -31,7 +31,7 @@ outputs:
   - "Test-coverage fix if applicable (which class / method needs coverage)"
   - "Workaround (if the underlying schema change isn't directly deployable)"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -102,6 +102,8 @@ A proper configuration collects the full error, the test level and the package s
 | `Component error: 'X' is not a valid value for type 'Y'` | Picklist value missing in target | Add picklist value to package; or update package XML to omit |
 | `Ambiguous reference to a method` | Two classes have same method signature; deploy order resolves wrong one | Fully-qualify the method call or rename |
 | `entity is in use` (when retiring fields) | Active references in flows / formulas / validation rules | Find references; deactivate or delete them; redeploy |
+
+**Finding every invalid class without a full recompile (API 68.0 / Winter '27+).** After an API version bump or a dependency change, you don't have to run Compile All Classes to learn which Apex is broken. At API 68.0 and later the platform returns compilation results for only the Apex classes and triggers that have validation errors, "instead of recompiling the entire org", through Setup or the Tooling API `apexCompileResults` resource (salesforce_apex_developer_guide.txt L45121-45123). Use that list to build the "deploy together" package for the `Dependent class is invalid` row. The Summer '26 (API 67.0) Apex Developer Guide has no such resource. Before 68.0 the nearest signal was the `ApexClass.IsValid` flag, which marks classes whose dependent metadata changed since their last compile (object_reference.txt L30586-30592) but carries no compile error text; the errors themselves came from a full recompile or a failed deploy. The same 68.0 compiler also warns on compile or deploy of Apex saved at API 9.0–19.0 (L45124-45125). Treat that warning as a version-debt signal, not a deploy error.
 
 ### `package.xml` ordering smells
 

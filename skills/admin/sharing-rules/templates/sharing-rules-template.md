@@ -85,8 +85,8 @@ Every one of these is required on an Account rule. Default to `None`; raise only
 ## 5. Metadata
 
 ```xml
-<!-- force-app/main/default/sharingRules/[REPLACE: Object].sharingRules-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/sharingRules/[REPLACE: Object].sharingRules-meta.xml -->
 <SharingRules xmlns="http://soap.sforce.com/2006/04/metadata">
     <[REPLACE: sharingOwnerRules | sharingCriteriaRules | sharingGuestRules]>
         <fullName>[REPLACE: Api_Name]</fullName>

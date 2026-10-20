@@ -22,9 +22,9 @@ outputs:
   - "Apex class that maintains __Share rows with RowCause and access levels"
   - "tests proving access is granted and revoked"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-19
 ---
 
 # Apex Managed Sharing Patterns
@@ -35,18 +35,31 @@ across owner changes instead of reclaiming them. It is the last mechanism in the
 record-access model, reached only when org-wide defaults, the role hierarchy,
 sharing rules, teams, and manual sharing cannot express the policy.
 
-The one constraint that determines whether this skill applies at all:
+The constraint that decides whether this skill applies is **object eligibility,
+and it changed at API 68.0 / Winter '27**:
 
-> "Apex sharing reasons and Apex managed sharing recalculation are only available
-> for custom objects."
-> — Apex Developer Guide, *Understanding Sharing*
+- **Custom objects** have had Apex sharing reasons since API 14.0.
+- **Standard objects** get them at API 68.0 and later, but only when the object has
+  its own share object (`AccountShare`, `OpportunityShare`, …) and an org-wide
+  default that can be Private or Public Read-Only. The detail side of a
+  master-detail relationship is excluded (api_meta.txt L47631-47651). Apex managed
+  sharing recalculation "is supported for both custom and standard objects"
+  (salesforce_apex_developer_guide.txt L12879-12882).
+- **History:** through API 67.0 reasons were "only available for custom objects".
+  The 264 Apex guide still prints that note at L12613 and L13057, contradicting its
+  own L12879-12882 and L12919-12920; the 68.0 Metadata API reference
+  (api_meta.txt L47650-47651) sides with the standard-object text.
+- **One wording gap:** the Metadata API reference says the OWD "can be set to"
+  Private or Public Read-Only (L47635-47636); the Apex guide says it "is set to"
+  one of them (L12919-12920). Either way a share row must exceed the OWD
+  (Gotcha 3), so a reason on a Public Read/Write object grants nothing.
 
-If the record needing programmatic access is an Opportunity, Account, Case, or any
-other standard object, Apex managed sharing is **not available**. You can still
-insert `OpportunityShare` rows from Apex, but they are user managed (manual)
-shares with `RowCause = 'Manual'`, and the platform deletes them the moment the
-record owner changes. Establish which side of that line you are on before
-designing anything.
+On a pre-68.0 project, or on an ineligible standard object, `OpportunityShare`
+rows you insert from Apex are manual shares (`RowCause = 'Manual'`), and the
+platform deletes them when the owner changes (at 68.0+ an org can keep them with
+`SharingSettings.enableKeepManualSharesOnTransfer`, api_meta.txt L130597-130599 —
+check it rather than assuming either way). Establish the API version and the
+object's eligibility before designing anything.
 
 ---
 
@@ -54,8 +67,10 @@ designing anything.
 
 Answer these four questions. Three of the four regularly kill the design.
 
-1. **Is the target a custom object?** If not, Apex managed sharing is off the
-   table. Route to the built-in team feature (`AccountTeamMember`,
+1. **Is the target eligible for a sharing reason?** A custom object is, unless it is a
+   master-detail child (question 2). A
+   standard object is eligible only at API 68.0+ with a share object and a
+   Private / Public Read-Only OWD (see above). If not, route to the built-in team feature (`AccountTeamMember`,
    `OpportunityTeamMember`, `CaseTeamMember`), to criteria-based sharing rules, or
    accept manual-share lifecycle and plan the re-grant on owner change.
 
@@ -75,6 +90,20 @@ Answer these four questions. Three of the four regularly kill the design.
    long before they are anywhere near that. Read
    [`standards/decision-trees/sharing-selection.md`](../../../standards/decision-trees/sharing-selection.md)
    and cite the branch that sent you here.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which object, and what API version does the project deploy at? | Standard-object sharing reasons exist only at 68.0+ and only on eligible objects; master-detail children have no share object (Gotchas 1, 7) | Managed sharing vs a team or manual-share design |
+| Who creates and deploys the sharing reasons? | The reason UI is Classic-only, and standard objects have none (Gotchas 1, 2) | Reasons in source control, deployed before the Apex |
+| What is the OWD, and will it change? | A share row must exceed the OWD, and an OWD change wipes Apex shares (Gotchas 3, 5) | The access levels that will actually insert |
+| Which user context writes the shares? | `AccessLevel.USER_MODE` blocks share inserts for ordinary users (Gotcha 4) | A service that works outside an admin sandbox |
+| When must access be withdrawn? | A revoke not scoped by `RowCause` deletes other access (Gotcha 6) | A paired `grant` / `revoke` |
+| Will Experience Cloud users ever be involved? | Role-based group Ids differ once it is enabled (Gotcha 8) | Group Ids that keep working after enablement |
+| How many sharing rules does the object already carry? | The 300-rule ceiling is rarely the real blocker (Gotcha 9) | Proof that a declarative rule can't do it |
+
+A proper configuration settles these first; "just doing it" produces a reason that won't save, a grant that standard users can't run, or access that never leaves.
 
 ---
 
@@ -106,7 +135,7 @@ platform throws away.
 | Opportunity/Account/Case team | `Team` | Platform-maintained |
 | Territory rule | `TerritoryRule` | Platform-maintained |
 | Implicit parent/child | `ImplicitParent` / `ImplicitChild` | Platform-maintained, not writable |
-| Manual sharing | `Manual` | **Deleted when record owner changes** |
+| Manual sharing | `Manual` | **Deleted when record owner changes** (unless, at API 68.0+, `SharingSettings.enableKeepManualSharesOnTransfer` is `true` — api_meta.txt L130597-130599) |
 | Apex managed sharing | *developer-defined, e.g.* `Recruiter__c` | **Maintained when record owner changes or is deactivated** |
 
 Manual shares written from Apex default to `RowCause = 'Manual'`, and the Apex
@@ -116,7 +145,8 @@ sharing.
 
 ### Apex sharing reasons
 
-A sharing reason is metadata on the custom object with a label (shown in the
+A sharing reason is `SharingReason` metadata on the object (custom, or an eligible
+standard object at API 68.0+) with a label (shown in the
 Reason column of the record's sharing detail) and a name used in code. Names
 follow `MyReasonName__c` and are referenced as:
 
@@ -132,6 +162,12 @@ Two operational facts about creating them:
   Guide: "Apex sharing reasons aren't available in Lightning Experience. Use
   Salesforce Classic to create sharing reasons within the UI." Deploy
   `SharingReason` metadata instead so the reason lives in source control.
+- **Standard objects have no UI for reasons at all.** Create them through the
+  Metadata or Tooling API (L12891-12892, L12916-12917). Max 10 reasons per standard
+  object; reserved names (`Manual`, `Team`, …) are refused; deleting a reason
+  deletes every share row using it (api_meta.txt L47670-47673). UNVERIFIED
+  (2026-10-19): the guides print the `Schema.<Share>.RowCause.<Reason>__c` token
+  only for custom objects; compile the standard-object form against a 68.0 org.
 - The name may contain only underscores and alphanumerics, must be unique in the
   org, must begin with a letter, must not end with an underscore, and must not
   contain two consecutive underscores.
@@ -201,8 +237,8 @@ silently destroys your access model. Treat it as mandatory.
 |---|---|
 | Access follows record ownership | Nothing — the platform grants Full Access to the owner and the hierarchy above them |
 | Access follows a field value, granted to a group or role | Criteria-based sharing rule |
-| Access follows named users on a standard object | Built-in team (`AccountTeamMember` / `OpportunityTeamMember` / `CaseTeamMember`) |
-| Access follows named users on a custom object, must survive owner change | **Apex managed sharing** with a custom sharing reason |
+| Access follows named users on a standard object, API 67.0 or ineligible object | Built-in team (`AccountTeamMember` / `OpportunityTeamMember` / `CaseTeamMember`) |
+| Access follows named users on a custom object, or an eligible standard object at API 68.0+, must survive owner change | **Apex managed sharing** with a custom sharing reason |
 | Access follows named users, may be reclaimed on owner change | Manual share from Apex (`RowCause = 'Manual'`) — plan the re-grant |
 | Access must be *removed* from users who would otherwise have it | Restriction rules, not sharing — sharing only grants |
 | Target is an unauthenticated guest user | Guest user sharing rule — Apex cannot share to guests |
@@ -211,13 +247,13 @@ silently destroys your access model. Treat it as mandatory.
 
 ## Recommended Workflow
 
-1. **Confirm the object is custom and its OWD is restrictive.** Verify the target
-   sObject name ends in `__c`, is not the detail side of a master-detail
+1. **Confirm the object is eligible and its OWD is restrictive.** Verify the target
+   is a custom object (or, at API 68.0+, a standard object with its own share object), is not the detail side of a master-detail
    relationship, and has an org-wide default of Private (or Public Read Only when
    you only grant Edit). If any of these fail, stop and route to the decision
    guidance table above.
 2. **Create the Apex sharing reason as metadata**, one per distinct business
-   reason for access, in `objects/<Object>__c/sharingReasons/<Reason>.sharingReason-meta.xml`.
+   reason for access, in `objects/<Object>/sharingReasons/<Reason>.sharingReason-meta.xml`.
    Deploy before the Apex that references it, or the class will not save.
 3. **Write a service class with paired `grant` and `revoke`**, both bulk-safe,
    both scoped by `RowCause`, with the share DML in `AccessLevel.SYSTEM_MODE` and
@@ -236,7 +272,7 @@ silently destroys your access model. Treat it as mandatory.
 
 ## Review Checklist
 
-- [ ] Target object is custom; sharing reason metadata is in source control
+- [ ] Target object is custom, or a standard object eligible at API 68.0+; sharing reason metadata is in source control
 - [ ] Org-wide default is more restrictive than every access level granted
 - [ ] `grant` and `revoke` both exist; `revoke` filters on `RowCause`
 - [ ] Trigger context is `after insert` / `after update`
@@ -255,9 +291,10 @@ silently destroys your access model. Treat it as mandatory.
 Full detail with quotes and reproduction conditions in
 [`references/gotchas.md`](references/gotchas.md).
 
-1. **Apex sharing reasons do not exist on standard objects.** The compile error on
-   `Schema.OpportunityShare.RowCause.Anything__c` is the platform telling you the
-   design is unavailable, not that a setting is missing.
+1. **Standard-object sharing reasons need API 68.0 and an eligible object.** On
+   67.0, or on an object with no share object of its own (a master-detail
+   child), or with no deployed `SharingReason`, a compile error on `Schema.OpportunityShare.RowCause.Anything__c` means the
+   design is unavailable there, not that a setting is missing (api_meta.txt L47650-47651).
 2. **The sharing reason UI is Classic-only.** Lightning Experience never renders
    the Apex Sharing Reasons or Apex Sharing Recalculation related lists.
 3. **A share not more permissive than the OWD is rejected** with
@@ -280,7 +317,7 @@ Full detail with quotes and reproduction conditions in
 | Artifact | Description |
 |---|---|
 | Sharing policy statement | One sentence per reason: who gets access, at what level, driven by which field or relationship, and when it is withdrawn |
-| `SharingReason` metadata | One file per reason under `objects/<Object>__c/sharingReasons/` |
+| `SharingReason` metadata | One file per reason under `objects/<Object>/sharingReasons/` (custom, or eligible standard at 68.0+) |
 | Share service class | Bulk-safe `grant` / `revoke` pair with `RowCause`-scoped DML and documented system-mode escape |
 | Recalculation class + registration | `Database.Batchable` implementation plus the Object Manager registration step recorded in the post-refresh checklist |
 | Access test class | `System.runAs` assertions covering grant, re-assignment, and revocation |

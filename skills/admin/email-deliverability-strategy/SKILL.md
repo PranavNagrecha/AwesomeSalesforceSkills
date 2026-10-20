@@ -53,9 +53,9 @@ outputs:
   - "Deployable EmailAdministrationSettings / EmailAuthorizationSettings XML plus package.xml"
   - "DKIM key inventory with rotation dates, and the SOQL that regenerates it"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 # Email Deliverability Strategy
@@ -151,6 +151,8 @@ Six controls, four of which have no Metadata API type. `references/metadata-exam
 | Deliverability **Access Level** | Setup page only | **No** | A sandbox mailing real customers, or production silently sending nothing |
 
 Two consequences that shape every plan. First, only two of the six are deployable, so a "deliverability change" is a mixed release: metadata for the settings, Data Loader or API for the sObjects, and a manual Setup step for Access Level — see `references/metadata-examples.md` § 7 for the required order. Second, the Access Level control that decides whether the org sends at all has no metadata element and cannot be diffed between orgs; when a send silently produces nothing, check it before anything else, and expect Apex to surface it as `System.NoAccessException: The organization is not permitted to send email.` (apexrefguide.txt L225158).
+
+**Experience Cloud sites get their own unverified-domain switch at API 68.0 / Winter '27+.** For mail a site sends on behalf of a user whose email domain is unverified, the `Network` metadata type has `networkOptionsBit` (api_meta.txt L93706-93715): `true` sends it from the site's own `emailSenderAddress`; `false` (the default) falls back to the org-wide substitute address if one is set and otherwise suppresses the message. The `Network` sObject has a field with the same described behaviour, `OptionsEmailDomainSubstitutionEnabled`, which the UI shows as **Enable Email Domain Substitution** under Administration > Emails in the site's Administration Workspace (object_reference.txt L189179-189193); the docs do not state outright that the metadata bit and the sObject field are one setting, so confirm in a sandbox before scripting both. It only helps when the site sender itself is verified: with the field `true` and an unverified `EmailSenderAddress`, Salesforce does not send the email (L189188-189190). On API 67.0 the field does not exist, so a site had only the org-level substitute-or-suppress choice (Gotcha 10).
 
 ### Outbound Volume Is a Shared Org Budget
 

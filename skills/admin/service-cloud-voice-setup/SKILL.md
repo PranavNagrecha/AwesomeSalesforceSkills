@@ -46,9 +46,9 @@ outputs:
   - "Verification SOQL over VoiceCall separating unrouted, unlinked, and unqueued calls"
 dependencies:
   - admin/omni-channel-routing-setup
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 # Service Cloud Voice Setup
@@ -121,6 +121,25 @@ guide's own `CallCenterRoutingMap` sample carries an `arn:aws:connect:` agent AR
 adapter workflow — the AppExchange package, the locally hosted adapter URL, and manual user
 assignment to a call center; see `references/llm-anti-patterns.md` Anti-Pattern 5, which is correct
 about the workflow and imprecise about the metadata type.
+
+**Bring Your Own Carrier (BYOC) carriers are deployable at API 68.0 / Winter '27+ — but they belong to
+Agentforce Contact Center, not to the Amazon Connect path this skill provisions.** The guide describes
+these types as "Agentforce Contact Center BYOC" configuration, gated by the **Agentforce Contact Center
+Admin (Salesforce Voice)** permission set (api_meta.txt L136609, L110285, L140504-140505), and never
+mentions Amazon Connect for them. Treat them as a separate product surface: if the org's voice runs on
+Amazon Connect through the wizard below, these types do not apply. Four Metadata API types, all new in 68.0:
+
+- `TelephonyProvider` (`telephonyProviders/*.telephonyProvider`) — "represents a telephony provider
+  configuration that an org uses with Bring Your Own Carrier (BYOC)" (api_meta.txt L136588-136605).
+  Required: `fullName`, `country`, `masterLabel`, `providerName`, and `trunkType` (`Trusted` or
+  `Secondary`) (L136614-136632). Wildcard `*` is supported in package.xml (L136673-136674).
+- `TrustedTelephonyProvider` — the trusted-carrier configuration (L140504-140515).
+- `SecondaryTelephonyProvider` — the SIP configuration for secondary providers (L110284-110295).
+- `ScndTelephPrvdOtbdDtl` — the outbound SIP routing configuration for a secondary provider (L109674-109688).
+
+None of the four is in the Summer '26 (API 67.0) Metadata API guide, so on 67.0 carrier setup could not be
+moved as metadata. Each type has its own `<name>` in package.xml. The guide does not describe how these
+types relate to `CallCenter` or `ConversationVendorInfo`; do not assume one replaces or references the other.
 
 ### The Guided Provisioning Wizard
 

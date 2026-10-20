@@ -31,9 +31,9 @@ outputs:
   - Apex test result summary with per-class coverage analysis
   - Rollback plan if deployment introduced regressions
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-07-07
+updated: 2026-10-19
 ---
 
 # Post Deployment Validation
@@ -49,6 +49,20 @@ Gather this context before working on anything in this domain:
 - Identify whether this is a validation deploy (checkOnly:true) that still needs a quick deploy to commit, or a completed deployment that needs post-landing verification. These are fundamentally different states.
 - Confirm the Apex test level used during the deployment. RunSpecifiedTests requires 75% code coverage per class in the deployment package, while RunLocalTests checks org-wide coverage. Test failures during deployment do not always mean the metadata failed to land — they can be pre-existing failures surfaced by the deployment.
 - Know the 10-day expiration window for validation deploys. A validated deploy ID is valid for quick deploy for exactly 10 days from the time the validation completed. After that, you must re-validate from scratch.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Was this a check-only validation or a committed deploy, and which ID are you watching? | A quick deploy returns a new ID; watching the validation ID shows stale status (Gotcha 1) | The right job ID to verify |
+| When did the validation complete? | The validation is usable for quick deploy for 10 days only (Gotcha 2) | Whether to quick deploy or re-validate |
+| Which test level ran? | `RunSpecifiedTests` enforces 75% per class in the package (Gotcha 3) | The coverage rule the result is judged by |
+| Did the deploy change anything, or was the source already in the org? | An identical deploy reports success as a no-op (Gotcha 4) | A retrieve-and-diff on key components |
+| Which tests were already failing in the target before the deploy? | Pre-existing failures look like deploy regressions (Gotcha 5) | A baseline to compare test results against |
+| Is the prior version of each component archived, and does it compile against today's org? | Rollback is a redeploy of that version (Gotcha 6) | A rollback package that will actually deploy |
+| How old is the deploy you need to report on, and does local tracking need to catch up? | `--use-most-recent` sees 3 days only, and `deploy report` never updates source tracking (Gotchas 7, 8) | The report command and the follow-up retrieve |
+
+A proper verification answers these before anyone declares the release done; "just doing it" means reading one green banner that may describe a no-op, the wrong job, or a coverage rule that did not apply.
 
 ---
 
@@ -73,6 +87,8 @@ While a deployment runs, the page renders real-time progress charts. The first c
 For each completed deployment you can drill into Deployment Details to see the component-level success/failure breakdown, per-test class results with individual method pass/fail, per-class code coverage percentages, and error details for any failed components. The Deployment Details page also surfaces Apex test errors **with stack-trace information**, code coverage warnings, and information about slow tests — data that is easy to miss if you only read the aggregate pass/fail count.
 
 The Metadata API also exposes this through `checkDeployStatus` which returns `DeployResult` with nested `RunTestsResult`, `CodeCoverageResult`, and `CodeCoverageWarning` objects. `DeployResult` additionally carries a `stateDetail` field that names exactly which component is being deployed or which Apex test class is currently running — the field that powers live-progress reporting rather than terminal-state polling. The REST deploy-status response nests the current `deployResult` alongside the original `deployOptions` (checkOnly, rollbackOnError, testLevel) and reports creation/start/lastModified/completion timestamps plus the creating and (if applicable) canceling user, so an audit trail can reconstruct who requested the deploy and with which options. The sf CLI surfaces all of this with `sf project deploy report --job-id <id>`.
+
+**Line-level covered counts in `CodeCoverageResult` (API 68.0 / Winter '27+).** Through API 67.0, `CodeCoverageResult` described line coverage from the uncovered side only: `numLocations`, `locationsNotCovered` (`CodeLocation[]`) and `numLocationsNotCovered`. Its `dmlInfo`, `methodInfo` and `soqlInfo` arrays cover DML, method and SOQL locations, not every line. At API 68.0 it also returns `locationsCovered`, a `CodeLocation[]` that "identifies the code locations for each class or trigger tested", giving each location's line, column, and execution count (api_meta.txt L8011-8014; `locationsNotCovered` L8017, `numLocationsNotCovered` L8051-8053). Read deploy results at API 68.0 or later when a post-deploy review needs to show which lines ran and how hot each one was, not just which lines no test reached.
 
 ### Reporting on a Deploy with `sf project deploy report`
 

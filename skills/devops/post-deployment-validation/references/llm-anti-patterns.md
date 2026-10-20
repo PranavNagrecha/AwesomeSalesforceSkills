@@ -146,3 +146,16 @@ This one is worth calling out separately because of **where it lands**: an anti-
 **Correct version:** From the Salesforce CLI command reference — `sf project deploy validate`: *"Validate a metadata deployment without actually executing it."* It returns a job ID that `sf project deploy quick --job-id` consumes to deploy without re-running tests, which is the standard production release pattern. `sf project deploy preview` also exists: *"Preview a deployment to see what will deploy to the org, the potential conflicts, and the ignored files."*
 
 **Detection hint:** any rule that asserts a command is fake **without a link to the CLI reference section it is absent from**. Concretely: grep this repo for `sf project deploy validate` — it appears as a recommended command in dozens of skills (e.g. `skills/architect/ci-cd-pipeline-architecture`), so a file claiming it is hallucinated is contradicting the rest of the corpus, and internal contradiction is the cheapest available signal that one side is wrong. Generalisable rule: **a claim that something does not exist needs a source too.** Negative claims feel safe and are not.
+
+---
+
+## Anti-Pattern 8: Saying Deploy Results Report Only Uncovered Lines
+
+**What the LLM generates:** "The Metadata API coverage result lists only `locationsNotCovered` and the counts. Per-line execution counts are not available from a deploy, so use the Developer Console for that."
+
+**Why it happens:** Through API 67.0, `CodeCoverageResult` carried no covered-locations field for lines (only the DML, method, and SOQL arrays), and older answers describe its shape from that version.
+
+**Correct pattern:** At API 68.0 / Winter '27+, `CodeCoverageResult.locationsCovered` (`CodeLocation[]`) returns the line and column of each tested code location and the number of times it executed (api_meta.txt L8011-8014). Call `checkDeployStatus` with the API version set to 68.0 or later to receive it.
+
+**Detection hint:** A coverage-analysis answer for a 68.0 deploy that never mentions `locationsCovered` is on the 67.0 model.
+

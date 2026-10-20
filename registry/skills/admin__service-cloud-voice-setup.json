@@ -19,6 +19,7 @@
     "0d3468ec3d90902ebb77",
     "0d6ba6c74f448ec6ed28",
     "0ef16b747f6ce6d366cb",
+    "0fba7248fae8841a3e03",
     "10b1102aa4aa1235f66a",
     "11ddf53a5e74d2ce3f78",
     "122ac74285af4cd57b63",
@@ -148,6 +149,7 @@
     "9395fa5b779ff6af7343",
     "96813b5b00800aedc145",
     "97e413568f6234d415b5",
+    "9d254c315ddf3acf29db",
     "9dc201474e428906052f",
     "a0042cf73dd702141fb7",
     "a06163716b8aeb3e792c",
@@ -183,6 +185,7 @@
     "bcb596582d69e0048428",
     "bf3385a65477c6a65550",
     "c1c3404cacccf2f03a3f",
+    "c272630bdc4ea30d48d0",
     "c28d81231bb8b2cee966",
     "c3d2aa7d99b4da88372a",
     "c418e2ecf0e854e5c1b6",
@@ -236,7 +239,7 @@
     "fd57c5d8e0f241bbbed5",
     "ff85f99bf581449e9968"
   ],
-  "content_hash": "88c78f2b760ed2ae4c507154e3d6e66f2d82a19a802069b54e101cd7a988f981",
+  "content_hash": "ec619a8d38dab76d039404a97475dd876ee2cd03849ec395ee5be1896bd88758",
   "dependencies": [
     "admin/omni-channel-routing-setup"
   ],
@@ -299,7 +302,7 @@
   "templates": [
     "skills/admin/service-cloud-voice-setup/templates/service-cloud-voice-setup-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

@@ -30,7 +30,7 @@ outputs:
   - "sf agent test run commands for CI pipeline integration"
   - "Source control layout and metadata deployment guidance for agents"
 dependencies: []
-version: 1.2.1
+version: 1.2.2
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -52,6 +52,20 @@ Gather this context before working on anything in this domain:
 - Is the project structured as a Salesforce DX project with `sfdx-project.json`? The `sf agent` CLI commands operate on DX-structured projects only.
 - What is the current state of the agent in the org? Retrieving before editing is critical — manually authored `.agent` files that diverge from the deployed BotVersion state produce merge conflicts on the next retrieve.
 - Are there existing GenAiPlugin or GenAiFunction metadata files in the project? These must be co-deployed with BotVersion and GenAiPlannerBundle as a unit.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| What `sourceApiVersion` does `sfdx-project.json` pin? | It selects GenAiPlanner (60.0–63.0) or GenAiPlannerBundle (64.0+), and whether `AiAgentDefinition` exists at all (68.0+) (gotchas.md Gotcha 1; Core Concepts § API 68.0) | The exact type list for the manifest |
+| Was the agent authored in the new Agentforce Builder? | Its Agent Script source lives only in `AiAuthoringBundle` (Gotcha 6) | A manifest that versions the blueprint, not just the runtime output |
+| Has anyone edited the agent in Builder since the last retrieve? | A retrieve replaces `plannerInstructions` wholesale (Gotcha 4) | A retrieve-and-diff step before any local edit |
+| Who activates the agent in each target org, and when? | Activation is not deployable; agents arrive inactive (Gotcha 2) | A named manual step in the release runbook |
+| Does CI run `sf agent test run`, and is the agent active there first? | Tests against an inactive agent fail without a clear cause (Gotcha 5) | An activation pre-check in the pipeline |
+| Is the Agentforce VS Code extension installed for every author? | LSP errors do not block a CLI deploy (Gotcha 3) | Diagnostics caught before the deploy, not after |
+| Does any manifest, test, or script use "subagent" identifiers? | The rename never reached the API (Salesforce-Specific Gotcha 8) | Identifiers that resolve at deploy time |
+
+A proper configuration answers these before the first retrieve; "just doing it" from Builder leaves an unversioned script, an inactive agent, and a manifest that silently misses a type.
 
 ---
 
@@ -84,6 +98,13 @@ force-app/main/default/aiAuthoringBundles/New_Agent/
 Two fields drive deployment behavior. `bundleType` is currently `AGENT` for Agent Script agents. `target` names the `{Bot}.{BotVersion}` to commit the version to — **omit `target` and the agent deploys in draft state; include it and the deploy commits the agent version**, the equivalent of Agentforce Builder's version commit. Committing a version is still not activation (see the activation gotcha).
 
 The consequence for CI/CD: a manifest built from the 2024-era five-type list (Bot, BotVersion, GenAiPlanner, GenAiPlugin, GenAiFunction) versions an *incomplete* agent — the `.agent` blueprint never reaches the repo or the target org. Add `AiAuthoringBundle` to the manifest and set `sourceApiVersion` to 65.0 or higher.
+
+### API 68.0 / Winter '27+: AiAgentDefinition and AiAgentDefinitionVersion
+
+At API 68.0 the agent itself has a top-level Metadata API type. `AiAgentDefinition` "represents an Agentforce agent and the settings that apply to all its versions, such as its type and its context variables" (api_meta.txt L17518-17520). Files are `aiAgents/<Name>.aiAgentDefinition`, the `fullName` is the agent API name, and the type is available only in API 68.0 and later, with Agents enabled (L17534-17548). Each version is a separate `AiAgentDefinitionVersion` component named `MyAgent#1`, `MyAgent#2` (L17822-17851). Its `agentScript/` subfolder holds a compiled copy of the script, **not** the Agent Script source (L17847), so `AiAuthoringBundle` is still the versioned source of truth. So a 68.0 manifest names `AiAgentDefinition` + `AiAgentDefinitionVersion`, plus `AiAuthoringBundle` for an Agent Script agent. UNVERIFIED (2026-10-19): the type pages do not list which `GenAi*` or `Bot*` components still travel alongside; the guide defers to "Use Metadata to Move an Agent to a New Org" (L17520-17521), which is not in the reference — retrieve a 68.0 agent with wildcards and diff before trimming the manifest. Pin `sourceApiVersion` to 68.0 first; on 67.0 neither type exists and the agent moves only through the Bot/BotVersion/GenAiPlannerBundle set above.
+
+- `agentDSLEnabled` is `true` for an Agent Script agent. When you deploy a new agent with it set, include its `AiAuthoringBundle` unless the target org already has it (L17558-17563).
+- `type` (`ExternalCopilot`, `InternalCopilot`, `AgentforceOrchestrator`, `Bot`) must always be set, and you can't change it after creation. Omit it and the agent gets type `Bot` and retrieves as a `Bot` component, not an `AiAgentDefinition` (L17643-17652).
 
 ### YAML-Based .agent File Format
 
@@ -301,7 +322,7 @@ Non-obvious platform behaviors that cause real production problems:
 8. **"Topic" and "subagent" are the same thing after April 2026 — but only in the docs and the UI** — the rename is terminology only, with no functional change, and it never reached the API. `GenAiPlugin` is still documented as "an agent topic," and `AiEvaluationDefinition` still expects `topic_sequence_match`. Renaming either to match the new vocabulary produces an unknown metadata type or an invalid expectation name. Do not treat a diff that only swaps this vocabulary as a behavioral change, and do not "modernize" API identifiers.
 9. **Do not hand-edit compiled agent metadata** — Agent Script compiles to lower-level runtime metadata on save. The script is the source of truth; the compiled metadata is a build artifact. Editing the compiled output rather than the script produces the same divergence problem as partial bundle deploys.
 10. **Agent Script went GA in Summer '26 and the legacy builder no longer creates agents** — beta-era caveats ("pilot," "open beta," "no GA date") are stale. From the week of July 13, 2026 the New Agent button no longer opens the legacy builder in Setup; new agents are created only in the new Agentforce Builder. Existing legacy agents keep running and have an explicit upgrade path, so this is an end-of-life clock on legacy authoring, not an outage. Still pin CLI plugin versions and keep the open-sourced `salesforce/agentscript` tooling aligned with your target release.
-11. **A five-type agent manifest is an incomplete agent** — Bot + BotVersion + GenAiPlannerBundle + GenAiPlugin + GenAiFunction captures the runtime metadata but not the Agent Script source, which lives in `AiAuthoringBundle` (API v65.0+). A pipeline built on the older list deploys a working-looking agent whose blueprint was never versioned, so the next Builder edit has nothing to diff against. Add `AiAuthoringBundle` and set `sourceApiVersion` to 65.0 or higher.
+11. **A five-type agent manifest is an incomplete agent** — Bot + BotVersion + GenAiPlannerBundle + GenAiPlugin + GenAiFunction captures the runtime metadata but not the Agent Script source, which lives in `AiAuthoringBundle` (API v65.0+). A pipeline built on the older list deploys a working-looking agent whose blueprint was never versioned, so the next Builder edit has nothing to diff against. Add `AiAuthoringBundle` and set `sourceApiVersion` to 65.0 or higher; at 68.0 also add `AiAgentDefinition` and `AiAgentDefinitionVersion` (api_meta.txt L17518-17851).
 
 ---
 

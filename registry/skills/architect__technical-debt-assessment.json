@@ -42,6 +42,7 @@
     "4263bbfab65d348848b1",
     "428a345921e7b8d1eb50",
     "44d78e05e280dd44711d",
+    "4b5112511611864e580a",
     "4d93f960bbcc82790156",
     "4e78eaadd81cf7cc3045",
     "4edc1a369f6bfc80c7e1",
@@ -87,6 +88,7 @@
     "91f059a98280194486b7",
     "92fcfe28c67a29721f57",
     "9411f9702bfbaa225a56",
+    "9435df34b28de5945486",
     "972259d2374202de0cf1",
     "97b2f8766bbd53c35174",
     "98044eb03743e4b4a238",
@@ -98,6 +100,7 @@
     "9e066b58acfe2b4cdc4e",
     "a09579548f20076b0e52",
     "a1360c8e8b1849a24a90",
+    "a14392bfcac1e2fe253d",
     "a2fca75dfa44e6e2dc97",
     "a3f183cb973cb6bbf18d",
     "a689e53169ffb10338fb",
@@ -156,7 +159,7 @@
     "fe131b84a96afae713d9",
     "ff0b1a80a6a7d5ef06f8"
   ],
-  "content_hash": "89e833f3c1b76fd4cf9b1758789e9ed941bb5dae29b0bcf669f5571f5bb9705d",
+  "content_hash": "df71a43edf32f022ff007491149d49791f56916aa970e86ef14d810d22b14baa",
   "dependencies": [],
   "description": "Use when auditing a Salesforce org for technical debt: dead code, unused automations, overlapping Flow and Apex triggers, deprecated features, configuration complexity, and legacy patterns. Triggers: technical debt review, org health check, dead code analysis, automation overlap, deprecated features, complexity audit, audit our org for technical debt. NOT for actually deleting the unused fields, inactive Flow versions and old workflow rules \u2014 use admin/org-cleanup-and-technical-debt. NOT for a security-specific review \u2014 use architect/security-architecture-review.",
   "file_location": "skills/architect/technical-debt-assessment",
@@ -205,7 +208,7 @@
   "templates": [
     "skills/architect/technical-debt-assessment/templates/technical-debt-assessment-template.md"
   ],
-  "updated": "2026-10-03",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

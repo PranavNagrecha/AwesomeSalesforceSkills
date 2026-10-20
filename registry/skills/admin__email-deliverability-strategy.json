@@ -135,6 +135,7 @@
     "94ce5598c45517197181",
     "9582a4e610e50c95d761",
     "96a6878b13ca65fb7fda",
+    "98838a1ef945b1f36c10",
     "98883d7d955c042ba563",
     "9af8524895430114a352",
     "9b471133fe98bedb8c7e",
@@ -198,6 +199,7 @@
     "e407c5e1608dcc9cd0e6",
     "e410c116a496a89a848f",
     "e70a81c8e51c1a155ca7",
+    "e926fcfd36a189f571dd",
     "e9ae9ed86690899ca302",
     "eab512bbc55bccb89a1d",
     "eacb90e9818fd3c2ee1e",
@@ -219,7 +221,7 @@
     "fe4c9160bc26f05ecc43",
     "ff1f574b0ddb059ece36"
   ],
-  "content_hash": "0e8a6894aafb822921dd6046cf1ff8a79a7d55dd5566e30ffba5b63efece462e",
+  "content_hash": "79a2f30f34876b677dbb4536b76002660bad1a8fbe7db1dd48b83e08b5ff18a2",
   "dependencies": [],
   "description": "Use when configuring or troubleshooting email deliverability for Marketing Cloud or Salesforce orgs: sender authentication (SPF, DKIM, DMARC), private sending domain setup, dedicated IP warm-up, list hygiene practices, and sender reputation monitoring. NOT for building a Marketing Cloud email \u2014 use admin/email-studio-administration. NOT for unsubscribe and consent \u2014 use admin/consent-management-marketing. Also covers the Salesforce Core deliverability surface: EmailAdministrationSettings, EmailAuthorizationSettings, EmailDomainKey (DKIM), EmailRelay, EmailDomainFilter, OrgWideEmailAddress verification, bounce management, and the 5,000-a-day outbound email cap.",
   "file_location": "skills/admin/email-deliverability-strategy",
@@ -287,7 +289,7 @@
   "templates": [
     "skills/admin/email-deliverability-strategy/templates/email-deliverability-strategy-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

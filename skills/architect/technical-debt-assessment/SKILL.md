@@ -30,9 +30,9 @@ triggers:
   - "audit our org for technical debt and give me a prioritized remediation backlog"
   - "find Apex classes nobody calls before we delete them"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-10-03
+updated: 2026-10-19
 ---
 
 Use this skill when auditing a Salesforce org to identify and document technical debt across automation, code, data model, security configuration, and integrations. This skill produces a structured findings report with severity ratings and a prioritized remediation backlog. It does not implement fixes — use domain-specific skills (apex/, flow/, security/, integration/) for remediation work.
@@ -60,7 +60,7 @@ Ask these before running a single query. Each one traces to a gotcha in `referen
 | "Which namespaces belong to managed packages, and which code is ours?" | Managed package Apex is excluded from org coverage and cannot be edited (Gotcha 4) | A namespace allow-list that splits org debt from vendor debt | The backlog only holds items the team can fix; vendor debt goes to the package owner |
 | "When did the full local test suite last run, and can we run it now?" | Coverage is stale until tests rerun (Gotcha 5) | A fresh test-run ID and timestamp to quote beside every coverage figure | "0% coverage" findings are real, not artifacts of a stale run |
 | "Do we have Event Monitoring (Shield or the add-on)?" | Trigger execution evidence and old-API-version evidence both come from event log files (Gotchas 7 and 10) | Observed "last fired" data instead of inference | "Dead trigger" and "retired API client" findings are proven, not guessed |
-| "Which external systems call Salesforce APIs, and on which API version?" | Versions 30.0 and below already return `410 GONE` (Gotcha 7) | An integration inventory with versions and owners | Critical integration findings land before the next retirement release, not after the outage |
+| "Which external systems call Salesforce APIs, and on which API version?" | Versions 30.0 and below already return `410 GONE`; 31.0–40.0 are unsupported from Summer '27 (Gotcha 7) | An integration inventory with versions and owners | Critical integration findings land before the next retirement release, not after the outage |
 | "Which objects still have active Workflow Rules or processes beside flows or triggers?" | Legacy layers re-fire update triggers and run in no guaranteed order (Gotchas 2, 8, 9) | A per-object automation list to build the overlap matrix from | Overlap is rated by real consequence (double trigger runs, last-writer-wins), not by count |
 | "Is any Apex invoked by name at runtime (`Type.forName`, class names in Custom Metadata, scheduled jobs)?" | The Dependency API misses dynamic references and truncates at 2,000 rows (Gotchas 3 and 6) | A list of dynamic entry points to exclude from deletion | No "dead" class is deleted that a scheduled job or configuration record still calls |
 
@@ -176,7 +176,8 @@ A before-save Flow writing a field and an Apex after trigger reading that same f
 | Workflow Rules | Deprecated — no new activations; existing rules still execute | Migration to Record-Triggered Flow is required |
 | Process Builder | Deprecated — no new flows since Summer '22 (UNVERIFIED 2026-10-03, Help-only); existing flows still execute, at order-of-execution step 13 in no guaranteed order | Migration to Record-Triggered Flow is required |
 | Aura components (org-owned) | Legacy — supported but not receiving new features; LWC is the current standard | Migration to LWC for any component that will receive future enhancements |
-| Legacy API versions (below v50.0) | Versions 21.0–30.0 were retired in Summer '25 and return `410 GONE` (REST API Developer Guide, "API End-of-Life Policy"); v50.0 is this skill's planning threshold, not a platform boundary | Upgrade integration endpoints to current API version; treat 30.0 and below as Critical |
+| Legacy API versions (below v50.0) | Versions 21.0–30.0 were retired in Summer '25 and return `410 GONE`; versions 31.0–40.0 are deprecated and unsupported from Summer '27 and retired from Summer '28 (REST API Developer Guide, "API End-of-Life Policy", Winter '27 edition, api_rest.txt L1232-1238); v50.0 is this skill's planning threshold, not a platform boundary | Upgrade integration endpoints to current API version; treat 30.0 and below as Critical and 31.0–40.0 as High with a Summer '27 deadline |
+| Apex classes and triggers saved at API 9.0–19.0 | From API 68.0 / Winter '27 the Apex compiler warns when you compile or deploy code saved at these versions, and Salesforce states they "will be retired in a future release" (Apex Developer Guide, Versioned Behavior Changes, salesforce_apex_developer_guide.txt L45124-45125). No retirement release is named yet | Re-save each one at a current API version and retest; list them with `SELECT Name, ApiVersion FROM ApexClass WHERE ApiVersion < 20` (`ApexClass.ApiVersion`, object_reference.txt L30564-30569), and the same query on `ApexTrigger` |
 
 ### Step 5 — Complexity Indicators
 
@@ -202,7 +203,7 @@ These are not full security findings (use `security-architecture-review` for tha
 ### Step 7 — Integration Debt Indicators
 
 - Hardcoded endpoint URLs in Named Credentials, Apex classes, or Custom Settings — any URL that is not parameterized will break when the endpoint changes.
-- API version references below v50.0 in integration code — Salesforce API v50.0 corresponds to Winter '21. Versions 30.0 and below are already retired; Salesforce supports a version for at least 3 years and gives at least 1 year of notice before ending support (REST API Developer Guide, "API End-of-Life Policy").
+- API version references below v50.0 in integration code — Salesforce API v50.0 corresponds to Winter '21. Versions 30.0 and below are already retired, and 31.0–40.0 become unsupported from Summer '27 (api_rest.txt L1232-1238); Salesforce supports a version for at least 3 years and gives at least 1 year of notice before ending support (REST API Developer Guide, "API End-of-Life Policy").
 - HTTP callouts using hardcoded credentials (username/password in Apex string literals) — a security and integration debt item.
 - Named Credential records with no associated authentication provider — may be using legacy password auth instead of OAuth.
 
