@@ -5,7 +5,7 @@ Validates backslash escape sequences inside SOQL single-quoted string literals
 against the fixed rule set in the SOQL and SOSL Reference:
 
   - The escape character is the backslash (\\).
-  - Valid sequences: \\n \\r \\t \\b \\f (case-insensitive), \\" \\' \\\\,
+  - Valid sequences: \\n \\r \\t \\b \\f (case-insensitive), \\s, \\" \\' \\\\,
     \\uXXXX (four hex digits), and the LIKE-only \\_ and \\%.
   - Any backslash used in any other context is a hard query error.
   - \\_ and \\% are valid ONLY inside a LIKE expression.
@@ -22,7 +22,11 @@ raw source uses different escaping and would produce false positives. For unsafe
 dynamic-SOQL construction in Apex, use the apex-dynamic-soql-binding-safety
 skill's checker instead.
 
-Stdlib only. Exits 1 if any issue is found.
+Severity / exit contract (2026-10-20): P0 issues are parse errors (ERROR) and
+exit 1 always; P1 issues are WARN — exit 0 unless --strict. Missing
+--manifest-dir: ERROR exit 1. No .soql files: one WARN, exit 0. `\\s` (space) is
+accepted: the Apex guide lists it among the escape sequences Apex shares with
+SOQL strings (apexdev 264 L1280-1282). Stdlib only.
 
 Usage:
     python3 check_soql_string_escaping_and_reserved_characters.py --query "SELECT Id FROM Account WHERE Name = 'Bob\\'s BBQ'"
@@ -37,7 +41,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 # Letter escapes (case-insensitive) plus the quote/backslash escapes.
-_ALWAYS_VALID = set("nNrRtTbBfF") | set("\"'\\")
+_ALWAYS_VALID = set("nNrRtTbBfFs") | set("\"'\\")
 _HEX_DIGITS = set("0123456789abcdefABCDEF")
 _LIKE_ONLY = set("_%")
 
@@ -170,6 +174,7 @@ def parse_args() -> argparse.Namespace:
         help="Root directory to scan for *.soql files (default: current directory). "
              "Ignored when --query is given.",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on P1 (WARN) issues too.")
     return parser.parse_args()
 
 
@@ -185,12 +190,12 @@ def main() -> int:
         total_p1 += p1
     else:
         root = Path(args.manifest_dir)
-        if not root.exists():
-            print(f"ERROR: directory not found: {root}", file=sys.stderr)
-            return 1
+        if not root.is_dir():
+            print(f"ERROR: directory not found: {root}")
+            sys.exit(1)
         files = find_soql_files(root)
         if not files:
-            print(f"No .soql files found under {root}. "
+            print(f"WARN: no .soql files found under {root}. "
                   f"(Use --query to validate a SOQL string directly.)")
             return 0
         for f in files:
@@ -208,7 +213,7 @@ def main() -> int:
     print(f"\nScanned {scanned} SOQL source(s). P0 issues: {total_p0}. P1 issues: {total_p1}.")
     if not total_p0 and not total_p1:
         print("No escaping issues found.")
-    return 1 if (total_p0 or total_p1) else 0
+    return 1 if (total_p0 or (total_p1 and args.strict)) else 0
 
 
 if __name__ == "__main__":

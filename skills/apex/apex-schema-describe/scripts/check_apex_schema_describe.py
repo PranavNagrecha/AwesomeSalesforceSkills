@@ -6,17 +6,20 @@ Scans Apex sources for the high-confidence anti-patterns documented in
 
   1. `Schema.getGlobalDescribe()` called inside a `for` / `while` loop.
   2. Per-field `.getDescribe()` calls inside loops.
-  3. `getPicklistValues()` enumeration without an `isActive()` filter.
+  3. (removed 2026-10-20) a "getPicklistValues() without isActive()" rule:
+     its premise was wrong — the method returns active values only
+     (apexref 262 L190851).
   4. `getRecordTypeInfosByName(...)` against a literal label (use
      `getRecordTypeInfosByDeveloperName` instead).
   5. `Type.forName('<API name>')` followed by a cast to `SObject`
-     (wrong tool — use `Schema.getGlobalDescribe().get(...).newSObject()`).
+     (use the documented `Schema.getGlobalDescribe().get(...).newSObject()`).
 
+All findings are WARN. Exit codes: 0 clean or WARN-only (1 with --strict);
+1 when --manifest-dir is missing; an empty tree prints one WARN and exits 0.
 Stdlib only.
 
 Usage:
-    python3 check_apex_schema_describe.py --src-root .
-    python3 check_apex_schema_describe.py --help
+    python3 check_apex_schema_describe.py --manifest-dir force-app [--strict]
 """
 
 from __future__ import annotations
@@ -110,16 +113,6 @@ def _scan_apex(path: Path) -> list[str]:
                 "(references/gotchas.md)"
             )
 
-    # 3. getPicklistValues without isActive filter (file-level heuristic)
-    if _PICKLIST_VALUES_RE.search(text) and not _IS_ACTIVE_RE.search(text):
-        m = _PICKLIST_VALUES_RE.search(text)
-        if m:
-            findings.append(
-                f"{path}:{_line_no(text, m.start())}: getPicklistValues() used "
-                "without an isActive() filter — inactive picklist values will "
-                "appear in output (references/llm-anti-patterns.md § 3)"
-            )
-
     # 4. getRecordTypeInfosByName against a literal label
     for m in _RT_BY_NAME_RE.finditer(text):
         findings.append(
@@ -132,26 +125,16 @@ def _scan_apex(path: Path) -> list[str]:
     # 5. Type.forName('<APIName>') followed by cast to SObject
     for m in _TYPE_FORNAME_SOBJECT_RE.finditer(text):
         # Look ahead ~120 chars for "(SObject)" cast
-        window = text[m.end(): m.end() + 200]
+        # the cast can precede the call: `(SObject) Type.forName(...)`
+        window = text[max(0, m.start() - 40): m.end() + 200]
         if re.search(r"\(\s*SObject\s*\)", window):
             findings.append(
                 f"{path}:{_line_no(text, m.start())}: Type.forName('{m.group(1)}') "
-                "used to construct an SObject — Type.forName is for Apex types. "
-                "Use Schema.getGlobalDescribe().get('<api>').newSObject() instead "
+                "used to construct an SObject — use the documented "
+                "Schema.getGlobalDescribe().get('<api>').newSObject() path instead "
                 "(references/llm-anti-patterns.md § 2)"
             )
 
-    return findings
-
-
-def scan_tree(root: Path) -> list[str]:
-    if not root.exists():
-        return [f"src-root does not exist: {root}"]
-    if not root.is_dir():
-        return [f"src-root is not a directory: {root}"]
-    findings: list[str] = []
-    for apex in list(root.rglob("*.cls")) + list(root.rglob("*.trigger")):
-        findings.extend(_scan_apex(apex))
     return findings
 
 
@@ -160,17 +143,23 @@ def main() -> int:
         description=(
             "Scan Apex sources for Schema describe anti-patterns "
             "(getGlobalDescribe in loops, per-field getDescribe in loops, "
-            "getPicklistValues without isActive, getRecordTypeInfosByName, "
-            "Type.forName for SObject construction)."
+            "getRecordTypeInfosByName, Type.forName for SObject construction)."
         ),
     )
-    parser.add_argument(
-        "--src-root", default=".",
-        help="Root of the Apex source tree (default: current directory).",
-    )
+    parser.add_argument("--manifest-dir", "--src-root", dest="root", default=".",
+                        help="Root of the Apex source tree (default: current directory).")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings.")
     args = parser.parse_args()
 
-    findings = scan_tree(Path(args.src_root))
+    root = Path(args.root)
+    if not root.is_dir():
+        print(f"ERROR: manifest dir not found or not a directory: {root}")
+        sys.exit(1)
+    files = list(root.rglob("*.cls")) + list(root.rglob("*.trigger"))
+    if not files:
+        print(f"WARN: no .cls or .trigger files under {root}")
+        return 0
+    findings = [f for apex in files for f in _scan_apex(apex)]
 
     if not findings:
         print("OK: no Apex Schema describe anti-patterns detected.")
@@ -179,7 +168,7 @@ def main() -> int:
     for f in findings:
         print(f"WARN: {f}", file=sys.stderr)
     print(f"\n{len(findings)} finding(s).", file=sys.stderr)
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

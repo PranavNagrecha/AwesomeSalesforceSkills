@@ -3,8 +3,14 @@
 
 Scans sfdx-project.json and metadata files for common dependency and coverage risks:
 - Package directories without dependency declarations
-- Metadata types commonly unsupported in packages
-- Circular dependency indicators in package config
+- Metadata types commonly unsupported in packages (a "verify" WARN; which types
+  are unsupported is a Metadata Coverage report fact, api_meta 264 L10256-10260)
+
+Exit contract (2026-10-20): ERROR (unparseable sfdx-project.json, missing
+--manifest-dir) exits 1; WARN exits 0 unless --strict; a directory with no
+sfdx-project.json and no *-meta.xml files prints one WARN and exits 0.
+(The earlier docstring promised circular-dependency detection, which was never
+implemented.)
 
 Uses stdlib only — no pip dependencies.
 
@@ -115,9 +121,12 @@ def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
 
-    if not manifest_dir.exists():
+    if not manifest_dir.is_dir():
         print(f"ERROR: Directory not found: {manifest_dir}")
-        return 2
+        sys.exit(1)
+    if not (manifest_dir / "sfdx-project.json").exists() and not any(manifest_dir.rglob("*-meta.xml")):
+        print(f"WARN: no sfdx-project.json or *-meta.xml files under {manifest_dir}")
+        return 0
 
     print(f"Scanning {manifest_dir} for metadata coverage and dependency risks\n")
 

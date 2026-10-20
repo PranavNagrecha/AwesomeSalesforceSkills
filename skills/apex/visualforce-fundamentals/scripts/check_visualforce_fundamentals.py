@@ -3,7 +3,8 @@
 
 Scans Salesforce metadata for common Visualforce anti-patterns:
   - SOQL queries in Apex controllers without WITH USER_MODE
-  - SOQL queries still carrying WITH SECURITY_ENFORCED, removed in API 67.0 (Summer '26)
+  - SOQL queries still carrying WITH SECURITY_ENFORCED, which can't be used in Apex
+    at API 67.0 and later (apexdev 264 L11926-11927)
   - Non-transient List/Map controller properties (view state bloat risk)
   - DML operations inside page-action-bound methods
   - window.top / window.parent usage in VF page scripts (LEX incompatibility)
@@ -11,8 +12,13 @@ Scans Salesforce metadata for common Visualforce anti-patterns:
 
 Uses stdlib only — no pip dependencies.
 
+Exit contract (2026-10-20): every finding is WARN — exit 0, exit 1 with --strict.
+Missing --manifest-dir: ERROR exit 1. No .cls or .page files: one WARN, exit 0.
+SOQL-NO-ENFORCEMENT is skipped for classes whose .cls-meta.xml apiVersion is 67.0+,
+where Apex runs in user mode by default (apexdev 264 L11928-11929).
+
 Usage:
-    python3 check_visualforce_fundamentals.py [--manifest-dir path/to/metadata]
+    python3 check_visualforce_fundamentals.py [--manifest-dir path/to/metadata] [--strict]
     python3 check_visualforce_fundamentals.py --manifest-dir force-app/main/default
 """
 
@@ -33,8 +39,8 @@ _SOQL_NO_ENFORCEMENT = re.compile(
     r"\[[\s]*SELECT\b.*?\]",
     re.DOTALL | re.IGNORECASE,
 )
-# SECURITY_ENFORCED is matched here DELIBERATELY. It was removed in API 67.0
-# (Summer '26), but a query that carries it did enforce FLS at the versions
+# SECURITY_ENFORCED is matched here DELIBERATELY. It can't be used in Apex at
+# API 67.0 and later (apexdev 264 L11926-11927), but a query that carries it did enforce FLS at the versions
 # where it compiled, so treating it as "no enforcement at all" would be a
 # false positive on a controller pinned below 67.0. It is reported separately
 # by _LEGACY_SECURITY_ENFORCED below. Do not drop the alternation.
@@ -100,6 +106,15 @@ _CROSS_FRAME_JS = re.compile(
 # ---------------------------------------------------------------------------
 
 
+def _class_api_version(cls_file: Path) -> float | None:
+    meta = cls_file.with_name(cls_file.name + "-meta.xml")
+    try:
+        m = re.search(r"<apiVersion>\s*([0-9.]+)\s*</apiVersion>", meta.read_text(encoding="utf-8"))
+    except OSError:
+        return None
+    return float(m.group(1)) if m else None
+
+
 def check_apex_files(apex_dir: Path) -> list[str]:
     """Scan .cls files for SOQL without enforcement and non-transient collections."""
     issues: list[str] = []
@@ -112,24 +127,27 @@ def check_apex_files(apex_dir: Path) -> list[str]:
             continue
 
         is_vf_controller = bool(_VF_CONTROLLER_HINT.search(source))
+        api_version = _class_api_version(cls_file)
+        user_mode_default = api_version is not None and api_version >= 67.0
 
         # Check SOQL queries for missing enforcement (flag in VF controllers explicitly)
         for match in _SOQL_NO_ENFORCEMENT.finditer(source):
             query_text = match.group(0)
             if not _SOQL_USER_MODE.search(query_text):
+                if user_mode_default:
+                    continue  # 67.0+: user mode is the default (apexdev 264 L11928-11929)
                 issues.append(
                     f"[SOQL-NO-ENFORCEMENT] {cls_file.name}: "
-                    f"SOQL query missing WITH USER_MODE — "
+                    f"SOQL query missing WITH USER_MODE (class not at API 67.0+, so system "
+                    f"mode is the default, apexdev 264 L11928-11929) — "
                     f"snippet: {query_text[:80].strip()!r}"
                 )
             elif _LEGACY_SECURITY_ENFORCED.search(query_text):
                 issues.append(
                     f"[SOQL-LEGACY-SECURITY-ENFORCED] {cls_file.name}: "
-                    f"SOQL query uses WITH SECURITY_ENFORCED, which was removed in "
-                    f"API 67.0 (Summer '26). On a controller pinned at 67.0 or above "
-                    f"this does not compile ('WITH SECURITY_ENFORCED is no longer "
-                    f"supported, use WITH USER_MODE instead'); below 67.0 it is the "
-                    f"weaker construct and should migrate to WITH USER_MODE. The gate "
+                    f"SOQL query uses WITH SECURITY_ENFORCED, which can't be used in "
+                    f"Apex at API 67.0 and later (apexdev 264 L11926-11927); below 67.0 "
+                    f"it should migrate to WITH USER_MODE. The gate "
                     f"is the apiVersion in the class's .cls-meta.xml, not the org's "
                     f"release — snippet: {query_text[:80].strip()!r}"
                 )
@@ -164,7 +182,7 @@ def check_vf_pages(pages_dir: Path) -> list[str]:
             issues.append(
                 f"[PDF-SCRIPT-TAG] {page_file.name}: "
                 f"Page uses renderAs=\"pdf\" but contains <script> tags. "
-                f"JavaScript is NOT executed by the Flying Saucer PDF renderer — "
+                f"JavaScript is NOT executed by the PDF renderer — "
                 f"remove all <script> blocks from PDF pages."
             )
 
@@ -253,12 +271,19 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings.")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
+    if not (any(manifest_dir.rglob("*.cls")) or any(manifest_dir.rglob("*.page"))):
+        print(f"WARN: no .cls or .page files under {manifest_dir}")
+        return 0
     issues = check_visualforce_fundamentals(manifest_dir)
 
     if not issues:
@@ -266,9 +291,9 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"ISSUE: {issue}")
+        print(f"WARN: {issue}")
 
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

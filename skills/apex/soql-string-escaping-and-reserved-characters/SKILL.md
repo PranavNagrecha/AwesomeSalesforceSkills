@@ -27,9 +27,9 @@ outputs:
   - "The right escape sequence for each special character (\\', \\\\, \\n, \\uXXXX, and the LIKE-only \\_ / \\%)"
   - "Apex-side guidance: when String.escapeSingleQuotes covers the reserved characters and when to bind instead"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # SOQL String Escaping and Reserved Characters
@@ -45,7 +45,24 @@ Gather this context before working on anything in this domain:
 - **The escape character in SOQL is the backslash (`\`)** — not doubling the quote (`''`), which is the SQL-92 / Oracle convention. This is the single most common wrong assumption: a person who knows SQL will write `'Bob''s BBQ'`, which is invalid SOQL. The correct form is `'Bob\'s BBQ'`.
 - **A backslash used outside a defined escape sequence is a *hard query error*, not a literal backslash.** The docs state: "If you use a backslash character in any other context, an error occurs." So a Windows path like `'C:\Users'` or a regex-style `'\d+'` inside a SOQL literal fails to parse — it does not silently keep the backslash.
 - **Two characters are formally *reserved*: the single quote (`'`) and the backslash (`\`).** Inside a single-quoted literal both must be preceded by a backslash to be interpreted correctly, or an error occurs.
+- **Corpus status (audited 2026-10-20).** The escape table, the reserved-character rule, the LIKE-only `\_`/`\%` escapes and the "any other context, an error occurs" quote come from the SOQL and SOSL Reference ("Quoted String Escape Sequences"), which is not in the corpus — UNVERIFIED (2026-10-20). What the corpus does hold: Apex strings "use the same escape sequences as SOQL strings: \b (backspace), \t (tab), \n (line feed), \f (form feed), \r (carriage return),\s (space),\" (double quote), \' (single quote), and \\ (backslash)" (apexdev 264 L1280-1282), and `escapeSingleQuotes` escapes `'` and `\` (apexref 262 L235380).
 - **Maturity is unstated.** These are baseline SOQL language rules documented in the SOQL and SOSL Reference; the official docs do not stamp them with a GA/Beta/Pilot label, and they are unchanged in substance across recent API versions. Do not assert a maturity level the docs don't state.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the query inline `[SELECT ...]` or a dynamic string? | Gotcha 6: two escaping layers | Whether to write `\_` or `\\_` in source |
+| Does any value come from user input? | Gotcha 3: binding beats escaping | Bind variables instead of hand escapes |
+| Can the value contain an apostrophe? | Gotcha 1: `''` is not a SOQL escape | `\'` or a bind, never doubling |
+| Can the value contain a backslash (paths, regex)? | Gotcha 2: a stray `\` breaks the query | `\\` for every literal backslash |
+| Is the filter a LIKE, and should `%`/`_` be literal? | Gotchas 3, 4, 6: wildcards stay active | Which characters need `\%` / `\_` |
+| Are escapes written in upper case (`\N`, `\T`)? | Gotcha 5: case-insensitive letters | No false "typo" review findings |
+| Does the value need control or Unicode characters? | Table: only listed sequences parse | `\n`, `\t` or `\uXXXX` only |
+
+A proper configuration decides per literal which layer escapes it, where "just doing it" pastes SQL habits that fail on the first O'Brien.
 
 ---
 
@@ -60,7 +77,7 @@ The escape character for SOQL string literals is the backslash. Only the sequenc
 | `\n` or `\N` | New line |
 | `\r` or `\R` | Carriage return |
 | `\t` or `\T` | Tab |
-| `\b` or `\B` | Bell |
+| `\b` or `\B` | Backspace per the Apex guide (apexdev 264 L1280-1281); the earlier text said "Bell", from the SOQL Reference, which is not in the corpus |
 | `\f` or `\F` | Form feed |
 | `\"` | One double-quote character |
 | `\'` | One single-quote character |
@@ -68,6 +85,7 @@ The escape character for SOQL string literals is the backslash. Only the sequenc
 | `\_` | Matches a single underscore character — **LIKE expression only** |
 | `\%` | Matches a single percent sign character — **LIKE expression only** |
 | `\uXXXX` | Unicode character, where `XXXX` is the hex code (e.g. `é` is `é`) |
+| `\s` | Space — listed by the Apex guide among the sequences shared with SOQL strings (apexdev 264 L1281); absent from the earlier table |
 
 Any backslash followed by anything else is an error. There is no "unknown escape falls back to literal" behavior — the parser rejects the whole query.
 
@@ -164,7 +182,7 @@ Run through these before marking work in this area complete:
 Non-obvious platform behaviors that cause real production problems:
 
 1. **Doubling the quote is a SQL habit that fails in SOQL** — `'O''Brien'` parses in Oracle/SQL-92 but errors in SOQL; the correct escape is `'O\'Brien'`.
-2. **A stray backslash is a hard error, not a literal** — Windows paths (`'C:\temp'`) and regex fragments (`'\d'`) inside a SOQL literal throw a query error because the backslash isn't part of a defined sequence.
+2. **A stray backslash is a hard error, not a literal** — Windows paths (`'C:\Users'`) and regex fragments (`'\d'`) inside a SOQL literal throw a query error because the backslash isn't part of a defined sequence (SOQL Reference, UNVERIFIED (2026-10-20)). `'C:\temp'` is worse: `\t` is a valid tab escape (apexdev 264 L1280-1281), so it parses and silently matches nothing — corrected 2026-10-20, the old text listed `'C:\temp'` as an error case.
 3. **`String.escapeSingleQuotes` does not escape LIKE wildcards** — it handles `'` and `\` only, so a user-supplied `%`/`_` still behaves as a wildcard and can widen the result set even after "escaping."
 
 ---

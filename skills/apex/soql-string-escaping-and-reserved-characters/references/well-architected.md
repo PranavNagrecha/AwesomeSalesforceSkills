@@ -34,6 +34,10 @@
 
 ## Official Sources Used
 
+- Apex Developer Guide 264 — Apex strings use the same escape sequences as SOQL strings: `\b` backspace, `\t`, `\n`, `\f`, `\r`, `\s`, `\"`, `\'`, `\\` (salesforce_apex_developer_guide.txt L1280-1282); escapeSingleQuotes against SOQL injection (L11679-11681)
+- Apex Reference 262 — `String.escapeSingleQuotes(stringToEscape)` adds `\` before any `'` or `\` (salesforce_apex_reference_guide.txt L235379-235384)
+- Platform Events 264 — filter expressions cannot escape `\`, `_` or `%` (platform_events.txt L4495-4497)
+
 - SOQL and SOSL Reference — Quoted String Escape Sequences — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_quotedstringescapes.htm
 - SOQL and SOSL Reference — Reserved Characters — https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_reservedcharacters.htm
 - Apex Reference Guide — String Class methods (escapeSingleQuotes) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm

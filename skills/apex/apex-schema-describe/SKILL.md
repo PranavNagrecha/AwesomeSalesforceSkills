@@ -29,9 +29,9 @@ outputs:
   - "FLS / sharing check using the right API"
   - "Picklist value enumeration with correct active-only filtering"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-05
+updated: 2026-10-20
 ---
 
 # Apex Schema Describe
@@ -49,8 +49,8 @@ This skill covers the patterns that make Schema describe fast
 and correct: caching, FLS checks, picklist enumeration, and the
 loop-cost trap.
 
-NOT for SOQL string-binding (`apex/dynamic-soql`); NOT for
-Tooling API metadata work (`apex/tooling-api`).
+NOT for SOQL string-binding (`apex/apex-dynamic-soql-binding-safety`); NOT for
+Tooling API metadata work (`apex/tooling-api-patterns`).
 
 ---
 
@@ -67,6 +67,22 @@ Tooling API metadata work (`apex/tooling-api`).
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does the describe run once per request or inside a per-record loop? | Gotchas 1–2: loop placement multiplies the call | Tells you whether a transaction-scoped `static` cache is required |
+| Is the object/field known at compile time? | Gotcha 1: a token needs no global describe | Lets you drop `getGlobalDescribe()` entirely |
+| Does the code run inside, or call into, a namespaced package? | Gotcha 5: map keys carry the running code's namespace | The exact key string to look up |
+| Do you need inactive picklist values too? | Gotcha 3: `getPicklistValues()` returns active values only | Whether a different source (metadata) is needed |
+| Is a record type looked up by label or DeveloperName? | Gotcha 6: labels are renameable | A lookup that survives an admin rename |
+| Is the FLS check for one field or for a bulk DML list? | Gotcha 7: per-field checks do not strip values | Picks `isAccessible()` vs `stripInaccessible` |
+| Is the field name a runtime string? | Gotcha 8: field-map keys are case-insensitive | Removes needless `toLowerCase()` normalising |
+
+A proper configuration caches what the transaction reuses and checks the user's access once, where "just doing it" describes per record and trusts stale assumptions about the map.
+
+---
+
 ## Core Concepts
 
 ### Static-vs-runtime SObjectType lookup
@@ -79,9 +95,15 @@ Schema.SObjectType t = Account.SObjectType;
 Schema.SObjectType t = Schema.getGlobalDescribe().get('Account');
 ```
 
-`Schema.getGlobalDescribe()` is the expensive call — it materializes
-the entire org's SObject inventory. Cache the result if you call
-it more than once per transaction.
+`Schema.getGlobalDescribe()` returns a map of every sObject name the
+running user can see to its token (apexdev 264 L11244-11249); tokens are
+the lightweight path (apexdev 264 L10919). That it is the expensive call
+is UNVERIFIED (2026-10-20): the guide gives no cost figure. Cache the
+result if you call it more than once per transaction. To describe several
+runtime names at once, use `Schema.describeSObjects(List<String>)` (apexref 262
+L229191); its `describeSObjects(types, SObjectDescribeOptions)` overload
+documents `SObjectDescribeOptions.DEFERRED` (lazy) as its default
+(apexref 262 L229225-229227).
 
 ### Caching describe results
 
@@ -105,8 +127,9 @@ public class SchemaCache {
 }
 ```
 
-`static final` ensures the global describe runs once per class
-load. Per-type field maps are lazy.
+`static final` ensures the global describe runs once per transaction
+(a static is static only within the Apex transaction, apexdev 264 L3746).
+Per-type field maps are lazy.
 
 ### FLS check via DescribeFieldResult
 
@@ -144,7 +167,10 @@ for (Schema.PicklistEntry pe : entries) {
 }
 ```
 
-Inactive entries are still in the list — filter explicitly.
+Corrected 2026-10-20: `getPicklistValues()` returns active entries only
+— "Only active picklist values are returned" (apexref 262 L190851). The
+`isActive()` test above is a harmless no-op, not a required filter; the
+earlier claim that inactive entries appear in the list was wrong.
 
 ---
 
@@ -178,8 +204,8 @@ public static List<Account> readAccessible(List<Account> records) {
 }
 ```
 
-Removes inaccessible field values from the records — bulk-safe,
-governor-cheap.
+Strips fields the user cannot access (apexdev 264 L12281-12282) —
+bulk-safe; "governor-cheap" is UNVERIFIED (2026-10-20), no cost figure in the guide.
 
 ### Pattern C — Dynamic SObject creation by name
 
@@ -191,8 +217,12 @@ public static SObject create(String objName) {
 }
 ```
 
-Use `Schema.getGlobalDescribe().get(name)` — NOT `Type.forName(name)`.
-Type.forName returns `System.Type`, not an SObject prototype.
+Use `Schema.getGlobalDescribe().get(name)` + `newSObject()` — the
+guide's documented dynamic-creation path (apexdev 264 L11795-11801).
+`Type.forName('Account')` does resolve (it equals `Account.class`, apexref
+262 L242043-242045) but returns `System.Type` whose `newInstance()` returns
+`Object` (apexref 262 L242303); whether that yields a usable sObject is
+UNVERIFIED (2026-10-20): the reference documents it for classes only.
 
 ---
 
@@ -205,8 +235,9 @@ Type.forName returns `System.Type`, not an SObject prototype.
 | Repeated describe in a loop | Cache as `static final` | Avoid per-iteration describe overhead |
 | FLS check before bulk DML | `Security.stripInaccessible` | Bulk-safe; cleaner than per-field |
 | FLS check on a single field | `getDescribe().isAccessible()` | Single-field is fine direct |
-| List of active picklist values | `getPicklistValues()` + `isActive()` filter | Inactive entries still in the list |
-| RecordType lookup by name | `getRecordTypeInfosByDeveloperName().get(name)` | Stable identifier across orgs |
+| List of active picklist values | `getPicklistValues()` | Returns active values only (apexref 262 L190851) |
+| Several runtime type names at once | `Schema.describeSObjects(names)` | One call, many results (apexref 262 L229191) |
+| RecordType lookup by name | `getRecordTypeInfosByDeveloperName().get(name)` | Labels are what `ByName` keys on (apexref 262 L192589) |
 | Schema query on managed-package object | Include namespace prefix | Required for cross-package access |
 
 ---
@@ -217,8 +248,8 @@ Type.forName returns `System.Type`, not an SObject prototype.
 2. **Use compile-time references when possible.** Skip describe entirely.
 3. **For dynamic strings, cache `Schema.getGlobalDescribe()` once.**
 4. **For FLS on bulk DML, use `Security.stripInaccessible`.**
-5. **For picklist enumeration, filter `isActive()` explicitly.**
-6. **Test the namespaced case** if managed packages are in scope.
+5. **For picklist enumeration, rely on `getPicklistValues()` returning active values only** (apexref 262 L190851).
+6. **Test the namespaced case** if managed packages are in scope, then run `scripts/check_apex_schema_describe.py --manifest-dir force-app` (add `--strict` in CI).
 
 ---
 
@@ -227,19 +258,20 @@ Type.forName returns `System.Type`, not an SObject prototype.
 - [ ] No `Schema.getGlobalDescribe()` inside loops.
 - [ ] Per-type field map cached as `static final` when used in hot paths.
 - [ ] FLS checks use `Security.stripInaccessible` for bulk DML.
-- [ ] Picklist enumeration filters by `isActive()`.
-- [ ] Dynamic SObject creation uses `Schema.getGlobalDescribe()` not `Type.forName`.
+- [ ] Picklist code does not assume inactive values are returned (they are not).
+- [ ] Dynamic SObject creation uses `Schema.getGlobalDescribe().get(name).newSObject()`.
 - [ ] Managed-package SObjects include namespace prefix.
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-1. **`Schema.getGlobalDescribe()` is expensive.** Cache. (See `references/gotchas.md` § 1.)
+1. **`Schema.getGlobalDescribe()` returns every visible sObject.** Cache it; its cost is UNVERIFIED (2026-10-20). (See `references/gotchas.md` § 1.)
 2. **`getDescribe()` on a field in a loop multiplies cost.** Cache the field map at class scope. (See `references/gotchas.md` § 2.)
-3. **Inactive picklist entries appear in `getPicklistValues()`.** Filter. (See `references/gotchas.md` § 3.)
+3. **`getPicklistValues()` returns active entries only** (apexref 262 L190851) — no inactive values to filter. (See `references/gotchas.md` § 3.)
 4. **`Type.forName` returns `System.Type`, not SObjectType.** Use `Schema.getGlobalDescribe().get()`. (See `references/gotchas.md` § 4.)
 5. **Managed-package fields require the namespace prefix.** (See `references/gotchas.md` § 5.)
+6. **Field-map keys are case-insensitive** — "All field names are case insensitive" (apexdev 264 L11079). (See `references/gotchas.md` § 8.)
 
 ---
 
@@ -256,6 +288,6 @@ Type.forName returns `System.Type`, not an SObject prototype.
 ## Related Skills
 
 - `apex/dynamic-apex` — broader dynamic-Apex patterns; this skill is the schema-describe slice.
-- `apex/dynamic-soql` — SOQL string binding (different concern: SOQL injection prevention).
+- `apex/apex-dynamic-soql-binding-safety` — SOQL string binding (different concern: SOQL injection prevention).
 - `apex/apex-switch-on-sobject` — when describe-driven dispatch fits a switch-on-SObject pattern.
-- `security/field-level-security-design` — broader FLS architecture; this skill is the Apex-side enforcement.
+- `apex/apex-stripinaccessible-and-fls-enforcement` — broader FLS enforcement; this skill is the describe slice.

@@ -14,10 +14,15 @@ Scans a Salesforce DX project for secret-storage anti-patterns:
        like a secret (key, secret, token, password, credential).
 
 Actual secret values are NEVER printed — only the file path, line number,
-and a short redacted marker. Exit 1 if any P0 or P1 issues are found.
+and a short redacted marker.
+
+Severity / exit contract (2026-10-20): P0 findings and unparseable
+customMetadata XML are ERROR — exit 1 always. P1 findings are WARN — exit 0
+unless --strict. Missing --manifest-dir is ERROR exit 1; a tree with no
+.cls/.trigger/customMetadata files prints one WARN and exits 0.
 
 Usage:
-    python3 check_apex_secrets_and_protected_cmdt.py [--manifest-dir PATH]
+    python3 check_apex_secrets_and_protected_cmdt.py [--manifest-dir PATH] [--strict]
 
 Stdlib only.
 """
@@ -77,6 +82,7 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on P1 (WARN) findings too.")
     return parser.parse_args()
 
 
@@ -131,7 +137,7 @@ def scan_custom_metadata(root: Path) -> list[tuple[str, str, int, str]]:
         try:
             tree = ET.parse(path)
         except (ET.ParseError, OSError) as exc:
-            print(f"WARN: cannot parse {path}: {exc}", file=sys.stderr)
+            findings.append(("P0", str(path), 0, f"customMetadata XML does not parse: {exc}"))
             continue
 
         root_el = tree.getroot()
@@ -160,9 +166,13 @@ def scan_custom_metadata(root: Path) -> list[tuple[str, str, int, str]]:
 def main() -> int:
     args = parse_args()
     root = Path(args.manifest_dir)
-    if not root.exists():
-        print(f"ERROR: directory not found: {root}", file=sys.stderr)
-        return 1
+    if not root.is_dir():
+        print(f"ERROR: directory not found: {root}")
+        sys.exit(1)
+    if not (any(root.rglob("*.cls")) or any(root.rglob("*.trigger"))
+            or any(root.rglob("customMetadata/*.md-meta.xml"))):
+        print(f"WARN: no .cls, .trigger or customMetadata files under {root}")
+        return 0
 
     findings = scan_apex_files(root) + scan_custom_metadata(root)
 
@@ -173,10 +183,11 @@ def main() -> int:
     findings.sort(key=lambda item: (item[0], item[1], item[2]))
     has_blocking = False
     for severity, path, line_no, message in findings:
-        if severity in {"P0", "P1"}:
+        if severity == "P0" or (severity == "P1" and args.strict):
             has_blocking = True
+        label = "ERROR" if severity == "P0" else "WARN"
         location = f"{path}:{line_no}" if line_no else path
-        print(f"{severity}: {location}: {message}", file=sys.stderr)
+        print(f"{label} ({severity}): {location}: {message}", file=sys.stderr)
 
     return 1 if has_blocking else 0
 

@@ -56,7 +56,7 @@ public with sharing class AccountContactController {
 }
 ```
 
-```xml
+```html
 <!-- AccountContacts.page -->
 <apex:page controller="AccountContactController" showHeader="true" sidebar="false">
     <apex:form>
@@ -121,9 +121,9 @@ public with sharing class InvoicePdfController {
 }
 ```
 
-```xml
+```html
 <!-- InvoicePdf.page -->
-<!-- renderAs="pdf" triggers Flying Saucer HTML-to-PDF conversion server-side -->
+<!-- renderAs="pdf" triggers server-side HTML-to-PDF conversion -->
 <apex:page controller="InvoicePdfController"
            renderAs="pdf"
            applyHtmlTag="false"
@@ -172,7 +172,7 @@ public with sharing class InvoicePdfController {
 </apex:page>
 ```
 
-**Why it works:** `renderAs="pdf"` instructs Salesforce to pass the rendered HTML output to the Flying Saucer PDF engine server-side — no JavaScript is involved in the rendering pipeline. All CSS is inline in a `<style>` block, which the renderer processes reliably. The controller uses `WITH USER_MODE` so the PDF is only generated with data the running user is permitted to see.
+**Why it works:** `renderAs="pdf"` instructs Salesforce to pass the rendered HTML output to the PDF engine server-side (engine name UNVERIFIED (2026-10-20)) — no JavaScript is involved in the rendering pipeline. All CSS is inline in a `<style>` block, which the renderer processes reliably. The controller uses `WITH USER_MODE` so the PDF is only generated with data the running user is permitted to see.
 
 ---
 

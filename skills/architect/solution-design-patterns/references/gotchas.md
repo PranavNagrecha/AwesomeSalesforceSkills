@@ -18,24 +18,24 @@ Non-obvious Salesforce platform behaviors that cause real problems when making a
 
 ---
 
-## Gotcha 2: Flow Cannot Make Synchronous HTTP Callouts After Record Save
+## Gotcha 2: No Layer Can Make an HTTP Callout After the Save's Uncommitted DML
 
 **What happens:** An architect designs a Record-Triggered Flow (after save) to call an external REST API in the same transaction. The Flow is built using a custom Apex action that makes the callout. At runtime, Salesforce throws `System.CalloutException: You have uncommitted work pending. Please commit or rollback before calling out.`
 
-**Why it happens:** After a record save, the platform has uncommitted DML in memory. HTTP callouts are blocked when there is uncommitted DML to prevent partial state from being visible to external systems. This restriction applies to Flow invoking Apex actions that make callouts, not just to Apex code directly.
+**Why it happens:** After a record save, the platform has uncommitted DML in memory; "callouts aren't allowed after DML operations in the same transaction" (apexdev 264 L35611). HTTP callouts are blocked when there is uncommitted DML to prevent partial state from being visible to external systems. This restriction applies to Flow invoking Apex actions that make callouts, not just to Apex code directly.
 
 **Common misconception:** Developers assume that wrapping the callout in an Apex action called from Flow bypasses the restriction. It does not — the restriction is enforced at the transaction level, regardless of what invoked the callout.
 
 **How to avoid:**
-- For after-save callouts: Fire a Platform Event from the Flow. An Apex Platform Event trigger receives the event in a fresh transaction context and makes the callout there.
+- For after-save callouts: Fire a Platform Event from the Flow, and have the Apex platform event trigger enqueue a Queueable or `@future(callout=true)` method. Corrected 2026-10-20: the old text had the event trigger make the callout itself, but event triggers "generally can't make Apex callouts" (platform_events 264 L2318-2319); callouts from triggers must be asynchronous (apexdev 264 L15104-15106).
 - For before-save callouts: Not possible at all from a record-triggered context. Design the callout to occur in a separate async transaction (Queueable, `@future`).
 - Never put a callout in the same after-save transaction as the record DML, in any layer.
 
 ---
 
-## Gotcha 3: Record-Triggered Flow and Apex Triggers Share the Same SOQL and DML Governor Limits
+## Gotcha 3: Record-Triggered Flow and Apex Triggers Run in One Transaction (shared SOQL/DML limits UNVERIFIED)
 
-**What happens:** An org has both a Record-Triggered Flow and an Apex trigger on the Account object. The Flow does a Get Records query and the Apex trigger also does a SOQL query. In isolation, each uses 1 SOQL query out of the 100 allowed per transaction. Together they use 2. When Flow contains a loop with a Get Records inside the loop body (an anti-pattern), each loop iteration uses an additional SOQL query — and those queries count against the same 100-limit shared with Apex.
+**What happens:** (UNVERIFIED (2026-10-20): no corpus line states that Flow Get Records elements count against the Apex 100-query limit; verify with `LIMIT_USAGE_FOR_NS` in the debug log, apexdev 264 L39324.) An org has both a Record-Triggered Flow and an Apex trigger on the Account object. The Flow does a Get Records query and the Apex trigger also does a SOQL query. In isolation, each uses 1 SOQL query out of the 100 allowed per transaction. Together they use 2. When Flow contains a loop with a Get Records inside the loop body (an anti-pattern), each loop iteration uses an additional SOQL query — and those queries count against the same 100-limit shared with Apex.
 
 **Why it matters for design:** Teams that build Flow in isolation from Apex code do not know how many SOQL queries the other automation layer is consuming. When both scale up, the shared limit is hit before either team expects it.
 
@@ -46,11 +46,11 @@ Non-obvious Salesforce platform behaviors that cause real problems when making a
 
 ---
 
-## Gotcha 4: Custom Metadata Queries Are Cached — But Only After the First Access in a Transaction
+## Gotcha 4: Custom Metadata Caching Does Not Make Repeated Queries Free (per-transaction accounting UNVERIFIED)
 
 **What happens:** A developer uses Custom Metadata Types (CMDT) for routing config because "CMDT queries don't count against SOQL limits." They write code that queries the same CMDT type five times across five separate Apex methods in one transaction, expecting zero SOQL usage. In reality, the first query counts against the SOQL limit. Subsequent queries for the same type in the same transaction hit the cache and do not count.
 
-**The nuance:** CMDT records are cached per transaction after first access. The first access in a transaction consumes one SOQL query. If the same CMDT type is queried again in the same transaction (even from a different class), the cached result is returned — no additional SOQL cost.
+**The nuance:** UNVERIFIED (2026-10-20): the per-transaction SOQL accounting below is not in the corpus, which says only that custom metadata is "exposed in the application cache" (apexref 262 L204514-204515). CMDT records are cached per transaction after first access. The first access in a transaction consumes one SOQL query. If the same CMDT type is queried again in the same transaction (even from a different class), the cached result is returned — no additional SOQL cost.
 
 **How to avoid:**
 - Query CMDT once per transaction and store the result in a static variable (Apex) or pass it as a collection to subflows (Flow).
@@ -58,9 +58,9 @@ Non-obvious Salesforce platform behaviors that cause real problems when making a
 
 ---
 
-## Gotcha 5: The 2,000-Element Flow Interview Limit Is Per Interview, Not Per Flow Definition
+## Gotcha 5: The Flow Element Limit Is Per Interview, Not Per Flow Definition (2,000 figure UNVERIFIED)
 
-**What happens:** A Flow is designed with a loop that iterates over records. When the record count exceeds a threshold, the Flow interview throws `The flow tried to execute a flow interview that has exceeded the maximum number of executed elements: 2000`.
+**What happens:** (UNVERIFIED (2026-10-20): the 2,000-element limit and its error text are not in the corpus.) A Flow is designed with a loop that iterates over records. When the record count exceeds a threshold, the Flow interview throws `The flow tried to execute a flow interview that has exceeded the maximum number of executed elements: 2000`.
 
 **The misunderstanding:** The limit applies to the number of *elements executed in a single interview* — not to the number of elements defined in the Flow. A 5-element Flow that loops 500 times executes 2,500 element invocations and hits the limit.
 

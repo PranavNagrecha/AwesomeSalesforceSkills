@@ -13,9 +13,13 @@ Scans a Salesforce project directory for common automation design anti-patterns:
 
 Uses stdlib only — no pip dependencies.
 
+Exit contract (2026-10-20): Flow XML that does not parse is ERROR (exit 1
+always); design findings are WARN (exit 0, exit 1 with --strict); a missing
+directory is ERROR exit 1; no Apex or Flow files prints one WARN, exit 0.
+
 Usage:
-    python3 check_solution_design.py [--help]
-    python3 check_solution_design.py --project-dir path/to/force-app
+    python3 check_solution_design.py --manifest-dir path/to/force-app [--strict]
+    (--project-dir is kept as an alias)
 """
 
 from __future__ import annotations
@@ -55,9 +59,9 @@ TRIGGER_DIRECT_DML = re.compile(
 )
 TRIGGER_DIRECT_SOQL = re.compile(r'\[SELECT\b', re.IGNORECASE)
 
-# Detects callout in an @InvocableMethod — callout=true in future is not
-# allowed from InvocableMethod in after-save context.
+# Detects callout in an @InvocableMethod that lacks the callout=true modifier.
 INVOCABLE_ANNOTATION = re.compile(r'@InvocableMethod', re.IGNORECASE)
+INVOCABLE_CALLOUT_TRUE = re.compile(r'@InvocableMethod\s*\([^)]*\bcallout\s*=\s*true', re.IGNORECASE)
 HTTP_CALLOUT_IN_METHOD = re.compile(
     r'\bHttp\b|\bHttpRequest\b|\bHttpResponse\b', re.IGNORECASE
 )
@@ -121,12 +125,16 @@ def check_apex_file(path: Path) -> list[str]:
             )
 
     # Check for HTTP callout inside an @InvocableMethod
-    if INVOCABLE_ANNOTATION.search(source) and HTTP_CALLOUT_IN_METHOD.search(source):
+    # 2026-10-20: an invocable that declares callout=true is the documented
+    # screen-flow pattern (apexdev 264 L27226-27227) and is not flagged.
+    if (INVOCABLE_ANNOTATION.search(source) and HTTP_CALLOUT_IN_METHOD.search(source)
+            and not INVOCABLE_CALLOUT_TRUE.search(source)):
         issues.append(
-            f"{path}: HTTP callout (HttpRequest/HttpResponse) found in a class "
-            "that also declares @InvocableMethod — callouts from InvocableMethod "
-            "are blocked in after-save record-triggered contexts; use Platform Events "
-            "to decouple the callout into a separate Apex transaction"
+            f"{path}: HTTP callout (HttpRequest/HttpResponse) in a class with "
+            "@InvocableMethod but no callout=true modifier — declare it for screen "
+            "flows (apexdev 264 L27226-27227); from a record-triggered save the "
+            "callout fails after uncommitted DML (L35611), so enqueue a Queueable "
+            "with callout instead"
         )
 
     return issues
@@ -138,7 +146,7 @@ def check_flow_file(path: Path) -> list[str]:
     try:
         tree = ET.parse(path)
     except ET.ParseError as exc:
-        return [f"{path}: XML parse error — {exc}"]
+        return [f"ERROR: {path}: XML parse error — {exc}"]
 
     root = tree.getroot()
     ns = {'sf': FLOW_NS}
@@ -203,10 +211,11 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        '--project-dir',
+        '--manifest-dir', '--project-dir', dest='project_dir',
         default='.',
         help='Root directory of the Salesforce project (default: current directory).',
     )
+    parser.add_argument('--strict', action='store_true', help='Exit 1 on WARN findings.')
     return parser.parse_args()
 
 
@@ -214,15 +223,15 @@ def main() -> int:
     args = parse_args()
     project_dir = Path(args.project_dir)
 
-    if not project_dir.exists():
-        print(f"ISSUE: Project directory not found: {project_dir}")
-        return 1
+    if not project_dir.is_dir():
+        print(f"ERROR: Project directory not found: {project_dir}")
+        sys.exit(1)
 
     apex_files = find_apex_files(project_dir)
     flow_files = find_flow_files(project_dir)
 
     if not apex_files and not flow_files:
-        print(f"No Apex or Flow files found under {project_dir}. Nothing to check.")
+        print(f"WARN: No Apex or Flow files found under {project_dir}. Nothing to check.")
         return 0
 
     all_issues: list[str] = []
@@ -242,14 +251,17 @@ def main() -> int:
         )
         return 0
 
+    errors = [i for i in all_issues if i.startswith("ERROR: ")]
     for issue in all_issues:
-        print(f"ISSUE: {issue}")
+        print(issue if issue.startswith("ERROR: ") else f"WARN: {issue}")
 
     print(
         f"\n{len(all_issues)} issue(s) found across {total_files} file(s) "
         f"({len(apex_files)} Apex, {len(flow_files)} Flow)."
     )
-    return 1
+    if errors:
+        return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == '__main__':

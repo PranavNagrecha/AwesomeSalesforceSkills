@@ -20,7 +20,7 @@ The 170 KB view state limit is a hard platform constraint that directly impacts 
 - SOQL queries fetching all fields when only a subset are rendered.
 - SOQL inside loops triggered by page rendering (one query per row in a `<apex:repeat>`).
 
-Mitigation: Mark display-only collections `transient`, restrict SOQL field lists, pre-load related data into maps in the constructor, and use `<apex:remoteAction>` for heavy read operations to bypass view state entirely.
+Mitigation: Mark display-only collections `transient`, restrict SOQL field lists, pre-load related data into maps in the constructor, and use JavaScript remoting (`@RemoteAction`) for heavy read operations to bypass view state entirely.
 
 ## Architectural Tradeoffs
 
@@ -28,7 +28,7 @@ Mitigation: Mark display-only collections `transient`, restrict SOQL field lists
 The standard controller provides FLS enforcement and standard actions for free, but limits customization. A custom controller gives full control at the cost of manual FLS/CRUD enforcement. Extensions are the preferred middle ground — they let you add custom logic while keeping the standard controller's automatic field-level enforcement for bound fields.
 
 **View State vs. No-View-State Patterns:**
-Pages with `<apex:form>` carry view state overhead on every postback. For display-heavy pages with frequent updates, JavaScript Remoting (`<apex:remoteAction>`) or `<apex:actionFunction>` calling lightweight methods can reduce postback cost significantly, but requires more JavaScript and moves data-binding responsibility to the client.
+Pages with `<apex:form>` carry view state overhead on every postback. For display-heavy pages with frequent updates, JavaScript Remoting (`@RemoteAction`) or `<apex:actionFunction>` calling lightweight methods can reduce postback cost significantly, but requires more JavaScript and moves data-binding responsibility to the client.
 
 **Visualforce vs. LWC:**
 For new development, Lightning Web Components are the recommended approach for custom UI on the Salesforce platform. Visualforce remains appropriate for PDF generation (`renderAs="pdf"`), email templates, and maintenance of existing Classic pages. New interactive UI should use LWC unless VF-specific platform features are required.
@@ -42,6 +42,9 @@ For new development, Lightning Web Components are the recommended approach for c
 3. **DML Triggered on Page Load via `action` Attribute** — Using the `<apex:page action="{!doSomething}">` attribute to perform DML or side-effecting callouts fires those operations on every page load, including refreshes and bookmarked URLs. This pattern causes duplicate records, unexpected audit entries, and is exploitable via CSRF.
 
 ## Official Sources Used
+
+- Apex Developer Guide 264 — standard and custom controllers execute in user mode (salesforce_apex_developer_guide.txt L19443-19444); user mode default at API 67.0+, system mode at ≤66.0 (L11928-11929); transient/static not in view state (L4777, L4788); `@RemoteAction` JavaScript remoting (L6245-6246)
+- Limits cheat sheet 264 — 170KB view state, <15 MB response (salesforce_app_limits_cheatsheet.txt L746-748); Apex Reference 262 — Visualforce host `MyDomainName--PackageName.vf.force.com` (salesforce_apex_reference_guide.txt L226384-226385)
 
 - Visualforce Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_intro.htm
 - Visualforce Limits Quick Reference — https://help.salesforce.com/s/articleView?id=000385650&type=1

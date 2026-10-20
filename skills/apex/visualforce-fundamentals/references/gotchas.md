@@ -2,9 +2,9 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: View State Is Encrypted and Round-Tripped — Not Just Stored
+## Gotcha 1: View State Is Round-Tripped on Every Postback — Not Just Stored
 
-**What happens:** Every postback (form submit, commandButton click, actionFunction call) sends the entire `__VIEWSTATE` field to the server and back. Even if a user never notices, the 170 KB limit applies per-request, and exceeding it throws a `ViewStateException` that breaks the page entirely.
+**What happens:** Every postback (form submit, commandButton click, actionFunction call) sends the entire `__VIEWSTATE` field to the server and back. Even if a user never notices, the 170KB limit applies per page (app_limits 264 L748), and exceeding it breaks the page (the exception name `ViewStateException` is UNVERIFIED (2026-10-20)).
 
 **When it occurs:** Pages with large non-transient collections, multiple controller extensions each holding their own state, or pages that accumulate data across a multi-step flow. The limit is invisible in developer testing because small data sets rarely trigger it — it surfaces in production with real record volumes.
 
@@ -14,17 +14,17 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 2: Standard Controller FLS Does Not Extend to Custom Getter Methods
 
-**What happens:** When a standard controller is used, bound fields (e.g., `{!account.Industry}` on `<apex:inputField>`) automatically enforce FLS for the running user. However, if a controller extension queries the same object in a custom getter method (e.g., `[SELECT Industry FROM Account WHERE Id = :recordId]`), that query result does NOT automatically enforce FLS — the extension method runs in Apex and returns the raw data.
+**What happens:** When a standard controller is used, bound fields (e.g., `{!account.Industry}` on `<apex:inputField>`) automatically enforce FLS for the running user. However, if a controller extension queries the same object in a custom getter method (e.g., `[SELECT Industry FROM Account WHERE Id = :recordId]`), in a class saved at API 66.0 or earlier that query runs in system mode (apexdev 264 L11928-11929) and does NOT enforce FLS — the extension method returns the raw data.
 
 **When it occurs:** Pages that mix standard controller bindings with extension methods that perform their own SOQL to enrich the page with additional fields or related data.
 
-**How to avoid:** Add `WITH USER_MODE` to all SOQL in extension and custom controller methods. This ensures the database enforces FLS and CRUD for the running user before returning results. Available from Summer '23 onwards.
+**How to avoid:** Add `WITH USER_MODE` to all SOQL in extension and custom controller methods saved at API 66.0 or earlier, where system mode is the default; at 67.0+ user mode is the default (apexdev 264 L11928-11929). The guide's controller section says controllers "execute entirely in user mode" (L19443-19444). "Available from Summer '23" is UNVERIFIED (2026-10-20).
 
 ---
 
 ## Gotcha 3: `renderAs="pdf"` Completely Ignores JavaScript
 
-**What happens:** When `<apex:page renderAs="pdf">` is set, Salesforce renders the page HTML server-side and passes the raw HTML to the Flying Saucer PDF engine. Flying Saucer does not execute JavaScript. Any page behavior that depends on JS (dynamic content, JS-based charting, third-party libraries, jQuery DOM manipulation) will be absent or broken in the PDF output.
+**What happens:** When `<apex:page renderAs="pdf">` is set, Salesforce renders the page HTML server-side and passes the raw HTML to the PDF engine (named Flying Saucer in community sources — UNVERIFIED (2026-10-20)), which does not execute JavaScript. Any page behavior that depends on JS (dynamic content, JS-based charting, third-party libraries, jQuery DOM manipulation) will be absent or broken in the PDF output.
 
 **When it occurs:** Developers port an existing Visualforce page to PDF by adding `renderAs="pdf"` without auditing JS dependencies. The preview in a browser looks correct, but the PDF is blank or missing sections.
 
@@ -34,7 +34,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 4: Visualforce Pages in LEX Load in a Cross-Origin iframe
 
-**What happens:** In Lightning Experience, Visualforce pages are served from a `*.visualforce.com` subdomain (or a custom domain if configured), not from the `*.salesforce.com` Lightning host domain. The browser treats these as different origins. Any JavaScript in the VF page that tries to access `window.parent.location`, `window.top.document`, or modify the outer Lightning frame DOM will throw a `SecurityError: Blocked a frame with origin` error.
+**What happens:** In Lightning Experience, Visualforce pages are served from a separate Visualforce host — in production `MyDomainName--PackageName.vf.force.com` (apexref 262 L226384-226385); `*.visualforce.com` only with stabilized hostnames (api_meta 264 L125879-125885) — not from the Lightning host. Corrected 2026-10-20 from "a `*.visualforce.com` subdomain". The browser treats these as different origins. Any JavaScript in the VF page that tries to access `window.parent.location`, `window.top.document`, or modify the outer Lightning frame DOM will throw a `SecurityError: Blocked a frame with origin` error.
 
 **When it occurs:** Classic VF pages migrated to LEX that used JavaScript navigation hacks (`window.location = '...'`, `parent.window.location.reload()`), modal overlays that relied on DOM access to the parent frame, or pages that used Salesforce Classic JavaScript APIs (`sforce.connection`).
 
@@ -42,9 +42,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 5: `<apex:inputField>` Bound to a Formula or Rollup Field Throws on Save
+## Gotcha 5: `<apex:inputField>` Bound to a Formula or Rollup Field (save-time failure UNVERIFIED)
 
-**What happens:** `<apex:inputField>` renders an appropriate HTML input for the field's data type. When bound to a read-only field — formula, rollup summary, or auto-number — the component renders as an input, accepts user input, and then throws a `DmlException: FIELD_INTEGRITY_EXCEPTION` on the save action because the field is not writable at the database level.
+**What happens:** `<apex:inputField>` renders an appropriate HTML input for the field's data type. When bound to a read-only field — formula, rollup summary, or auto-number — the component renders as an input, accepts user input, and then (UNVERIFIED (2026-10-20)) throws a `DmlException: FIELD_INTEGRITY_EXCEPTION` on the save action because the field is not writable at the database level.
 
 **When it occurs:** Pages scaffolded by a developer who included all fields on a page without checking which fields are read-only. This is not a compile-time error and does not surface until a user attempts to save the record.
 

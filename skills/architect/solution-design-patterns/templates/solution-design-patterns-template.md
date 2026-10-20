@@ -35,7 +35,7 @@ Select the event that initiates the automation:
 
 | Constraint | Answer |
 |---|---|
-| Requires same-transaction HTTP callout? | [ ] Yes [ ] No |
+| Requires an HTTP callout on record save (must be async)? | [ ] Yes [ ] No |
 | Expected record volume per run | (e.g., 1–10 / 100–500 / 1,000+) |
 | Logic complexity | [ ] Simple (field default, notification) [ ] Moderate (conditional routing) [ ] Complex (multi-object, branching, data transformation) |
 | External system dependency? | [ ] Yes — (name system) [ ] No |
@@ -50,7 +50,7 @@ Work through this checklist in order. **Stop at the first "Yes" answer** — tha
 | Question | Answer | Layer implied |
 |---|---|---|
 | Can the logic be expressed entirely in Flow formulas and standard actions? | [ ] Yes [ ] No | Flow |
-| Does the logic require a same-transaction HTTP callout? | [ ] Yes [ ] No | Apex |
+| Does the logic require an HTTP callout on record save? | [ ] Yes [ ] No | Apex (async) |
 | Does bulk processing require explicit governor limit control (200+ records per transaction)? | [ ] Yes [ ] No | Apex |
 | Does the use case require a custom UI that standard Lightning components cannot provide? | [ ] Yes [ ] No | LWC |
 | Can the custom UI use Lightning Data Service for reads and standard actions for writes? | [ ] Yes [ ] No | LWC without Apex |
@@ -84,9 +84,9 @@ Work through this checklist in order. **Stop at the first "Yes" answer** — tha
 
 ### Layer Decoupling (if callout required)
 
-If the design requires both declarative logic and a same-transaction callout:
+If the design requires both declarative logic and a save-time callout (always asynchronous — apexdev 264 L35611):
 
-- [ ] Platform Event fired by Flow → Apex Platform Event trigger handles callout
+- [ ] Platform Event fired by Flow → Apex Platform Event trigger enqueues a Queueable with callout (event triggers generally can't call out, platform_events 264 L2318-2319)
 - [ ] Apex `@future(callout=true)` for post-transaction callout
 - [ ] Apex Queueable with callout support (preferred over `@future` for chaining and monitoring)
 
@@ -127,7 +127,7 @@ Estimate the limits consumed in a single transaction for the designed automation
 |---|---|---|---|
 | SOQL queries | 100 | | (count Flow Get Records + Apex queries combined) |
 | DML statements | 150 | | (count Flow Update/Create + Apex DML combined) |
-| Flow interview elements | 2,000 | | (estimate loop iterations × elements per iteration) |
+| Flow interview elements | 2,000 (UNVERIFIED (2026-10-20)) | | (estimate loop iterations × elements per iteration) |
 | CPU time (ms) | 10,000 | | (Apex-heavy designs; less relevant for Flow-only) |
 
 **Risk flag:** If any resource exceeds 50% of budget in a low-volume scenario, flag for load testing before production deployment.

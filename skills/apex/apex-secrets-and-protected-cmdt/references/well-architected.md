@@ -25,6 +25,11 @@
 
 ## Official Sources Used
 
+- Apex Developer Guide 264 — protected custom settings public outside a managed package, readable by guest user (salesforce_apex_developer_guide.txt L13709-13713); `public` = all Apex in the package (L3661-3663); debug log retention 24 h / 7 days (L38605)
+- Metadata API 264 — `Protected` / `PackageProtected` visibility (api_meta.txt L44591-44594)
+- Packaging 264 — `@NamespaceAccessible` across same-namespace 2GP packages; `global` across all namespaces (pkg2_dev.txt L17987-17990); sfdx 264 scratch-org shared-namespace exposure (sfdx_dev.txt L18905-18912)
+- Apex Reference 262 — protected CMDT behaves as public outside managed package (L170826-170828); `getInstance(developerName)` returns null on no match (L204618-204620); hierarchy `getInstance()` (L205082-205084); Security Guide 262 — Classic encrypted text 175-char limit (salesforce_security_impl_guide.txt L2522)
+
 - Custom Metadata Types — Protect Sensitive Data — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_metadata_security.htm
 - Apex Developer Guide — Named Credentials as Callout Endpoints — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm
 - Metadata API Developer Guide — PlatformEncryptionSettings — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_platformencryptionsettings.htm

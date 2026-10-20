@@ -31,11 +31,14 @@ the backslash, so `''` is almost always wrong.
 literal, treating `\` as literal (C/Python/JS mental model).
 
 ```sql
-SELECT Id FROM Doc__c WHERE Path__c = 'C:\temp\report'
+SELECT Id FROM Doc__c WHERE Path__c = 'C:\Users\report'
 ```
 
 **Why it happens:** in many languages an undefined escape degrades to a literal character; the
-model generalizes that here. In SOQL it is a hard error instead.
+model generalizes that here. In SOQL `\U` is not a sequence, so it is a hard error (SOQL Reference,
+UNVERIFIED (2026-10-20)). Worse, `'C:\temp\report'` parses silently: `\t` and `\r` are tab and
+carriage return (apexdev 264 L1280-1281), so the filter matches nothing. Corrected 2026-10-20: the
+old example used `C:\temp\report` as the "error" case.
 
 **Correct pattern:**
 
@@ -44,7 +47,8 @@ SELECT Id FROM Doc__c WHERE Path__c = 'C:\\temp\\report'
 ```
 
 **Detection hint:** a single `\` inside a SOQL literal followed by any character other than
-`n N r R t T b B f F " ' \ u` (or LIKE-only `_ %`). Flag it — it will not parse.
+`n N r R t T b B f F s " ' \ u` (or LIKE-only `_ %`). Flag it — it will not parse. Also flag
+`\t`/`\r`/`\n`/`\b`/`\f` inside path-like values: they parse, as control characters.
 
 ---
 
@@ -142,6 +146,6 @@ escape sequences that isn't backed by a release-notes citation.
 
 **Why it happens:** `__c` looks like a suffix. In `LIKE`, `_` is any single character.
 
-**Correct pattern:** Escape underscores (`LIKE '%\\_\\_c'`) or filter in Apex after describe (`endsWith('__c')` on the API name, not LIKE). Never use unescaped `_` in a LIKE meant to be literal.
+**Correct pattern:** Escape underscores — inline SOQL `LIKE '%\_\_c'`, or `'%\\_\\_c'` inside an Apex string for `Database.query` — or filter in Apex after describe (`endsWith('__c')` on the API name, not LIKE). Never use unescaped `_` in a LIKE meant to be literal.
 
 **Detection hint:** `LIKE '%__c'` or `LIKE '%_c'` without backslash-escaped underscores.

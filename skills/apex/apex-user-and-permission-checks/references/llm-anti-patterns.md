@@ -11,7 +11,7 @@ if (p.Name == 'System Administrator') { /* admin path */ }
 
 **Why it happens:** LLMs reach for intuitive identity checks. Profile name is the first thing that comes to mind.
 
-**Correct pattern:** `FeatureManagement.checkPermission('ModifyAllData')` or a dedicated custom permission. No Profile SOQL needed.
+**Correct pattern:** a dedicated custom permission checked with `FeatureManagement.checkPermission('<CustomPermissionApiName>')` — the argument is a custom permission API name (apexref 262 L215460), so `'ModifyAllData'` is not a documented use. No Profile SOQL needed.
 
 **Detection hint:** SOQL selecting `Profile.Name` followed by a string equality branch.
 
@@ -86,7 +86,7 @@ if (FeatureManagement.checkPermission('Typoed_Perm_Name')) {
 }
 ```
 
-**Why it happens:** LLMs don't know typos return false without warning.
+**Why it happens:** LLMs don't anticipate silent denial. Whether an undefined name returns `false` rather than throwing is UNVERIFIED (2026-10-20); the reference documents only enabled (true) / disabled (false) (apexref 262 L215465).
 
 **Correct pattern:** Add a deployment-time validation test that uses a known-good user and asserts every used permission returns `true`.
 
@@ -115,19 +115,19 @@ static void testRefund() {
 
 ---
 
-## Anti-Pattern 7: Treating `UserInfo.getUserType()` As A String
+## Anti-Pattern 7: Treating `UserInfo.getUserType()` As An Enum
 
 **What the LLM generates:**
 
 ```apex
-if (UserInfo.getUserType() == 'Standard') { /* internal */ }
+if (UserInfo.getUserType() == UserType.Standard) { /* internal */ }
 ```
 
-**Why it happens:** LLMs don't know `getUserType()` returns a `UserType` enum, not a string.
+**Why it happens:** Corrected 2026-10-20 — this entry previously had it backwards. `getUserType()` is `public static String getUserType()` (apexref 262 L243456-243460); there is no `UserType` enum to compare against.
 
-**Correct pattern:** `if (UserInfo.getUserType() == UserType.Standard) { ... }`.
+**Correct pattern:** `if (UserInfo.getUserType() == 'Standard') { ... }` — values per User.UserType (object_reference 264 L300019-300037).
 
-**Detection hint:** `UserInfo.getUserType()` compared to a string literal.
+**Detection hint:** `UserType.` followed by a value name, or a `UserType` variable assigned from `getUserType()`.
 
 ---
 
@@ -137,6 +137,6 @@ if (UserInfo.getUserType() == 'Standard') { /* internal */ }
 
 **Why it happens:** LLMs mix identity/environment info with authorization.
 
-**Correct pattern:** Use custom permissions for authorization; use `UserInfo` only for identity and environment facts.
+**Correct pattern:** Use custom permissions for authorization; use `UserInfo` only for identity and environment facts. `isMultiCurrencyOrganization()` "Specifies whether the organization uses multiple currencies" (apexref 262 L243541-243542) — it says nothing about the user.
 
 **Detection hint:** `UserInfo` methods in security-sensitive `if` conditions.

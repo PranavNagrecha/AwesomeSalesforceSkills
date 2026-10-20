@@ -6,7 +6,7 @@
 
 **Solution:**
 
-Create Protected CMDT `Webhook_Signing_Key__mdt` with `Value__c` (Long Text Area, External ID), `Key_Version__c`, `Active__c`. Mark the type Protected. Ship inside the managed package.
+Create Protected CMDT `Webhook_Signing_Key__mdt` with `Value__c` (Long Text Area — not External ID: that flag exists only on auto number, email, number and text fields, api_meta 264 L45637-45639), `Key_Version__c`, `Active__c`. Mark the type Protected. Ship inside the managed package.
 
 ```apex
 public with sharing class WebhookSigner {
@@ -31,7 +31,7 @@ public with sharing class WebhookSigner {
 }
 ```
 
-**Why it works:** Subscribers cannot read `Webhook_Signing_Key__mdt.Value__c` via SOQL, Tooling API, or anonymous Apex — Protected CMDT in a packaged namespace blocks all four. `@NamespaceAccessible` lets sibling classes inside `acme` invoke `activeSigningKey()` while keeping subscriber Apex out. Rotation is a single CMDT row insert + flip of `Active__c`, no code deploy.
+**Why it works:** A Protected type in a managed package is "accessible only to the developer org. Subscribing orgs can't access it" (api_meta 264 L44591-44592); the per-channel list (SOQL, Tooling API, anonymous Apex) is UNVERIFIED (2026-10-20). `public` already lets sibling classes inside `acme` call `activeSigningKey()` (apexdev 264 L3661); `@NamespaceAccessible` adds other `acme` 2GP packages, never subscriber Apex. Rotation is a single CMDT row insert + flip of `Active__c`, no code deploy.
 
 ---
 
@@ -112,7 +112,7 @@ public with sharing class StripeConfigSetup {
 }
 ```
 
-**Why it works:** The subscriber admin can SET the value via the LWC (write path is `@AuraEnabled`) but cannot GET it (no exposed getter, and the setting is Protected so direct SOQL from subscriber code returns null/error). Internal namespace Apex reads via `@NamespaceAccessible getApiKey()` only at the moment of callout. Combine with a Named Credential (`Stripe_NC`) that delegates the Authorization header injection — `getApiKey` is a fallback for SDK-style code that demands a raw bearer.
+**Why it works:** The subscriber admin can SET the value via the LWC (write path is `@AuraEnabled`) but cannot GET it (no exposed getter, and the setting is Protected so direct SOQL from subscriber code returns null/error — that exact runtime behaviour is UNVERIFIED (2026-10-20)). Internal namespace Apex reads via `@NamespaceAccessible getApiKey()` only at the moment of callout. Combine with a Named Credential (`Stripe_NC`) that delegates the Authorization header injection — `getApiKey` is a fallback for SDK-style code that demands a raw bearer.
 
 ---
 

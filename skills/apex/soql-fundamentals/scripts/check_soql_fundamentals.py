@@ -10,7 +10,10 @@ Uses stdlib only — no pip dependencies.
 
 Usage:
     python3 check_soql_fundamentals.py [--help]
-    python3 check_soql_fundamentals.py --manifest-dir path/to/classes
+    python3 check_soql_fundamentals.py --manifest-dir path/to/classes [--strict]
+
+Exit contract: findings are WARN (exit 0; exit 1 with --strict); a missing
+--manifest-dir is ERROR exit 1; a tree with no .cls files prints one WARN, exit 0.
 """
 
 from __future__ import annotations
@@ -89,7 +92,7 @@ def check_file(apex_file: Path) -> list[str]:
             if not has_where and not has_limit:
                 issues.append(
                     f"{apex_file.name}:{block_start}: SOQL query has no WHERE clause and no LIMIT. "
-                    "An unrestricted query can return up to 50,000 rows and exhaust the transaction "
+                    "An unrestricted query can consume the 50,000 records-per-transaction limit and exhaust the transaction "
                     "row budget. Add a WHERE clause or LIMIT."
                 )
 
@@ -127,12 +130,19 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory containing Apex .cls files (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings.")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
+    if not any(manifest_dir.rglob("*.cls")):
+        print(f"WARN: no .cls files under {manifest_dir}")
+        return 0
     issues = check_soql_fundamentals(manifest_dir)
 
     if not issues:
@@ -140,9 +150,9 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"ISSUE: {issue}")
+        print(f"WARN: {issue}")
 
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

@@ -23,9 +23,9 @@ outputs:
   - Documented rotation procedure
   - Source-control exclusion rules for `customMetadata/*-md.xml`
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-20
 tags:
   - apex
   - secrets
@@ -46,6 +46,20 @@ Activate when Apex needs to consume a secret value — API key, HMAC signing key
 - Confirm whether the consuming Apex ships in a **managed package** (with a namespace) or an unmanaged DX project. "Protected" Custom Metadata and "Protected" Custom Settings are only protected against **subscribers** — they offer zero protection in the source org.
 - Decide who owns **rotation** and on what cadence. A secret with no rotation procedure is a future incident.
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does the Apex ship in a managed package installed in subscriber orgs? | Gotcha 1: protection applies only there | Whether Protected CMDT/settings protect anything at all |
+| Is the secret used as callout authentication? | Decision tree: Named Credentials own that case | Removes Apex from the secret path entirely |
+| Must your own org's admins be unable to read it? | Gotcha 1: the source org always sees it | Forces an off-platform vault decision early |
+| Will several 2GP packages share the namespace? | Gotcha 3: `@NamespaceAccessible` crosses packages | Which getters need the annotation, and who can call them |
+| Are developers working in scratch orgs with the shared namespace? | Gotcha 1: secrets are visible there | Keeps real values out of scratch orgs |
+| Who rotates the value, and is a deploy acceptable? | Gotcha 2: records in git defeat rotation | A runbook and a `.forceignore` rule on day one |
+| Will anyone debug the integration in production? | Gotcha 5: debug logs keep what you print | A hash-only logging rule before the incident |
+
+A proper configuration decides the threat model first, so the storage choice is defensible, where "just doing it" stores a key wherever the first tutorial put it.
+
 ## Core Concepts
 
 ### The canonical decision tree
@@ -61,9 +75,9 @@ Activate when Apex needs to consume a secret value — API key, HMAC signing key
 
 ### Why "Protected" only protects against subscribers
 
-Protected Custom Metadata Types and Protected Custom Settings expose values **only to Apex code in the same managed-package namespace**. In the subscriber org, the admin cannot read them via UI, SOQL, Workbench, the Tooling API, or anonymous Apex. In the **packaging org** (or any unmanaged project) the System Admin retains full visibility — protection is a **packaging boundary**, not a cryptographic one.
+Protection "only applies to custom settings that are marked protected and installed to a subscriber organization as part of a managed package"; otherwise they are public and "readable for all profiles, including the guest user" (apexdev 264 L13709-13711). Protected custom metadata types behave the same way outside a managed package (apexref 262 L170826-170828). The specific list of subscriber channels that are blocked (UI, SOQL, Workbench, Tooling API, anonymous Apex) is UNVERIFIED (2026-10-20); the packaging guide notes the package developer, logged in to a subscriber org as a user, can view and edit protected custom settings data (pkg2 264 L22831). Protection is a **packaging boundary**, not a cryptographic one. For custom metadata types, Metadata API also offers `<visibility>PackageProtected</visibility>` (API 47.0+): "only accessible by the custom Apex code in the package. Use this value to secure secrets such as API access keys" (api_meta 264 L44593-44594).
 
-Implication: shipping "Protected" CMDT in an unmanaged 2GP or DX project gives you **none** of the protection you may have read about. The values land in `force-app/main/default/customMetadata/MySecret.Foo.md-meta.xml` and ride your git history forever.
+Implication: shipping "Protected" CMDT in an unlocked package or DX project gives you **none** of the protection you may have read about; outside a managed package the guide says to use named credentials or encrypted custom fields for secrets (apexdev 264 L13712-13713). The values land in `force-app/main/default/customMetadata/MySecret.Foo.md-meta.xml` and ride your git history forever.
 
 ### `@NamespaceAccessible` and the secret-getter pattern
 
@@ -79,15 +93,15 @@ global class SecretsProvider {
 }
 ```
 
-The `@NamespaceAccessible` annotation lets other classes in the same namespace call `getSecret`; subscriber code cannot. Combined with Protected CMDT, this is the platform-canonical pattern for shipping a signing key.
+Corrected 2026-10-20: `public` alone already makes `getSecret` "accessible by all Apex within a specific package" (apexdev 264 L3661). `@NamespaceAccessible` widens that to other 2GP packages sharing the namespace (apexdev 264 L3661-3663; pkg2 264 L17987-17990); `global` is available across all namespaces (pkg2 264 L17989-17990), which is what lets subscriber code call it. `getInstance(developerName)` returns null when no record matches (apexref 262 L204618-204620), hence the `?.`. `getInstance()` and `getAll()` return "only the first 255 characters of any field" — a Long Text Area secret longer than that is silently truncated; read it with SOQL instead (apexref 262 L204570-204571, L204645-204647).
 
 ### Custom Settings, Hierarchy, Protected
 
-A Hierarchy Custom Setting marked **Protected** behaves like Protected CMDT: only managed-package code can read it. Hierarchy is preferable to List for secrets because per-org values don't bloat the schema. Same caveat: only protected against subscribers.
+A Hierarchy Custom Setting marked **Protected** behaves like Protected CMDT: only managed-package code can read it. Hierarchy `getInstance()` returns the record for the current user, merged from the lowest level defined (apexref 262 L205082-205084). "Hierarchy is preferable to List because per-org values don't bloat the schema" is UNVERIFIED (2026-10-20). Same caveat: only protected against subscribers.
 
 ### Shield Platform Encryption is for record data, not configuration
 
-Encrypted Custom Fields exist for PII and regulated record data — encryption-at-rest with key management (BYOK or platform-managed). They are not the right home for a webhook signing key; the value still appears in screens, reports (with permission), and Apex SOQL results. Use Shield for "the customer's tax ID," not for "our outbound HMAC secret."
+Shield Platform Encryption exists for PII and regulated record data — encryption-at-rest with key management. That a Shield-encrypted value "still appears in screens, reports and Apex SOQL results" is UNVERIFIED (2026-10-20). Do not confuse it with Classic **encrypted custom fields** (Text (Encrypted)), which the Apex guide names as a secret store outside managed packages (apexdev 264 L13712-13713): only users with View Encrypted Data can see them, and they are limited to 175 characters (secguide 262 L2486, L2522) — too short for some keys.
 
 ## Common Patterns
 
@@ -125,7 +139,7 @@ Store key version metadata in Protected CMDT (`Key_Version__c`, `Active__c`, `Re
 1. Classify the secret by purpose using the decision tree; reject hardcoding outright.
 2. Confirm packaging shape — managed (namespace) vs unmanaged (DX). If unmanaged and the secret needs subscriber-invisibility, escalate to managed packaging or off-platform vault.
 3. Pick storage: Named Credential (callouts), Protected CMDT or Protected Custom Setting (managed package), Encrypted Field (record data), or off-platform vault (admin-invisible).
-4. Implement Apex retrieval with `@NamespaceAccessible` for managed-package secret getters; never read into a `static final String` constant.
+4. Implement Apex retrieval as a `public` getter (add `@NamespaceAccessible` only when other 2GP packages in the namespace must call it; never `global`); never read into a `static final String` constant.
 5. Add a `.forceignore` rule (or explicit absence from `package.xml`) so `customMetadata/Secret_Config.*.md-meta.xml` records do not get committed with values.
 6. Document a rotation procedure: who rotates, on what cadence, the runbook to update the CMDT row, and how dependent integrations re-sync.
 7. Run `scripts/check_apex_secrets_and_protected_cmdt.py` against the repo to detect hardcoded literals, unprotected secret-named CMDT fields, and `System.debug` of secret-named variables.
@@ -143,9 +157,9 @@ Store key version metadata in Protected CMDT (`Key_Version__c`, `Active__c`, `Re
 
 ## Salesforce-Specific Gotchas
 
-1. **Protected does not protect against the source-org admin.** The promise applies only to subscribers of a managed package. In your own org, every System Admin can query, view, and export every "Protected" CMDT row.
+1. **Protected does not protect outside a managed package installed in a subscriber org.** There, protected settings are "readable for all profiles, including the guest user" (apexdev 264 L13709-13711).
 2. **Custom Metadata records are source-controlled by default.** `sf project retrieve` pulls `customMetadata/*.md-meta.xml` into git — including secret values someone typed in once. Add a `.forceignore` rule the day you create the type.
-3. **`@NamespaceAccessible` is required to expose secret-getters across classes inside a managed package** while keeping subscriber code locked out. Without it, either the method is private (unreachable from sibling classes) or global (callable by subscriber code).
+3. **`public` already reaches every class in the package** (apexdev 264 L3661) — corrected 2026-10-20; the old text said `@NamespaceAccessible` is required inside one package. The annotation is for other 2GP packages sharing the namespace (pkg2 264 L17987-17990); never make a secret getter `global`.
 4. **Rotation must be planned upfront.** CMDT updates are deployable, but a rotation runbook that requires a deploy each time is operationally fragile — design the type so a manual record edit (by a controlled admin) is the rotation step.
 
 ## Output Artifacts
@@ -161,6 +175,6 @@ Store key version metadata in Protected CMDT (`Key_Version__c`, `Active__c`, `Re
 ## Related Skills
 
 - `apex/apex-named-credentials-patterns` — callout authentication (the most common reason engineers reach for "store an API key")
-- `security/shield-platform-encryption` — record-data encryption-at-rest
-- `apex/apex-crypto-patterns` — `Crypto.generateAesKey`, signing, hashing
-- `devops/source-control-hygiene` — `.forceignore` patterns and secret-leak scanning
+- `security/platform-encryption` — record-data encryption-at-rest
+- `apex/apex-encoding-and-crypto` — `Crypto.generateAesKey`, signing, hashing
+- `devops/pipeline-secrets-management` — keeping secrets out of source and CI

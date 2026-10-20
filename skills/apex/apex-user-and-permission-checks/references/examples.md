@@ -83,9 +83,8 @@ public class BulkRefundQueueable implements Queueable {
 ```apex
 public with sharing class CaseVisibility {
     public static Boolean isExternal() {
-        UserType t = UserInfo.getUserType();
-        // Standard is internal; everything else (Partner, CspLitePortal, etc.) is external.
-        return t != UserType.Standard;
+        // getUserType() returns a String (apexref 262 L243456); 'Standard' is internal.
+        return UserInfo.getUserType() != 'Standard';
     }
 
     public static List<String> visibleFieldApiNames() {
@@ -97,7 +96,7 @@ public with sharing class CaseVisibility {
 }
 ```
 
-**Why it works:** `UserType` enum is license-aware and stable. One branch covers all external license flavors.
+**Why it works:** `User.UserType` is license-based: `Standard` is internal, the other values (PowerPartner, CspLitePortal, CustomerSuccess, PowerCustomerSuccess, CsnOnly, Guest) are not (object_reference 264 L300019-300037). One branch covers all external license flavors. Corrected 2026-10-20: the previous version used a non-existent `UserType` enum.
 
 ---
 
@@ -113,7 +112,7 @@ if (UserInfo.getProfileId() == [SELECT Id FROM Profile WHERE Name = 'System Admi
 
 **What goes wrong:** Profile name can be renamed or cloned. The SOQL runs every call. Admins with "Modify All Data" via a permission set are misclassified as non-admin.
 
-**Correct approach:** `FeatureManagement.checkPermission('ModifyAllData')` (a built-in permission check).
+**Correct approach:** a custom permission granted to the admin permission set, checked with `FeatureManagement.checkPermission` (custom permission API names only, apexref 262 L215460). Corrected 2026-10-20: `checkPermission('ModifyAllData')` is not a documented use.
 
 ---
 
@@ -127,4 +126,4 @@ private static Boolean canRefund = FeatureManagement.checkPermission('Perform_Bu
 
 **What goes wrong:** The static initializer fires once on first class load of the transaction. In long-running async jobs that pull configuration changes mid-run, the cached value is stale.
 
-**Correct approach:** Call `checkPermission` at the decision site. It's cheap.
+**Correct approach:** Call `checkPermission` at the decision site ("cheap" is UNVERIFIED (2026-10-20): no cost figure in the reference).

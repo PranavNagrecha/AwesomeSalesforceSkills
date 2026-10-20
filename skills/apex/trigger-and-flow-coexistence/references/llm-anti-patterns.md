@@ -11,7 +11,7 @@ Two variants, both wrong, both common:
 
 **Variant B — the indeterminacy claim.** "Before-save Flows and before triggers both run at step 3, and Salesforce doesn't guarantee which goes first, so the outcome is indeterminate — never rely on their relative order."
 
-**Why it happens:** Before-save updates in record-triggered Flows arrived in **Spring '20**; before that, only triggers existed at before-save timing, and a large body of blog and StackExchange content states flatly that "triggers run first." Variant B has a different origin: for a period the Apex Developer Guide's order-of-execution list did not enumerate before-save Flows as their own numbered step, and writers filled the gap by declaring the order unspecified. The current list resolves it explicitly. Models trained on either era repeat the stale claim as fact.
+**Why it happens:** Before-save updates in record-triggered Flows arrived in **Spring '20** (UNVERIFIED (2026-10-20): release history not in the corpus); before that, only triggers existed at before-save timing, and a large body of blog and StackExchange content states flatly that "triggers run first." Variant B has a different origin: for a period the Apex Developer Guide's order-of-execution list did not enumerate before-save Flows as their own numbered step, and writers filled the gap by declaring the order unspecified. The current list resolves it explicitly. Models trained on either era repeat the stale claim as fact.
 
 **Correct pattern:**
 
@@ -88,7 +88,7 @@ InvocableMethod called from the Flow or consolidate logic into the trigger handl
 Flow Trigger Explorer shows the execution order of record-triggered Flows only.
 It does not display Apex triggers, workflow rules, or Process Builder. To see
 trigger-Flow interleaving, enable debug logs and look for CODE_UNIT_STARTED
-and FLOW_START_INTERVIEWS events in the execution log.
+and FLOW_START_INTERVIEWS_BEGIN/_END events (apexdev 264 L39261-39264) in the execution log.
 ```
 
 **Detection hint:** Recommendations to use Flow Trigger Explorer to debug trigger-Flow ordering or claims that it shows "all automation" on an object.

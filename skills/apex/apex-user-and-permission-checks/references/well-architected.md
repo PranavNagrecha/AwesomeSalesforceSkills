@@ -25,9 +25,13 @@ Permission-gated code that fails wrong (denies valid users, admits invalid users
 
 1. **Profile-name string check** — renamed profiles and PS-only grants break the gate silently.
 2. **Async running-user assumption** — the Queueable's `checkPermission` resolves to the async context user, often different from the enqueuer.
-3. **No deployment-time validation of permission existence** — typos or not-yet-deployed permissions deny everyone without warning.
+3. **No deployment-time validation of permission existence** — typos or not-yet-deployed permissions deny everyone (silent `false` is UNVERIFIED (2026-10-20)).
 
 ## Official Sources Used
+
+- Apex Reference 262 — `FeatureManagement.checkPermission(apiName)` checks a custom permission; argument is its API name; returns enabled/disabled (salesforce_apex_reference_guide.txt L215449-215465); `UserInfo.getUserType()` returns String (L243451-243460); `isMultiCurrencyOrganization()` (L243541-243542)
+- Object Reference 264 — User.UserType values (object_reference.txt L300019-300037); CustomPermission / SetupEntityAccess query examples (L88715-88729); `PermissionsModifyAllData` filter (L192754-192757)
+- Platform Events 264 — PE Apex trigger runs as Automated Process or the configured user (platform_events.txt L2309, L2366-2368)
 
 - Apex Reference — FeatureManagement: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_FeatureManagement.htm
 - Apex Reference — UserInfo: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_userinfo.htm

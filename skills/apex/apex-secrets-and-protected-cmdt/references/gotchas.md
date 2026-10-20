@@ -4,9 +4,9 @@ Non-obvious Salesforce platform behaviors that cause real production secret leak
 
 ## Gotcha 1: Protected CMDT only protects against subscribers, never against the source-org admin
 
-**What happens:** A team marks a Custom Metadata Type "Protected", believes the values are now hidden, and stores production credentials in the source org. Any System Administrator (or any user with View All Custom Settings + Customize Application) can still read every row via Setup, Workbench, the Tooling API, and anonymous Apex. The "Protected" promise applies only when the type ships INSIDE a managed package and is read FROM a subscriber org.
+**What happens:** A team marks a Custom Metadata Type "Protected", believes the values are now hidden, and stores production credentials in the source org. Outside a managed package, protected types "behave like public custom metadata types", which "are readable for all profiles, including the guest user" (apexref 262 L170826-170827; custom settings: apexdev 264 L13709-13711). The exact permission set a source-org user needs to read rows (View All Custom Settings + Customize Application) is UNVERIFIED (2026-10-20). The "Protected" promise applies only when the type ships INSIDE a managed package installed in a subscriber org.
 
-**When it occurs:** Unmanaged 2GP DX projects, unmanaged orgs, and the packaging org itself. Anyone who reads the Salesforce help article and skips the "managed package" prerequisite makes this mistake.
+**When it occurs:** Unlocked packages, DX projects, unmanaged orgs, and the packaging org itself. Also scratch orgs: when several second-generation packages share a namespace, protected values are "visible to any of your developers that are working in a scratch org with a shared namespace" — workaround: none (sfdx 264 L18905-18912).
 
 **How to avoid:** If the threat model includes the source-org admin, do not store the secret in Salesforce metadata at all — use an off-platform vault accessed via Named Credential. If the threat model is only subscribers, ship the type inside a managed package with a namespace and verify protection by testing read access from a subscriber sandbox.
 
@@ -28,13 +28,13 @@ Treat secret CMDT records as runtime-only configuration that is created post-dep
 
 ---
 
-## Gotcha 3: `@NamespaceAccessible` is the (only) correct access modifier for cross-class secret getters in a managed package
+## Gotcha 3: `global` on a secret getter hands it to subscriber code; `public` was already enough
 
-**What happens:** A developer wants other classes inside their managed namespace to call `SecretsProvider.getSecret(...)`. They mark the method `public` — but `public` in a managed package only allows callers from the same class file. They switch to `global` — but now any subscriber Apex can call it and exfiltrate the secret. Either choice breaks the threat model.
+**What happens:** Corrected 2026-10-20 — this gotcha used to say `public` "only allows callers from the same class file". The guide says `public` means "accessible by all Apex within a specific package" (apexdev 264 L3661). A developer who believes the old claim switches the getter to `global`, and "Apex that is declared global is always available across all namespaces" (pkg2 264 L17989-17990) — subscriber Apex can now call it.
 
-**When it occurs:** Whenever a managed-package developer assumes Apex access modifiers behave like Java's `public`. They don't — namespace boundaries override class-level visibility.
+**When it occurs:** When a namespace is split across several 2GP packages and a getter in one package must be called from another.
 
-**How to avoid:** Annotate the method with `@NamespaceAccessible`. This makes it callable from any class inside the same namespace and inaccessible from subscriber code. The annotation also works on classes, properties, constructors, and inner types.
+**How to avoid:** Keep the getter `public`. Add `@NamespaceAccessible` only for cross-package callers in the same namespace: it "makes public Apex in a package available to other packages that use the same namespace" (pkg2 264 L17987).
 
 ```apex
 public class SecretsProvider {
@@ -47,7 +47,7 @@ public class SecretsProvider {
 
 ## Gotcha 4: Shield Platform Encryption has indexing and SOQL caveats that surprise teams
 
-**What happens:** A team encrypts `Account.External_Id__c` with Shield, then their integration breaks because case-insensitive search returns no results, `LIKE` queries don't work, ORDER BY orders by ciphertext, and indexed lookups slow down. Some operators (`<`, `>`, `STARTS WITH`) are unsupported on encrypted fields.
+**What happens:** A team encrypts `Account.External_Id__c` with Shield, then their integration breaks because case-insensitive search returns no results, `LIKE` queries don't work, ORDER BY orders by ciphertext, and indexed lookups slow down. Some operators (`<`, `>`, `STARTS WITH`) are unsupported on encrypted fields. UNVERIFIED (2026-10-20): the Shield query restrictions are help-only; the corpus security guide documents only Classic encrypted text fields (no filters, reports criteria or search — secguide 262 L2523-2525).
 
 **When it occurs:** Most often during the first integration after enabling Shield on a previously-unencrypted field, especially when external systems sync via Bulk API filtering on the now-encrypted column.
 
@@ -55,9 +55,9 @@ public class SecretsProvider {
 
 ---
 
-## Gotcha 5: `System.debug` of a secret variable lands in the debug log forever
+## Gotcha 5: `System.debug` of a secret variable stays readable for the log's whole retention window
 
-**What happens:** Debug log lines are not purged on demand; they remain available for download by anyone with the View All Data permission until the log expires. A `System.debug('key=' + apiKey)` line written for a single bug investigation leaks the secret to every developer with debug-log access for the next 24 hours and to any Event Monitoring archive indefinitely.
+**What happens:** "System debug logs are retained for 24 hours. Monitoring debug logs are retained for seven days" (apexdev 264 L38605). A `System.debug('key=' + apiKey)` line written for a single bug investigation leaks the secret to every developer with debug-log access for that window. Who may download logs (View All Data) and any Event Monitoring archive are UNVERIFIED (2026-10-20).
 
 **When it occurs:** During incident triage, when a developer enables a TraceFlag and adds debug statements to figure out why a callout is failing 401.
 

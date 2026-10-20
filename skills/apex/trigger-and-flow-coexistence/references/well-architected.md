@@ -26,5 +26,6 @@
 - Metadata API Developer Guide: Flow (`triggerOrder`, API 54.0+) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
 - Salesforce Help: Record-Triggered Automation Decision Guide — https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger.htm
 - Salesforce Architects: Well-Architected Overview — https://architect.salesforce.com/well-architected/overview
+- Corpus cites (2026-10-20): order of execution steps 3-4 (salesforce_apex_developer_guide.txt 264 L15643-15644), validation step 5 (L15645-15646), workflow re-fire once and no flow re-run (L15654-15662), steps 12-14 (L15664-15673), multiple triggers per event not ordered (L15705-15707), at API 53.0 and earlier after-save flows run after entitlements (L15712)
 - Salesforce Help: Flow Trigger Explorer — https://help.salesforce.com/s/articleView?id=sf.flow_trigger_explorer.htm
 - Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm

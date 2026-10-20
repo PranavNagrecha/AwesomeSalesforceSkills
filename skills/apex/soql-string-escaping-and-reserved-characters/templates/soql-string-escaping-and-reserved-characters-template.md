@@ -15,9 +15,9 @@ The escape character is the backslash (`\`). Letter escapes are case-insensitive
 | New line | `\n` / `\N` | |
 | Carriage return | `\r` / `\R` | |
 | Tab | `\t` / `\T` | |
-| Bell | `\b` / `\B` | |
+| Backspace (apexdev 264 L1280-1281; earlier "Bell") | `\b` / `\B` | |
 | Form feed | `\f` / `\F` | |
-| A Unicode character | `\uXXXX` | Exactly 4 hex digits (e.g. `é` = é) |
+| A Unicode character | `\uXXXX` | Exactly 4 hex digits (e.g. `\u00e9` = é) |
 | A **literal** `%` in a LIKE pattern | `\%` | **LIKE only** — error elsewhere |
 | A **literal** `_` in a LIKE pattern | `\_` | **LIKE only** — error elsewhere |
 

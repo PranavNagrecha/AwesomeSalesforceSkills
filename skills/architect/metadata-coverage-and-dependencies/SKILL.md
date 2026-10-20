@@ -26,17 +26,17 @@ outputs:
   - Packaging eligibility assessment
   - Unsupported metadata type workaround recommendations
 triggers:
-  - which metadata types are supported by Metadata API
-  - how to check if a metadata type can go in an unlocked package
-  - how to find all components that depend on a custom field
-  - impact analysis before deleting an Apex class
-  - dependency graph for packaging boundary decisions
-  - MetadataComponentDependency query examples
-  - unsupported metadata types workaround
+  - "which metadata types are supported by Metadata API"
+  - "how to check if a metadata type can go in an unlocked package"
+  - "how to find all components that depend on a custom field"
+  - "impact analysis before deleting an Apex class"
+  - "dependency graph for packaging boundary decisions"
+  - "MetadataComponentDependency query examples"
+  - "unsupported metadata types workaround"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-20
 ---
 
 # Metadata Coverage and Dependencies
@@ -49,9 +49,25 @@ The Metadata Coverage Report answers the first question. The Tooling API Metadat
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which channel ships this metadata — Metadata API, unlocked, 2GP, 1GP? | Gotcha 5: unsupported types drop out | The coverage column to read |
+| At which API version was coverage last checked? | Gotcha 2: coverage changes each release | A dated, versioned coverage record |
+| Will automation gate releases on the dependency query? | Gotcha 1: the object's status is unverified | Whether a manual review must back it |
+| Is any field or class referenced dynamically (strings, CMDT, templates)? | Gotcha 3: dynamic references are invisible | A text search alongside the query |
+| How many dependency rows could the org return? | Gotcha 4: per-job limits and paging | Segmented extraction, row-count checks |
+| Do candidate packages reference each other both ways? | Gotcha 6: circular dependencies aren't supported | A base package for shared components |
+| Are standard fields counted as coupling? | Gotcha 7: they inflate metrics | Custom-only coupling counts |
+
+A proper configuration records the channel, API version and dependency evidence behind each packaging decision, where "just doing it" discovers the unsupported type at subscriber install.
+
+---
+
 ## Metadata Coverage Report
 
-The Metadata Coverage Report is the canonical source of truth for which metadata types are supported across Salesforce deployment channels. It is published by Salesforce at `https://developer.salesforce.com/docs/metadata-coverage` and is versioned by API release.
+The Metadata Coverage Report is the canonical source of truth for which metadata types are supported across Salesforce deployment channels. Metadata API calls it "the ultimate source of truth for metadata coverage across several channels" — Metadata API, scratch org source tracking, unlocked packages, second-generation managed packages, classic managed packages (api_meta 264 L10250-10252); you don't have to be logged into an org to view it (L10253). The URL and "versioned by API release" are UNVERIFIED (2026-10-20).
 
 The report covers support status across these channels:
 
@@ -63,7 +79,7 @@ The report covers support status across these channels:
 | 2GP Managed Packages | Second-generation managed package support. |
 | 1GP Managed Packages | Classic (first-generation) managed package support. |
 
-Each metadata type has one of three statuses per channel: **Supported**, **Not Supported**, or **Beta**. Beta types may work but carry no forward-compatibility guarantee.
+Each metadata type has one of three statuses per channel: **Supported**, **Not Supported**, or **Beta** (UNVERIFIED (2026-10-20): the report's status vocabulary is not in the corpus). Beta types may work but carry no forward-compatibility guarantee.
 
 ### How to Use the Coverage Report
 
@@ -74,7 +90,7 @@ Each metadata type has one of three statuses per channel: **Supported**, **Not S
 
 ### Common Unsupported or Partially Supported Types
 
-Not all metadata is created equal. Some frequently encountered types with coverage gaps include:
+Not all metadata is created equal. Some frequently encountered types with coverage gaps include (UNVERIFIED (2026-10-20): every row below is a field observation, not a corpus statement; `KnowledgeSettings`, `Territory2Model`, `StandardValueSet` and `PlatformEncryptionSettings` all exist as Metadata API types — api_meta 264 L123802, L137016, L134303, L127832 — so check the report per type):
 
 | Type | Coverage gap |
 |---|---|
@@ -90,7 +106,7 @@ Always verify against the current API version. Coverage improves with each relea
 
 ## Unsupported Metadata Types
 
-Salesforce publishes an explicit list of unsupported metadata types in the Metadata API Developer Guide. These types cannot be retrieved, deployed, or packaged through the Metadata API at all. They must be configured manually or through the Tooling API (for types that support it).
+Corrected 2026-10-20: the Metadata API guide does not carry its own list; it says some features' types "can't be retrieved or deployed with Metadata API. To make changes to these types, you must do it manually in each of your organizations", that types "may also be unsupported in source tracking, packaging, and change sets", and "For a complete list ... see Metadata Coverage" (api_meta 264 L10256-10260). The old text claimed an explicit list in the guide and a Tooling API alternative (UNVERIFIED (2026-10-20)).
 
 When an unsupported type is part of your solution architecture, document it as a manual deployment step in your release runbook. Do not assume future support — plan for the current state.
 
@@ -98,7 +114,7 @@ When an unsupported type is part of your solution architecture, document it as a
 
 ## MetadataComponentDependency (Tooling API)
 
-The `MetadataComponentDependency` object in the Tooling API provides a read-only, queryable dependency graph for metadata components in an org. Each record represents a directional dependency: component A depends on component B.
+The `MetadataComponentDependency` object in the Tooling API provides a read-only, queryable dependency graph for metadata components in an org (UNVERIFIED (2026-10-20): the Tooling API guide that defines `MetadataComponentDependency` is not in the corpus; no corpus line names the object; the field names, read-only status and Bulk API 2.0 support below are unverified with it). Each record represents a directional dependency: component A depends on component B.
 
 ### Key Fields
 
@@ -143,11 +159,13 @@ FROM MetadataComponentDependency
 
 ### Bulk API 2.0 for Large Dependency Graphs
 
-For production orgs with thousands of metadata components, the standard Tooling API query may hit governor limits. Salesforce supports querying `MetadataComponentDependency` through Bulk API 2.0, which can return up to 100,000 records per query job. This is the recommended approach for full-org dependency extraction.
+For production orgs with thousands of metadata components, the standard Tooling API query may hit governor limits. Salesforce supports querying `MetadataComponentDependency` through Bulk API 2.0, which can return up to 100,000 records per query job (UNVERIFIED (2026-10-20); Bulk API 2.0 results page with the `Sforce-Locator` header, api_asynch 264 L3295-3296). This is the recommended approach for full-org dependency extraction.
 
 ```bash
 sf data query --query "SELECT MetadataComponentName, MetadataComponentType, RefMetadataComponentName, RefMetadataComponentType FROM MetadataComponentDependency" --use-tooling-api --bulk --target-org myOrg
 ```
+
+Whether `sf data query` accepts `--bulk` together with `--use-tooling-api` is UNVERIFIED (2026-10-20): the CLI guide shows `--use-tooling-api` only on plain queries (sfdx 264 L12664-12666). If the CLI rejects the pair, run the plain Tooling query segmented by `MetadataComponentType`.
 
 ### Dependency Graph Is Read-Only
 
@@ -189,7 +207,7 @@ One of the highest-value uses of the dependency graph is defining packaging boun
    - **Internal edges** — dependencies between components inside the boundary.
    - **External edges** — dependencies that cross the boundary (incoming or outgoing).
 5. A good package boundary has high internal cohesion (many internal edges) and low external coupling (few cross-boundary edges).
-6. Cross-boundary dependencies require package dependency declarations. Circular cross-boundary dependencies are not allowed and indicate the boundary is wrong.
+6. Cross-boundary dependencies require package dependency declarations. "Circular dependencies among packages aren't supported"; multi-level dependencies are (pkg2 264 L20669-20673).
 
 ### Package Dependency Order
 

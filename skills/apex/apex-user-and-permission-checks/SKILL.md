@@ -26,9 +26,9 @@ outputs:
   - "guidance on Profile-name checks vs Permission Set checks"
   - "patterns for internal vs community user branching"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-10-20
 ---
 
 # Apex User And Permission Checks
@@ -41,8 +41,24 @@ Activates when Apex needs to branch on who the running user is or what they are 
 
 - What are you actually gating — UI behavior only, or server-side authorization? Server-side checks must be enforced with `stripInaccessible` / `user_mode` regardless of permission flags.
 - Does a **Custom Permission** exist for this concept? If not, create one — it's the supported extensibility point.
-- Is the check supposed to ignore admins (e.g., "even admins can't do this") or honor them (most permissions do)? Custom Permissions respect "Modify All Data."
+- Is the check supposed to ignore admins (e.g., "even admins can't do this") or honor them? Whether Custom Permissions follow "Modify All Data" is UNVERIFIED (2026-10-20) — grant the permission to admins explicitly.
 - Does this run in a Queueable, Batch, or `@future`? The running user is the async context user, not the originating user.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does the check run in a Queueable, Batch, `@future` or platform event trigger? | Gotcha 1: `checkPermission` sees the running user | Whether the originator's Id must be passed in |
+| Is a Custom Permission already defined for this concept? | Gotcha 3: a misspelt name is not an error | The exact DeveloperName to test |
+| Should admins pass the gate? | Gotcha 2: admin behaviour is unverified | An explicit grant instead of an assumption |
+| Is any grant made through a session-based permission set? | Gotcha 7: it needs activation | Whether the flow must activate it first |
+| Does existing code derive access from the profile? | Gotcha 4: permission sets are invisible to `getProfileId()` | A list of profile-name checks to replace |
+| Is this a custom permission or a managed-package feature parameter? | Gotcha 6: separate APIs | The right `FeatureManagement` method |
+| Will tests run as an admin? | Gotcha 5: admin masks denials | Low-privilege test users for both paths |
+
+A proper configuration names the permission an admin can grant and tests both paths, where "just doing it" hardcodes a profile name that breaks on the first rename.
 
 ---
 
@@ -50,17 +66,17 @@ Activates when Apex needs to branch on who the running user is or what they are 
 
 ### Prefer Custom Permissions Over Profile / Permission-Set Name Checks
 
-The supported way to gate a feature in Apex is a Custom Permission. In Setup create `Perform_Bulk_Refund`, assign it to permission sets or profiles, and check with `FeatureManagement.checkPermission('Perform_Bulk_Refund')`. This returns `true` if the user has the permission via any assignment path.
+The supported way to gate a feature in Apex is a Custom Permission. In Setup create `Perform_Bulk_Refund`, assign it to permission sets or profiles, and check with `FeatureManagement.checkPermission('Perform_Bulk_Refund')`, which "Checks whether a custom permission is enabled" (apexref 262 L215450-215454); its argument is "The API name of the custom permission" (L215460).
 
 Checking `Profile.Name == 'Sales Manager'` is brittle: the name can be renamed in production, cloned profiles drift, and this check misses permission-set-based grants.
 
 ### `UserInfo` Gives Identity, Not Authorization
 
-`UserInfo.getUserId()`, `.getUserName()`, `.getProfileId()`, and `.getSessionId()` report identity. Use them for logging and relationship lookups. Don't use `UserInfo.getProfileId()` to drive authorization — couple the gate to a permission the admin can grant.
+`UserInfo.getUserId()`, `.getUserName()`, `.getProfileId()`, and `.getSessionId()` report identity. Use them for logging and relationship lookups. Don't use `UserInfo.getProfileId()` to drive authorization — couple the gate to a permission the admin can grant. In async Apex, `getSessionId()` returns null when the code runs as an internal user such as the automated process user (apexref 262 L243297-243299).
 
 ### Async Context Switches The User
 
-Apex in `@future`, Queueable, Batch, Scheduled, and platform event triggers runs as the async context user (often the user who fired the async, but for scheduled jobs the scheduler, for platform events the "Automated Process" user). `FeatureManagement.checkPermission` then checks that user's permissions. If you need the originating user, pass their Id explicitly and look up permissions via a query (see patterns).
+Apex in `@future`, Queueable, Batch, Scheduled, and platform event triggers runs as the async context user (often the user who fired the async; for scheduled jobs the scheduler — UNVERIFIED (2026-10-20): the Apex guide says only that "The scheduler runs as system" for class-access purposes, apexdev 264 L17006-17007, not which user `UserInfo` reports). A platform event Apex trigger runs "under the Automated Process entity or the user you select in the trigger configuration" (platform_events 264 L2309; override via PlatformEventSubscriberConfig, L2366-2368). `FeatureManagement.checkPermission` then checks that user's permissions. If you need the originating user, pass their Id explicitly and look up permissions via a query (see patterns).
 
 ### Custom Permission Lookup Paths
 
@@ -115,23 +131,23 @@ public class RefundQueueable implements Queueable {
     }
 
     private static Boolean hasPermission(Id userId, String permApiName) {
+        List<CustomPermission> cps =
+            [SELECT Id FROM CustomPermission WHERE DeveloperName = :permApiName];
+        if (cps.isEmpty()) return false;
         return ![
             SELECT Id FROM PermissionSetAssignment
             WHERE AssigneeId = :userId
-            AND PermissionSet.PermissionsCustomizeApplication = false
             AND PermissionSetId IN (
                 SELECT ParentId FROM SetupEntityAccess
                 WHERE SetupEntityType = 'CustomPermission'
-                AND SetupEntityId IN (
-                    SELECT Id FROM CustomPermission WHERE DeveloperName = :permApiName
-                )
+                AND SetupEntityId = :cps[0].Id
             )
         ].isEmpty();
     }
 }
 ```
 
-**Why not the alternative:** `FeatureManagement.checkPermission` silently checks the running (async context) user, not the originating user.
+**Why not the alternative:** `FeatureManagement.checkPermission` silently checks the running (async context) user, not the originating user. The query shape follows the CustomPermission usage examples (object_reference 264 L88715-88724). Corrected 2026-10-20: the previous version filtered `PermissionSet.PermissionsCustomizeApplication = false`, which wrongly denied users whose permission set also grants Customize Application, and nested a second semi-join; the CustomPermission Id is now resolved first. The query does not check whether a session-based permission set is activated in the user's session (activation lives in `SessionPermSetActivation`, object_reference 264 L264542-264543), so it can report `true` for a grant that is not active.
 
 ### Pattern 3: Distinguish Internal Vs Community Users
 
@@ -142,13 +158,12 @@ public class RefundQueueable implements Queueable {
 ```apex
 public with sharing class UserContextUtil {
     public static Boolean isInternal() {
-        UserType t = UserInfo.getUserType();
-        return t == UserType.Standard;
+        return UserInfo.getUserType() == 'Standard';
     }
 }
 ```
 
-Where `UserType` is an enum and `Standard` represents internal users. Partner, Customer Success, CspLitePortal and others represent external. Treating internal-only code paths as the default is safer than enumerating every external type.
+Corrected 2026-10-20: `UserInfo.getUserType()` returns a `String`, not an enum (apexref 262 L243451-243460) — the old `UserType t = ...; t == UserType.Standard` did not compile. `Standard` is the internal license value; `PowerPartner`, `CspLitePortal`, `CustomerSuccess`, `PowerCustomerSuccess`, `CsnOnly` and `Guest` are the others (object_reference 264 L300019-300037). Treating internal-only code paths as the default is safer than enumerating every external type.
 
 ---
 
@@ -157,10 +172,10 @@ Where `UserType` is an enum and `Standard` represents internal users. Partner, C
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Gate a feature | Custom Permission + `FeatureManagement.checkPermission` | Admin-manageable, rename-safe |
-| Check user identity | `UserInfo` accessors | They are free and cached |
+| Check user identity | `UserInfo` accessors | No query needed ("free and cached" is UNVERIFIED (2026-10-20)) |
 | Check permission for async originator | Query `PermissionSetAssignment` / `SetupEntityAccess` | `checkPermission` uses running user |
 | Distinguish internal vs community | `UserInfo.getUserType()` | License-aware and stable |
-| Check Modify All Data | `FeatureManagement.checkPermission('ModifyAllData')` (built-in) or `UserInfo.isMultiCurrencyOrganization` equivalent | Avoid Profile-name checks |
+| Check Modify All Data | Query `PermissionSetAssignment` where `PermissionSet.PermissionsModifyAllData = true` (object_reference 264 L192754-192757) | Corrected 2026-10-20: `checkPermission` takes a custom permission API name (apexref 262 L215460), and `isMultiCurrencyOrganization` reports multi-currency (L243541-243542), not MAD |
 | Test the check in unit tests | `System.runAs(testUser)` with proper permissions assigned | Running as System.runAs with Admin masks bugs |
 
 ---
@@ -193,10 +208,11 @@ Where `UserType` is an enum and `Standard` represents internal users. Partner, C
 See `references/gotchas.md` for the full list.
 
 1. **Async context users differ from originators** — `checkPermission` in a Queueable checks the async user.
-2. **Custom Permissions respect "Modify All Data"** — admins pass any permission check by default.
+2. **Admin bypass of Custom Permissions is UNVERIFIED (2026-10-20)** — grant the permission set explicitly rather than relying on "Modify All Data".
 3. **Profile rename breaks hardcoded name checks** — prefer Custom Permissions.
 4. **`System.runAs(admin)` in tests masks permission bugs** — test as real users.
-5. **`FeatureManagement.checkPermission` returns `false` for undefined permissions without throwing** — typos silently deny.
+5. **`FeatureManagement.checkPermission` returning `false` (not throwing) for undefined names is UNVERIFIED (2026-10-20)** — the reference documents only true/false for enabled/disabled (apexref 262 L215465); still, test the name.
+6. **`UserInfo.getUserType()` returns a String** (apexref 262 L243456) — compare with `'Standard'`, there is no `UserType` enum.
 
 ---
 
@@ -214,6 +230,6 @@ See `references/gotchas.md` for the full list.
 
 ## Related Skills
 
-- **apex-security-patterns** — FLS/CRUD enforcement alongside permission gating
-- **apex-async-architecture** — user-context switches in async work
-- **apex-callable-interface** — permission-sensitive dynamic invocation
+- `apex/apex-security-patterns` — FLS/CRUD enforcement alongside permission gating
+- `apex/async-apex` — user-context switches in async work
+- `apex/apex-callable-interface` — permission-sensitive dynamic invocation

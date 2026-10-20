@@ -89,8 +89,10 @@ is still preferred because it removes the escaping burden entirely — see
 
 **Context:** a query filters a text field that stores a Windows path, `C:\temp\report`.
 
-**Problem:** a lone backslash outside a defined escape sequence is rejected by the parser —
-"If you use a backslash character in any other context, an error occurs."
+**Problem:** written raw, `'C:\temp\report'` does not error — `\t` and `\r` are valid tab and
+carriage-return escapes (apexdev 264 L1280-1281), so the filter silently matches nothing. A path
+such as `C:\Users` does error: the SOQL Reference says "If you use a backslash character in any
+other context, an error occurs" (UNVERIFIED (2026-10-20), not in the corpus).
 
 **Solution:**
 

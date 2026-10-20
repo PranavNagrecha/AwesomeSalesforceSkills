@@ -21,11 +21,12 @@ double-quote-the-quote escaping in SOQL.
 followed by a character that isn't a defined escape sequence.
 
 **When it occurs:** Windows paths (`'C:\Users'`), regex fragments (`'\d+'`, `'\w'`), or any text
-where someone assumed an unknown escape falls through to a literal backslash. The docs are
-explicit: "If you use a backslash character in any other context, an error occurs."
+where someone assumed an unknown escape falls through to a literal backslash. The SOQL Reference
+says: "If you use a backslash character in any other context, an error occurs." — UNVERIFIED
+(2026-10-20): that guide is not in the corpus.
 
 **How to avoid:** double every literal backslash to `\\`, and only ever emit backslash sequences
-that appear in the escape table (`\n \r \t \b \f \" \' \\ \uXXXX`, plus LIKE-only `\_ \%`).
+that appear in the escape table (`\n \r \t \b \f \s \" \' \\ \uXXXX`, plus LIKE-only `\_ \%`); the Apex guide lists `\s` among the sequences shared with SOQL (apexdev 264 L1280-1282).
 
 ---
 
@@ -35,7 +36,7 @@ that appear in the escape table (`\n \r \t \b \f \" \' \\ \uXXXX`, plus LIKE-onl
 user can broaden a search by typing `%`.
 
 **When it occurs:** the value is passed through `String.escapeSingleQuotes` (which escapes only
-`'` and `\`) and dropped into a `LIKE` pattern; the user's `%`/`_` are still active wildcards.
+`'` and `\` — apexref 262 L235380) and dropped into a `LIKE` pattern; the user's `%`/`_` are still active wildcards.
 
 **How to avoid:** escape LIKE wildcards separately (`%` → `\%`, `_` → `\_`) before assembling the
 pattern. Treat quote-escaping and wildcard-escaping as two independent steps.
@@ -64,7 +65,7 @@ flags `\T` as a typo.
 
 **How to avoid:** the alphabetic escape sequences are case-insensitive — `\n` and `\N` both mean
 newline, `\t` and `\T` both mean tab. Only `\uXXXX` requires its lowercase `u`, with four hex
-digits following.
+digits following. UNVERIFIED (2026-10-20): case-insensitivity is a SOQL Reference statement, not in the corpus.
 
 ---
 
@@ -74,4 +75,4 @@ digits following.
 
 **When it occurs:** Tooling/EntityDefinition scans, report-type field lists, "find all custom fields" Apex.
 
-**How to avoid:** Escape the underscore: `LIKE '%\\_\\_c'` (or bind a string that contains escaped `_`). Prefer `DurableId` / `QualifiedApiName` ending-in checks in Apex after an unfiltered describe, not LIKE on `__c`.
+**How to avoid:** Escape the underscore: inline SOQL `LIKE '%\_\_c'`; inside an Apex string passed to `Database.query`, `'%\\_\\_c'` (the Apex layer turns `\\` into one `\`). Corrected 2026-10-20: the old text gave only `'%\\_\\_c'`, which inline is an escaped backslash followed by a live `_` wildcard. Prefer `DurableId` / `QualifiedApiName` ending-in checks in Apex after an unfiltered describe, not LIKE on `__c`.

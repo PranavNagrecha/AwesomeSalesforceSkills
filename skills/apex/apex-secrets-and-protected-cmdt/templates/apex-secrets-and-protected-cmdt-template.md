@@ -13,7 +13,7 @@ Use this template when adding, rotating, or refactoring secret storage in Apex.
 Record the answers to the Before Starting questions from SKILL.md here.
 
 - **Secret purpose:** (callout auth | signing key | symmetric crypto key | per-tenant lookup token | record-data encryption)
-- **Packaging shape:** (managed package with namespace `___` | unmanaged 2GP | unmanaged DX | bare org)
+- **Packaging shape:** (managed package with namespace `___` | unlocked package | unmanaged DX | bare org)
 - **Threat model:** (subscriber-invisible only | source-org-admin-invisible required | regulated record data)
 - **Rotation owner:** (team / individual)
 - **Rotation cadence:** (e.g. 90 days, on demand)
@@ -93,8 +93,8 @@ Before marking work complete:
 - [ ] No `String API_KEY = '...'`, `String SECRET = '...'`, etc. in any `.cls` (run checker script)
 - [ ] No `customMetadata/*.md-meta.xml` containing fields named `Api_Key__c`, `Secret__c`, `Token__c`, `Password__c` with values (run checker script)
 - [ ] No `System.debug` of secret-named variables (run checker script)
-- [ ] `@NamespaceAccessible` annotation present on all secret-getter methods
-- [ ] CMDT type confirmed Protected in metadata (`<protected>true</protected>`)
+- [ ] Secret getters are `public` (never `global`); `@NamespaceAccessible` only where another 2GP package in the namespace calls them
+- [ ] CMDT type confirmed `<visibility>Protected</visibility>` or `PackageProtected` (api_meta 264 L44591-44594); records `<protected>true</protected>` (L43645)
 - [ ] Custom Setting confirmed Protected in metadata (`<visibility>Protected</visibility>`)
 - [ ] `.forceignore` rule added for secret-bearing CMDT records
 - [ ] Rotation runbook written, owner assigned, first rotation date scheduled

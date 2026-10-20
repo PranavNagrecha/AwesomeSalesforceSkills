@@ -39,9 +39,9 @@ outputs:
   - "Future-proofing guidance (Custom Metadata, avoid hard-coded IDs)"
   - "Migration path recommendation when replacing legacy automation (Process Builder, Workflow Rules)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-20
 ---
 
 Use this skill when choosing the right automation layer for a Salesforce requirement, reviewing an existing design for hidden complexity or technical debt, or troubleshooting a system that mixes automation tools in conflicting or redundant ways. This skill covers the structural decision-making layer — it does not replace role-specific skills for building individual features.
@@ -51,9 +51,25 @@ Use this skill when choosing the right automation layer for a Salesforce require
 ## Before Starting
 
 - **What is the trigger type?** User-initiated action, record save (before/after), scheduled time, or external platform event?
-- **Does the use case require a same-transaction HTTP callout?** Callouts after record save are not allowed from Flow. This alone forces Apex.
-- **What automation already exists on this object?** Overlapping record-triggered Flows and Apex triggers on the same object share governor limits and execute in a defined order. Know what is already there.
+- **Does the use case call an external system on record save?** "By default, callouts aren't allowed after DML operations in the same transaction" (apexdev 264 L35611) — in Apex as well as Flow; Apex triggers must make the callout asynchronously (L15104-15106). Corrected 2026-10-20: the old text said this "alone forces Apex" for a same-transaction callout, which no layer can make.
+- **What automation already exists on this object?** Overlapping record-triggered Flows and Apex triggers on the same object execute in a defined order (apexdev 264 L15643-15673); that they share one set of governor limits is UNVERIFIED (2026-10-20). Know what is already there.
 - **Who will maintain this?** A team of admins maintaining Flow is a different risk profile from a developer team owning Apex. The right tool depends partly on who will own it.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does any step call an external system when a record saves? | Gotcha 2: no callout after uncommitted DML | An async path (Queueable/`@future`) designed in |
+| What already runs on this object, in Flow and Apex? | Gotcha 3: both draw on the same transaction | One owner per event, a combined query budget |
+| How many records can one loop in the Flow touch? | Gotcha 5: per-interview element ceiling | Loop sizing, or a move to Apex |
+| Is configuration read repeatedly in one transaction? | Gotcha 4: caching behaviour is unverified | One read, held in memory |
+| Are Process Builders or workflow rules still active? | Gotcha 6: they still fire | A migration list before new build |
+| Who maintains the result — admins or developers? | Layered model: maintainability first | The layer the team can own |
+| Are any IDs or thresholds hard-coded? | Future-proofing principle 1 | CMDT or labels instead |
+
+A proper configuration picks the layer from the requirement and the owning team, where "just doing it" picks the layer the builder knows and pays for it at the first callout or limit.
 
 ---
 
@@ -84,31 +100,33 @@ Use Flow when:
 - **The team is admin-led:** Flow is the right default when the maintenance team is certified admins without deep Apex experience.
 
 **Flow governor limits to know:**
-- A single Flow interview can execute up to 2,000 elements.
-- An org can have up to 50 active autolaunched Flows (not including Screen Flows).
+- A single Flow interview can execute up to 2,000 elements (UNVERIFIED (2026-10-20): no Flow limits table in the corpus).
+- An org can have up to 50 active autolaunched Flows (not including Screen Flows) (UNVERIFIED (2026-10-20)).
 - Record-Triggered Flows run in the same transaction as the triggering DML operation — before-save Flows run before the record is committed; after-save Flows run after.
-- Flow cannot make synchronous HTTP callouts after a record save. Use Platform Events or Apex if a same-transaction callout is required.
+- No layer can call out after the record's uncommitted DML (apexdev 264 L35611); move the callout to an asynchronous path.
 
 ### When to Use Apex
 
 Escalate to Apex when Flow cannot satisfy the requirement:
 
-- **Same-transaction REST callouts:** Flow cannot make HTTP callouts in after-save context. Apex `@future(callout=true)` or Queueable Apex with callout support handles this.
+- **Callouts with custom handling:** a callout triggered by a save must be asynchronous in Apex too (apexdev 264 L15104-15106); Apex `@future(callout=true)` or Queueable Apex runs it in a later transaction — not the same one.
 - **Complex data transformation:** Multi-step conditional logic involving more than a few objects, especially if intermediate values cannot be easily expressed in Flow formulas, is cleaner and more testable in Apex.
 - **Bulk processing:** Apex is designed with bulkification in mind. While Flow handles bulk scenarios, Apex gives explicit control over collection processing, chunked DML, and SOQL optimization.
 - **Bypass record trigger limits:** Apex triggers can set static boolean flags to prevent re-entrant execution — a common pattern when the same record is touched multiple times in one transaction.
 - **Cross-object logic that exceeds Flow's subflow depth:** Deeply nested subflow hierarchies become hard to debug. If the logic requires the same level of composition as a class hierarchy, use Apex.
 - **Custom metadata-driven routing:** Flow can read Custom Metadata, but complex branching based on CMDT values (routing rules with nested conditions) is easier to unit test in Apex.
 
-**Apex trigger order of execution (simplified, per record save):**
-1. System validation rules (required fields, field type enforcement)
-2. Before-save record-triggered Flows
-3. Before Apex triggers
-4. Record saved to database (in memory — not yet committed)
-5. After Apex triggers
-6. Assignment rules, auto-response rules, workflow rules (legacy — do not add new)
-7. After-save record-triggered Flows
-8. Escalation rules, entitlement rules
+**Apex trigger order of execution (simplified, per record save — apexdev 264 L15643-15681):**
+1. System validation (required fields, field formats)
+2. Before-save record-triggered Flows (step 3)
+3. Before Apex triggers (step 4)
+4. System validation again plus custom validation rules (step 5), duplicate rules (step 6)
+5. Record saved to database, not yet committed (step 7)
+6. After Apex triggers (step 8)
+7. Assignment, auto-response, workflow rules (steps 9-11), escalation rules (step 12), Process Builder (step 13)
+8. After-save record-triggered Flows (step 14), then entitlement rules (step 15)
+
+Corrected 2026-10-20: the old list put escalation rules after after-save Flows and omitted custom validation and duplicate rules.
 
 This ordering matters when both Flow and Apex handle the same object: a before-save Flow fires before an Apex before trigger, so Flow field writes are visible to the Apex before trigger.
 
@@ -118,19 +136,19 @@ Add LWC when the standard Salesforce UI cannot deliver the user experience the r
 
 - **Rich interactive UI:** Real-time data refresh without page reload, drag-and-drop interfaces, custom data visualizations.
 - **Reusable components:** A validated input widget, a shared layout, or a record card used across multiple pages.
-- **Mobile support:** LWC is fully supported on Salesforce Mobile. Aura components are legacy and do not reliably support mobile features introduced after ~2021.
+- **Mobile support:** LWC is fully supported on Salesforce Mobile. Aura components are legacy and do not reliably support mobile features introduced after ~2021 (UNVERIFIED (2026-10-20)).
 - **Integration with external APIs from the UI layer:** Display data from external systems without creating Salesforce records (data virtualization, mashups).
 
-**LWC vs. Aura:** Aura is legacy. Do not create new Aura components. All net-new custom UI work should use LWC. Aura components and LWC can coexist — Aura can contain LWC, but LWC cannot contain Aura.
+**LWC vs. Aura:** Aura is legacy. Do not create new Aura components. All net-new custom UI work should use LWC. Aura components and LWC can coexist — Aura can contain LWC, but LWC cannot contain Aura (UNVERIFIED (2026-10-20): the LWC guide is not in the corpus).
 
 ### Future-Proofing Principles
 
 Regardless of layer chosen, apply these principles to avoid design rot:
 
 1. **No hard-coded IDs.** Record IDs, user IDs, profile IDs, and queue IDs change between sandboxes and orgs. Store configurable values in Custom Labels or Custom Metadata Types (CMDT).
-2. **Use Custom Metadata Types for configuration.** CMDT records are deployable, queryable without SOQL limits (cached after first access), and version-controllable. Use them for routing rules, threshold values, and feature flags.
-3. **Do not use Process Builder for new automation.** Process Builder is scheduled for deprecation. Migrate existing Process Builders to Flow using the Migration Tool in Setup.
-4. **Do not use Workflow Rules for new automation.** Workflow Rules were deprecated in Summer '23. No new Workflow Rules can be activated; all remaining ones should be migrated to Flow.
+2. **Use Custom Metadata Types for configuration.** CMDT records are deployable and version-controllable; "All custom metadata is exposed in the application cache, which allows access without repeated queries to the database" (apexref 262 L204514-204515). Whether SOQL on CMDT counts against the SOQL limit is UNVERIFIED (2026-10-20). Use them for routing rules, threshold values, and feature flags.
+3. **Do not use Process Builder for new automation.** Process Builder is scheduled for deprecation (UNVERIFIED (2026-10-20): retirement dates are Help/release-note only). Migrate existing Process Builders to Flow using the Migration Tool in Setup.
+4. **Do not use Workflow Rules for new automation.** "Deprecated in Summer '23" and "no new Workflow Rules can be activated" are UNVERIFIED (2026-10-20); migrate remaining ones to Flow.
 5. **One automation owner per trigger event.** Avoid a pattern where a Record-Triggered Flow and an Apex trigger both react to the same `after insert` event on the same object doing similar things. This creates hidden coupling and makes execution order non-obvious.
 
 ---
@@ -155,7 +173,7 @@ Use this mode when a new feature or requirement needs a recommended automation a
 Ask each question in order. Stop at the first "yes":
 
 1. Can the logic be expressed entirely with Flow formulas and standard actions? → **Use Flow.**
-2. Does the logic require a same-transaction HTTP callout? → **Use Apex.**
+2. Does the logic require an HTTP callout on record save? → **Use Apex, asynchronously** (Queueable / `@future(callout=true)`; no layer calls out after uncommitted DML, apexdev 264 L35611).
 3. Does the logic require bulk-safe processing of more than ~200 records in one transaction with explicit governor limit control? → **Use Apex.**
 4. Does the logic require a custom UI that standard components cannot provide? → **Use LWC (backed by Apex if data access is needed).**
 5. Can the custom UI use Lightning Data Service for reads and standard actions for writes? → **Use LWC without Apex.**
@@ -172,16 +190,13 @@ Ask each question in order. Stop at the first "yes":
 
 Use this mode when reviewing a design document, a completed build, or an inherited org for design quality.
 
-#
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Answer the Questions table and Mode 1 Step 1 (trigger type) for the requirement.
+2. Inventory existing automation on the object (Flows, triggers, Process Builder, workflow) and map it to the order-of-execution steps above.
+3. Apply the escalation criteria (Mode 1 Step 2); any save-time callout goes to an asynchronous path.
+4. Run `python3 scripts/check_solution_design.py --manifest-dir force-app` (add `--strict` in CI) to find hard-coded IDs and legacy automation.
+5. Record the decision in `templates/solution-design-patterns-template.md` and tick the Review Checklist.
 
 ---
 
@@ -193,7 +208,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - [ ] **No hard-coded IDs:** Grep the org's Flows and Apex for embedded 15- or 18-character Salesforce IDs. Every one is a deployment risk.
 - [ ] **Custom Metadata for config:** Routing rules, feature flags, thresholds — are they in CMDT or in hard-coded values?
 - [ ] **LWC over Aura:** Any new component work uses LWC. Existing Aura components have a documented migration plan.
-- [ ] **Flow interview element count:** Are any individual Flows approaching the 2,000-element interview limit? (check Flow debug logs or increase Element Count in Setup)
+- [ ] **Flow interview element count:** Are any individual Flows approaching the 2,000-element interview limit (UNVERIFIED (2026-10-20))? (check Flow debug logs or increase Element Count in Setup)
 - [ ] **Apex trigger framework:** Are triggers bulkified? Is there a handler class pattern preventing logic from living directly in the trigger file?
 
 ---
@@ -207,11 +222,11 @@ Use this mode when an existing org has automation that behaves unexpectedly, fai
 | Symptom | Likely cause | Where to look |
 |---|---|---|
 | Duplicate records created | Two automations react to the same `after insert` event | Setup → Flows + object's Apex triggers |
-| Governor limit hit unexpectedly | Flow and Apex both perform SOQL in the same transaction | Debug log — check `LIMIT_USAGE_FOR_NS` entries |
-| Field update from Flow overwritten by Apex | Execution order misunderstood; after-save Flow fires after Apex triggers | Review order of execution; move one to before-save |
+| Governor limit hit unexpectedly | Flow and Apex both perform SOQL in the same transaction | Debug log — check `LIMIT_USAGE_FOR_NS` entries (apexdev 264 L39324) |
+| Field update from Flow overwritten by Apex | Before-save Flow (step 3) runs before the before trigger (step 4), so the trigger's write wins (apexdev 264 L15643-15644) | Give the field one owner. Corrected 2026-10-20: the old cause, "after-save Flow fires after Apex triggers", would make the Flow win |
 | Automation works in sandbox but not production | Hard-coded IDs that differ between orgs | Search Flow conditions and Apex for literal record IDs |
 | Process Builder action not firing | Process Builder is deprecated; active PBs may behave unpredictably | Migrate to Flow immediately |
-| Intermittent timeout in Record-Triggered Flow | External callout attempted from Flow after record save | Flow cannot callout after save — move to Apex Queueable with callout |
+| Callout error in Record-Triggered Flow | External callout attempted after the record's uncommitted DML (apexdev 264 L35611) | Move the callout to an async path (Queueable with callout) |
 | Config value wrong in one org | Hard-coded in Apex or Flow formula | Move to Custom Metadata Type |
 
 ---
@@ -222,9 +237,9 @@ Use this mode when an existing org has automation that behaves unexpectedly, fai
 |---|---|---|---|
 | Maintainability | High — visual, admin-friendly | Medium — requires developer + test class | Lower — requires developer, DOM knowledge |
 | Flexibility | Medium — constrained to available actions | High — full Salesforce API access | High — full DOM, JavaScript, Wire adapters |
-| Testability | Limited — Flow tests via debug run; no unit test framework | High — full Apex test framework with assertions | Medium — Jest for unit, manual for integration |
+| Testability | Medium — Flow tests (`FlowTest` metadata) verify record-triggered and autolaunched flows before activation (api_meta 264 L76698-76700); corrected 2026-10-20 from "no unit test framework" | High — full Apex test framework with assertions | Medium — Jest for unit, manual for integration |
 | Deployability | Metadata API / Change Sets | Metadata API / Change Sets | Metadata API / Change Sets |
-| Governor limit transparency | Low — limits are shared, less visible | High — explicit bulkification patterns | N/A for UI layer |
+| Governor limit transparency | Low — limits drawn in the same transaction as Apex (sharing UNVERIFIED (2026-10-20)), less visible | High — explicit bulkification patterns | N/A for UI layer |
 | Mobile support | Full (Screen Flow on Mobile) | N/A (server-side) | Full (LWC) / Partial (Aura — legacy) |
 
 ---
@@ -234,5 +249,5 @@ Use this mode when an existing org has automation that behaves unexpectedly, fai
 - `flow/` skills — for building specific Flow types (record-triggered, screen, scheduled)
 - `apex/trigger-framework` — for Apex trigger architecture and bulkification
 - `apex/custom-metadata-in-apex` — for CMDT-driven configuration patterns
-- `apex/callouts-and-http-integrations` — for same-transaction callout design
+- `apex/callouts-and-http-integrations` — for asynchronous callout design
 - `lwc/` skills — for component authoring and Lightning Data Service

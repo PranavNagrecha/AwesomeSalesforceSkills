@@ -24,11 +24,11 @@
 1. Create a Custom Metadata Type `Lead_Routing_Rule__mdt` with fields: `Country__c`, `Industry__c`, `Assigned_Queue_API_Name__c`.
 2. Populate the CMDT records for each of the 12 rules (deployable, sandbox-safe, no IDs).
 3. Build a Record-Triggered Flow on Lead (after insert):
-   - Query the CMDT records using a Get Records element (CMDT queries do not count against SOQL limits after first access).
+   - Query the CMDT records using a Get Records element (that CMDT queries do not count against SOQL limits after first access is UNVERIFIED (2026-10-20)).
    - Loop through matching rules and set `OwnerId` using an Update Records element.
 4. When routing rules change, the sales ops admin updates CMDT records in Setup — no developer, no deployment.
 
-**When this escalates to Apex:** If routing logic requires a same-transaction callout to an external CRM to validate rep territory assignments, Flow cannot make that callout after save. At that point, move the routing logic to an Apex trigger with a `@future(callout=true)` method, keeping the routing rules themselves in CMDT so they remain admin-configurable.
+**When this escalates to Apex:** If routing logic requires a callout to an external CRM to validate rep territory assignments, no layer can make it after the save's uncommitted DML (apexdev 264 L35611) — it must run asynchronously. At that point, move the routing logic to an Apex trigger with a `@future(callout=true)` method, keeping the routing rules themselves in CMDT so they remain admin-configurable.
 
 **Key takeaway:** Keep the *routing rules* in CMDT (configurable) and the *routing execution* in whichever layer the callout requirement dictates. Don't let a callout requirement force all logic into Apex if only the callout itself needs to be in Apex.
 
@@ -58,7 +58,7 @@
 **Correct layered approach:**
 
 1. **Scheduled Flow (declarative layer):** Runs every hour, finds Cases meeting the 48-hour escalation criteria. Updates Priority to Critical and sends the manager email notification. Fires a Platform Event (`Case_Escalation_Event__e`) to signal that a callout is needed.
-2. **Apex Platform Event Trigger (programmatic layer):** Subscribes to `Case_Escalation_Event__e`. Receives the Case ID from the event payload and makes the REST callout to the external ticketing system.
+2. **Apex Platform Event Trigger (programmatic layer):** Subscribes to `Case_Escalation_Event__e`. Receives the Case ID from the event payload and enqueues a Queueable with callout that calls the external ticketing system. Corrected 2026-10-20: the trigger itself does not call out — event triggers "generally can't make Apex callouts" (platform_events 264 L2318-2319).
 
 This design keeps the declarative work in Flow (visible to admins, no code changes for threshold adjustments) and isolates the callout to Apex where it belongs. The Platform Event decouples the two layers, so a callout failure does not roll back the Priority update.
 

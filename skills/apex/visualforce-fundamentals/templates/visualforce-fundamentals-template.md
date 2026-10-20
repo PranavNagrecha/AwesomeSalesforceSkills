@@ -25,7 +25,7 @@ Which pattern from SKILL.md applies? Why?
 - [ ] Standard Controller + extension (custom logic, FLS inherited for bound fields)
 - [ ] Custom Controller with `WITH USER_MODE` (full Apex control, explicit FLS)
 - [ ] PDF rendering via `renderAs="pdf"` (inline CSS, no JS, server-side data only)
-- [ ] JavaScript Remoting / `<apex:remoteAction>` (bypass view state for read-heavy ops)
+- [ ] JavaScript Remoting / `@RemoteAction` (bypass view state for read-heavy ops)
 
 ## Security Checklist
 

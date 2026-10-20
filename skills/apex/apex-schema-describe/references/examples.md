@@ -79,13 +79,15 @@ SObject.
 public static List<String> activeIndustryValues() {
     List<String> out = new List<String>();
     for (Schema.PicklistEntry pe : Account.Industry.getDescribe().getPicklistValues()) {
-        if (pe.isActive()) out.add(pe.getValue());
+        out.add(pe.getValue());
     }
     return out;
 }
 ```
 
-`getValue()` is the API name, `getLabel()` is the display string.
+`getValue()` is the API name, `getLabel()` is the display string. No
+`isActive()` filter is needed: the method returns active values only
+(apexref 262 L190851).
 
 ---
 

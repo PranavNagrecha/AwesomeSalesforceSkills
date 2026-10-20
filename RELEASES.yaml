@@ -809,7 +809,10 @@ releases:
       at a time, one heavy local job. Worklist is DERIVED each batch, never stored: never-audited = no ''UNVERIFIED'' and
       no '' 264 L'' anywhere in the package AND updated < 2026-10-19; order (1) cited in Mandatory Reads of status stable|beta
       agents, (2) cited by any other agent, (3) uncited; minus done_skills. Each reviewer report feeds standards/skill-writer-brief.md
-      ''Learned rules'' (orchestrator Step 3b) so new skills follow them. Sample defect rate from R3-05: ~1 in 3 skills.'
+      ''Learned rules'' (orchestrator Step 3b) so new skills follow them. Sample defect rate from R3-05: ~1 in 3 skills. WRITER-TIER
+      TRIAL (2026-10-20, batches 1-2, Opus reviewer both): Opus writer 58 defects/9 skills (6.44) with 4 contradictions found;
+      Sonnet writer 46/9 (5.11) with 40 contradictions found and 0 wrong fixes. DECISION: writers = Sonnet from batch 4; reviewer
+      stays Opus; Fable orchestrates and spot-checks. KPI ledger: evals/measurement/audit-ledger.jsonl.'
     done_skills:
     - admin/configuration-workbook-authoring
     - admin/fit-gap-analysis-against-org
@@ -829,9 +832,23 @@ releases:
     - apex/apex-enum-patterns
     - apex/apex-hardcoded-id-elimination
     - apex/apex-managed-sharing
+    - apex/apex-schema-describe
+    - apex/apex-secrets-and-protected-cmdt
+    - apex/apex-user-and-permission-checks
+    - apex/soql-fundamentals
+    - apex/soql-string-escaping-and-reserved-characters
+    - apex/trigger-and-flow-coexistence
+    - apex/visualforce-fundamentals
+    - architect/metadata-coverage-and-dependencies
+    - architect/solution-design-patterns
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-40
+    title: '<apex:remoteAction> does not exist: fix apex/pdf-generation-patterns (6 sites + checker) and security/visualforce-security-and-modernization'
     size: S
     owner_model: sonnet
     status: todo
@@ -1224,5 +1241,12 @@ inbox:
     add a note, and grep skills/ for TestUserFactory callers whose examples would now be wrong; also check the writer''s other
     out-of-batch leads: sandbox-strategy / sandbox-data-isolation-gotchas Help-only figures (29-day floor, 5 GB/10k Partial
     Copy), custom-permissions ''$Permission in validation rules'', SOQL ''--'' comment-injection claims in apex/soql-security.'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by R3-06 batch 3: the Visualforce component <apex:remoteAction> does not exist; the feature is the @RemoteAction
+    annotation (apexdev 264 L6245-6246). Sites: skills/apex/pdf-generation-patterns references/gotchas.md:7, llm-anti-patterns.md:29,46,
+    well-architected.md:21, examples.md:7,154, scripts/check_pdf_generation_patterns.py:75-78; skills/security/visualforce-security-and-modernization/SKILL.md:70.
+    These two skills are also on the never-audited list — fold into their audit batch or fix standalone.'
   size: S
   slotted_into: 1.5.0

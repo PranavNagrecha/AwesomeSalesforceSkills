@@ -8,7 +8,7 @@ Mistakes AI assistants commonly make when advising on Salesforce metadata covera
 
 **What the LLM generates:** "You can retrieve and deploy all your org configuration using `sf project retrieve start` and `sf project deploy start`."
 
-**Why it is wrong:** Not all metadata types are supported by the Metadata API. Salesforce publishes an explicit list of unsupported types, and the Metadata Coverage Report shows that many types are only partially supported (e.g., supported for Metadata API but not for packages, or Beta only). Blanket statements about full metadata deployability are factually incorrect and lead to incomplete deployments.
+**Why it is wrong:** Not all metadata types are supported by the Metadata API. The Metadata API guide defers the list to the Metadata Coverage report (api_meta 264 L10256-10260; corrected 2026-10-20 from "publishes an explicit list"), and the Metadata Coverage Report shows that many types are only partially supported (e.g., supported for Metadata API but not for packages, or Beta only). Blanket statements about full metadata deployability are factually incorrect and lead to incomplete deployments.
 
 **Correct guidance:** Always qualify deployment advice with "check the Metadata Coverage Report for your specific metadata types and target channel." Name the report explicitly so the user knows where to verify.
 
@@ -70,4 +70,4 @@ Mistakes AI assistants commonly make when advising on Salesforce metadata covera
 
 **Why it is wrong:** Standard Tooling API queries are subject to query timeout and row limits that make them unsuitable for production orgs with thousands of components. The full dependency graph for a large org can exceed 100,000 rows. Without using Bulk API 2.0, the query will either time out or return incomplete results.
 
-**Correct guidance:** For full-org dependency extraction, recommend Bulk API 2.0 via `sf data query --bulk --use-tooling-api`. Note the 100,000-row-per-job limit and recommend segmenting by `MetadataComponentType` if the org exceeds that threshold.
+**Correct guidance:** For full-org dependency extraction, recommend Bulk API 2.0 via `sf data query --bulk --use-tooling-api`. Note the 100,000-row-per-job limit (UNVERIFIED (2026-10-20)) and recommend segmenting by `MetadataComponentType` if the org exceeds that threshold.

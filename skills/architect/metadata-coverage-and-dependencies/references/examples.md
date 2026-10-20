@@ -57,7 +57,7 @@ Concrete worked examples of metadata coverage assessment and dependency analysis
 **Approach Applied:**
 - Reviewed the Metadata Coverage Report at the target API version (v60.0).
 - Cross-referenced every metadata type in the package source directory against the "2GP Managed Packages" column.
-- Found three unsupported types:
+- Found three unsupported types (illustrative statuses — UNVERIFIED (2026-10-20), check the live report):
   - `PlatformEventSubscriberConfig` — Beta for 2GP.
   - `ManagedContentType` — Not Supported for 2GP.
   - `AIApplication` — Not Supported for 2GP.

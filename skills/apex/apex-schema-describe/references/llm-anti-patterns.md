@@ -30,29 +30,34 @@ Type t = Type.forName('Account');
 SObject r = (SObject) t.newInstance();
 ```
 
-**Correct pattern.** `Schema.getGlobalDescribe().get('Account').newSObject()`.
-Type.forName is for Apex types, not SObject prototypes.
+**Correct pattern.** `Schema.getGlobalDescribe().get('Account').newSObject()`,
+the guide's documented path (apexdev 264 L11795-11801). `Type.forName('Account')`
+resolves to `Account.class` (apexref 262 L242043-242045), but `newInstance()`
+is documented for classes; that it builds a usable sObject is UNVERIFIED (2026-10-20).
 
-**Detection hint.** Any `Type.forName` for an SObject API name
-followed by cast to SObject is wrong.
+**Detection hint.** `Type.forName` for an SObject API name followed by
+a cast to SObject — replace with the documented `newSObject()` path.
 
 ---
 
-## Anti-Pattern 3: Picklist enumeration without `isActive` filter
+## Anti-Pattern 3: Claiming `getPicklistValues()` returns inactive values
 
 **What the LLM generates.**
 
 ```apex
 List<Schema.PicklistEntry> entries = Account.Industry.getDescribe().getPicklistValues();
 for (Schema.PicklistEntry pe : entries) {
-    options.add(pe.getValue());  // includes inactive
+    options.add(pe.getValue());  // "includes inactive" — false
 }
 ```
 
-**Correct pattern.** `if (pe.isActive()) options.add(pe.getValue());`.
+**Correct pattern.** Corrected 2026-10-20 (this anti-pattern previously
+told you to add an `isActive()` filter): "Only active picklist values are
+returned" (apexref 262 L190851). The loop above is already active-only;
+code that needs retired values must read them from metadata.
 
-**Detection hint.** Any picklist enumeration without `isActive` is
-showing inactive values.
+**Detection hint.** A comment or review note saying the list "includes
+inactive" values, or logic that relies on seeing retired values.
 
 ---
 
@@ -87,27 +92,30 @@ update records;
 ```
 
 **Correct pattern.** `Security.stripInaccessible(AccessType.UPDATABLE,
-records)` — bulk-safe and runtime-context-aware.
+records)` — strips the fields the user cannot access (apexdev 264
+L12281-12282) instead of only testing one boolean.
 
 **Detection hint.** Any per-record FLS check before bulk DML
 should be replaced with stripInaccessible.
 
 ---
 
-## Anti-Pattern 6: Field-map keys treated as case-sensitive
+## Anti-Pattern 6: Claiming field-map keys are lowercase-only
 
 **What the LLM generates.**
 
 ```apex
 Schema.SObjectField f = Account.SObjectType.getDescribe()
-    .fields.getMap().get('Name');  // returns null
+    .fields.getMap().get('Name'.toLowerCase());  // "get('Name') returns null" — false
 ```
 
-**Correct pattern.** Field-map keys are lowercase: `.get('name')`.
-Or use compile-time `Account.Name`.
+**Correct pattern.** Corrected 2026-10-20 (this entry previously said the
+keys are lowercase and `get('Name')` returns null): "All field names are
+case insensitive" (apexdev 264 L11079). `get('Name')` works; the miss that
+does return null is a packaged field without its namespace (L11080).
 
-**Detection hint.** Any `fields.getMap().get('CamelCaseName')` is
-returning null silently.
+**Detection hint.** Defensive `toLowerCase()` before `getMap().get(...)`,
+or a review comment asserting lowercase keys.
 
 ---
 

@@ -12,19 +12,19 @@ Non-obvious Salesforce platform behaviors that cause real production problems.
 
 ---
 
-## Gotcha 2: Custom Permissions Respect Modify All Data
+## Gotcha 2: Whether Admins Bypass Custom Permissions Is Unverified
 
-**What happens:** A "Customer Service Agent" permission check returns `true` for a System Administrator even though no admin was explicitly granted the permission.
+**What happens:** Teams assume a "Customer Service Agent" permission check returns `true` for a System Administrator who was never granted it. UNVERIFIED (2026-10-20): the reference says only that `checkPermission` "Checks whether a custom permission is enabled" (apexref 262 L215450); no corpus line says "Modify All Data" implies custom permissions.
 
 **When it occurs:** Any user with "Modify All Data" (admins, most integration users).
 
-**How to avoid:** This is usually fine — admins are supposed to bypass gates. If you truly need "admins cannot do this," check explicitly: `!FeatureManagement.checkPermission('ModifyAllData') && customCheck(...)`.
+**How to avoid:** Grant the custom permission to the admin permission set explicitly and test both an admin and a non-admin with `System.runAs`. To detect Modify All Data, query `PermissionSet.PermissionsModifyAllData` (object_reference 264 L192754-192757) — `checkPermission('ModifyAllData')` is not documented (the argument is a custom permission API name, L215460).
 
 ---
 
 ## Gotcha 3: Typos Return `false`, Not An Error
 
-**What happens:** `FeatureManagement.checkPermission('Perform_Buk_Refund')` (typo) returns `false` for everyone. No exception, no warning. Admins spend hours debugging "why does no one have this permission."
+**What happens:** `FeatureManagement.checkPermission('Perform_Buk_Refund')` (typo) returns `false` for everyone. No exception, no warning — UNVERIFIED (2026-10-20): the reference documents only true/false for enabled/disabled (apexref 262 L215465). Admins spend hours debugging "why does no one have this permission."
 
 **When it occurs:** Any typo, renamed custom permission, or not-yet-deployed custom permission.
 
@@ -64,7 +64,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems.
 
 ## Gotcha 7: Session-Based Permission Sets Need Session Activation
 
-**What happens:** A user has a permission set assigned but `checkPermission` returns `false` because the permission set is session-based and not yet activated in the current session.
+**What happens:** A user has a permission set assigned but `checkPermission` returns `false` because the permission set is session-based and not yet activated in the current session. Activation is per session (`SessionPermSetActivation`; deleting the record ends it — object_reference 264 L264542-264543); the exact `checkPermission` result before activation is UNVERIFIED (2026-10-20).
 
 **When it occurs:** Session-based permission sets with activation controls.
 

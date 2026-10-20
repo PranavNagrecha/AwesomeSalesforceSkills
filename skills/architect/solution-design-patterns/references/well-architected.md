@@ -20,7 +20,7 @@ Debug tooling reflects this: Flow has its own debug log, Apex has its own debug 
 
 The order of execution matters for reliability. Before-save Flows run before Apex before triggers. After-save Flows run after Apex after triggers. Designs that rely on implicit timing assumptions between these layers are fragile: a future Flow or trigger addition can shift the behavior. Reliable designs document ownership of each field and each behavior explicitly, reducing dependence on implicit ordering.
 
-Flow governor limits (2,000 elements per interview, shared SOQL and DML limits with Apex) are reliability constraints. A design that pushes Flow to its element limit or that exhausts the shared SOQL budget through uncoordinated queries across Flow and Apex will fail under production volume even when it passes sandbox testing at low data volumes.
+Flow governor limits (2,000 elements per interview — UNVERIFIED (2026-10-20) — and SOQL/DML drawn in the same transaction as Apex) are reliability constraints. A design that pushes Flow to its element limit or that exhausts the shared SOQL budget through uncoordinated queries across Flow and Apex will fail under production volume even when it passes sandbox testing at low data volumes.
 
 ## Architectural Tradeoffs
 
@@ -34,7 +34,7 @@ Flow governor limits (2,000 elements per interview, shared SOQL and DML limits w
 
 1. **Hard-coded Salesforce record IDs in Flow conditions or Apex code.** Record IDs are org-specific and change between production and sandbox. Any design that hard-codes IDs is a deployment failure waiting to happen. Use Custom Metadata Types, Custom Labels, or dynamic lookups.
 
-2. **Using Process Builder or Workflow Rules for new automation.** Process Builder is scheduled for deprecation; Workflow Rules were deprecated in Summer '23. Building new automation in deprecated tools creates guaranteed future rework. All new automation starts in Flow.
+2. **Using Process Builder or Workflow Rules for new automation.** Process Builder is scheduled for deprecation; Workflow Rules were deprecated in Summer '23 (both dates UNVERIFIED (2026-10-20)). Building new automation in deprecated tools creates guaranteed future rework. All new automation starts in Flow.
 
 3. **Two automations owning the same field or behavior on the same object.** When a Record-Triggered Flow and an Apex trigger both write to the same field, the execution order determines the final value — and that order is non-obvious and can shift when new automation is added. Assign one canonical owner per field and per behavior.
 
@@ -43,6 +43,8 @@ Flow governor limits (2,000 elements per interview, shared SOQL and DML limits w
 5. **Over-engineering with LWC when standard UI suffices.** Custom components require JavaScript testing, wire adapter maintenance, and ongoing updates as Salesforce APIs evolve. Build a custom LWC only when a specific, documented standard component gap exists for the user requirement.
 
 ## Official Sources Used
+
+- Corpus cites (2026-10-20): order of execution steps 3-15 (salesforce_apex_developer_guide.txt 264 L15643-15681); no callouts after DML in the same transaction (L35611); trigger callouts must be asynchronous (L15104-15106); platform event triggers generally can't call out (platform_events.txt 264 L2318-2319); `FlowTest` metadata type (api_meta.txt 264 L76698-76700); custom metadata in the application cache (salesforce_apex_reference_guide.txt 262 L204514-204515)
 
 - Salesforce Well-Architected — Adaptable: Automation — https://architect.salesforce.com/well-architected/adaptable/automation — primary authority for automation layer selection, "clicks before code" principle, and adaptability framing
 - Salesforce Architects: Decision Guide — Build Forms — https://architect.salesforce.com/design/decision-guides/build-forms — declarative vs. programmatic decision framework

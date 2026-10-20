@@ -9,8 +9,13 @@ and record-triggered Flows, then flags potential coexistence risks:
 
 Uses stdlib only — no pip dependencies.
 
+Exit contract (2026-10-20): unparseable trigger/flow XML is ERROR (exit 1 always);
+coexistence findings are WARN (exit 0, exit 1 with --strict); INFO lines never
+fail. Missing --manifest-dir: ERROR exit 1. No triggers or record-triggered
+Flows: one WARN, exit 0.
+
 Usage:
-    python3 check_trigger_and_flow_coexistence.py --manifest-dir path/to/metadata
+    python3 check_trigger_and_flow_coexistence.py --manifest-dir path/to/metadata [--strict]
 """
 
 from __future__ import annotations
@@ -32,7 +37,11 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings.")
     return parser.parse_args()
+
+
+PARSE_ERRORS: list[str] = []
 
 
 def find_triggers(manifest_dir: Path) -> dict[str, list[str]]:
@@ -58,7 +67,8 @@ def find_triggers(manifest_dir: Path) -> dict[str, list[str]]:
             if sobject_el is not None and sobject_el.text:
                 obj_name = sobject_el.text
                 triggers.setdefault(obj_name, []).append(str(trig_file))
-        except ET.ParseError:
+        except ET.ParseError as exc:
+            PARSE_ERRORS.append(f"{trig_file}: XML does not parse: {exc}")
             continue
 
     # Also check .trigger files for sObject via content parsing
@@ -139,7 +149,8 @@ def find_record_triggered_flows(manifest_dir: Path) -> dict[str, list[dict[str, 
                 }
                 flows.setdefault(obj_name, []).append(flow_info)
 
-            except ET.ParseError:
+            except ET.ParseError as exc:
+                PARSE_ERRORS.append(f"{flow_file}: XML does not parse: {exc}")
                 continue
 
     return flows
@@ -184,7 +195,7 @@ def check_trigger_and_flow_coexistence(manifest_dir: Path) -> list[str]:
 
     if not triggers and not flows:
         issues.append(
-            "INFO: No triggers or record-triggered Flows found in metadata directory. "
+            "WARN: No triggers or record-triggered Flows found in metadata directory. "
             "Ensure the --manifest-dir points to the correct metadata root."
         )
         return issues
@@ -261,19 +272,29 @@ def check_trigger_and_flow_coexistence(manifest_dir: Path) -> list[str]:
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
     issues = check_trigger_and_flow_coexistence(manifest_dir)
 
-    if not issues:
+    for err in PARSE_ERRORS:
+        print(f"ERROR: {err}")
+    if not issues and not PARSE_ERRORS:
         print("No issues found.")
         return 0
 
-    exit_code = 0
+    has_warn = False
     for issue in issues:
-        print(f"ISSUE: {issue}")
-        if not issue.startswith("INFO:"):
-            exit_code = 1
+        if issue.startswith(("INFO:", "WARN:")):
+            print(issue)
+            has_warn = has_warn or issue.startswith("WARN:") and not issue.startswith("WARN: No triggers")
+        else:
+            print(f"WARN: {issue}")
+            has_warn = True
 
-    return exit_code
+    if PARSE_ERRORS:
+        return 1
+    return 1 if (has_warn and args.strict) else 0
 
 
 if __name__ == "__main__":

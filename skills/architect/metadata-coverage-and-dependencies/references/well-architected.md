@@ -24,6 +24,10 @@ Key operational excellence practices this skill addresses:
 
 ## Official Sources Used
 
+- Metadata API 264 — Coverage report as "ultimate source of truth" across channels, no login needed (api_meta.txt L10250-10253); unsupported types are changed manually per org, list deferred to Metadata Coverage (L10256-10260)
+- Packaging 264 — circular package dependencies not supported, multi-level supported (pkg2_dev.txt L20669-20673); Bulk API 2.0 `Sforce-Locator` paging (api_asynch.txt L3295-3296)
+- Not in corpus: the Tooling API guide (`MetadataComponentDependency`) — every claim about the object is marked UNVERIFIED (2026-10-20)
+
 - Metadata Coverage Report — canonical source for metadata type support across deployment channels
   URL: https://developer.salesforce.com/docs/metadata-coverage
 - Metadata API Developer Guide — retrieve/deploy behavior, unsupported types list, metadata type reference

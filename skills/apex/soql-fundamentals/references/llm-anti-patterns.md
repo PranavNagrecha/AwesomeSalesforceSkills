@@ -170,7 +170,7 @@ List<Account> allAccounts = [SELECT Id, Name FROM Account];
 // Returns ALL accounts — hits 50K row limit in production orgs
 ```
 
-**Why it happens:** LLMs generate unbounded queries when the intent is "get some accounts." In production orgs with millions of records, this immediately hits the 50,000 SOQL row limit and throws a `QueryException`.
+**Why it happens:** LLMs generate unbounded queries when the intent is "get some accounts." In production orgs with millions of records, this hits the 50,000-records-per-transaction limit (apexdev 264 L19749) and throws `System.LimitException` (QueryRows, object_reference 264 L33680), which "can't be caught" (apexref 262 L214984) — corrected 2026-10-20 from "throws a `QueryException`".
 
 **Correct pattern:**
 

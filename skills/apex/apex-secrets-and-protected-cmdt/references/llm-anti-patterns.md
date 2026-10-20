@@ -51,7 +51,7 @@ public class StripeClient {
 
 **Correct pattern:**
 
-> Protected CMDT hides values **only from subscribers of a managed package**. In an unmanaged DX project, in the packaging org, or in any org where the user has Customize Application + View All Data, the values are fully visible. If your project is unmanaged, Protected CMDT is **not** a secret-storage mechanism — use an off-platform vault accessed via Named Credential.
+> Protected CMDT hides values **only from subscribers of a managed package**. Outside a managed package protected types behave like public ones, "readable for all profiles, including the guest user" (apexref 262 L170826-170827). If your project is unmanaged, Protected CMDT is **not** a secret-storage mechanism — use an off-platform vault accessed via Named Credential.
 
 **Detection hint:** Look for assistant output that recommends Protected CMDT without first asking or asserting that the code lives in a managed (namespaced) package.
 
@@ -91,7 +91,7 @@ System.debug('Stripe key sha256=' + EncodingUtil.convertToHex(
 
 ```xml
 <!-- force-app/main/default/customMetadata/Webhook_Signing_Key.Outbound.md-meta.xml -->
-<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata">
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <values>
         <field>Value__c</field>
         <value xsi:type="xsd:string">sk_live_a1b2c3d4e5f6...</value>
@@ -127,3 +127,15 @@ Blob enc = Crypto.encryptWithManagedIV('AES256', key, Blob.valueOf(plain));
 **Correct pattern:** Use `Crypto.generateAesKey(256)` once at install time, store the resulting Blob via Protected CMDT (base64-encoded in the Long Text Area) or, preferably, in an off-platform KMS. Never construct the key from a string literal.
 
 **Detection hint:** Regex `Blob\.valueOf\s*\(\s*'[^']*'\s*\)\s*[,)].*Crypto\.(encrypt|decrypt)` against `.cls`.
+
+---
+
+## Anti-Pattern 7: Making a secret getter `global` because "`public` is class-only"
+
+**What the LLM generates:** "`public` methods in a managed package are only callable from the same class, so declare `getSecret` as `global`."
+
+**Why it happens:** It conflates Apex access with Java packages. The guide: `public` is "accessible by all Apex within a specific package" (apexdev 264 L3661), and `global` "is always available across all namespaces" (pkg2 264 L17989-17990) — i.e. to subscriber code.
+
+**Correct pattern:** `public` getter; `@NamespaceAccessible` only for other 2GP packages sharing the namespace (pkg2 264 L17987).
+
+**Detection hint:** `global` on any method whose name or return value matches key/secret/token.
