@@ -22,10 +22,15 @@
 2. **Snapshotting full `shadowRoot.innerHTML` as the a11y test.** Engine-emitted attributes change across releases and produce noise; the snapshot becomes a maintenance burden that the team eventually starts auto-updating without reading. Use targeted attribute assertions instead.
 3. **Asserting on visual presentation in jest.** "The button looks orange" or "the focus ring is 2px" cannot be verified in jsdom — there's no rendering layer. Tests written this way produce false negatives or false positives. Move presentation assertions to a real-browser test.
 4. **Skipping the second `await Promise.resolve()` and calling the test "stable."** Tests that pass 95% of the time and fail 5% are the worst case — they erode trust in the suite. Match awaits to async hops correctly the first time.
-5. **Adding axe-core but not disabling `color-contrast`.** Produces hangs / false errors and convinces the team that "axe-core doesn't work in jest." It does work — just not for layout-dependent rules in jsdom.
+5. **Adding axe-core but not disabling `color-contrast`.** Produces hangs / false errors (UNVERIFIED (2026-10-20): axe-core behaviour, not in the corpus) and convinces the team that "axe-core doesn't work in jest." It does work — just not for layout-dependent rules in jsdom.
 6. **Testing the SLDS base components.** `lightning-input` already has Salesforce-maintained a11y. Re-testing it inside your component's jest suite is wasted code that breaks when SLDS updates. Test the integration (your label flows through correctly) and stop there.
 
 ## Official Sources Used
+
+- Shadow tree is "not available by traditional DOM querying methods"; LWC uses "synthetic shadow" — lwcguide testing-dom-api.
+- DOM updates asynchronously; wait on a resolved Promise; `moduleNameMapper` for `@salesforce/apex` — lwcguide unit-testing-using-jest-create-tests.
+- Three wire adapters (generic, LDS, Apex) in sfdx-lwc-jest; `@salesforce/wire-service-jest-util` only outside sfdx-lwc-jest — lwcguide unit-testing-using-wire-utility.
+- `const { jestConfig } = require('@salesforce/sfdx-lwc-jest/config')` — lwcguide unit-testing-using-jest-advanced; `"test:unit": "sfdx-lwc-jest"` — lwcguide unit-testing-using-jest-installation.
 
 - LWC Developer Guide — Test Lightning Web Components — https://developer.salesforce.com/docs/platform/lwc/guide/unit-testing-using-jest.html
 - LWC Developer Guide — Write Jest Tests for Lightning Web Components That Use the Wire Service — https://developer.salesforce.com/docs/platform/lwc/guide/unit-testing-using-jest-mock-wire.html

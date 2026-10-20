@@ -7,8 +7,13 @@ Anti-patterns detected:
      sharing` — guest-reachable + bypasses sharing.
   2. Apex class with `@RestResource(urlMapping=...)` annotation
      declared `without sharing` — same risk via REST.
-  3. Profile XML granting `viewAllData` or `modifyAllData` to a
-     Guest profile (file name containing `Guest` heuristic).
+  3. Profile / permission set XML (file name containing `Guest`
+     heuristic) with a `<userPermissions>` block that enables
+     ViewAllData, ModifyAllData, ManageUsers or ApiEnabled. Retrieved
+     metadata writes `<enabled>` BEFORE `<name>` (api_meta 264
+     L97915-97917), so the block is matched in either order. ApiEnabled:
+     the guide says to leave it unchecked on guest profiles (secguide
+     262 L9629).
   4. Concatenated user input in `Database.query(...)` — SOQL
      injection vector when guest-reachable.
   5. `@RestResource` Apex class with NO sharing declaration, where
@@ -24,10 +29,14 @@ Anti-patterns detected:
      exempt too — they can't carry a sharing declaration at any
      version.
 
+Contract: missing path -> ERROR, exit 1. Empty tree (no .cls / .trigger /
+profile / permission set) -> one WARN, exit 0. Findings are WARN -> exit 0
+unless --strict (then exit 1).
+
 Stdlib only.
 
 Usage:
-    python3 check_guest_user_security_audit.py --src-root .
+    python3 check_guest_user_security_audit.py --src-root .   (alias --manifest-dir)
     python3 check_guest_user_security_audit.py --help
 """
 
@@ -46,13 +55,19 @@ _AURAENABLED_RE = re.compile(r"@AuraEnabled\b", re.IGNORECASE)
 _RESTRESOURCE_RE = re.compile(r"@RestResource\b", re.IGNORECASE)
 _WITHOUT_SHARING_RE = re.compile(r"\bwithout\s+sharing\b", re.IGNORECASE)
 
-_PROFILE_VIEW_ALL_RE = re.compile(
-    r"<name>(viewAllData|modifyAllData|manageUsers)</name>\s*<enabled>true</enabled>",
-    re.IGNORECASE | re.DOTALL,
+_USER_PERM_BLOCK_RE = re.compile(
+    r"<userPermissions>(.*?)</userPermissions>", re.IGNORECASE | re.DOTALL
 )
+_PERM_NAME_RE = re.compile(
+    r"<name>\s*(ViewAllData|ModifyAllData|ManageUsers|ApiEnabled)\s*</name>",
+    re.IGNORECASE,
+)
+_ENABLED_TRUE_RE = re.compile(r"<enabled>\s*true\s*</enabled>", re.IGNORECASE)
 
+# The literal may contain escaped quotes (`'... Name = \'' + input`), the
+# shape llm-anti-patterns.md § 6 shows; `[^']*` alone stopped at the `\'`.
 _DYNAMIC_QUERY_CONCAT_RE = re.compile(
-    r"Database\.query\s*\(\s*['\"][^'\"]*['\"]\s*\+\s*\w+",
+    r"Database\.query\s*\(\s*(['\"])(?:\\.|(?!\1).)*\1\s*\+\s*\w+",
     re.IGNORECASE,
 )
 
@@ -163,28 +178,28 @@ def _scan_profile(path: Path) -> list[str]:
         text = path.read_text(encoding="utf-8", errors="ignore")
     except OSError as exc:
         return [f"could not read {path}: {exc}"]
-    for m in _PROFILE_VIEW_ALL_RE.finditer(text):
-        findings.append(
-            f"{path}:{_line_no(text, m.start())}: Guest profile grants "
-            f"{m.group(1)}=true — secure-by-default removes these grants; "
-            "remove from the guest profile (llm-anti-patterns.md § 4)."
-        )
+    for block in _USER_PERM_BLOCK_RE.finditer(text):
+        name = _PERM_NAME_RE.search(block.group(1))
+        if name and _ENABLED_TRUE_RE.search(block.group(1)):
+            findings.append(
+                f"{path}:{_line_no(text, block.start())}: guest profile enables "
+                f"{name.group(1)} — remove it from the guest profile "
+                "(llm-anti-patterns.md § 4; API Enabled: secguide 262 L9629)."
+            )
     return findings
 
 
-def scan_tree(root: Path) -> list[str]:
-    if not root.exists():
-        return [f"src-root does not exist: {root}"]
-    if not root.is_dir():
-        return [f"src-root is not a directory: {root}"]
+def scan_tree(root: Path) -> tuple[list[str], int]:
     findings: list[str] = []
-    for apex in list(root.rglob("*.cls")) + list(root.rglob("*.trigger")):
-        findings.extend(_scan_apex(apex))
-    for prof in list(root.rglob("*.profile-meta.xml")) + list(
+    apex_files = list(root.rglob("*.cls")) + list(root.rglob("*.trigger"))
+    perm_files = list(root.rglob("*.profile-meta.xml")) + list(
         root.rglob("*.permissionset-meta.xml")
-    ):
+    )
+    for apex in apex_files:
+        findings.extend(_scan_apex(apex))
+    for prof in perm_files:
         findings.extend(_scan_profile(prof))
-    return findings
+    return findings, len(apex_files) + len(perm_files)
 
 
 def main() -> int:
@@ -200,21 +215,30 @@ def main() -> int:
     )
     parser.add_argument(
         "--src-root",
+        "--manifest-dir",
+        dest="src_root",
         default=".",
         help="Root of the Salesforce source tree (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="exit 1 on WARN findings")
     args = parser.parse_args()
 
-    findings = scan_tree(Path(args.src_root))
-
+    root = Path(args.src_root)
+    if not root.is_dir():
+        print(f"ERROR: src-root not found or not a directory: {root}")
+        return 1
+    findings, scanned = scan_tree(root)
+    if scanned == 0:
+        print(f"WARN: no Apex, profile or permission set files under {root}")
+        return 0
     if not findings:
         print("OK: no guest-user exposure anti-patterns detected.")
         return 0
 
     for f in findings:
-        print(f"WARN: {f}", file=sys.stderr)
-    print(f"\n{len(findings)} finding(s).", file=sys.stderr)
-    return 1
+        print(f"WARN: {f}")
+    print(f"{len(findings)} finding(s).")
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

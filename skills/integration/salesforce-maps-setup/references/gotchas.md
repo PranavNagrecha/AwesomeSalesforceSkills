@@ -2,6 +2,8 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
+UNVERIFIED (2026-10-20): every Salesforce Maps package name, namespace (`maps__`, `ma__`), object, field, Setup path, default and tier boundary below. The corpus has no Salesforce Maps guide; see the note at the top of SKILL.md.
+
 ## Gotcha 1: Real-Time Geocoding Is OFF By Default Per Object
 
 **What happens:** A rep creates a new Account in Salesforce. The Account does not appear on the map. The rep refreshes Maps. Still missing. The Account only appears the next morning, after the scheduled batch geocode.
@@ -28,7 +30,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it bites you:** Day-of-go-live, immediately. The package install creates the permission sets (`Salesforce Maps`, `Salesforce Maps Advanced`, `Salesforce Maps Routing`) but does not assign them to any user.
 
-**How to handle:** After package install, the deployment runbook's next step is **PermissionSetAssignment** records for the user cohort. This is easy to script:
+**How to handle:** After package install, the deployment runbook's next step is **PermissionSetAssignment** records for the user cohort — the object "Represents a user's assignment to a permission set or permission set group" (obj 264 L219697), with `AssigneeId` (L219713) and `PermissionSetId` (L219833). This is easy to script with `--values "<fieldName>=<value>"` pairs (sfdx 264 L12568-12572):
 
 ```bash
 sf data create record --sobject PermissionSetAssignment \
@@ -52,7 +54,7 @@ Or build a permission-set group that bundles the Maps permission sets with the c
 
 ## Gotcha 5: Live Tracking Volume Can Overwhelm Storage
 
-**What happens:** A 200-rep deployment enables Live Tracking with 5-minute pings during a 10-hour workday. Within 90 days, the org has 6 million breadcrumb records. Storage limits start triggering reminders; reports against the breadcrumb object slow to a crawl.
+**What happens:** A 200-rep deployment enables Live Tracking with 5-minute pings during a 10-hour workday. Within 90 days, the org has about 2.2 million breadcrumb records (120 pings × 200 reps = 24,000 a day × 90). Storage limits start triggering reminders; reports against the breadcrumb object slow to a crawl.
 
 **When it bites you:** Several months post-Live-Tracking enablement, when the volume catches up to org limits.
 

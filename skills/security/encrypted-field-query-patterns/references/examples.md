@@ -26,7 +26,8 @@
 
 - Field: `Amount__c`.
 - Queries: `WHERE Amount__c > 10000`, SUM in reports.
-- Scheme: **do not encrypt**. Encryption blocks range and aggregate.
+- Scheme: **do not encrypt**. Encryption blocks range and aggregate
+  (UNVERIFIED (2026-10-20): see SKILL.md Scheme Matrix).
 - Alternative: leave unencrypted; enforce FLS + masking for non-privileged
   users.
 
@@ -34,11 +35,14 @@
 
 - Field: `LastName` (standard).
 - Queries: `WHERE LastName LIKE 'Sm%'`.
-- Scheme: encryption blocks LIKE. Options:
+- Scheme: encryption blocks LIKE (UNVERIFIED (2026-10-20): see SKILL.md
+  Scheme Matrix). Options:
   1. Skip encryption (accept risk).
   2. Encrypt AND add a one-way hashed `LastNameTokenPrefix__c`
-     populated from `HASH(UPPER(SUBSTRING(LastName, 1, 3)))` via a
-     trigger. Filter on the hash field for prefix search (imperfect).
+     populated in a trigger with
+     `EncodingUtil.convertToHex(Crypto.generateDigest('SHA-256', Blob.valueOf(LastName.left(3).toUpperCase())))`
+     — Apex has no `HASH()`; `generateDigest` "Computes a secure, one-way hash
+     digest" (apexref 262 L203794-203795; SHA-256 is a valid value, L203816). Filter on the hash field for prefix search (imperfect).
   3. Store only under pseudonym; keep lookup separate.
 
 ## Example 6: Mixed-Permission Test Plan
@@ -49,8 +53,8 @@
   A sees plaintext and B cannot retrieve the field at all, with no
   functional error.
 - Do **not** build this matrix on "View Encrypted Data". That permission
-  is Classic Encryption only; toggling it changes nothing for a
-  Shield-encrypted field.
+  is Classic Encryption only (secguide 262 L2548); toggling it changes
+  nothing for a Shield-encrypted field (UNVERIFIED (2026-10-20): Help only).
 
 ## Example 7: Schema Decision Log
 

@@ -13,10 +13,12 @@
 ## Test Plan
 
 - [ ] User with FLS Read on the field sees plaintext (Shield decrypts
-      transparently for anyone with field read).
+      transparently for anyone with field read — UNVERIFIED (2026-10-20):
+      Trailhead wording, not in the corpus).
 - [ ] User with FLS Read removed cannot retrieve the field at all.
 - [ ] Plan does NOT rely on "View Encrypted Data" — that is a Classic
-      Encryption permission and does not mask Shield fields.
+      Encryption permission (secguide 262 L2548) and does not mask Shield
+      fields (UNVERIFIED (2026-10-20): Help only).
 - [ ] All filters tested post-encryption flip.
 - [ ] All reports tested post-encryption flip.
 

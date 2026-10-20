@@ -4,9 +4,9 @@ Subtle traps when designing or hardening an LWC's public surface. Each gotcha in
 
 ---
 
-## 1. `@api recordId` is always a string, regardless of declared "type"
+## 1. `@api recordId` is a string Id or unset, regardless of declared "type"
 
-**What happens:** developers declare `@api recordId;` with a JSDoc `@type {number}` or even a `.ts`-style annotation, then later write `if (this.recordId > 0)` or pass `this.recordId` straight into a wire that expects a string. At runtime, `recordId` arrives from the host page as a string Id (e.g. `"001..."`), so numeric comparisons silently coerce or NaN.
+**What happens:** developers declare `@api recordId;` with a JSDoc `@type {number}` or even a `.ts`-style annotation, then later write `if (this.recordId > 0)` or pass `this.recordId` straight into a wire that expects a string. At runtime, `recordId` arrives from the host page as "the 18-character ID of the record" — or is not set at all outside "an explicit record context" (lwcguide use-record-context) — so numeric comparisons silently coerce or NaN.
 
 **When it occurs:** any `@api recordId` consumer outside a Jest test, where the host (Lightning App Builder, Experience Cloud page, Flow with a record context) injects the live Id.
 
@@ -34,7 +34,7 @@ document.body.appendChild(el);
 console.log(el.maxRows); // undefined, NOT 10
 ```
 
-The same is true when a parent LWC includes `<c-foo>` inline without setting `max-rows` — `default` is an App-Builder-only convenience.
+The same is true when a parent LWC includes `<c-foo>` inline without setting `max-rows` — `default` is an App-Builder-only convenience (UNVERIFIED (2026-10-20): the guide does not say where `default` is applied).
 
 **When it occurs:** unit tests, component composition (one LWC inside another), and `lwc.createElement(...)` callers.
 
@@ -83,11 +83,11 @@ set enabled(v) {
 }
 ```
 
-LWC App Builder coerces a `type="Boolean"` design property correctly when an admin uses the toggle, but HTML markup, programmatic callers, and Flow inputs do not.
+LWC App Builder coerces a `type="Boolean"` design property correctly when an admin uses the toggle, but HTML markup, programmatic callers, and Flow inputs do not (UNVERIFIED (2026-10-20) for App Builder and Flow; for markup the guide says "Setting show="false" in markup evaluates to true", lwcguide js-props-boolean).
 
 ---
 
-## 4. Reactive re-render breaks when you swap a bare `@api` for a getter/setter pair
+## 4. A getter/setter pair stops re-rendering when the setter mutates its backing field in place
 
 **What happens:** the change from
 
@@ -104,7 +104,7 @@ get foo() { return this._foo; }
 set foo(v) { this._foo = normalise(v); }
 ```
 
-stops triggering re-renders for some consumers because they relied on the parent reassigning the bare field. With the setter form, the underlying `_foo` field is the reactive source — and if `_foo` is a non-primitive (object, array) and the setter mutates it in place, the template never re-renders.
+keeps re-rendering as long as the setter reassigns `_foo`: a field "used in a template or in a getter of a property that's used in a template" re-renders when "a new value is assigned to the field" (lwcguide reactivity-fields). With the setter form, the underlying `_foo` field is the reactive source — and if `_foo` is a non-primitive (object, array) and the setter mutates it in place, the template never re-renders.
 
 **When it occurs:** when the setter mutates an object/array stored in `_foo` rather than reassigning it.
 
@@ -118,13 +118,13 @@ set rows(v) { this._rows.length = 0; this._rows.push(...v); }
 set rows(v) { this._rows = Array.isArray(v) ? [...v] : []; }
 ```
 
-LWC's reactivity tracks reassignment of class fields and primitive mutations; in-place object mutation is not tracked.
+LWC's reactivity tracks reassignment of class fields and primitive mutations; in-place object mutation is not tracked — "you must create a new object and assign it to the field for the change to be detected" (lwcguide reactivity-fields).
 
 ---
 
 ## 5. `propertyType` only works inside a `<lightning__FlowScreen>` `<targetConfig>`
 
-**What happens:** an author copies a Flow `<propertyType name="T" extends="SObject"/>` block into a `<lightning__RecordPage>` `<targetConfig>`. Depending on org version, the deploy either fails with a confusing schema error or succeeds but the type is silently treated as `String`, producing very strange admin UX.
+**What happens:** an author copies a Flow `<propertyType name="T" extends="SObject"/>` block into a `<lightning__RecordPage>` `<targetConfig>`. Depending on org version, the deploy either fails with a confusing schema error or succeeds but the type is silently treated as `String`, producing very strange admin UX (UNVERIFIED (2026-10-20): the outcome is not in the guide; the guide lists `propertyType` only for the Flow screen target, lwcguide targets-lightning-flow-screen).
 
 **When it occurs:** any time a multi-target component is generalising "accept an SObject" across surfaces.
 
@@ -134,7 +134,7 @@ LWC's reactivity tracks reassignment of class fields and primitive mutations; in
 
 ## 6. Kebab-case attribute / camelCase property mapping is not symmetric
 
-**What happens:** a developer writes `@api maxRows` in JS and `<c-foo maxRows="3">` in markup. The attribute does not bind because HTML attribute names are case-insensitive and LWC requires kebab-case in markup: `<c-foo max-rows="3">`. Conversely, in `<targetConfig>` the `<property name="maxRows">` uses **camelCase** — that is the JS property name, and App Builder maps it correctly without kebab conversion.
+**What happens:** a developer writes `@api maxRows` in JS and `<c-foo maxRows="3">` in markup. The attribute does not bind because "HTML attributes in a template can't contain uppercase characters" and a property `itemName` "maps to an HTML attribute named item-name" (lwcguide js-props-names): `<c-foo max-rows="3">`. Conversely, in `<targetConfig>` the `<property name="maxRows">` uses **camelCase** — that is the JS property name, and App Builder maps it correctly without kebab conversion.
 
 **When it occurs:** mixing the two conventions or copy-pasting between markup, design XML, and JS.
 
@@ -162,7 +162,7 @@ get foo() { return this._foo; }
 set foo(v) { this._foo = v; }
 ```
 
-This is a syntax / decorator error or a silent no-op depending on tooling — `@api` cannot be applied to both a class field and an accessor pair with the same name. The intent (set a default) must move into the constructor or the backing field.
+This is a syntax / decorator error or a silent no-op depending on tooling (UNVERIFIED (2026-10-20): which one) — `@api` cannot be applied to both a class field and an accessor pair with the same name. The guide's rule: "If you write a setter for a public property, you must also write a getter. Annotate either the getter or the setter with @api, but not both" (lwcguide js-props-getters-setters). The intent (set a default) must move into the constructor or the backing field.
 
 **When it occurs:** during refactor, when an author converts a bare `@api foo = 'default';` into a getter/setter and forgets to remove the original line.
 
@@ -177,9 +177,9 @@ set foo(v) { this._foo = v ?? 'default'; }
 
 ---
 
-## 9. Public method on a removed component throws "this.template is null"
+## 9. Public method called after the component is removed from the DOM
 
-**What happens:** parent calls `child.refresh()` from a `setTimeout`. By the time the timer fires, the child has been removed from the DOM (e.g. user navigated). `this.template` is now null, and the method throws an unhandled exception that bubbles to the LWS error boundary.
+**What happens:** parent calls `child.refresh()` from a `setTimeout`. By the time the timer fires, the child has been removed from the DOM (e.g. user navigated). `this.template` is now null, and the method throws an unhandled exception that bubbles to the LWS error boundary (UNVERIFIED (2026-10-20): not in the guide).
 
 **When it occurs:** any `@api` method that touches `this.template` and is called via deferred work (timeouts, promises, async callbacks) from outside the component.
 
@@ -187,9 +187,9 @@ set foo(v) { this._foo = v ?? 'default'; }
 
 ---
 
-## 10. Namespaced design attributes need the namespace prefix in installed packages
+## 10. Namespaced design attributes may need the namespace prefix in installed packages (UNVERIFIED (2026-10-20))
 
-**What happens:** a managed-package component declares `<property name="primaryField">`. Inside the package org it resolves as `primaryField`. After install in a subscriber org, the property is exposed as `c__primaryField` (or `<ns>__primaryField`). Any documentation that says "set `primaryField` to ..." is wrong for the subscriber.
+**What happens:** a managed-package component declares `<property name="primaryField">`. Inside the package org it resolves as `primaryField`. After install in a subscriber org, the property is exposed as `c__primaryField` (or `<ns>__primaryField`) (UNVERIFIED (2026-10-20): not in the LWC guide or api_meta). Any documentation that says "set `primaryField` to ..." is wrong for the subscriber.
 
 **When it occurs:** publishing an LWC in a managed package.
 

@@ -2,6 +2,8 @@
 
 Use this template when scoping a Salesforce Maps deployment. Fill it in collaboratively with the customer; archive the completed copy in the implementation folder.
 
+UNVERIFIED (2026-10-20): every Salesforce Maps package name, namespace (`maps__`, `ma__`), object, field, Setup path, default and tier boundary below. The corpus has no Salesforce Maps guide; see the note at the top of SKILL.md.
+
 ---
 
 ## Scope

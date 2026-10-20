@@ -5,10 +5,13 @@ Scans force-app/ metadata for common Salesforce Maps configuration risks. Stdlib
 
 Checks:
   1. installedPackages/ — detect Salesforce Maps and legacy MapAnything coexistence
-     (legacy `ma` / modern `maps` namespace) which signals an in-flight migration.
-  2. PermissionSet metadata — confirm Maps permission set assignments exist;
-     warn if a Maps package is installed but no PermissionSetAssignment-bearing
-     metadata references it.
+     (legacy `ma` / modern `maps` namespace — UNVERIFIED (2026-10-20): the namespaces
+     are not in the corpus) which signals an in-flight migration. An InstalledPackage
+     file is "named after the package's namespace prefix" with extension
+     .installedPackage (api_meta 264 L84151-84152), so detection is by file stem.
+  2. PermissionSet metadata — if a Maps package is installed and no permission set in
+     scope references Maps, REVIEW: assignments are PermissionSetAssignment records
+     (data, obj 264 L219697), not metadata, so confirm them with SOQL.
   3. Custom object metadata — flag references to FSL ServiceTerritory mixed with
      MapsTerritory__c in the same flow/automation, which indicates the persona-
      boundary anti-pattern.
@@ -18,9 +21,12 @@ Checks:
   5. Custom Object / Custom Setting — flag if Live Tracking-related objects
      are present without a `*__b` Big Object archival counterpart in scope.
 
+Contract: missing --manifest-dir -> ERROR, exit 1. Empty directory -> one WARN,
+exit 0. REVIEW findings exit 0 unless --strict (then exit 1).
+
 Usage:
     python3 check_salesforce_maps_setup.py
-    python3 check_salesforce_maps_setup.py --manifest-dir force-app/main/default
+    python3 check_salesforce_maps_setup.py --manifest-dir force-app/main/default [--strict]
 """
 
 from __future__ import annotations
@@ -40,7 +46,12 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of Salesforce metadata (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="exit 1 on REVIEW findings")
     return parser.parse_args()
+
+
+MODERN_NS = {"maps"}
+LEGACY_NS = {"ma"}
 
 
 def _read(path: Path) -> str:
@@ -55,12 +66,12 @@ def find_installed_maps_packages(root: Path) -> tuple[bool, bool, list[str]]:
     has_modern = False
     has_legacy = False
     issues: list[str] = []
-    for f in root.rglob("*.installedPackage-meta.xml"):
-        text = _read(f).lower()
-        name = f.stem.replace(".installedPackage-meta", "").lower()
-        if "salesforcemaps" in name or "salesforce_maps" in name or "salesforce-maps" in name or "maps__" in text:
+    files = list(root.rglob("*.installedPackage-meta.xml")) + list(root.rglob("*.installedPackage"))
+    for f in files:
+        namespace = f.name.split(".installedPackage")[0].lower()
+        if namespace in MODERN_NS:
             has_modern = True
-        if "mapanything" in name or "ma__" in text:
+        if namespace in LEGACY_NS or "mapanything" in namespace:
             has_legacy = True
     if has_modern and has_legacy:
         issues.append(
@@ -86,8 +97,9 @@ def find_permission_set_grants(root: Path, has_maps: bool) -> list[str]:
             break
     if not found_maps_perm:
         issues.append(
-            "BLOCKER: A Salesforce Maps package is installed but no PermissionSet metadata in scope grants Maps permissions. "
-            "Package install does not assign permissions automatically — users will see no Maps tab on Day 1 without an explicit assignment."
+            "REVIEW: A Salesforce Maps package is installed but no PermissionSet metadata in scope references Maps. "
+            "Package install does not assign permissions automatically (UNVERIFIED (2026-10-20)); assignments are "
+            "PermissionSetAssignment records, not metadata — confirm them with SOQL before go-live."
         )
     return issues
 
@@ -103,7 +115,8 @@ def find_persona_boundary_violations(root: Path) -> list[str]:
     for f in list(root.rglob("*.flow-meta.xml")) + list(root.rglob("*.cls")):
         text = _read(f)
         has_fsl = bool(re.search(r"\bServiceTerritory\b", text))
-        has_maps_t = bool(re.search(r"\bMapsTerritory", text)) or "maps__Territory" in text
+        # no leading \b: a namespaced name (maps__MapsTerritory__c) has "_" before "M"
+        has_maps_t = bool(re.search(r"MapsTerritory", text)) or "maps__Territory" in text
         if has_fsl and has_maps_t:
             issues.append(
                 f"REVIEW: {f.relative_to(root)} references both ServiceTerritory (FSL) and MapsTerritory (Maps). "
@@ -148,15 +161,18 @@ def find_live_tracking_volume_signals(root: Path) -> list[str]:
     if has_live_tracking_signal and not has_archival:
         issues.append(
             "REVIEW: Live Tracking metadata signals are present but no Big Object (`*__b`) or archive metadata is in scope. "
-            "Live Tracking generates 100k+ records per day per 100 reps. Confirm an archival job exists before enabling org-wide."
+            "At 5-minute pings over a 10-hour day, 100 reps produce ~12,000 records per day (UNVERIFIED (2026-10-20): "
+            "one record per ping). Confirm an archival job exists before enabling org-wide."
         )
     return issues
 
 
 def check_salesforce_maps_setup(manifest_dir: Path) -> list[str]:
     issues: list[str] = []
-    if not manifest_dir.exists():
-        return [f"Manifest directory not found: {manifest_dir}"]
+    if not manifest_dir.is_dir():
+        return [f"ERROR: Manifest directory not found: {manifest_dir}"]
+    if not any(p.is_file() for p in manifest_dir.rglob("*")):
+        return [f"WARN: no metadata files under {manifest_dir}"]
 
     has_modern, has_legacy, pkg_issues = find_installed_maps_packages(manifest_dir)
     issues.extend(pkg_issues)
@@ -177,22 +193,14 @@ def main() -> int:
     if not issues:
         print("No Salesforce Maps setup issues detected.")
         return 0
+    if issues[0].startswith(("ERROR", "WARN")):
+        print(issues[0])
+        return 1 if issues[0].startswith("ERROR") else 0
 
-    blockers = [i for i in issues if i.startswith("BLOCKER")]
-    reviews = [i for i in issues if i.startswith("REVIEW")]
-
-    print(f"Salesforce Maps Setup checks — {manifest_dir}")
-    print(f"  blockers: {len(blockers)}  review: {len(reviews)}")
-    print()
-    for group_name, group in [("BLOCKERS", blockers), ("REVIEWS", reviews)]:
-        if not group:
-            continue
-        print(f"--- {group_name} ---")
-        for issue in group:
-            print(f"  {issue}")
-        print()
-
-    return 1 if blockers else 0
+    print(f"Salesforce Maps Setup checks — {manifest_dir}  review: {len(issues)}")
+    for issue in issues:
+        print(f"  {issue}")
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

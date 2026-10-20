@@ -39,9 +39,10 @@ class, including clause-less queries and DML; explicit filter
 restricts to a public flag; `WITH USER_MODE` enforces FLS, object
 permissions, and sharing on this query.
 Write `WITH USER_MODE`, not `WITH SECURITY_ENFORCED`: the gate is the
-class's `apiVersion` in its `.cls-meta.xml`, and at 67.0+ the older
-clause was removed and the class no longer compiles. `WITH USER_MODE`
-is GA from API 57.0, so it is correct on every version that still
+class's `apiVersion` in its `.cls-meta.xml` — "In API version 67.0 and
+later, you can't use the WITH SECURITY_ENFORCED clause" (apexdev 264
+L11926). `WITH USER_MODE` is GA from API 57.0 (UNVERIFIED (2026-10-20):
+release-notes only), so it is correct on every version that still
 takes new code.
 
 **OWASP mapping.** A01 Broken Access Control.
@@ -107,9 +108,8 @@ them.
 
 **Remediation.** Guest profile should not grant Read on Contact
 unless absolutely required. Audit the matching sharing rule;
-restrict the criteria; or remove guest's standard API access (Setup
--> Sites -> per-site -> Restrict guest user from accessing
-standard Salesforce APIs).
+restrict the criteria; or remove guest's standard API access by
+unchecking API Enabled on the guest profile (secguide 262 L9629).
 
 **OWASP mapping.** A01 Broken Access Control.
 
@@ -117,17 +117,19 @@ standard Salesforce APIs).
 
 ## Example 5 — Audit query for `without sharing` classes
 
-**Tooling SOQL.** Run via Tooling API or `sfdx force:data:soql`
-against the Tooling endpoint:
+**Tooling SOQL.** `ApexClass.Body` is not filterable — its properties
+are "Create, Nillable, Update", no Filter (obj 264 L30571-30574) — so a
+`WHERE Body LIKE '%without sharing%'` query fails. Pull every body and
+search locally, with `sf data query ... --use-tooling-api`
+(sfdx 264 L12664-12666):
 
 ```sql
-SELECT Id, Name, Body
+SELECT Id, Name, ApiVersion, Body
 FROM ApexClass
-WHERE Body LIKE '%without sharing%'
 ```
 
-Then for each, manually check for `@AuraEnabled` or
-`@RestResource` annotations to determine guest reachability.
+Then search each `Body` for `without sharing`, `@AuraEnabled` and
+`@RestResource` to determine guest reachability.
 
 **Caveat.** `Body` queries return source; pattern-matching can have
 false positives (comments, strings). Use this as a triage list, not
@@ -143,10 +145,14 @@ a final verdict.
   unless explicit business need documented.
 - System Permissions: no "View All Data", "Modify All Data",
   "Manage Users", "Author Apex", "Customize Application", "Schedule
-  Reports".
+  Reports"; API Enabled and Access Activities unchecked (secguide 262
+  L9629).
 - Field-level security: blanket-disabled by default; enable only
   fields needed by public components.
-- Login IP ranges: not applicable to guest (no login).
+- Login IP ranges / login hours: a guest profile can carry them —
+  the Security Guide describes a site "whose guest user's profile has
+  restrictions based on IP range or login hours" (secguide 262
+  L1523-1524).
 - Session settings: short timeout if guest checkout / form-fill is
   the use case.
 

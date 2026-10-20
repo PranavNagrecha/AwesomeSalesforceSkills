@@ -1,5 +1,7 @@
 # Examples — Salesforce Maps Setup
 
+UNVERIFIED (2026-10-20): every Salesforce Maps package name, namespace (`maps__`, `ma__`), object, field, Setup path, default and tier boundary below. The corpus has no Salesforce Maps guide; see the note at the top of SKILL.md.
+
 ## Example 1: First-Time Maps Install For 80-Rep Outside Sales Team
 
 **Context:** A B2B distributor licensed Salesforce Maps (base tier only — no Advanced, no Routing, no Live Tracking) for 80 outside sales reps who visit ~2,500 active accounts in the US. Reps want to "see my accounts on a map and filter by industry" from their phone.

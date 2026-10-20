@@ -14,15 +14,21 @@ different permissions.
 
 **How to avoid.** Enumerate all sites first (Setup -> All Sites)
 and audit each Guest User profile separately. They are clones, not
-shared.
+shared. Guest users reach a site "via the Guest User license associated
+with each site" (obj 264 L299563-299564), and each retrieved `CustomSite`
+names its own profile in the read-only `guestProfile` field (api_meta 264
+L49340-49341).
 
 ---
 
-## Gotcha 2: Spring '21 secure-by-default does not retroactively migrate orgs
+## Gotcha 2: Secure guest record access is retroactive; old profile grants are not
 
 **What happens.** Org existed pre-Spring '21. Admin assumes "secure
-by default" applies. In reality, grandfathered permissions are
-still active until explicitly removed.
+by default" applies. Record access does: `enableSecureGuestAccess` is
+always true as of API 50.0 and the change "applies retroactively back to
+API version 47.0" (api_meta 264 L130645-130648), so guest org-wide
+defaults are Private everywhere. Profile permissions an admin granted
+earlier stay until removed (UNVERIFIED (2026-10-20): not in the corpus).
 
 **When it occurs.** Older orgs that never executed a guest-user
 hardening project.
@@ -38,9 +44,10 @@ release never happened. Verify each setting explicitly.
 keyword and the reviewer scores it as `inherited sharing`. It is
 not — that is a keyword you write, and an omitted declaration is a
 separate rule that Summer '26 changed. The Apex Developer Guide
-(API 67.0) states "Apex without an explicit sharing declaration runs
-as `with sharing` by default". At API 66.0 and earlier the mode is
-resolved from the class instead, in this order: `with sharing` if
+states "Apex without an explicit sharing declaration runs as with
+sharing by default" (apexdev 264 L4894) and gates it: "In API version
+67.0 and later" (L4994). At API 66.0 and earlier the mode is
+resolved from the class instead, by these factors (L4995-5001): `with sharing` if
 any class in its inheritance chain is saved at 67.0 or later, or if
 it is an Aura controller or an `@AuraEnabled` method called from a
 Lightning web component; the calling class's mode if it isn't an
@@ -59,14 +66,14 @@ LWC entry point and no 67.0+ ancestor, so it lands on the
 bypass on a public endpoint. Bare `@AuraEnabled`-from-LWC classes
 are the mild case (`with sharing` at every version). Either way,
 declare it: Salesforce's guidance is to "always include an explicit
-sharing declaration."
+sharing declaration" (apexdev 264 L4897).
 
 **One caveat no version changes.** "Apex triggers can't have an
 explicit sharing declaration" and they always run in a
-`without sharing` context. Database operations inside a trigger body
+`without sharing` context (apexdev 264 L4905). Database operations inside a trigger body
 default to user mode — which reapplies the running user's sharing
-and so overrides that context — only at `apiVersion` 67.0+; at
-≤ 66.0 they default to system mode and the bypass stands. That
+and so overrides that context (L4907-4909) — only at `apiVersion` 67.0+; at
+≤ 66.0 they default to system mode and the bypass stands (apexdev 264 L45133-45135; L11928-11929). That
 adjacent flip is tabled in
 [`AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version)
 § *Apex security idiom by API version*, which covers access mode,
@@ -89,26 +96,32 @@ clause intact.
 
 **How to avoid.** Declare the class `with sharing` — it is what
 covers the queries and DML in it that carry no clause — and write
-`WITH USER_MODE` (GA at API 57.0), which enforces FLS, object
+`WITH USER_MODE` (GA at API 57.0 — UNVERIFIED (2026-10-20): the GA
+version is release-notes only), which enforces FLS, object
 permissions, and the running user's sharing rules on the query it
-sits on, or
+sits on (user mode applies "the sharing rules, field-level security
+(FLS), and object permissions of the running user", apexdev 264
+L12116-12117), or
 `Security.stripInaccessible(AccessType.READABLE, records)` — operate
 on the returned `SObjectAccessDecision`'s `.getRecords()` — where a
 result must be trimmed rather than throw. The audit **flags** every
 `WITH SECURITY_ENFORCED` it finds rather than scoring the query
-clean: on a class at `apiVersion` 67.0+ it is a P0 compile failure
-(`WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE
-instead`); at 57.0–66.0 it is P2 tech debt with a named migration to
+clean: on a class at `apiVersion` 67.0+ it is a P0 — "In API version
+67.0 and later, you can't use the WITH SECURITY_ENFORCED clause"
+(apexdev 264 L11926; the exact compiler message is UNVERIFIED
+(2026-10-20)); at 57.0–66.0 it is P2 tech debt with a named migration to
 `WITH USER_MODE`; at ≤ 56.0 it is the idiom available, and the fix is
 to raise the class's `apiVersion`.
 
 ---
 
-## Gotcha 5: Sharing rules with `Type = 'Guest user'` are limited but not blocked entirely
+## Gotcha 5: Guest user sharing rules are Read Only but open every matching record to anyone
 
-**What happens.** Modern orgs restrict the kinds of sharing rules
-you can create for guest. Some grants are blocked outright; others
-produce a warning but save anyway.
+**What happens.** A guest user sharing rule is the "only way to grant
+record access" to guests and "can only grant Read Only access"
+(secguide 262 L2986-2987). Saving one is allowed; the guide's warning
+is that it gives "immediate and unlimited access to all records
+matching the sharing rule's criteria to anyone" (L3068-3069).
 
 **When it occurs.** Admins clicking past warnings.
 
@@ -118,18 +131,21 @@ for a security review.
 
 ---
 
-## Gotcha 6: Public sites can call standard Salesforce APIs by default
+## Gotcha 6: Public sites can call standard Salesforce APIs when the guest profile allows it
 
 **What happens.** A guest user can hit `/services/data/...` REST
 endpoints to query objects the guest profile has Read on. This is
-distinct from the site's custom Apex REST endpoints.
+distinct from the site's custom Apex REST endpoints. UNVERIFIED
+(2026-10-20): the behaviour is not described in the corpus.
 
-**When it occurs.** Sites where the "Restrict guest user from
-accessing standard Salesforce APIs" toggle has not been enabled.
+**When it occurs.** Guest profiles with API Enabled checked.
 
-**How to avoid.** Set the restriction on every site (Setup ->
-Sites -> Public Access Settings) unless a documented use case
-needs it.
+**How to avoid.** Uncheck API Enabled on every guest profile — the
+guide's checklist: "Confirm that Object access, and the API Enabled
+and Access Activities checkboxes are unchecked" (secguide 262 L9629)
+— unless a documented use case needs it. A per-site "Restrict guest
+user from accessing standard Salesforce APIs" toggle is UNVERIFIED
+(2026-10-20): no such setting is named in the corpus.
 
 ---
 
@@ -144,7 +160,12 @@ convenience.
 `OwnerId = guestUserId`.
 
 **How to avoid.** Audit `OwnerId` distribution; flag any custom
-object with rows owned by the guest. Reassign to a service user.
+object with rows owned by the guest. Reassign to an internal user —
+the guide: "Ensure that ownership of all existing records is
+transferred to an internal user" (secguide 262 L9632). New guest
+records go to the user named in `CustomSite.siteGuestRecordDefaultOwner`
+(api_meta 264 L49432-49433). UNVERIFIED (2026-10-20): the "implicit
+access to own records" pattern in What happens.
 
 ---
 
@@ -152,7 +173,9 @@ object with rows owned by the guest. Reassign to a service user.
 
 **What happens.** `@AuraEnabled(cacheable=true)` declarations are
 sometimes assumed to be safer because they are read-only. They are
-not — sharing semantics still apply via the class declaration.
+not — sharing semantics still apply via the class declaration;
+`cacheable=true` only caches results of methods that "retrieve data
+but don't modify it" (apexdev 264 L5096).
 
 **When it occurs.** Code review confusion between "cacheable" and
 "safe".
@@ -173,4 +196,5 @@ persist.
 
 **How to avoid.** Re-audit guest-user configuration after any
 significant site change (activation, member profile changes,
-template change).
+template change). UNVERIFIED (2026-10-20): which settings reset on
+activation is not in the corpus.

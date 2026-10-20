@@ -1,4 +1,4 @@
-# Lwc Jest Testing With Accessibility — Work Template
+# LWC Jest Testing With Accessibility — Work Template
 
 Use this template when working on tasks in this area.
 
@@ -10,23 +10,26 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Answers to the Questions to Ask Before Configuring table in SKILL.md:
 
-- Setting / configuration:
-- Known constraints:
-- Failure modes to watch for:
+- A11y surface of the template (roles, aria-*, tabindex, focus targets, key handlers):
+- Async hops between each action and the asserted attribute:
+- `jest-axe` in or out, and who owns browser-side contrast checks:
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Follow the Recommended Workflow in SKILL.md: setup, accessible-name baseline,
+ARIA-state tests, focus and keyboard tests, axe decision, checker run.
 
 ## Checklist
 
-Copy the review checklist from SKILL.md and tick items as you complete them.
-
-- [ ] TODO
-- [ ] TODO
+- [ ] `package.json` has `@salesforce/sfdx-lwc-jest` and `"test:unit": "sfdx-lwc-jest"`.
+- [ ] `jest.config.js` spreads `jestConfig` from `@salesforce/sfdx-lwc-jest/config`.
+- [ ] Every query goes through `element.shadowRoot`.
+- [ ] Every `aria-*` state the template toggles has a test.
+- [ ] Focus tests assert `shadowRoot.activeElement`, not `document.activeElement`.
+- [ ] `check_lwc_jest_testing_with_accessibility.py --strict` exits 0.
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Record any deviation from the Recommended Workflow and why.

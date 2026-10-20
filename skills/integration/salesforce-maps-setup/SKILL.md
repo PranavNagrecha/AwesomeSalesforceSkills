@@ -38,14 +38,16 @@ outputs:
   - "Live Tracking enablement plan (if licensed)"
   - "Integration plan with Sales/Service Cloud records (Visit, CheckIn) and Lightning page placement"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-04
+updated: 2026-10-20
 ---
 
 # Salesforce Maps Setup
 
 This skill activates when a practitioner is configuring **Salesforce Maps** (the rebranded MapAnything product, marketed as Maps for Sales Cloud and Maps for Service Cloud). It covers package installation, geocoding setup, territory polygon design, route optimization, and live tracking — all distinct from Field Service Lightning's territory model and from Consumer Goods Cloud's RoutePlan/Visit. Use it when the question is "how do I configure Salesforce Maps," not "how does FSL territorying work."
+
+UNVERIFIED (2026-10-20): every Salesforce Maps package name, namespace, object, field, Setup path, default and tier boundary in this package. The corpus has no Salesforce Maps guide and object_reference holds no Maps object; only the platform objects cited inline (ServiceTerritory, PermissionSetAssignment, InstalledPackage) are grounded.
 
 ---
 
@@ -54,10 +56,26 @@ This skill activates when a practitioner is configuring **Salesforce Maps** (the
 Gather this context before working on anything in this domain:
 
 - **Salesforce Maps is a separately licensed paid add-on** with its own managed package(s), not a free Sales Cloud feature. Confirm the customer holds Maps licenses (and which tier — Maps, Advanced, Live Tracking, Routing) before proposing setup work. The license tier dictates which features are available.
-- Maps is **not Field Service**. FSL has its own territory model (`ServiceTerritory`, `ServiceTerritoryMember`, `MaintenancePlan`) optimized for dispatching work-order resources. Maps targets a broader Sales / Service field-rep persona — outside reps visiting accounts, distributing leads by geography, optimizing daily call sequences. Mixing the two object models leads to permission and licensing chaos.
-- Maps is **not Consumer Goods Cloud**. CG Cloud's `RoutePlan` / `RoutePlanEntry` / `Visit` are CG-specific objects for retail-execution scenarios with cadence-driven store coverage. Maps is the general-purpose mapping product that can plot any object with geocode fields.
+- Maps is **not Field Service**. FSL has its own territory model — `ServiceTerritory` ("a geographic or functional region in which work can be performed in Field Service", obj 264 L263543) and `ServiceTerritoryMember` (obj 264 L263979) — optimized for dispatching work-order resources. (`MaintenancePlan` is not a territory object: it "Represents a preventive maintenance schedule", obj 264 L179723.) Maps targets a broader Sales / Service field-rep persona — outside reps visiting accounts, distributing leads by geography, optimizing daily call sequences. Mixing the two object models leads to permission and licensing chaos.
+- Maps is **not Consumer Goods Cloud**. CG Cloud's `RoutePlan` / `RoutePlanEntry` / `Visit` are CG-specific objects for retail-execution scenarios with cadence-driven store coverage (UNVERIFIED (2026-10-20): these objects are not in object_reference 264). Maps is the general-purpose mapping product that can plot any object with geocode fields.
 - Maps relies on **base data services** (Geocoding, Routing, Live Tracking, Mass Operations). These run as scheduled jobs after package install. Maps is not usable until at least the Geocoding service has run for your source objects.
 - Geocoding is **synchronous on insert/update** only when the "Real-Time Geocoding" trigger is enabled per object; otherwise records geocode on the next scheduled batch. New users frequently file "accounts not on map" tickets because they didn't enable real-time geocoding.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which objects must plot the moment a record is created? | Gotcha 1: real-time geocoding is off by default per object | The per-object real-time list |
+| How clean are State and Country on the address fields? | Gotcha 2: geocode failures are silent | A pre-load cleanup and a failure-rate threshold |
+| Who assigns the Maps permission sets after install? | Gotcha 3: install assigns them to no one | A `PermissionSetAssignment` step in the runbook |
+| Does the org also run Field Service territories? | Gotcha 4: `MapsTerritory__c` and `ServiceTerritory` are different models | A documented persona boundary |
+| If Live Tracking is in scope: how many reps, what ping interval, what retention? | Gotcha 5: breadcrumb volume grows with reps × pings | An archival design sized before enablement |
+| Does any BI tool need the territory polygons? | Gotcha 6: polygons are package-internal | An export pipeline in the plan |
+| Is the org on legacy MapAnything today? | Gotcha 7: the namespaces differ and nothing migrates itself | A coexistence migration window |
+
+These rows inherit the package-wide UNVERIFIED (2026-10-20) note above for every Maps-specific behaviour. A proper configuration sizes geocoding, permissions and tracking volume before go-live instead of discovering them from rep tickets.
 
 ---
 
@@ -112,7 +130,7 @@ Maps cannot plot records without latitude/longitude. The Maps Geocoding service 
 Live Tracking emits breadcrumb events (a new record per location ping at the configured interval). Two operational realities:
 
 1. **Privacy and labor compliance.** Live tracking is regulated in some jurisdictions (e.g., requires explicit employee consent in California, EU). The customer's HR or legal team must approve enablement per region before activating.
-2. **Volume.** A 100-rep deployment with 5-minute pings during a 10-hour workday generates ~120,000 breadcrumb records per day. Plan an archival job (Big Object archive or scheduled hard delete after retention period) before turning Live Tracking on org-wide.
+2. **Volume.** A 100-rep deployment with 5-minute pings during a 10-hour workday generates ~12,000 breadcrumb records per day (600 min ÷ 5 = 120 pings × 100 reps; one record per ping). Plan an archival job (Big Object archive or scheduled hard delete after retention period) before turning Live Tracking on org-wide.
 
 ---
 
@@ -253,4 +271,4 @@ Run through these before marking work in this area complete:
 - `architect/fsl-optimization-architecture` — overall FSL optimization architecture
 - `admin/consumer-goods-cloud-setup` — CG Cloud RoutePlan/Visit (retail-execution; do not confuse with Maps)
 - `integration/file-and-document-integration` — if Maps imports require bulk-load file integration
-- `data/data-loader-best-practices` — for the initial batch import of geocoded data
+- `data/data-loader-and-tools` — for the initial batch import of geocoded data

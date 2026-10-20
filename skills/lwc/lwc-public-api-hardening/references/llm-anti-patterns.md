@@ -159,7 +159,7 @@ const el = createElement('c-foo', { is: Foo });
 expect(el.maxRows).toBe(10); // FAILS — undefined
 ```
 
-**Why it happens:** the LLM reads `<property default="10">` as "the runtime default" rather than "the App Builder admin-UI default."
+**Why it happens:** the LLM reads `<property default="10">` as "the runtime default" rather than "the App Builder admin-UI default." (UNVERIFIED (2026-10-20): the guide does not say where `default` is applied; a Jest `createElement` never reads `.js-meta.xml`, so the test above fails either way.)
 
 **Correct pattern:** mirror the default in JS too:
 

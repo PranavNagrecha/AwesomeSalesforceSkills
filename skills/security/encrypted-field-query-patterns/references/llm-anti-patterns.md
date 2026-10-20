@@ -45,7 +45,8 @@ used as selective filters.
 **Why it happens:** standard debug pattern.
 
 **Correct pattern:** never log encrypted values. Event Monitoring,
-replay logs, and support dumps all persist debug output.
+replay logs, and support dumps all persist debug output. UNVERIFIED (2026-10-20):
+which stores persist debug output is not in the corpus.
 
 ## Anti-Pattern 6: Claiming "View Encrypted Data" Gates Shield Plaintext
 
@@ -64,7 +65,9 @@ plausible and self-consistent, so nothing in the answer looks wrong.
 **Correct pattern:** Shield Platform Encryption decrypts
 **transparently** — anyone with field-level READ on the field sees
 plaintext, in Apex, SOQL, reports, and the UI. "View Encrypted Data" has
-been unnecessary for Shield since Spring '17. Restrict plaintext with
+been unnecessary for Shield since Spring '17 (UNVERIFIED (2026-10-20): this and
+the transparent-decryption sentence are Help/Trailhead only; the corpus places the
+permission on the Classic Encryption page, secguide 262 L2484-2486, L2548). Restrict plaintext with
 **field-level security** (profiles / permission sets), page layouts, and
 sharing. State which product a claim applies to: Classic → "View
 Encrypted Data"; Shield → FLS.

@@ -10,23 +10,27 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Answers to the Questions to Ask Before Configuring table in SKILL.md:
 
-- Setting / configuration:
-- Known constraints:
-- Failure modes to watch for:
+- Sites in scope and the guest profile behind each:
+- Classes reachable from guest, with their `apiVersion`:
+- Guest user sharing rules and their criteria:
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Walk the Recommended Workflow in SKILL.md in order: sites, profiles,
+sharing rules, Apex, Run-As-Guest, endpoint probes, prioritised report.
 
 ## Checklist
 
-Copy the review checklist from SKILL.md and tick items as you complete them.
-
-- [ ] TODO
-- [ ] TODO
+- [ ] Every site's guest profile audited, not just one.
+- [ ] API Enabled and Access Activities unchecked on each guest profile.
+- [ ] Every guest user sharing rule has a written business justification.
+- [ ] No guest-reachable class is `without sharing`; bare classes read against their `apiVersion`.
+- [ ] No `WITH SECURITY_ENFORCED` left in guest-reachable classes.
+- [ ] Records owned by a guest user reassigned to an internal user.
+- [ ] `check_guest_user_security_audit.py` run on the source tree.
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Record any deviation from the Recommended Workflow and why.

@@ -34,10 +34,18 @@ that the public surface is fragile:
   P1  Design property block declares `name="<kebab-case>"` (contains `-`).
       Action: design property names must be camelCase.
 
-stdlib only. Exits 1 on any P0 or P1 finding, 0 otherwise.
+P0/P1 are priorities, not exit codes. Contract (stdlib only):
+  - a supplied path that does not exist, or a .js-meta.xml that does not parse
+    -> ERROR, exit 1;
+  - no .js / .js-meta.xml under the paths -> one WARN, exit 0;
+  - P0/P1 findings -> WARN, exit 0 unless --strict (then exit 1).
+`@api` may sit on the getter OR the setter ("Annotate either the getter or the
+setter with @api, but not both", lwcguide js-props-getters-setters); both forms
+are recognised.
 
 Usage:
-    python3 check_lwc_public_api_hardening.py <path> [<path> ...]
+    python3 check_lwc_public_api_hardening.py <path> [<path> ...] [--strict]
+    python3 check_lwc_public_api_hardening.py --manifest-dir <bundle-or-lwc-dir>
 
 Each <path> may be a `.js` file, a `.js-meta.xml` file, or a directory
 (recursively scanned for both file types).
@@ -45,9 +53,11 @@ Each <path> may be a `.js` file, a `.js-meta.xml` file, or a directory
 
 from __future__ import annotations
 
+import argparse
 import os
 import re
 import sys
+import xml.etree.ElementTree as ET
 from typing import Iterable, List, Tuple
 
 # ---------------------------------------------------------------------------
@@ -58,7 +68,7 @@ CLASS_DECL_RE = re.compile(r"\bclass\s+([A-Za-z_$][A-Za-z0-9_$]*)\s+extends\s+Li
 API_BARE_FIELD_RE = re.compile(
     r"@api\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*(?:=\s*[^;\n]+)?\s*;"
 )
-API_GETTER_RE = re.compile(r"@api\s*\n?\s*get\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(")
+API_GETTER_RE = re.compile(r"@api\s*\n?\s*(?:get|set)\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(")
 API_SETTER_RE = re.compile(r"\bset\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(")
 API_METHOD_RE = re.compile(
     r"@api\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\([^)]*\)\s*\{"
@@ -135,8 +145,8 @@ def iter_target_files(paths: Iterable[str]) -> Iterable[str]:
                 for name in files:
                     if name.endswith(".js") or name.endswith(".js-meta.xml"):
                         yield os.path.join(root, name)
-        else:
-            print(f"WARN: skipping non-LWC or missing path: {raw}", file=sys.stderr)
+        elif os.path.isfile(raw):
+            print(f"WARN: skipping non-LWC file: {raw}")
 
 
 # ---------------------------------------------------------------------------
@@ -177,7 +187,7 @@ def analyse_js(path: str) -> List[Tuple[str, str]]:
         with open(path, "r", encoding="utf-8", errors="replace") as fh:
             text = fh.read()
     except OSError as exc:
-        return [("P0", f"{path}: could not read file ({exc})")]
+        return [("ERROR", f"{path}: could not read file ({exc})")]
 
     if not CLASS_DECL_RE.search(text):
         # Not an LWC main file (could be a helper module). Skip silently.
@@ -277,7 +287,11 @@ def analyse_meta_xml(path: str) -> List[Tuple[str, str]]:
         with open(path, "r", encoding="utf-8", errors="replace") as fh:
             text = fh.read()
     except OSError as exc:
-        return [("P0", f"{path}: could not read file ({exc})")]
+        return [("ERROR", f"{path}: could not read file ({exc})")]
+    try:
+        ET.fromstring(text)
+    except ET.ParseError as exc:
+        return [("ERROR", f"{path}: .js-meta.xml does not parse ({exc})")]
 
     for block_match in TARGETCONFIG_BLOCK_RE.finditer(text):
         targets_attr = block_match.group(1)
@@ -323,13 +337,25 @@ def analyse(path: str) -> List[Tuple[str, str]]:
 
 
 def main(argv: List[str]) -> int:
-    if len(argv) < 2:
-        print(__doc__, file=sys.stderr)
-        return 2
+    parser = argparse.ArgumentParser(description="LWC public-API hardening checker.")
+    parser.add_argument("paths", nargs="*", help=".js / .js-meta.xml files or directories")
+    parser.add_argument("--manifest-dir", action="append", default=[], help="bundle or lwc directory")
+    parser.add_argument("--strict", action="store_true", help="exit 1 on WARN findings")
+    args = parser.parse_args(argv[1:])
+    paths = args.paths + args.manifest_dir
+    if not paths:
+        parser.print_usage()
+        print("ERROR: no path supplied")
+        return 1
+    missing = [p for p in paths if not os.path.exists(p)]
+    if missing:
+        for p in missing:
+            print(f"ERROR: path not found: {p}")
+        return 1
 
-    files = list(iter_target_files(argv[1:]))
+    files = list(iter_target_files(paths))
     if not files:
-        print("No .js or .js-meta.xml files found in the supplied paths.", file=sys.stderr)
+        print("WARN: no .js or .js-meta.xml files found in the supplied paths.")
         return 0
 
     all_findings: List[Tuple[str, str]] = []
@@ -340,18 +366,19 @@ def main(argv: List[str]) -> int:
         print(f"OK - scanned {len(files)} file(s); no public-API hardening violations found.")
         return 0
 
+    errors = [f for f in all_findings if f[0] == "ERROR"]
     p0 = [f for f in all_findings if f[0] == "P0"]
     p1 = [f for f in all_findings if f[0] == "P1"]
 
     for severity, message in all_findings:
-        print(f"[{severity}] {message}")
+        level = "ERROR" if severity == "ERROR" else f"WARN [{severity}]"
+        print(f"{level}: {message}")
 
-    print("")
-    print(f"Summary: {len(p0)} P0, {len(p1)} P1, scanned {len(files)} file(s).")
+    print(f"Summary: {len(errors)} ERROR, {len(p0)} P0, {len(p1)} P1, scanned {len(files)} file(s).")
 
-    if p0 or p1:
+    if errors:
         return 1
-    return 0
+    return 1 if (args.strict and (p0 or p1)) else 0
 
 
 if __name__ == "__main__":

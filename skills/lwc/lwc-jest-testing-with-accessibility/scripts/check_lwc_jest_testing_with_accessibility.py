@@ -4,7 +4,10 @@
 Walks an SFDX-style force-app/ tree plus the project root and reports:
 
 1. `package.json` missing `@salesforce/sfdx-lwc-jest` devDependency
-2. `jest.config.js` missing OR not extending the official Salesforce preset
+2. `jest.config.js` missing, not referencing `@salesforce/sfdx-lwc-jest/config`,
+   or referencing it without the `jestConfig` export the guide spreads
+   (`const { jestConfig } = require('@salesforce/sfdx-lwc-jest/config');
+   module.exports = { ...jestConfig };` — lwcguide unit-testing-using-jest-advanced)
 3. LWC components (under `force-app/main/default/lwc/<name>/`) with NO
    `__tests__/` directory at all
 4. LWC test files (`*.test.js`) that contain a render harness but make NO
@@ -19,12 +22,12 @@ Stdlib only — no pip dependencies.
 
 Usage:
     python3 check_lwc_jest_testing_with_accessibility.py
-        [--root force-app/main/default]
-        [--project-root .]
+        [--root force-app/main/default]   (alias --manifest-dir)
+        [--project-root .] [--strict]
 
-Exit codes:
-    0  no findings
-    1  findings present (informational, non-blocking)
+Exit codes (repo checker contract):
+    1  ERROR — --root or --project-root missing, or package.json does not parse
+    0  findings are WARN (exit 1 only with --strict); no lwc/ components -> one WARN
 """
 
 from __future__ import annotations
@@ -75,7 +78,7 @@ def check_package_json(project_root: Path) -> list[str]:
     try:
         data = json.loads(pkg.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        findings.append(f"package.json could not be parsed: {exc}")
+        findings.append(f"ERROR package.json could not be parsed: {exc}")
         return findings
     deps = {}
     deps.update(data.get("devDependencies") or {})
@@ -117,6 +120,13 @@ def check_jest_config(project_root: Path) -> list[str]:
         findings.append(
             "jest.config.js: does not reference @salesforce/sfdx-lwc-jest — "
             "ensure the file extends the official preset"
+        )
+    elif "jestConfig" not in text:
+        findings.append(
+            "jest.config.js: references @salesforce/sfdx-lwc-jest/config but never "
+            "uses its `jestConfig` export — the guide's form is "
+            "`const { jestConfig } = require('@salesforce/sfdx-lwc-jest/config'); "
+            "module.exports = { ...jestConfig };`"
         )
     return findings
 
@@ -209,6 +219,8 @@ def main() -> int:
     )
     p.add_argument(
         "--root",
+        "--manifest-dir",
+        dest="root",
         default="force-app/main/default",
         help="Root of LWC metadata (default: force-app/main/default).",
     )
@@ -217,10 +229,18 @@ def main() -> int:
         default=".",
         help="Project root containing package.json / jest.config.js.",
     )
+    p.add_argument("--strict", action="store_true", help="exit 1 on WARN findings")
     args = p.parse_args()
 
     project_root = Path(args.project_root)
     metadata_root = Path(args.root)
+    for label, path in (("--root", metadata_root), ("--project-root", project_root)):
+        if not path.is_dir():
+            print(f"ERROR: {label} not found or not a directory: {path}")
+            return 1
+    if not find_lwc_dirs(metadata_root):
+        print(f"WARN: no LWC components under {metadata_root / 'lwc'}; nothing to check")
+        return 0
 
     findings_count = 0
 
@@ -238,36 +258,32 @@ def main() -> int:
             print(f"  - {f}")
         findings_count += len(cfg_findings)
 
-    if metadata_root.exists():
-        coverage_findings, test_files = check_lwc_test_coverage(metadata_root)
-        if coverage_findings:
-            print("\n## LWC components missing tests")
-            for f in coverage_findings:
-                print(f"  - {f}")
-            findings_count += len(coverage_findings)
+    coverage_findings, test_files = check_lwc_test_coverage(metadata_root)
+    if coverage_findings:
+        print("\n## LWC components missing tests")
+        for f in coverage_findings:
+            print(f"  - {f}")
+        findings_count += len(coverage_findings)
 
-        per_test_findings: list[str] = []
-        for tf in test_files:
-            per_test_findings.extend(check_test_file(tf))
-        if per_test_findings:
-            print("\n## Test files missing a11y assertions or using wrong patterns")
-            for f in per_test_findings:
-                print(f"  - {f}")
-            findings_count += len(per_test_findings)
-    else:
-        print(
-            f"\nNote: metadata root not found at {metadata_root} — "
-            "skipped per-component checks",
-            file=sys.stderr,
-        )
+    per_test_findings: list[str] = []
+    for tf in test_files:
+        per_test_findings.extend(check_test_file(tf))
+    if per_test_findings:
+        print("\n## Test files missing a11y assertions or using wrong patterns")
+        for f in per_test_findings:
+            print(f"  - {f}")
+        findings_count += len(per_test_findings)
 
+    if any(f.startswith("ERROR ") for f in pkg_findings):
+        print("ERROR: package.json does not parse")
+        return 1
     if findings_count == 0:
         print("No LWC jest a11y testing issues detected.")
         return 0
 
-    print(f"\nTotal findings: {findings_count}")
+    print(f"\nWARN: total findings: {findings_count}")
     print("See SKILL.md and references/llm-anti-patterns.md for remediation.")
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

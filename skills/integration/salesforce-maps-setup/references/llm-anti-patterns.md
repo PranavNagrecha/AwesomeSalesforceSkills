@@ -2,6 +2,8 @@
 
 Common mistakes AI coding assistants make when generating or advising on Salesforce Maps Setup.
 
+UNVERIFIED (2026-10-20): every Salesforce Maps package name, namespace (`maps__`, `ma__`), object, field, Setup path, default and tier boundary below. The corpus has no Salesforce Maps guide; see the note at the top of SKILL.md.
+
 ## Anti-Pattern 1: Confusing Salesforce Maps With Field Service Lightning
 
 **What the LLM generates:** "To configure territories in Salesforce Maps, create `ServiceTerritory` records and assign `ServiceTerritoryMember` rows for each rep."

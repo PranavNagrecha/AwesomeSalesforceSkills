@@ -96,7 +96,7 @@ export default class AccountSummary extends LightningElement {
 
 ```xml
 <targetConfigs>
-    <targetConfig targets="lightning__RecordPage" objects="Account">
+    <targetConfig targets="lightning__RecordPage">
         <property
             name="maxContacts"
             label="Max contacts"
@@ -105,11 +105,14 @@ export default class AccountSummary extends LightningElement {
             min="1"
             max="50"
             description="Number of contact rows to render. 1-50." />
+        <objects>
+            <object>Account</object>
+        </objects>
     </targetConfig>
 </targetConfigs>
 ```
 
-Result: setter coerces App Builder strings, defends against programmatic `undefined`, enforces the 1-50 range. `connectedCallback` fails fast with a useful message. `objects="Account"` constrains the record-page placement so admins don't accidentally drop it on a Contact page.
+Result: setter coerces App Builder strings, defends against programmatic `undefined`, enforces the 1-50 range. `connectedCallback` fails fast with a useful message. `<objects><object>Account</object></objects>` (a child tag set, not an attribute — api_meta 264 L86776-86778) constrains the record-page placement so admins don't accidentally drop it on a Contact page.
 
 ---
 
@@ -228,6 +231,8 @@ Result: the child has zero `@api` methods. The contract is one-way and DOM-remov
 `topicPicker.js-meta.xml`:
 
 ```xml
+<!-- excerpt of topicPicker.js-meta.xml -->
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
 <targets>
     <target>lightning__FlowScreen</target>
     <target>lightning__RecordPage</target>
@@ -240,6 +245,7 @@ Result: the child has zero `@api` methods. The contract is one-way and DOM-remov
         <property name="initialTopic" label="Initial Topic" type="String" />
     </targetConfig>
 </targetConfigs>
+</LightningComponentBundle>
 ```
 
 `topicPicker.js`:
@@ -267,6 +273,8 @@ Symptoms:
 `topicPicker.js-meta.xml`:
 
 ```xml
+<!-- excerpt of topicPicker.js-meta.xml -->
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
 <targets>
     <target>lightning__FlowScreen</target>
     <target>lightning__RecordPage</target>
@@ -280,15 +288,21 @@ Symptoms:
             type="{T}"
             description="Topic SObject record from a Flow variable." />
     </targetConfig>
-    <targetConfig targets="lightning__RecordPage" objects="Topic__c">
+    <targetConfig targets="lightning__RecordPage">
         <property
             name="initialTopicId"
             label="Initial Topic Id"
             type="String"
             description="18-char Topic Id (record-page mode falls back to a typed Id)." />
+        <objects>
+            <object>Topic__c</object>
+        </objects>
     </targetConfig>
 </targetConfigs>
+</LightningComponentBundle>
 ```
+
+`propertyType name="T"` pairs with `property type="{T}"` (lwcguide use-flow-custom-property-editor-sobject-lwc-example).
 
 `topicPicker.js`:
 
@@ -335,7 +349,7 @@ export default class TopicPicker extends LightningElement {
 
     connectedCallback() {
         if (!this._currentTopicId) {
-            // Soft fallback - Flow halts on uncaught errors; we render a "pick a topic" prompt instead.
+            // Soft fallback - render a "pick a topic" prompt instead of throwing.
             return;
         }
     }

@@ -38,9 +38,9 @@ outputs:
   - "Optional: `axe-core` integration recipe with the caveats that apply to the LWC jest jsdom environment"
   - "CI gate recommendation — which assertions are blocking vs informational"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-08
+updated: 2026-10-20
 ---
 
 # LWC Jest Testing with Accessibility
@@ -55,9 +55,27 @@ Gather this context before writing the test:
 
 - **What a11y dimensions actually live in the component.** Tests can only assert what the component is responsible for. A component that consumes `lightning-input` inherits a lot of accessibility from the base component — you don't re-test SLDS. What you DO test is the markup *your* template adds: `role`, `aria-*`, `tabindex`, dynamic accessible-name updates, focus-target wiring, keyboard handlers.
 - **What the jsdom environment can and cannot do.** `@salesforce/sfdx-lwc-jest` runs in jsdom under Node. jsdom has no layout engine, no real focus visualization, no actual screen reader. You can read `aria-*` attributes and check `document.activeElement`, but you cannot assert pixel positions, computed contrast, or screen-reader announcements. Plan accordingly — jest catches structural regressions; manual or UTAM testing catches sensory ones.
-- **Whether Locker Service is in play.** It is not, in jest. jest runs the component in a plain Node + jsdom context with no Locker Service or Lightning Locker. Tests that pass in jest can still fail at runtime due to Locker restrictions — keep a Locker-aware end-to-end check separately.
-- **Existing setup in the project.** Check `package.json` for `@salesforce/sfdx-lwc-jest` and a `test:unit` script. Check `jest.config.js` for the official Salesforce preset. If either is missing, the first deliverable is the setup, not the assertions.
-- **Whether you're going to add `axe-core`.** `axe-core` works in jsdom but with caveats — it cannot evaluate computed style or rendered layout, so a "passes axe in jest" result is a *structural* pass, not a full a11y pass. Decide upfront whether to integrate it (for fail-fast on common ARIA mistakes) or skip it (for less ceremony) and document the choice.
+- **Whether Locker Service is in play.** It is not, in jest. jest runs the component in a plain Node + jsdom context with no Locker Service or Lightning Locker (UNVERIFIED (2026-10-20): not stated in the LWC guide). Tests that pass in jest can still fail at runtime due to Locker restrictions — keep a Locker-aware end-to-end check separately.
+- **Existing setup in the project.** Check `package.json` for `@salesforce/sfdx-lwc-jest` and a `"test:unit": "sfdx-lwc-jest"` script (the default script entry, lwcguide unit-testing-using-jest-installation). Check `jest.config.js` for the official Salesforce preset. If either is missing, the first deliverable is the setup, not the assertions.
+- **Whether you're going to add `axe-core`.** `axe-core` works in jsdom but with caveats (UNVERIFIED (2026-10-20): axe behaviour comes from the axe-core project, not the corpus) — it cannot evaluate computed style or rendered layout, so a "passes axe in jest" result is a *structural* pass, not a full a11y pass. Decide upfront whether to integrate it (for fail-fast on common ARIA mistakes) or skip it (for less ceremony) and document the choice.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does the component run under Locker or LWS in production? | Gotcha 1: jest does not reproduce Locker restrictions | A real-org smoke test in the plan |
+| How many async hops sit between the action and the attribute you assert? | Gotcha 2: one `await Promise.resolve()` may not be enough | The right number of awaits, or a flush helper |
+| Does the component move focus inside its own shadow tree? | Gotcha 3: `document.activeElement` returns the host | Focus assertions on `shadowRoot.activeElement` |
+| Do any handlers depend on modifier keys? | Gotcha 4: jsdom modifier flags can drift | Outcome-based keyboard assertions |
+| Does the team snapshot `shadowRoot.innerHTML`? | Gotcha 5: engine markers break snapshots | Targeted attribute assertions instead |
+| Will `jest-axe` be added, and who owns contrast checks? | Gotcha 6: `color-contrast` misbehaves in jsdom | A browser-side contrast check |
+| Does any template use `lwc:dom="manual"`? | Gotcha 7: injected nodes appear one cycle later | An extra await before querying them |
+
+Every row restates a gotcha marked UNVERIFIED (2026-10-20): jsdom, axe-core, Locker and shadow-focus (`activeElement`) behaviour sit outside the corpus and the LWC guide.
+
+A proper configuration decides up front which a11y dimensions jest proves and which go to a browser or manual pass, so a green suite is never read as a full accessibility sign-off.
 
 ---
 
@@ -94,8 +112,8 @@ describe('c-my-component', () => {
 
 Two things are non-negotiable:
 
-1. **`shadowRoot` queries.** LWC uses Shadow DOM (synthetic in older API versions, native in newer). Inside the test, query through `element.shadowRoot.querySelector(...)` — never through `document.querySelector`, which won't pierce the shadow boundary.
-2. **Wait for render before assertions.** LWC re-renders asynchronously. `await Promise.resolve()` flushes the microtask queue and lets pending re-renders settle. Skip this and your assertion runs before the DOM updates, producing flaky tests. For multiple re-render cycles, chain multiple awaits or use a `flushPromises()` helper.
+1. **`shadowRoot` queries.** LWC uses Shadow DOM — "a shadow DOM polyfill, also known as synthetic shadow" (lwcguide testing-dom-api). Inside the test, query through `element.shadowRoot.querySelector(...)` — never through `document.querySelector`: elements in the shadow tree "are not available by traditional DOM querying methods" (same page).
+2. **Wait for render before assertions.** LWC re-renders asynchronously — "When the state of a Lightning web component changes, the DOM updates asynchronously" (lwcguide unit-testing-using-jest-create-tests). `await Promise.resolve()` flushes the microtask queue and lets pending re-renders settle. Skip this and your assertion runs before the DOM updates, producing flaky tests. For multiple re-render cycles, chain multiple awaits or use a `flushPromises()` helper.
 
 The same harness handles a11y assertions — there is no special "a11y mode." You use it to read `aria-*` attributes, query focusable elements, dispatch keyboard events, and check `document.activeElement`.
 
@@ -128,7 +146,7 @@ Knowing the jest/jsdom boundary is the difference between a useful test and a mi
 
 Wire and Apex mocks are essential because jest does not have a Salesforce server. Two official patterns:
 
-**Wire adapters** — use the test wire adapter helpers bundled with `@salesforce/sfdx-lwc-jest`:
+**Wire adapters** — use the test wire adapter helpers bundled with `@salesforce/sfdx-lwc-jest`, which "has three adapters for mocking wire service data: a generic wire adapter, a Lightning Data Service (LDS) wire adapter, and an Apex wire adapter" (lwcguide unit-testing-using-wire-utility). The factory name `createApexTestWireAdapter` is from the sfdx-lwc-jest README (UNVERIFIED (2026-10-20): not in the guide):
 
 ```js
 import { createElement } from 'lwc';
@@ -176,13 +194,13 @@ it('announces success in the live region after assignment', async () => {
 });
 ```
 
-The `{ virtual: true }` option is required because `@salesforce/apex/...` is a virtual module resolved at compile time on the platform — jest needs to be told it's OK that the module doesn't exist on disk.
+The `{ virtual: true }` option is required because `@salesforce/apex/...` is a virtual module resolved at compile time on the platform — jest needs to be told it's OK that the module doesn't exist on disk (UNVERIFIED (2026-10-20); the guide's alternative is a `moduleNameMapper` entry for `@salesforce/apex` in `jest.config.js`, lwcguide unit-testing-using-jest-create-tests).
 
-A11y assertions sit immediately after the mocked async settles. The dance with three `await Promise.resolve()`s exists because click → mock resolution → re-render is three microtasks, not one.
+A11y assertions sit immediately after the mocked async settles. The dance with three `await Promise.resolve()`s exists because click → mock resolution → re-render is three microtasks, not one (UNVERIFIED (2026-10-20): the guide says only to wait for a resolved Promise).
 
 ### Concept 4 — `axe-core` integration: structural pass only, with caveats
 
-`axe-core` (https://github.com/dequelabs/axe-core) can run inside jsdom and check a defined subset of WCAG rules — those that don't depend on rendered layout or computed style. The integration via `jest-axe` looks like:
+`axe-core` (https://github.com/dequelabs/axe-core) can run inside jsdom and check a defined subset of WCAG rules — those that don't depend on rendered layout or computed style. UNVERIFIED (2026-10-20): every axe-in-jsdom statement in this concept (what it catches, what it misses, `color-contrast`) comes from the axe-core project, not the corpus or the LWC guide. The integration via `jest-axe` looks like:
 
 ```js
 import { axe, toHaveNoViolations } from 'jest-axe';
@@ -220,12 +238,12 @@ Treat `axe(...)` in jest as an extra gate against ARIA mistakes, not as a full a
 ## Recommended Workflow
 
 1. **Inventory the component's a11y surface.** Open the component template; list every `role`, `aria-*`, `tabindex`, focus target, and keyboard handler. Each is a candidate assertion. If the list is empty, the component may not need a dedicated a11y test (e.g. a thin display-only wrapper around `lightning-card`).
-2. **Confirm the jest setup.** `package.json` should depend on `@salesforce/sfdx-lwc-jest`. `jest.config.js` should extend the Salesforce preset (`module.exports = require('@salesforce/sfdx-lwc-jest/config');`). If missing, follow the current `sfdx-lwc-jest` README to install. Without these, none of the assertions in this skill will work.
+2. **Confirm the jest setup.** `package.json` should depend on `@salesforce/sfdx-lwc-jest`. `jest.config.js` should spread the preset's `jestConfig` export — `const { jestConfig } = require('@salesforce/sfdx-lwc-jest/config'); module.exports = { ...jestConfig };` (lwcguide unit-testing-using-jest-advanced); the guide destructures `jestConfig` from the module, so `module.exports = require('@salesforce/sfdx-lwc-jest/config')` is not the documented shape. The guide's lwc-recipes config also pushes a `jest-sa11y-setup.js` into `setupFilesAfterEnv` (lwcguide unit-testing-using-jest-create-tests). If missing, follow the current `sfdx-lwc-jest` README to install. Without these, none of the assertions in this skill will work.
 3. **Write the render + accessible-name baseline.** Start with one test that renders the component in a default state and asserts the accessible name (`aria-label` or `aria-labelledby` chain). This is the cheapest, highest-signal a11y test — if it fails, the component has no accessible identity at all.
 4. **Add interaction-driven ARIA-state tests.** For every `aria-expanded`, `aria-pressed`, `aria-selected`, or `aria-checked` your template emits, add one test that toggles the underlying state and asserts the attribute follows. This is where most real a11y regressions happen.
 5. **Add focus-management and keyboard-handler tests.** If the component manages focus on open/close (modal, popover, accordion) or implements a keyboard handler (`Escape` to close, `Arrow` to navigate), add a test that dispatches the event and asserts both the state change AND `shadowRoot.activeElement`.
 6. **Decide on axe-core.** If the team wants a fail-fast gate against ARIA mistakes, add `jest-axe` and a single per-state axe assertion. Document in the PR description that axe-in-jest does NOT replace browser axe checks. If the team prefers minimal ceremony, skip it — explicit assertions are usually more maintainable.
-7. **Run the bundled checker against the project.** `python3 scripts/check_lwc_jest_testing_with_accessibility.py --root force-app/main/default` enumerates LWC components without test files, test files without a11y assertions, and `package.json` lacking the official preset.
+7. **Run the bundled checker against the project.** `python3 scripts/check_lwc_jest_testing_with_accessibility.py --root force-app/main/default --strict` (findings are WARN, exit 0 without `--strict`; a missing root or unparseable `package.json` is ERROR, exit 1) enumerates LWC components without test files, test files without a11y assertions, and `package.json` lacking the official preset.
 
 ---
 

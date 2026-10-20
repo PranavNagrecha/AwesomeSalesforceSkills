@@ -5,6 +5,7 @@
 - **Security** — at-rest encryption for sensitive data.
 - **Performance** — deterministic schemes still index; probabilistic
   does not; queries without a plan become full-table scans.
+  UNVERIFIED (2026-10-20): Shield index behaviour is not in the corpus.
 - **Reliability** — silent filter mismatches after enabling encryption
   are a classic reliability trap.
 
@@ -14,7 +15,7 @@
   inference attacks but unusable for queries.
 - **Case-sensitive vs case-insensitive deterministic:** case-insensitive
   is more useful for user-entered data; case-sensitive has marginally
-  stronger cryptographic isolation of values.
+  stronger cryptographic isolation of values. UNVERIFIED (2026-10-20): not in the corpus.
 - **Encrypting aggregatable numerics:** usually the wrong call — the
   operational cost is high.
 
@@ -33,10 +34,17 @@ and sharing. Encrypting a field and then assuming it is hidden from
 internal users is the classic Security-pillar failure in this domain.
 
 The "View Encrypted Data" permission is part of **Classic Encryption**
-(legacy `Encrypted Text` fields), a different product. It has been
-unnecessary for Shield since Spring '17 and does not mask Shield fields.
+(legacy `Encrypted Text` fields), a different product (secguide 262 L2484-2486,
+L2548); the `encryptionScheme` values "pertain to Shield Platform Encryption, not
+Classic Encryption" (api_meta 264 L45629-45630).
 
 ## Official Sources Used
+
+- Scheme values and Shield-not-Classic scope — api_meta 264 L45625-45630.
+- Deterministic scheme "lets customers filter on encrypted data" — api_meta 264 L127865-127866.
+- View Encrypted Data is the Classic Encryption permission — secguide 262 L2484-2486, L2548.
+- Support adds custom indexes on request — apexdev 264 L9812.
+- Tenant secret rotation frequency — obj 264 L283644.
 
 - Shield Platform Encryption Overview —
   https://help.salesforce.com/s/articleView?id=sf.security_pe_overview.htm

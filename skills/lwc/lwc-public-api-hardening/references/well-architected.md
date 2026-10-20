@@ -31,11 +31,17 @@ This skill maps to **Security**, **Reliability**, and **Operational Excellence**
 
 1. **Treating `@api` as a type system.** Annotating `@api recordId` as `number` in JSDoc and assuming it arrives as a number. The framework does not enforce types; it binds values.
 2. **Public methods that should be events.** `@api refresh()` couples parent to child internals, invites recursion, and breaks when the child is removed mid-async.
-3. **Trusting `default` on a design property as a runtime default.** App Builder sets it; programmatic instantiation, unit tests, and inline composition do not. Mirror the default in JS.
+3. **Trusting `default` on a design property as a runtime default.** App Builder sets it (UNVERIFIED (2026-10-20)); programmatic instantiation, unit tests, and inline composition do not. Mirror the default in JS.
 4. **Leaking implementation details via `@api`.** Exposing `_internalRowMap` or a method whose signature mirrors a private helper. The public surface should be the *intent* of the component, not the *shape* of its internals.
 5. **Mutating an `@api` value in place.** A setter that does `this._rows.length = 0; this._rows.push(...v);` breaks LWC reactivity. Always reassign with a new value.
 
 ## Official Sources Used
+
+- **Design `<property>` attributes (`type`, `default`, `required`, `datasource`, `min`, `max`) and the `<objects>` tag set** — lwcguide targets-lightning-record-page; `<objects><object>` child form also in api_meta 264 L86776-86778.
+- **`propertyType` / `type="{T}"` for Flow screens** — lwcguide targets-lightning-flow-screen; lwcguide use-flow-custom-property-editor-sobject-lwc-example.
+- **Field reactivity: reassign, don't mutate** — lwcguide reactivity-fields.
+- **`recordId` set only in an explicit record context** — lwcguide use-record-context.
+- **`show="false"` in markup evaluates to true** — lwcguide js-props-boolean.
 
 - **LWC Developer Guide — `@api` decorator and public properties**: <https://developer.salesforce.com/docs/platform/lwc/guide/create-components-public-properties.html> — canonical reference for declaring public properties, getter/setter pairs, and the runtime semantics that this skill hardens against.
 - **LWC Developer Guide — `@api` methods**: <https://developer.salesforce.com/docs/platform/lwc/guide/js-public-methods.html> — reference for public method declaration and the semantics this skill cautions against (over-using methods where events are appropriate).

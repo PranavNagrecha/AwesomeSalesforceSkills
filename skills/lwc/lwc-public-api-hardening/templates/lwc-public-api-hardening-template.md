@@ -29,7 +29,7 @@ For every `@api` property, fill in the row.
 Rules:
 
 - Required props must have a guard in `connectedCallback` (throw, log + early return, or fallback render).
-- Optional props with a default must mirror the default in JS (the `default` in `<targetConfig>` is App-Builder-only).
+- Optional props with a default must mirror the default in JS (the `default` in `<targetConfig>` is App-Builder-only — UNVERIFIED (2026-10-20), see SKILL.md Before Starting).
 - Every property whose value comes from HTML / App Builder / Flow needs a setter that coerces.
 
 ---
@@ -86,7 +86,7 @@ Rules:
 Pick one for the bundle:
 
 - [ ] **Throw in `connectedCallback`** — visible, easy to debug. Acceptable for App Builder / record page; harsh on Flow screens.
-- [ ] **Log + render fallback template** — best for Flow screens (Flow halts on uncaught errors).
+- [ ] **Log + render fallback template** — best for Flow screens (Flow halts on uncaught errors — UNVERIFIED (2026-10-20)).
 - [ ] **Early return in `connectedCallback` + render placeholder** — acceptable for non-critical components.
 
 Document the choice in the JSDoc on the class.
@@ -100,7 +100,7 @@ Confirm each item before considering the hardening done:
 - [ ] Every `@api` property that can receive a string from HTML / App Builder has a setter that coerces.
 - [ ] Every required `@api` property is validated in `connectedCallback`.
 - [ ] No `@api` method exists that could be replaced with a CustomEvent.
-- [ ] Every design `<property>` has explicit `type` and (where applicable) `default`, `datasource`, `min`, `max`.
+- [ ] Every design `<property>` has explicit `type` and (where applicable) `default`, `required`, `datasource`, `min`, `max`.
 - [ ] `propertyType` only appears inside `<lightning__FlowScreen>` `<targetConfig>` blocks.
 - [ ] All boolean `@api` properties coerce string `"true"`/`"false"`.
 - [ ] No setter mutates a backing field in place — every assignment is a reassignment.

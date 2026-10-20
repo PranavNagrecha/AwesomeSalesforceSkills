@@ -36,9 +36,9 @@ outputs:
   - "a documented public-API contract using `templates/lwc-public-api-hardening-template.md`"
   - "a clean run of `scripts/check_lwc_public_api_hardening.py <bundle-path>`"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # LWC Public API Hardening
@@ -55,8 +55,24 @@ Gather this context before changing any `@api` surface:
 
 - **Every public touchpoint.** List every `@api` property, every `@api` method, and every `<property>` block inside every `<targetConfig>` in `.js-meta.xml`. The public surface is the union of those three lists, not just the JS file.
 - **The most common wrong assumption.** Authors almost always assume the LWC engine validates `@api` types at runtime. It does not. TypeScript-style annotations (whether via JSDoc `@type {number}` or a `.ts`-style comment) compile away — at runtime `@api recordId` and `@api count` are both just whatever the parent assigned, which is usually a string from HTML / App Builder / Flow.
-- **Default-value scope.** `default` on a `<property>` in `<targetConfig>` is applied by **App Builder** when an admin drops the component on a page. It is NOT applied when (a) you instantiate the component programmatically via `lwc.createElement(...)`, (b) you put the component directly inside another LWC's template, or (c) you use it on a Visualforce page. In those cases the property is plain `undefined` until the parent assigns it.
-- **Form-factor / container quirks.** `<lightning__FlowScreen>` design attributes use `propertyType` for object inputs (Flow only — not valid in `<lightning__AppPage>` or `<lightning__RecordPage>`). HTML attribute parsing converts `false` / `true` to **strings**, not booleans, which bites when consumers use the component declaratively.
+- **Default-value scope.** `default` on a `<property>` in `<targetConfig>` is applied by **App Builder** when an admin drops the component on a page. It is NOT applied when (a) you instantiate the component programmatically via `lwc.createElement(...)`, (b) you put the component directly inside another LWC's template, or (c) you use it on a Visualforce page. In those cases the property is plain `undefined` until the parent assigns it. (The guide defines `default` only as "The default value for the attribute" (lwcguide targets-lightning-record-page) and the file as the "design configuration for components intended for use in Lightning App Builder" (lwcguide use-config-for-app-builder); that template and `createElement` callers skip it is UNVERIFIED (2026-10-20).)
+- **Form-factor / container quirks.** `<lightning__FlowScreen>` design attributes use `propertyType` for object inputs — for the Flow target "You can also include one or more propertyType tag" in `targetConfig` (lwcguide targets-lightning-flow-screen), while a record-page `targetConfig` lists only `property` and `objects` (lwcguide targets-lightning-record-page). In markup, "Setting show="false" in markup evaluates to true" (lwcguide js-props-boolean), which bites when consumers use the component declaratively.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which surfaces host the component: record page, Flow screen, Experience site, another LWC, a test? | Gotchas 1 and 2: `recordId` is only set in an explicit record context, and design defaults do not reach template or `createElement` callers (UNVERIFIED (2026-10-20)) | The list of input shapes each setter must accept |
+| Which `@api` properties are boolean, and are any set from markup? | Gotcha 3: `enabled="false"` in markup evaluates to true | Which properties need a coercing setter |
+| Does any setter store an object or array? | Gotcha 4: in-place mutation does not re-render | Setters that reassign instead of mutate |
+| Does the Flow target need an SObject input? | Gotcha 5: `propertyType` is documented only for the Flow screen target | A Flow-only `targetConfig` with `type="{T}"` |
+| Which targets share a property, and do they need different defaults? | Gotcha 7: properties and defaults are declared per `targetConfig` | One `property` block per target, with a JS fallback |
+| Which `@api` methods does a parent call, and could it call them after removal? | Gotcha 9: deferred calls can land on a removed child (the null-`this.template` symptom is UNVERIFIED (2026-10-20)) | Methods converted to events, or guarded |
+| Will the component ship in a managed package? | Gotcha 10: subscriber orgs may see a namespaced property name (UNVERIFIED (2026-10-20)) | Documentation that names the subscriber-side property |
+
+A proper configuration writes the contract down once — types, required inputs, defaults, events — so every container gets the same behaviour instead of whatever its own input shape happens to produce.
 
 ---
 
@@ -64,21 +80,21 @@ Gather this context before changing any `@api` surface:
 
 ### 1. `@api` does not enforce JavaScript types — only binds the property
 
-`@api` exposes a property to the parent and (for primitive values from HTML) makes attribute writes flow into property writes. It does not coerce, validate, default, or constrain the value. The classic example is `@api recordId`: the framework documentation says it is "the record ID injected by the host page", and consumers infer the type is a Salesforce Id (a string of length 15 or 18). But on a Flow screen with a manually wired input, on a programmatically instantiated component, or in a Jest test, you can set it to a number, an object, `null`, or `undefined`. The component must tolerate every shape it can receive — a setter is the only place you can guarantee the value gets normalised before it lands in component state.
+`@api` exposes a property to the parent and (for primitive values from HTML) makes attribute writes flow into property writes. It does not coerce, validate, default, or constrain the value. The classic example is `@api recordId`: in a record context it "is set to the 18-character ID of the record", and it "is set automatically only when you place or invoke the component in an explicit record context. In all other cases, the recordId isn't set" (lwcguide use-record-context). On a Flow screen with a manually wired input, on a programmatically instantiated component, or in a Jest test, you can set it to a number, an object, `null`, or `undefined`. The component must tolerate every shape it can receive — a setter is the only place you can guarantee the value gets normalised before it lands in component state.
 
 The same holds for `@api method()`. Nothing prevents a parent from calling `myMethod('not a record id')` when you expected `myMethod(['a','list'])`. The argument list is whatever the caller passes, full stop.
 
 ### 2. Design attribute types are admin-facing strings until App Builder coerces them
 
-Inside `<property>` you declare a `type` (`String`, `Boolean`, `Integer`, `Color`). At the App Builder UI level the admin gets a typed editor and Salesforce coerces what they enter to that type before assigning it to the `@api` property. But when the same component is dropped on a Flow screen or instantiated from another LWC's template, **no coercion happens** — the value flows through verbatim. Boolean attributes from HTML markup (`<c-foo enabled="false">`) are particularly nasty: the attribute value is the string `"false"`, which is truthy, so a naive `if (this.enabled) { ... }` runs. Always coerce inside the setter.
+Inside `<property>` you declare a `type`. `Boolean`, `Integer` and `String` are "valid for all targets" (lwcguide targets-lightning-record-page); `Color` and `ContentReference` are listed for the Experience Builder target (lwcguide targets-lightning-community-default) and `Double`, `Date`, `DateTime`, `apex://` and `@salesforce/schema/` types for Flow screens (lwcguide targets-lightning-flow-screen). "If the types don't match, the value in the configuration file takes precedence" (same pages). At the App Builder UI level the admin gets a typed editor and Salesforce coerces what they enter to that type before assigning it to the `@api` property (UNVERIFIED (2026-10-20): the coercion step is not described in the guide). But when the same component is dropped on a Flow screen or instantiated from another LWC's template, **no coercion happens** — the value flows through verbatim. Boolean attributes from HTML markup (`<c-foo enabled="false">`) are particularly nasty: the attribute value is the string `"false"`, which is truthy, so a naive `if (this.enabled) { ... }` runs. Always coerce inside the setter.
 
 ### 3. Required-vs-optional has no enforcement layer
 
-There is no `@api required` decorator. There is no js-meta.xml flag that fails the deploy when an admin drops the component without setting a property. The only place to enforce a required input is in `connectedCallback` (or in the setter, if you need to react before connection). Throwing during `connectedCallback` aborts the render with a stack trace in the console — that is your enforcement; choose whether you'd rather throw, log + return early, or render a fallback "configuration missing" template.
+There is no `@api required` decorator. The design `<property>` does take `required` — "Specifies whether the attribute is required. The default value is false" (lwcguide targets-lightning-record-page) — but that governs the builder only; a parent template, `createElement`, or a test can still leave the property unset. The only place to enforce a required input for every caller is in `connectedCallback` (or in the setter, if you need to react before connection). Throwing during `connectedCallback` aborts the render with a stack trace in the console (UNVERIFIED (2026-10-20): not in the guide) — that is your enforcement; choose whether you'd rather throw, log + return early, or render a fallback "configuration missing" template.
 
 ### 4. Reactive `@api` and the getter/setter trap
 
-Plain `@api foo;` is reactive: when the parent reassigns it, the template re-renders. As soon as you replace it with a `@api get foo()` / `set foo(v)` pair, the *underlying field* the setter writes to must be tracked (decorated with `@track` or be a primitive on `this`) for re-renders to fire. A common bug is to write `set foo(v) { this._foo = normalise(v); }` and never re-render because the field `_foo` is not tracked and the getter's return value depends on it. Either keep the underlying value as a primitive on `this` (LWC tracks all primitive class fields automatically) or store complex shapes inside an `@track`-friendly structure.
+Plain `@api foo;` is reactive: when the parent reassigns it, the template re-renders. A `@api get foo()` / `set foo(v)` pair stays reactive as long as the setter **reassigns** its backing field: "If a field's value changes, and the field is used in a template or in a getter of a property that's used in a template, the component rerenders", and changes "are detected when a new value is assigned to the field" (lwcguide reactivity-fields). So `set foo(v) { this._foo = normalise(v); }` re-renders. The trap is mutating an object or array held in `_foo` in place: "you must create a new object and assign it to the field for the change to be detected" (same page), or decorate the field with `@track`.
 
 ---
 
@@ -123,7 +139,7 @@ connectedCallback() {
 }
 ```
 
-For Flow screens, prefer setting an `errorMessage` property and rendering a fallback — Flow halts the screen on uncaught errors, which is harsh UX:
+For Flow screens, prefer setting an `errorMessage` property and rendering a fallback — Flow halts the screen on uncaught errors, which is harsh UX (UNVERIFIED (2026-10-20): Flow's behaviour on an uncaught component error is not in the guide):
 
 ```js
 connectedCallback() {
@@ -162,9 +178,11 @@ handleSaveSucceeded() {
 **How it works:** in `.js-meta.xml`:
 
 ```xml
+<!-- excerpt of <name>.js-meta.xml -->
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
 <targets><target>lightning__RecordPage</target></targets>
 <targetConfigs>
-    <targetConfig targets="lightning__RecordPage" objects="Account,Contact">
+    <targetConfig targets="lightning__RecordPage">
         <property
             name="primaryField"
             label="Primary field"
@@ -179,11 +197,16 @@ handleSaveSucceeded() {
             default="5"
             min="1"
             max="50" />
+        <objects>
+            <object>Account</object>
+            <object>Contact</object>
+        </objects>
     </targetConfig>
 </targetConfigs>
+</LightningComponentBundle>
 ```
 
-Then in `.js`, still coerce inside the setter — `default` only applies when the admin uses App Builder; programmatic callers get `undefined`.
+Objects are a child `<objects><object>` tag set, not an attribute (api_meta 264 L86776-86778; lwcguide targets-lightning-record-page). Then in `.js`, still coerce inside the setter — `default` only applies when the admin uses App Builder; programmatic callers get `undefined` (UNVERIFIED (2026-10-20), see Before Starting).
 
 ---
 
@@ -196,8 +219,8 @@ Then in `.js`, still coerce inside the setter — `default` only applies when th
 | Child needs to notify parent of an event, value change, or completion | `CustomEvent` with `dispatchEvent` | One-way contract; parent decides whether to act; survives DOM removal |
 | Cross-DOM-tree communication (sibling components, deep tree) | Lightning Message Service (LMS) | `CustomEvent` only bubbles within the DOM subtree; LMS works across the page |
 | Child needs admin to configure a value | Design attribute in `<targetConfig>` + defensive setter | Gives admins a typed editor with default; the setter still defends against programmatic callers |
-| Child needs a "required to function" input | `@api property` + guard in `connectedCallback` | There is no `required` flag; explicit guard is the only enforcement point |
-| Component instantiated programmatically AND from App Builder | Defensive setter that handles both `undefined` and string forms | App Builder defaults do not apply programmatically; setter is the only common path |
+| Child needs a "required to function" input | `@api property` + guard in `connectedCallback` (+ `required="true"` on the design property) | `required` binds the builder only; the guard is the only enforcement for template and programmatic callers |
+| Component instantiated programmatically AND from App Builder | Defensive setter that handles both `undefined` and string forms | App Builder defaults do not apply programmatically (UNVERIFIED (2026-10-20)); setter is the only common path |
 
 ---
 
@@ -210,8 +233,8 @@ Step-by-step instructions for hardening an existing component's public API:
 3. **Convert bare `@api` fields to getter/setter pairs where coercion is needed.** Use the "Defensive setter" pattern above. Coerce strings to numbers, `"true"`/`"false"` strings to booleans, normalise nullish to a chosen default.
 4. **Add a `connectedCallback` guard for required props.** Throw or render a fallback. Document the choice in a JSDoc comment on the class.
 5. **Audit `@api` methods.** For each one, ask: "Could a CustomEvent in the other direction replace this?" If yes, refactor. If no, document the imperative contract in a JSDoc comment so consumers know the input shape and the side effects.
-6. **Type the design attributes in `.js-meta.xml`.** Set explicit `type`, `default`, `min`/`max` (for `Integer`), and `datasource` (for fixed-set `String`). For Flow targets only, use `propertyType` if accepting an SObject. Verify kebab-case attribute names map to the camelCase JS property as expected.
-7. **Run the checker.** `python3 skills/lwc/lwc-public-api-hardening/scripts/check_lwc_public_api_hardening.py <bundle-path>`. Fix every P0 and P1 finding before marking complete.
+6. **Type the design attributes in `.js-meta.xml`.** Set explicit `type`, `default`, `required`, `min`/`max` (for `Integer`), and `datasource` (for fixed-set `String`). For Flow targets only, use `propertyType` if accepting an SObject. Verify kebab-case attribute names map to the camelCase JS property as expected.
+7. **Run the checker.** `python3 skills/lwc/lwc-public-api-hardening/scripts/check_lwc_public_api_hardening.py <bundle-path> --strict`. Fix every P0 and P1 finding before marking complete (without `--strict` they print as WARN and exit 0; a missing path or an unparseable `.js-meta.xml` is an ERROR, exit 1).
 
 ---
 
@@ -222,11 +245,11 @@ Run through these before marking work in this area complete:
 - [ ] Every `@api` property that can receive a string from HTML/App Builder has a setter that coerces to the intended type.
 - [ ] Every required `@api` property is validated in `connectedCallback` (throw, log + early return, or fallback render).
 - [ ] No `@api` method exists that could be replaced with a CustomEvent — methods are reserved for genuine imperative actions.
-- [ ] No `@api` getter returns a value derived from a non-tracked, non-primitive backing field.
+- [ ] No `@api` setter mutates an object or array backing field in place — it reassigns a new value.
 - [ ] Every design attribute has explicit `type`, `default` (where applicable), and `datasource` or `min`/`max` (where applicable).
 - [ ] Boolean design attributes have setters that coerce string `"false"` to boolean `false`.
 - [ ] No `@api` property leaks an internal mutable structure that the parent could mutate by reference.
-- [ ] `python3 skills/lwc/lwc-public-api-hardening/scripts/check_lwc_public_api_hardening.py <bundle-path>` exits 0.
+- [ ] `python3 skills/lwc/lwc-public-api-hardening/scripts/check_lwc_public_api_hardening.py <bundle-path> --strict` exits 0.
 
 ---
 
@@ -234,13 +257,13 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **`@api recordId` is always a string.** Even when surrounded by code that says `Number(...)` or has a `@type {number}` comment. The host page assigns the string Id; the framework does not coerce.
-2. **`default` on a design property does NOT apply to programmatic instantiation.** A unit test that does `createElement('c-foo', { is: Foo })` gets `undefined` for every property until the test explicitly assigns it. The same is true for one LWC including another in its template.
-3. **Boolean attributes from HTML are strings.** `<c-foo enabled="false">` results in `this.enabled === 'false'` (truthy). HTML knows nothing about JS types.
+1. **`@api recordId` is a string Id or unset — never a number.** In a record context it is "the 18-character ID of the record"; outside an explicit record context "the recordId isn't set" (lwcguide use-record-context). A `@type {number}` comment changes nothing; the framework does not coerce.
+2. **`default` on a design property does NOT apply to programmatic instantiation** (UNVERIFIED (2026-10-20), see Before Starting). A unit test that does `createElement('c-foo', { is: Foo })` gets `undefined` for every property until the test explicitly assigns it. The same is true for one LWC including another in its template.
+3. **Boolean attributes from HTML are strings.** `<c-foo enabled="false">` leaves a truthy value — "Setting show="false" in markup evaluates to true" (lwcguide js-props-boolean). HTML knows nothing about JS types.
 4. **Design attribute names are kebab-case in markup, camelCase in JS.** `<property name="maxRows">` becomes `@api maxRows` (not `max-rows`). The XML attribute name is the *internal* key; it must follow the JS identifier convention except when used inline in HTML where attributes are kebab-case.
-5. **Default values in `<targetConfig>` are scoped to that target.** A `default="5"` inside `<targetConfig targets="lightning__RecordPage">` does not apply when the same component is dropped on `lightning__AppPage`. Each target needs its own `<targetConfig>` block with its own defaults.
-6. **`propertyType` is Flow-only.** Using `propertyType` inside a non-Flow `<targetConfig>` either deploys quietly and is ignored, or fails deploy depending on org version. Object-typed inputs only work for `<lightning__FlowScreen>`.
-7. **Namespaced design attributes need the namespace prefix.** When referenced from an installed package, `c__myProperty` is the resolved name, not `myProperty`. Author components in unmanaged orgs without the prefix to avoid confusion, but be aware of the package case.
+5. **Default values in `<targetConfig>` are scoped to that target** — a component can have "a different set of properties defined for record pages than for app and Home pages" (lwcguide use-config-for-app-builder). A `default="5"` inside `<targetConfig targets="lightning__RecordPage">` does not apply when the same component is dropped on `lightning__AppPage`. Each target needs its own `<targetConfig>` block with its own defaults.
+6. **`propertyType` is Flow-only.** Using `propertyType` inside a non-Flow `<targetConfig>` either deploys quietly and is ignored, or fails deploy depending on org version (UNVERIFIED (2026-10-20): the outcome is not in the guide). Object-typed inputs only work for `<lightning__FlowScreen>`.
+7. **Namespaced design attributes need the namespace prefix.** When referenced from an installed package, `c__myProperty` is the resolved name, not `myProperty` (UNVERIFIED (2026-10-20): not in the LWC guide or api_meta). Author components in unmanaged orgs without the prefix to avoid confusion, but be aware of the package case.
 
 ---
 

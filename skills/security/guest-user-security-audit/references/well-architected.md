@@ -23,7 +23,8 @@
   sharing` everywhere; reach for `without sharing` only when there
   is a documented system-context reason and the class is unreachable
   from guest.
-- **Public site standard-API access on vs off.** Off is the safer
+- **Public site standard-API access on vs off.** Off (API Enabled
+  unchecked on the guest profile, secguide 262 L9629) is the safer
   default. Turn on only when a documented use case requires it.
 - **JIT-style ad-hoc grants vs documented sharing baseline.** Each
   ad-hoc "let's just give the guest profile Read on this object for
@@ -35,9 +36,9 @@
 2. **Sharing rule granting "All" records to Type = Guest.**
 3. **`@RestResource` exposed publicly without `with sharing`.**
 4. **`WITH SECURITY_ENFORCED` used as the sole control** — and in
-   any newly written query at all: the clause was removed at API
-   67.0, so a class pinned there fails to compile. Use
-   `WITH USER_MODE` (GA at API 57.0). The gate is the class's
+   any newly written query at all: "In API version 67.0 and later, you
+   can't use the WITH SECURITY_ENFORCED clause" (apexdev 264 L11926). Use
+   `WITH USER_MODE` (GA at API 57.0 — UNVERIFIED (2026-10-20)). The gate is the class's
    `apiVersion`, not the org's release, so existing classes pinned
    to ≤ 66.0 still compile it — flag those as tech debt, not as a
    secure query.
@@ -51,10 +52,17 @@
 
 ## Official Sources Used
 
+- Guest OWD Private, unchangeable — secguide 262 L2868-2869.
+- Guest user sharing rules: only way to grant access, Read Only — secguide 262 L2986-2987; api_meta 264 L132881.
+- `enableSecureGuestAccess` always true, retroactive — api_meta 264 L130645-130652.
+- Guest profile checklist (API Enabled, record ownership) — secguide 262 L9629-9632.
+- Omitted sharing declaration by API version — apexdev 264 L4994-5001, L18941-18942.
+- WITH SECURITY_ENFORCED can't be used at 67.0+ — apexdev 264 L11926.
+
 - Secure Your Experience Cloud Site (Spring '21 Secure-by-Default) — https://help.salesforce.com/s/articleView?id=sf.networks_security_overview.htm&type=5
 - Best Practices and Considerations When Configuring the Guest User Profile — https://help.salesforce.com/s/articleView?id=sf.guest_users_best_practice.htm&type=5
 - Apex Sharing Modes — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm — Apex Developer Guide, *Use the with sharing, without sharing, and inherited sharing Keywords* (Version 67.0, Summer '26). Confirms the omitted-declaration default is `with sharing` at 67.0+, the ≤ 66.0 resolution factors (67.0+ class anywhere in the inheritance chain → `with sharing`; Aura / `@AuraEnabled`-from-LWC → `with sharing`; non-entry-point → caller's mode; otherwise `without sharing`), and that "Apex triggers can't have an explicit sharing declaration" and always run `without sharing` (verified 2026-08-14)
 - Secure Apex Code with User Mode Database Operations (GA, Spring '23 / API 57.0) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_User_Mode_GA.htm&type=5
-- The WITH SECURITY_ENFORCED SOQL Clause Is Removed (Summer '26 / API 67.0) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5
+- Release note "The WITH SECURITY_ENFORCED SOQL Clause Is Removed" (Summer '26 / API 67.0; the guide's words are "can't use ... in API version 67.0 and later", apexdev 264 L11926) — https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_removed_withSecurityEnforced.htm&type=5
 - OWASP Top 10 — https://owasp.org/www-project-top-ten/
 - Salesforce Well-Architected Trustworthy — https://architect.salesforce.com/well-architected/trusted/secure

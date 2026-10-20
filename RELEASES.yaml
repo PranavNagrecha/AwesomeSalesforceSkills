@@ -877,6 +877,11 @@ releases:
     - integration/manufacturing-cloud-setup
     - integration/named-credentials-setup
     - integration/net-zero-cloud-setup
+    - integration/salesforce-maps-setup
+    - lwc/lwc-jest-testing-with-accessibility
+    - lwc/lwc-public-api-hardening
+    - security/encrypted-field-query-patterns
+    - security/guest-user-security-audit
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'

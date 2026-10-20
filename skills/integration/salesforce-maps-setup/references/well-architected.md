@@ -10,7 +10,7 @@
 
 - **Real-time vs batch geocoding.** Real-time gives reps immediate feedback ("the account I just created is on the map") but adds a synchronous callout per insert/update. In high-volume orgs, batch is safer for governor-limit headroom; real-time is mandatory for outside-sales personas where stale geocodes break the workflow. Per-object choice; not org-wide.
 - **Polygon vs ZIP territories.** Polygons handle custom boundaries (e.g., "the eastern half of New Jersey except the Trenton corridor") but the polygon data is package-internal and hard to export to Tableau or other BI. ZIP territories are simpler, fully queryable, but cannot model boundaries that don't align to ZIP3/ZIP5. Pick by reporting requirements, not by visual appeal.
-- **Live Tracking ping interval.** Lower interval (e.g., 1 min) produces high-fidelity breadcrumb trails but generates 4× the data volume of a 5-min interval. Most use cases need only "approximate location every 15 min" — pick the longest interval that satisfies the actual operational question.
+- **Live Tracking ping interval.** Lower interval (e.g., 1 min) produces high-fidelity breadcrumb trails but generates 5× the data volume of a 5-min interval (5 pings for every 1). Most use cases need only "approximate location every 15 min" — pick the longest interval that satisfies the actual operational question.
 - **Maps vs FSL boundary.** Maps is for outside-sales / general field-rep coverage; FSL is for work-order dispatch to scheduled resources. Customers occasionally try to use Maps to dispatch service techs, which always ends in a re-architect to FSL. Honor the persona boundary up front.
 
 ## Anti-Patterns
@@ -21,6 +21,12 @@
 4. **Enabling Live Tracking without HR/legal approval and an archival plan.** Privacy and storage are both binding constraints. Enabling live tracking org-wide without these is a compliance and platform-limit risk.
 
 ## Official Sources Used
+
+- No Salesforce Maps guide is in the corpus; Maps-specific claims are UNVERIFIED (2026-10-20) — see SKILL.md.
+- `ServiceTerritory` is the Field Service region object — obj 264 L263543.
+- `PermissionSetAssignment` assigns a permission set to a user — obj 264 L219697.
+- InstalledPackage files are named after the namespace prefix — api_meta 264 L84151-84152.
+- `sf data create record --values` syntax — sfdx 264 L12568-12572.
 
 - Salesforce Maps Implementation Guide (Help & Training) — https://help.salesforce.com/s/articleView?id=sf.maps_implementation_overview.htm — used for package install order, base data services, and Geocoding configuration mechanics
 - Salesforce Maps Object Reference (managed-package documentation) — https://help.salesforce.com/s/articleView?id=sf.maps_objects.htm — used for `MapsTerritoryPlan__c`, `MapsTerritory__c`, `MapsLayer__c`, `MapsLayerProperty__c`, `MapsAdvancedRoute__c` semantics

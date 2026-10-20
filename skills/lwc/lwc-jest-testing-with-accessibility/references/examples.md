@@ -105,8 +105,8 @@ describe('c-case-list — empty state a11y', () => {
 
 **What to notice:**
 
-- `createApexTestWireAdapter(jest.fn())` inside the `jest.mock` factory makes the mocked `getCases` export itself the adapter, so `getCases.emit(...)` pushes data into the wire. There is no separate register step — `register*TestWireAdapter` was the 2.x API and was removed in wire-service-jest-util 3.x, which is what current `sfdx-lwc-jest` bundles.
-- Two `await Promise.resolve()` calls — one for the wire, one for the resulting re-render. With one, the assertion runs before the empty state is in the DOM and you get a flaky test.
+- `createApexTestWireAdapter(jest.fn())` inside the `jest.mock` factory makes the mocked `getCases` export itself the adapter, so `getCases.emit(...)` pushes data into the wire. There is no separate register step — `register*TestWireAdapter` was the 2.x API and was removed in wire-service-jest-util 3.x, which is what current `sfdx-lwc-jest` bundles (UNVERIFIED (2026-10-20): the factory names and the 2.x→3.x change are from the GitHub READMEs, not the LWC guide).
+- Two `await Promise.resolve()` calls — one for the wire, one for the resulting re-render (UNVERIFIED (2026-10-20): the per-hop count; the guide only says the DOM updates asynchronously). With one, the assertion runs before the empty state is in the DOM and you get a flaky test.
 - Asserting `aria-live="polite"` is what proves the empty state announces itself to screen readers when it appears mid-session.
 
 ---
@@ -303,7 +303,7 @@ describe('c-disclosure-panel — axe', () => {
 import { createElement } from 'lwc';
 import ReassignCase from 'c/reassignCase';
 
-// Mock the imperative Apex module (virtual: true required for @salesforce/apex/...).
+// Mock the imperative Apex module with { virtual: true } (or map @salesforce/apex in jest.config.js moduleNameMapper — lwcguide unit-testing-using-jest-create-tests).
 jest.mock(
     '@salesforce/apex/CaseController.assignCase',
     () => ({ default: jest.fn() }),
@@ -334,7 +334,7 @@ describe('c-reassign-case — live-region announcement', () => {
         const btn = element.shadowRoot.querySelector('button.reassign');
         btn.click();
 
-        // Three microtask flushes: click handler → mock resolution → re-render.
+        // Three flushes: click handler → mock resolution → re-render (hop count UNVERIFIED (2026-10-20)).
         await Promise.resolve();
         await Promise.resolve();
         await Promise.resolve();

@@ -138,4 +138,7 @@ You review one writer's uncommitted worktree. You may edit, you never commit. Fo
 - 2026-10-20 (R3-06 batch 6): an object-index or table-of-contents line is never a cite — cite the object's own page (FlowInterviewLog is obj 264 L140750, not the index line L8369).
 - 2026-10-20 (R3-06 batch 7): a contradicted claim may not be left standing under an UNVERIFIED hedge — when the cited line says the opposite ("recalculated automatically", api_meta 264 L16757) the sentence is corrected, not marked; a marker is for silence, never for contradiction.
 - 2026-10-20 (R3-06 batch 7): packaging and credentials facts live in pkg2_dev (packaged named credentials exclude secrets, L9543-9544) — grep pkg2_dev and sfdx_dev for any claim about what a package or deploy carries before marking it.
+- 2026-10-20 (R3-06 batch 8): a package-wide UNVERIFIED note in SKILL.md does not cover gotchas.md, examples.md, llm-anti-patterns.md or the template — each file that asserts the unverifiable names carries its own file-level marker.
+- 2026-10-20 (R3-06 batch 8): an UNVERIFIED paragraph goes BELOW a markdown table, never inside it (it orphans the rows after it), and must name the heading's claim when the heading carries one.
+- 2026-10-20 (R3-06 batch 8): "deprecated" is a claim like any other — label a feature deprecated only with a corpus line; Classic Encryption is presented as current (secguide 262 L2483-2548).
 

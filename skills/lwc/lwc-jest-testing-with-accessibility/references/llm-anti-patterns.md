@@ -27,9 +27,9 @@ import getCases from '@salesforce/apex/CaseController.getCases';
 // ... now getCases is jest.fn() — set with .mockResolvedValue / .mockRejectedValue
 ```
 
-The `{ virtual: true }` option is what tells jest "the module is fine; just use my factory."
+The `{ virtual: true }` option is what tells jest "the module is fine; just use my factory." (UNVERIFIED (2026-10-20): jest semantics, not in the LWC guide.)
 
-**Detection hint:** Any test file importing from `@salesforce/apex/...` without a sibling `jest.mock(...)` call is wrong. (Older guidance allowed `registerApexTestWireAdapter(...)` as an alternative; that API was removed in wire-service-jest-util 3.x — the current shape is `jest.mock(..., () => ({ default: createApexTestWireAdapter(jest.fn()) }), { virtual: true })`.)
+**Detection hint:** Any test file importing from `@salesforce/apex/...` without a sibling `jest.mock(...)` call is wrong — unless `jest.config.js` maps `@salesforce/apex` through `moduleNameMapper`, which is the guide's own pattern: "To mock Apex methods, update your jest.config.js file to include a moduleNameMapper entry for @salesforce/apex" (lwcguide unit-testing-using-jest-create-tests). (Older guidance allowed `registerApexTestWireAdapter(...)` as an alternative; that API was removed in wire-service-jest-util 3.x — the current shape is `jest.mock(..., () => ({ default: createApexTestWireAdapter(jest.fn()) }), { virtual: true })`.)
 
 ---
 
@@ -221,6 +221,6 @@ getCases.error({ message: 'boom' }, 500);
 getCases.getLastConfig();
 ```
 
-Three factories exist: `createTestWireAdapter` (generic), `createLdsTestWireAdapter` (LDS shape), `createApexTestWireAdapter` (Apex, also callable imperatively). All are re-exported from `@salesforce/sfdx-lwc-jest`, so no extra dependency is needed. The key mental shift: **there is no separate handle.** The mocked module export is the adapter you call `.emit()` on.
+Three factories exist: `createTestWireAdapter` (generic), `createLdsTestWireAdapter` (LDS shape), `createApexTestWireAdapter` (Apex, also callable imperatively). All are re-exported from `@salesforce/sfdx-lwc-jest`, so no extra dependency is needed. The guide confirms the three adapter kinds — "a generic wire adapter, a Lightning Data Service (LDS) wire adapter, and an Apex wire adapter" (lwcguide unit-testing-using-wire-utility); `createTestWireAdapter` appears in the guide's navigation mock (lwcguide unit-testing-using-jest-create-tests); the LDS and Apex factory names are UNVERIFIED (2026-10-20) (sfdx-lwc-jest README). The key mental shift: **there is no separate handle.** The mocked module export is the adapter you call `.emit()` on.
 
 **Detection hint:** grep test files and LWC testing guidance for `registerApexTestWireAdapter`, `registerLdsTestWireAdapter`, `registerTestWireAdapter` — all three are removed. Structural hint: `const someAdapter = register…(someImport)` assigns a *handle* separate from the import; in the 3.x API no such variable exists, so any two-name pattern (`getCases` and `getCasesAdapter` both in scope) is a 2.x tell. Inverted-rule hint: any guidance that lists `jest.mock` as the anti-pattern and `register*` as the fix has the polarity backwards.
