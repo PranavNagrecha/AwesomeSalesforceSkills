@@ -1,0 +1,29 @@
+When the date arrives, Salesforce treats the assignment as expired and the user loses whatever that permission set alone granted. The assignment is not a reminder or a flag. It really ends the access.
+
+**What happens**
+- **Permissions are revoked.** Object and field permissions, user permissions, Apex class and page access, custom permissions, and tab settings that came only from that permission set are removed.
+- **Overlapping access stays.** If the same permission is also granted by the profile, another permission set, or a permission set group, the user keeps it. Only the net difference disappears.
+- **The assignment becomes inactive.** `PermissionSetAssignment.IsActive` goes to false, and a system process later cleans up the expired record. The exact cleanup timing is not something to rely on, so filter on `IsActive = true` in reports or SOQL if you need current assignments.
+- **Timing is approximate.** Expiration is processed at the start of the expiration date or shortly after, in a platform-controlled job, not at an exact timestamp you choose. If you need a precise cutoff, deactivate or remove the assignment yourself.
+
+**What does not happen**
+- **No record cleanup.** Records the user created or owns while holding the permission set stay as they are. Sharing and ownership are unchanged.
+- **No notification by default.** Salesforce does not email the user or admin when an assignment expires. Build a Flow or scheduled Apex on `ExpirationDate` if you want a warning beforehand.
+- **No profile or role change.** Only the assignment is affected.
+
+**Related behavior**
+- Permission set group assignments support expiration dates in the same way.
+- If the permission set carries a permission set license and nothing else on the user needs that license, the license assignment is released when the permission set assignment ends.
+- Setting the date can be done in the UI, via the API, or in Apex by setting `ExpirationDate` on `PermissionSetAssignment`.
+- Users with an already open session may need to refresh or log in again to see the change.
+
+To audit upcoming expirations:
+
+```sql
+SELECT Assignee.Username, PermissionSet.Name, ExpirationDate
+FROM PermissionSetAssignment
+WHERE ExpirationDate != null AND IsActive = true
+ORDER BY ExpirationDate
+```
+
+I'm confident about the revocation behavior but less sure about the exact cleanup timing, so check the current release notes if you need to document that precisely.

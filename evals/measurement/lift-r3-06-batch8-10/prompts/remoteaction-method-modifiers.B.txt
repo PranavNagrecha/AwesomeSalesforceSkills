@@ -1,0 +1,403 @@
+Use the following skill package when answering.
+
+<skill_package>
+=== visualforce-security-and-modernization/SKILL.md ===
+---
+name: visualforce-security-and-modernization
+description: "Use when hardening or modernizing legacy Visualforce pages — covers the platform CSRF token model and when disabling it is a security regression, view state encryption guarantees and the 170 KB ceiling, FLS/CRUD enforcement gaps on `<apex:outputField>` and on getters that return sObjects, `<apex:includeScript>` interaction with the org Content Security Policy, hosting LWC inside a VF page via `lightning:container` / `lightning-out`, and the retire-vs-harden-vs-leave-alone decision for an inventory of legacy pages. Triggers: 'should I rewrite this Visualforce page in LWC', 'CSRF protection disabled on Visualforce page is that safe', 'community user sees a field they should not on a Visualforce page', 'view state encryption is that enough for sensitive data', 'how do I host an LWC inside a Visualforce page', 'apex:dynamicComponent and apex:actionFunction safe to keep'. NOT for greenfield Visualforce architecture (use apex/visualforce-fundamentals — controller types, view state pattern selection, PDF rendering); NOT for Visualforce email template authoring (use admin/email-templates-and-alerts); NOT for general Apex security review across triggers and async (use apex/soql-security and security/secure-coding-review-checklist)."
+category: security
+salesforce-version: "Spring '25+"
+well-architected-pillars:
+  - Security
+  - Operational Excellence
+tags:
+  - visualforce-security-and-modernization
+  - visualforce
+  - csrf
+  - view-state
+  - fls-crud-enforcement
+  - lwc-vf-interop
+  - legacy-modernization
+triggers:
+  - "we have 80 legacy Visualforce pages and need to decide which to rewrite in LWC"
+  - "is it safe to set csrfProtection=false on a Visualforce page that takes URL parameters"
+  - "Customer Community user sees a salary field on a Visualforce page that admins do not flag"
+  - "Visualforce page works for admins but throws view state exception in production"
+  - "how do I embed an LWC inside an existing Visualforce page without rewriting"
+  - "navigating from a Visualforce page to an LWC tab in Lightning Experience"
+  - "should we keep apex:dynamicComponent or rewrite as conditional rendering"
+  - "Visualforce controller without with sharing — does that affect FLS"
+  - "apex:outputField on a formula returning a Money custom field — is FLS enforced"
+inputs:
+  - "Inventory of Visualforce pages in the org with usage telemetry (page views, last-modified, controller name)"
+  - "Per-page security context: who can hit it (internal, partner, customer community, guest), what objects are read or written, whether GET-accessible URLs trigger DML"
+  - "Org-level Content Security Policy posture (My Domain, Lightning CSP trusted sites)"
+  - "Migration appetite: full LWC rewrite, harden in place, or leave alone"
+outputs:
+  - "Per-page disposition: rewrite to LWC / harden in place / leave alone, with rationale tied to risk × usage × maintenance cost"
+  - "Hardening checklist for pages staying on Visualforce: CSRF posture, FLS enforcement on getters, controller sharing keyword, view-state-free patterns where applicable"
+  - "LWC interop recipe for pages that should partially modernize (host LWC inside VF, or navigate from VF to LWC pages)"
+  - "Retirement plan for pages flagged for rewrite: dependency map, deprecation banner, sunset date"
+dependencies: []
+version: 1.0.1
+author: Pranav Nagrecha
+updated: 2026-10-20
+---
+
+# Visualforce Security And Modernization
+
+Activate this skill when an org has a population of Visualforce pages — usually a mix of legacy admin tools, customer-facing pages on Experience Cloud, and PDF generators — and a security review or LWC migration program is forcing decisions on each one. The skill is about the *retire-vs-harden-vs-leave-alone* choice plus the security baseline for whatever stays on Visualforce. Greenfield Visualforce architecture (controller patterns, PDF, view state strategy) belongs in `apex/visualforce-fundamentals`.
+
+---
+
+## Before Starting
+
+Gather this context before proposing changes to any Visualforce page:
+
+- **Visualforce is not deprecated.** Salesforce has not announced a sunset date. Pages continue to be supported and CSRF / view state / iframe-in-LEX behaviors continue to receive platform-level fixes. Do not migrate to LWC just because LWC is newer — migrate when there is a real reason (security finding, broken UX in LEX, unmaintainable controller, performance regression). The default for a working page is *leave alone*. UNVERIFIED (2026-10-20): no corpus guide states Visualforce's support status or the absence of a sunset date; the Visualforce Developer Guide and release notes are not in the corpus.
+- **Who hits the page matters more than what it does.** A page accessible only to System Administrators with a sharing-aware controller is low risk. The same page accessible to Customer Community users is a different security profile entirely — guest and external users get no implicit record access, and FLS gaps that would never trip an admin trip them on first load.
+- **The CSRF token is on by default and you almost never want to turn it off.** Every page includes a random token as a hidden form field that is validated before the command runs, and it protects "all of the standard controllers and methods" (apexdev 264 L13568-13571). The CSRF switches the corpus documents are `ApexPage.confirmationTokenRequired` (GET requests to the page need a token, api_meta 264 L24635-24639) and the org-wide `SessionSettings` fields `enableCSRFOnGet` / `enableCSRFOnPost` (api_meta 264 L129739-129745); turning any of them off is a security regression that needs a documented justification. UNVERIFIED (2026-10-20): a per-page `csrfProtection` attribute on `<apex:page>` appears in no corpus guide (the `<apex:page>` attribute list lives in the Visualforce Developer Guide, which is not in the corpus) — confirm it against that guide before acting on any finding that names it. If the team is "just trying to make a callback work," 95% of the time the right answer is to fix the callback to use POST, not to disable CSRF.
+- **`with sharing` does not enforce FLS or CRUD.** It only enforces record-level sharing ("Using the with sharing keyword doesn't enforce the user's permissions and field-level security", apexdev 264 L11982). A `with sharing` controller class still happily reads and returns fields the user has no FLS access to. FLS must be enforced separately — either by binding to standard-controller `<apex:inputField>` / `<apex:outputField>`, or by calling `Schema.sObjectType.X.fields.Y.isAccessible()` / using `WITH USER_MODE`. **Read the `apiVersion` in the controller's `.cls-meta.xml` before scoring any of this.** Both Apex defaults inverted at 67.0 (Summer '26): a class with no sharing keyword runs `with sharing` there rather than `without sharing`, and database operations run in user mode with no clause at all (apexdev 264 L11928-11931; at 66.0 and earlier an entry-point class with no keyword runs `without sharing`, L11936-11937). The guide's Visualforce section says flatly that standard and custom controllers "execute entirely in user mode" (apexdev 264 L19443-19444); read that as the 67.0+ behaviour, because the versioned list keeps system mode as the default at 66.0 and earlier (L11928-11929). The gate is the class's pinned version, not the org's release — a Summer '26 org runs a controller pinned to 58.0 with the old behaviour. Canonical table: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
+- **View state is encrypted, but encryption is not access control.** Salesforce encrypts the `__VIEWSTATE` payload before sending it to the browser. The user cannot read or tamper with it, but anything you put in a non-transient controller property is round-tripped to that user's browser on every postback. "Encrypted" does not mean "safe to put a list of all customer SSNs in a controller property." UNVERIFIED (2026-10-20): view-state encryption and tamper resistance have no corpus line; the corpus holds only the 170 KB limit (lim 264 L748) and that `transient` fields are not transmitted in view state (apexdev 264 L4770).
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Who can reach this page — internal, partner, customer community, or guest? | External audiences hit FLS gaps on first load that admins never see (Gotcha 4, Gotcha 8). | Ranks the page in the harden / rewrite queue and decides how hard to test as a low-privilege user. |
+| What `apiVersion` does each controller and extension pin in its `.cls-meta.xml`? | Below 67.0 an unqualified query runs in system mode; at 67.0+ it runs in user mode (Gotcha 4). | Separates real FLS leaks from legibility fixes before any finding is raised. |
+| Does any `<apex:page action>` method, or code that reads a URL parameter, perform DML? | Custom action methods never read the anti-CSRF token (Gotcha 3). | A list of GET-side writes to move behind an `<apex:form>` POST. |
+| Does the page set `cspHeader="true"`, and which external hosts does it load scripts or styles from? | Trusted-site restrictions apply to a custom Visualforce page only when `cspHeader` is true (Gotcha 5). | The `CspTrustedSite` entries (context `VisualForce`) to add, or the static resources to create. |
+| Which formula fields on the page derive from fields this audience cannot read? | A readable formula can expose a value computed from unreadable inputs (Gotcha 2). | The formula fields whose own FLS must be restricted. |
+| Does any `<apex:dynamicComponent>` branch depend on URL parameters or POST data? | A request-supplied value can switch which permission-protected UI renders (Gotcha 6). | Which branches to replace with `rendered=` on static components or with an LWC. |
+| How close does the page get to the 170 KB view state limit for the users with the most data? | The limit fails only for users with large data sets (Gotcha 1). | Which controller properties to mark `transient` or move to remoting. |
+
+A proper configuration adds an evidence trail per page — audience, pinned `apiVersion`, CSRF and CSP posture — so the rewrite / harden / leave-alone label survives review instead of being one engineer's impression.
+
+---
+
+## Core Concepts
+
+### Concept 1 — The CSRF protection model and when disabling it is a regression
+
+Visualforce ships with anti-CSRF token protection enabled at the platform level: every page includes a random string as a hidden form field, and the next request is not executed unless the value matches (apexdev 264 L13568-13570); a third-party site cannot forge a POST that performs DML on behalf of a logged-in user without the token.
+
+What the protection does NOT cover:
+
+- **GET-triggered actions.** A page with `<apex:page action="{!doSomething}">` where `doSomething()` performs DML is CSRF-vulnerable regardless of the form token. The action fires on a simple GET to the page URL — an attacker just embeds the URL in an `<img src>` tag on a malicious site. The guide's own example is an `action="{!init}"` method that deletes the record named by the `id` parameter: "The anti-CSRF token is never read or validated" and "There are no built-in defenses for such situations" (apexdev 264 L13593-13596). **Reserve the page-level `action` attribute for read-only data loading. DML belongs inside `<apex:commandButton>` actions in a form.**
+- **JavaScript remoting (`@RemoteAction` methods).** Remoting is an Apex annotation, not a Visualforce tag: `@RemoteAction` marks a method that page JavaScript calls, and the method must be `static` and either `global` or `public` (apexdev 264 L6245-6248). Adding a controller or extension to a page grants every viewer access to *all* its `@RemoteAction` methods, even ones the page never calls (L6253-6254). Treat remoting calls like any authenticated AJAX endpoint and validate inputs server-side. UNVERIFIED (2026-10-20): whether remoting calls carry the form's anti-CSRF token or a token of their own is not described in the corpus — its CSRF passage covers "the standard controllers and methods" only (apexdev 264 L13568-13571).
+- **Custom URL parameters.** If a controller reads `ApexPages.currentPage().getParameters().get('id')` and uses it to mutate data on page load, the form token is irrelevant — there is no form involved.
+
+Disabling the token — via the documented `confirmationTokenRequired` / `enableCSRFOnGet` / `enableCSRFOnPost` switches above, or the `csrfProtection` page attribute that legacy codebases are said to carry (UNVERIFIED (2026-10-20): that attribute appears in no corpus guide) — is the regression. The defensible reasons to do so are extremely rare (e.g., a legacy page that *must* accept third-party POST submissions and uses an alternative authentication model). The non-defensible reasons that show up in real codebases include "we couldn't get an external system to send the token" — fix the integration to send the token (or move it off Visualforce) instead.
+
+### Concept 2 — FLS enforcement on `<apex:outputField>`, `<apex:inputField>`, and getter-returned sObjects
+
+Salesforce automatically enforces FLS on certain Visualforce bindings, but the rules are not symmetric and the gaps are where bugs live.
+
+| Binding pattern | FLS enforced? | Notes |
+|---|---|---|
+| `<apex:inputField value="{!account.Name}"/>` bound to a standard controller's record | Yes | Hidden if no read access; read-only if no edit access. |
+| `<apex:outputField value="{!account.Name}"/>` bound to a standard controller's record | Yes | Field is hidden if user has no read access. Empty string is rendered. |
+| `<apex:outputText value="{!account.Name}"/>` | **No** | `outputText` does not check FLS. The field value is rendered regardless. |
+| `<apex:outputField value="{!myCustomGetter}"/>` where the getter returns an sObject from a custom query | **No** | If the controller queries the record without `WITH USER_MODE` or explicit `isAccessible()` checks, the field is rendered regardless of FLS. |
+| `<apex:repeat var="r" value="{!myList}">` then `<apex:outputField value="{!r.SensitiveField__c}"/>` | **Partial** | FLS is enforced on the *outputField* binding only if the underlying SOQL was executed with FLS enforcement. If the controller used a permissive query, the field renders even though `outputField` is the binding. |
+| Formula field referenced via `<apex:outputField>` | Yes for the formula's read access, **but not for the underlying fields** | If the formula references `Salary__c` and the user has no FLS access to `Salary__c` but does have access to the formula, the formula's computed value is shown. This is documented platform behavior and a frequent surprise. |
+
+UNVERIFIED (2026-10-20): the binding-by-binding FLS behaviour in this table (`inputField` / `outputField` enforcement, `outputText` not enforcing, formula inputs not propagating) is Visualforce Developer Guide material with no corpus line. The corpus holds only that `<apex:outputText>` escapes HTML (apexdev 264 L13439-13442) and that only `<apex:outputField>` presents encrypted fields (secguide 262 L2504).
+
+The reliable pattern: query with `WITH USER_MODE`, bind to `<apex:inputField>` / `<apex:outputField>`, and treat `<apex:outputText>` as user-supplied display text — never use it for sObject-field output.
+
+The **No** and **Partial** rows above describe a controller whose class is pinned below `apiVersion` 67.0, where an unqualified query runs in system mode. At 67.0+ that same query defaults to user mode and is already FLS-enforced, and "you can't use the WITH SECURITY_ENFORCED clause" (apexdev 264 L11926) — so an unannotated query is a finding only after you have checked the version in the `.cls-meta.xml`. Write `WITH USER_MODE` either way: at 67.0+ it states the intent explicitly instead of leaving the reader to infer it, and below 67.0 it is the enforcing form. UNVERIFIED (2026-10-20): the API version at which `WITH USER_MODE` first became available (often given as 57.0 / Spring '23) is a release-note fact with no corpus line.
+
+### Concept 3 — Modernization decision: retire vs harden vs leave alone
+
+The default for a working page is *leave alone*. Modernization work is justified by one of these signals:
+
+| Signal | Disposition | Rationale |
+|---|---|---|
+| Page is broken in Lightning Experience (cross-frame JS, classic-only CSS) and used by internal users daily | Rewrite to LWC | LEX iframe issues compound over time; a working LWC is a one-time cost. |
+| Page is exposed to external users (guest, customer community) AND has FLS gaps OR uses `<apex:dynamicComponent>` for permission-driven UI | Rewrite to LWC | LWC has a stronger security default (`Lightning Locker`, manifest-declared permissions). Hardening VF for external surfaces is high-effort and easy to get wrong. |
+| Page is admin-only, internal-network, low-traffic, controller is sharing-aware, no security findings | Leave alone | The migration ROI is negative. |
+| Page is a PDF generator using `renderAs="pdf"` | Leave alone | LWC has no PDF rendering equivalent — a rewrite either keeps the VF page or introduces an external PDF service. |
+| Page uses `<apex:actionFunction>` to call a controller method from JS, doing DML | Harden in place | The pattern is dated but the security model is sound if FLS and CSRF are correct. Migrating the pattern alone is not worth a rewrite. |
+| Page uses `<apex:dynamicComponent>` for permission-driven branching | Rewrite to LWC | `<apex:dynamicComponent>` is hard to reason about for security review and has been overtaken by simple conditional rendering in LWC. |
+
+UNVERIFIED (2026-10-20): the comparative claims in rows 2 and 4 — that LWC has a stronger security default ("Lightning Locker, manifest-declared permissions") and that LWC has no PDF rendering equivalent — have no corpus line. The corpus documents only that `PageReference.getContentAsPDF()` returns the page as PDF regardless of `renderAs` (apexref 262 L226553).
+
+The output of this decision pass is a per-page label — `rewrite-lwc`, `harden-in-place`, or `leave-alone` — plus a sunset date for the rewrite candidates. Implement in batches; do not attempt a full-org migration in one quarter.
+
+### Concept 4 — Visualforce + LWC interop
+
+Two interop directions matter, and they have different mechanics:
+
+- **Hosting an LWC inside a Visualforce page.** Use `<apex:includeLightning/>` once on the page, then a `<div id="container"/>` placeholder, then call `$Lightning.use("c:MyApp", function() { $Lightning.createComponent("c:myLwc", {...}, "container", function(cmp) { ... }); })` from JS. This is the "Lightning Out" pattern and is said to work for both internal users and Experience Cloud sites with the right configuration; the LWC runs inside Locker / Lightning Web Security and gets its own session. UNVERIFIED (2026-10-20): the `$Lightning.use` / `$Lightning.createComponent` API and these runtime claims have no corpus line; the corpus names Lightning Out only in passing (CORS allowlisting, api_rest 264 L597).
+- **Navigating from a Visualforce page to an LWC tab.** The navigation API is `sforce.one.navigateToURL()` for relative URLs and `sforce.one.navigateToSObject()` for record pages. These are LEX-only — they do not work in Salesforce Classic. From within a VF page in LEX, `window.location` does not behave correctly (the iframe origin is `*.visualforce.com`, not the Lightning host), so always prefer the `sforce.one` API for navigation. UNVERIFIED (2026-10-20): `sforce.one` and the `*.visualforce.com` iframe origin are not in the corpus.
+
+The interop pattern that does NOT work cleanly: passing complex objects between the host VF controller and an embedded LWC. The bridge is JS-side; serialize at the boundary, do not assume Apex-typed objects survive.
+
+---
+
+## Common Patterns
+
+### Pattern 1 — Hardening a CSRF-disabled page back to default
+
+**When to use:** Audit finds CSRF switched off — `enableCSRFOnPost` / `enableCSRFOnGet` false in `SessionSettings`, or `csrfProtection="false"` on a page (UNVERIFIED (2026-10-20): that attribute is not in the corpus) — and the original justification is "needed for the integration." 95% of the time the integration can be fixed.
+
+**How it works:**
+1. Identify what the page is doing on POST. If it is taking submissions from a third-party system, capture the integration spec.
+2. Re-enable CSRF protection (set `enableCSRFOnPost` / `enableCSRFOnGet` back to `true` in `SessionSettings`, api_meta 264 L129739-129745; remove `csrfProtection="false"` where a page carries it — UNVERIFIED (2026-10-20): that attribute is not in the corpus). Verify the third-party submission now fails.
+3. Make the third-party system either (a) hit a Salesforce REST endpoint with proper OAuth instead of the VF page, or (b) load the VF page first via GET to obtain the form token, then submit. Option (a) is almost always the right answer for any submission newer than 2018.
+4. If neither is feasible, the next-best option is moving the endpoint to an Apex REST class (`@RestResource`) with explicit authentication — VF pages are not a good integration surface in 2026.
+
+**Why not the alternative:** Leaving CSRF disabled means an attacker who can convince a logged-in user to load a malicious page can submit arbitrary DML on their behalf. The risk is real and the remediation is documentation-bounded.
+
+### Pattern 2 — Adding FLS guards to a custom-controller getter
+
+**When to use:** Audit finds a VF page where `{!myCustomMethod}` returns an sObject and the underlying controller does `[SELECT Salary__c FROM Employee WHERE Id = :id]` without `WITH USER_MODE`, and the controller's `.cls-meta.xml` pins `apiVersion` at 66.0 or below. External users see the field. (At 67.0+ that query already runs in user mode; adding the clause there is a legibility fix, not a leak fix.)
+
+**How it works:** Switch the SOQL to `WITH USER_MODE`:
+
+```apex
+public Employee__c getEmployee() {
+    if (this.cachedEmployee != null) return this.cachedEmployee;
+    this.cachedEmployee = [
+        SELECT Id, Name, Salary__c
+        FROM Employee__c
+        WHERE Id = :this.empId
+        WITH USER_MODE
+        LIMIT 1
+    ];
+    return this.cachedEmployee;
+}
+```
+
+`WITH USER_MODE` enforces both CRUD and FLS for the running user, and it fails closed rather than filtering: user mode "Finds all FLS errors in your SOQL query" and reports them through `QueryException.getInaccessibleFields()` (apexdev 264 L12157-12158), so one inaccessible field in the `SELECT` list throws `System.QueryException` and the getter returns no record at all. Budget for that — a user who could previously load the page will now see an error, so either narrow the `SELECT` to the fields that audience can read, or use `Security.stripInaccessible(AccessType.READABLE, records).getRecords()` when partial rendering is the better outcome.
+
+**Why not the alternative:** A `with sharing` class still returns FLS-restricted fields; the keyword only governs records. `Schema.sObjectType.X.fields.Y.isAccessible()` works but is verbose and easy to miss for the 17th field.
+
+### Pattern 3 — Hosting an LWC inside an existing Visualforce page (incremental modernization)
+
+**When to use:** A 2,000-line VF page does one thing well that the team needs to modernize incrementally — e.g., the data table at the top — without rewriting the whole page.
+
+**How it works:**
+
+```html
+<apex:page sidebar="false">
+    <apex:includeLightning/>
+    <div id="lwc-container"></div>
+    <script>
+        $Lightning.use("c:MyEmbedApp", function() {
+            $Lightning.createComponent(
+                "c:myDataTable",
+                { recordIds: "{!recordIdsJson}" },
+                "lwc-container",
+                function(cmp) { /* component ready */ }
+            );
+        });
+    </script>
+</apex:page>
+```
+
+Where `c:MyEmbedApp` is a Lightning Out app (`.app` file with `<aura:application access="GLOBAL" extends="ltng:outApp">`), and `c:myDataTable` is the LWC (UNVERIFIED (2026-10-20): `ltng:outApp` and this wiring have no corpus line). The LWC runs under Lightning Web Security; Apex calls from inside it use `@AuraEnabled` methods, not the host VF controller.
+
+**Why not the alternative:** Rewriting a 2,000-line VF page in one shot is high-risk and high-cost. Lightning Out lets you replace one component at a time. Eventually the VF shell is empty and can be retired.
+
+---
+
+## Recommended Workflow
+
+1. **Inventory.** Enumerate every Visualforce page in the org with: usage count (last 90 days), last-modified date, controller name, audience (internal / partner / community / guest), and whether it is `renderAs="pdf"`. Run the bundled `scripts/check_visualforce_security_and_modernization.py` against your retrieved metadata to flag the structural risks (CSRF disabled, controller without `with sharing`, getter returning sObject in a non-USER_MODE class).
+2. **Triage.** Apply the decision table in Core Concept 3. Tag every page `rewrite-lwc`, `harden-in-place`, or `leave-alone`. Most should be `leave-alone` — modernization work is justified per page, not orgwide.
+3. **Harden the `harden-in-place` set.** For each: re-enable CSRF if disabled, verify FLS enforcement on every getter that returns an sObject, confirm controller is `with sharing`, audit `<apex:page action>` for DML, replace `<apex:outputText>` with `<apex:outputField>` for sObject fields. Run the checker after each round.
+4. **Plan the `rewrite-lwc` set.** Map LWC equivalents for each VF feature (component decomposition). For pages doing PDF, decide whether the rewrite keeps a slim VF wrapper just for `renderAs="pdf"`. Set sunset dates 3–6 months out and add a deprecation banner to the existing page (`<apex:outputPanel>` with a notice).
+5. **Implement Lightning Out interop where helpful.** If a page is too big to rewrite at once, embed LWCs incrementally using the pattern in Common Pattern 3. Track the proportion of the page that is now LWC vs legacy VF; the page is ready to retire when the VF shell is empty.
+6. **Retire and remove.** Once the LWC equivalent is live and adopted (verify via login/usage metrics), remove the page from every profile and permission set `pageAccesses` list (api_meta 264 L97542-97544) and from any quick action / button references. Wait one release, then delete. `availableInTouch` is not a retirement switch — it only controls whether the page's Visualforce tabs can be used in the Salesforce mobile app (api_meta 264 L24626-24627).
+7. **Re-measure.** Re-run the inventory and checker quarterly. The set of `leave-alone` pages will shift over time as audiences change (e.g., a page suddenly exposed to a new community license type joins the harden-or-rewrite list).
+
+---
+
+## Related Skills
+
+- `apex/visualforce-fundamentals` — controller architecture, view state optimization, PDF rendering, LEX iframe basics. Use that skill for greenfield VF and basic security; use *this* skill when the question is about an existing page's disposition.
+- `apex/soql-security` — SOQL injection, `WITH USER_MODE` semantics, FLS/CRUD enforcement at the query layer. Direct dependency for hardening custom-controller queries.
+- `security/secure-coding-review-checklist` — broader Apex security review including open-redirect, IDOR, and CSRF context for non-VF endpoints.
+- `lwc/lwc-security` (if/when authored) — LWC-side security model that the rewrite targets land in.
+- `admin/org-setup-and-configuration` — My Domain, session, and CSP Trusted Sites configuration that affects VF iframe origin, session sharing, and CSP behavior.
+
+
+=== visualforce-security-and-modernization/references/llm-anti-patterns.md ===
+# LLM Anti-Patterns — Visualforce Security And Modernization
+
+Common mistakes AI coding assistants make when generating or advising on Visualforce hardening and modernization. Avoid these in generated output.
+
+---
+
+## Anti-Pattern 1: Suggesting view state shrink without measuring first
+
+**What the LLM generates:** "Your view state is too large; mark these 14 controller properties as `transient` and the page will work."
+
+**Why it happens:** LLMs treat the 170 KB limit (lim 264 L748) as a fixed input and `transient` as a one-size-fits-all fix. They skip the measurement step because they cannot run the View State Inspector — view state size is monitored "in the Developer Console or in the footer of a Visualforce page when development mode is enabled" (apexdev 264 L36808-36809).
+
+**Correct pattern:**
+
+```
+1. Open the page in Developer Console with View State Inspector enabled.
+2. Identify the actual top-N largest properties — the contribution is rarely
+   what the developer expects (often it's a single SelectOption list or an
+   unbounded SOQL result).
+3. Mark only those `transient` (or remove from the controller entirely if
+   the data is fetchable on demand).
+4. Re-measure. If the page still hits the ceiling, the structural fix is
+   moving to JS Remoting, not more `transient` keywords.
+```
+
+**Detection hint:** Generated suggestions that mark > 5 properties `transient` without referencing the View State Inspector or any measurement step.
+
+---
+
+## Anti-Pattern 2: Missing FLS enforcement on custom-controller getters that return sObjects
+
+**What the LLM generates:**
+
+```apex
+public Employee__c getEmployee() {
+    return [
+        SELECT Id, Name, Salary__c
+        FROM Employee__c
+        WHERE Id = :empId
+    ];
+}
+```
+
+**Why it happens:** LLMs default to "the simplest SOQL that returns the record" and treat `with sharing` on the surrounding class as sufficient security. Training data contains many examples of older code that did not have `WITH USER_MODE` available, and the syntax has not propagated (UNVERIFIED (2026-10-20): the release that introduced `WITH USER_MODE` is not in the corpus).
+
+**Correct pattern:**
+
+```apex
+public Employee__c getEmployee() {
+    return [
+        SELECT Id, Name, Salary__c
+        FROM Employee__c
+        WHERE Id = :empId
+        WITH USER_MODE
+        LIMIT 1
+    ];
+}
+```
+
+**Detection hint:** Any SOQL inside a Visualforce custom-controller class that lacks `WITH USER_MODE` (or, below 67.0 only, `WITH SECURITY_ENFORCED` — at 67.0+ that clause can't be used, apexdev 264 L11926). The bundled checker script regexes for this. Resolve the hit against the `apiVersion` in the class's `.cls-meta.xml` before calling it a leak: at 67.0+ (Summer '26) database operations default to user mode, so a *bare* query is already FLS-enforced and the finding is legibility, not exposure. A query carrying `WITH SYSTEM_MODE` is the opposite case — it opts out at every version, so it stays a real exposure finding. See [`agents/_shared/AGENT_CONTRACT.md`](../../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
+
+---
+
+## Anti-Pattern 3: Assuming `with sharing` covers FLS
+
+**What the LLM generates:** "I added `with sharing` to the controller class, so the page is now FLS-secure."
+
+**Why it happens:** LLMs conflate three distinct security layers — sharing (records), CRUD (objects), FLS (fields) — into one `with sharing` keyword. The semantic distinction is documented but rarely highlighted in training data; many tutorials over-state what `with sharing` does.
+
+**Correct pattern:** Always pair `with sharing` with explicit FLS/CRUD enforcement. The cleanest way is `WITH USER_MODE` on every SOQL query and `Database.insert(records, AccessLevel.USER_MODE)` for DML. State the layered model in the explanation: "`with sharing` enforces record-level visibility; `WITH USER_MODE` enforces field- and object-level access." The guide says it outright: "Using the with sharing keyword doesn't enforce the user's permissions and field-level security" (apexdev 264 L11982).
+
+**Detection hint:** Any explanation that says "FLS is enforced because the class is `with sharing`" — that is structurally wrong.
+
+---
+
+## Anti-Pattern 4: "Fixing" CSRF errors by disabling the protection
+
+UNVERIFIED (2026-10-20): the `csrfProtection` attribute and the "CSRF token mismatch" error text below appear in no corpus guide; the CSRF switches the corpus documents are `ApexPage.confirmationTokenRequired` and `SessionSettings.enableCSRFOnGet` / `enableCSRFOnPost` (api_meta 264 L24635-24639, L129739-129745), and the only CSRF error text it quotes is "The page you submitted was invalid for your session" (apexdev 264 L13601-13602).
+
+**What the LLM generates:**
+
+```html
+<apex:page csrfProtection="false" ...>
+```
+
+with the explanation "this fixes the CSRF token mismatch error."
+
+**Why it happens:** The error messages are confusing ("CSRF token mismatch" sounds like the protection is broken), and disabling the attribute is the most direct path to making the symptom go away. LLMs optimize for "make the error stop."
+
+**Correct pattern:** Diagnose why the legitimate request is not carrying a token. Almost always it is a third-party integration that should be using REST instead, or a flow that should load the form via GET first to acquire the token. The remediation is at the integration boundary, not the platform's CSRF setting. If you must keep the integration on Visualforce, document why and have a security architect review the disablement.
+
+**Detection hint:** Any generated `<apex:page ... csrfProtection="false" ...>` that does not include a security-justification comment immediately above it. The bundled checker flags every `csrfProtection="false"` for review.
+
+---
+
+## Anti-Pattern 5: Recommending mass migration of all VF pages to LWC
+
+**What the LLM generates:** "Visualforce is the legacy framework. Migrate all 80 of your pages to LWC for a modernization roadmap."
+
+**Why it happens:** LLMs treat newer-is-better as a default and conflate "Visualforce is older than LWC" with "Visualforce is deprecated." Visualforce is supported and continues to receive platform fixes; there is no announced sunset (UNVERIFIED (2026-10-20): the corpus states no support status for Visualforce).
+
+**Correct pattern:** Per-page disposition based on real signals — security findings, LEX-broken UX, controller maintenance burden. Stable internal-only pages stay on VF. PDF generators stay on VF (LWC has no PDF rendering — UNVERIFIED (2026-10-20): not in the corpus). External-facing pages with security gaps go first to LWC. The `rewrite-lwc` set should be a minority of the inventory, not the default.
+
+**Detection hint:** Generated migration plans that propose rewriting more than ~30% of an inventory in one quarter, or that list every VF page as a rewrite candidate without per-page rationale.
+
+---
+
+## Anti-Pattern 6: Treating `<apex:outputText>` and `<apex:outputField>` as interchangeable
+
+**What the LLM generates:**
+
+```html
+<apex:outputText value="{!account.Sensitive_Field__c}"/>
+```
+
+**Why it happens:** LLMs see both components used in similar positions in training data and treat them as equivalent display tags. The FLS distinction is documented but easy to miss.
+
+**Correct pattern:**
+
+```html
+<apex:outputField value="{!account.Sensitive_Field__c}"/>
+```
+
+`<apex:outputField>` enforces FLS when bound to a standard-controller record or a USER_MODE-queried sObject; `<apex:outputText>` does not (UNVERIFIED (2026-10-20): the per-component FLS rule is not in the corpus; it does say `<apex:outputText>` escapes HTML, apexdev 264 L13439-13442). Reserve `<apex:outputText>` for controller-computed display strings (calculated labels, formatted numbers from non-sObject sources) — never for sObject field values.
+
+**Detection hint:** Any `<apex:outputText value="{!record.FieldName__c}"/>` where the value binding references an sObject field. Replace with `<apex:outputField>`.
+
+---
+
+## Anti-Pattern 7: Generating navigation code using `window.location` instead of `sforce.one`
+
+**What the LLM generates:**
+
+```html
+<apex:commandButton onclick="window.location='/lightning/n/MyTab'; return false;"/>
+```
+
+**Why it happens:** `window.location` is the universal browser API; LLMs default to it and rarely know about the LEX-iframe origin issue. Salesforce documentation recommends `sforce.one` but it is less commonly seen in training data.
+
+**Correct pattern:**
+
+```html
+<script>
+    function openTab() {
+        if (typeof sforce !== 'undefined' && sforce.one) {
+            sforce.one.navigateToURL('/lightning/n/MyTab');
+        } else {
+            window.location = '/lightning/n/MyTab';
+        }
+    }
+</script>
+<apex:commandButton onclick="openTab(); return false;"/>
+```
+
+The `sforce.one` API survives the iframe-to-host transition in LEX; `window.location` does not (UNVERIFIED (2026-10-20): `sforce.one` is not in the corpus). Always include the fallback for Classic and standalone VF page access.
+
+**Detection hint:** Any generated VF page navigation code that uses `window.location` for paths starting with `/lightning/`. Flag and replace with the `sforce.one` pattern.
+
+---
+
+## Anti-Pattern 8: Writing `<apex:remoteAction>` as if remoting were a tag
+
+**What the LLM generates:** "Expose the method with `<apex:remoteAction>`" or a page that declares that element.
+
+**Why it happens:** Visualforce has `<apex:actionFunction>` and `<apex:actionSupport>` tags, so the model invents a matching tag for remoting.
+
+**Correct pattern:** JavaScript remoting is the `@RemoteAction` Apex annotation on a method that must be `static` and either `global` or `public` (apexdev 264 L6245-6248). Every `@RemoteAction` method in the page's controller or extension is callable by anyone who can view the page (L6253-6254), so each one needs its own input validation and access checks.
+
+**Detection hint:** The string `apex:remoteAction` anywhere in generated markup or prose.
+
+</skill_package>
+
+What modifiers must an Apex method carry to be callable through JavaScript remoting in Visualforce?

@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "Guest user sharing rules grant **Read Only** access, and nothing more.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.059524,
+    "duration_s": 2.13,
+    "input_tokens": 7334,
+    "output_tokens": 43
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"Guest user sharing rules grant **Read Only** access, and nothing more.\"}",
+  "prompt_sha": "9e15ea4fa84ff091"
+}

@@ -1,0 +1,42 @@
+An Apex method exposed to JavaScript remoting must be annotated with **`@RemoteAction`** and declared **`static`**, and it must be **`global`** or **`public`**.
+
+```apex
+global with sharing class AccountRemoter {
+
+    @RemoteAction
+    global static Account getAccount(Id accountId) {
+        return [SELECT Id, Name FROM Account WHERE Id = :accountId LIMIT 1];
+    }
+}
+```
+
+**Details**
+
+- **`@RemoteAction`**: the annotation that makes the method callable from JavaScript.
+- **`static`**: remote methods are not invoked on an instance, so they can't be instance methods.
+- **`global` or `public`**: `global` is the usual choice, and it is required if the class lives in a managed package and is meant to be called from outside that namespace. `public` works in a local, unmanaged class.
+
+**Calling it from the page**
+
+```javascript
+Visualforce.remoting.Manager.invokeAction(
+    '{!$RemoteAction.AccountRemoter.getAccount}',
+    accountId,
+    function(result, event) {
+        if (event.status) {
+            console.log(result.Name);
+        } else {
+            console.error(event.message);
+        }
+    },
+    { escape: true }
+);
+```
+
+**Related points**
+
+- Using `{!$RemoteAction.ClassName.methodName}` lets the platform resolve the namespace for you.
+- The class can be the page's controller or extension, or it can be named through the page's `controller`/`extensions` attributes. It can also be a separate class if you use the `RemoteAction` namespace-resolved reference.
+- Remote methods don't have access to the controller's view state, so the data they need must be passed in as parameters.
+- Parameters and return values are serialized as JSON. The supported types are primitives, sObjects, collections, and user-defined Apex classes (whose members must be properly accessible).
+- Enforce security yourself in the method (`with sharing`, `WITH USER_MODE` or `WITH SECURITY_ENFORCED`, and `Security.stripInaccessible`), because remoting does not apply field-level security to your queries automatically.

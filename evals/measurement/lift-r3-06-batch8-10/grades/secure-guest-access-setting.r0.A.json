@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "In a current org, an admin can't turn off Secure Guest User Record Access.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.057836,
+    "duration_s": 2.468,
+    "input_tokens": 7123,
+    "output_tokens": 43
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"In a current org, an admin can't turn off Secure Guest User Record Access.\"}",
+  "prompt_sha": "8117cb9e1c0e71e7"
+}

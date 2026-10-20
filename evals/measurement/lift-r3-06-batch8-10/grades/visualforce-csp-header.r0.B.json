@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "The skill says trusted-site restrictions apply to a custom Visualforce page only when the page sets `cspHeader=\"true\"` on `<apex:page>`.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0584191,
+    "duration_s": 3.129,
+    "input_tokens": 7074,
+    "output_tokens": 72
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"The skill says trusted-site restrictions apply to a custom Visualforce page only when the page sets `cspHeader=\\\"true\\\"` on `<apex:page>`.\"}",
+  "prompt_sha": "c0c24e33f39d024d"
+}

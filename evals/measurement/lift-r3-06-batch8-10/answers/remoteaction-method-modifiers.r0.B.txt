@@ -1,0 +1,19 @@
+A JavaScript remoting method must be annotated with `@RemoteAction`, and it must be **`static`** and either **`global`** or **`public`**. Remoting is an Apex annotation, not a Visualforce tag, so there is no `<apex:remoteAction>` element.
+
+```apex
+public with sharing class MyController {
+    @RemoteAction
+    public static Account getAccount(Id accId) {
+        return [SELECT Id, Name FROM Account WHERE Id = :accId WITH USER_MODE LIMIT 1];
+    }
+}
+```
+
+The skill package cites this requirement to the Apex Developer Guide (apexdev 264 L6245-6248).
+
+**Security caveat:** Adding a controller or extension to a page gives every viewer of that page access to all of its `@RemoteAction` methods, even ones the page never calls (apexdev 264 L6253-6254). Treat each method as an authenticated AJAX endpoint:
+
+- Validate inputs server-side.
+- Check access explicitly, for example with `WITH USER_MODE`. `with sharing` alone does not enforce FLS or CRUD.
+
+The skill package flags one open question: whether remoting calls carry the form's anti-CSRF token or a token of their own is not documented in the corpus. Confirm that against the Visualforce Developer Guide before relying on it.

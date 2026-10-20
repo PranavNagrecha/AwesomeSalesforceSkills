@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "A guest user sharing rule can only grant Read Only access.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.056572,
+    "duration_s": 1.399,
+    "input_tokens": 6980,
+    "output_tokens": 37
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"A guest user sharing rule can only grant Read Only access.\"}",
+  "prompt_sha": "1483f368fb0edbd5"
+}

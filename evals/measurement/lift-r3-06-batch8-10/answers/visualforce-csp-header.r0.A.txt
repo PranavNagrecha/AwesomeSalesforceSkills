@@ -1,0 +1,19 @@
+**Not reliably, and not in the way you're probably hoping.** Treat the org's Trusted URLs list as something that governs Lightning and Experience Cloud contexts, not as a blanket policy on every Visualforce page. I'm answering from memory, so confirm the details against current docs and a quick test in your org.
+
+**What I'm fairly confident about**
+- Trusted URLs (formerly CSP Trusted Sites) is Salesforce's mechanism for allowing external hosts in directives like `connect-src`, `img-src`, `frame-src` and `font-src`. It is aimed at Lightning Experience, LWC/Aura, and Experience Builder sites.
+- Visualforce has historically been much looser than Lightning. Inline scripts, inline event handlers and third-party script tags generally work, because Visualforce was never subject to Lightning's Locker/Lightning Web Security and strict-CSP model.
+- A custom Visualforce page is not "locked down to trusted URLs" just because it exists in an org with a populated Trusted URLs list. Calling an arbitrary external endpoint or loading an arbitrary external script from a Visualforce page will often just work, with no Trusted URLs entry needed.
+- Visualforce pages served inside an Experience Cloud site are the likely exception. Those sites have their own CSP setting (Strict CSP vs. allowing inline scripts), and a Visualforce page there can inherit the site's header.
+
+**Where this matters**
+- If you embed a Visualforce page in Lightning Experience via an iframe or `lightning:container`, the Lightning host page's CSP (including `frame-src`) applies to the embedding, even though the page's own content is governed separately.
+- If you move code from Visualforce to LWC/Aura, expect it to break. A script or endpoint that worked in Visualforce will need a Trusted URLs entry (and often a CSP-friendly rewrite).
+
+**What I'd do in practice**
+1. Don't rely on the org CSP as a security control for Visualforce. Enforce your own constraints in the page: avoid inline scripts, use `JSENCODE`/`HTMLENCODE`/`JSINHTMLENCODE`, and keep `escape="true"` on output.
+2. Test empirically. Open the page, check the response headers in DevTools for `Content-Security-Policy`, and watch the console for CSP violation messages. That tells you what's enforced in your org and context.
+3. For Experience Cloud, check the site's Security settings (CSP level, clickjack protection) and the Trusted URLs `Context` values (Communities vs. LEX) for the host you need.
+4. Keep clickjack protection and "Require HttpOnly attribute"/session settings turned on. Those are separate from CSP and apply to Visualforce directly.
+
+If you tell me where the page is served (internal Lightning, classic, Experience Cloud, or embedded in an iframe), I can say more precisely which policy you should expect to see.

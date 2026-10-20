@@ -1,0 +1,85 @@
+{
+  "_comment": "R3-06 claims-audit wave, probes for batches 8-10 (15 skills, 68 contradicted claims; the first batches written with the mechanical sweep). One probe per contradicted-claim class. Arm A = model alone, arm B = model + the owning skill's SKILL.md + llm-anti-patterns.md (run_lift). Quotes are verbatim lines from scratchpad/corpus264 (264) or scratchpad/corpus (262). Built 2026-10-20.",
+  "probes": [
+    {
+      "id": "guest-sharing-rule-access",
+      "skill": "security/guest-user-security-audit",
+      "question": "What access levels can a guest user sharing rule grant on an Experience Cloud site?",
+      "wrong_answer": "Read, Read/Write, or Read/Write/Transfer, like any criteria-based sharing rule.",
+      "correct_answer": "Read Only only. Guest user sharing rules cannot grant edit access.",
+      "source": "salesforce_security_impl_guide.txt 262 L2987",
+      "quote": "Guest user sharing rules can only grant Read Only access.",
+      "wrong_source": "skill before audit: guests could update records via a sharing rule"
+    },
+    {
+      "id": "secure-guest-access-setting",
+      "skill": "security/guest-user-security-audit",
+      "question": "Can an admin turn off the Secure Guest User Record Access setting (enableSecureGuestAccess) in a current org?",
+      "wrong_answer": "Yes, it is a toggle that can be disabled to restore the old guest sharing model.",
+      "correct_answer": "No. As of API version 50.0 the field's value is always true regardless of what you set.",
+      "source": "api_meta.txt 264 L130645",
+      "quote": "As of API version 50.0, this field's value is always true, regardless of",
+      "wrong_source": "skill before audit: 'does not retroactively migrate', implying it is optional"
+    },
+    {
+      "id": "jsinhtmlencode-order",
+      "skill": "security/xss-and-injection-prevention",
+      "question": "In Visualforce, what is JSINHTMLENCODE(x) equivalent to, and in which order are the two encodings applied?",
+      "wrong_answer": "HTMLENCODE(JSENCODE(x)): JavaScript encoding first, then HTML.",
+      "correct_answer": "JSENCODE(HTMLENCODE(x)): it first encodes with HTMLENCODE, then encodes that result with JSENCODE.",
+      "source": "salesforce_apex_developer_guide.txt 264 L13512",
+      "quote": "That is, JSINHTMLENCODE first encodes someValue with HTMLENCODE, and then encodes the result with JSENCODE.",
+      "wrong_source": "skill before audit: 'JS first, then HTML'"
+    },
+    {
+      "id": "visualforce-csp-header",
+      "skill": "security/visualforce-security-and-modernization",
+      "question": "Does a custom Visualforce page automatically get the org's Content Security Policy restricting it to trusted URLs?",
+      "wrong_answer": "Yes, the org CSP applies to all Visualforce pages and the default is restrictive.",
+      "correct_answer": "No. For custom Visualforce pages, content is restricted to trusted URLs only if the page's cspHeader attribute is set to true.",
+      "source": "api_meta.txt 264 L41642-41643",
+      "quote": "URLs only if the page’s cspHeader attribute is set to true.",
+      "wrong_source": "skill before audit: 'subject to the org CSP / default is restrictive'"
+    },
+    {
+      "id": "remoteaction-method-modifiers",
+      "skill": "security/visualforce-security-and-modernization",
+      "question": "What modifiers must an Apex method carry to be callable through JavaScript remoting in Visualforce?",
+      "wrong_answer": "Any public instance method annotated @RemoteAction works.",
+      "correct_answer": "It must be static and either global or public, with the @RemoteAction annotation; there is no <apex:remoteAction> component.",
+      "source": "salesforce_apex_developer_guide.txt 264 L6248",
+      "quote": "Methods with the RemoteAction annotation must be static and either global or public.",
+      "wrong_source": "skill before audit: <apex:remoteAction> component"
+    },
+    {
+      "id": "tenant-secret-destroy",
+      "skill": "security/platform-encryption",
+      "question": "If a Shield Platform Encryption tenant secret is destroyed, is the data encrypted with it lost forever?",
+      "wrong_answer": "Yes, destroying a tenant secret is irreversible and the data is permanently unreadable.",
+      "correct_answer": "Not necessarily: the data is inaccessible unless you previously exported the key and import it back into Salesforce.",
+      "source": "object_reference.txt 264 L283928-283929",
+      "quote": "tenant secret, related data isn’t accessible unless you previously exported the key and then import the key back into Salesforce",
+      "wrong_source": "skill before audit: 'destroying a tenant secret is irreversible'"
+    },
+    {
+      "id": "encryption-existing-data",
+      "skill": "security/platform-encryption",
+      "question": "When you enable Shield Platform Encryption on a field that already holds data, does the existing data get encrypted?",
+      "wrong_answer": "No, the policy encrypts only new writes; existing records stay plaintext until you run a re-encryption job yourself.",
+      "correct_answer": "Yes. A background encryption process applies the active key material to existing data; field history and feed tracking values are included when enableEncryptFieldHistory is true.",
+      "source": "api_meta.txt 264 L127877-127878",
+      "quote": "Indicates whether the background encryption process applies the",
+      "wrong_source": "skill before audit: 'policy encrypts only new writes; run a re-encryption job'"
+    },
+    {
+      "id": "permission-expiration-revoked",
+      "skill": "security/privileged-access-management",
+      "question": "When a permission set assignment with an ExpirationDate reaches that date, what happens to the permissions?",
+      "wrong_answer": "Nothing automatic; an admin must remove the assignment by hand.",
+      "correct_answer": "The added permissions are revoked at the timestamp in PermissionSetAssignment.ExpirationDate.",
+      "source": "platform_events.txt 264 L25278-25279",
+      "quote": "specifies when added",
+      "wrong_source": "skill before audit: the revocation at expiry was marked unverifiable"
+    }
+  ]
+}

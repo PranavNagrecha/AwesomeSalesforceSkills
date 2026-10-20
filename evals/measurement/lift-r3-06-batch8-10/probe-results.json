@@ -1,0 +1,412 @@
+{
+  "answer_model": "sonnet",
+  "grader_model": "opus",
+  "repeats": 1,
+  "probes": [
+    {
+      "id": "guest-sharing-rule-access",
+      "skill": "security/guest-user-security-audit",
+      "source": "salesforce_security_impl_guide.txt 262 L2987",
+      "runs": [
+        {
+          "A": {
+            "answer": "Guest user sharing rules grant **Read Only** access, and nothing more.\n\n**Details**\n\n- **Access level:** Read Only is the only option. The sharing rule UI doesn't offer Read/Write for guest user sharing rules. This is a deliberate platform restriction, not a configuration gap.\n- **Object scope:** They work on standard objects that support sharing rules (e.g., Account, Contact, Case, Lead, Opportunity) and on custom objects. The object's OWD must be Private (or otherwise more restrictive than the access being opened) for the rule to matter.\n- **Criteria-based only:** You can't use owner-based guest sharing rules. Guest user sharing rules must be **criteria-based**, which prevents sharing \"everything owned by X\" with unauthenticated visitors. You choose records by field criteria (e.g., `Public_Visible__c = true`).\n- **Target:** The rule shares with a site's guest user (the \"Site Guest User\" profile-based user), selected as a public group or \"Guest User\" entry for the site.\n- **Why it's restricted:** Since Winter '21, guest users can no longer be granted View All / Modify All, and the Secure Guest User Record Access setting enforces that guests only get record access via guest sharing rules, not via ownership, manual shares, or Apex-managed sharing in the default case.\n\n**What it does not give you**\n\n- No create, edit, or delete via sharing. Those come from the guest profile's object permissions (and create is the only write-type permission you can realistically give a guest; Edit and Delete are not available on guest profiles for standard objects in current releases).\n- No access to fields the guest profile's field-level security hides. A sharing rule opens record access only; FLS and object CRUD still apply.\n- No View All / Modify All bypass.\n\n**Practical guidance**\n\n1. Set the OWD for the object to Private (external OWD too, where applicable).\n2. Give the guest profile Read on the object and Read on only the needed fields.\n3. Create a criteria-based guest sharing rule with a tightly scoped filter, using a dedicated flag field rather than broad criteria.\n4. Review the rule as public exposure: assume anything it matches is readable by anyone on the internet who can reach the site.\n5. If a guest needs to *write* data (e.g., submit a case or lead form), do it through create permission on the profile or through an Apex controller running `without sharing` with careful, explicit validation. Don't use sharing rules for it.\n\nCheck your org's current release notes if you depend on exact UI behavior, but Read Only and criteria-based have been the stable rules for guest sharing for years.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "Guest user sharing rules grant **Read Only** access, and nothing more.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09260560000000001,
+            "duration_s": 13.451,
+            "tokens": {
+              "input": 13423,
+              "output": 903
+            }
+          },
+          "B": {
+            "answer": "**Read Only, and nothing else.**\n\nA guest user sharing rule can only grant Read Only access. The security guide says a guest user sharing rule is \"the only way to grant record access\" to guest users and can \"only grant Read Only access\" (secguide 262 L2986-2987). The metadata API agrees: on `SharingGuestRule`, `accessLevel` \"can be set only to Read\" (api_meta 264 L132881).\n\nWhat this means in practice:\n\n- **No edit, create, or delete through sharing.** A guest can't update other users' records via a sharing rule. Any write capability has to come from somewhere else, such as object permissions on the guest profile, and that is a separate decision to audit.\n- **Guest org-wide defaults are Private for every object** and can't be changed (secguide 262 L2868-2869). The sharing rule is the only door to record visibility.\n- **Each rule is broad.** It opens every record matching its criteria to anyone who visits the site (secguide 262 L3068-3069). In an audit, each rule needs a business justification, and a rule granting \"all records\" of a sensitive object is a finding.\n- **Rules can match guest-owned records.** By default, sharing rules include records owned by authenticated users, guest users, and queues (secguide 262 L3247-3248). The guidance is to move guest-created records to an internal owner (secguide 262 L9630-9632).\n\nRead access is still the exposure point. Apex running `without sharing` can bypass these rules entirely, so check the sharing rules and the guest-reachable Apex together.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "A guest user sharing rule can only grant Read Only access.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1138134,
+            "duration_s": 9.171,
+            "tokens": {
+              "input": 19830,
+              "output": 541
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "secure-guest-access-setting",
+      "skill": "security/guest-user-security-audit",
+      "source": "api_meta.txt 264 L130645",
+      "runs": [
+        {
+          "A": {
+            "answer": "**No.** In a current org, an admin can't turn off Secure Guest User Record Access.\n\n- Salesforce made it a release update and enforced it in **Winter '21**. Once enforced, it is permanently on. Orgs created since Summer '20 had it on from the start.\n- `enableSecureGuestAccess` still exists on the `SharingSettings` metadata type, but it is effectively a legacy flag. Treat it as `true`. Don't build deployments that try to set it to `false`, because that can't succeed.\n- I'm confident about the enforcement but haven't checked it against the current Metadata API reference. If you're scripting against it, confirm the field's behavior in the docs and with a test deploy to a scratch org.\n\n**What the setting enforces for guest users:**\n- The guest user's org-wide default is Private, and you can't change it.\n- Guests can't be added to public groups or queues, and they can't be assigned as record owners or share recipients in the old way.\n- Guest profiles get only Read (and Create, where the object allows it) on objects. There is no Edit or Delete, and no View All or Modify All.\n- Records created by guests are owned by a default owner (the site's default record owner), not the guest user.\n\n**How to give guests access instead:**\n1. Use **guest user sharing rules**. They are criteria-based only and read-only, and they apply to a specific guest user profile.\n2. Grant object and field access on the guest profile with the minimum permissions needed.\n3. For writes (such as form submissions), use Apex running `with sharing` or `without sharing` in a controlled, narrowly scoped method. Do this deliberately and audit it.\n4. For broader data exposure, use Experience Cloud authenticated or external users with proper sharing sets, not guest access.\n\nIf something broke after you assumed you could disable it, such as a legacy site that depended on guests having broader access, the fix is a guest sharing rule or an authenticated-user redesign, not turning the setting off.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "In a current org, an admin can't turn off Secure Guest User Record Access.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0936034,
+            "duration_s": 12.71,
+            "tokens": {
+              "input": 13228,
+              "output": 1165
+            }
+          },
+          "B": {
+            "answer": "**No.** In a current org an admin cannot turn it off. `enableSecureGuestAccess` is always true.\n\nPer the Metadata API reference (api_meta 264 L130643-130652):\n\n- The setting is \"always true, even if it reads false.\"\n- This has been applied \"retroactively back to API version 47.0.\"\n\nSo the field can still read `false` in metadata, for example in an older retrieve or a legacy deployment package. That value is vestigial and has no effect on behavior. Don't treat a `false` as a finding, and don't try to deploy `false` to relax guest access. Ignore the flag when auditing and look at the real controls.\n\n**What secure guest access enforces (secguide 262)**\n\n- Guest org-wide defaults are Private for all objects and can't be changed (L2868-2869).\n- A guest user sharing rule is the only way to grant record access, and it can only grant Read Only (L2986-2987).\n\n**What an admin can still change, so audit these**\n\n- **Guest profile permissions.** Legacy object grants may still be on for older sites. The skill marks the pre-Spring '21 carry-over details as UNVERIFIED in the corpus, so confirm them in the org.\n- **Guest user sharing rules.** Each rule opens every matching record to anyone (secguide 262 L3068-3069), so each one needs a documented business reason.\n- **Sharing-rule scope.** By default these rules include records owned by guest users (secguide 262 L3247-3248). Move guest-created records to an internal owner (L9630-9632).\n- **API Enabled.** Leave it unchecked on the guest profile (L9629).\n- **Apex sharing mode.** This is the real remaining bypass. A `without sharing` class, or a bare `@RestResource` class at API 66.0 or earlier (which defaults to `without sharing`, apexdev 264 L18941-18942), can still expose records regardless of the setting.\n- **`WITH SECURITY_ENFORCED`.** It doesn't compile at API 67.0+ (apexdev 264 L11926). Migrate those queries to `with sharing` plus `WITH USER_MODE`.\n\nIf someone asks you to disable the setting to fix a guest access problem, the fix is a sharing rule or a narrowly scoped Apex path, never the flag.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "In a current org an admin cannot turn it off. `enableSecureGuestAccess` is always true.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1187827,
+            "duration_s": 22.241,
+            "tokens": {
+              "input": 20100,
+              "output": 803
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "jsinhtmlencode-order",
+      "skill": "security/xss-and-injection-prevention",
+      "source": "salesforce_apex_developer_guide.txt 264 L13512",
+      "runs": [
+        {
+          "A": {
+            "answer": "`JSINHTMLENCODE(x)` is equivalent to `JSENCODE(HTMLENCODE(x))`.\n\n**Order of application:**\n1. **HTMLENCODE is applied first** (the inner function). It converts HTML-special characters to entities, e.g. `<` becomes `&lt;`, `>` becomes `&gt;`, `&` becomes `&amp;`, `\"` becomes `&quot;`.\n2. **JSENCODE is applied second** (the outer function). It escapes characters that are special in JavaScript string literals, such as adding backslashes before quotes and escaping backslashes, newlines, etc. This includes the backslashes and `&`/`;` produced as part of the HTML entities only insofar as they are JS-significant (the `&` and `;` themselves are left as-is, but any quote or backslash characters would be escaped).\n\n**Why it matters:** This is the right encoding when you place a merge field inside a JavaScript string that will later be inserted into the DOM as HTML, for example:\n\n```html\n<script>\n  var name = '{!JSINHTMLENCODE(Account.Name)}';\n  document.getElementById('out').innerHTML = name;\n</script>\n```\n\nThe value is first made safe as HTML (so `innerHTML` can't be used to inject markup), then made safe as a JS string literal (so it can't break out of the quotes). Using plain `JSENCODE` alone in an `innerHTML` context would leave you vulnerable to XSS, since the JS escaping doesn't neutralize HTML tags.\n\nNote that the reverse nesting, `HTMLENCODE(JSENCODE(x))`, is a different thing and is not what `JSINHTMLENCODE` does. Likewise, `JSINHTMLENCODE` is for JS strings that get interpreted as HTML, whereas for a JS string in a plain `<script>` context that is never rendered as HTML, `JSENCODE` is the appropriate choice.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "`JSINHTMLENCODE(x)` is equivalent to `JSENCODE(HTMLENCODE(x))`.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0896076,
+            "duration_s": 12.629,
+            "tokens": {
+              "input": 13271,
+              "output": 712
+            }
+          },
+          "B": {
+            "answer": "`JSINHTMLENCODE(x)` is equivalent to `JSENCODE(HTMLENCODE(x))`.\n\n**Order:** the HTML encoding is applied first (the inner call), then the JavaScript encoding is applied to that result (the outer call). The name reads \"JS in HTML\", which tempts people to assume JS goes first, but that is backwards.\n\n**When to use it:** in HTML attributes that contain JavaScript, such as inline event handlers (`onclick=\"...\"`). The browser first HTML-decodes the attribute value and then parses it as JavaScript, so the value needs both layers of encoding, applied in the reverse order of how the browser decodes them.\n\n```html\n<!-- Inline handler: JavaScript inside an HTML attribute -->\n<a href=\"#\" onclick=\"doSomething('{!JSINHTMLENCODE(contact.LastName)}')\">Go</a>\n```\n\n**Related contrast:** inside a `<script>` block, use `JSENCODE()` alone. `HTMLENCODE` does not protect a JavaScript string literal there, because script contents are raw text and are not entity-decoded. This follows the Apex Developer Guide's description of the encoding functions.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "`JSINHTMLENCODE(x)` is equivalent to `JSENCODE(HTMLENCODE(x))`.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.12061449999999999,
+            "duration_s": 11.058,
+            "tokens": {
+              "input": 21588,
+              "output": 460
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "visualforce-csp-header",
+      "skill": "security/visualforce-security-and-modernization",
+      "source": "api_meta.txt 264 L41642-41643",
+      "runs": [
+        {
+          "A": {
+            "answer": "**Not reliably, and not in the way you're probably hoping.** Treat the org's Trusted URLs list as something that governs Lightning and Experience Cloud contexts, not as a blanket policy on every Visualforce page. I'm answering from memory, so confirm the details against current docs and a quick test in your org.\n\n**What I'm fairly confident about**\n- Trusted URLs (formerly CSP Trusted Sites) is Salesforce's mechanism for allowing external hosts in directives like `connect-src`, `img-src`, `frame-src` and `font-src`. It is aimed at Lightning Experience, LWC/Aura, and Experience Builder sites.\n- Visualforce has historically been much looser than Lightning. Inline scripts, inline event handlers and third-party script tags generally work, because Visualforce was never subject to Lightning's Locker/Lightning Web Security and strict-CSP model.\n- A custom Visualforce page is not \"locked down to trusted URLs\" just because it exists in an org with a populated Trusted URLs list. Calling an arbitrary external endpoint or loading an arbitrary external script from a Visualforce page will often just work, with no Trusted URLs entry needed.\n- Visualforce pages served inside an Experience Cloud site are the likely exception. Those sites have their own CSP setting (Strict CSP vs. allowing inline scripts), and a Visualforce page there can inherit the site's header.\n\n**Where this matters**\n- If you embed a Visualforce page in Lightning Experience via an iframe or `lightning:container`, the Lightning host page's CSP (including `frame-src`) applies to the embedding, even though the page's own content is governed separately.\n- If you move code from Visualforce to LWC/Aura, expect it to break. A script or endpoint that worked in Visualforce will need a Trusted URLs entry (and often a CSP-friendly rewrite).\n\n**What I'd do in practice**\n1. Don't rely on the org CSP as a security control for Visualforce. Enforce your own constraints in the page: avoid inline scripts, use `JSENCODE`/`HTMLENCODE`/`JSINHTMLENCODE`, and keep `escape=\"true\"` on output.\n2. Test empirically. Open the page, check the response headers in DevTools for `Content-Security-Policy`, and watch the console for CSP violation messages. That tells you what's enforced in your org and context.\n3. For Experience Cloud, check the site's Security settings (CSP level, clickjack protection) and the Trusted URLs `Context` values (Communities vs. LEX) for the host you need.\n4. Keep clickjack protection and \"Require HttpOnly attribute\"/session settings turned on. Those are separate from CSP and apply to Visualforce directly.\n\nIf you tell me where the page is served (internal Lightning, classic, Experience Cloud, or embedded in an iframe), I can say more precisely which policy you should expect to see.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "A custom Visualforce page is not \"locked down to trusted URLs\" just because it exists in an org with a populated Trusted URLs list.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.10733200000000001,
+            "duration_s": 17.921,
+            "tokens": {
+              "input": 13585,
+              "output": 2039
+            }
+          },
+          "B": {
+            "answer": "**No, not automatically.** The skill says trusted-site restrictions apply to a custom Visualforce page only when the page sets `cspHeader=\"true\"` on `<apex:page>`. Without that attribute, the page is not held to your org's Trusted URL list.\n\nCaveats on how far to trust this:\n\n- **Only a one-line reference supports it.** The Questions-to-Ask table cites \"Gotcha 5\" for this point, but the Gotchas section isn't in the package I was given. That table row is my only source, and it carries no corpus citation or UNVERIFIED marker. Confirm `cspHeader` and its default behavior against the Visualforce Developer Guide and the Trusted URLs/CSP documentation before you write it into a finding.\n- **Tooling.** The skill points to `CspTrustedSite` metadata records with context `VisualForce` as the place to allow external script, style, or other hosts once `cspHeader` is true.\n\n**What to do in practice**\n1. For each page, check whether `<apex:page>` sets `cspHeader=\"true\"`. If it doesn't, the org's trusted-site list isn't restricting that page, and external `<apex:includeScript>` or `<apex:stylesheet>` sources load unrestricted.\n2. Where you turn it on, first inventory every external host the page loads from. Then add `CspTrustedSite` entries (context `VisualForce`), or move the assets into static resources, so you don't break the page.\n3. Test as the lowest-privilege audience (community or guest) and watch the browser console for CSP violations.\n4. Treat enabling CSP as hardening for the *harden-in-place* set, especially pages exposed to external users. It complements FLS and CSRF fixes rather than replacing them.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "The skill says trusted-site restrictions apply to a custom Visualforce page only when the page sets `cspHeader=\"true\"` on `<apex:page>`.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1510861,
+            "duration_s": 12.392999999999999,
+            "tokens": {
+              "input": 27150,
+              "output": 1146
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "remoteaction-method-modifiers",
+      "skill": "security/visualforce-security-and-modernization",
+      "source": "salesforce_apex_developer_guide.txt 264 L6248",
+      "runs": [
+        {
+          "A": {
+            "answer": "An Apex method exposed to JavaScript remoting must be annotated with **`@RemoteAction`** and declared **`static`**, and it must be **`global`** or **`public`**.\n\n```apex\nglobal with sharing class AccountRemoter {\n\n    @RemoteAction\n    global static Account getAccount(Id accountId) {\n        return [SELECT Id, Name FROM Account WHERE Id = :accountId LIMIT 1];\n    }\n}\n```\n\n**Details**\n\n- **`@RemoteAction`**: the annotation that makes the method callable from JavaScript.\n- **`static`**: remote methods are not invoked on an instance, so they can't be instance methods.\n- **`global` or `public`**: `global` is the usual choice, and it is required if the class lives in a managed package and is meant to be called from outside that namespace. `public` works in a local, unmanaged class.\n\n**Calling it from the page**\n\n```javascript\nVisualforce.remoting.Manager.invokeAction(\n    '{!$RemoteAction.AccountRemoter.getAccount}',\n    accountId,\n    function(result, event) {\n        if (event.status) {\n            console.log(result.Name);\n        } else {\n            console.error(event.message);\n        }\n    },\n    { escape: true }\n);\n```\n\n**Related points**\n\n- Using `{!$RemoteAction.ClassName.methodName}` lets the platform resolve the namespace for you.\n- The class can be the page's controller or extension, or it can be named through the page's `controller`/`extensions` attributes. It can also be a separate class if you use the `RemoteAction` namespace-resolved reference.\n- Remote methods don't have access to the controller's view state, so the data they need must be passed in as parameters.\n- Parameters and return values are serialized as JSON. The supported types are primitives, sObjects, collections, and user-defined Apex classes (whose members must be properly accessible).\n- Enforce security yourself in the method (`with sharing`, `WITH USER_MODE` or `WITH SECURITY_ENFORCED`, and `Security.stripInaccessible`), because remoting does not apply field-level security to your queries automatically.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "An Apex method exposed to JavaScript remoting must be annotated with **`@RemoteAction`** and declared **`static`**, and it must be **`global`** or **`public`**.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09087529999999999,
+            "duration_s": 10.265,
+            "tokens": {
+              "input": 13289,
+              "output": 784
+            }
+          },
+          "B": {
+            "answer": "A JavaScript remoting method must be annotated with `@RemoteAction`, and it must be **`static`** and either **`global`** or **`public`**. Remoting is an Apex annotation, not a Visualforce tag, so there is no `<apex:remoteAction>` element.\n\n```apex\npublic with sharing class MyController {\n    @RemoteAction\n    public static Account getAccount(Id accId) {\n        return [SELECT Id, Name FROM Account WHERE Id = :accId WITH USER_MODE LIMIT 1];\n    }\n}\n```\n\nThe skill package cites this requirement to the Apex Developer Guide (apexdev 264 L6245-6248).\n\n**Security caveat:** Adding a controller or extension to a page gives every viewer of that page access to all of its `@RemoteAction` methods, even ones the page never calls (apexdev 264 L6253-6254). Treat each method as an authenticated AJAX endpoint:\n\n- Validate inputs server-side.\n- Check access explicitly, for example with `WITH USER_MODE`. `with sharing` alone does not enforce FLS or CRUD.\n\nThe skill package flags one open question: whether remoting calls carry the form's anti-CSRF token or a token of their own is not documented in the corpus. Confirm that against the Visualforce Developer Guide before relying on it.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "A JavaScript remoting method must be annotated with `@RemoteAction`, and it must be **`static`** and either **`global`** or **`public`**.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1434637,
+            "duration_s": 9.286,
+            "tokens": {
+              "input": 26997,
+              "output": 509
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "tenant-secret-destroy",
+      "skill": "security/platform-encryption",
+      "source": "object_reference.txt 264 L283928-283929",
+      "runs": [
+        {
+          "A": {
+            "answer": "**Effectively yes, unless you have a backup of that tenant secret.**\n\n**What happens when you destroy a secret**\n- Shield derives data encryption keys from the tenant secret plus a Salesforce-held master secret. Destroying the tenant secret permanently deletes the customer-side key material.\n- Any data still encrypted with that secret can no longer be decrypted. That includes field values, files and attachments, and any Salesforce backups that contain them.\n- Salesforce Support can't recover it. The key material is gone.\n- Only an archived secret can be destroyed, not the active one. By then new writes already use the newer secret, so the loss covers only data that was never re-encrypted.\n\n**Ways to recover**\n1. **Exported backup:** If you exported the tenant secret before destroying it, you can re-import it and the data becomes readable again. You can't export a secret after it's destroyed, so this has to happen beforehand. Store the export securely.\n2. **BYOK:** If you uploaded your own tenant secret material (customer-supplied key material wrapped with your certificate), you can re-upload the same material, since you hold the original.\n3. **Cache-Only Key Service:** The key lives in your external key service, so you can restore it from there if you still have it.\n\n**Prevention before you destroy anything**\n- Re-encrypt existing data with the active secret first. Use the \"Synchronize\" / key rotation option for fields, and the equivalent for files.\n- Check the Encryption Statistics page, or query the data, to confirm nothing is still encrypted with the old key version.\n- Export and back up the secret before destroying it anyway.\n- Test in a sandbox first. Sandbox refreshes don't carry over your production tenant secrets, so don't assume a sandbox test proves the same state as production.\n\nIf you've already destroyed one and have no export or BYOK material, treat the data encrypted with that secret as permanently unreadable. Restore from an external source such as a data warehouse, an unencrypted export, or an integration source of truth.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "If you exported the tenant secret before destroying it, you can re-import it and the data becomes readable again.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0950916,
+            "duration_s": 12.271,
+            "tokens": {
+              "input": 13251,
+              "output": 1287
+            }
+          },
+          "B": {
+            "answer": "**Not necessarily, but treat destruction as effectively permanent unless you exported the key first.**\n\n**What the platform does**\n- Setting a tenant secret to `Status = Destroyed` means it \"can't encrypt or decrypt data,\" and files encrypted with it can no longer be downloaded (obj 264 L283782-283785).\n- Data encrypted under that secret becomes inaccessible.\n\n**When it is recoverable**\n- If you previously exported the key, you can import it back into Salesforce and the related data becomes accessible again: \"related data isn't accessible unless you previously exported the key and then import the key back\" (L283928-283929).\n- Cache-Only Key Service customers can move a cache-only secret from Destroyed back to Active (L283943-283944).\n\n**When it is lost**\n- You never exported the key, and the material (BYOK or otherwise) isn't held anywhere you can re-supply it. Salesforce-generated (`HSM`) secrets are the riskiest here, because you have nothing to re-import unless you exported first.\n- In that case the ciphertext is unreadable, which is the point if you are doing deliberate crypto-shredding.\n\n**Practical guidance**\n1. Distinguish *Archived* from *Destroyed*. Rotation only archives the old secret. An archived secret can't encrypt new data but still decrypts old data (L283779-283781), so rotation is safe.\n2. Before destroying, make sure the background encryption process has re-encrypted existing data under the new active key (api_meta 264 L127877-127882). Otherwise, anything still on the old secret goes dark. Check history duplicates and `FieldHistoryArchive` copies too, which have their own handling (secguide 262 L4899-4904).\n3. Export the key and store it securely unless destroying the data is the explicit goal.\n4. Rehearse in a sandbox first.\n\n**Caveat:** I'm relying on the corpus lines above. I haven't confirmed any additional Help-only behaviours, such as whether Salesforce support can recover anything after destruction. Don't assume it can.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "If you previously exported the key, you can import it back into Salesforce and the related data becomes accessible again: \"related data isn't accessible unless you previously exported the key and then import the key back\" (L283928-283929).",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1394092,
+            "duration_s": 9.705,
+            "tokens": {
+              "input": 25218,
+              "output": 766
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "encryption-existing-data",
+      "skill": "security/platform-encryption",
+      "source": "api_meta.txt 264 L127877-127878",
+      "runs": [
+        {
+          "A": {
+            "answer": "**No, not automatically.** Enabling encryption on a field only encrypts data written from that point on (new records and updated values). Existing values stay in plaintext until they're re-saved.\n\n**What to do after enabling**\n\n1. Go to **Setup \u2192 Platform Encryption \u2192 Encryption Statistics** (the exact label may vary by release). Look for the object and click **Synchronize** (or ask Salesforce Support to run the background encryption service if you have a very large volume). This kicks off a background job that re-encrypts existing records using the active tenant secret.\n2. Wait for the job to finish. Duration depends on record volume, and the status shows in Encryption Statistics. Do not assume it's done until it reports complete.\n3. Verify. The Encryption Statistics page shows how many records are encrypted versus total for the object.\n\n**Related things to know**\n\n- **Key rotation works the same way.** Generating a new tenant secret only applies to newly written data. Old data stays on the old key version until you synchronize, so don't destroy an old key until the sync has finished, or you'll lose access to data still encrypted with it.\n- **Field-type restrictions.** Not every field can be encrypted. Some standard fields are supported and some aren't, and certain features (e.g. SOQL `GROUP BY`/`ORDER BY` on encrypted fields, some filters and formulas) are limited. Check the deterministic vs probabilistic scheme choice, since it affects filtering and uniqueness.\n- **Sandbox refreshes and data loads.** Records you load via API or Data Loader after enabling are encrypted on write, so no extra step is needed for those.\n- **Field History and other copies.** History and other derived data can hold earlier plaintext. Check whether history tracking is encrypted for the field and whether older history rows need the same sync treatment.\n- **Indexes and search.** Encrypted data can change how search indexes and reports behave, so test those after the sync.\n\n**Rule of thumb:** enable encryption, then synchronize existing data, then verify the stats. The setting alone only protects new writes.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "Enabling encryption on a field only encrypts data written from that point on (new records and updated values). Existing values stay in plaintext until they're re-saved.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0903468,
+            "duration_s": 12.683,
+            "tokens": {
+              "input": 13286,
+              "output": 743
+            }
+          },
+          "B": {
+            "answer": "**Short answer: yes, mostly, but not instantly, and not everywhere.** Turning on encryption for a field does not leave existing values in plaintext. A background process picks them up. There are two exceptions you need to plan for.\n\n**What gets encrypted**\n- A background encryption process applies the active key material to your existing data (api_meta 264 L127877-127882).\n- The security guide says that once Platform Encryption is on, existing field values and the History related-list rows (e.g. Account History) get encrypted too (secguide 262 L4899-4902).\n\n**What can be missed**\n1. **Field history and feed duplicates** are skipped unless `PlatformEncryptionSettings.enableEncryptFieldHistory` is `true`. It defaults to false (api_meta 264 L127877-127882).\n2. **`FieldHistoryArchive` copies** that were already archived stay unencrypted until Salesforce re-archives them (secguide 262 L4903-4904). If you use Field Audit Trail, this is the one that bites in an audit.\n\n**Practical steps**\n- Don't treat \"policy enabled\" as \"done.\" Confirm background encryption has finished for each object before you sign off.\n- Make an explicit decision about history, feed and archive copies, and record it in your rollout runbook.\n- If you rotate to a new key later, the same background process re-applies the active key to existing data. The old secret stays `Archived`, which means it can still decrypt but can't encrypt new data (obj 264 L283779-283781).\n- Test in a sandbox first, and check which queries, reports and sharing rules depend on the fields. Your scheme choice (probabilistic vs deterministic) determines whether filtering on those fields survives.\n\n**Not verified from the corpus**\nThe skill marks the Setup button that kicks off background encryption, and its performance impact on large objects, as Help-only. I can't give you grounded detail on either, so check the current Help docs before scheduling it on a big org.\n\nOne more caution: older advice sometimes says \"enabling only encrypts new writes, so you must run a re-encryption job.\" That is incomplete. The reverse claim, \"everything including history is encrypted,\" is also wrong, for the two reasons above.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "A background encryption process applies the active key material to your existing data (api_meta 264 L127877-127882).",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1398306,
+            "duration_s": 11.181,
+            "tokens": {
+              "input": 25268,
+              "output": 769
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "permission-expiration-revoked",
+      "skill": "security/privileged-access-management",
+      "source": "platform_events.txt 264 L25278-25279",
+      "runs": [
+        {
+          "A": {
+            "answer": "When the date arrives, Salesforce treats the assignment as expired and the user loses whatever that permission set alone granted. The assignment is not a reminder or a flag. It really ends the access.\n\n**What happens**\n- **Permissions are revoked.** Object and field permissions, user permissions, Apex class and page access, custom permissions, and tab settings that came only from that permission set are removed.\n- **Overlapping access stays.** If the same permission is also granted by the profile, another permission set, or a permission set group, the user keeps it. Only the net difference disappears.\n- **The assignment becomes inactive.** `PermissionSetAssignment.IsActive` goes to false, and a system process later cleans up the expired record. The exact cleanup timing is not something to rely on, so filter on `IsActive = true` in reports or SOQL if you need current assignments.\n- **Timing is approximate.** Expiration is processed at the start of the expiration date or shortly after, in a platform-controlled job, not at an exact timestamp you choose. If you need a precise cutoff, deactivate or remove the assignment yourself.\n\n**What does not happen**\n- **No record cleanup.** Records the user created or owns while holding the permission set stay as they are. Sharing and ownership are unchanged.\n- **No notification by default.** Salesforce does not email the user or admin when an assignment expires. Build a Flow or scheduled Apex on `ExpirationDate` if you want a warning beforehand.\n- **No profile or role change.** Only the assignment is affected.\n\n**Related behavior**\n- Permission set group assignments support expiration dates in the same way.\n- If the permission set carries a permission set license and nothing else on the user needs that license, the license assignment is released when the permission set assignment ends.\n- Setting the date can be done in the UI, via the API, or in Apex by setting `ExpirationDate` on `PermissionSetAssignment`.\n- Users with an already open session may need to refresh or log in again to see the change.\n\nTo audit upcoming expirations:\n\n```sql\nSELECT Assignee.Username, PermissionSet.Name, ExpirationDate\nFROM PermissionSetAssignment\nWHERE ExpirationDate != null AND IsActive = true\nORDER BY ExpirationDate\n```\n\nI'm confident about the revocation behavior but less sure about the exact cleanup timing, so check the current release notes if you need to document that precisely.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "When the date arrives, Salesforce treats the assignment as expired and the user loses whatever that permission set alone granted.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09780130000000001,
+            "duration_s": 19.561,
+            "tokens": {
+              "input": 13375,
+              "output": 1388
+            }
+          },
+          "B": {
+            "answer": "The user loses access to the permissions, but the assignment itself stays in place. The skill's own text puts it this way:\n\n- **The user** remains assigned to the permission set or group but cannot access its permissions.\n- **Other grants** are unaffected. Permissions from non-expiring permission sets, groups, or the profile still apply.\n- **The assignment row** is treated as a soft-delete.\n- **Ordinary SOQL** does not return expired assignments. You need `ALL ROWS` to see them.\n- **What can't expire:** profiles and permission set licenses don't support expiration.\n\n**What is verified and what isn't.** Only part of this is grounded in the corpus:\n\n- `PermissionSetAssignment.ExpirationDate` exists as a `dateTime` field from API 52.0.\n- `PermissionSetEvent.PermissionExpirationList` carries the timestamps for \"when added permissions will be revoked\". That supports the claim that the permissions are withdrawn at expiry.\n- The soft-delete behavior, the `ALL ROWS` requirement, the row staying assigned, and the \"cannot expire profiles or permission set licenses\" rule come from Help only. The skill marks them UNVERIFIED (2026-10-20).\n- The object reference's only `ALL ROWS` example is for revoked assignments (`IsRevoked = true ALL ROWS`), not expired ones.\n- The skill also doesn't say what `ExpirationDate` does when `UserManagementSettings.psaExpirationUIEnabled` is off.\n\n**Practical consequences:**\n\n1. Don't build an \"expired elevations\" report with ordinary SOQL. It may return zero rows, which looks like a clean result when it isn't.\n2. Use `ALL ROWS` for any review of expiring or expired assignments:\n   ```sql\n   SELECT Id, ExpirationDate, Assignee.Name, PermissionSet.Name\n   FROM PermissionSetAssignment\n   WHERE ExpirationDate != null\n   ALL ROWS\n   ```\n3. Before relying on any of this, test it on a known expired grant. Confirm both that the user actually loses the permissions and that your report returns that row.\n4. For time-boxed elevation, expect the user to still show as \"assigned\" in some views even though the permissions are gone. Judge effective access by the permissions, not by the presence of the assignment.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "The user loses access to the permissions, but the assignment itself stays in place.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1313418,
+            "duration_s": 7.144,
+            "tokens": {
+              "input": 23122,
+              "output": 824
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "skills": {
+      "security/guest-user-security-audit": {
+        "correct_a": 2,
+        "correct_b": 2,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "security/xss-and-injection-prevention": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "security/visualforce-security-and-modernization": {
+        "correct_a": 2,
+        "correct_b": 2,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "security/platform-encryption": {
+        "correct_a": 1,
+        "correct_b": 2,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "security/privileged-access-management": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      }
+    },
+    "overall": {
+      "correct_a": 7,
+      "correct_b": 8,
+      "wrong_a": 1,
+      "wrong_b": 0,
+      "neither_a": 0,
+      "neither_b": 0,
+      "paired": 8,
+      "errors": 0,
+      "probes": 8,
+      "quotes_not_found": 0,
+      "pct_correct_a": 87.5,
+      "pct_correct_b": 100.0,
+      "pct_wrong_a": 12.5,
+      "pct_wrong_b": 0.0,
+      "pct_neither_a": 0.0,
+      "pct_neither_b": 0.0
+    },
+    "cost_usd": 1.8156056,
+    "call_seconds": 203.67,
+    "input_tokens": 295981,
+    "output_tokens": 14839,
+    "elapsed_s": 231.54047258300125
+  }
+}

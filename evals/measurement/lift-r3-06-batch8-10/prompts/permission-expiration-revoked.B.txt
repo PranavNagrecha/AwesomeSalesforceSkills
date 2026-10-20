@@ -1,0 +1,428 @@
+Use the following skill package when answering.
+
+<skill_package>
+=== privileged-access-management/SKILL.md ===
+---
+name: privileged-access-management
+description: "Design just-in-time elevation, break-glass accounts, and audit trails for Modify All Data / System Admin / Customize Application permissions. NOT for regular permission set design — use admin/permission-set-architecture."
+category: security
+salesforce-version: "Spring '25+"
+well-architected-pillars:
+  - Security
+  - Operational Excellence
+triggers:
+  - "system admin break glass account"
+  - "too many modify all data users"
+  - "just in time admin elevation"
+  - "root account security salesforce"
+  - "find everyone who has modify all data or view all data"
+tags:
+  - pam
+  - admin
+  - sod
+  - audit
+inputs:
+  - "Current admin user list"
+  - "audit log retention capability"
+outputs:
+  - "PAM runbook"
+  - "permission-set-group rotation policy"
+  - "break-glass procedure"
+dependencies: []
+version: 1.1.1
+author: Pranav Nagrecha
+updated: 2026-10-20
+---
+
+# Privileged Access Management (PAM)
+
+PAM on Salesforce is three things: knowing exactly who holds admin-equivalent permissions today, replacing standing grants with elevation that ends by itself, and being able to prove both after the fact. The platform ships every primitive you need — `PermissionSetAssignment.ExpirationDate`, session-based permission set groups, `SetupAuditTrail` — but each has a documented behaviour that breaks a naive audit. The most common failure is an inventory query that returns a clean result because it silently excluded the rows that mattered.
+
+---
+
+## Before Starting
+
+- Confirm the assignment-expiration UI is on: `UserManagementSettings.psaExpirationUIEnabled` lets admins use "an updated user interface that includes an assignment expiration for permission sets and permission set groups" (api_meta 264 L132107-132111). `PermissionSetAssignment.ExpirationDate` itself is a field from API 52.0 (obj 264 L219739-219745). UNVERIFIED (2026-10-20): what `ExpirationDate` does when that setting is off is not in the corpus.
+- Confirm what "admin" means in this org. It is rarely the System Administrator profile alone — see the admin-equivalent permission table below.
+- Confirm log retention: `SetupAuditTrail` represents Setup changes "for at least the last 180 days" (obj 264 L264576), and "after 180 days, setup entity records are deleted" (secguide 262 L4975). Anything longer is an Event Monitoring plus archive problem.
+- Confirm the org's break-glass identities exist, are named to individual humans, and are not shared.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Who holds Modify All Data, View All Data, Customize Application or Manage Users today, and through a profile or an assignment? | Filtering on `IsOwnedByProfile` drops the profile half of the answer — llm-anti-patterns.md Anti-Pattern 1 | A baseline inventory with the grant path per row |
+| Which identity will run the inventory, and does it hold View Setup and Configuration, Assign Permission Sets or Manage User? | `PermissionSetAssignment` is readable only with one of those (obj 264 L219705-219708) — gotchas.md Gotcha 3 | An auditor identity that returns real rows, owned and reviewed like any other privileged account |
+| Will elevation be session-based or time-boxed with `ExpirationDate`? | Session-based permission sets lose their activation requirement inside a group (obj 264 L264383-264384) — gotchas.md Gotcha 1 | `HasActivationRequired` set on the unit you assign, or a dated expiry where a session is too short |
+| Which permission set group is the elevation unit, and is its `Status` `Updated`? | `Status` can be Outdated, Updating or Failed (obj 264 L220011-220015) — Core Concepts | A pre-grant status check in the elevation flow |
+| Are user access policies enabled in this org? | `IsRevoked` exists only when they are (obj 264 L219761) — gotchas.md Gotcha 5 | Review queries that select only fields the org actually has |
+| How long must Setup change evidence be kept? | Setup Audit Trail keeps at least 180 days (obj 264 L264576) and refuses aggregates — gotchas.md Gotcha 6 | An export cadence shorter than the retention floor |
+| Does any delegated-admin group list a privileged profile or permission set as assignable? | Delegated admins can assign whatever those lists hold (api_meta 264 L53427) — gotchas.md Gotcha 7 | Delegate group lists reviewed with the same permission test as the inventory |
+
+A proper configuration adds a measured baseline, an elevation path that ends by itself, and evidence that outlives the audit window; "just removing a few admins" leaves no way to prove the count went down or stays down.
+
+---
+
+## Core Concepts
+
+### Every profile is also a permission set
+
+Salesforce maintains one underlying permission set per profile, flagged `IsOwnedByProfile = true` ("the permission set is owned by a profile", obj 264 L219419). That single fact decides whether your inventory query is correct: because a user is assigned to their profile's permission set, a query over `PermissionSetAssignment` captures **both** profile-granted and permission-set-granted permissions. Adding `WHERE PermissionSet.IsOwnedByProfile = false` — a very natural-looking filter — deletes the profile half of your findings.
+
+### Permissions that are admin-equivalent in practice
+
+| Permission field (`PermissionSet.*`) | Why it is privileged |
+|---|---|
+| `PermissionsModifyAllData` | Read, edit, and delete every record of every object, bypassing sharing and most FLS |
+| `PermissionsViewAllData` | Read every record of every object; sufficient for a full data exfiltration |
+| `PermissionsCustomizeApplication` | Change metadata, including automation that can move data or grant access |
+| `PermissionsManageUsers` | Create users, reset passwords, and reassign profiles — a route to any other permission |
+| `PermissionsDataExport` / `PermissionsExportReport` | Bulk extraction paths that leave a different trail from record-level reads |
+| `PermissionsApiEnabled` | Converts every permission above into a scriptable one |
+| `PermissionsPasswordNeverExpires` | Turns a compromised credential into a permanent one |
+
+The permission API names match the list Salesforce itself treats as sensitive in event monitoring — `ModifyAllData`, `ViewAllData`, `ManageUsers`, `PasswordNeverExpires` among them (platform_events 264 L25307-25318). This skill uses **Customize Application AND Modify All Data** as the admin signature and the OR of the first four as the wider privileged set. UNVERIFIED (2026-10-20): the "Why it is privileged" column and the attribution of that signature to a Salesforce-published query come from a developer blog, not the corpus.
+
+### Assignment expiration: what is documented and what is not
+
+`PermissionSetAssignment.ExpirationDate` is a `dateTime` field with Create, Filter, Nillable, Sort and Update properties, available in API 52.0 and later (obj 264 L219739-219745). What happens at expiry is the part that catches people:
+
+| Behaviour | Consequence stated in Help (see marker below) |
+|---|---|
+| The assignment row | Expired assignments are treated as soft-deletes |
+| Ordinary SOQL | Does not return user assignment information for assignments that have expired |
+| Retrieving them anyway | Requires the `ALL ROWS` clause |
+| The user | Remains assigned to the permission set or group, but cannot access its permissions |
+| Other grants | Permissions from non-expiring permission sets, groups, or the profile still apply |
+| What cannot expire | Profiles and permission set licenses — expiration is not supported for either |
+
+The "cannot access its permissions" half of the user row is grounded: `PermissionSetEvent.PermissionExpirationList` carries the `ExpirationDate` timestamps that specify "when added permissions will be revoked" (platform_events 264 L25278-25279). UNVERIFIED (2026-10-20): every other row of this table except the field's existence is Help-only — the object reference's only `ALL ROWS` example is for revoked assignments (`WHERE IsRevoked=true ALL ROWS`, obj 264 L219899-219901), not expired ones. Test the expiry behaviour on a known expired grant before relying on it.
+
+The practical trap: an "expired elevations" report written as ordinary SOQL may return zero rows and read as a clean bill of health.
+
+### Session-based activation is the tightest elevation primitive
+
+A permission set (`hasActivationRequired`, API 37.0+, api_meta 264 L97521-97523) or permission set group (`HasActivationRequired`, API 53.0+, obj 264 L219948-219954) marked **Session Activation Required** "requires an associated active session". Activation is represented by `SessionPermSetActivation` — "a permission set assignment activated during an individual user session" (obj 264 L264375) — which ties `UserId` and `PermissionSetId` / `PermissionSetGroupId` to an `AuthSessionId`. It supports `create()` and `delete()` (L264381): the reference's own Apex example inserts a `SessionPermSetActivation` to activate and deletes it to deactivate (L264509-264514, L264542-264543). Flow offers the `activateSessionPermSet` and `deactivateSessionPermSet` actions for the running user (api_meta 264 L71098, L71249). UNVERIFIED (2026-10-20): that one flow cannot both activate and deactivate is Help-only.
+
+Compared with a four-hour `ExpirationDate`, session activation removes the window entirely: the grant dies with the session rather than at a wall-clock time the user may not still be present for.
+
+### Permission set group recalculation status is a precondition of the grant
+
+`PermissionSetGroup.Status` takes the values **Updated** (current), **Outdated** (requires recalculation), **Updating** (recalculating), and **Failed** (obj 264 L220011-220015). Check `Status` as part of the grant, not as part of the post-mortem. UNVERIFIED (2026-10-20): that an assignment to an `Outdated` or `Failed` group succeeds without error and withholds the permissions is not stated in the corpus.
+
+---
+
+## Common Patterns
+
+### Pattern 1: Standing-privilege inventory that does not lie
+
+**When to use:** the first question in every PAM engagement — who actually holds admin-equivalent access right now.
+
+```sql
+-- Admin signature: Customize Application AND Modify All Data, from profile OR permission set
+SELECT Assignee.Id, Assignee.Username, Assignee.Name,
+       PermissionSet.Label, PermissionSet.IsOwnedByProfile, PermissionSet.Profile.Name
+FROM PermissionSetAssignment
+WHERE PermissionSet.PermissionsCustomizeApplication = true
+  AND PermissionSet.PermissionsModifyAllData = true
+  AND Assignee.IsActive = true
+```
+
+```sql
+-- Wider privileged population: any one of the four high-impact permissions
+SELECT Assignee.Id, Assignee.Username, Assignee.Name,
+       PermissionSet.PermissionsModifyAllData, PermissionSet.PermissionsCustomizeApplication,
+       PermissionSet.PermissionsManageUsers, PermissionSet.PermissionsViewAllData,
+       PermissionSet.IsOwnedByProfile
+FROM PermissionSetAssignment
+WHERE (PermissionSet.PermissionsModifyAllData = true
+       OR PermissionSet.PermissionsCustomizeApplication = true
+       OR PermissionSet.PermissionsManageUsers = true
+       OR PermissionSet.PermissionsViewAllData = true)
+  AND Assignee.IsActive = true
+```
+
+`IsOwnedByProfile` is selected, never filtered — it tells you *how* each user got the permission so you know whether the remediation is a profile change or an assignment removal.
+
+**Why not query `PermissionSet` alone:** that returns the permission sets that carry the permission, not the people who hold it. A permission set with the flag and zero assignees is not a finding.
+
+### Pattern 2: Time-boxed elevation with an honest expiry report
+
+**When to use:** a request-and-approve workflow grants an elevated permission set group for a fixed window.
+
+```apex
+// Grant. ExpirationDate is a dateTime, so a relative offset is valid.
+insert new PermissionSetAssignment(
+    AssigneeId          = requesterId,
+    PermissionSetGroupId = elevatedGroupId,
+    ExpirationDate      = System.now().addHours(4)
+);
+```
+
+```sql
+-- Review. ALL ROWS is the safe default; whether expired rows need it is UNVERIFIED (2026-10-20).
+-- Add IsRevoked only if user access policies are enabled (obj 264 L219761).
+SELECT Id, ExpirationDate, Assignee.Name, PermissionSet.Name
+FROM PermissionSetAssignment
+WHERE ExpirationDate != null
+ALL ROWS
+```
+
+Before granting, confirm the target group is usable:
+
+```sql
+SELECT Id, DeveloperName, Status, HasActivationRequired FROM PermissionSetGroup
+WHERE DeveloperName = 'PAM_Elevated'
+```
+
+Treat anything other than `Status = 'Updated'` as not ready to grant against.
+
+**Why not a custom revoke scheduler:** the platform expires the assignment for you, and a scheduled job that fails silently leaves standing privilege behind — the exact outcome PAM exists to prevent.
+
+### Pattern 3: Break-glass that produces evidence
+
+**When to use:** two named humans need a path to full admin when normal elevation is unavailable.
+
+1. Two accounts, each mapped to one named person. Never shared — a shared account destroys attribution, which is the only thing break-glass is for.
+2. MFA and network restrictions on both, and no standing membership in any other privileged group.
+3. Detection on use, not on request: a Transaction Security policy on the Login event for those user IDs, notifying a channel the security team actually watches. `security/transaction-security-policies` owns the policy mechanics.
+4. Every use opens a review with a mandatory `SetupAuditTrail` extract for the window, correlated with `LoginHistory` for the same period.
+5. Credential rotation on a fixed schedule and immediately after each use.
+
+**Why detection beats approval:** an approval gate that stands between an engineer and a production incident gets bypassed. Detection is unbypassable, and it is what the auditor asks for.
+
+---
+
+## Decision Guidance
+
+| Situation | Recommended approach | Reason |
+|---|---|---|
+| Elevation for a single task in one sitting | Session-based permission set group | Grant dies with the session; no wall-clock window to leak |
+| Elevation spanning hours or a shift | `PermissionSetAssignment.ExpirationDate` | Platform-enforced expiry, no custom scheduler to fail |
+| Permanent elevation for a role | Neither — redesign the role | Standing privilege is the thing PAM exists to remove |
+| Need to prove who had admin last quarter | `SetupAuditTrail` plus Event Monitoring archive | Setup Audit Trail covers at least the last 180 days |
+| Need to expire a profile or a permission set license | Not supported (UNVERIFIED (2026-10-20): Help-only) | `ExpirationDate` is documented for permission set and group assignments (obj 264 L219744-219745) |
+| Auditing revoked (and expired) assignments | SOQL with `ALL ROWS` | Documented for revoked rows (obj 264 L219899-219901); the expired case is UNVERIFIED (2026-10-20) |
+| Emergency full admin | Break-glass with detection | Attribution and alerting matter more than a pre-approval step |
+
+---
+
+## Recommended Workflow
+
+1. Run the standing-privilege inventory (Pattern 1) and classify every row as profile-granted or assignment-granted. This is the baseline everything else is measured against.
+2. Define tiers: daily-admin (no Modify All Data), elevated (time-boxed or session-based), break-glass (two named humans). Record which permissions live in each.
+3. Move elevated access into a permission set group and pick the expiry mechanism — session activation for task-scoped work, `ExpirationDate` for shift-scoped work.
+4. Confirm the group's `Status` is `Updated` and that `psaExpirationUIEnabled` is on (api_meta 264 L132107-132111) before the first real grant.
+5. Build detection: Transaction Security on break-glass login, a scheduled `ALL ROWS` review of expiring assignments, a `SetupAuditTrail` extract routed off-platform before the 180-day floor, and `python3 scripts/check_privileged_access_management.py --manifest-dir <force-app>` on every permission-set change.
+6. Re-run Pattern 1 quarterly and diff against the baseline. The metric is the count of standing admin-equivalent holders, and it should only go down.
+
+---
+
+## Review Checklist
+
+- [ ] Inventory query selects `IsOwnedByProfile` rather than filtering on it
+- [ ] Expiring-assignment reports use `ALL ROWS`, and were verified to return non-zero on a known expired grant (the expiry behaviour is UNVERIFIED (2026-10-20) until that test passes)
+- [ ] `psaExpirationUIEnabled` is on, and nobody is relying on expiration for a profile or a permission set license
+- [ ] Elevated permission set group `Status` is `Updated` at grant time
+- [ ] Break-glass accounts are one-per-named-human, MFA-enforced, and alert on login
+- [ ] `SetupAuditTrail` is exported off-platform on a cadence shorter than its 180-day floor
+- [ ] Every standing admin-equivalent holder has a documented owner and review date
+- [ ] Session-based activation was evaluated before defaulting to a time-boxed assignment
+
+---
+
+## Deep Dives
+
+`references/examples.md` — inventory, time-boxed elevation, break-glass detection. `references/gotchas.md` — seven failure modes, including the two that make a clean audit report meaningless. `references/llm-anti-patterns.md` — six wrong/right query pairs. `templates/privileged-access-management-template.md` — the PAM runbook worksheet.
+
+---
+
+## Output Artifacts
+
+| Artifact | Description |
+|---|---|
+| Standing-admin inventory | One row per active user holding an admin-equivalent permission, with the grant path and `IsOwnedByProfile` |
+| Tier definitions | Daily-admin / elevated / break-glass, each with its permission list and expiry mechanism |
+| Elevation record | Request, approver, grant timestamp, expiry mechanism, and the observed revocation |
+| Break-glass procedure | Named holders, invocation steps, detection wiring, and the mandatory post-use review |
+
+---
+
+## Related Skills
+
+- `admin/permission-set-group-composition` — owns permission set group design, muting, and composition; this skill only consumes the group as an elevation unit.
+- `security/transaction-security-policies` — owns the policy that detects break-glass login in real time.
+- `security/event-monitoring` — owns event log retention and the archive that outlives Setup Audit Trail.
+- `admin/permission-sets-vs-profiles` — owns the profile-to-permission-set decomposition that shrinks the standing-privilege baseline in the first place.
+
+
+=== privileged-access-management/references/llm-anti-patterns.md ===
+# LLM Anti-Patterns — Privileged Access Management (PAM)
+
+## Anti-Pattern 1: Filtering the inventory on `IsOwnedByProfile = false`
+
+**What the LLM generates:**
+
+```sql
+-- WRONG - drops every admin whose privilege comes via their profile
+SELECT Assignee.Username, PermissionSet.Label
+FROM PermissionSetAssignment
+WHERE PermissionSet.PermissionsModifyAllData = true
+  AND PermissionSet.IsOwnedByProfile = false
+```
+
+**Why it happens:** the `PermissionSet` reference has an example ending `WHERE IsOwnedByProfile = FALSE`, meant to list sets that are not profile-owned. Transplanted into an assignment audit it removes half the answer: in API version 25.0 and later every profile has a permission set holding its permissions.
+
+**Correct pattern:**
+
+```sql
+-- RIGHT - select the grant path, never filter on it
+SELECT Assignee.Username, PermissionSet.IsOwnedByProfile, PermissionSet.Profile.Name
+FROM PermissionSetAssignment
+WHERE PermissionSet.PermissionsModifyAllData = true AND Assignee.IsActive = true
+```
+
+**Detection hint:** `IsOwnedByProfile` in a `WHERE` clause is wrong by construction. It belongs in `SELECT`, where it says whether remediation is a profile change or an assignment removal.
+
+---
+
+## Anti-Pattern 2: Querying `UserPermissionAccess` for somebody else
+
+**What the LLM generates:**
+
+```apex
+// WRONG - UserPermissionAccess has no user field to filter on
+Boolean targetHasMad = [SELECT PermissionsModifyAllData
+                        FROM UserPermissionAccess
+                        WHERE UserId = :targetUserId].PermissionsModifyAllData;
+```
+
+**Why it happens:** the name reads like a per-user access matrix. It represents "the permissions accessibility for a current user", supports only `describeSObjects()` and `query()`, and is aimed at API users without `PermissionsViewSetup` checking their own session.
+
+**Correct pattern:**
+
+```apex
+// RIGHT - the assignment graph is queryable for any user
+List<PermissionSetAssignment> hits = [
+    SELECT Id FROM PermissionSetAssignment
+    WHERE AssigneeId = :targetUserId AND PermissionSet.PermissionsModifyAllData = true];
+Boolean targetHasMad = !hits.isEmpty();
+```
+
+**Detection hint:** a `UserPermissionAccess` query filtered by user is fabricated. The replacement needs View Setup and Configuration, Assign Permission Sets, or Manage User to return rows.
+
+---
+
+## Anti-Pattern 3: Aggregating `SetupAuditTrail`
+
+**What the LLM generates:**
+
+```sql
+-- WRONG - aggregate queries are not supported on this object
+SELECT COUNT(Id), CreatedBy.Username
+FROM SetupAuditTrail
+WHERE CreatedDate = LAST_N_DAYS:30
+GROUP BY CreatedBy.Username
+```
+
+**Why it happens:** "changes per admin" is the first question after a break-glass event, and every other audit object supports `GROUP BY`. The reference: `SELECT count() FROM SetupAuditTrail` works, `SELECT count(Id) FROM SetupAuditTrail` fails. It is also "not a supported standard controller".
+
+**Correct pattern:**
+
+```apex
+// RIGHT - select rows, aggregate outside SOQL
+Map<String, Integer> byAdmin = new Map<String, Integer>();
+for (SetupAuditTrail r : [SELECT CreatedBy.Username, DelegateUser
+                          FROM SetupAuditTrail WHERE CreatedDate = LAST_N_DAYS:30]) {
+    String who = r.DelegateUser != null ? r.DelegateUser : r.CreatedBy.Username;
+    byAdmin.put(who, byAdmin.containsKey(who) ? byAdmin.get(who) + 1 : 1);
+}
+```
+
+**Detection hint:** `GROUP BY`, `COUNT(Id)`, or `standardController="SetupAuditTrail"` will not run; supported calls are `query()` and `retrieve()` only.
+
+---
+
+## Anti-Pattern 4: Updating a `PermissionSetAssignment` to re-target a grant
+
+**What the LLM generates:**
+
+```apex
+// WRONG - AssigneeId and PermissionSetGroupId are Create-only
+PermissionSetAssignment psa = [SELECT Id FROM PermissionSetAssignment WHERE Id = :assignmentId];
+psa.AssigneeId = newOwnerId;  psa.PermissionSetGroupId = newGroupId;
+update psa;
+```
+
+**Why it happens:** the object lists `update()` among its supported calls, inviting an updateable-looking edit. The field properties say otherwise: `AssigneeId`, `PermissionSetId`, and `PermissionSetGroupId` are Create-only. Only `ExpirationDate` and `IsRevoked` carry Update; the usage section says to delete the existing assignment and insert a new one.
+
+**Correct pattern:**
+
+```apex
+// RIGHT - re-target = delete + insert
+delete [SELECT Id FROM PermissionSetAssignment WHERE Id = :assignmentId];
+insert new PermissionSetAssignment(AssigneeId = newOwnerId,
+                                   PermissionSetGroupId = newGroupId,
+                                   ExpirationDate = System.now().addHours(4));
+```
+
+**Detection hint:** an `update` touching anything but `ExpirationDate` or `IsRevoked` here is wrong, and nothing warns you.
+
+---
+
+## Anti-Pattern 5: Folding a session-based permission set into a group "to simplify assignment"
+
+**What the LLM generates:**
+
+```text
+# WRONG - activation requirement on the member, not on what you assign
+PermissionSet      PAM_Elevated_Session  HasActivationRequired = true
+PermissionSetGroup PAM_Elevated          HasActivationRequired = false  (contains it)
+Assign PAM_Elevated -> permissions apply all session, no activation, no error
+```
+
+**Why it happens:** grouping is standard advice for reducing assignment sprawl. The `SessionPermSetActivation` reference notes the exception: session-based permission sets included in a permission set group do not require session-based activation for users assigned to the group.
+
+**Correct pattern:**
+
+```sql
+-- RIGHT - HasActivationRequired belongs on the group (API 53.0+)
+SELECT Id, DeveloperName, Status, HasActivationRequired
+FROM PermissionSetGroup
+WHERE DeveloperName = 'PAM_Elevated'
+```
+
+**Detection hint:** a design that sets `HasActivationRequired` on a permission set and then assigns a group has no session control. Check the flag on the record the assignment points at, and confirm `Status` is `Updated`.
+
+---
+
+## Anti-Pattern 6: Putting per-object permission names on `PermissionSet`
+
+**What the LLM generates:**
+
+```sql
+-- WRONG - these are ObjectPermissions fields, not PermissionSet fields
+SELECT Id, Name
+FROM PermissionSet
+WHERE PermissionsModifyAllRecords = true OR PermissionsViewAllRecords = true
+```
+
+**Why it happens:** org-wide and per-object permissions are named almost identically. `PermissionsModifyAllRecords` and `PermissionsViewAllRecords` are real, but live on `ObjectPermissions`, scoped by `SobjectType`, and the first also requires `PermissionsRead`, `PermissionsDelete`, `PermissionsEdit`, and `PermissionsViewAllRecords`. `PermissionSet` exposes one boolean per permission, whose count varies by org and license type.
+
+**Correct pattern:**
+
+```sql
+-- RIGHT - OR in the org-wide grant, as the reference's own example does
+SELECT ParentId, Parent.Label, SobjectType, Parent.PermissionsModifyAllData
+FROM ObjectPermissions
+WHERE SobjectType = 'Opportunity'
+  AND (PermissionsModifyAllRecords = true OR Parent.PermissionsModifyAllData = true)
+```
+
+**Detection hint:** run `describeSObjects()` against `PermissionSet` before accepting any permission field name — the reference names it as the way to get the list. A "who has full access to X" answer omitting "Modify All Data" is incomplete.
+
+</skill_package>
+
+When a permission set assignment with an ExpirationDate reaches that date, what happens to the permissions?

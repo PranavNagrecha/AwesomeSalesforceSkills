@@ -1,0 +1,28 @@
+The user loses access to the permissions, but the assignment itself stays in place. The skill's own text puts it this way:
+
+- **The user** remains assigned to the permission set or group but cannot access its permissions.
+- **Other grants** are unaffected. Permissions from non-expiring permission sets, groups, or the profile still apply.
+- **The assignment row** is treated as a soft-delete.
+- **Ordinary SOQL** does not return expired assignments. You need `ALL ROWS` to see them.
+- **What can't expire:** profiles and permission set licenses don't support expiration.
+
+**What is verified and what isn't.** Only part of this is grounded in the corpus:
+
+- `PermissionSetAssignment.ExpirationDate` exists as a `dateTime` field from API 52.0.
+- `PermissionSetEvent.PermissionExpirationList` carries the timestamps for "when added permissions will be revoked". That supports the claim that the permissions are withdrawn at expiry.
+- The soft-delete behavior, the `ALL ROWS` requirement, the row staying assigned, and the "cannot expire profiles or permission set licenses" rule come from Help only. The skill marks them UNVERIFIED (2026-10-20).
+- The object reference's only `ALL ROWS` example is for revoked assignments (`IsRevoked = true ALL ROWS`), not expired ones.
+- The skill also doesn't say what `ExpirationDate` does when `UserManagementSettings.psaExpirationUIEnabled` is off.
+
+**Practical consequences:**
+
+1. Don't build an "expired elevations" report with ordinary SOQL. It may return zero rows, which looks like a clean result when it isn't.
+2. Use `ALL ROWS` for any review of expiring or expired assignments:
+   ```sql
+   SELECT Id, ExpirationDate, Assignee.Name, PermissionSet.Name
+   FROM PermissionSetAssignment
+   WHERE ExpirationDate != null
+   ALL ROWS
+   ```
+3. Before relying on any of this, test it on a known expired grant. Confirm both that the user actually loses the permissions and that your report returns that row.
+4. For time-boxed elevation, expect the user to still show as "assigned" in some views even though the permissions are gone. Judge effective access by the permissions, not by the presence of the assignment.

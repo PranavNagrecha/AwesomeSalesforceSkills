@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "An Apex method exposed to JavaScript remoting must be annotated with **`@RemoteAction`** and declared **`static`**, and it must be **`global`** or **`public`**.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0592651,
+    "duration_s": 2.302,
+    "input_tokens": 7186,
+    "output_tokens": 77
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"An Apex method exposed to JavaScript remoting must be annotated with **`@RemoteAction`** and declared **`static`**, and it must be **`global`** or **`public`**.\"}",
+  "prompt_sha": "7274f10c40cbfb4a"
+}

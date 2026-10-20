@@ -1,0 +1,1 @@
+Can an admin turn off the Secure Guest User Record Access setting (enableSecureGuestAccess) in a current org?

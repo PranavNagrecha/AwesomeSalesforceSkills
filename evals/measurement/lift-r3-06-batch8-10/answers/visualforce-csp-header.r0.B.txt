@@ -1,0 +1,12 @@
+**No, not automatically.** The skill says trusted-site restrictions apply to a custom Visualforce page only when the page sets `cspHeader="true"` on `<apex:page>`. Without that attribute, the page is not held to your org's Trusted URL list.
+
+Caveats on how far to trust this:
+
+- **Only a one-line reference supports it.** The Questions-to-Ask table cites "Gotcha 5" for this point, but the Gotchas section isn't in the package I was given. That table row is my only source, and it carries no corpus citation or UNVERIFIED marker. Confirm `cspHeader` and its default behavior against the Visualforce Developer Guide and the Trusted URLs/CSP documentation before you write it into a finding.
+- **Tooling.** The skill points to `CspTrustedSite` metadata records with context `VisualForce` as the place to allow external script, style, or other hosts once `cspHeader` is true.
+
+**What to do in practice**
+1. For each page, check whether `<apex:page>` sets `cspHeader="true"`. If it doesn't, the org's trusted-site list isn't restricting that page, and external `<apex:includeScript>` or `<apex:stylesheet>` sources load unrestricted.
+2. Where you turn it on, first inventory every external host the page loads from. Then add `CspTrustedSite` entries (context `VisualForce`), or move the assets into static resources, so you don't break the page.
+3. Test as the lowest-privilege audience (community or guest) and watch the browser console for CSP violations.
+4. Treat enabling CSP as hardening for the *harden-in-place* set, especially pages exposed to external users. It complements FLS and CSRF fixes rather than replacing them.

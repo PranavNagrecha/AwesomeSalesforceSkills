@@ -1,0 +1,1 @@
+When a permission set assignment with an ExpirationDate reaches that date, what happens to the permissions?

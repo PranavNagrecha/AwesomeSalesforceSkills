@@ -1,0 +1,25 @@
+Guest user sharing rules grant **Read Only** access, and nothing more.
+
+**Details**
+
+- **Access level:** Read Only is the only option. The sharing rule UI doesn't offer Read/Write for guest user sharing rules. This is a deliberate platform restriction, not a configuration gap.
+- **Object scope:** They work on standard objects that support sharing rules (e.g., Account, Contact, Case, Lead, Opportunity) and on custom objects. The object's OWD must be Private (or otherwise more restrictive than the access being opened) for the rule to matter.
+- **Criteria-based only:** You can't use owner-based guest sharing rules. Guest user sharing rules must be **criteria-based**, which prevents sharing "everything owned by X" with unauthenticated visitors. You choose records by field criteria (e.g., `Public_Visible__c = true`).
+- **Target:** The rule shares with a site's guest user (the "Site Guest User" profile-based user), selected as a public group or "Guest User" entry for the site.
+- **Why it's restricted:** Since Winter '21, guest users can no longer be granted View All / Modify All, and the Secure Guest User Record Access setting enforces that guests only get record access via guest sharing rules, not via ownership, manual shares, or Apex-managed sharing in the default case.
+
+**What it does not give you**
+
+- No create, edit, or delete via sharing. Those come from the guest profile's object permissions (and create is the only write-type permission you can realistically give a guest; Edit and Delete are not available on guest profiles for standard objects in current releases).
+- No access to fields the guest profile's field-level security hides. A sharing rule opens record access only; FLS and object CRUD still apply.
+- No View All / Modify All bypass.
+
+**Practical guidance**
+
+1. Set the OWD for the object to Private (external OWD too, where applicable).
+2. Give the guest profile Read on the object and Read on only the needed fields.
+3. Create a criteria-based guest sharing rule with a tightly scoped filter, using a dedicated flag field rather than broad criteria.
+4. Review the rule as public exposure: assume anything it matches is readable by anyone on the internet who can reach the site.
+5. If a guest needs to *write* data (e.g., submit a case or lead form), do it through create permission on the profile or through an Apex controller running `without sharing` with careful, explicit validation. Don't use sharing rules for it.
+
+Check your org's current release notes if you depend on exact UI behavior, but Read Only and criteria-based have been the stable rules for guest sharing for years.

@@ -1,0 +1,18 @@
+`JSINHTMLENCODE(x)` is equivalent to `JSENCODE(HTMLENCODE(x))`.
+
+**Order of application:**
+1. **HTMLENCODE is applied first** (the inner function). It converts HTML-special characters to entities, e.g. `<` becomes `&lt;`, `>` becomes `&gt;`, `&` becomes `&amp;`, `"` becomes `&quot;`.
+2. **JSENCODE is applied second** (the outer function). It escapes characters that are special in JavaScript string literals, such as adding backslashes before quotes and escaping backslashes, newlines, etc. This includes the backslashes and `&`/`;` produced as part of the HTML entities only insofar as they are JS-significant (the `&` and `;` themselves are left as-is, but any quote or backslash characters would be escaped).
+
+**Why it matters:** This is the right encoding when you place a merge field inside a JavaScript string that will later be inserted into the DOM as HTML, for example:
+
+```html
+<script>
+  var name = '{!JSINHTMLENCODE(Account.Name)}';
+  document.getElementById('out').innerHTML = name;
+</script>
+```
+
+The value is first made safe as HTML (so `innerHTML` can't be used to inject markup), then made safe as a JS string literal (so it can't break out of the quotes). Using plain `JSENCODE` alone in an `innerHTML` context would leave you vulnerable to XSS, since the JS escaping doesn't neutralize HTML tags.
+
+Note that the reverse nesting, `HTMLENCODE(JSENCODE(x))`, is a different thing and is not what `JSINHTMLENCODE` does. Likewise, `JSINHTMLENCODE` is for JS strings that get interpreted as HTML, whereas for a JS string in a plain `<script>` context that is never rendered as HTML, `JSENCODE` is the appropriate choice.

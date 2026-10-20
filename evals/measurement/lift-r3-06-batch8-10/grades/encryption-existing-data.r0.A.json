@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "Enabling encryption on a field only encrypts data written from that point on (new records and updated values). Existing values stay in plaintext until they're re-saved.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.059055500000000004,
+    "duration_s": 1.697,
+    "input_tokens": 7185,
+    "output_tokens": 67
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"Enabling encryption on a field only encrypts data written from that point on (new records and updated values). Existing values stay in plaintext until they're re-saved.\"}",
+  "prompt_sha": "859000bb5f7b44c6"
+}

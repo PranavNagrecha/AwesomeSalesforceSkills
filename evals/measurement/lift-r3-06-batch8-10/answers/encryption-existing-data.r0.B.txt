@@ -1,0 +1,20 @@
+**Short answer: yes, mostly, but not instantly, and not everywhere.** Turning on encryption for a field does not leave existing values in plaintext. A background process picks them up. There are two exceptions you need to plan for.
+
+**What gets encrypted**
+- A background encryption process applies the active key material to your existing data (api_meta 264 L127877-127882).
+- The security guide says that once Platform Encryption is on, existing field values and the History related-list rows (e.g. Account History) get encrypted too (secguide 262 L4899-4902).
+
+**What can be missed**
+1. **Field history and feed duplicates** are skipped unless `PlatformEncryptionSettings.enableEncryptFieldHistory` is `true`. It defaults to false (api_meta 264 L127877-127882).
+2. **`FieldHistoryArchive` copies** that were already archived stay unencrypted until Salesforce re-archives them (secguide 262 L4903-4904). If you use Field Audit Trail, this is the one that bites in an audit.
+
+**Practical steps**
+- Don't treat "policy enabled" as "done." Confirm background encryption has finished for each object before you sign off.
+- Make an explicit decision about history, feed and archive copies, and record it in your rollout runbook.
+- If you rotate to a new key later, the same background process re-applies the active key to existing data. The old secret stays `Archived`, which means it can still decrypt but can't encrypt new data (obj 264 L283779-283781).
+- Test in a sandbox first, and check which queries, reports and sharing rules depend on the fields. Your scheme choice (probabilistic vs deterministic) determines whether filtering on those fields survives.
+
+**Not verified from the corpus**
+The skill marks the Setup button that kicks off background encryption, and its performance impact on large objects, as Help-only. I can't give you grounded detail on either, so check the current Help docs before scheduling it on a big org.
+
+One more caution: older advice sometimes says "enabling only encrypts new writes, so you must run a re-encryption job." That is incomplete. The reverse claim, "everything including history is encrypted," is also wrong, for the two reasons above.

@@ -1,0 +1,12 @@
+`JSINHTMLENCODE(x)` is equivalent to `JSENCODE(HTMLENCODE(x))`.
+
+**Order:** the HTML encoding is applied first (the inner call), then the JavaScript encoding is applied to that result (the outer call). The name reads "JS in HTML", which tempts people to assume JS goes first, but that is backwards.
+
+**When to use it:** in HTML attributes that contain JavaScript, such as inline event handlers (`onclick="..."`). The browser first HTML-decodes the attribute value and then parses it as JavaScript, so the value needs both layers of encoding, applied in the reverse order of how the browser decodes them.
+
+```html
+<!-- Inline handler: JavaScript inside an HTML attribute -->
+<a href="#" onclick="doSomething('{!JSINHTMLENCODE(contact.LastName)}')">Go</a>
+```
+
+**Related contrast:** inside a `<script>` block, use `JSENCODE()` alone. `HTMLENCODE` does not protect a JavaScript string literal there, because script contents are raw text and are not entity-decoded. This follows the Apex Developer Guide's description of the encoding functions.

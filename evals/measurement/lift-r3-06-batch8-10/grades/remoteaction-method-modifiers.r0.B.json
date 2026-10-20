@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "A JavaScript remoting method must be annotated with `@RemoteAction`, and it must be **`static`** and either **`global`** or **`public`**.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.057139100000000005,
+    "duration_s": 3.653,
+    "input_tokens": 6925,
+    "output_tokens": 67
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"A JavaScript remoting method must be annotated with `@RemoteAction`, and it must be **`static`** and either **`global`** or **`public`**.\"}",
+  "prompt_sha": "59d44303dc4a19fa"
+}

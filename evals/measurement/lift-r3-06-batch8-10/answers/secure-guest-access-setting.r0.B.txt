@@ -1,0 +1,24 @@
+**No.** In a current org an admin cannot turn it off. `enableSecureGuestAccess` is always true.
+
+Per the Metadata API reference (api_meta 264 L130643-130652):
+
+- The setting is "always true, even if it reads false."
+- This has been applied "retroactively back to API version 47.0."
+
+So the field can still read `false` in metadata, for example in an older retrieve or a legacy deployment package. That value is vestigial and has no effect on behavior. Don't treat a `false` as a finding, and don't try to deploy `false` to relax guest access. Ignore the flag when auditing and look at the real controls.
+
+**What secure guest access enforces (secguide 262)**
+
+- Guest org-wide defaults are Private for all objects and can't be changed (L2868-2869).
+- A guest user sharing rule is the only way to grant record access, and it can only grant Read Only (L2986-2987).
+
+**What an admin can still change, so audit these**
+
+- **Guest profile permissions.** Legacy object grants may still be on for older sites. The skill marks the pre-Spring '21 carry-over details as UNVERIFIED in the corpus, so confirm them in the org.
+- **Guest user sharing rules.** Each rule opens every matching record to anyone (secguide 262 L3068-3069), so each one needs a documented business reason.
+- **Sharing-rule scope.** By default these rules include records owned by guest users (secguide 262 L3247-3248). Move guest-created records to an internal owner (L9630-9632).
+- **API Enabled.** Leave it unchecked on the guest profile (L9629).
+- **Apex sharing mode.** This is the real remaining bypass. A `without sharing` class, or a bare `@RestResource` class at API 66.0 or earlier (which defaults to `without sharing`, apexdev 264 L18941-18942), can still expose records regardless of the setting.
+- **`WITH SECURITY_ENFORCED`.** It doesn't compile at API 67.0+ (apexdev 264 L11926). Migrate those queries to `with sharing` plus `WITH USER_MODE`.
+
+If someone asks you to disable the setting to fix a guest access problem, the fix is a sharing rule or a narrowly scoped Apex path, never the flag.

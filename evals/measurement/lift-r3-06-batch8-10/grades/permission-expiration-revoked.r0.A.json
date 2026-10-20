@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "When the date arrives, Salesforce treats the assignment as expired and the user loses whatever that permission set alone granted.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.060346699999999996,
+    "duration_s": 2.624,
+    "input_tokens": 7273,
+    "output_tokens": 96
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"When the date arrives, Salesforce treats the assignment as expired and the user loses whatever that permission set alone granted.\"}",
+  "prompt_sha": "b2bcfeecc5b8c7ef"
+}

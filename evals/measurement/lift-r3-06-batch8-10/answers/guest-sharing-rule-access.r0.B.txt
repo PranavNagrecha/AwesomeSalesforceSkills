@@ -1,0 +1,12 @@
+**Read Only, and nothing else.**
+
+A guest user sharing rule can only grant Read Only access. The security guide says a guest user sharing rule is "the only way to grant record access" to guest users and can "only grant Read Only access" (secguide 262 L2986-2987). The metadata API agrees: on `SharingGuestRule`, `accessLevel` "can be set only to Read" (api_meta 264 L132881).
+
+What this means in practice:
+
+- **No edit, create, or delete through sharing.** A guest can't update other users' records via a sharing rule. Any write capability has to come from somewhere else, such as object permissions on the guest profile, and that is a separate decision to audit.
+- **Guest org-wide defaults are Private for every object** and can't be changed (secguide 262 L2868-2869). The sharing rule is the only door to record visibility.
+- **Each rule is broad.** It opens every record matching its criteria to anyone who visits the site (secguide 262 L3068-3069). In an audit, each rule needs a business justification, and a rule granting "all records" of a sensitive object is a finding.
+- **Rules can match guest-owned records.** By default, sharing rules include records owned by authenticated users, guest users, and queues (secguide 262 L3247-3248). The guidance is to move guest-created records to an internal owner (secguide 262 L9630-9632).
+
+Read access is still the exposure point. Apex running `without sharing` can bypass these rules entirely, so check the sharing rules and the guest-reachable Apex together.

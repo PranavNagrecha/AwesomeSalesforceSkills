@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "The user loses access to the permissions, but the assignment itself stays in place.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058916,
+    "duration_s": 1.289,
+    "input_tokens": 7263,
+    "output_tokens": 41
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"The user loses access to the permissions, but the assignment itself stays in place.\"}",
+  "prompt_sha": "403f89c66f9299c6"
+}

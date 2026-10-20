@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "A background encryption process applies the active key material to your existing data (api_meta 264 L127877-127882).",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0591652,
+    "duration_s": 3.029,
+    "input_tokens": 7227,
+    "output_tokens": 51
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"A background encryption process applies the active key material to your existing data (api_meta 264 L127877-127882).\"}",
+  "prompt_sha": "27e18fdd0f1bea1f"
+}

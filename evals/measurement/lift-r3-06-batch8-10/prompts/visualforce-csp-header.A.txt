@@ -1,0 +1,1 @@
+Does a custom Visualforce page automatically get the org's Content Security Policy restricting it to trusted URLs?

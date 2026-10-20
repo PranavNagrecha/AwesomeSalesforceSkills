@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "In a current org an admin cannot turn it off. `enableSecureGuestAccess` is always true.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058904000000000005,
+    "duration_s": 1.782,
+    "input_tokens": 7239,
+    "output_tokens": 50
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"In a current org an admin cannot turn it off. `enableSecureGuestAccess` is always true.\"}",
+  "prompt_sha": "46b295387cd978e7"
+}

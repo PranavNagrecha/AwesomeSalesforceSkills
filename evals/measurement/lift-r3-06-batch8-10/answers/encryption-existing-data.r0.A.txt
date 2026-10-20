@@ -1,0 +1,17 @@
+**No, not automatically.** Enabling encryption on a field only encrypts data written from that point on (new records and updated values). Existing values stay in plaintext until they're re-saved.
+
+**What to do after enabling**
+
+1. Go to **Setup → Platform Encryption → Encryption Statistics** (the exact label may vary by release). Look for the object and click **Synchronize** (or ask Salesforce Support to run the background encryption service if you have a very large volume). This kicks off a background job that re-encrypts existing records using the active tenant secret.
+2. Wait for the job to finish. Duration depends on record volume, and the status shows in Encryption Statistics. Do not assume it's done until it reports complete.
+3. Verify. The Encryption Statistics page shows how many records are encrypted versus total for the object.
+
+**Related things to know**
+
+- **Key rotation works the same way.** Generating a new tenant secret only applies to newly written data. Old data stays on the old key version until you synchronize, so don't destroy an old key until the sync has finished, or you'll lose access to data still encrypted with it.
+- **Field-type restrictions.** Not every field can be encrypted. Some standard fields are supported and some aren't, and certain features (e.g. SOQL `GROUP BY`/`ORDER BY` on encrypted fields, some filters and formulas) are limited. Check the deterministic vs probabilistic scheme choice, since it affects filtering and uniqueness.
+- **Sandbox refreshes and data loads.** Records you load via API or Data Loader after enabling are encrypted on write, so no extra step is needed for those.
+- **Field History and other copies.** History and other derived data can hold earlier plaintext. Check whether history tracking is encrypted for the field and whether older history rows need the same sync treatment.
+- **Indexes and search.** Encrypted data can change how search indexes and reports behave, so test those after the sync.
+
+**Rule of thumb:** enable encryption, then synchronize existing data, then verify the stats. The setting alone only protects new writes.

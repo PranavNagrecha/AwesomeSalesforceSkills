@@ -1,0 +1,429 @@
+Use the following skill package when answering.
+
+<skill_package>
+=== platform-encryption/SKILL.md ===
+---
+name: platform-encryption
+description: "Use this skill when deciding which Salesforce fields to encrypt at rest, choosing between deterministic and probabilistic schemes, and managing tenant secrets and keys. Trigger keywords: Shield Platform Encryption, data at rest, AES-256, tenant secret, BYOK, key rotation, encrypted search. NOT for TLS/transport encryption, Classic Encrypted Text fields, or masking without Shield — use architect/salesforce-shield-architecture."
+category: security
+salesforce-version: "Spring '25+"
+well-architected-pillars:
+  - Security
+triggers:
+  - "we need to encrypt sensitive PII fields like SSN or credit card numbers at rest in Salesforce"
+  - "our compliance team requires data-at-rest encryption for HIPAA or PCI — what do we enable in Salesforce"
+  - "encrypted field can't be searched or filtered in SOQL — how do we fix this without removing encryption"
+  - "how do I rotate tenant secrets or bring our own encryption key to Salesforce Shield"
+  - "what fields cannot be encrypted with Shield Platform Encryption and why"
+tags:
+  - shield
+  - encryption
+  - security
+  - compliance
+  - key-management
+  - data-at-rest
+inputs:
+  - List of fields (standard or custom) that must be encrypted and their data types
+  - Compliance mandate (HIPAA, PCI-DSS, GDPR, etc.) driving the encryption requirement
+  - Whether the fields need to be searchable or filterable after encryption
+  - Shield Platform Encryption license status for the org
+  - "Key management preference: Salesforce-managed, BYOK, or Cache-Only Keys"
+outputs:
+  - Field encryption scheme recommendation (probabilistic vs deterministic per field)
+  - Key management strategy and rotation plan
+  - List of fields that cannot be encrypted with rationale
+  - Search/filter impact assessment and mitigation approach
+  - Review checklist for Shield rollout
+dependencies: []
+version: 1.0.2
+author: Pranav Nagrecha
+updated: 2026-10-20
+---
+
+# Platform Encryption
+
+This skill activates when an org needs to encrypt Salesforce field data at rest using Shield Platform Encryption. It covers encryption scheme selection, field eligibility, key management (including BYOK and Cache-Only Keys), the impact on search and reporting, and rollout considerations. It does NOT address TLS/transport security, Classic Encrypted Text fields, or Salesforce org-wide field masking.
+
+---
+
+## Before Starting
+
+Gather this context before working on anything in this domain:
+
+- Confirm the org has the Shield or Salesforce Platform Encryption add-on subscription (obj 264 L134305; Cache-Only Keys need the separate Cache-Only Key Service add-on, L134306). UNVERIFIED (2026-10-20): the eligible edition list and "Developer Edition at no cost" are Help-only; no corpus line.
+- Identify which specific fields need encryption and whether any must remain searchable or filterable after encryption — this is the single biggest architectural decision.
+- Determine the key management model: Salesforce-generated tenant secrets (`TenantSecret.Source = HSM`), customer-supplied key material (`Uploaded`, BYOK), or Cache-Only Keys fetched from an outside key service (`Remote`) — obj 264 L283748-283768.
+- Understand how existing data gets encrypted: a background encryption process applies the active key material to encrypted data (api_meta 264 L127877-127882), and secguide 262 L4899-4902 says turning on Platform Encryption encrypts the existing field values and their Account History rows — but copies already archived in `FieldHistoryArchive` stay unencrypted until Salesforce re-archives them (L4903-4904), and history/feed duplicates are skipped unless `enableEncryptFieldHistory` is true (api_meta 264 L127877-127882).
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which of these fields appear in a SOQL WHERE, report filter, list view, duplicate rule or Flow criterion? | Only the deterministic scheme lets you filter on encrypted data (api_meta 264 L127864-127866) — gotchas.md Gotcha 1 and 4 | A per-field scheme column (probabilistic, case-sensitive or case-insensitive deterministic) instead of one default for everything |
+| Do any of them drive a criteria-based sharing rule? | Criteria-based sharing rules can't use encrypted fields (secguide 262 L3478-3479) — examples.md Anti-Pattern | The sharing redesign is scoped before the policy is switched on, not after access disappears |
+| How much existing data, field history and archived history do these fields hold? | Background encryption covers existing values, but archived `FieldHistoryArchive` copies stay plaintext and history duplicates need `enableEncryptFieldHistory` — gotchas.md Gotcha 2 | A completion check per object and a decision on history and archive copies |
+| Is the Name field on the list? | Encrypting Name changes the lookup experience — gotchas.md Gotcha 3 | User communication and a test of lookup search in a sandbox first |
+| Salesforce-generated, customer-supplied, or Cache-Only key material — and what is the key service's availability? | Cache-Only material lives outside Salesforce and is applied on demand (api_meta 264 L118684-118687) — gotchas.md Gotcha 5 | A key model mapped to the mandate, with an outage runbook if Cache-Only |
+| Who must see plaintext, and who must not? | Encryption at rest does not change field-level security — gotchas.md Gotcha 6 | An FLS matrix delivered alongside the encryption policy |
+| What rotation cadence does policy require? | Data-type secrets rotate at most once per 24 hours in production (obj 264 L283644) and old secrets stay `Archived` until destroyed — Key Rotation and Background Encryption below | A rotation calendar the platform can honour, plus a destroy/export decision per archived secret |
+
+A proper configuration adds a recorded scheme, key model and access decision per field; "just turning it on" encrypts the data and leaves every query, sharing rule and reader to be discovered in production.
+
+---
+
+## Core Concepts
+
+### Encryption Schemes: Probabilistic vs Deterministic
+
+Shield Platform Encryption offers two scheme families — probabilistic and deterministic, the latter in a case-sensitive and a case-insensitive variant.
+
+The metadata names three schemes: `CustomField.encryptionScheme` takes `ProbabilisticEncryption`, `CaseSensitiveDeterministicEncryption`, `CaseInsensitiveDeterministicEncryption`, or `None` (api_meta 264 L45623-45630); the org-level `PlatformEncryptionSettings.enableDeterministicEncryption` governs whether the deterministic scheme is applied to supported fields (L127864-127866).
+
+**Probabilistic encryption**: Every encrypted value is unique, even if the underlying plaintext is identical. The guide states that it is the deterministic scheme that "lets customers filter on encrypted data" (api_meta 264 L127865-127866), so plan for no filtering on a probabilistic field. UNVERIFIED (2026-10-20): "default scheme", "AES-256 with a random IV", and the exact effect on WHERE, ORDER BY, GROUP BY, SOSL and report filters (empty result vs error) are Help-only; no corpus line.
+
+**Deterministic encryption**: The same plaintext always produces the same ciphertext, which leaks that two records share a value but keeps the field filterable. The Briefcase rule-filter reference states that fields encrypted with deterministic encryption "can be used in filters with equals and not equals operators" (api_meta 264 L33328-33329); pick the case-sensitive or case-insensitive variant to match how the field is compared. UNVERIFIED (2026-10-20): `IN` / `NOT IN` support, the field-specific IV derivation, and the absence of LIKE/range support are Help-only; no corpus line.
+
+Choose probabilistic for fields that are never searched or filtered (e.g., a stored SSN that is only displayed). Choose deterministic for fields used in lookup matching, deduplication, or any SOQL filter.
+
+### Tenant Secrets and Key Derivation
+
+A `TenantSecret` stores "an encrypted organization-specific key fragment that's used with the primary secret (KDF seed) to produce org-specific data encryption keys" (obj 264 L283642-283643). For customer-supplied material, `KeyDerivationMode = PBKDF2` derives the data encryption key from it and `NONE` uses it directly as the key (L283676-283682). UNVERIFIED (2026-10-20): "HMAC-SHA256 inside an HSM" and "the derived key is never persisted" are Help-only; the corpus names only the KDF seed and PBKDF2.
+
+Key management options:
+- **Salesforce-generated tenant secrets** (`Source = HSM`, L283749-283750): tenant secrets are created on the Key Management page in Setup (platform_events 264 L5732, the event-bus case) and listed there (obj 264 L283767-283768); rotation inserts a new secret and archives the old one (L283779-283781).
+- **Customer-supplied key material (BYOK)** (`Source = Uploaded`, L283762-283763): you generate the material outside Salesforce and upload it "in encrypted form" with its hash and the name of a BYOK-compatible certificate (`SecretValue`, `SecretValueHash`, `SecretValueCertificate`, L283873-283888). `SecretValue` is "the encrypted 256-bit secret value encoded in base64" (L283725).
+- **Cache-Only Keys** (`Source = Remote`, L283764-283768): `EncryptionKeySettings.enableCacheOnlyKeys` lets users "apply key material stored outside of Salesforce to data on demand" (api_meta 264 L118684-118687), fetched through a named credential (`RemoteKeyServiceID`, obj 264 L283716-283717). UNVERIFIED (2026-10-20): that a key-service outage makes encrypted data unreadable follows from "on demand" but no corpus line states the failure behaviour.
+
+### Key Rotation and Background Encryption
+
+Rotation creates a new active secret; the old one becomes `Archived`, which "can't encrypt new data" but "can be used to decrypt data previously encrypted with this key" (obj 264 L283779-283781). You can rotate Data-type secrets once every 4 hours in a sandbox or every 24 hours in production, and SearchIndex secrets once every 7 days (L283644-283645). Moving existing data onto the new key is the background encryption process, which "applies the customer's active key material" (api_meta 264 L127877-127882). UNVERIFIED (2026-10-20): the Setup button that starts it and its performance impact are Help-only.
+
+Destroying a secret sets `Status = Destroyed`: it "can't encrypt or decrypt data" and files encrypted with it can no longer be downloaded (obj 264 L283782-283785). It is not irreversible in every case: "related data isn't accessible unless you previously exported the key and then import the key back into Salesforce" (L283928-283929), and Cache-Only Key Service customers can move a cache-only secret from Destroyed back to Active (L283943-283944). Export before you destroy unless destruction of the data is the goal.
+
+### Field Eligibility
+
+**Fields that CAN be encrypted:**
+- Custom fields of type: Email, Phone, Text, Text Area, Text Area (Long), Text Area (Rich), URL, Date, Date/Time. That is the whole list — see "Which Custom Fields Can I Encrypt?" in the Shield Platform Encryption docs.
+- Selected standard fields: Contact and Lead Email, Phone, Mobile, Home Phone, Fax; Account Phone, Fax; Case Subject, Description; and others listed in the official Standard Fields reference
+
+**Fields that CANNOT be encrypted:**
+- **Number, Checkbox, Currency and Percent custom fields.** There is no "limited" Number encryption — numeric and boolean custom types are simply absent from the encryptable list. Plan around this: an SSN or account number that must be encrypted has to be modelled as Text, not Number.
+- Formula fields and Reference (lookup) fields — the Setup UI states "Formula & Reference fields cannot be encrypted"
+- Lookup relationship fields and external lookup fields
+- Auto-Number fields, Roll-Up Summary fields
+- Fields used in unique validation or duplicate-matching rules (in some configurations)
+- Fields encrypted with Classic Encrypted Text (separate feature — not Shield)
+- Required fields on certain objects where platform-internal processes depend on the plaintext value
+- Fields used in criteria-based sharing rules — grounded the other way round: "In criteria-based sharing rules, you can't use lookup fields, encrypted fields, formula fields" (secguide 262 L3478-3479)
+
+UNVERIFIED (2026-10-20): both lists above (the nine encryptable custom types, the standard-field examples, and every "cannot" entry except the sharing-rule one) come from Help pages ("Which Custom Fields Can I Encrypt?"); the corpus has no field-type eligibility table. Classic Encrypted Text being a separate feature is grounded (secguide 262 L2548).
+
+Encrypting the Name field changes the lookup experience. Enhanced lookups are documented as "an updated lookup dialog interface that lets users filter, sort, and page through search results" (api_meta 264 L44309-44311) — not as a restriction to recently accessed records, which an earlier version of this skill claimed. UNVERIFIED (2026-10-20): that encrypting Name turns enhanced lookups on automatically, and that the switch is irreversible, are Help-only.
+
+---
+
+## Common Patterns
+
+### Pattern 1: Encrypting PII Fields for HIPAA Compliance
+
+**When to use:** An org stores Protected Health Information (PHI) such as patient names, dates of service, or social security numbers in custom or standard fields and must satisfy HIPAA data-at-rest requirements.
+
+**How it works:**
+1. Audit all fields containing PHI. Classify each as "needs search" vs "display-only."
+2. For display-only fields (SSN, full date of birth): assign probabilistic encryption. These will no longer be filterable in SOQL — update any integration queries to fetch by record ID instead.
+3. For fields used in patient matching or lookup (e.g., Email, Phone): assign deterministic encryption so equality SOQL filters still work.
+4. Generate or upload a tenant secret on the Key Management page in Setup (platform_events 264 L5732).
+5. Enable encryption for each field in the encryption policy — the corpus names the Encryption Policy page only for platform events (platform_events 264 L5733); in metadata, set `encryptionScheme` on the field (api_meta 264 L45623).
+6. Verify all integration users and connected apps have **field-level read access (FLS)** to the encrypted fields. UNVERIFIED (2026-10-20): "Shield needs no View Encrypted Data permission" rests on Help KB 000382508; the corpus ties View Encrypted Data only to Classic Encryption (secguide 262 L2486, L2548) and also says Shield lets you "set encrypted data permissions to protect sensitive data from unauthorized users" (L305-306) — confirm in a sandbox which permission, if any, gates plaintext.
+7. Confirm the background encryption process has covered existing data (api_meta 264 L127877-127882; secguide 262 L4899-4904).
+
+**Why not probabilistic for all fields:** Audit logs, deduplication workflows, and many integrations depend on being able to query by Email or Phone. Using probabilistic on those fields would require full table scans or application-side decryption, neither of which is scalable.
+
+### Pattern 2: Bring Your Own Key for Regulatory Key Control
+
+**When to use:** A financial services or government org must demonstrate that Salesforce cannot independently access encrypted data without the customer's involvement, for regulatory reasons such as FedRAMP or internal security policy.
+
+**How it works:**
+1. Outside Salesforce, generate 256-bit key material — `SecretValue` is "the encrypted 256-bit secret value encoded in base64" (obj 264 L283725).
+2. Create a BYOK-compatible certificate in Salesforce (obj 264 L283874-283875); its unique name goes in `SecretValueCertificate` (L283732-283733).
+3. Encrypt the key material with that certificate and upload it with its hash as a customer-supplied tenant secret — "the key material is uploaded in encrypted form" (L283876-283877).
+4. Choose `KeyDerivationMode`: `PBKDF2` derives the data encryption key from your material, `NONE` uses it as the key directly (L283676-283682).
+5. Rotate on your schedule, within the platform rate limit (Data-type secrets: once per 24 hours in production, L283644). The previous secret becomes `Archived` and still decrypts old data (L283779-283781).
+6. Let the background encryption process apply the new active key to existing data (api_meta 264 L127877-127882).
+
+**Why not Cache-Only Keys for all scenarios:** Cache-Only material is applied "on demand" from a key service outside Salesforce (api_meta 264 L118684-118687) and needs its own add-on (obj 264 L134306), so the key service becomes part of every read path. BYOK keeps key control without that runtime dependency.
+
+---
+
+## Decision Guidance
+
+| Situation | Recommended Approach | Reason |
+|---|---|---|
+| Field must be filterable in SOQL (Email, Phone used in lookup) | Deterministic encryption (case-sensitive or case-insensitive) | Deterministic is the scheme that lets you filter (api_meta 264 L127865-127866); equals / not equals (L33328-33329) |
+| Field is display-only, never filtered (SSN, full account number) | Probabilistic encryption | Maximum confidentiality; no filter capability needed |
+| Must prove Salesforce cannot independently decrypt data | Customer-supplied (BYOK) or Cache-Only key material | Customer controls the material (obj 264 L283762-283768) |
+| Need key revocation with no runtime dependency | BYOK, export first, then set `Status = Destroyed` | Destroyed secrets can't decrypt (L283782-283785); re-import of an exported key restores access (L283928-283929) |
+| Need revocation with the material held outside Salesforce | Cache-Only Keys | Material is applied on demand from your key service (api_meta 264 L118684-118687) |
+| Name field on a custom object needs encryption | Either scheme, but test lookup search first | See Field Eligibility — the lookup change is UNVERIFIED (2026-10-20) beyond the enhanced-lookup description |
+| Formula field value needs to be confidential | Do not encrypt; use a non-formula field or restrict access via FLS | Formula-field encryption is not in the corpus — UNVERIFIED (2026-10-20), Help-only |
+| Existing data must be encrypted | Confirm background encryption covered it; decide on history and archive copies | api_meta 264 L127877-127882; secguide 262 L4899-4904 |
+
+---
+
+## Recommended Workflow
+
+1. Inventory the target fields and fill the field matrix in `templates/platform-encryption-template.md` — every row answers the Questions table above (filter use, sharing-rule use, history volume).
+2. Pick a scheme per field from Decision Guidance and record it as `encryptionScheme` on the field metadata (api_meta 264 L45623-45630).
+3. Choose the key model (Salesforce-generated, customer-supplied, Cache-Only) and write the rotation and destroy/export rules from Key Rotation above.
+4. Run `python3 scripts/check_platform_encryption.py --manifest-dir <force-app>` — it flags encrypted fields used in sharing-rule criteria, Classic Encrypted Text fields in formulas, and invalid `encryptionScheme` values.
+5. Enable in a sandbox, check every query, report, list view and sharing rule from the matrix, and confirm background encryption covered existing data and history before production.
+
+---
+
+## Review Checklist
+
+Run through these before marking encryption rollout complete:
+
+- [ ] Shield or Platform Encryption add-on subscription is active in the target org (obj 264 L134305)
+- [ ] Every field has a recorded scheme: probabilistic (display-only) or case-sensitive / case-insensitive deterministic (filterable)
+- [ ] Formula fields, lookup fields, and roll-up summaries are excluded from the encryption policy
+- [ ] Tenant secret has been generated or customer key material has been uploaded and verified
+- [ ] Field-level security on each encrypted field is reviewed and the plaintext-permission question is tested in a sandbox (UNVERIFIED (2026-10-20): whether Shield uses any "encrypted data permission" — see Pattern 1 step 6)
+- [ ] All SOQL queries filtering on newly encrypted fields are tested — probabilistic fields are removed from WHERE clauses
+- [ ] Report and dashboard filters on encrypted fields are reviewed and updated
+- [ ] Flows and automation criteria that reference encrypted fields are tested in the sandbox
+- [ ] Background encryption has covered existing data; history duplicates and `FieldHistoryArchive` copies have an explicit decision
+- [ ] Key rotation schedule (within the 24-hour production limit) and destroy/export runbook are documented
+- [ ] Test in a sandbox before enabling in production
+
+---
+
+## Salesforce-Specific Gotchas
+
+Non-obvious platform behaviors that cause real production problems:
+
+1. **Probabilistic encryption removes filtering** — deterministic is the scheme that "lets customers filter on encrypted data" (api_meta 264 L127865-127866), so filters on a probabilistic field stop working. UNVERIFIED (2026-10-20): whether such a query returns zero rows or raises an error is not in the corpus — test both in a sandbox.
+
+2. **Existing data, history and archives are three different cases** — background encryption applies the active key to existing data (api_meta 264 L127877-127882; secguide 262 L4899-4902), but history and feed duplicates are skipped unless `enableEncryptFieldHistory` is true, and `FieldHistoryArchive` copies stay plaintext until Salesforce re-archives them (secguide 262 L4903-4904).
+
+3. **Encrypting the Name field changes lookups** — see Field Eligibility; enhanced lookups are a filter/sort/page dialog (api_meta 264 L44309-44311). UNVERIFIED (2026-10-20): automatic enablement and irreversibility are Help-only.
+
+4. **Cache-Only material puts the key service on the read path** — it is applied on demand from outside Salesforce (api_meta 264 L118684-118687). UNVERIFIED (2026-10-20): the exact user-facing failure during a key-service outage is not in the corpus.
+
+5. **Deterministic is equality-only** — equals and not equals are the documented filter operators (api_meta 264 L33328-33329). UNVERIFIED (2026-10-20): that LIKE, range and SOSL fail on deterministic fields is Help-only.
+
+---
+
+## Output Artifacts
+
+| Artifact | Description |
+|---|---|
+| Field encryption scheme matrix | Table mapping each target field to its encryption scheme (probabilistic/deterministic) with justification |
+| Key management decision record | Documents chosen key model (Salesforce-generated, BYOK, Cache-Only), rotation schedule, and responsible owner |
+| SOQL impact assessment | List of queries, reports, and automations affected by encryption with required changes |
+| Background encryption runbook | How existing data, history duplicates and archived history are brought under the policy, and how completion is verified |
+
+---
+
+## Related Skills
+
+- `data/data-quality-and-governance` — overlaps when Shield encryption affects deduplication workflows or SOQL-based data quality checks
+- `admin/custom-field-creation` — Classic Encrypted Text vs Shield Platform Encryption field type selection decision
+- `architect/salesforce-shield-architecture` — Shield-wide architecture (Event Monitoring, Field Audit Trail) around this field-level work
+
+
+=== platform-encryption/references/llm-anti-patterns.md ===
+# LLM Anti-Patterns — Platform Encryption
+
+Common mistakes AI coding assistants make when generating or advising on Salesforce Shield Platform Encryption.
+These patterns help the consuming agent self-check its own output.
+
+UNVERIFIED (2026-10-20): the field-type eligibility lists in Anti-Patterns 3 and 8, "probabilistic is the default", and the operator limits beyond equals / not equals come from Help pages; the corpus has no eligibility table. Every other claim below carries its corpus line.
+
+## Anti-Pattern 1: Recommending Probabilistic Encryption on Filterable Fields
+
+**What the LLM generates:** "Enable encryption on Contact.Email using the probabilistic scheme" without checking whether SOQL filters depend on that field.
+
+**Why it happens:** Probabilistic provides stronger confidentiality, and the model defaults to the strongest option without assessing the filter requirement.
+
+**Correct pattern:**
+
+```
+Before choosing an encryption scheme, classify each field:
+- If the field appears in ANY SOQL WHERE clause, list view filter, report filter,
+  duplicate rule, or automation criteria -> CaseSensitiveDeterministicEncryption
+  or CaseInsensitiveDeterministicEncryption (api_meta 264 L45625-45626).
+- If the field is display-only and never filtered -> ProbabilisticEncryption.
+
+Deterministic is the scheme that "lets customers filter on encrypted data"
+(api_meta 264 L127865-127866). Whether a filter on a probabilistic field
+returns zero rows or an error is not in the corpus - test both.
+```
+
+**Detection hint:** If the advice uses probabilistic encryption on Email, Phone, or any field used in lookup matching or deduplication, filters on that field will stop working.
+
+---
+
+## Anti-Pattern 2: Getting Existing Data and History Wrong in Either Direction
+
+**What the LLM generates:** Either "enabling the policy only encrypts new writes, run a re-encryption job for the rest" or "enable the policy and all data, including history, is encrypted."
+
+**Why it happens:** Both are half-remembered. The corpus describes a background process and two exceptions.
+
+**Correct pattern:**
+
+```
+- A background encryption process applies the active key material to
+  encrypted data (api_meta 264 L127877-127882); after Platform Encryption is
+  turned on, existing field values and History related-list rows are
+  encrypted (secguide 262 L4899-4902).
+- Field-history and feed duplicates are skipped unless
+  PlatformEncryptionSettings.enableEncryptFieldHistory = true (default false).
+- FieldHistoryArchive copies stay unencrypted until Salesforce re-archives
+  them (secguide 262 L4903-4904).
+```
+
+**Detection hint:** Advice that never mentions field history or `FieldHistoryArchive`, or that tells the user to "run a re-encryption job" as the only path, is incomplete.
+
+---
+
+## Anti-Pattern 3: Attempting to Encrypt Formula or Lookup Fields
+
+**What the LLM generates:** "Encrypt the formula field that displays the full account number" or "Encrypt the lookup field to protect the relationship."
+
+**Why it happens:** LLMs generate field-agnostic encryption recommendations without checking field type eligibility.
+
+**Correct pattern:**
+
+```
+Help-only (UNVERIFIED 2026-10-20) - Shield Platform Encryption cannot encrypt:
+- Formula fields, lookup and external lookup fields
+- Auto-Number and Roll-Up Summary fields
+- Fields already using Classic Encrypted Text (a separate feature,
+  secguide 262 L2548)
+
+Corpus-grounded: criteria-based sharing rules can't use encrypted fields
+(secguide 262 L3478-3479) - so a field that drives one needs a sharing redesign.
+```
+
+**Detection hint:** If the advice recommends encrypting a formula, lookup, auto-number, or roll-up summary field, it is proposing an unsupported configuration.
+
+---
+
+## Anti-Pattern 4: Misdescribing What Name-Field Encryption Does to Lookups
+
+**What the LLM generates:** "Encrypt the Name field on Account" with no mention of lookups — or the opposite overstatement, "enhanced lookups only search recently accessed records."
+
+**Why it happens:** The side effect is non-obvious, and the second form is a confident paraphrase with no source.
+
+**Correct pattern:**
+
+```
+Enhanced lookups are "an updated lookup dialog interface that lets users
+filter, sort, and page through search results" (api_meta 264 L44309-44311).
+Help says Name-field encryption turns them on and that this can't be undone
+(UNVERIFIED 2026-10-20). Test lookup search in a sandbox and tell users
+before rollout.
+```
+
+**Detection hint:** Name-field encryption advice that is silent about lookups, or that says "recently accessed records only", needs correcting.
+
+---
+
+## Anti-Pattern 5: Recommending Cache-Only Keys Without Availability Planning
+
+**What the LLM generates:** "Use Cache-Only Keys for the strongest security — the key is never stored in Salesforce."
+
+**Why it happens:** LLMs rank options by security strength and skip the operational dependency.
+
+**Correct pattern:**
+
+```
+Cache-Only Keys let users "apply key material stored outside of Salesforce
+to data on demand" (api_meta 264 L118684-118687), fetched through a named
+credential (obj 264 L283716-283717), and need the Cache-Only Key Service
+add-on (obj 264 L134306). The key service sits on the read path.
+
+Before choosing Cache-Only Keys:
+- Confirm the key service's availability matches the org's.
+- Turn on enableReplayDetection (api_meta 264 L118689-118692).
+- Write an outage runbook (the exact outage behaviour is UNVERIFIED 2026-10-20).
+- Consider customer-supplied (BYOK) material for key control without a
+  runtime dependency.
+```
+
+**Detection hint:** If the advice recommends Cache-Only Keys without discussing the availability dependency, the risk is understated.
+
+---
+
+## Anti-Pattern 6: Claiming Deterministic Encryption Supports LIKE and SOSL
+
+**What the LLM generates:** "Use deterministic encryption so you can search encrypted fields with LIKE or SOSL."
+
+**Why it happens:** LLMs generalize from the fact that deterministic encryption supports some filtering.
+
+**Correct pattern:**
+
+```
+Documented operators on deterministic fields: equals and not equals
+(api_meta 264 L33328-33329). Two variants: CaseSensitiveDeterministicEncryption
+and CaseInsensitiveDeterministicEncryption (L45625-45626).
+
+LIKE, range comparisons, ORDER BY and SOSL are not documented as supported
+(the "not supported" statement itself is Help-only, UNVERIFIED 2026-10-20).
+If wildcard or full-text search is required, re-evaluate encryption.
+```
+
+**Detection hint:** If the advice claims LIKE, range, or SOSL works on deterministically encrypted fields, the capability is overstated.
+
+---
+
+## Anti-Pattern 7: Settling the "View Encrypted Data" Question From Memory
+
+**What the LLM generates:** Either "assign View Encrypted Data so integration users can read the Shield-encrypted SSN; others see `*********`" or the confident opposite, "Shield has no permission of any kind; anyone with FLS Read sees plaintext."
+
+**Why it happens:** Salesforce has two encryption features. Classic Encryption (the *Encrypted Text* field type) masks values and is governed by **View Encrypted Data** (secguide 262 L2486, L2499-2503; note at L2548). For Shield the corpus only says you "can set encrypted data permissions to protect sensitive data from unauthorized users" (secguide 262 L305-306). The "no permission needed since Spring '17" statement lives in Help KB 000382508 and is UNVERIFIED (2026-10-20) here.
+
+**Why this one is dangerous:** either answer, given without a test, can leave a need-to-know requirement unmet while the rollout looks complete.
+
+**Correct pattern:**
+
+```
+1. Field-level security is the access control you design and document.
+2. "View Encrypted Data" and asterisk masking are documented for Classic
+   Encryption (secguide 262 L2486, L2499-2503).
+3. For Shield, log in as each affected profile in a sandbox and record who
+   sees plaintext before telling an auditor anything.
+4. Administering Shield needs Customize Application + Manage Encryption Keys
+   (api_meta 264 L127848-127849) - administration, not read access.
+```
+
+**Detection hint:** A Shield rollout plan that cites a permission as the read control without a sandbox test, or that rules one out without a test, is asserting something the corpus does not settle.
+
+---
+
+## Anti-Pattern 8: Inventing Encryptable Custom Field Types (Number, Checkbox, Currency)
+
+**What the LLM generates:** An encryptable-types list that reads "Text, Long Text Area, Text Area, Phone, URL, Email, Date, Date/Time, Number (limited), Checkbox." The hedge — "Number (limited)" — is the tell.
+
+**Why it happens:** The model completes a field-type list with the rest of the Setup picker.
+
+**Correct pattern:**
+
+```
+Help-only list (UNVERIFIED 2026-10-20) of encryptable CUSTOM field types:
+  Email, Phone, Text, Text Area, Text Area (Long), Text Area (Rich),
+  URL, Date, Date/Time
+
+Consequence for design: a numeric identifier that must be encrypted
+(SSN, account number, policy number) has to be modelled as Text.
+Decide this at schema-design time.
+```
+
+**Detection hint:** in any "fields you can encrypt" list, a parenthetical hedge (`(limited)`, `(partial)`, `(in some cases)`) attached to a field type is a strong fabrication signal. In metadata, check `<encryptionScheme>` (api_meta 264 L45623) only on field types the current Help list names.
+
+</skill_package>
+
+When you enable Shield Platform Encryption on a field that already holds data, does the existing data get encrypted?

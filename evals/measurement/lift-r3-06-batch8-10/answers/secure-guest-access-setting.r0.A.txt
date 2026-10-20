@@ -1,0 +1,19 @@
+**No.** In a current org, an admin can't turn off Secure Guest User Record Access.
+
+- Salesforce made it a release update and enforced it in **Winter '21**. Once enforced, it is permanently on. Orgs created since Summer '20 had it on from the start.
+- `enableSecureGuestAccess` still exists on the `SharingSettings` metadata type, but it is effectively a legacy flag. Treat it as `true`. Don't build deployments that try to set it to `false`, because that can't succeed.
+- I'm confident about the enforcement but haven't checked it against the current Metadata API reference. If you're scripting against it, confirm the field's behavior in the docs and with a test deploy to a scratch org.
+
+**What the setting enforces for guest users:**
+- The guest user's org-wide default is Private, and you can't change it.
+- Guests can't be added to public groups or queues, and they can't be assigned as record owners or share recipients in the old way.
+- Guest profiles get only Read (and Create, where the object allows it) on objects. There is no Edit or Delete, and no View All or Modify All.
+- Records created by guests are owned by a default owner (the site's default record owner), not the guest user.
+
+**How to give guests access instead:**
+1. Use **guest user sharing rules**. They are criteria-based only and read-only, and they apply to a specific guest user profile.
+2. Grant object and field access on the guest profile with the minimum permissions needed.
+3. For writes (such as form submissions), use Apex running `with sharing` or `without sharing` in a controlled, narrowly scoped method. Do this deliberately and audit it.
+4. For broader data exposure, use Experience Cloud authenticated or external users with proper sharing sets, not guest access.
+
+If something broke after you assumed you could disable it, such as a legacy site that depended on guests having broader access, the fix is a guest sharing rule or an authenticated-user redesign, not turning the setting off.

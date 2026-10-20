@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "`JSINHTMLENCODE(x)` is equivalent to `JSENCODE(HTMLENCODE(x))`.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058556,
+    "duration_s": 1.626,
+    "input_tokens": 7168,
+    "output_tokens": 61
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"`JSINHTMLENCODE(x)` is equivalent to `JSENCODE(HTMLENCODE(x))`.\"}",
+  "prompt_sha": "c12ec75abb352df8"
+}

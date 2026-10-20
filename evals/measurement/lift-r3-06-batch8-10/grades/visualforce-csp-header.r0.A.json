@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "A custom Visualforce page is not \"locked down to trusted URLs\" just because it exists in an org with a populated Trusted URLs list.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0645769,
+    "duration_s": 3.155,
+    "input_tokens": 7483,
+    "output_tokens": 217
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"A custom Visualforce page is not \\\"locked down to trusted URLs\\\" just because it exists in an org with a populated Trusted URLs list.\"}",
+  "prompt_sha": "4c348d00f0852c23"
+}
