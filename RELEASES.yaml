@@ -364,8 +364,14 @@ releases:
       (org dry runs); then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: todo
+    status: done
     parent: R2-01
+    evidence: 'GRADE RIGHT-AND-USEFUL (verified by the orchestrator against the recorded later runs, no grader needed): 7
+      failures -> 3 independent first-order causes, 0 cascades; G2 = F-37 exactly (TestDataFactory not shipped), G3 = F-38
+      with the one-cycle fix the human needed two runs to find, G1 = F-28 (unverifiable .example sender); predictions P1 and
+      P2 (= F-61 LIMIT 1 picks foreign SlaProcess) matched exactly, P3/P4 right in mechanism (F-59/60/62). Library notes:
+      templates cited but not shipped is a pattern; context selector pulled an off-topic skill on keyword ''missing''; two
+      Metadata API rules are not in the guide (org-proven only).'
   - id: R2-01-8
     title: 'Agent proof: /build-from-requirements (build-planner) on a real input — examples/builds/opp-amount-lock/requirement.md
       re-run cold; then an adversarial grader scores right/useful/wrong against the corpus'
@@ -536,6 +542,11 @@ releases:
     size: M
     owner_model: opus
     status: todo
+  - id: R3-05
+    title: 'Recipe test step 1: Winter ''27 probe set (facts the model cannot know) in run_lift probe format'
+    size: M
+    owner_model: sonnet
+    status: running
   - id: R3-02
     title: Release 1.6.0 / 0.5.3 — content set by R3-01
     size: S
@@ -683,3 +694,10 @@ inbox:
     playbook to grep api_meta before declaring an element ungrounded'
   size: S
   slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Recipe test (owner 2026-10-21): build ~20 wrong-fact probes from standards/release-delta-winter27.md — API 68.0 facts
+    the model cannot know (heap 10/25 MB, elastic cap 2M, runInMode UserMode, API 31-40 retirement, Lifecycle Center rename,
+    new metadata types) — each with the 264 corpus cite as answer key, in evals/probes/winter27-probes.json (run_lift.py --probes
+    format); then run the recipe on the owning skills and measure with/without'
+  size: M
+  slotted_into: 1.6.0
