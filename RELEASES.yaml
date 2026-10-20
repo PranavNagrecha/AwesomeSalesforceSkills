@@ -476,7 +476,10 @@ releases:
       days after listing (R2-07), linter spike (R2-05) -> the direction for 1.6.0'
     size: S
     owner_model: fable
-    status: todo
+    status: done
+    evidence: 'decision_memo in measured{} of 1.5.0: lift 0->100% (20 probes) and 50->100% (10 ext probes, after owner fix);
+      8 proofs, 2 re-runs RIGHT; 64 skills via R3-05; roster 7/8/55; adoption unchanged; decision: improved on knowledge axis,
+      adoption untested until R2-03'
   - id: R2-09
     title: 'org-validation.yml: fix or disable the failing scheduled workflow'
     size: S
@@ -609,12 +612,20 @@ releases:
     title: 'limits-and-scalability-planning: two ungrounded limit claims (managed-package SOQL sharing; 50M/24h batch)'
     size: S
     owner_model: opus
-    status: todo
+    status: done
+    evidence: 'limits-and-scalability-planning 1.0.2: certified managed packages get their own per-transaction limits, 11x
+      cross-namespace cap (apexdev 264 L19873-19886); 50M = Database.QueryLocator per-job ceiling (L17902-17903), 24h cap
+      = DailyAsyncApexExecutions 250,000 or licences x 200 (L19936-19940); PE delivery 50k/25k/10k per day, publishing 250k/h
+      (pe 264 L7071, L7141); ~15 contradicted claims fixed across 7 files, 16 Help-only figures marked UNVERIFIED; verify
+      10/12 no FAIL; cites spot-checked by Fable'
   - id: R2-32
     title: 'check_limits_plan.py: empty-dir WARN semantics; scope heap pattern'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'check_limits_plan.py: heap figure counts only with ''heap'' in the same sentence/row; 6/12 MB beside heap ->
+      WARN stale unless labelled Summer ''26/262/API 67; empty dir WARN exit 0 (strict 1), missing path ERROR 1, --manifest-dir
+      added; fixtures bad 0/1 good 0/0 filesize-only not flagged; caught one real stale 12 MB in its own examples.md'
   - id: R3-05
     title: 'Scale-out wave 1: Winter ''27 corrections across the remaining delta-listed skills, writer+adversarial-reviewer
       pairs in batches of 9'
@@ -735,7 +746,77 @@ releases:
     size: S
     owner_model: fable
     status: todo
-  measured: {}
+  measured:
+    skills: 1040
+    at_bar: 433
+    questions_tables: 353
+    unverified_markers: 2309
+    default_version_skills: 1005
+    measured_on: 2026-10-20
+    decision_memo:
+      written: '2026-10-20'
+      question: 'Does the writer+adversarial-reviewer recipe make skills right, and do right skills make agents right? (owner
+        rule 2026-10-19: improve -> scale sub-agents; no improvement -> stop)'
+      knowledge_lift:
+        winter27_probes_20:
+          without_skill: correct 0% / wrong 65% / unsure 35%
+          with_recipe_skill: correct 100% / wrong 0% / unsure 0%
+          cost_usd: 2.48
+          file: evals/measurement/lift-winter27-2026-10-19.json
+        winter27_ext_probes_10:
+          without_skill: correct 50% / wrong 30% / neither 20%
+          with_skill: 'correct 90% / wrong 0% / neither 10%; the 1 miss was a probe-owner error (fact in a reference file
+            run_lift does not feed); re-run with the right owner: correct'
+          cost_usd: 2.53
+          files:
+          - evals/measurement/lift-winter27-ext-2026-10-20
+          - evals/measurement/lift-winter27-ext-usermode-rerun-2026-10-20
+        reading: A skill only helps if the fact is in SKILL.md or llm-anti-patterns.md; facts buried in other reference files
+          do not reach the model in this harness.
+      agent_proof:
+        runs: 8
+        first_grades: 3 PLAUSIBLE-WRONG, 3 RIGHT-BUT-NARROW, 2 RIGHT-AND-USEFUL
+        re_runs_after_skill_or_playbook_fix: 2 of 2 -> RIGHT-AND-USEFUL (/scan-security after R2-12; /why-cant-user after
+          R2-15)
+        reading: Agents are exactly as right as the skill they read; every wrong agent output traced to a wrong or missing
+          skill sentence.
+      scale_out_R3_05:
+        skills_corrected: 64
+        batches: 7
+        agents_per_batch: 1 Opus writer + 1 Opus adversarial reviewer, two live agents max
+        reviewer_found_defects_in_every_batch: true
+        defect_classes_fixed_by_reviewers:
+        - 'heap gated on API 68.0 (root cause: release-delta §7 wording, fixed 5a01909bd)'
+        - PE flow running user + 200-event batch
+        - DataWeaveResource storage + exception name
+        - Lifecycle Center leftovers
+        - debug log 20 MB trim
+        - anonymous-block methods
+        - ConnectApi test context (SeeAllData/setTest*)
+        - flex queue 5/100 split
+        - Apex exception email recipients
+        - omnistudio async SOQL 100->200
+        - middleware 120 s / uncatchable LimitException
+        - certified-package per-namespace limits
+        - QueryLocator 50M vs DailyAsyncApexExecutions
+        checker_contract_drift_filed:
+        - R2-33
+        - R2-34
+        - R2-35
+        - R2-36
+      roster:
+        stable: 7
+        beta: 8
+        experimental: 55
+      adoption_unchanged:
+        github_stars: 19
+        forks: 5
+        issues: 1
+        unique_cloners_14d: 177
+        pypi_downloads_month: 1067
+        listings_R2_03: not yet done
+      decision: IMPROVED on the measurable axis (knowledge lift 0->100% and 50->100% on probes; agents fixed by fixing skills).
+        Continue the recipe on content; the unmeasured axis is adoption, which R2-03 must test before R2-08 ships anything.
 - version: 1.6.0
   mcp_version: 0.5.3
   branch: release/1.6.0

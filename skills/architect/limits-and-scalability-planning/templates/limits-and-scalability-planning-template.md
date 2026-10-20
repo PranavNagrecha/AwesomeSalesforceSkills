@@ -27,7 +27,7 @@ For each significant synchronous transaction type (user action, trigger path, AP
 | | | | | | | | | |
 
 **Reference limits (synchronous):**
-- SOQL: 100 per transaction (shared with managed packages)
+- SOQL: 100 per transaction (shared with non-certified package code; certified managed packages get their own 100 — Apex Developer Guide 264 L19880, L19891–19892)
 - DML statements: 150 per transaction
 - DML rows: 10,000 per transaction
 - CPU time: 10,000ms
@@ -48,7 +48,7 @@ For each Queueable, Future method, or Scheduled Apex, complete one row.
 | | | | | | | | |
 | | | | | | | | |
 
-**Reference limits (async — Queueable, Future; Scheduled Apex uses the synchronous limits):**
+**Reference limits (async — Queueable, Future; Scheduled Apex and platform event triggers use the synchronous limits, Apex Developer Guide 264 L19739, Platform Events Developer Guide 264 L2339):**
 - SOQL: 200 per transaction
 - DML statements: 150 per transaction
 - DML rows: 10,000 per transaction
@@ -61,24 +61,27 @@ For each Queueable, Future method, or Scheduled Apex, complete one row.
 
 For each Batch Apex job in the org, complete one row.
 
-| Job Class Name | Purpose | Scope Size | Est. Records/Run | Frequency | Est. 24hr Record Volume | Queue Priority | Risk Rating |
+| Job Class Name | Purpose | Scope Size | Est. Records/Run | Frequency | Est. Executions/Run (records ÷ scope + 2) | Queue Priority | Risk Rating |
 |---|---|---|---|---|---|---|---|
-| _e.g. AccountClassificationBatch_ | _Populate Industry_Segment__c_ | _200_ | _10,000,000_ | _One-time_ | _10,000,000_ | _High_ | _High_ |
+| _e.g. AccountClassificationBatch_ | _Populate Industry_Segment__c_ | _200_ | _10,000,000_ | _One-time_ | _50,002_ | _High_ | _High_ |
 | | | | | | | | |
 | | | | | | | | |
 
 **Reference limits (Batch Apex):**
-- Max scope size: 2,000 records (recommended: 200)
-- Max records processed per 24-hour rolling window: 50,000,000
-- Max concurrent/queued jobs: 5 (Flex Queue: 100 in Holding state)
+- Max scope size: 2,000 records for a QueryLocator start (chunked above that); default 200 (Apex Developer Guide 264 L17904–17910)
+- Max records a `Database.QueryLocator` can return, per job: 50,000,000 — over that the job fails (264 L17902–17903)
+- 24-hour rolling async execution budget: 250,000 or licenses × 200, whichever is greater, shared with Queueable, future and scheduled; each start/execute/finish is one execution (264 L19936–19940, L20001–20002)
+- Max concurrent/queued jobs: 5 (Flex Queue: 100 in Holding state) (264 L19983, L19985)
 - CPU per execute() call: 60,000ms; Heap: 25MB (12MB through Summer '26)
 
-**24-hour rolling window total (all jobs):** _Sum of est. 24hr record volumes above_
-**Headroom against 50M limit:** _50,000,000 − total = remaining_
+**24-hour rolling window total (all async work):** _Sum of est. executions above plus Queueable, future and scheduled runs in the same window_
+**Headroom against the async execution budget:** _`DailyAsyncApexExecutions` remaining (REST limits resource) − total = remaining_
 
 ---
 
 ## 5. Org-Wide Metadata Limit Headroom
+
+UNVERIFIED (2026-10-20): the Limit values in this table except Apex code are from Salesforce Help "General Limits", not in the Winter '27 corpus; replace each with the org's edition allocation.
 
 | Metadata Type | Current Count | Limit | Used % | Headroom | Risk Rating |
 |---|---|---|---|---|---|
@@ -89,12 +92,11 @@ For each Batch Apex job in the org, complete one row.
 | Custom Fields — _[Object]_ | | 500 | | | |
 | Active Flows | | 4,000 | | | |
 | Custom Tabs | | 25 | | | |
-| Apex Classes | | 5,000 | | | |
-| Apex Triggers | | 5,000 | | | |
+| Apex code (all classes + triggers, characters) | | 6 MB (Apex Developer Guide 264 L20076) | | | |
 
-**Source:** Use `GET /services/data/v59.0/limits` (Salesforce Limits API) for authoritative current counts. Setup UI counts may lag.
+**Source:** The REST limits resource (`/services/data/vXX.X/limits/`) has no custom-object or custom-field key (REST API Developer Guide 264 L7923–8222); count objects and fields with Tooling API `EntityDefinition` / `FieldDefinition` queries.
 
-**Soft-deleted fields note:** Custom fields pending deletion still count against the 500 limit — and against the allocation for their field type (40 relationship, 25 roll-up summary) — until the hard delete completes or 15 days elapse, whichever comes first. Include them in Current Count: they are listed on the object's Deleted Fields page (Setup > Object Manager > _object_ > Fields & Relationships > Deleted Fields). Erase only queues the hard-delete background job; the Purge button that starts it immediately appears only at 75%+ of the object's field allocation, in Salesforce Classic.
+**Soft-deleted fields note (UNVERIFIED (2026-10-20): Help-only, not in the corpus):** Custom fields pending deletion still count against the 500 limit — and against the allocation for their field type (40 relationship, 25 roll-up summary) — until the hard delete completes or 15 days elapse, whichever comes first. Include them in Current Count: they are listed on the object's Deleted Fields page (Setup > Object Manager > _object_ > Fields & Relationships > Deleted Fields). Erase only queues the hard-delete background job; the Purge button that starts it immediately appears only at 75%+ of the object's field allocation, in Salesforce Classic.
 
 ---
 
@@ -107,13 +109,13 @@ For each Batch Apex job in the org, complete one row.
 | _Opportunity_ | | | | | | |
 | _[Custom Object]_ | | | | | | |
 
-**Selectivity threshold reminder:**
-- Objects < 333K records: query result must be < 10% of total, or < 33,333 records.
-- Objects > 1M records: query result must be < 333K records or < 10% — whichever is smaller.
+**Selectivity threshold reminder (Large Data Volumes Best Practices 264 L463, L468):**
+- Standard index: filter matches < 30% of the first million records and < 15% of additional records.
+- Custom index: filter matches < 10% of the first million records and < 5% of additional records.
 
-**Skinny table trigger:** Recommend Salesforce support case for skinny table when an object is projected to exceed 5M records AND is queried frequently on non-ID fields.
+**Skinny table trigger (this skill's heuristic):** Recommend Salesforce support case for skinny table when an object is projected to exceed 5M records AND is queried frequently on non-ID fields.
 
-**Data skew trigger:** Flag when a single owner holds > 10,000 records on a private-sharing object.
+**Data skew trigger:** Flag when a single owner holds > 10,000 records on a private-sharing object (Large Data Volumes Best Practices 264 L1033).
 
 ---
 
@@ -137,16 +139,17 @@ Document the async offload decisions for operations that cannot safely run in sy
 
 ## 8. Platform Event Throughput Assessment
 
-| Event Name | Publisher | Estimated Events/Hour | Estimated Events/24hr | % of 250K Limit | Risk Rating |
-|---|---|---|---|---|---|
-| _e.g. Order_Update__e_ | _ERP Integration_ | _2,000_ | _48,000_ | _19%_ | _Low_ |
-| | | | | | |
-| | | | | | |
+| Event Name | Publisher | Est. Published/Hour | % of Hourly Publishing Allocation | External Subscribers | Est. Deliveries/24hr (events × external clients) | % of 24hr Delivery Allocation | Risk Rating |
+|---|---|---|---|---|---|---|---|
+| _e.g. Order_Update__e_ | _ERP Integration_ | _2,000_ | _0.8% of 250,000_ | _0 (Apex trigger only)_ | _0_ | _0%_ | _Low_ |
+| | | | | | | | |
+| | | | | | | | |
 
-**Combined 24hr event total (all events):** _Sum of estimated Events/24hr above_
-**Headroom against 250,000 standard limit:** _250,000 − total = remaining_
+**Allocations (no add-on, Platform Events Developer Guide 264):** publishing 250,000 per rolling hour EE/UE (L7141); delivery to Pub/Sub API, CometD, empApi and event relays 25,000 EE / 50,000 UE per rolling 24 hours, summed across clients (L7071); Apex trigger and flow subscribers do not count against delivery (L7039–7041). Each add-on adds 100,000 deliveries/day and 25,000 publishes/hour (L7231–7233).
+**Combined 24hr delivery total (all events):** _Sum of Est. Deliveries/24hr above_
+**Headroom against the delivery allocation:** _allocation − total = remaining_
 
-**Subscriber bulkification check:** Confirm that all Apex triggers subscribing to each event process the event list as a collection (not record-by-record in a loop). Each trigger invocation receives a batch of up to 2,000 events.
+**Subscriber bulkification check:** Confirm that all Apex triggers subscribing to each event process the event list as a collection (not record-by-record in a loop). Each trigger invocation receives a batch of up to 2,000 events (L3098) and runs on the synchronous limits (L2339).
 
 ---
 
@@ -157,14 +160,14 @@ Document the async offload decisions for operations that cannot safely run in sy
 | Data Storage | | | | | |
 | File Storage | | | | | |
 
-**Allocation reference (Enterprise):**
+**Allocation reference (Enterprise) — UNVERIFIED (2026-10-20): Help-only, not in the corpus:**
 - Data: 1GB base + 20MB per user license
 - File: 1GB base + 2GB per user license
 
-**Source:** Setup > Storage Usage for current values.
+**Source:** `DataStorageMB` and `FileStorageMB` in the REST limits resource (Manage Users permission required, REST API Developer Guide 264 L8191–8193), or Setup > Storage Usage.
 
 **Archival options:**
-- Big Objects: write-once cold storage, async SOQL only, no DML limit
+- Big Objects: write-once cold storage (UNVERIFIED (2026-10-20): big-object query and DML behaviour is not in the corpus — check the Big Objects guide before choosing)
 - Data Export + Deletion: scheduled CSV export followed by bulk delete
 - External archive: move to external system and delete Salesforce records
 

@@ -12,14 +12,14 @@ Governor limits are the primary mechanism Salesforce uses to enforce scalability
 
 **Anti-patterns this skill catches:**
 - SOQL inside loops — does not scale; O(n) queries cause limit failure at moderate record volumes.
-- DML inside loops — same problem; fails when the loop body repeats more than 150 times.
+- DML inside loops — same problem; fails when the loop body repeats more than 150 times (150 DML statements, Apex Developer Guide 264 L19757).
 - Hard-coded selectivity assumptions — queries that are selective at 10,000 records become non-selective at 1,000,000 records; design for projected volume, not current volume.
 
 ---
 
 ## Pillar: Performance
 
-Governor limits intersect directly with user-perceived performance. A transaction that consumes 9,500ms of CPU is 9.5 seconds of wait time for the user before the page responds. A non-selective SOQL query on a large object can take 10–60 seconds and time out before returning results.
+Governor limits intersect directly with user-perceived performance. A transaction that consumes 9,500ms of CPU is 9.5 seconds of wait time for the user before the page responds. A non-selective SOQL query on a large object can run until Salesforce cancels the transaction at the 120-second SOQL run-time ceiling (Apex Developer Guide 264 L20051).
 
 **Performance guidance this skill provides:**
 - Skinny table consideration for objects > 5M records — reduces query I/O significantly for frequently queried field subsets.
@@ -36,7 +36,7 @@ Limit violations cause immediate transaction failures with no graceful degradati
 - Full-volume sandbox testing — limit risks that are invisible at 1,000 records become failures at 1,000,000. Test in a sandbox seeded with production-scale data.
 - Debug log checkpoints — `System.debug(Limits.getQueries())` instrumentation in high-risk transactions gives early warning before limits are reached.
 - Batch job queue planning — ensuring the 5-job limit is not saturated during peak periods prevents jobs from failing to start.
-- Platform event monitoring — tracking delivery consumption against the 250,000/24hr ceiling prevents silent event drops that create data inconsistency.
+- Platform event monitoring — tracking hourly publishing (250,000 EE/UE) and 24-hour external delivery (25,000 EE / 50,000 UE) consumption prevents dropped events that create data inconsistency (Platform Events Developer Guide 264 L7071, L7141).
 
 ---
 
@@ -55,17 +55,16 @@ Scalability planning is an ongoing operational practice, not a one-time design a
 
 ## Official Sources Used
 
-- Salesforce Apex Developer Guide: Apex Governor Limits — transaction and async limit values, heap and CPU specifications
-  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+Winter '27 (release 264, API 68.0) PDFs; line numbers are `grep -n` positions in the `pdftotext -layout` text.
 
-- Salesforce Help: General Limits — org-wide limits for custom objects, fields, flows, tabs, storage
-  https://help.salesforce.com/s/articleView?id=sf.limits_general.htm
-
-- Salesforce Apex Developer Guide: Batch Apex — batch interface contract, scope size, 50M record limit, queue behavior
-  https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm
-
-- Salesforce Help: Platform Events Considerations — delivery limits, message size, replay window
-  https://help.salesforce.com/s/articleView?id=sf.platform_events_considerations.htm
-
+- Apex Developer Guide 264 — per-transaction limits: 100/200 SOQL, 150 DML statements, 10,000 DML rows, 10,000/60,000 ms CPU, 10 MB / 25 MB heap, 100 callouts, 120 s callout timeout (L19747–19782); Scheduled Apex runs on synchronous limits (L19739)
+- Apex Developer Guide 264 — certified managed packages get their own per-transaction limits, including their own 100 SOQL; non-certified packages share the org's; heap, CPU and transaction time are not separated (L19873–19880, L19891–19892, L19920–19924)
+- Apex Developer Guide 264 — Batch Apex: 50 million QueryLocator rows per job (L17902–17903, L20059); scope max 2,000 for QueryLocator and default 200 (L17904–17910); preemptive async-capacity check (L17895–17899); 250,000-or-licenses×200 daily async executions counting start/execute/finish (L19936–19940, L20001–20002); 5 queued/active jobs, 100 flex-queue jobs (L19983, L19985); 6 MB org Apex code (L20076)
+- Salesforce Developer Limits and Allocations Quick Reference 264 — Bulk API batch allocation of 15,000 batches per rolling 24 hours, shared by Bulk API and Bulk API 2.0 (L300–302); 150,000,000 ingest records per 24 h (L348); 10 MB per batch / 150 MB per Bulk API 2.0 job (L391)
+- Platform Events Developer Guide 264 — publishing 250,000/hour EE/UE (L7141); delivery 50,000 UE / 25,000 EE / 10,000 DE per 24 h (L7071); Apex/flow subscribers excluded from delivery (L7039–7041); 1 MB message (L7000); 72 h retention (L291); add-on increments (L7231–7233); triggers run on synchronous limits with batches up to 2,000 (L2339, L3098)
+- Large Data Volumes Best Practices 264 — index selectivity thresholds (L463, L468, L476–479); skinny tables via Customer Support, 200 columns (L332, L381); no owner over 10,000 records, no parent over 10,000 children (L1033, L1052)
+- REST API Developer Guide 264 — limits resource keys `DailyAsyncApexExecutions`, `HourlyPublishedPlatformEvents`, `DailyDeliveredPlatformEvents`, `DataStorageMB`, `FileStorageMB`, and no custom-object key (L7923–8222)
+- Metadata API Developer Guide 264 — `ApexSettings.enableEnforceSummer26ApexHeapLimit`, Winter '27-only nonproduction heap opt-out (L113855–113862)
+- Not in the corpus (those claims carry inline dated markers in the package): Salesforce Help "General Limits" (custom objects, fields, tabs, apps, flows, storage) and the field-deletion topics (15-day soft delete, Purge at 75%)
 - Salesforce Well-Architected Overview — quality model framing for Scalability, Performance, Reliability, and Operational Excellence pillars
   https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
