@@ -36,9 +36,10 @@ Every well-formed VR has the following structure in its `ErrorConditionFormula`:
 
 ```text
 AND(
-  /* 1. Bypass condition — always first, OR'd inverse */
-  NOT($Setup.Integration_Bypass__c.Is_Active__c),
+  /* 1. Bypass condition — always first, OR'd inverse. Use ONE of the two lines:
+        the custom permission (preferred), or a custom-setting flag. */
   NOT($Permission.Bypass_Validation_<Domain>),
+  /* NOT($Setup.Integration_Bypass__c.Is_Active__c), */
 
   /* 2. Relevance gate — when does this rule even apply? */
   RecordType.DeveloperName = "...",
@@ -56,7 +57,7 @@ AND(
 )
 ```
 
-- **Bypass FIRST.** Every VR MUST admit a bypass via either a Custom Setting (`Integration_Bypass__c`) OR a Custom Permission (`Bypass_Validation_<Domain>`). Both, in practice. See `skills/admin/validation-rules` for the canon.
+- **Bypass FIRST.** Every VR MUST admit a bypass via one of: a Custom Permission (`Bypass_Validation_<Domain>`, preferred) or a custom-setting flag (`Integration_Bypass__c`). See `skills/admin/validation-rules` for the canon.
 - **Relevance gate SECOND.** Scope the VR to the record types / states it's intended for. An un-scoped VR on Account fires in every integration, every import, every test class.
 - **Business rule LAST.** Keep it readable — a single OR of logical clauses. Complex nested logic is a sign the rule should be split.
 
@@ -64,11 +65,11 @@ AND(
 
 ## Bypass contract
 
-**The `Integration_Bypass__c` Hierarchy Custom Setting and the `Bypass_Validation_<Domain>` Custom Permission are NOT optional.** Every VR the agent generates includes both. Every VR the agent audits is expected to have at least one (preferably both).
+**A bypass is not optional; which mechanism is.** Every VR the agent generates includes one of: the `Bypass_Validation_<Domain>` Custom Permission (preferred) or an `Integration_Bypass__c` Hierarchy Custom Setting flag. No skill ships the Custom Setting's XML, so do not require it; add it only when the org already has one or the requester asks for a user-level switch. Every VR the agent audits is expected to have at least one.
 
-Why both:
-- **Custom Setting** is how integrations disable VRs at the user level (the integration user is granted an org-level bypass for stable data loads).
-- **Custom Permission** is how short-lived bypasses work for migration or data-fix operations — assign the permission via a time-limited PS (`Temp_Data_Fix_Feb26`), run the fix, unassign.
+Where each fits:
+- **Custom Permission** (preferred) — covers integrations and short-lived bypasses alike: assign the permission through a PS (a time-limited one such as `Temp_Data_Fix_Feb26` for a migration or data fix), run the load, unassign.
+- **Custom Setting flag** — an alternative where the org already controls integrations with a hierarchy setting set at user or profile level.
 
 Missing bypass = P1 finding. The agent proposes a patch.
 
@@ -78,11 +79,11 @@ Missing bypass = P1 finding. The agent proposes a patch.
 
 - `ISNEW()` — fires only on insert. Use for "Required on create" gates.
 - `NOT(ISNEW())` — fires only on update. Use for "Cannot change once set" rules.
-- `ISCHANGED(Field)` — fires when the field value moves. Use for stage-transition gates. **Never** use `ISCHANGED` without `NOT(ISNEW())` wrapping it, or the rule fires on insert too (ISCHANGED is true for a new record).
+- `ISCHANGED(Field)` — fires when the field value moves. Use for stage-transition gates. Wrap it in `NOT(ISNEW())` so the rule is scoped to updates regardless of insert behaviour. UNVERIFIED (2026-10-19): whether `ISCHANGED` evaluates true on insert is not stated in the Metadata API, Object Reference or Apex Developer Guide corpus (only an `ISCHANGED(Name)` workflow-rule sample appears); confirm in an org before relying on either answer.
 - `PRIORVALUE(Field)` — the value at the start of the save context. Use for "cannot regress" rules (Stage can only move forward).
 
 Common bugs the audit agent catches:
-- `ISCHANGED(Field)` alone → fires on insert.
+- `ISCHANGED(Field)` alone with no `ISNEW()` scoping → intent unclear on insert (UNVERIFIED 2026-10-19, see above); add `NOT(ISNEW())` or `ISNEW()` explicitly.
 - `ISBLANK(Field)` on a formula/rollup field — `ISBLANK` is not reliable on formula fields; use `ISNULL` for numeric formulas, compare to `""` for text.
 - `NOT(ISPICKVAL(Field, "X"))` when the intent is "not one of X or Y" — use `AND(NOT(ISPICKVAL...), NOT(ISPICKVAL...))`.
 
@@ -108,7 +109,7 @@ The `skills/apex/trigger-and-flow-coexistence` skill governs the mental model. W
 2. Compose the canonical shape above: Bypass → Relevance gate → Business rule.
 3. Name per `templates/admin/naming-conventions.md` (`<Object>_<Field_or_Concept>_<Action>`).
 4. Output a Setup-ready rule description + `ErrorConditionFormula` + suggested `ErrorMessage` (short, actionable, no "Error:", no uppercase shouting).
-5. Generate the migration patch for missing Custom Settings / Custom Permissions if they don't exist yet.
+5. Generate the migration patch for the missing bypass (Custom Permission, or Custom Setting if that is the org's convention) if they don't exist yet.
 
 **When auditing (`validation-rule-auditor`):**
 

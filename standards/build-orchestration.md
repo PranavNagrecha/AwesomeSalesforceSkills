@@ -270,7 +270,7 @@ scale: ask (D=1 metadata type, S=2 skills with question tables, O=1 object, inte
 
 | | `ask` | `feature` | `project` |
 |---|---|---|---|
-| Clarification scope | only the cited skills' Questions-to-Ask rows, each with its proposed default; **one** round; ≤ 8 put to the human as blocking | those, plus one question per decision tree whose scope the requirement straddles (`standards/decision-trees/`); blocking questions are **not** capped at this tier — an integration feature legitimately asks 20–30 — answered in **one** round (a second round only when answers contradict each other); the tier is re-checked afterward only by the D/S/O/X recount (below), never by how many questions were asked | unchanged: every row of every cited skill plus the generic `admin/requirements-gathering-for-sf` set |
+| Clarification scope | the cited skills' Questions-to-Ask rows plus the generic set (below), each with its proposed default; **one** round; ≤ 8 put to the human as blocking | those (generic set included), plus one question per decision tree whose scope the requirement straddles (`standards/decision-trees/`); blocking questions are **not** capped at this tier — an integration feature legitimately asks 20–30 — answered in **one** round (a second round only when answers contradict each other); the tier is re-checked afterward only by the D/S/O/X recount (below), never by how many questions were asked | unchanged: every row of every cited skill plus the generic set |
 | Plan shape | 1 milestone, 1 step | 1 milestone, ≤ 5 steps | unchanged: 2–6 milestones |
 | Verification | verifier runs **once** — three lenses over the one step, refutation-only; no re-plan round unless a blocker is CRITICAL (below) | ≤ 2 rounds | unchanged |
 | Gates | two human decisions: `go` and `accept` | `clarifications`, `plan`, `milestone:M1` — plus a `step:<id>` record for every step the planner marks `human_gate: true` (credentials, permission sets, deletions), as § 3 requires | unchanged |
@@ -287,6 +287,19 @@ six-over-the-limit; `set-plan`/`validate`'s § 3.1 sizing-rule check is a WARN
 only, never an ERROR (§ 3.1 "CLI deltas": an ERROR here would turn a re-tier
 into a re-plan), so a plan carrying this step and reading the WARN applies the
 carve-out by inspection rather than needing the CLI to special-case the count.
+
+**The generic set applies at every tier.** The generic set — every row of
+`skills/admin/requirements-gathering-for-sf` § Questions to Ask Before Configuring
+— is harvested at `ask`, `feature` and `project` alike, tagged with that skill's
+`source_skill` id, and counts as one skill toward S. Evidence: all five committed
+builds carry it — `opp-amount-lock` (`ask`) as 6 rows (Q6 volume, Q7 data origin,
+Q10 as-is workaround, Q11 sharing, Q12 who edits, Q13 reporting) plus the
+exception-path row folded into Q3 via `also_asked_by`; `tier2-webhook` and
+`cold-start-case-escalation-email` (`feature`) as 5 rows (plus one folded) and 7;
+`northwind-sales` (`project`) as 7; `case-onboarding` (unscaled) as 6 (plus one folded). The
+volume question is the one a topic skill most often assumes away. At `ask` its
+informational rows pre-fill from `proposed_default` like any other, so the cost
+is the blocking ones only.
 
 The ≤ 8 is **not** a cap on the harvest. § 3's "questions are never capped" and
 the schema's "Never capped" both still hold: every row of every cited question

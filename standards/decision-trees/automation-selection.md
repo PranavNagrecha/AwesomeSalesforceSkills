@@ -38,6 +38,7 @@ START: User or system needs to react to something.
 
 Q1. What triggers the work?
     ├── A record change                                                 → Q2
+    ├── A save that must be REJECTED with an error message              → Q16
     ├── A user clicking a button or filling a form                      → Q7
     ├── A natural-language request from a user                          → Agentforce topic + invocable Apex action
     ├── A scheduled clock ("every night at 2am")                        → Q10
@@ -210,6 +211,49 @@ Execution* list; positions are the guide's own numbering.
 
 ---
 
+## Rejecting a save (Q16)
+
+Reached from Q1 when the requirement is not "do something on save" but "refuse
+this save and say why". Three mechanisms can reject one, and the Apex Developer
+Guide's *Triggers and Order of Execution* list (apexdev corpus L15643-L15647)
+puts them in this order: before-save record-triggered flows (step 3), then
+before triggers (step 4), then custom validation rules (step 5). Take the
+cheapest one that can see everything the condition needs.
+
+```
+Q16. What does the condition that rejects the save need to read?
+     ├── Only fields on the saved record (a formula can express it)   → Validation rule · `admin/validation-rules`
+     │                                                                  (canonical shape: `templates/admin/validation-rule-patterns.md`)
+     ├── Related records or branching a formula cannot express,
+     │   and no code is needed                                        → Before-save record-triggered Flow with a Custom Error
+     │                                                                  element · `flow/record-triggered-flow-patterns`
+     └── Cross-object lookups in bulk, a callout, shared logic with
+         other triggers, or a condition the Flow limits (Q3) rule out → Apex `addError()` in a before trigger
+                                                                        · `apex/trigger-framework`
+```
+
+- **Validation rule** — take this leaf by default: it is an admin-owned formula,
+  needs no test class, and shows its message inline on a field or at the top of
+  the page. It cannot query related records beyond what a formula can span, and
+  it runs at step 5, so an earlier before-save flow or before trigger has
+  already had its say. Give it a bypass (custom permission preferred).
+- **Before-save Flow with a Custom Error** — take this leaf when the rule needs a
+  Get Records lookup or several branches but no code. The Metadata API models the
+  element as `Flow.customErrors` holding `FlowCustomErrorMessage` entries, each
+  with a required `errorMessage` and `isFieldError`, which shows the message
+  inline on the field named in `fieldSelection` when true and in a window on the
+  record page when false (api_meta corpus L70631, L72614-L72626). It runs at
+  step 3, before triggers and validation rules.
+- **Apex `addError()`** — take this leaf when the condition crosses objects in
+  bulk, needs a callout, or already lives in a trigger handler; `addError()` on
+  the record or one of its fields from a before trigger blocks the save
+  (apexdev corpus L2498-L2502 for field-level, L15448-L15453 for the
+  `Trigger.oldMap.get(...).addError(...)` pattern). Prefer one handler per object
+  over a second trigger; see `apex/trigger-and-flow-coexistence` when a
+  before-save flow on the same object also writes.
+
+---
+
 ## Cheat sheet
 
 | Requirement | First choice | Second choice | Never |
@@ -268,7 +312,9 @@ Do NOT graduate to Apex because:
 
 - `admin/flow-for-admins` — declarative-first automation decisions
 - `flow/record-triggered-flow-patterns` — the Flow of choice for this tree
-- `apex/trigger-framework` — where to go when Flow isn't enough
+- `apex/trigger-framework` — where to go when Flow isn't enough; also Q16's `addError()` leaf
+- `admin/validation-rules` — Q16's default leaf: reject a save with a formula
+- `apex/trigger-and-flow-coexistence` — Q16: a before-save flow and a before trigger on the same object
 - `apex/async-apex` — paired with the async selection tree below
 - `agentforce/agentforce-agent-creation` — conversational automation
 - `architect/platform-selection-guidance` — org-wide strategic defaults

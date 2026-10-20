@@ -29,14 +29,15 @@ Scans a Salesforce DX metadata tree and reports, by severity:
          package), so it is not an error.
 
 A run that read no files at all prints "Scanned 0 file(s)" rather than a
-summary of zero findings: a tree with no custom permission, no permission
-set or profile and no consumer file in it has not been cleared, it has not
-been checked.
+summary of zero findings and counts it as a WARN: a tree with no custom
+permission, no permission set or profile and no consumer file in it has not
+been cleared, it has not been checked. It exits 0 normally and 1 under
+--strict.
 
 Exit codes:
   0 -- no ERROR (and no WARN when --strict is passed)
-  1 -- at least one ERROR, or at least one WARN under --strict
-  2 -- the manifest directory does not exist
+  1 -- at least one ERROR, or at least one WARN under --strict, or the
+       manifest directory does not exist
 
 Uses stdlib only -- no pip dependencies.
 
@@ -411,7 +412,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if not manifest_dir.is_dir():
         print(f"ERROR: Manifest directory not found: {manifest_dir}")
-        return 2
+        return 1
 
     print(f"Scanning: {manifest_dir.resolve()}")
     print()
@@ -439,6 +440,9 @@ def main(argv: list[str] | None = None) -> int:
     print_coverage_report(coverage_map, consumer_refs)
     print()
 
+    if not scanned and not errors and not warnings and not infos:
+        warnings.append("Scanned 0 file(s) — nothing asserted; check --manifest-dir")
+
     print_block("ERROR:", errors)
     print_block("WARN:", warnings)
     print_block("INFO:", infos)
@@ -447,9 +451,6 @@ def main(argv: list[str] | None = None) -> int:
         f"Summary: {len(errors)} error(s), {len(warnings)} warning(s), "
         f"{len(infos)} info."
     )
-
-    if not scanned and not errors and not warnings and not infos:
-        print("Scanned 0 file(s) — nothing asserted; check --manifest-dir")
 
     if errors:
         return 1

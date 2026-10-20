@@ -568,7 +568,11 @@ releases:
       custom-permissions --strict'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: '3.1 + clarifier Step 4 reconciled: generic set applies at every tier (evidence: all five committed plans carry
+      it, incl. ask); automation-selection Q16 reject-a-save branch (VR / before-save Flow customError / Apex addError) reachable,
+      tree lint 0 new warnings; VR template: ISCHANGED-on-insert UNVERIFIED, bypass = one of custom permission or setting;
+      custom-permissions checker --strict empty -> 1, missing -> 1; verify 12/12'
   - id: R2-28
     title: 'build_plan.py: WARN when a step owner is an experimental agent'
     size: S
