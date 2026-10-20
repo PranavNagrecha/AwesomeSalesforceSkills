@@ -330,14 +330,21 @@ releases:
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: running
+    status: done
     parent: R2-01
+    evidence: 'GRADE RIGHT-BUT-NOISY (bordering PARTLY-WRONG). Inventory 20 files correct, 6 comment refs missed, workflow
+      lines mis-filed under the approval file; renameMetadata/fullName/purgeOnDelete/Apex L155/LWC cascade/Data Loader claims
+      CORRECT (corpus264); P0-cap is the playbook rule (AGENT.md L217) but P1 justified via VR/approval formulas which Step
+      2 classes as reads; html field-name and email merge/errorDisplayField failure modes UNVERIFIABLE and left unclassified;
+      acceptance grep must be scoped to artefacts/ (reports/mock-deploy evidence also contains the name). Library defects
+      confirmed: probe regex (R2-19), custom-field-creation rename claim (R2-20), naming: Discount_Percent__c (L30 bans <4-char
+      abbreviations).'
   - id: R2-01-5
     title: 'Agent proof: /architect-perms (permission-set-architect) on a real input — personas in examples/builds/case-onboarding/CLARIFICATIONS.md;
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: todo
+    status: running
     parent: R2-01
   - id: R2-01-6
     title: 'Agent proof: /design-object (object-designer) on a real input — an object concept from examples/builds/northwind-sales/requirement.md;
@@ -456,6 +463,11 @@ releases:
   - id: R2-20
     title: 'custom-field-creation: API names CAN be renamed (renameMetadata); fix the claim and add the rename-vs-redeploy
       gotcha'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-21
+    title: 'field-impact-analyzer: scoped clean-grep, mandatory failure class per reference, consistent comment handling'
     size: S
     owner_model: sonnet
     status: todo
@@ -607,5 +619,12 @@ inbox:
     creation'' — contradicted by Metadata API renameMetadata() (api_meta 264 L6392-6426; CustomField extends Metadata L45455).
     Correct it: API name can be renamed in Setup / renameMetadata (Id and data kept); deploying a renamed file instead creates
     a second field; which org references cascade is UNVERIFIED'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'From agent proof R2-01-4: field-impact-analyzer playbook — scope the post-rename clean grep to artefacts/ (never the
+    reports/mock-deploy evidence); require every reference to carry an explicit failure class (deploy-fail / runtime-fail
+    / silent / UNVERIFIABLE) instead of leaving some unclassified; count comments consistently (all or none); after REFUSAL_MISSING_ORG
+    continue only when the caller explicitly asked for org-free, and say so'
   size: S
   slotted_into: 1.5.0
