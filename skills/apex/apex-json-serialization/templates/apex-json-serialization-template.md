@@ -35,7 +35,7 @@ Copy from SKILL.md Review Checklist and tick items as you complete them:
 - [ ] `JSON.deserialize` wrapped in try/catch for `TypeException`
 - [ ] `deserializeUntyped` result cast explicitly before use
 - [ ] Static fields not expected in serialized output
-- [ ] Large payloads sized against heap limit (6 MB sync / 12 MB async)
+- [ ] Large payloads sized against heap limit (10 MB sync / 25 MB async from Winter '27; 6 MB / 12 MB on a sandbox pinned to Summer '26 limits)
 - [ ] `JSON.deserializeStrict` used where extra fields must be rejected
 
 ## Notes

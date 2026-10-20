@@ -592,7 +592,7 @@ releases:
     title: 'record-access-troubleshooting: fix admin-bypass SOQL (PermissionSet. prefix)'
     size: S
     owner_model: sonnet
-    status: running
+    status: todo
   - id: R2-30
     title: 'check_apex_security_patterns: stale-claim rule per sentence and across comment continuation lines'
     size: S
@@ -608,6 +608,44 @@ releases:
     size: S
     owner_model: sonnet
     status: todo
+  - id: R3-05
+    title: 'Scale-out wave 1: Winter ''27 corrections across the remaining delta-listed skills, writer+adversarial-reviewer
+      pairs in batches of 9'
+    size: L
+    owner_model: opus
+    status: running
+    target: 45
+    floor: 18
+    domains:
+    - apex
+    - architect
+    - flow
+    - data
+    - admin
+    - agentforce
+    - devops
+    notes: 'Owner rule 2026-10-19: recipe PASSED (0/20 -> 20/20) so scale with sub-agent pairs, two agents max. Batches C
+      (c14eadaec) and D are labelled ''R2-29 C/D'' in their commit subjects by mistake; R2-29 is the SOQL defect. Batch E
+      (9 heap-stale admin/agentforce/architect/data/devops/flow skills) writing.'
+    done_skills:
+    - apex/apex-limits-monitoring
+    - apex/apex-queueable-patterns
+    - apex/callouts-and-http-integrations
+    - apex/governor-limit-recovery-patterns
+    - apex/apex-collections-patterns
+    - architect/limits-and-scalability-planning
+    - data/soql-query-optimization
+    - flow/flow-bulkification
+    - flow/flow-governor-limits-deep-dive
+    - apex/apex-rest-services
+    - apex/apex-scheduled-jobs
+    - apex/apex-json-serialization
+    - apex/apex-email-services
+    - apex/change-data-capture-apex
+    - apex/custom-iterators-and-iterables
+    - apex/dynamic-apex
+    - apex/long-running-process-orchestration
+    - apex/apex-blob-and-content-version
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -638,12 +676,6 @@ releases:
     title: 'case-onboarding: escalation scope, Tier 1 peer visibility, billing@ send-as, SuppliedEmail FLS + gotchas in two
       admin skills'
     size: M
-    owner_model: opus
-    status: todo
-  - id: R3-05
-    title: '[split before scheduling] Scale-out wave 1: Winter ''27 corrections across the remaining delta-listed skills (~45),
-      writer+reviewer pairs'
-    size: L
     owner_model: opus
     status: todo
   - id: R3-02
@@ -838,7 +870,7 @@ inbox:
     (worktree, merge release/1.5.0 first) -> Opus adversarial reviewer -> rsync -> sync/validate -> commit; measure with a
     10-probe extension of winter27-probes drawn from those skills'
   size: L
-  slotted_into: 1.6.0
+  slotted_into: 1.5.0 (R3-05)
 - date: 2026-10-19
   ask: 'Found by the re-run of proof 2: skills/security/record-access-troubleshooting SKILL.md:134-138 (and llm-anti-patterns)
     admin-bypass SOQL selects PermissionsViewAllData/PermissionsModifyAllData directly from PermissionSetAssignment; those

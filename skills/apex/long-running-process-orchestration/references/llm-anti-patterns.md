@@ -211,7 +211,7 @@ public class StepOneQueueable implements Queueable, Database.AllowsCallouts {
 
 Prose in an architecture or design doc:
 
-> "Salesforce imposes hard transaction limits: 60,000 ms CPU, 100 SOQL, 150 DML, 12 MB heap, and a 10-second total callout timeout. Because our sync step makes four callouts averaging four seconds, we must split it across four Queueables."
+> "Salesforce imposes hard transaction limits: 60,000 ms CPU, 200 SOQL, 150 DML, 25 MB heap, and a 10-second total callout timeout. Because our sync step makes four callouts averaging four seconds, we must split it across four Queueables."
 
 …and the sibling arithmetic error, "each callout can run up to 10 seconds, for a combined 120-second total".
 

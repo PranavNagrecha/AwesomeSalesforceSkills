@@ -411,7 +411,7 @@ File: `force-app/main/default/PlatformEventSubscriberConfigs/AccountChangeEventT
 
 **How to read it:**
 
-- `batchSize` is 1 through 2,000 and the default is 2,000; "We don't recommend setting the batch size to 1… Small batch sizes can slow down the processing of event messages" (`api_meta` L96416–96424). Lower it because a full batch will not fit in 6 MB of heap (`apexdev` L19577), not as a general precaution.
+- `batchSize` is 1 through 2,000 and the default is 2,000; "We don't recommend setting the batch size to 1… Small batch sizes can slow down the processing of event messages" (`api_meta` L96416–96424). Lower it because a full batch will not fit in 10 MB of heap (`apexdev` 264 L19780; 6 MB before Winter '27), not as a general precaution.
 - Setting `user` moves the trigger off the Automated Process entity. The guide names four consequences: records are created as that user, `OwnerId` populates to that user, debug logs are created by that user, and **email can be sent, which is not supported from the default Automated Process user** (`api_meta` L96453–96465).
 - `numPartitions` (1–10) and `partitionKey` exist in API 62.0 and later (`api_meta` L96434–96452), but `partitionKey` is documented as the standard `EventUuid` field or a required custom field of the **custom platform event** the trigger subscribes to. A change event is not a custom platform event and has no `EventUuid`.
   - UNVERIFIED (2026-09-05): `api_meta` L96385–96386 scopes this whole type to "a platform event Apex trigger". That change event triggers are also configurable this way is stated only in the Change Data Capture Developer Guide, which is not in the grounding corpus. If the deploy is rejected, that is the answer.

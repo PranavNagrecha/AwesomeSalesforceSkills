@@ -39,9 +39,9 @@ outputs:
   - "resource scaffold with explicit status and JSON patterns"
   - "deployable resource + service + test class, `.cls-meta.xml`, `package.xml`, and a cURL contract probe"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 Use this skill when Salesforce itself is exposing a custom HTTP contract through Apex. The point is to keep the REST resource thin, explicit about sharing and validation, and predictable in its status codes and JSON behavior. A custom endpoint should be a deliberate choice, not the default substitute for standard APIs or internal Apex calls.

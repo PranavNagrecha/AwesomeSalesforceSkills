@@ -62,14 +62,14 @@ global with sharing class [YourHandlerName] implements Messaging.InboundEmailHan
             // --- 4. Process text attachments ---
             if (email.textAttachments != null) {
                 for (Messaging.InboundEmail.TextAttachment att : email.textAttachments) {
-                    // TODO: handle att.fileName, att.body, att.mimeTypeSubType
+                    // Replace with your handling of att.fileName, att.body, att.mimeTypeSubType
                 }
             }
 
             // --- 5. Process binary attachments ---
             if (email.binaryAttachments != null) {
                 for (Messaging.InboundEmail.BinaryAttachment att : email.binaryAttachments) {
-                    // TODO: persist att.body (Blob) to ContentVersion, then enqueue Queueable
+                    // Replace with: persist att.body (Blob) to ContentVersion, then enqueue Queueable
                     // ContentVersion cv = new ContentVersion(
                     //     Title = att.fileName,
                     //     PathOnClient = att.fileName,
@@ -207,7 +207,7 @@ Work through this before marking the implementation complete:
 - [ ] `textAttachments` null guard is in place before iteration
 - [ ] `binaryAttachments` null guard is in place before iteration
 - [ ] Attachment handling is sized against the **50 MB** email-services heap, counting *copies* (`EncodingUtil.base64Encode` ≈ 1.33× a second copy, `Blob.toString()` a third) rather than raw payload size — no arbitrary `att.body.size() > 1000000`-style guard, which is sized against the wrong ceiling and defers work that would have fit
-- [ ] Work is deferred to a Queueable for a fresh CPU/DML budget and a retry surface — **not** for more heap, since a Queueable *lowers* the ceiling from 50 MB to 12 MB; deferred work is sized against 12 MB
+- [ ] Work is deferred to a Queueable for a fresh CPU/DML budget and a retry surface — **not** for more heap, since a Queueable *lowers* the ceiling from 50 MB to 25 MB (12 MB before Winter '27); deferred work is sized against 25 MB
 - [ ] Email Service address is **Active** in Setup
 - [ ] `Accept Email From` is configured — not left blank for public-facing addresses
 - [ ] Error Action and Over Email Rate Limit settings are set intentionally

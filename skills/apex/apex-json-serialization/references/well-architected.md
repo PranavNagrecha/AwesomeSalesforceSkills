@@ -2,7 +2,7 @@
 
 ## Relevant Pillars
 
-- **Performance Efficiency** — JSON payloads contribute to heap consumption (6 MB sync / 12 MB async). Large payloads should use streaming `JSONGenerator`/`JSONParser` rather than loading the full object graph into memory. Null suppression via `suppressApexObjectNulls` reduces payload size and downstream parsing overhead.
+- **Performance Efficiency** — JSON payloads contribute to heap consumption (10 MB sync / 25 MB async from Winter '27, Apex Developer Guide 264 L19780; 6 MB / 12 MB through Summer '26). Large payloads should use streaming `JSONGenerator`/`JSONParser` rather than loading the full object graph into memory. Null suppression via `suppressApexObjectNulls` reduces payload size and downstream parsing overhead.
 - **Reliability** — Deserializing external JSON without catching `TypeException` and `JSONException` creates unhandled exceptions that abort transactions and can trigger duplicate processing on retry. All external deserialization must be wrapped in error handling.
 - **Security** — Avoid logging raw JSON payloads that may contain PII or credentials. Mask sensitive fields before serializing for audit trails.
 - **Operational Excellence** — Use structured error payloads (error code + message) rather than raw exception stack traces in API error responses.

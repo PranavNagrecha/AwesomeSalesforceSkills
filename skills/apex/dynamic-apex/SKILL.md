@@ -30,9 +30,9 @@ outputs:
   - "Schema describe caching pattern to avoid governor limit pressure"
   - "runtime type inspection example for polymorphic record processing"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-19
 ---
 
 # Dynamic Apex
@@ -47,7 +47,23 @@ Gather this context before working on anything in this domain:
 
 - Is the object API name or field list coming from user input, stored configuration, or code logic? User-supplied values require injection defenses; admin-configured values still need allowlist validation.
 - Does the code run in a user-facing context (AuraEnabled, LWC wire, REST endpoint) where FLS must be enforced, or a system context (Batch, Scheduled, admin utility) where that enforcement may be intentionally relaxed?
-- Is the schema inspection happening inside a loop? Describe calls count against governor limits and must be cached.
+- Is the schema inspection happening inside a loop? Describe calls have no count limit, but they spend CPU and heap and must be cached.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Where do the object and field names come from — user input, stored configuration, or code?" | `String.escapeSingleQuotes()` does not protect identifiers (Gotcha 3) | A Schema-describe allowlist for every name |
+| "Are filter values user-supplied?" | Concatenated values are the injection path that bind variables close (Core Concepts, SOQL Injection Prevention, defenses 1–2) | `Database.queryWithBinds` instead of string building |
+| "Does the code run in a user-facing context where CRUD and FLS must hold?" | The enforcement mode belongs in the `AccessLevel` argument (Salesforce-Specific Gotchas 3) | `AccessLevel.USER_MODE` on every dynamic query |
+| "Should an inaccessible field fail the request or be dropped?" | `WITH SECURITY_ENFORCED` throws rather than filters (Gotcha 5) | A deliberate fail-versus-strip choice |
+| "Is schema inspection inside a loop, a trigger or a batch?" | `Schema.getGlobalDescribe()` cost compounds in CPU and heap — 10 MB sync / 25 MB async from Winter '27 (apexdev 264 L19780) (Gotcha 1) | A `static` describe cache |
+| "Are Field Sets used, and can admins delete their fields?" | A deleted member field fails at describe or query time (Gotcha 2) | Member validation before the query is built |
+| "Are values written with `record.put()` from untyped input?" | A type mismatch surfaces only at DML (Gotcha 4) | Type checks via `DescribeFieldResult.getType()` before `put()` |
+
+A proper configuration adds an allowlist, an access mode and a describe cache; string-built dynamic SOQL without them works in the demo and fails on the first hostile input or large org.
 
 ---
 
@@ -81,9 +97,9 @@ Salesforce exposes schema metadata through several describe APIs:
 - `DescribeSObjectResult.fields.getMap()` — returns `Map<String, Schema.SObjectField>` of all fields on the object.
 - `Schema.SObjectField.getDescribe()` — returns `Schema.DescribeFieldResult`. Includes `isAccessible()`, `isCreateable()`, `isUpdateable()`, `getType()`, `getPicklistValues()`, `getReferenceTo()`, `getName()`.
 
-There is **no governor limit on the number of describe calls** in a transaction. Describe limits were removed and are no longer enforced in any API version — the Limits methods that once measured them (`Limits.getLimitDescribes()` and friends) were withdrawn, and `Limits.getChildRelationshipsDescribes()` is documented as "no longer available" for exactly that reason. Do not write code, tests, or review checklists that assert a describe-count ceiling; a `LimitException` from describe volume cannot occur.
+There is **no governor limit on the number of describe calls** in a transaction. Describe limits were removed and are no longer enforced in any API version — the Limits methods that once measured them (`Limits.getLimitDescribes()` and friends) were withdrawn, and `Limits.getChildRelationshipsDescribes()` is documented as "no longer available" for exactly that reason (Apex Reference Guide 262 L220528: "Because describe limits are no longer enforced in any API version, this method is no longer available"; the Winter '27 per-transaction limits table, apexdev 264 L19745–L19790, has no describe row). Do not write code, tests, or review checklists that assert a describe-count ceiling; a `LimitException` from describe volume cannot occur.
 
-Cache describes anyway, in `static` maps or class-level variables — the real cost is **CPU time and heap**, both of which are hard-limited (10,000 ms synchronous CPU, 6 MB synchronous / 12 MB asynchronous heap). `Schema.getGlobalDescribe()` in a large org materialises hundreds of `SObjectType` tokens on every call; doing that inside a loop is a CPU and heap problem, not a describe-count problem. Getting the *reason* right matters: a developer told the ceiling is 100 will "fix" a slow batch by counting describes instead of profiling `Limits.getCpuTime()`.
+Cache describes anyway, in `static` maps or class-level variables — the real cost is **CPU time and heap**, both of which are hard-limited (10,000 ms synchronous CPU, 10 MB synchronous / 25 MB asynchronous heap from Winter '27 — Apex Developer Guide 264 L19780, L19782; 6 MB / 12 MB through Summer '26 — a release-level change, whatever the class's `apiVersion`). `Schema.getGlobalDescribe()` in a large org materialises hundreds of `SObjectType` tokens on every call; doing that inside a loop is a CPU and heap problem, not a describe-count problem. Getting the *reason* right matters: a developer told the ceiling is 100 will "fix" a slow batch by counting describes instead of profiling `Limits.getCpuTime()`.
 
 ### SObjectType and Runtime Type Inspection
 
@@ -119,7 +135,7 @@ record.put('Field_API_Name__c', newValue);
 
 ### Performance: Caching Describe Calls
 
-Describe calls are not free. In a transaction that processes multiple objects or iterates over records, a naive implementation that calls `getDescribe()` per field per record will exhaust the 100-describe-call limit or introduce excessive CPU time.
+Describe calls are not free. In a transaction that processes multiple objects or iterates over records, a naive implementation that calls `getDescribe()` per field per record will burn CPU time and heap — describe calls have no count limit of their own, so the failure arrives as a CPU-time or heap `LimitException`.
 
 Cache pattern:
 
@@ -193,7 +209,7 @@ Declare the cache at the class level as `static final` so it is populated once p
 | Field API names come from a Field Set | Validate against field map, then concatenate | Field Sets are trusted but fields may be deleted; validate on each run |
 | Object name comes from custom metadata | Allowlist via `Schema.getGlobalDescribe()` lookup before use | Detects stale or invalid names before query is executed |
 | Inspecting picklist values or field type | `DescribeFieldResult.getType()` / `getPicklistValues()` | Only reliable runtime source; do not hard-code schema knowledge |
-| Processing thousands of records of multiple types | Cache describe results in static maps | 100-describe-call limit can be hit quickly without caching |
+| Processing thousands of records of multiple types | Cache describe results in static maps | Repeated describes burn CPU time and heap quickly without caching (there is no describe-count limit) |
 | Reading a field value whose type is unknown | `record.get()` with explicit cast after `getType()` check | Prevents `SObjectException` at runtime |
 
 ---

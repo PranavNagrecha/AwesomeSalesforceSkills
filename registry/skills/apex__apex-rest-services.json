@@ -93,6 +93,7 @@
     "7c6f00412c33c69ccd3c",
     "7d96ca02a0b5af8fa776",
     "7df1123e1709b45d7372",
+    "7ed13fec3461dc82bb21",
     "83a0309824a33761554a",
     "84729add5cc64c993765",
     "86d08375e0513fb2e82c",
@@ -186,7 +187,7 @@
     "fe7b9c32e663edfa9831",
     "febb70492a2ae2437384"
   ],
-  "content_hash": "097d6b96587263d12534f53b2cc673d4d3b4ba8fd8a4a8daaf49cab639e4f280",
+  "content_hash": "561a815569f5a341c8caa81b704b305845f56c8dfe7828bbbfaec3d219f6fa06",
   "dependencies": [],
   "description": "Use when building, reviewing, or debugging inbound Apex REST resources, request/response handling, status codes, versioned URL mappings, or JSON serialization in `@RestResource` classes. Triggers: 'Apex REST', '@RestResource', 'HttpGet/HttpPost', 'RestContext', 'versioned endpoint', 'services/apexrest', 'urlMapping', 'RestRequest requestBody', 'RestResponse statusCode'. NOT for outbound callouts \u2014 use apex/callouts-and-http-integrations. NOT for a deprecation and sunset policy across many endpoints \u2014 use integration/api-versioning-strategy.",
   "file_location": "skills/apex/apex-rest-services",
@@ -236,7 +237,7 @@
   "templates": [
     "skills/apex/apex-rest-services/templates/apex-rest-services-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

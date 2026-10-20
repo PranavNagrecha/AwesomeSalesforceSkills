@@ -14,7 +14,7 @@ Dynamic SOQL and dynamic field access are high-risk surfaces because they shift 
 
 Describe calls are not capped by a dedicated governor limit. The Limits class documentation states that "describe limits are no longer enforced in any API version," and the per-transaction limits table lists no describe-count limit — so there is no `LimitException` to hit by describing too many objects or fields. Do not design around a describe budget, and do not write tests that assert one.
 
-Describes are still worth caching, but for cost rather than for a count limit: `Schema.getGlobalDescribe()` returns a map of every object in the org, so repeated calls consume CPU time and heap — both of which *are* governed (10,000 ms synchronous / 60,000 ms asynchronous CPU; 6 MB / 12 MB heap). In batch, trigger, or multi-object utilities that describe inside a loop, the failure mode is a CPU-time or heap limit, not a describe limit. Schema describe results do not change within a transaction, so caching them in a static map is a straightforward win.
+Describes are still worth caching, but for cost rather than for a count limit: `Schema.getGlobalDescribe()` returns a map of every object in the org, so repeated calls consume CPU time and heap — both of which *are* governed (10,000 ms synchronous / 60,000 ms asynchronous CPU; 10 MB / 25 MB heap from Winter '27, Apex Developer Guide 264 L19780–L19782 — 6 MB / 12 MB through Summer '26). In batch, trigger, or multi-object utilities that describe inside a loop, the failure mode is a CPU-time or heap limit, not a describe limit. Schema describe results do not change within a transaction, so caching them in a static map is a straightforward win.
 
 Dynamic SOQL also bypasses compile-time query binding, meaning selective filter analysis must be validated at design time rather than relying on the optimizer to do it. Poor filter selectivity in dynamic queries produces the same large-scan behavior as in static SOQL but is harder to detect in code review.
 
@@ -30,7 +30,7 @@ Strict enforcement fails the entire query if any field is inaccessible — that 
 
 ## Anti-Patterns
 
-1. **Describe calls inside iteration loops** — calling `getGlobalDescribe()` or `getDescribe()` per record in a list multiplies describe-call cost by the record count. In any scenario with more than a handful of records this approaches or exceeds the 100-call limit. Cache describe results at the class level and access them inside loops.
+1. **Describe calls inside iteration loops** — calling `getGlobalDescribe()` or `getDescribe()` per record in a list multiplies describe-call cost by the record count. There is no describe-count limit, but in any scenario with more than a handful of records the repeated work spends CPU time and heap, which are limited. Cache describe results at the class level and access them inside loops.
 
 2. **Trusting configuration or user input as a field name without Schema validation** — an admin-entered field name from custom metadata or a UI parameter that is concatenated into a query without validating it against `fields.getMap()` will throw a `QueryException` if the field does not exist (e.g., after a rename or deletion). All field names from external sources must be validated against the live schema before query construction.
 

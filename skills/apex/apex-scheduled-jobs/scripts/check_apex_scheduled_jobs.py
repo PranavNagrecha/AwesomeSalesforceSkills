@@ -336,7 +336,7 @@ def check_file(path: Path, raw: str) -> list[Finding]:
                     WARN, path, line, "R1-thin-execute",
                     f"execute(SchedulableContext) contains {soql} SOQL and {dml} DML "
                     "operation(s), which is more than a dispatch. Scheduled Apex runs "
-                    "under SYNCHRONOUS governor limits (100 SOQL / 6 MB heap / 10,000 ms "
+                    "under SYNCHRONOUS governor limits (100 SOQL / 10 MB heap / 10,000 ms "
                     "CPU); the guide recommends \"all processing must take place in a "
                     "separate class\". Delegate to Batch or Queueable.",
                 ))

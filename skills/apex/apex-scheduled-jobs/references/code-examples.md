@@ -19,9 +19,9 @@ per claim in the "How to read it" list.
   (apexdev L16628–16632). `public` is the right default; `global` is only needed when the class
   crosses a managed-package namespace boundary.
 - **The scheduled body runs under *synchronous* governor limits.** "Although scheduled Apex is an
-  asynchronous feature, synchronous limits apply to scheduled Apex jobs" (apexdev L19536). That is
-  100 SOQL queries, 6 MB heap, 10,000 ms CPU — not the async 200 / 12 MB / 60,000 ms
-  (apexdev L19544–L19579). This is the concrete reason `execute()` stays a dispatcher; the guide
+  asynchronous feature, synchronous limits apply to scheduled Apex jobs" (apexdev 264 L19739). That is
+  100 SOQL queries, 10 MB heap, 10,000 ms CPU — not the async 200 / 25 MB / 60,000 ms
+  (apexdev 264 L19747–L19782; Winter '27 — the heap pair was 6 MB / 12 MB through Summer '26). This is the concrete reason `execute()` stays a dispatcher; the guide
   itself recommends "all processing must take place in a separate class" (apexdev L16972).
 - **`Database.executeBatch` and `System.enqueueJob` counts differ inside `execute()`.** Because
   synchronous limits apply, up to 50 jobs can be added with `System.enqueueJob` from a
@@ -72,7 +72,7 @@ Canonical building blocks referenced rather than re-invented:
  * Why so thin: scheduled Apex runs under SYNCHRONOUS governor limits
  * (Apex Developer Guide, Per-Transaction Apex Limits note: "Although scheduled Apex is
  * an asynchronous feature, synchronous limits apply to scheduled Apex jobs") — 100 SOQL,
- * 6 MB heap, 10,000 ms CPU. Real work belongs in the batch.
+ * 10 MB heap (Winter '27+; 6 MB before), 10,000 ms CPU. Real work belongs in the batch.
  *
  * `public` (not `global`) is deliberate: the guide requires the execute method be
  * "global or public". Use `global` only to expose this across a managed-package namespace.

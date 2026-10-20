@@ -34,9 +34,9 @@ triggers:
 dependencies:
   - apex/apex-queueable-patterns
   - apex/platform-events-apex
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-10-19
 ---
 
 # Long-Running Process Orchestration
@@ -50,7 +50,7 @@ Use this skill when a business process must span multiple Apex transactions, can
 Gather this context before working on anything in this domain:
 
 - How many discrete steps does the process have, and are they sequential, parallel, or conditional?
-- Can each step complete within a single Apex transaction (60 000 ms CPU, 100 SOQL, 150 DML)? If any step may exceed those limits, it needs its own Queueable or Batch boundary.
+- Can each step complete within a single asynchronous Apex transaction (60 000 ms CPU, 200 SOQL, 150 DML, 25 MB heap from Winter '27 for every class whatever its `apiVersion` — 12 MB before; apexdev 264 L19747–L19782)? If any step may exceed those limits, it needs its own Queueable or Batch boundary.
 - Which steps involve callouts? Callout steps require `Database.AllowsCallouts` on their Queueable class.
 - Where does progress need to be visible — operations dashboard, record field, email notification? This shapes the checkpoint mechanism.
 - What is the correct recovery behavior when step N fails? Should the whole process abort, retry step N, or skip to a compensating action?
@@ -58,11 +58,27 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "How many steps are there, and how deep can the chain get?" | `MaximumQueueableStackDepth` does not propagate to child jobs (Gotcha 1) | A depth option re-set on every `enqueueJob` |
+| "Does any step publish a platform event to advance the state machine?" | Events published before a rolled-back commit are still delivered (Gotcha 2) | Publish-after-commit behaviour, or state checked by the subscriber |
+| "Who must learn that a step failed, and how?" | A failing Finalizer is silent unless it logs (Gotcha 3) | A durable log or alert written from the Finalizer |
+| "What is the recovery rule when step N fails — abort, retry, or compensate?" | An uncaught failure ends the Queueable's transaction; the Finalizer runs in its own transaction and is where recovery for that case lives (Gotcha 3) | A per-step recovery table in the design |
+| "How will the depth guard be tested?" | `getCurrentQueueableStackDepth()` returns 0 in a synchronous test (Gotcha 4) | A test that injects the depth instead of reading it |
+| "Do any steps need to fan out to parallel children?" | A Queueable cannot enqueue more than one child (Gotcha 5) | A Batch or event-driven fan-out instead |
+| "Which steps make callouts, and from what context?" | `Continuation` works only in LWC, Aura and Visualforce controller actions (Gotcha 6) | Queueables with `Database.AllowsCallouts` for non-UI steps |
+
+A proper configuration adds a depth guard, a failure channel and a recovery rule per step; a chain of Queueables without them finishes in testing and stalls invisibly in production.
+
+---
+
 ## Core Concepts
 
 ### Why Single Transactions Are Insufficient
 
-Salesforce imposes hard transaction limits per execution context: 60 000 ms CPU (asynchronous), 100 SOQL queries, 150 DML statements, 12 MB heap (asynchronous), a maximum of 100 callouts, and a **cumulative callout timeout of 120 seconds per transaction**.
+Salesforce imposes hard transaction limits per execution context: 60 000 ms CPU (asynchronous), 200 SOQL queries (asynchronous; 100 synchronous), 150 DML statements, 25 MB heap (asynchronous, Winter '27 — 12 MB through Summer '26; Apex Developer Guide 264 L19747, L19757, L19780, L19782), a maximum of 100 callouts, and a **cumulative callout timeout of 120 seconds per transaction**.
 
 That 120-second figure is the one to design against, and it is routinely mis-stated as 10 seconds. Ten seconds is the *default* timeout for a **single** callout, and it is not a ceiling: `HttpRequest.setTimeout()` accepts 1–120,000 ms, in both synchronous and asynchronous Apex. So one callout may legitimately run for the full two minutes, or twelve callouts may run for ten seconds each — what you cannot do is exceed 120 seconds *summed across every callout in the transaction*. A process that must send 20 batched callouts against a slow service, process thousands of records in sequential dependency steps, or wait for external system responses cannot fit in one transaction. Multi-step orchestration is the platform-endorsed pattern for these cases: each step runs in its own transaction with a full allocation of governor limits, and state advances through controlled async handoffs.
 

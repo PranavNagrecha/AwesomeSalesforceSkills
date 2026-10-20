@@ -82,7 +82,7 @@ public with sharing class AccountOppExportBatch
 
 **Context:** A product image URL lives on an external CDN. When a Product2 is created, a trigger must fetch the image and attach it to the product record.
 
-**Problem:** Triggers cannot perform callouts. Developers sometimes try to bypass this with `@future(callout=true)`, but `@future` has a 12 MB heap limit and the response can overflow. Synchronous callout from the trigger throws `CalloutException`.
+**Problem:** Triggers cannot perform callouts. Developers sometimes try to bypass this with `@future(callout=true)`, but `@future` has a 25 MB heap limit (Winter '27; 12 MB before) and a callout response capped at 12 MB async (Apex Developer Guide 264 L19780, L20048–L20049), so a large image can still overflow. Synchronous callout from the trigger throws `CalloutException`.
 
 **Solution:**
 

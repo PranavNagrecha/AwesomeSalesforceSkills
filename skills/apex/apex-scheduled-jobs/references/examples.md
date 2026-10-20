@@ -65,7 +65,7 @@ private class StaleLeadCleanupSchedulerTest {
 }
 ```
 
-**Why it works:** The Schedulable acts purely as the timer and hands off to Batch Apex, which resets governor limits for each chunk of 200 records. That matters more than it first appears: the Schedulable body runs under *synchronous* limits (apexdev L19536), so it has 100 SOQL / 6 MB heap / 10,000 ms CPU to spend — less headroom than the Batch it dispatches, not more.
+**Why it works:** The Schedulable acts purely as the timer and hands off to Batch Apex, which resets governor limits for each chunk of 200 records. That matters more than it first appears: the Schedulable body runs under *synchronous* limits (apexdev 264 L19739), so it has 100 SOQL / 10 MB heap (Winter '27+; 6 MB through Summer '26) / 10,000 ms CPU to spend — less headroom than the Batch it dispatches, not more.
 
 ---
 

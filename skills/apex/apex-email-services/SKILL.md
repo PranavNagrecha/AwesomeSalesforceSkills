@@ -30,9 +30,9 @@ outputs:
   - "Attachment parsing strategy for TextAttachment and BinaryAttachment"
   - "Review checklist for production readiness"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-19
 ---
 
 # Apex Email Services
@@ -48,8 +48,24 @@ Gather this context before working on anything in this domain:
 - Confirm the org's **user license count**, not its edition — the inbound processing ceiling scales with licenses. "Email Services: Maximum Number of Email Messages Processed" is *"Number of user licenses multiplied by 1,000; maximum 1,000,000"*, and Salesforce *"limits the total number of messages that all email services combined, including On-Demand Email-to-Case, can process daily."* So it is an **org-wide daily pool**, not a per-service-address allowance: every email service in the org, plus On-Demand Email-to-Case, draws from the same number. Ten licenses means 10,000 messages a day across all of them. Messages over the ceiling are bounced, discarded, or queued for the next day depending on each service's failure-response setting.
 - Identify whether you need text parsing, HTML parsing, or binary attachment processing — these require different handler branches.
 - The most common wrong assumption: practitioners expect `handleInboundEmail` to run as the sender. It does not — it runs as the Email Service's configured **Context User**, and `email.fromAddress` is unverified header data at every API version. What its database operations enforce is gated by the `apiVersion` in the class's `.cls-meta.xml`, not by the org's release: at **66.0 and below** a handler declared without a sharing keyword runs in system mode, so no user permission enforcement applies unless you explicitly delegate to a helper class declared `with sharing`; at **67.0+** (Summer '26) that inverts and the bare class runs `with sharing` with SOQL/DML defaulting to user mode against the Context User. Read the `.cls-meta.xml` before assuming either. Canonical table: `agents/_shared/AGENT_CONTRACT.md` § *Apex security idiom by API version*.
-- Email Services run synchronously per message. Governor limits apply to the full handler execution: 100 SOQL queries, 150 DML statements, and a heap of **50 MB** — email services get their own elevated heap allocation, not the 6 MB synchronous / 12 MB asynchronous figure that applies to ordinary Apex. Size your attachment handling against 50 MB, and note that heap is consumed by *transformations* of a Blob (base64-encoding, `toString()`, string concatenation), each of which allocates a fresh copy, not by holding the original Blob once. The largest payload that can reach the handler is capped upstream: "Email Services: Maximum Size of Email Message (Body and Attachments)" is **25 MB**, measured across body text, HTML, and all attachments together.
+- Email Services run synchronously per message. Governor limits apply to the full handler execution: 100 SOQL queries, 150 DML statements, and a heap of **50 MB** — email services get their own elevated heap allocation (apexdev 264 L19853), not the 10 MB synchronous / 25 MB asynchronous figure that applies to ordinary Apex from Winter '27 (apexdev 264 L19780; 6 MB / 12 MB through Summer '26, and in Winter '27 on a nonproduction org that sets `ApexSettings.enableEnforceSummer26ApexHeapLimit`, api_meta 264 L113855–L113862; the ordinary-Apex rise is release-level, not tied to the class's `apiVersion`). Size your attachment handling against 50 MB, and note that heap is consumed by *transformations* of a Blob (base64-encoding, `toString()`, string concatenation), each of which allocates a fresh copy, not by holding the original Blob once. The largest payload that can reach the handler is capped upstream: "Email Services: Maximum Size of Email Message (Body and Attachments)" is **25 MB**, measured across body text, HTML, and all attachments together.
 - The Email Service address must be **activated** in Setup. An inactive address silently drops all inbound mail.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Who activates the Email Service address in each org after deploy?" | An inactive address discards mail with no bounce and no error (Gotcha 1) | A post-deploy activation step and a smoke-test email |
+| "Which context user runs the service, and at what API version is the handler saved?" | The handler runs as the context user and its default access mode inverted at API 67.0 (Gotcha 2) | An explicit sharing keyword and a context user with only the access it needs |
+| "Will senders attach files, and of which kind — text or binary?" | Attachment lists are `null`, not empty, when absent (Gotcha 3) | Null guards on both lists |
+| "How large is the biggest attachment, and what does the handler do to it?" | Email-services heap is 50 MB, but each Blob transformation allocates another full copy (Gotcha 4) | An inline-versus-persist decision sized by copies, not by payload |
+| "Is any of the work deferred to a Queueable?" | The Queueable gets the ordinary 25 MB async heap from Winter '27 (12 MB before) — less than the handler's 50 MB (Gotcha 4) | Deferred work sized against the right ceiling |
+| "Will senders send HTML-only or plain-text-only mail?" | Either body field can be `null` (Salesforce-Specific Gotchas 3) | Both paths handled and tested |
+| "How will the handler be tested with realistic mail?" | Tests cannot send real email; `Messaging.InboundEmail` must be constructed directly (Gotcha 5) | Fixtures with large attachments and both body shapes |
+
+A proper configuration adds an activated address, a deliberate run-as user and a heap budget per path; deploying the handler class alone produces a service that can drop mail silently or fail on the first large attachment.
 
 ---
 
@@ -101,7 +117,7 @@ Two attachment types exist, mapped separately:
 
 CSV, plain text, and XML files arrive as `TextAttachment` when the MIME type is text-based. Images, PDFs, and binary formats arrive as `BinaryAttachment`. Handlers must check both lists and apply defensive null checks — either list can be null if no attachments of that type exist.
 
-Attachments are processed **synchronously** inside your handler's governor limit budget. The inbound message as a whole — body plus all attachments — is capped at **25 MB**, so that is the ceiling on what can arrive, against the 50 MB email-services heap allocation. Heap is consumed by *transforming* the payload rather than by receiving it: converting a `Blob` to a `String` (e.g., `EncodingUtil.base64Encode`, `Blob.toString()`) allocates a fresh full-size copy each time, and two or three copies of a large attachment will exhaust 50 MB. Use chunked processing, or persist the Blob and defer the heavy work to a `Queueable` called from within the handler — sizing that Queueable's work against the 12 MB asynchronous heap limit rather than the handler's 50 MB.
+Attachments are processed **synchronously** inside your handler's governor limit budget. The inbound message as a whole — body plus all attachments — is capped at **25 MB**, so that is the ceiling on what can arrive, against the 50 MB email-services heap allocation. Heap is consumed by *transforming* the payload rather than by receiving it: converting a `Blob` to a `String` (e.g., `EncodingUtil.base64Encode`, `Blob.toString()`) allocates a fresh full-size copy each time, and two or three copies of a large attachment will exhaust 50 MB. Use chunked processing, or persist the Blob and defer the heavy work to a `Queueable` called from within the handler — sizing that Queueable's work against the 25 MB asynchronous heap limit (12 MB before Winter '27) rather than the handler's 50 MB.
 
 ---
 
@@ -167,9 +183,9 @@ global class OrderEmailHandler implements Messaging.InboundEmailHandler {
 3. The Queueable performs the expensive parsing (CSV, base64 decode, PDF text extraction stubs, etc.) in a separate transaction with its own governor limits.
 4. Return `result.success = true` from the handler immediately — the email is accepted, processing continues asynchronously.
 
-**Why not synchronous:** The email-services heap ceiling is **50 MB**, not the 6 MB synchronous / 12 MB asynchronous figure for ordinary Apex — a 10–15 MB attachment does not blow heap by arriving. What exhausts it is in-line *transformation*: `EncodingUtil.base64Encode` allocates a second, ~33%-larger copy, `Blob.toString()` a third, and a parse loop one per iteration.
+**Why not synchronous:** The email-services heap ceiling is **50 MB**, not the 10 MB synchronous / 25 MB asynchronous figure for ordinary Apex (Winter '27+; 6 / 12 MB before) — a 10–15 MB attachment does not blow heap by arriving. What exhausts it is in-line *transformation*: `EncodingUtil.base64Encode` allocates a second, ~33%-larger copy, `Blob.toString()` a third, and a parse loop one per iteration.
 
-Be precise about what deferring buys you. A `Queueable` runs under the ordinary **12 MB** asynchronous heap limit, so moving work there *lowers* your heap ceiling from 50 MB — "defer it for more heap" is backwards. Defer for a fresh transaction with its own CPU and DML budget and a retry surface, and size the Queueable's work against 12 MB.
+Be precise about what deferring buys you. A `Queueable` runs under the ordinary **25 MB** asynchronous heap limit (Winter '27+; 12 MB before), so moving work there *lowers* your heap ceiling from 50 MB — "defer it for more heap" is backwards. Defer for a fresh transaction with its own CPU and DML budget and a retry surface, and size the Queueable's work against 25 MB (12 MB on an org still on Summer '26 limits).
 
 ### Pattern: Sender-Based Routing with Multiple Service Addresses
 

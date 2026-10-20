@@ -42,9 +42,9 @@ outputs:
   - Entity tracking configuration guidance
   - PlatformEventSubscriberConfig guidance when running user or batch size override is needed
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 # Change Data Capture Apex
@@ -61,7 +61,7 @@ Gather this context before working on anything in this domain:
 - **Is this a platform event?** If the event is manually published by application code (e.g., `EventBus.publish()`), use `apex/platform-events-apex` instead. CDC events are system-generated; they cannot be manually published.
 - **What operations need handling?** CDC triggers fire for CREATE, UPDATE, DELETE, and UNDELETE. Confirm which change types the business logic must react to — GAP events also require handling in production.
 - **Is synchronous callout needed?** CDC triggers run asynchronously under the Automated Process entity. Synchronous callouts from a CDC trigger are not supported. Use a queueable or @future(callout=true) dispatched from the trigger if callouts are required.
-- **Batch size:** 2,000 event messages per trigger invocation (`apexdev` L19862), against 6 MB of heap (`apexdev` L19577). Override with `PlatformEventSubscriberConfig` (`batchSize` 1–2,000; never 1 — `api_meta` L96416–96424).
+- **Batch size:** 2,000 event messages per trigger invocation (`apexdev` L19862), against 10 MB of heap from Winter '27 (`apexdev` 264 L19780; 6 MB through Summer '26, 262 L19577 — and in Winter '27 on a nonproduction org that sets `ApexSettings.enableEnforceSummer26ApexHeapLimit`, `api_meta` 264 L113855–113862; release-level, so a trigger saved at 67.0 gets 10 MB too). Override with `PlatformEventSubscriberConfig` (`batchSize` 1–2,000; never 1 — `api_meta` L96416–96424).
 - **Does redelivery matter?** Nothing in Apex deduplicates change events. If the downstream effect is not naturally idempotent, the dedupe key is `transactionKey` + `sequenceNumber` (`apexrefguide` L157420–157441) and it needs a store — `references/code-examples.md` Artifact 5.
 - **Is the field you want to watch a formula field?** If so, it will never appear in `changedFields` (`object_reference` L5157–5163). Watch its stored inputs instead.
 
@@ -80,7 +80,7 @@ metadata, and each maps to a gotcha in `references/gotchas.md`.
 | "When the platform cannot generate a full event, what should happen?" | Decides the `GAP_*` / `GAP_OVERFLOW` branch (`apexrefguide` L157298–157304). A subscriber with no gap branch drifts silently | A named resync action and something that counts it, rather than a `changeType` chain that falls through to nothing |
 | "Can the downstream effect of this handler itself change the same object?" | Decides whether `changeOrigin` must be read. It is "only populated for changes done by API apps or from Lightning Experience" and exists to "detect whether your app initiated the change to not process the change again and potentially avoid a deep cycle of changes" (`apexrefguide` L157197–157200) | A loop-breaker chosen deliberately — `changeOrigin`, a control flag, or `apex/recursive-trigger-prevention` — instead of a cycle discovered by a runaway event count |
 | "Who owns the records this handler creates, and does it ever send email?" | The subscriber runs as the Automated Process entity by default, which cannot send email, and Automated Process users "can't perform Object and FLS checks in custom code unless appropriate permission sets are explicitly applied" (`api_meta` L96453–96465, `apexdev` L11921–11922) | A `PlatformEventSubscriberConfig` with a real `user`, or a written decision that Automated Process is correct plus the permission sets it needs |
-| "How many events will one invocation actually carry, and what will they weigh?" | The batch is 2,000, not 200 (`apexdev` L19862), against 100 SOQL / 150 DML / 6 MB heap (`apexdev` L19542, L19553, L19577) | A deliberate `batchSize` — never 1 (`api_meta` L96419–96424) — and a handler that hydrates only the fields it consumes |
+| "How many events will one invocation actually carry, and what will they weigh?" | The batch is 2,000, not 200 (`apexdev` L19862), against 100 SOQL / 150 DML / 10 MB heap (`apexdev` 264 L19747, L19757, L19780; 6 MB before Winter '27) | A deliberate `batchSize` — never 1 (`api_meta` L96419–96424) — and a handler that hydrates only the fields it consumes |
 
 What a proper configuration adds over just writing the trigger: CDC enablement ships as metadata
 instead of a Setup click that nobody repeats in the next org, redelivery cannot duplicate downstream
@@ -105,7 +105,7 @@ trigger AccountChangeEventTrigger on AccountChangeEvent (after insert) {
 CDC triggers:
 - Execute **asynchronously** after the originating database transaction commits. They run outside the originating Apex transaction. UNVERIFIED (2026-09-05): stated in the Change Data Capture Developer Guide; the Apex Developer Guide, Apex Reference Guide and Object Reference do not state the delivery timing of a change event trigger.
 - Run under the **Automated Process** entity, not the user who performed the DML — `api_meta` L96461–96462 ("By default, the platform event trigger runs as the Automated Process entity"). Debug logs must be configured for the Automated Process entity; setting a `user` in `PlatformEventSubscriberConfig` moves them, because "debug logs for the trigger execution are created by this user" (`api_meta` L96464).
-- Are subject to **synchronous Apex governor limits** despite running asynchronously: 100 SOQL, 150 DML, 6 MB heap, 10,000 ms CPU (`apexdev` L19542, L19553, L19577, L19579). UNVERIFIED (2026-09-05): that a *change event trigger* falls in the synchronous column rather than the asynchronous one is stated in the Change Data Capture Developer Guide, not in the Apex guides. Do not infer it from the word "asynchronous" — see `references/llm-anti-patterns.md` Anti-Pattern 7.
+- Are subject to **synchronous Apex governor limits** despite running asynchronously: 100 SOQL, 150 DML, 10 MB heap (Winter '27+; 6 MB before), 10,000 ms CPU (`apexdev` 264 L19747, L19757, L19780, L19782). UNVERIFIED (2026-09-05): that a *change event trigger* falls in the synchronous column rather than the asynchronous one is stated in the Change Data Capture Developer Guide, not in the Apex guides. Do not infer it from the word "asynchronous" — see `references/llm-anti-patterns.md` Anti-Pattern 7.
 - Have a maximum batch size of **2,000 event messages** per execution — "The Apex trigger batch size for platform events and Change Data Capture events is 2,000" (`apexdev` L19862). Multiple batches fire if more events are queued.
 - Can be configured with `PlatformEventSubscriberConfig` (Metadata API, `batchSize` 1–2,000 and `user`; `api_meta` L96385–96480) to override the running user identity and default batch size. UNVERIFIED (2026-09-05): `api_meta` L96385–96386 scopes this type to "a platform event Apex trigger"; that change event triggers are in scope is a Change Data Capture Developer Guide claim.
 - Cannot enqueue one Queueable per event: `System.enqueueJob` allows 50 calls in a synchronous context and **1** in an asynchronous one (`apexdev` L19571). Enqueue once per invocation, after the loop.
@@ -410,7 +410,7 @@ trigger ContactChangeEventTrigger on ContactChangeEvent (after insert) {
 
 4. **GAP events carry no field values** — A gap event fires when the full change event cannot be generated (event too large, bulk bypass, internal error). The event body is empty; only `recordIds` and the GAP-prefixed `changeType` are available. Apex code that skips the GAP check and falls through to field access will read null fields and silently skip the change. Production CDC subscribers must include explicit GAP handling that queues a record re-fetch.
 
-5. **CDC triggers are subject to synchronous governor limits** — Despite running asynchronously, CDC triggers consume Apex **synchronous** limits (100 SOQL, 150 DML operations, **6 MB heap**) per batch invocation. Read that heap number carefully: it is the synchronous 6 MB, *not* the 12 MB an asynchronous context would suggest — the "runs asynchronously" framing is exactly what misleads people into budgeting double. A batch of 2,000 events that naively issues one SOQL per event will hit the 100-SOQL limit; 2,000 events plus their queried parent records against 6 MB is a real heap constraint, not a theoretical one. Always collect IDs across the full `Trigger.new` loop and issue bulk SOQL outside the loop, and keep only the fields you need.
+5. **CDC triggers are subject to synchronous governor limits** — Despite running asynchronously, CDC triggers consume Apex **synchronous** limits (100 SOQL, 150 DML operations, **10 MB heap** from Winter '27 — 6 MB before) per batch invocation. Read that heap number carefully: it is the synchronous 10 MB, *not* the 25 MB an asynchronous context would suggest (`apexdev` 264 L19780) — the "runs asynchronously" framing is exactly what misleads people into budgeting 2.5× the heap they have. A batch of 2,000 events that naively issues one SOQL per event will hit the 100-SOQL limit; 2,000 events plus their queried parent records against 10 MB is a real heap constraint, not a theoretical one. Always collect IDs across the full `Trigger.new` loop and issue bulk SOQL outside the loop, and keep only the fields you need.
 
 ---
 

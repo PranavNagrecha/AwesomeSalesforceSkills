@@ -6,6 +6,8 @@
     "02ff487492c0c7a5007d",
     "0478f24f6af0c3d90be1",
     "055d91abc8fa2dc84164",
+    "07d8bd5dfacb2122ba4b",
+    "07dc0a07ffa2e3435dda",
     "08e57a8b147bb0288cac",
     "0925e01b8466ef7b96fb",
     "0c0480c761d76c9b12b9",
@@ -26,6 +28,7 @@
     "22042d7f7ec2605a8dd0",
     "252150b1ae595d499c4e",
     "255106c5872cd035bc84",
+    "267271bff7e79de26d19",
     "26cf2ab92a767c82f1c3",
     "293d3cbf6971d1b709ad",
     "2a9078098246186925c5",
@@ -39,8 +42,8 @@
     "3b029fb0649e386ef59c",
     "3c4978bdc579ecf46ba2",
     "3d3c02e45741d577515e",
+    "3db10bbc49216c83f9c1",
     "3e5032eef51ee1485a3d",
-    "4174e2c399d3905fc657",
     "41f3ac5a64a45564cc69",
     "42232f72ffe7b32c7a4d",
     "4491c6f83d9c1c2589d6",
@@ -64,7 +67,6 @@
     "630b29090a4603fb0103",
     "63bf7f5a18ef060a8dab",
     "6440e6788af662d95d39",
-    "64bd43cf4e71491680f0",
     "656688c52eb7f071ef65",
     "656a819a079ece61061a",
     "677b69674235bf7057bb",
@@ -87,11 +89,11 @@
     "804cef40c1b7b0357aec",
     "816af2be32d2cc84595a",
     "825aad0a8b29acddc0e3",
+    "85f28266d75343d2aaa4",
     "88b59aee7504de4a3185",
     "8a62328c9dc0ee5a5c61",
     "8e0e8373c1bf0f7a4d38",
     "8ecaadcfbc94f3eb9958",
-    "8f262c4523fcb17384c5",
     "91f4328d3b5c47433f98",
     "94007c9966e14bdb4f1e",
     "94658ff1cfe69aeb6741",
@@ -99,7 +101,6 @@
     "96b4e7961ed8fb3855fc",
     "97d84556b56df0716e82",
     "988f3c2745a868014835",
-    "9b0c18beba4adab9e46c",
     "9d518a012f450c9a87a6",
     "a0ddef0cb3bcabf349ba",
     "a1953eb43d28ec5ae9f7",
@@ -182,7 +183,7 @@
     "fe6e61778e8013b19902",
     "ff3c513088a5c20fb590"
   ],
-  "content_hash": "de7ad364a03ee5dd9f4f9e24e0c97343710c99ea7d5035257149f0c83bbec690",
+  "content_hash": "230c86ce8a364978daf8bf09c8f4c476bc2b1d340d986730cd2a4241076a958b",
   "dependencies": [],
   "description": "Use this skill when writing or reviewing Apex change event triggers: trigger syntax on ChangeEvent objects, reading ChangeEventHeader fields (changeType, changedFields, recordIds, commitUser), handling CREATE/UPDATE/DELETE/UNDELETE and GAP events in Apex, and configuring entity tracking. NOT for platform events published by application code (use apex/platform-events-apex). NOT for external CDC subscribers via CometD or Pub/Sub API (use integration/change-data-capture-integration). Keywords: AccountChangeEvent, MyObject__ChangeEvent, transactionKey, sequenceNumber, nulledFields, diffFields, changeOrigin, GAP_OVERFLOW, PlatformEventChannelMember, enrichedFields, PlatformEventSubscriberConfig, Test.enableChangeDataCapture, idempotent change event subscriber.",
   "file_location": "skills/apex/change-data-capture-apex",
@@ -197,7 +198,7 @@
   "official_sources": [
     "**Apex Reference Guide \u2014 `EventBus.ChangeEventHeader` class and properties** (`apexrefguide` L157167\u2013157447) \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/apex_ref_guide.pdf \u2014 the twelve header properties and their exact types and semantics: the `changeType` enumeration including `SNAPSHOT` and `GAP_OVERFLOW` (L157286\u2013157304), `changedFields` including `LastModifiedDate` (L157231\u2013157232), `nulledFields` as the way to tell null-set from unchanged (L157381\u2013157385), `diffFields` for large text (L157353\u2013157358), the `recordIds` merge rule and the `001*` wildcard (L157393\u2013157417), `commitNumber`'s non-uniqueness across database instances (L157306\u2013157310), `sequenceNumber` and the lead-conversion example (L157420\u2013157436), `transactionKey` (L157438\u2013157441), and the `changeOrigin` format and purpose (L157245\u2013157275).",
     "**Apex Reference Guide \u2014 `Test.enableChangeDataCapture()`** (`apexrefguide` L240419\u2013240437) \u2014 same PDF \u2014 the test-side contract: call it at the beginning of the test before DML and before `Test.getEventBus().deliver()`, and it fires triggers regardless of the entities selected in Setup, so a green test proves nothing about org enablement.",
-    "**Apex Developer Guide \u2014 Execution Governors and Limits** (`apexdev` L19540\u201319582) \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf \u2014 100/200 SOQL, 150 DML, **6 MB synchronous / 12 MB asynchronous heap** (L19577), 10,000/60,000 ms CPU, and `System.enqueueJob` at 50 synchronous but **1** asynchronous (L19571) \u2014 the number that caps \"dispatch to a Queueable\" advice.",
+    "**Apex Developer Guide \u2014 Execution Governors and Limits** (`apexdev` L19540\u201319582) \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf \u2014 100/200 SOQL, 150 DML, 10,000/60,000 ms CPU, `System.enqueueJob` at 50 synchronous but **1** asynchronous (L19571) \u2014 the number that caps \"dispatch to a Queueable\" advice \u2014 and **6 MB synchronous / 12 MB asynchronous heap** (L19577), the Summer '26 values. The Winter '27 guide (https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf L19780) raises the heap to **10 MB / 25 MB** as a release-level change for every class whatever its `apiVersion`; the other figures are unchanged (264 L19747, L19757, L19776, L19782). Metadata API Developer Guide 264 L113855\u2013113862: `ApexSettings.enableEnforceSummer26ApexHeapLimit` lets a nonproduction org keep the lower heap in Winter '27 only.",
     "**Apex Developer Guide \u2014 Static Apex Limits footnote 2** (`apexdev` L19862) \u2014 same PDF \u2014 \"The Apex trigger batch size for platform events and Change Data Capture events is 2,000.\" This is the only in-corpus statement of the CDC trigger batch size.",
     "**Apex Developer Guide \u2014 Enforcing Object and Field Permissions, and Versioned Behavior Changes** (`apexdev` L11921\u201311922, L11744\u201311748, L18734\u201318740) \u2014 same PDF \u2014 \"Automated Process users can't perform Object and FLS checks in custom code unless appropriate permission sets are explicitly applied to those users\", and the API 67.0 switch to user context by default with `with sharing` as the unstated default. Together these are the security-context gotcha for every CDC subscriber.",
     "**Apex Developer Guide \u2014 External Change Data Capture Packaging and Testing** (`apexdev` L29624\u201329685) \u2014 same PDF \u2014 the only in-corpus sample of a change event trigger (`on Products__ChangeEvent (after insert)`), of constructing an `EventBus.ChangeEventHeader` in a test, and of `event.ChangeEventHeader.getChangeType()`. It is an **External** CDC sample, which is why this package marks the constructed-event test pattern UNVERIFIED for platform CDC.",
@@ -240,7 +241,7 @@
   "templates": [
     "skills/apex/change-data-capture-apex/templates/change-data-capture-apex-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

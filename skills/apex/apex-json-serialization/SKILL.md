@@ -27,9 +27,9 @@ outputs:
   - "Serialized JSON string for callout payload or storage"
   - "Hydrated Apex object or Map<String,Object> from JSON response"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-19
+updated: 2026-10-19
 ---
 
 # Apex JSON Serialization
@@ -43,8 +43,24 @@ Use this skill when converting Apex objects to JSON strings for outbound callout
 Gather this context before working on anything in this domain:
 
 - Confirm whether the JSON shape is known at compile time (use typed deserialization) or dynamic (use `deserializeUntyped` or `JSONParser`).
-- Check heap constraints: large JSON payloads count toward the 6 MB sync / 12 MB async heap limit.
+- Check heap constraints: large JSON payloads count toward the 10 MB sync / 25 MB async heap limit (Winter '27, Apex Developer Guide 264 L19780; 6 MB / 12 MB through Summer '26, 262 L19577). In Winter '27 only, a nonproduction org can pin the lower pair with `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855–L113862), so test in the org whose limit you will hit. The heap rise is a release-level change, not a versioned behaviour: it applies to every class whatever the `apiVersion` in its `.cls-meta.xml` (heap is absent from the API 68.0 versioned-behaviour list, apexdev 264 L45116–L45128). Exceeding heap throws an uncatchable `System.LimitException` (apexdev 264 L19853).
 - Identify whether null fields in the output will cause downstream parsing failures — if so, use `suppressApexObjectNulls`.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Is the JSON shape fixed and known at compile time?" | `JSON.deserializeUntyped` returns `Object`; it must be cast to `Map<String,Object>` or `List<Object>` before use (Gotcha 4) | The choice between typed `JSON.deserialize` and untyped parsing with explicit casts |
+| "Does any consumer require null fields to be present (schema validation, explicit clears)?" | `suppressApexObjectNulls` drops them without error (Gotcha 1) | Whether to pass `true` at all |
+| "Must nested objects keep their nulls while the top level drops them?" | Null suppression is recursive through every nested Apex object (Gotcha 1) | A `JSONGenerator` path for the nodes that must keep nulls |
+| "Can the sender change a field's type, such as a number sent as a string?" | A type mismatch on a matched field throws `TypeException` (Gotcha 2) | A tolerant parse for that field instead of a failed transaction |
+| "Must unknown inbound fields be detected rather than ignored?" | Extra JSON fields with no Apex match are dropped silently (Gotcha 2) | An explicit validation step against the untyped map |
+| "Which fields must appear in the output, and are any static, transient or private?" | Those are excluded from `JSON.serialize` without warning (Gotcha 3) | A DTO with public instance fields for the wire shape |
+| "How large is the biggest payload, and is it a heterogeneous array?" | The whole parsed graph sits in heap — 10 MB sync / 25 MB async from Winter '27 (apexdev 264 L19780) — and streaming with `JSONParser` needs the cursor advanced before `readValueAs` (Gotcha 5) | A streaming design and the transaction context it runs in |
+
+A proper configuration adds a written serialization contract — field types, null policy, size budget — that survives the sender changing its payload; calling `JSON.serialize` on whatever object is at hand encodes today's shape and nothing else.
 
 ---
 
@@ -156,7 +172,7 @@ try {
 - [ ] `JSON.deserialize` wrapped in try/catch for `TypeException`
 - [ ] `deserializeUntyped` result cast explicitly before use
 - [ ] Static fields not expected in serialized output
-- [ ] Large payloads sized against heap limit (6 MB sync / 12 MB async)
+- [ ] Large payloads sized against heap limit (10 MB sync / 25 MB async from Winter '27; 6 MB / 12 MB on a sandbox pinned to Summer '26 limits)
 - [ ] `JSON.deserializeStrict` used where extra fields must be rejected
 
 ---

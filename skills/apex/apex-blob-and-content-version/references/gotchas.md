@@ -49,7 +49,7 @@ Blob bytes = EncodingUtil.base64Decode(body);
 
 ## Gotcha 5: Heap Doesn't Release Between Loop Iterations
 
-**What happens:** A Batch processes 200 records, builds a 1 MB ContentVersion per record in heap, and hits the 12 MB heap ceiling around record #11 even though `execute` loops once per batch.
+**What happens:** A Batch processes 200 records, builds a 1 MB ContentVersion per record in heap, and hits the 25 MB async heap ceiling (Winter '27, Apex Developer Guide 264 L19780) around record #24 — record #11 under the 12 MB ceiling that applied through Summer '26 — even though `execute` loops once per batch.
 
 **When it occurs:** Any loop that holds `Blob` references across iterations; GC is conservative on `Blob` and doesn't reclaim until scope exits.
 

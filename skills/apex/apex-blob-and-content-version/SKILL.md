@@ -27,9 +27,9 @@ outputs:
   - "review findings on heap usage, sharing mistakes, and large-file handling"
   - "chunked-upload design when payloads exceed synchronous limits"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-10-19
 ---
 
 # Apex Blob And ContentVersion
@@ -42,10 +42,26 @@ Use this skill when Apex is the producer or consumer of binary file data — cre
 
 Gather this context before touching `ContentVersion`, `ContentDocumentLink`, or raw `Blob` DML:
 
-- **Expected file size** — under 3 MB, 3–12 MB, 12 MB+? Synchronous Apex has a 6 MB heap ceiling; async (Queueable, Batch, Future) has 12 MB. ContentVersion itself supports up to 2.1 GB, but you cannot land one through a single synchronous `insert` if the Blob is already in heap.
+- **Expected file size** — under 3 MB, 3–10 MB, 10–25 MB, 25 MB+? From Winter '27, synchronous Apex has a 10 MB heap ceiling; async (Queueable, Batch, Future) has 25 MB (Apex Developer Guide 264 L19780). Through Summer '26 — and in Winter '27 on a nonproduction org that sets `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855–L113862) — the pair is 6 MB / 12 MB. The heap rise is a release-level change, not a versioned behaviour: it applies to every class whatever the `apiVersion` in its `.cls-meta.xml` (heap is absent from the API 68.0 versioned-behaviour list, apexdev 264 L45116–L45128). ContentVersion itself supports up to 2.1 GB, but you cannot land one through a single synchronous `insert` if the Blob is already in heap.
 - **Sharing model for the file** — public to all internal users (`AllUsers`), tied to a record (inferred via ContentDocumentLink), or private to the uploader? The `ShareType` and `Visibility` flags on `ContentDocumentLink` are the control plane, not ContentVersion itself.
 - **Round-trip requirements** — does the file need to come back down from Apex unchanged? If so, any intermediate `Blob.toString()` conversion will corrupt non-UTF-8 bytes.
 - **Transaction boundary** — DML that inserts ContentVersion counts toward your DML row limit. Chained inserts of 50 large files exhaust heap well before the DML cap.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Will the code read file bytes back after a query?" | `VersionData` is not returned unless selected (Gotcha 1) | Explicit field lists on every ContentVersion query |
+| "Is this a new file or a new version of an existing one?" | `FirstPublishLocationId` is ignored when `ContentDocumentId` is set (Gotcha 2) | The right insert shape for each case |
+| "Will Experience Cloud users need to see the file?" | `Visibility = 'InternalUsers'` hides it from them (Gotcha 3) | The link visibility set for the audience |
+| "Where do the bytes come from — an LWC data URL, REST, a callout?" | A `data:...;base64,` prefix corrupts the decode (Gotcha 4) | Prefix stripping at the boundary |
+| "How large is the biggest file, and how many arrive per transaction?" | Blobs held across loop iterations stay in heap — 10 MB sync / 25 MB async from Winter '27, 6 / 12 MB before (Gotcha 5) | A one-Blob-at-a-time loop and the async context large files need |
+| "Is the file stored in Salesforce or referenced at an external URL?" | External files use `ContentLocation = 'E'` (Gotcha 6) | The storage model chosen up front |
+| "Which record should own the file — and is any legacy `Attachment` involved?" | Without `FirstPublishLocationId` the file lands in the user's private library (Gotcha 7), and Attachment is not interchangeable with ContentDocument (Gotcha 8) | A named parent record and a migration decision |
+
+A proper configuration adds a size budget, an owner and a visibility rule per file path; inserting a ContentVersion from whatever Blob is at hand works for the first small file and fails on the first large or shared one.
 
 ---
 
@@ -184,7 +200,7 @@ public with sharing class AssetImportQueueable implements Queueable, Database.Al
 }
 ```
 
-**Why not the alternative:** Attempting this synchronously from an `@AuraEnabled` method will fail either at the 120-second callout timeout, the 6 MB heap ceiling, or the Apex CPU ceiling for 10+ MB downloads. Queueable with `Database.AllowsCallouts` buys you the async heap limit (12 MB) and the 120-second per-callout timeout.
+**Why not the alternative:** Attempting this synchronously from an `@AuraEnabled` method will fail either at the 120-second callout timeout, the 10 MB sync heap ceiling (6 MB before Winter '27), or the Apex CPU ceiling for 10+ MB downloads. Queueable with `Database.AllowsCallouts` buys you the async heap limit (25 MB from Winter '27; 12 MB before) and the 120-second per-callout timeout. The callout response itself is still capped at 6 MB sync / 12 MB async (apexdev 264 L20048–L20049) — the heap increase does not lift that cap, so a single response over 12 MB fails even in a Queueable.
 
 ---
 
@@ -198,7 +214,7 @@ public with sharing class AssetImportQueueable implements Queueable, Database.Al
 | Multiple records need the same file | Insert once, then one ContentDocumentLink per record | Avoid duplicating bytes |
 | File must be visible in a community | `ContentDocumentLink.Visibility = 'AllUsers'` | `InternalUsers` hides it from Experience Cloud |
 | File must follow the record's share | `ContentDocumentLink.ShareType = 'I'` | Inferred sharing respects record access |
-| File generated on a schedule | Queueable with `Database.AllowsCallouts` | 12 MB async heap + callout support |
+| File generated on a schedule | Queueable with `Database.AllowsCallouts` | 25 MB async heap (Winter '27+; 12 MB before) + callout support |
 | Legacy `Attachment` object | Migrate to ContentVersion | No version history, deprecated for new work |
 
 ---

@@ -47,13 +47,13 @@ if (email.binaryAttachments != null) {
 
 ## Gotcha 4: Large Attachments Processed Synchronously Can Exhaust Heap
 
-**What happens:** Binary attachments are passed directly into `handleInboundEmail` as `Blob` values. The heap ceiling here is **50 MB** — email services are documented as an exception to the ordinary 6 MB synchronous / 12 MB asynchronous Apex heap, so a large attachment does *not* blow heap merely by arriving. What blows heap is **transforming** it: `EncodingUtil.base64Encode(blob)` allocates a second, ~33%-larger copy; `blob.toString()` allocates a third; string concatenation in a parse loop allocates one per iteration. Three copies of a 15 MB attachment plus parse intermediates is how you reach 50 MB and get a `System.LimitException` that fails the email processing.
+**What happens:** Binary attachments are passed directly into `handleInboundEmail` as `Blob` values. The heap ceiling here is **50 MB** — email services are documented as an exception (apexdev 264 L19853) to the ordinary 10 MB synchronous / 25 MB asynchronous Apex heap (Winter '27, apexdev 264 L19780; 6 / 12 MB through Summer '26), so a large attachment does *not* blow heap merely by arriving. What blows heap is **transforming** it: `EncodingUtil.base64Encode(blob)` allocates a second, ~33%-larger copy; `blob.toString()` allocates a third; string concatenation in a parse loop allocates one per iteration. Three copies of a 15 MB attachment plus parse intermediates is how you reach 50 MB and get a `System.LimitException` that fails the email processing.
 
-Get the number right in both directions. Under-stating it (12 MB) makes teams defer work that would have fit and mis-size their chunking; assuming heap is unbounded because "50 MB is huge" ignores that the multiplier is on transformations, not on the payload.
+Get the number right in both directions. Under-stating it (25 MB, or the pre-Winter '27 12 MB) makes teams defer work that would have fit and mis-size their chunking; assuming heap is unbounded because "50 MB is huge" ignores that the multiplier is on transformations, not on the payload.
 
 **When it occurs:** When emails arrive with large PDFs, images, or binary files. The problem is invisible during unit tests because test `InboundEmail` objects use synthetic small payloads that never approach real attachment sizes.
 
-**How to avoid:** Store the attachment Blob to a `ContentVersion` immediately (this operation is fast and uses minimal heap for the DML statement itself), then enqueue a `Queueable` to perform any expensive processing. The Queueable runs in a separate transaction with a fresh CPU and DML budget and a retry surface — but its heap ceiling is the ordinary 12 MB asynchronous limit, *lower* than the handler's 50 MB, so size the deferred work against 12 MB.
+**How to avoid:** Store the attachment Blob to a `ContentVersion` immediately (this operation is fast and uses minimal heap for the DML statement itself), then enqueue a `Queueable` to perform any expensive processing. The Queueable runs in a separate transaction with a fresh CPU and DML budget and a retry surface — but its heap ceiling is the ordinary 25 MB asynchronous limit (12 MB before Winter '27), *lower* than the handler's 50 MB, so size the deferred work against 25 MB.
 
 ---
 

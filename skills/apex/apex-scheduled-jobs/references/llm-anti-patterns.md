@@ -16,7 +16,7 @@ public class DailyCleanup implements Schedulable {
 }
 ```
 
-**Why it happens:** LLMs treat the Schedulable `execute` method like a Batch `execute` method, and then assume "async feature, async limits". Both halves are wrong. The Apex Developer Guide states the exception in a note above the limits table: "Although scheduled Apex is an asynchronous feature, synchronous limits apply to scheduled Apex jobs" (apexdev L19536). So the body gets 100 SOQL, 6 MB heap and 10,000 ms CPU — *less* than the Batch it should have dispatched. The guide's own recommendation is unambiguous: "all processing must take place in a separate class" (apexdev L16972–L16973).
+**Why it happens:** LLMs treat the Schedulable `execute` method like a Batch `execute` method, and then assume "async feature, async limits". Both halves are wrong. The Apex Developer Guide states the exception in a note above the limits table: "Although scheduled Apex is an asynchronous feature, synchronous limits apply to scheduled Apex jobs" (apexdev 264 L19739). So the body gets 100 SOQL, 10 MB heap (Winter '27+; 6 MB through Summer '26) and 10,000 ms CPU — *less* than the Batch it should have dispatched. The guide's own recommendation is unambiguous: "all processing must take place in a separate class" (apexdev L16972–L16973).
 
 **Correct pattern:**
 

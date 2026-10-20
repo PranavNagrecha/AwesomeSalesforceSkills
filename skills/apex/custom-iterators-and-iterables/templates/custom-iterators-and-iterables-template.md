@@ -118,7 +118,7 @@ public class MyBatch implements Database.Batchable<SObject> {
 - [ ] `iterator()` returns a **new** cursor instance — not `this`
 - [ ] Total SOQL rows across all pages confirmed < 50,000 (if using custom Iterable in Batch start())
 - [ ] Keyset pagination used (not OFFSET) if record count > 2,000
-- [ ] Buffer / page size fits within async heap limit (12 MB) at peak usage
+- [ ] Buffer / page size fits within async heap limit (25 MB from Winter '27; 12 MB on an org still on Summer '26 limits) at peak usage
 - [ ] Batch class implements `Database.Batchable<SObject>` and `start()` return type is `Iterable<SObject>`
 - [ ] `Database.Stateful` declared on Batch class only if inter-batch state accumulation is needed
 - [ ] Test coverage includes: empty source, single record, multi-page, and exactly-one-page-boundary cases

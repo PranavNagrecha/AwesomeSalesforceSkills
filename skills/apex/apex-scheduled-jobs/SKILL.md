@@ -41,9 +41,9 @@ outputs:
   - "CronTrigger SOQL query for monitoring and audit"
   - "Guidance on abort-and-reschedule pattern, deployment considerations, and testing approach"
 dependencies: []
-version: 1.1.2
+version: 1.1.3
 author: Pranav Nagrecha
-updated: 2026-09-16
+updated: 2026-10-19
 ---
 
 # Apex Scheduled Jobs
@@ -98,7 +98,7 @@ public with sharing class MyScheduledJob implements Schedulable {
 }
 ```
 
-`execute()` runs under **synchronous** governor limits — 100 SOQL, 6 MB heap, 10,000 ms CPU — because "Although scheduled Apex is an asynchronous feature, synchronous limits apply to scheduled Apex jobs" (apexdev L19536). That single sentence is the whole justification for the dispatcher pattern below.
+`execute()` runs under **synchronous** governor limits — 100 SOQL, 10 MB heap, 10,000 ms CPU (Winter '27 guide, apexdev 264 L19747, L19780, L19782; the sync heap was 6 MB through Summer '26, 262 L19577, and a Winter '27 nonproduction org can still opt back to it — `references/gotchas.md` Gotcha 7) — because "Although scheduled Apex is an asynchronous feature, synchronous limits apply to scheduled Apex jobs" (apexdev 264 L19739). That single sentence is the whole justification for the dispatcher pattern below.
 
 `SchedulableContext.getTriggerId()` returns the `CronTrigger` Id for the running job. It is a valid argument to `System.abortJob` — the reference lists it among the methods returning an abortable job ID (apexrefguide L238688–L238695) — so a one-shot job can retire its own schedule. Aborting does not stop the current run: "any code that is in progress will continue to execute until it completes" (apexrefguide L238663).
 
@@ -206,7 +206,7 @@ public with sharing class NightlyLeadCleanupScheduler implements Schedulable {
 
 The guide gives the same shape and the same advice: "Though it's possible to do additional processing in the execute method, we recommend that all processing must take place in a separate class" (apexdev L16972–L16973). See `references/code-examples.md` §1 for the production version, which adds the in-flight guard and structured logging.
 
-**Why not the alternative:** inline work spends *synchronous* limits — 100 SOQL, 6 MB heap, 10,000 ms CPU (apexdev L19536, L19544, L19577, L19579), which is less headroom than the Batch or Queueable you were avoiding writing. The dispatched job opens a fresh transaction and gets its own budget, so the dispatcher's footprint stays flat at any data volume.
+**Why not the alternative:** inline work spends *synchronous* limits — 100 SOQL, 10 MB heap, 10,000 ms CPU (apexdev 264 L19739, L19747, L19780, L19782; 6 MB heap through Summer '26), which is less headroom than the Batch or Queueable you were avoiding writing. The dispatched job opens a fresh transaction and gets its own budget, so the dispatcher's footprint stays flat at any data volume.
 
 ### Self-Identifying Job for Conditional Logic
 
@@ -296,7 +296,7 @@ System.schedule('Nightly Lead Cleanup', '0 0 3 * * ?', new NightlyLeadCleanupSch
 Run through these before marking scheduled job work complete:
 
 - [ ] Class declares an explicit sharing mode and implements `Schedulable`; `execute` is `public` (or `global` only if it must cross a package namespace).
-- [ ] `execute(SchedulableContext)` is sized for **synchronous** limits — 100 SOQL, 6 MB heap, 10,000 ms CPU.
+- [ ] `execute(SchedulableContext)` is sized for **synchronous** limits — 100 SOQL, 10 MB heap (Winter '27+; 6 MB before), 10,000 ms CPU.
 - [ ] Any field that must be recomputed per run is `transient`, or is derived inside `execute()`.
 - [ ] `execute()` refuses to dispatch when a prior run of the same worker is still in flight.
 - [ ] Heavy work (SOQL at scale, DML at scale) is delegated to Batch or Queueable, not done inline.
@@ -320,7 +320,7 @@ Full write-ups, with guide line cites, are in `references/gotchas.md` (13 entrie
 
 1. **The active job is data, not metadata.** `package.xml` deploys the class; nothing in it recreates the `CronTrigger`. Every release touching a schedule needs a post-deploy script (`references/code-examples.md` §7).
 2. **The ceiling counts scheduled Apex only.** `CronJobDetail.JobType = '7'`; Developer Edition stops at 5, not 100.
-3. **Synchronous limits, not asynchronous ones.** Half the SOQL, half the heap, a sixth of the CPU you would get in a Batch `execute()`.
+3. **Synchronous limits, not asynchronous ones.** Half the SOQL, two-fifths of the heap (10 of 25 MB from Winter '27; half, 6 of 12 MB, before), a sixth of the CPU you would get in a Batch `execute()`.
 4. **The schedule locks the class *and its references*** against deployment until the job is aborted.
 5. **State is sticky.** Constructor-captured values persist into every future run unless declared `transient`.
 

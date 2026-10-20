@@ -32,9 +32,9 @@ outputs:
   - "Decision guidance on when to use custom Iterable vs. Database.getQueryLocator()"
 dependencies:
   - batch-apex-patterns
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-19
 ---
 
 # Custom Iterators and Iterables
@@ -49,6 +49,22 @@ Use this skill when a Batch Apex job needs a non-SOQL data source for its `start
 - Understand that when `start()` returns an `Iterable`, the total records the platform can handle across all batches is bounded by the 50,000-row query-rows-returned governor limit, not the separate query locator cursor limit. This is a critical difference.
 - Custom Iterators cannot be used directly in Apex for-each loops unless they are wrapped inside a class that also implements `Iterable<T>`. An `Iterator<T>` alone is not iterable by the for-each construct — the for-each loop requires `Iterable<T>`.
 - Heap usage is your primary risk: if `iterator()` pre-materializes the entire collection at construction time, you have not gained anything over a plain `List`. Genuine lazy evaluation means `next()` fetches or computes one element (or a small page) at a time.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "How many rows will `start()` read in total?" | A custom `Iterable` returned from `start()` counts against the 50,000 query-rows limit; `Database.getQueryLocator` does not (Gotcha 1) | The QueryLocator-versus-Iterable decision made on volume |
+| "Will callers loop over it with for-each?" | For-each needs `Iterable<T>`; an `Iterator<T>` alone does not compile there (Gotcha 2) | The right interface on the public type |
+| "How deep will pagination go?" | SOQL `OFFSET` degrades past roughly 2,000 records (Gotcha 3) | Keyset pagination (`WHERE Id > :lastId ORDER BY Id`) |
+| "Will the same Iterable be iterated twice, or by two jobs?" | `iterator()` returning `this` shares cursor state between callers (Gotcha 4) | A fresh cursor object per `iterator()` call |
+| "What should happen when `next()` is called past the end?" | `NoSuchElementException` is not caught by the batch framework (Gotcha 5) | A `hasNext()` guard inside `next()` |
+| "What batch scope size will run it?" | The framework calls `next()` scope-size times before `execute()`, so a refill on every `hasNext()` multiplies SOQL (Salesforce-Specific Gotchas 5) | Refill only when the buffer is empty |
+| "How large is one buffered page in heap?" | `start()` runs in one transaction (Gotcha 1), so the buffer shares the async heap — 25 MB from Winter '27, 12 MB before (apexdev 264 L19780) | A page size with measured headroom |
+
+A proper configuration adds a cursor that is lazy, restartable and bounded; returning a materialised `List` behind an `Iterable` interface keeps every limit problem it was meant to solve.
 
 ---
 
@@ -168,11 +184,11 @@ public class PagedExternalIterable implements Iterable<Account> {
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Decide the source: if `start()` reads one SOQL query, return `Database.getQueryLocator`; use a custom `Iterable` only for non-SOQL or computed sources, and only under the 50,000-row limit (Gotcha 1).
+2. Implement `Iterable<T>` whose `iterator()` returns a new cursor object; page with keyset pagination, never `OFFSET`; guard `next()` with `hasNext()` and throw `NoSuchElementException` past the end (Gotchas 3–5).
+3. Size the page buffer against the scope size and the async heap, using `templates/custom-iterators-and-iterables-template.md` to record the numbers.
+4. Run `python3 skills/apex/custom-iterators-and-iterables/scripts/check_custom_iterators_and_iterables.py --manifest-dir force-app` — it flags `OFFSET` in iterator classes, `iterator()` returning `this`, unguarded `next()`, and Iterator-only classes.
+5. Test: iterate the same `Iterable` twice, exhaust it, call `next()` past the end, and run the batch inside `Test.startTest()`/`Test.stopTest()` at the production scope size.
 
 ---
 
@@ -182,7 +198,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - [ ] `next()` throws `NoSuchElementException` (not returns `null`) when called past end
 - [ ] `iterator()` on the `Iterable` creates a fresh cursor each call — no shared mutable state between calls
 - [ ] Total rows returned through the iterator in the `start()` context stay within the 50,000-row query-rows-returned governor limit
-- [ ] Heap usage has been estimated: the buffer size and object size stay within the 12 MB async heap limit
+- [ ] Heap usage has been estimated: the buffer size and object size stay within the async heap limit — 25 MB from Winter '27 (Apex Developer Guide 264 L19780), 12 MB through Summer '26 and on a Winter '27 nonproduction org that sets `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855–L113862); the rise is release-level, not tied to the class's `apiVersion`
 - [ ] The Batch class implements `Database.Batchable<SObject>` and `start()` return type matches the iterator element type
 - [ ] If `Database.Stateful` is needed for accumulating results, it is declared on the Batch class, not the Iterator class
 

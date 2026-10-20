@@ -72,7 +72,7 @@ global class WarehouseAlertEmailHandler implements Messaging.InboundEmailHandler
 
 **Context:** A finance team receives a daily CSV export from their ERP system, emailed to a Salesforce address. Each CSV has up to 500 rows of invoice data. The team wants these rows automatically inserted as `Invoice__c` records.
 
-**Problem:** Parsing 500 rows of CSV inline inside `handleInboundEmail` risks hitting CPU time limits (10,000 ms for synchronous Apex) and the email-services heap limit (50 MB — not the 6 MB synchronous / 12 MB asynchronous figure for ordinary Apex; note the Queueable this example enqueues runs under the 12 MB asynchronous ceiling). A naive synchronous approach fails under production load.
+**Problem:** Parsing 500 rows of CSV inline inside `handleInboundEmail` risks hitting CPU time limits (10,000 ms for synchronous Apex) and the email-services heap limit (50 MB — not the 10 MB synchronous / 25 MB asynchronous figure for ordinary Apex from Winter '27, 6 / 12 MB before; note the Queueable this example enqueues runs under the 25 MB asynchronous ceiling). A naive synchronous approach fails under production load.
 
 **Solution:**
 
@@ -152,7 +152,7 @@ public class InvoiceCsvQueueable implements Queueable {
 
 **Why it works:** The handler's only job is to accept the email and persist the attachment — both are fast, low-limit operations. All parsing and DML happens inside `InvoiceCsvQueueable`, which runs as a separate transaction with a fresh CPU, SOQL and DML budget (and CPU goes *up*: 60,000 ms asynchronous vs 10,000 ms synchronous) plus a retry surface. The ContentVersion record is a durable handoff point between the two transactions.
 
-Heap is the exception, and it moves the wrong way. The Queueable runs under the ordinary **12 MB** asynchronous heap ceiling, *below* the handler's 50 MB email-services allocation — so deferring buys time and retries, never more heap. Size the deferred parse against 12 MB. If the work needs more heap than that, chunk it or keep it in the handler; moving it to a Queueable makes the heap problem worse, not better.
+Heap is the exception, and it moves the wrong way. The Queueable runs under the ordinary **25 MB** asynchronous heap ceiling (Winter '27, apexdev 264 L19780; 12 MB before), *below* the handler's 50 MB email-services allocation — so deferring buys time and retries, never more heap. Size the deferred parse against 25 MB. If the work needs more heap than that, chunk it or keep it in the handler; moving it to a Queueable makes the heap problem worse, not better.
 
 ---
 

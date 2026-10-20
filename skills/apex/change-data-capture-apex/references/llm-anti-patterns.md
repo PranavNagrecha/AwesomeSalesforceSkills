@@ -183,26 +183,26 @@ if (!allIds.isEmpty()) {
 
 ---
 
-## Anti-Pattern 7: Budgeting a CDC Trigger Against Asynchronous (or Invented) Heap
+## Anti-Pattern 7: Budgeting a CDC Trigger Against Asynchronous, Stale, or Invented Heap
 
 **What the LLM generates:**
 
 ```apex
 trigger AccountChangeTrigger on AccountChangeEvent (after insert) {
-    // "CDC runs async, so we have 12 MB heap — safe to hydrate all 2,000 parents."
+    // "CDC runs async, so we have 25 MB heap — safe to hydrate all 2,000 parents."
     Set<Id> ids = new Set<Id>();
     for (AccountChangeEvent e : Trigger.new) {
         ids.addAll((List<Id>) e.ChangeEventHeader.getRecordIds());
     }
     List<Account> parents = [SELECT FIELDS(STANDARD) FROM Account WHERE Id IN :ids];
-    // heap blows at ~6 MB, long before the SOQL row limit
+    // heap blows at ~10 MB, long before the SOQL row limit
 }
 ```
 
-…and prose of the form "CDC triggers consume Apex synchronous limits (100 SOQL, 150 DML, **10 MB heap**)" — a sentence that contradicts itself, since 10 MB is neither the synchronous nor the asynchronous figure.
+…and prose of the form "CDC triggers consume Apex synchronous limits (100 SOQL, 150 DML, **25 MB heap**)" — a sentence that contradicts itself, since 25 MB is the asynchronous figure — or the stale "**6 MB heap**", which was the figure through Summer '26 and survives in Winter '27 only on a nonproduction org that opted back to the lower limits (`api_meta` 264 L113855–113862) — or a figure such as "**8 MB**" or "**20 MB**" that matches neither release.
 
-**Why it happens:** The Change Data Capture docs correctly and repeatedly describe change event triggers as running **asynchronously**, after the transaction that produced the change. The model reads "asynchronous" and applies the asynchronous heap allocation, which is the natural inference and is wrong — Salesforce documents change event triggers as running under *synchronous* governor limits despite the asynchronous delivery. The 10 MB variant is a separate failure: a round number that splits the difference between the two real values, emitted when the model recalls "there is a heap limit around ten-ish megabytes" without recalling which. Both survive review because the accompanying advice (bulkify, query outside the loop) is correct on its own terms.
+**Why it happens:** The Change Data Capture docs correctly and repeatedly describe change event triggers as running **asynchronously**, after the transaction that produced the change. The model reads "asynchronous" and applies the asynchronous heap allocation, which is the natural inference and is wrong — Salesforce documents change event triggers as running under *synchronous* governor limits despite the asynchronous delivery. The 6 MB variant is a separate failure: the Summer '26 figure (262 L19577) carried forward from training data after Winter '27 raised it to 10 MB (`apexdev` 264 L19780). The third variant is invention: a round number that belongs to neither release. Since Winter '27, 10 MB is a real figure — the synchronous one — so the test is no longer "is it 10 MB?" but "is it 10/25 MB (Winter '27) or 6/12 MB (Summer '26), in the column this context uses?"; any other heap figure has no source. All three survive review because the accompanying advice (bulkify, query outside the loop) is correct on its own terms.
 
-**Correct pattern:** Change event triggers run under **synchronous** limits: 100 SOQL, 150 DML, **6 MB heap**, 10,000 ms CPU (`apexdev` L19542, L19553, L19577, L19579) — with up to 2,000 events per trigger invocation (`apexdev` L19862). UNVERIFIED (2026-09-05): the 2,000 batch size and the 6/12 MB heap split are both grounded in the Apex Developer Guide, but the classification of a *change event trigger* into the synchronous column is a Change Data Capture Developer Guide claim and cannot be read in the Apex guides. The 10 MB figure below remains a fabrication either way — no Apex context has a 10 MB heap. Do not infer the limit profile from the word "asynchronous"; delivery timing and limit context are independent here. Size hydration against 6 MB: select only the fields you consume, and if 2,000 events × parent records will not fit, chunk into a Queueable (which *does* get 12 MB) rather than assuming you already have it.
+**Correct pattern:** Change event triggers run under **synchronous** limits: 100 SOQL, 150 DML, **10 MB heap** (Winter '27; 6 MB before), 10,000 ms CPU (`apexdev` 264 L19747, L19757, L19780, L19782) — with up to 2,000 events per trigger invocation (`apexdev` 264 L20065). UNVERIFIED (2026-09-05): the 2,000 batch size and the 10/25 MB heap split are both grounded in the Apex Developer Guide, but the classification of a *change event trigger* into the synchronous column is a Change Data Capture Developer Guide claim and cannot be read in the Apex guides. Do not infer the limit profile from the word "asynchronous"; delivery timing and limit context are independent here. Size hydration against 10 MB: select only the fields you consume, and if 2,000 events × parent records will not fit, chunk into a Queueable (which *does* get 25 MB) rather than assuming you already have it.
 
-**Detection hint:** `10\s?MB\s+heap` anywhere in Salesforce material is a fabrication — no Apex context has a 10 MB heap. Additionally flag any file matching `ChangeEvent|change event trigger` that also matches `12\s?MB`, and any sentence containing both `asynchron` and `heap` within a CDC file: the pairing is almost always the wrong inference. Conversely, correct CDC guidance states `6 MB` and `synchronous` together.
+**Detection hint:** in any file matching `ChangeEvent|change event trigger`, flag a sentence that attaches `(12|25)\s?MB` to the trigger's own heap (the Queueable's 25 MB is legitimate), any `6\s?MB\s+heap` without a Summer '26 qualifier, any heap figure other than 6, 10, 12 or 25 MB, and any sentence containing both `asynchron` and `heap` within a CDC file: the pairing is almost always the wrong inference. Conversely, correct CDC guidance states `10 MB` (Winter '27+) and `synchronous` together.
