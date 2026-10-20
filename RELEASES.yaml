@@ -285,12 +285,12 @@ releases:
     owner_model: opus
     status: done
     parent: R2-01
-    evidence: 'GRADE PARTLY-WRONG. Findings mostly real (0 P0; F2/F3/F4 CORRECT, F3 understated -> P1: Create+Modify All+Delete
-      on Integration_Failure__c for every escalator, idempotency key derivable from editable Request_Payload__c, alerts go
-      to all holders); F1 premise partly (silent-loss branch real; Queueable running user is PLAN A2 UNVERIFIED) but F1 FIX
-      WRONG and harmful: WITH SYSTEM_MODE in a with sharing class still applies record sharing (apexdev L11958-11961) — inherited
-      from skills/apex/apex-with-without-sharing-decision SKILL.md L140-141 and the Decision Guidance row L208. Two checker
-      false positives confirmed. Usefulness: a practitioner acting on it would fix F3 correctly and mis-fix F1.'
+    evidence: 'GRADE PARTLY-WRONG (first run: F1 fix = WITH SYSTEM_MODE in a with sharing class, inherited from the skill).
+      RE-RUN after R2-12: F1 fix = keep with sharing, inner without sharing helper + WITH SYSTEM_MODE + Database.update(AccessLevel.SYSTEM_MODE),
+      resend path stays user mode, cites apex-with-without-sharing-decision L175-182/L252/examples L141-195; lists the old
+      fix under ''what does not work'' -> RIGHT-AND-USEFUL on the first grader''s criterion (orchestrator-verified against
+      skill lines). New: F2 COUNT() under sharing in the health check (valid, gate-accepted); check_apex_security_patterns
+      misses multi-line stale-comment claims (false negative).'
   - id: R2-12
     title: 'Fix harmful claim: WITH SYSTEM_MODE in a with sharing class does not bypass record sharing (apex-with-without-sharing-decision
       + siblings)'
@@ -593,6 +593,11 @@ releases:
     size: S
     owner_model: sonnet
     status: running
+  - id: R2-30
+    title: 'check_apex_security_patterns: stale-claim rule per sentence and across comment continuation lines'
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -829,5 +834,12 @@ inbox:
     admin-bypass SOQL selects PermissionsViewAllData/PermissionsModifyAllData directly from PermissionSetAssignment; those
     are PermissionSet fields and need the PermissionSet. relationship prefix — verify against object_reference (PermissionSetAssignment
     fields vs PermissionSet) and fix'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Found by the proof-1 re-run: skills/apex/apex-security-patterns/scripts/check_apex_security_patterns.py STALE_CLAIM_NEGATED_RE
+    is applied to the whole comment block (a ''does not need'' elsewhere suppresses a ''runs in system mode'' claim) and the
+    claim regex cannot cross a '' * '' continuation line — both tier2-webhook stale comments were missed. Fix per-sentence
+    matching + multi-line comments; fixtures'
   size: S
   slotted_into: 1.5.0
