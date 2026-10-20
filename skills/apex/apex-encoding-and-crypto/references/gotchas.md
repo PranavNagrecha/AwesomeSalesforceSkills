@@ -14,37 +14,37 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## `Crypto.signWithCertificate` Needs The Cert In Setup, Not A Static Resource
 
-**What happens:** A developer uploads a `.p12` or `.pem` file as a Static Resource, reads it as a `Blob`, and tries to call `Crypto.sign('RSA-SHA256', input, p12Blob)`. The call throws or produces an unverifiable signature.
+**What happens:** A developer uploads a `.p12` or `.pem` file as a Static Resource, reads it as a `Blob`, and tries to call `Crypto.sign('RSA-SHA256', input, p12Blob)`. UNVERIFIED (2026-10-20): that the call throws or produces an unverifiable signature.
 
-**When it occurs:** `Crypto.sign` with a raw private-key blob expects a DER-encoded PKCS#8 private key — not a `.p12` container, not a PEM-wrapped key. Meanwhile `Crypto.signWithCertificate` requires the certificate to live in Setup → Certificate and Key Management.
+**When it occurs:** `Crypto.sign` takes a private key that "must be decoded using the EncodingUtil base64Decode method, and should be in RSA's PKCS #8 (1.2) Private-Key Information Syntax Standard form", at most 4 KB, with the PEM BEGIN/END lines removed (apexref 262 L204008-204009, L204030-204031). Meanwhile `Crypto.signWithCertificate` takes a certificate DeveloperName (L204053-204059); UNVERIFIED (2026-10-20): that the certificate must live in Setup → Certificate and Key Management.
 
 **How to avoid:** Import the certificate into Setup → Certificate and Key Management and reference it by DeveloperName through `Crypto.signWithCertificate`. This also keeps the private key out of Apex memory entirely.
 
 ---
 
-## `Blob.toString()` Corrupts Non-UTF-8 Bytes
+## `Blob.toString()` Is A Cast, Not An Encoding
 
-**What happens:** AES ciphertext or HMAC output is converted to a string with `Blob.toString()` for storage. Round-trip decryption or verification fails with a `CryptoException` or a mismatched MAC.
+**What happens:** AES ciphertext or HMAC output is converted to a string with `Blob.toString()` for storage. Round-trip decryption or verification fails. Decryption errors surface as `System.SecurityException` (apexref 262 L203193-203198); the earlier `CryptoException` is not a documented type — CONTRADICTED.
 
-**When it occurs:** `Blob.toString()` (no argument) defaults to UTF-8. Random cryptographic bytes are almost never valid UTF-8, so the Unicode replacement character is substituted and information is lost silently.
+**When it occurs:** `Blob.toString()` takes no argument and "casts the Blob into a String" (apexref 262 L201256-201257). UNVERIFIED (2026-10-20): that the cast is UTF-8 and that the replacement character silently loses information.
 
-**How to avoid:** Always encode cryptographic bytes with `EncodingUtil.base64Encode` or `EncodingUtil.convertToHex` before coercing to `String`. Only call `Blob.toString('UTF-8')` when the blob is known to contain UTF-8 text (e.g. a decrypted plaintext you originally built from `Blob.valueOf(someString)`).
+**How to avoid:** Always encode cryptographic bytes with `EncodingUtil.base64Encode` or `EncodingUtil.convertToHex` before coercing to `String`. Only call `Blob.toString()` when the blob is known to contain text (e.g. a decrypted plaintext you originally built from `Blob.valueOf(someString)`); there is no encoding argument.
 
 ---
 
 ## `Crypto.encrypt` Requires A Caller-Provided IV — And IV Reuse Is Catastrophic
 
-**What happens:** A team uses `Crypto.encrypt('AES256', key, iv, plaintext)` with a hardcoded IV (often all zeros). Under CBC mode, identical plaintexts produce identical ciphertexts, leaking equality of record fields across the dataset.
+**What happens:** A team uses `Crypto.encrypt('AES256', key, iv, plaintext)` with a hardcoded IV (often all zeros). UNVERIFIED (2026-10-20): that under CBC a fixed IV makes identical plaintexts produce identical ciphertexts — the guide states the IV requirements (any 16-byte value, apexref 262 L203560-203562) and the padding-oracle caution for CBC (L203203-203220), not this leak.
 
 **When it occurs:** Any time a developer copies a "how to encrypt in Apex" snippet from a blog that uses a literal 16-byte `Blob.valueOf('0123456789abcdef')` IV.
 
-**How to avoid:** Prefer `Crypto.encryptWithManagedIV`, which prepends a platform-generated random IV to the ciphertext. If you need an explicit IV for protocol interop, generate it with `Crypto.generateAesKey(128)` (truncated to 16 bytes) per call and store it alongside the ciphertext — never reuse.
+**How to avoid:** Prefer `Crypto.encryptWithManagedIV`, which prepends a platform-generated random IV to the ciphertext. If you need an explicit IV for protocol interop, supply a fresh 16-byte value per call (`Crypto.generateAesKey(128)` returns a 128-bit key, apexref 262 L203751-203765) and store it alongside the ciphertext — never reuse. For GCM, supply no IV: any non-null IV results in an error (L203562).
 
 ---
 
-## `Crypto.generateDigest('SHA-1', ...)` Is Not A Security Control
+## `Crypto.generateDigest('SHA1', ...)` Is Not A Security Control
 
-**What happens:** A team uses SHA-1 or MD5 as a "password hash" or "HMAC" in Apex and fails a pen test.
+**What happens:** A team uses SHA-1 or MD5 as a "password hash" or "HMAC" in Apex and fails a pen test. Note the documented digest spellings are `MD5`, `SHA1`, `SHA-256`, `SHA-512` and the SHA3 variants (apexref 262 L203811-203817) — `SHA1` has no hyphen.
 
 **When it occurs:** Legacy code; or a developer conflating hash (integrity) with MAC (authenticated integrity) with signature (authenticated non-repudiation).
 
@@ -54,7 +54,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## `EncodingUtil.urlEncode` Double-Encodes If You Encode Twice
 
-**What happens:** A value containing `%20` gets re-encoded to `%2520` and the downstream API rejects it as invalid.
+**What happens:** A value containing `%20` gets re-encoded to `%2520` and the downstream API rejects it as invalid. This follows from `urlEncode` treating all characters outside A-Z, a-z, 0-9 and `. - * _` as unsafe and encoding them (apexref 262 L214361-214365).
 
 **When it occurs:** A developer calls `EncodingUtil.urlEncode` both in a helper function and again at the point of URL assembly.
 
@@ -62,9 +62,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Hex Output From `EncodingUtil.convertToHex` Is Lowercase
+## Hex Case From `EncodingUtil.convertToHex` Is Not Documented
 
-**What happens:** A service that expects uppercase-hex HMAC signatures (some legacy SOAP partners) receives lowercase hex and returns `400 Invalid Signature`.
+**What happens:** A service that expects uppercase-hex HMAC signatures (some legacy SOAP partners) receives lowercase hex and returns `400 Invalid Signature`. UNVERIFIED (2026-10-20): that `convertToHex` emits lowercase — apexref 262 L214291-214292 does not say; test against a known-good sample.
 
 **When it occurs:** The Apex side generates the MAC correctly but serialization differs in case.
 
@@ -72,7 +72,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## `Blob.valueOf(String)` Is UTF-8; Other Character Sets Need Explicit Conversion
+## `Blob.valueOf(String)` Encoding Is Not Documented; Other Character Sets Need Explicit Conversion
+
+UNVERIFIED (2026-10-20): that `Blob.valueOf(String)` is UTF-8 — apexref 262 L201258-201259 says only that it "casts the specified String to a Blob".
 
 **What happens:** A MAC computed in Apex doesn't match one computed by a partner running ISO-8859-1 or UTF-16. The partner's body bytes differ for any non-ASCII character.
 
@@ -86,6 +88,6 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A developer uses `Math.random()` to generate a nonce, session token, or PKCE verifier. A security review flags it as a predictable source.
 
-**When it occurs:** `Math.random()` returns a pseudo-random `Double` with no platform guarantee of cryptographic quality.
+**When it occurs:** `Math.random()` returns a pseudo-random `Double` (UNVERIFIED (2026-10-20): that it carries no guarantee of cryptographic quality — the corpus documents only that `Crypto.getRandomInteger` and `getRandomLong` call `java.security.SecureRandom`, apexref 262 L203920, L203957).
 
-**How to avoid:** Use `Crypto.getRandomInteger()` or `Crypto.getRandomLong()` for anything security-sensitive. For longer random bytes, generate an AES key via `Crypto.generateAesKey(256)` and slice it — the underlying source is cryptographically strong.
+**How to avoid:** Use `Crypto.getRandomInteger()` or `Crypto.getRandomLong()` for anything security-sensitive. For longer random bytes, generate an AES key via `Crypto.generateAesKey(256)` and slice it (UNVERIFIED (2026-10-20): that the source is cryptographically strong).

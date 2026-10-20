@@ -9,11 +9,11 @@
 
 | Tradeoff | Discussion |
 |---|---|
-| Describe-API call vs SOQL | Describe is free of SOQL cost but takes some CPU. For RecordType, describe is unambiguously better. For Profile/Group/Queue, describe is unavailable; SOQL with caching is the pattern. |
+| Describe-API call vs SOQL | Describe is free of SOQL cost but takes some CPU (UNVERIFIED (2026-10-20): both halves of that sentence). For RecordType, describe is unambiguously better. For Profile/Group/Queue, describe is unavailable; SOQL with caching is the pattern. |
 | Cached static map vs Platform Cache | Static map is per-transaction, simple, no setup. Platform Cache survives transactions but adds operational complexity. Use Platform Cache only when measured SOQL cost across transactions justifies it. |
-| Custom Metadata vs Custom Setting | CMDT is deployable and visible in source control; ideal for ID mappings. Custom Settings (Hierarchy) suit per-user/per-profile overrides. ID-mapping config almost always belongs in CMDT. |
+| Custom Metadata vs Custom Setting | CMDT is deployable and visible in source control; ideal for ID mappings. Custom Settings (Hierarchy) suit per-user/per-profile overrides (`getInstance(Profile_ID)` is shown in apex dev guide 264 L13791). ID-mapping config almost always belongs in CMDT. |
 | Metadata Relationship field vs raw `Text__c` ID | For references to *metadata* (another CMDT record, an object, a field), a Metadata Relationship field gives referential integrity and portability that a raw ID string cannot. Reserve `Text__c` for references to *data* records that metadata relationships can't target — custom metadata types have no Lookup field type, so a Text field is the only place to store a data-record Id. |
-| `getInstance()` cache read vs SOQL on `__mdt` | `getInstance()`/`getAll()` are free of SOQL and query-row limits but truncate every field to 255 chars. When a config value can exceed 255 chars, the SOQL query on the `__mdt` type is the correct read even though it costs a query. |
+| `getInstance()` cache read vs SOQL on `__mdt` | Custom metadata records "can have unlimited SOQL queries" in a transaction (apex dev guide 264 L19819-19820) and `getInstance()`/`getAll()` truncate every field to 255 chars (apexref 262 L204570-204571); UNVERIFIED (2026-10-20): that they are "free of query-row limits" and read a cache. When a config value can exceed 255 chars, the SOQL query on the `__mdt` type is the correct read even though it costs a query. |
 | Lookup at every call vs static-init | Static initializers (`static final Id X = describe(...)`) are concise but throw at class-load time if metadata is missing. Lazy lookup via helper method gives clearer errors. |
 
 ## Anti-Patterns

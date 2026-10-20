@@ -11,7 +11,7 @@
 | Tradeoff | Implication |
 |---|---|
 | `Database.query` with `:varName` vs `Database.queryWithBinds` | `query` is terser for single-method use; `queryWithBinds` is mandatory across method boundaries because bind variables otherwise go out of scope. Standardize on `queryWithBinds` to eliminate scope-related bugs. |
-| `WITH USER_MODE` clause vs `AccessLevel.USER_MODE` argument | Equivalent semantics. The argument keeps security policy out of the parsed string and out of reach of accidental concatenation. Prefer the argument. |
+| `WITH USER_MODE` clause vs `AccessLevel.USER_MODE` argument | Both set user mode (apex dev guide 264 L11609-11613, L12149-12151); UNVERIFIED (2026-10-20): that the semantics are identical. The argument keeps security policy out of the parsed string and out of reach of accidental concatenation. Prefer the argument. |
 | Allowlist via `Set<String>` vs Schema describe | `Set<String>` is fast and explicit but goes stale when fields are added. Schema describe is dynamic but slower and more code. Combining both (Set for "exposed in UI", describe for "real and accessible") is the most defensible. |
 | `AccessLevel.SYSTEM_MODE` for background jobs | Legitimate but high-risk. Document every site, prohibit it in user-facing controllers, audit periodically. |
 
@@ -23,8 +23,8 @@
 
 ## Official Sources Used
 
-- Apex Developer Guide — Dynamic SOQL — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm
-- Apex Reference Guide — Database Class (`queryWithBinds`) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm
-- Apex Developer Guide — SOQL Injection — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/pages_security_tips_soql.htm
+- Apex Developer Guide — Dynamic SOQL — supports `queryWithBinds` (API 57.0), the `accessLevel` parameter (API 55.0), bind scope and duplicate-key rules: apex dev guide 264 L11595-11672 — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm
+- Apex Reference Guide — Database Class (`queryWithBinds`) — signature `queryWithBinds(String, Map<String, Object>, AccessLevel)`: apexref 262 L209135 — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm
+- Apex Developer Guide — SOQL Injection — `escapeSingleQuotes` and the injection definition: apex dev guide 264 L11675-11681; user-mode clauses and `WITH SECURITY_ENFORCED` at 67.0: L12149-12158, L11926-11927 — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/pages_security_tips_soql.htm
 - Salesforce Security Trailhead — SOQL Injection — https://trailhead.salesforce.com/  (page retired — see host index for current equivalent) (referenced unit on input safety) and the dedicated unit at https://trailhead.salesforce.com/  (page retired — see host index for current equivalent) (combined Apex security path)
 - Salesforce Well-Architected — Trusted (Security) — https://architect.salesforce.com/well-architected/trusted/secure

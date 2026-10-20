@@ -6,7 +6,7 @@ Non-obvious behaviors that turn a "simple ID lookup" into a production bug.
 
 ## 1. `getRecordTypeInfosByName()` uses a translatable label
 
-`getRecordTypeInfosByName()` returns the map keyed by the RecordType's MasterLabel. Labels are translatable and renamable in setup; DeveloperName is the API-stable identifier.
+`getRecordTypeInfosByName()` returns the map keyed by the record type label (apexref 262 L192589), and the label "can be translated into any language that Salesforce supports" (L193789); `getRecordTypeInfosByDeveloperName()` returns a map by developer name (L192556-192558).
 
 **Always use:**
 
@@ -20,25 +20,25 @@ Never:
 Schema.SObjectType.Account.getRecordTypeInfosByName().get('Partner');  // breaks if label is renamed or translated
 ```
 
-This applies to API version 31.0+. The describe-API approach replaces older patterns (`[SELECT Id FROM RecordType WHERE DeveloperName=...]`) which still work but cost a SOQL query.
+UNVERIFIED (2026-10-20): the "API version 31.0+" availability. The describe-API approach replaces older patterns (`[SELECT Id FROM RecordType WHERE DeveloperName=...]`) which still work; a SOQL statement counts against the 100-query limit (apex dev guide 264 L19747).
 
 ---
 
 ## 2. `Profile.Name = 'System Administrator'` is not universally portable
 
-Salesforce has historically used `Name = 'System Administrator'`, but some orgs (notably newer / certain editions) display "Standard System Administrator" or have localized names. The Profile object lacks a true DeveloperName field for standard profiles in older API versions, and querying by `Name` couples your code to one org's labeling.
+Salesforce has historically used `Name = 'System Administrator'`; UNVERIFIED (2026-10-20): that some orgs display "Standard System Administrator" or localized names. The Profile field list has `Name` and no `DeveloperName` at all (object_reference 264 L234799-234887) — the earlier "for standard profiles in older API versions" qualifier is dropped — so querying by `Name` couples your code to one org's labeling.
 
 **Mitigations (in preference order):**
 
 1. Put the admin Profile's actual `Name` in a Custom Metadata Type entry. Code reads from CMDT; admin updates the value per org.
-2. Use `PermissionSet` membership instead of Profile checks where possible — Permission Sets have a stable DeveloperName.
+2. Use `PermissionSet` membership instead of Profile checks where possible — a PermissionSet has `Name` and `Label` fields (object_reference 264 L219421-219444), not a `DeveloperName`; UNVERIFIED (2026-10-20): that `Name` is stable across orgs.
 3. If you must hardcode the predicate, document the assumption explicitly and add a unit test that asserts the lookup returns a non-null Id.
 
 ---
 
 ## 3. Custom Metadata is the right home for config IDs in subscriber orgs
 
-If your code is going into a managed package, hardcoded IDs are guaranteed to be wrong in every subscriber org. Custom Metadata Types are deployable, accessible via `CustomType__mdt.getInstance()`, and editable in setup without a code change.
+If your code is going into a managed package, hardcoded IDs are guaranteed to be wrong in every subscriber org. Custom Metadata Types are accessible via `CustomType__mdt.getInstance()` (apexref 262 L204587-204629); UNVERIFIED (2026-10-20): that they are editable in Setup without a code change and deployable in packages.
 
 **Use CMDT for:**
 
@@ -52,10 +52,10 @@ If your code is going into a managed package, hardcoded IDs are guaranteed to be
 ## 4. `Id`-as-`String` comparisons fail across the 15/18 boundary
 
 Salesforce IDs exist in two forms:
-- 15-char, **case-sensitive** (`0011x00000ABCDe`)
-- 18-char, **case-insensitive** (`0011x00000ABCDeAAB`)
+- 15-char (`0011x00000ABCDe`)
+- 18-char (`0011x00000ABCDeAAB`)
 
-The 18-char form is the 15-char form plus a 3-char checksum suffix that encodes case. SOQL returns 18-char IDs. UI/URL bars often show 15-char.
+Apex "converts the value to its 18-character representation" when you set an `ID` to a 15-character value (apex dev guide 264 L1254-1255). UNVERIFIED (2026-10-20): the case-sensitivity of each form, the checksum suffix, that SOQL returns 18-char IDs and that UI bars show 15-char.
 
 **The trap:**
 
@@ -78,7 +78,7 @@ Never store a Salesforce ID in a `String` field, variable, or Map key without an
 
 ## 5. Static-map cache survives the transaction, not the request
 
-A static `Map<String, Id>` populated once is reused for the rest of the transaction (good — saves SOQL). It does NOT persist across transactions or across user sessions. Don't confuse it with Platform Cache. Each new Apex execution context starts cold.
+A static `Map<String, Id>` populated once is reused for the rest of the transaction (good — saves SOQL): a static variable is "static only within the scope of the Apex transaction" and "reset across transaction boundaries" (apex dev guide 264 L3746-3748). It does NOT persist across transactions or across user sessions. Don't confuse it with Platform Cache. Each new Apex execution context starts cold.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: apex-dynamic-soql-binding-safety
-description: "Safe construction of dynamic SOQL — Database.query bind variables (:varName, API 60+ semantics), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 55+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and WITH USER_MODE interaction (WITH SECURITY_ENFORCED was removed in API 67.0). NOT for reviewing a query for injection or CRUD/FLS generally — use apex/soql-security. NOT for Schema.describe and runtime type inspection — use apex/dynamic-apex."
+description: "Safe construction of dynamic SOQL — Database.query bind variables (:varName), Database.queryWithBinds(query, Map<String,Object>, AccessLevel) (API 57.0+), field-name allowlisting, ORDER BY direction whitelist, LIMIT/OFFSET typing, and WITH USER_MODE interaction (WITH SECURITY_ENFORCED can't be used at API 67.0 and later). NOT for reviewing a query for injection or CRUD/FLS generally — use apex/soql-security. NOT for Schema.describe and runtime type inspection — use apex/dynamic-apex."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -30,9 +30,9 @@ outputs:
   - SOQL-injection negative tests asserting safe behavior on attack payloads
   - Documented USER_MODE / SYSTEM_MODE choice with justification
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Apex Dynamic SOQL Binding Safety
@@ -47,8 +47,26 @@ Gather this context before working on anything in this domain:
 
 - **Where does each fragment of the query string come from?** Trace every concatenation back to its source — Visualforce parameter, LWC `@AuraEnabled` argument, REST request, custom metadata, or hard-coded literal. Hard-coded literals are safe; everything else needs binding or allowlisting.
 - **Is the dynamic part a value or an identifier?** Bind variables protect VALUES. They do NOT protect field names, sObject names, ORDER BY columns, ASC/DESC direction, or LIMIT keywords — those require allowlisting.
-- **What AccessLevel is correct?** `AccessLevel.USER_MODE` enforces FLS and object permissions at runtime; `AccessLevel.SYSTEM_MODE` bypasses them. Default to USER_MODE; document any SYSTEM_MODE call.
+- **What AccessLevel is correct?** In user mode "the object permissions, field-level security, and sharing rules of the current user are enforced"; in system mode object and field permissions are ignored and sharing follows the class keyword, and "User mode is the default" (apex dev guide 264 L11610-11613). Default to USER_MODE; document any SYSTEM_MODE call.
 - **Common wrong assumption:** "I called `String.escapeSingleQuotes` so I'm safe." Escaping single quotes prevents quote-breakout on string literals, but does nothing for field-name injection, ORDER BY injection, or LIMIT injection.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Is each fragment a value or an identifier?" | `USER_MODE` is not a substitute for allowlisting identifiers (gotcha 5) | A VALUE/IDENTIFIER inventory for the query string |
+| "Is the query built and run in the same method?" | Bind variables must be in scope of the operation (gotcha 1) | `queryWithBinds` wherever the query crosses a method boundary |
+| "What types are the bind values, and what is the map declared as?" | The method takes `Map<String, Object>` (gotcha 2) | Converted values in a `Map<String, Object>` with unique keys |
+| "Does any bind feed an IN clause?" | The IN bind expects a collection (gotcha 3) | A `List<Id>` or `Set<Id>` parsed before binding |
+| "Who runs this, and which AccessLevel?" | SYSTEM_MODE ignores the user's permissions (gotcha 4) | USER_MODE by default, a comment on any SYSTEM_MODE site |
+| "Which fields, objects or sort columns does the user choose?" | Those are identifiers; binds cannot carry them (gotcha 5) | A Schema-describe allowlist returning canonical names |
+| "Which API version are these classes saved at?" | `WITH SECURITY_ENFORCED` can't be used at 67.0 and later (gotcha 5) | `WITH USER_MODE` or the AccessLevel argument instead |
+
+A proper configuration adds a bind map, an identifier allowlist, a stated AccessLevel and an injection negative test, where "just doing it" gives a query that works on the happy path and returns every record to an attacker.
 
 ---
 
@@ -64,19 +82,18 @@ String soql = 'SELECT Id, Name FROM Account WHERE Name = \'' + name + '\'';
 List<Account> accs = Database.query(soql);
 ```
 
-If a user supplies `name = ' OR Id != null --`, the resulting query becomes `SELECT Id, Name FROM Account WHERE Name = '' OR Id != null --'`. Every Account in the org is returned, FLS-aware or not. The `--` swallows the trailing quote so the parser is happy. Variants exist for sub-selects, UNION-style trickery via semi-joins, and ORDER BY exfiltration.
+If a user supplies `name = ' OR Id != null --`, the resulting query becomes `SELECT Id, Name FROM Account WHERE Name = '' OR Id != null --'`. Every Account in the org is returned, FLS-aware or not. UNVERIFIED (2026-10-20): that `--` swallows the trailing quote — the corpus holds no SOQL comment syntax, and the guide defines injection only as passing SOQL statements into your code (apex dev guide 264 L11676-11678); drop the `--` and the trailing quote breaks the query instead. Variants exist for sub-selects and ORDER BY exfiltration (UNVERIFIED (2026-10-20): "UNION-style trickery via semi-joins" — not in the corpus).
 
-`String.escapeSingleQuotes(input)` defangs the quote-breakout vector but provides ZERO protection if the attacker controls a field name, ORDER BY column, or LIMIT integer represented as a string. It is necessary but not sufficient.
+`String.escapeSingleQuotes(input)` "adds the escape character (\) to all single quotation marks in a string that is passed in from a user" (apex dev guide 264 L11679-11681). It defangs the quote-breakout vector but provides no protection if the attacker controls a field name, ORDER BY column, or LIMIT integer represented as a string. It is necessary but not sufficient.
 
 ### Bind variables in `Database.query`
 
-When the query string contains a colon-prefixed token like `:accountName`, `Database.query(soql)` resolves it against the local scope of the call site. The platform parameterizes the value — the user input never participates in SOQL parsing. Caveats:
+When the query string contains a colon-prefixed token like `:accountName`, `Database.query(soql)` accepts "simple bind variables" that "must be within the scope of the database operation" (apex dev guide 264 L11623-11624). UNVERIFIED (2026-10-20): that the platform parameterizes the value so user input never participates in SOQL parsing — the guide's injection advice is `escapeSingleQuotes` (L11679). Caveats:
 
-- The variable MUST be in lexical scope at the `Database.query(...)` call. A variable defined in the calling class but not in the executing method will throw `System.QueryException: Variable does not exist`.
-- `IN :collection` requires `collection` to be a `List` or `Set`.
-- Works for primitives, sObjects, IDs, and collections of those.
+- The variable MUST be in scope at the `Database.query(...)` call. The guide's own failing example binds a *field* (`:myVariable.field1__c`) and "results in a Variable does not exist error" (L11629-11633); copy the field into a local first (L11643-11645). UNVERIFIED (2026-10-20): the exception type `System.QueryException`, and the helper-method and class-field cases.
+- An `IN` bind takes a list: the guide's SOQL examples bind an Id list, a list of sObjects (their Ids are used) and a String list (apex dev guide 264 L10075-10084). UNVERIFIED (2026-10-20): the full list of supported bind types in a `Database.query` string, which accepts only "simple bind variables" (L11623).
 
-### `Database.queryWithBinds` (API 55+) — the modern explicit-bind variant
+### `Database.queryWithBinds` (API 57.0+) — the modern explicit-bind variant
 
 ```apex
 Map<String, Object> binds = new Map<String, Object>{
@@ -91,7 +108,7 @@ List<Opportunity> opps = Database.queryWithBinds(
 );
 ```
 
-Use `queryWithBinds` whenever a query is constructed across methods or service layers — bind values travel as a map, not a hidden lexical-scope contract. Always pair with `AccessLevel.USER_MODE` unless SYSTEM_MODE is documented.
+Use `queryWithBinds` whenever a query is constructed across methods or service layers — "bind variables in the query are resolved from a Map parameter directly with a key … This removes the need for the variables to be in scope when the query is executed" (apex dev guide 264 L11647-11649; "API version 57.0 and later"). The `accessLevel` parameter itself is API 55.0 and later (L11609). The signature takes a `Map<String, Object>` (apexref 262 L209135). Map keys compare case-insensitively and duplicates throw a runtime `QueryException` (L11659-11662); a key must start with an ASCII letter and follow variable-naming rules (L11670-11671). Always pair with `AccessLevel.USER_MODE` unless SYSTEM_MODE is documented.
 
 ### Allowlisting field names, sObject names, and clauses
 
@@ -115,13 +132,13 @@ For ORDER BY direction, hard-code an allowlist:
 String dir = ('DESC'.equalsIgnoreCase(userDir)) ? 'DESC' : 'ASC';
 ```
 
-For LIMIT and OFFSET, parse to `Integer` first; never let a String reach the query. Apex `Integer.valueOf` throws on non-numeric input — that is the desired failure mode.
+For LIMIT and OFFSET, parse to `Integer` first; never let a String reach the query. The guide's SOQL examples bind both clauses to Integers, `LIMIT :i` and `OFFSET :offsetVal` (apex dev guide 264 L10067-10073). UNVERIFIED (2026-10-20): that `Integer.valueOf` throws on non-numeric input; that `getMap()` keys are lowercase (apexref 262 L192361 says only that it returns a map of Strings and SObjectFields).
 
 ### Dynamic SOQL with `WITH USER_MODE`
 
-`WITH USER_MODE` (GA at API 57.0, Spring '23) is the access-mode clause to put inside a dynamic query string, and it is enforced at parse time on the field list. `WITH SECURITY_ENFORCED` is the older, weaker equivalent: it was removed in API 67.0 (Summer '26) and a class pinned at 67.0 or above fails to compile with `WITH SECURITY_ENFORCED is no longer supported, use WITH USER_MODE instead`. Because the clause lives inside a *string* here, a dynamic query hides that compile error until the string is parsed at run time — so it surfaces as a `QueryException` in production rather than a build failure. Never build `WITH SECURITY_ENFORCED` into a query string. Per-version detail: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
+`WITH USER_MODE` (or `WITH SYSTEM_MODE`) is the access-mode clause for a SOQL or SOSL query (apex dev guide 264 L12149-12151). In user mode the query "processes all clauses in the SOQL SELECT statement including the WHERE clause" and "finds all FLS errors" (L12154-12157) — the earlier "enforced on the field list" wording was CONTRADICTED by that. UNVERIFIED (2026-10-20): the "GA at API 57.0, Spring '23" date; the corpus dates only the `queryWithBinds` method (57.0) and its `accessLevel` parameter (55.0). `WITH SECURITY_ENFORCED`: "In API version 67.0 and later, you can't use the WITH SECURITY_ENFORCED clause in SOQL SELECT queries in Apex code. Instead, use the WITH USER_MODE clause" (L11926-11927, L45145-45146) — "can't be used at 67.0 and later", not a statement that it was removed from older classes. UNVERIFIED (2026-10-20): the compile-error text `WITH SECURITY_ENFORCED is no longer supported…`, that a dynamic string defers the failure to run time as a `QueryException`, and that it is the "weaker" clause. Never build `WITH SECURITY_ENFORCED` into a query string. Per-version detail: [`agents/_shared/AGENT_CONTRACT.md`](../../../agents/_shared/AGENT_CONTRACT.md) § *Apex security idiom by API version*.
 
-The access-mode clause protects what the query CAN ASK FOR; it does not protect HOW the query is built. A dynamic query with `WITH USER_MODE` is still injectable if you concatenate user input into the WHERE clause — `WITH USER_MODE` just stops the attacker from selecting fields they cannot see.
+The access-mode clause enforces the running user's permissions across the query; it does not protect HOW the query is built. A dynamic query with `WITH USER_MODE` is still injectable if you concatenate user input into the WHERE clause — it limits the damage to what the user may already access.
 
 Prefer `Database.queryWithBinds(..., AccessLevel.USER_MODE)` over an in-string `WITH USER_MODE`; the AccessLevel argument does the same job and stays out of the parsed string.
 
@@ -245,9 +262,9 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **`Database.query` bind scope is lexical, not class-wide.** `:term` resolves against the executing method's local variables, not a class field with the same name in some cases — and definitely not a variable in the caller. Refactoring a query into a helper method routinely produces `Variable does not exist` at runtime. Use `Database.queryWithBinds` to pass binds explicitly.
-2. **`Database.queryWithBinds` requires `Map<String, Object>`.** A `Map<String, String>` will compile but throw at runtime when the platform tries to bind a non-string value (Integer for LIMIT, List for IN). Always declare the map as `Map<String, Object>`.
-3. **`AccessLevel.SYSTEM_MODE` silently bypasses FLS and CRUD.** It is the right choice for some background jobs but is a security regression in user-facing controllers. Default to `USER_MODE`; require a code comment for any `SYSTEM_MODE` call site.
+1. **`Database.query` bind variables must be in scope of the database operation** (apex dev guide 264 L11623-11624); a bind on a field such as `:myVariable.field1__c` fails with a `Variable does not exist` error (L11629-11633). UNVERIFIED (2026-10-20): the helper-method and class-field cases. Use `Database.queryWithBinds` to pass binds explicitly (L11647-11649).
+2. **`Database.queryWithBinds` takes `Map<String, Object>`** (apexref 262 L209135). UNVERIFIED (2026-10-20): that a `Map<String, String>` compiles and then throws when a non-string value is bound. Declare the map as `Map<String, Object>`, and keep keys unique ignoring case (apex dev guide 264 L11659-11662).
+3. **`AccessLevel.SYSTEM_MODE` ignores the user's object and field permissions** (apex dev guide 264 L11610-11612). It is the right choice for some background jobs but is a security regression in user-facing controllers. Default to `USER_MODE`; require a code comment for any `SYSTEM_MODE` call site.
 
 ---
 
@@ -264,7 +281,8 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- `apex/apex-soql-fundamentals` — static SOQL, when dynamic SOQL is unnecessary
+- `apex/soql-fundamentals` — static SOQL, when dynamic SOQL is unnecessary
 - `apex/apex-stripinaccessible-and-fls-enforcement` — post-query FLS scrubbing for results
-- `apex/apex-soql-injection-prevention` — broader injection threat model
-- `security/soql-security` — security-pillar guidance for SOQL access control
+- `apex/soql-string-escaping-and-reserved-characters` — what `escapeSingleQuotes` does and does not cover
+- `security/xss-and-injection-prevention` — broader injection threat model
+- `apex/soql-security` — security-pillar guidance for SOQL access control

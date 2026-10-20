@@ -29,9 +29,9 @@ outputs:
   - "test data covering the boundary cases (terminating, repeating, half-way, divide-by-zero)"
   - "rounding-mode decision aligned with the business rule (banker's rounding for tax, HALF_UP for retail price)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-07
+updated: 2026-10-20
 ---
 
 # Apex Decimal Arithmetic Precision
@@ -50,28 +50,46 @@ Gather this context before working on anything in this domain:
 
 ---
 
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `references/gotchas.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which `divide` overload does the code call, and does it name a rounding mode?" | Only the two- and three-argument forms exist; the two-argument mode is not documented (gotcha 1) | A rounding mode written at every division |
+| "Are both operands of any fraction Integers?" | Integer division truncation is the usual cause of a result of 0 (gotcha 2) | Decimal-typed operands or an explicit `Decimal.valueOf` |
+| "Does money pass through a Double, for example from JSON?" | A Decimal made from a Double is first converted to a String and takes its scale from it; what that String holds for a binary fraction is not documented (gotcha 3) | `JSONParser.getDecimalValue()` or the String overload |
+| "Are Decimals compared or used as Set/Map keys?" | Equal numbers at different scale generally hash differently (gotcha 4) | One scale applied before comparing or keying |
+| "Does the code consume an aggregate result?" | An aggregate's scale is not documented (gotcha 5) | An explicit `setScale` on the value read from `AggregateResult` |
+| "What is the destination field's scale, and which mode should reach it?" | The platform's rounding at the DML boundary is not documented (gotcha 6) | `setScale(fieldScale, mode)` before assignment |
+| "Does Flow or a formula compute the same figure?" | Cross-engine rounding agreement is unproven (gotcha 6) | A written decision on which engine owns the figure |
+
+A proper configuration adds one stated scale and rounding mode per division and one boundary rounding per write, where "just doing it" gives a total that is a cent off in production only.
+
+---
+
 ## Core Concepts
 
 ### Apex Decimal is fixed-precision, scale-tracking
 
-Apex's `Decimal` type is a fixed-point decimal — internally a Java `BigDecimal`. Every Decimal value carries a *scale* (number of digits after the decimal point). Scale is preserved through addition, subtraction, and multiplication. Division is the operation where Apex *requires* you to declare what scale the result should have, because most divisions don't terminate in finite digits.
+Apex's `Decimal` is "an arbitrary precision number" and currency fields are typed Decimal (apex dev guide 264 L1224-1225). Every Decimal has a *scale* — "a count of decimal places" — set by what it is created from: the field's scale for a query, the number of characters after the decimal point for a String, and a non-decimal number is first converted to a String (L1226-1243). UNVERIFIED (2026-10-20): that it is internally a Java `BigDecimal`, and how scale combines through addition, subtraction and multiplication. The Decimal class offers exactly two divide overloads, `divide(divisor, scale)` and `divide(divisor, scale, roundingMode)` (apexref 262 L212672-212677); the scale is something you always state.
 
-A Decimal literal in Apex source picks up its scale from how you wrote it:
+A Decimal literal in Apex source picks up its scale from the digits you wrote after the point — the reference example `Decimal myDecimal = 9.27400968;` has `scale()` 8 (apexref 262 L213029-213030):
 
 - `1.5` — scale 1
 - `1.50` — scale 2
 - `1` — Integer (no scale, not Decimal)
 - `1.0` — Decimal, scale 1
 
-Once the value is in a Decimal variable, scale is "sticky" across arithmetic in predictable ways:
+Once the value is in a Decimal variable, scale is "sticky" across arithmetic (UNVERIFIED (2026-10-20): every scale rule in the next three bullets, and the Integer-division result — the corpus states only how scale is assigned at creation, L1226-1243):
 
 - `Decimal a = 1.50; Decimal b = 1.5; Decimal c = a + b;` → `c` is `3.00` (scale 2, the larger of the two)
 - `Decimal d = 1.25 * 1.0;` → `d` is `1.250` (scale = sum of operand scales for multiply)
 - `Integer e = 10 / 4;` → `e == 2` (Integer / Integer truncates). The compiler does not warn.
 
-### Division requires `divide(divisor, scale, roundingMode)` for non-terminating results
+### Division takes a scale, and a rounding mode when you want to choose it
 
-`Decimal.divide(Decimal divisor)` (single-argument) throws `System.MathException: Division does not result in an exact result, set scale and rounding mode for an inexact result` when the result has more digits than the result's natural scale can hold. `1.0 / 3` blows up; `1.0 / 4 == 0.25` works.
+The Decimal class has no one-argument `divide(Decimal)`: the method list holds only `divide(divisor, scale)` and `divide(divisor, scale, roundingMode)` (apexref 262 L212672-212677). The earlier text described a one-argument form throwing `System.MathException: Division does not result in an exact result…` — CONTRADICTED by that list, and the message text is UNVERIFIED (2026-10-20). The guide's example is `decimalNumber.divide(100, 3)` on `19` giving `0.190` (L212769-212771).
 
 Always prefer the three-argument form for any production calculation:
 
@@ -79,28 +97,24 @@ Always prefer the three-argument form for any production calculation:
 Decimal result = numerator.divide(denominator, 4, System.RoundingMode.HALF_UP);
 ```
 
-The two-argument `divide(divisor, scale)` exists but uses `HALF_EVEN` (banker's rounding) silently — fine if that's what you want, dangerous if you assumed `HALF_UP`.
+The two-argument `divide(divisor, scale)` exists, but UNVERIFIED (2026-10-20): which rounding mode it applies when the result is inexact — the guide says only that it "sets the scale" (L212743-212744). Name the mode instead of relying on it.
 
 ### Rounding modes that matter
 
 | Mode | Behavior | Use for |
 |---|---|---|
-| `HALF_UP` | 0.5 rounds away from zero | Retail prices, most user-facing money |
-| `HALF_EVEN` (banker's) | 0.5 rounds to even neighbor | Tax, GAAP/IFRS reporting, statistics |
+| `HALF_UP` | 0.5 rounds away from zero | Retail prices, most user-facing money (UNVERIFIED (2026-10-20): the retail and tax-authority use cases are business convention, not corpus) |
+| `HALF_EVEN` (banker's) | 0.5 rounds to even neighbor; "statistically minimizes cumulative error" (apexref 262 L212576-212600) | Tax, GAAP/IFRS reporting, statistics |
 | `HALF_DOWN` | 0.5 rounds toward zero | Rare; specific contractual rounding |
 | `UP` / `DOWN` | Always away / toward zero | Truncation; commission caps |
 | `CEILING` / `FLOOR` | Always up / down (signed) | Inventory ceiling, never-overcharge |
 | `UNNECESSARY` | Throws if rounding actually needed | Use to prove no rounding loss occurred |
 
-The platform's currency-field UI uses `HALF_EVEN` for display rounding. If your Apex uses `HALF_UP` and writes to a Currency field, the value persists as you wrote it but a downstream formula that re-rounds via the platform may shift it back. Match the rounding mode end-to-end or accept the difference.
+UNVERIFIED (2026-10-20): that the platform's currency-field UI and formulas round `HALF_EVEN`. The corpus confirms that `setScale(scale)` and `round()` use half-even (apexref 262 L212707-212709, L212690-212693); nothing states what the UI or a formula does. Match the rounding mode end-to-end or accept the difference.
 
 ### Scale of currency, percent, and number fields
 
-- Standard `Currency` fields: scale 2 (or more in multi-currency orgs after Dated Exchange Rate conversion — the stored value retains source scale).
-- Custom `Number(length, decimal)`: scale = `decimal`.
-- Custom `Percent(length, decimal)`: scale = `decimal`. Stored as the displayed value (5.25% → `5.25`, not `0.0525`).
-
-When you write a higher-scale Decimal into a field with smaller scale, the platform truncates **without an explicit rounding mode** at the DML boundary. To control rounding, call `setScale(fieldScale, RoundingMode.X)` *before* assignment.
+A Decimal read by a query takes the scale of the field returned (apex dev guide 264 L1229-1230). UNVERIFIED (2026-10-20): the scale of standard Currency fields, the multi-currency behaviour, the Percent storage convention (5.25% stored as `5.25`), and what the platform does when a higher-scale Decimal is written to a smaller-scale field (the earlier "truncates" here and "rounds HALF_EVEN" in gotcha 6 disagree with each other). To control rounding, call `setScale(fieldScale, RoundingMode.X)` *before* assignment.
 
 ---
 
@@ -120,7 +134,7 @@ public class LineItemCalc {
 }
 ```
 
-Notes: intermediate `tax` carries scale 6 to avoid double-rounding; the outer `setScale(2, HALF_EVEN)` aligns to the currency-field display behavior; `qty` (Integer) is implicitly promoted by `unitPrice * qty` because `unitPrice` is already Decimal.
+Notes: intermediate `tax` carries scale 6 to avoid double-rounding; the outer `setScale(2, HALF_EVEN)` is the platform-default mode of `setScale` (apexref 262 L212707-212709; UNVERIFIED (2026-10-20): that it matches currency display); `qty` (Integer) is multiplied with the Decimal `unitPrice` (UNVERIFIED (2026-10-20): the implicit promotion rule).
 
 ### Splitting a total across allocations without rounding drift
 
@@ -148,12 +162,12 @@ The list always sums *exactly* to `total`. Useful for revenue allocation, invoic
 
 | Situation | Choice | Rationale |
 |---|---|---|
-| Storing into a currency field | `setScale(2, HALF_EVEN)` before DML | Matches platform display rounding |
+| Storing into a currency field | `setScale(2, HALF_EVEN)` before DML | `setScale` defaults to half-even too (apexref 262 L212707-212709); that the platform display matches is UNVERIFIED (2026-10-20) |
 | User-visible price (retail) | `setScale(2, HALF_UP)` | Matches consumer expectation |
-| Tax calculation | `HALF_EVEN` | Required by most tax authorities; defensible in audit |
+| Tax calculation | `HALF_EVEN` | Defensible in audit (UNVERIFIED (2026-10-20): "required by most tax authorities" is a business claim) |
 | Cumulative average / weighted avg | Carry scale 6+ in intermediates, round at end | Avoid double-rounding error compounding |
-| `1 / 3`-style division | Three-arg `divide(d, scale, mode)` | One-arg form throws on non-terminating |
-| Equality compare | Round both sides to same scale first | `1.50 == 1.5` is **true** in Apex but `Decimal.valueOf('1.50').equals(1.5)` is **false** |
+| `1 / 3`-style division | Three-arg `divide(d, scale, mode)` | The mode is stated, not implied; there is no one-arg `divide` |
+| Equality compare | Round both sides to same scale first | Equal numbers at different scale "generally don't have the same hashcode" (apex dev guide 264 L1244-1246), so normalise scale before using Decimals as Set/Map keys; UNVERIFIED (2026-10-20): the `==` vs `.equals()` results |
 
 ---
 
@@ -162,8 +176,8 @@ The list always sums *exactly* to `total`. Useful for revenue allocation, invoic
 1. Identify every division in the calculation. For each, decide the result scale and rounding mode based on the destination field — write them down before writing code.
 2. Identify every Integer literal (`1`, `100`, `qty`) being divided or multiplied. If the operation could produce a fraction, change the literal to a Decimal (`1.0`, `100.0`) or wrap with `Decimal.valueOf()`.
 3. Carry intermediates at scale ≥ 4 even when the final answer is scale 2. Round only at the boundary (UI display, DML write, contract output).
-4. Replace any one-argument `divide(d)` with the three-argument form. Search the codebase for `\.divide\([^,]+\)` to find single-arg divides.
-5. Add tests for the boundary cases: zero divisor (expect `MathException`), exact-terminating divide (`1.00 / 4`), repeating divide (`1.00 / 3`), half-way value with both `HALF_UP` and `HALF_EVEN` to confirm the chosen mode.
+4. Replace any two-argument `divide(d, scale)` with the three-argument form so the rounding mode is stated. Search the codebase for `\.divide\([^,]+,[^,]+\)` to find two-argument divides; a one-argument `divide(d)` does not exist and will not compile.
+5. Add tests for the boundary cases: zero divisor (UNVERIFIED (2026-10-20): the exception type — assert on the type your test observes), exact-terminating divide (`1.00 / 4`), repeating divide (`1.00 / 3`), half-way value with both `HALF_UP` and `HALF_EVEN` to confirm the chosen mode.
 6. If the calculation feeds a Currency field, write a final `setScale(2, HALF_EVEN)` and confirm the stored value matches a hand calculation.
 7. Where the calculation is reused, lift it into a `LineItemCalc`-style stateless utility class with a single rounding-mode parameter so the policy is one place, not seven.
 
@@ -171,12 +185,12 @@ The list always sums *exactly* to `total`. Useful for revenue allocation, invoic
 
 ## Review Checklist
 
-- Every `divide()` call uses the three-argument form (or there is an inline comment explaining why one-arg is safe — e.g. divisor is a literal power of 2).
+- Every `divide()` call uses the three-argument form (or an inline comment explains why the unstated rounding mode of the two-argument form is acceptable).
 - Every Integer-typed operand in a fraction-producing operation is either deliberately Integer (count, index) or has been promoted to Decimal.
 - Final scale matches the destination field's scale; intermediate scale is at least 2 higher than final.
 - The chosen rounding mode is `HALF_EVEN` for tax/financial reporting, `HALF_UP` for consumer-visible prices, or has a comment explaining the deviation.
 - Splitting / allocation logic uses the residual-on-last-item pattern; tests assert sum-equals-total to the cent.
-- Equality comparisons round both sides to the same scale before comparing, OR use `==` (value-equal) deliberately rather than `.equals()` (scale-equal).
+- Equality comparisons and Set/Map keys round both sides to the same scale first (UNVERIFIED (2026-10-20): whether `==` or `.equals()` is value-equal or scale-equal).
 
 ---
 
@@ -184,11 +198,11 @@ The list always sums *exactly* to `total`. Useful for revenue allocation, invoic
 
 | Gotcha | Behavior |
 |---|---|
-| Currency fields in multi-currency orgs | `Decimal` reads from a Currency field carry the *record's* currency, not the user's. Apex doesn't auto-convert; use `UserInfo.getDefaultCurrency()` and the `DatedConversionRate` SObject if conversion is needed. |
-| `Decimal.valueOf(Double)` | Passes through Java double's binary float, reintroducing `0.1 + 0.2 = 0.30000000000000004` errors. Use `Decimal.valueOf(String)` or a Decimal literal. |
-| Aggregate query types | `SUM(Amount__c)` returns Decimal in Apex but `AVG()` always returns scale 6 regardless of source field. Round explicitly when consuming. |
-| Formula-field evaluation | Cross-object formulas evaluate at platform-level with `HALF_EVEN`; if Apex pre-computed the same value with `HALF_UP`, expect a 1-cent shift. |
-| `==` vs `.equals()` | Apex `==` on Decimal is value-equal (`1.50 == 1.5` is `true`); `.equals()` is scale-strict. Use `==` for "same number" semantics. |
+| Currency fields in multi-currency orgs | `UserInfo.getDefaultCurrency()` exists (apexref 262 L243152) and `DatedConversionRate` is an object (object_reference 264 L7778). UNVERIFIED (2026-10-20): that a Decimal read from a Currency field carries the record's currency and that Apex never auto-converts. |
+| `Decimal.valueOf(Double)` | The guide says a Decimal made from a non-decimal number is first converted to a String and takes its scale from it (apex dev guide 264 L1242-1243), which does not support the earlier "binary float noise" claim. UNVERIFIED (2026-10-20): that `valueOf(Double)` reintroduces `0.30000000000000004`-style errors. Using `Decimal.valueOf(String)` or `JSONParser.getDecimalValue()` (apexref 262 L219544) is still the safe habit. |
+| Aggregate query types | An aggregate query returns `AggregateResult` rows (apex dev guide 264 L9699-9700). UNVERIFIED (2026-10-20): that `SUM` returns Decimal and `AVG()` always returns scale 6. Round explicitly when consuming. |
+| Formula-field evaluation | UNVERIFIED (2026-10-20): that formulas evaluate with `HALF_EVEN`; if Apex pre-computed the same value with a different mode, expect a possible 1-cent shift. |
+| `==` vs `.equals()` | UNVERIFIED (2026-10-20): that `==` on Decimal is value-equal and `.equals()` scale-strict. The corpus confirms only the hashcode caveat (apex dev guide 264 L1244-1246). |
 
 ---
 

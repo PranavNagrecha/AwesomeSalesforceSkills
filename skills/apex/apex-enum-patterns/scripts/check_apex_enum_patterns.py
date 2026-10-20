@@ -13,7 +13,11 @@ Scans Apex source for the high-confidence anti-patterns documented in
 Stdlib only.
 
 Usage:
-    python3 check_apex_enum_patterns.py --src-root .
+    python3 check_apex_enum_patterns.py --manifest-dir . [--strict]
+
+`--src-root` is kept as an alias. Exit codes: findings are WARN and exit 0 unless
+--strict; a directory with no Apex is one WARN and exit 0; a missing directory is
+ERROR and exit 1.
 """
 
 from __future__ import annotations
@@ -95,8 +99,8 @@ def _scan_apex(path: Path) -> list[str]:
             continue
         findings.append(
             f"{path}:{_line_no(text, m.start())}: {m.group(1)}.valueOf(...) "
-            "called without an enclosing try/catch — throws "
-            "System.NoSuchElementException on unknown input "
+            "called without an enclosing try/catch — throws an exception "
+            "on unknown input (apexref 262 L214381-214382) "
             "(references/llm-anti-patterns.md § 1)"
         )
 
@@ -149,21 +153,31 @@ def main() -> int:
         ),
     )
     parser.add_argument(
-        "--src-root", default=".",
+        "--manifest-dir", "--src-root", dest="src_root", default=".",
         help="Root of the Apex source tree (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on findings or when there is nothing to check.")
     args = parser.parse_args()
 
-    findings = scan_tree(Path(args.src_root))
+    root = Path(args.src_root)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+
+    if not (list(root.rglob("*.cls")) or list(root.rglob("*.trigger"))):
+        print(f"WARN: no .cls or .trigger files under {root}; nothing to check.")
+        return 1 if args.strict else 0
+
+    findings = scan_tree(root)
 
     if not findings:
         print("OK: no Apex enum anti-patterns detected.")
         return 0
 
     for f in findings:
-        print(f"WARN: {f}", file=sys.stderr)
-    print(f"\n{len(findings)} finding(s).", file=sys.stderr)
-    return 1
+        print(f"WARN: {f}")
+    print(f"\n{len(findings)} finding(s).")
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

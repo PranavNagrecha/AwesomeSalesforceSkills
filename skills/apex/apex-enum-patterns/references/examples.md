@@ -24,15 +24,14 @@ public class RenewalDispatcher {
 }
 ```
 
-The `when else` is mandatory — Apex doesn't enforce exhaustive switch.
+The `when else` is recommended, not mandatory — Apex doesn't enforce exhaustive switch (apex dev guide 264 L2890-2893).
 When someone adds `RENEW_AT_DISCOUNT`, the throw surfaces it in tests.
 
 ---
 
 ## Example 2: Safe `valueOf` from a Custom Metadata string
 
-`Enum.valueOf` throws `System.NoSuchElementException` for unknown values.
-Wrap it.
+`Enum.valueOf` throws an exception for unknown values (apexref 262 L214381-214382; UNVERIFIED (2026-10-20): that it is `System.NoSuchElementException`). Wrap it.
 
 ```apex
 public class RenewalActionParser {
@@ -40,7 +39,7 @@ public class RenewalActionParser {
         if (String.isBlank(raw)) return fallback;
         try {
             return RenewalAction.valueOf(raw.trim());
-        } catch (System.NoSuchElementException e) {
+        } catch (Exception e) {   // the exception type is not named in the guide
             System.debug(LoggingLevel.WARN,
                 'Unknown RenewalAction `' + raw + '`; using ' + fallback);
             return fallback;
@@ -123,9 +122,6 @@ right file.
 global enum LicenseTier { FREE, PRO, ENTERPRISE }
 ```
 
-Once a `global` enum ships, the values become a stable contract. Removing
-`PRO` is a breaking change for every subscriber. Add new values at the
-end of the list — never reorder; ordinals are positional.
+Once a `global` enum ships, "you can't remove or reorder global enum values, although you can add new enum values" (apex dev guide 264 L43920). Removing `PRO` is therefore not allowed. Add new values at the end of the list — never reorder; ordinals are positional (apexref 262 L214386-214387).
 
-For internal-only enums, use `public`. The compiler will let you change
-public enum values freely between package versions.
+For internal-only enums, use `public`. The package restrictions apply to "the global Apex in the package" (L43901); UNVERIFIED (2026-10-20): that public enum values may be changed freely between versions.

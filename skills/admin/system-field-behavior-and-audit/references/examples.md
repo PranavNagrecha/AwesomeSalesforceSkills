@@ -4,7 +4,7 @@
 
 **Context:** A Mulesoft integration syncs Account data from Salesforce to a data warehouse every 15 minutes. The team needs to pull only records changed since the last sync.
 
-**Problem:** The initial implementation used `LastModifiedDate > :lastSync` as the filter. After go-live, the warehouse showed stale data for Accounts that were updated by a workflow rule that stamps `Account_Status__c` when a related Opportunity closes. The workflow updated the field, but LastModifiedDate did not change because no user or API call directly modified the Account.
+**Problem:** The initial implementation used `LastModifiedDate > :lastSync` as the filter. After go-live, the warehouse showed stale data for Accounts that were updated by a workflow rule that stamps `Account_Status__c` when a related Opportunity closes. The team's diagnosis was that the workflow updated the field without moving LastModifiedDate, because no user modified the Account. UNVERIFIED (2026-10-20): that a workflow field update leaves LastModifiedDate unchanged — the Object Reference only defines LastModifiedDate as a user's modification (object_reference 264 L2563) and SystemModstamp as a user's or automated process's (L2566).
 
 **Solution:**
 
@@ -18,7 +18,7 @@ LIMIT 2000
 
 Store the highest `SystemModstamp` value from the result set as the watermark for the next poll. If the batch is interrupted, re-query from the stored watermark.
 
-**Why it works:** SystemModstamp captures every modification — user edits, API updates, workflow field updates, formula recalculations, and roll-up summary recalcs. It is also indexed, so the query uses a selective filter instead of a full table scan.
+**Why it works:** SystemModstamp covers modifications by a user or an automated process (object_reference 264 L2566) and is on the default index list (large_data_volumes_bp 264 L404). It is not a complete change log: a value one object retrieves from another moves only the source object's SystemModstamp (L2581-2583).
 
 ---
 
@@ -30,7 +30,7 @@ Store the highest `SystemModstamp` value from the result set as the watermark fo
 
 **Solution:**
 
-1. Enable "Set Audit Fields upon Record Creation" at the org level (Setup > User Interface or via Salesforce Support case).
+1. Enable "Set Audit Fields upon Record Creation" in Setup > User Interface (object_reference 264 L2599-2601); no Support case is needed.
 2. Assign the "Set Audit Fields upon Record Creation" user permission to the integration user via a permission set.
 3. Include audit fields in the Data Loader CSV:
 
@@ -53,7 +53,7 @@ SELECT Id, FirstName, CreatedDate, CreatedById FROM Contact WHERE Email = 'jane@
 
 **Context:** A sales operations user accidentally mass-deleted 2,000 Leads using Data Loader. The team needs to identify exactly which records were deleted and recover them before the 15-day Recycle Bin window closes.
 
-**Problem:** The standard Recycle Bin UI in Setup only shows 5,000 records across all objects and can be slow to search. The team needs a targeted query.
+**Problem:** The Recycle Bin UI is slow to search for one mass delete (UNVERIFIED (2026-10-20): the earlier "shows only 5,000 records" figure has no corpus line). The team needs a targeted query.
 
 **Solution:**
 
@@ -89,6 +89,6 @@ for (Database.UndeleteResult r : results) {
 
 **What practitioners do:** Write integration queries with `WHERE LastModifiedDate > :lastSync` because LastModifiedDate is the more familiar field name.
 
-**What goes wrong:** Any record modified by an automated process (workflow field update, process builder, formula field recalculation on a parent change) will have its SystemModstamp updated but LastModifiedDate unchanged. The integration misses these changes, causing silent data drift between Salesforce and the target system. The problem compounds over time and is difficult to diagnose because the records appear unchanged in standard Salesforce UI views.
+**What goes wrong:** A record modified by an automated process can have its SystemModstamp updated without a user modification, which is the scope difference in object_reference 264 L2563 vs L2566. UNVERIFIED (2026-10-20): the named examples (workflow field update, Process Builder, parent-driven formula recalculation). The integration misses these changes, causing silent data drift between Salesforce and the target system. The problem compounds over time and is difficult to diagnose because the records appear unchanged in standard Salesforce UI views.
 
 **Correct approach:** Always use `SystemModstamp` for delta sync and incremental replication queries. Reserve `LastModifiedDate` for display purposes where only intentional human edits matter.

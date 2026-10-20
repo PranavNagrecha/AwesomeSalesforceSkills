@@ -11,7 +11,7 @@ These patterns help the consuming agent self-check its own output.
 SELECT Id, Name FROM Account WHERE LastModifiedDate > :lastSync
 ```
 
-**Why it happens:** LastModifiedDate is the more "human-readable" field name, and most training data examples use it. LLMs default to the familiar name without understanding the indexing and update-scope differences.
+**Why it happens:** LastModifiedDate is the more "human-readable" field name, and most training data examples use it. LLMs default to the familiar name without understanding the update-scope difference (user modification, object_reference 264 L2563, vs user or automated process, L2566).
 
 **Correct pattern:**
 
@@ -29,7 +29,7 @@ SELECT Id, Name FROM Account WHERE SystemModstamp > :lastSync ORDER BY SystemMod
 
 **Why it happens:** Training data often describes both fields with the same generic definition ("timestamp of last modification"). The nuance that SystemModstamp includes automated system changes while LastModifiedDate does not is frequently omitted.
 
-**Correct pattern:** "SystemModstamp updates on all changes including automated processes (workflow field updates, formula recalculations). LastModifiedDate updates only on direct user or API modifications. SystemModstamp >= LastModifiedDate. SystemModstamp is indexed; LastModifiedDate is not."
+**Correct pattern:** "SystemModstamp records when a user or automated process last modified the record (object_reference 264 L2566); LastModifiedDate records when a user did (L2563). SystemModstamp is on the default index list (large_data_volumes_bp 264 L404). It does not capture every change — a value that object A retrieves from object B moves B's SystemModstamp, not A's (L2581-2583)." Do not state that SystemModstamp >= LastModifiedDate or that LastModifiedDate is unindexed: UNVERIFIED (2026-10-20).
 
 **Detection hint:** Any statement containing "interchangeable", "same as", or "equivalent" when comparing these two fields.
 
@@ -46,7 +46,7 @@ update account;
 
 **Why it happens:** LLMs treat Salesforce fields like regular database columns and assume any field can be updated if you have sufficient permissions. They do not know that audit fields are insert-only even with the Create Audit Fields permission.
 
-**Correct pattern:** Audit fields (CreatedDate, CreatedById, LastModifiedDate, LastModifiedById) can only be set on insert with the Create Audit Fields permission enabled. To correct a wrong CreatedDate, you must delete and re-insert the record (with cascading implications) or store the correct date in a custom field.
+**Correct pattern:** Audit fields (CreatedDate, CreatedById, LastModifiedDate, LastModifiedById) are set when the record is created, with the Setup setting and user permission enabled (object_reference 264 L2599-2603). The guide documents no update path, so plan the values before insert; UNVERIFIED (2026-10-20): that delete and re-insert is the only remediation — a custom field for the true date is the safe alternative.
 
 **Detection hint:** Any DML `update` statement that sets `CreatedDate`, `CreatedById`, `LastModifiedDate`, or `LastModifiedById`.
 
@@ -76,9 +76,9 @@ SELECT Id, Name FROM Account WHERE IsDeleted = true ALL ROWS
 
 **What the LLM generates:** "Go to Setup > Create Audit Fields and enable the checkbox."
 
-**Why it happens:** LLMs hallucinate a simple Setup path because most org-level settings follow that pattern. In reality, enabling Create Audit Fields historically required a Salesforce Support case, though some editions now expose it under Setup > User Interface.
+**Why it happens:** LLMs invent a Setup path such as "Setup > Create Audit Fields", or swing the other way and claim a Support case is required. The real path is Setup > User Interface (object_reference 264 L2599-2601).
 
-**Correct pattern:** "The org-level setting may be available under Setup > User Interface > 'Enable Set Audit Fields upon Record Creation.' If the option is not visible, open a case with Salesforce Support. Additionally, the individual user performing the migration must be assigned the 'Set Audit Fields upon Record Creation' user permission via a permission set."
+**Correct pattern:** "Setup > User Interface > select 'Enable Set Audit Fields upon Record Creation' (and 'Update Records with Inactive Owners'). Then enable the permission 'Set Audit Fields upon Record Creation' in the profile or permission set of the migrating user, and create the record through the API (object_reference 264 L2599-2603)." The earlier "open a case with Support" fallback is removed: no corpus line says it. UNVERIFIED (2026-10-20): whether some orgs lack the Setup option.
 
 **Detection hint:** Any instruction that mentions only the org-level setting without also mentioning the required user-level permission, or that oversimplifies the enablement path.
 

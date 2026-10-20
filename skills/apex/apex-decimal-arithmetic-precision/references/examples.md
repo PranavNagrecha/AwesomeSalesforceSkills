@@ -7,14 +7,14 @@
 **Problem:** The original code:
 
 ```apex
-// WRONG — uses HALF_UP on platform that uses HALF_EVEN for currency display
+// WRONG — HALF_UP chosen without checking it against the business rule
 Decimal subtotal = unitPrice * qty;
 Decimal tax = subtotal * (taxRate / 100);
 Decimal total = (subtotal + tax).setScale(2, System.RoundingMode.HALF_UP);
 li.Total_With_Tax__c = total;
 ```
 
-Two bugs: `taxRate / 100` is Decimal-divided-by-Integer-literal, fine here, but `subtotal * (taxRate / 100)` is not given an explicit scale — relies on the natural scale of the multiply, which compounds with the chosen final-rounding mode. And `HALF_UP` disagrees with the Currency field's display rounding (`HALF_EVEN`) on every halfway value.
+Two bugs: `taxRate / 100` is Decimal-divided-by-Integer-literal, fine here, but `subtotal * (taxRate / 100)` is not given an explicit scale — relies on the natural scale of the multiply, which compounds with the chosen final-rounding mode. And `HALF_UP` may disagree with the rounding a Flow or formula applies on halfway values (UNVERIFIED (2026-10-20): that the platform's currency display and formulas round `HALF_EVEN`).
 
 **Solution:**
 
@@ -22,14 +22,14 @@ Two bugs: `taxRate / 100` is Decimal-divided-by-Integer-literal, fine here, but 
 public class TaxCalc {
     public static Decimal totalWithTax(Decimal unitPrice, Integer qty, Decimal taxRatePercent) {
         Decimal subtotal = unitPrice * qty;
-        Decimal tax = subtotal.multiply(taxRatePercent)
-            .divide(100, 6, System.RoundingMode.HALF_EVEN);
+        Decimal tax = (subtotal * taxRatePercent)
+            .divide(100, 6, System.RoundingMode.HALF_EVEN);   // Decimal has no multiply()
         return (subtotal + tax).setScale(2, System.RoundingMode.HALF_EVEN);
     }
 }
 ```
 
-**Why it works:** Intermediate `tax` carries scale 6 to absorb the multiply-then-divide rounding without losing precision. The final `setScale(2, HALF_EVEN)` matches the platform's display behavior so the value persisted in `Total_With_Tax__c` matches what a Flow or formula would compute.
+**Why it works:** Intermediate `tax` carries scale 6 to absorb the multiply-then-divide rounding without losing precision. The final `setScale(2, HALF_EVEN)` states the mode explicitly (it is also the default of `setScale`, apexref 262 L212707-212709). UNVERIFIED (2026-10-20): that this makes the persisted value match what a Flow or formula computes.
 
 ---
 
@@ -61,8 +61,7 @@ public static void allocateProportional(List<LineItem__c> items, Decimal total) 
     }
     Decimal running = 0;
     for (Integer i = 0; i < items.size() - 1; i++) {
-        Decimal share = total
-            .multiply(items[i].Amount__c)
+        Decimal share = (total * items[i].Amount__c)
             .divide(totalAmount, 6, System.RoundingMode.HALF_EVEN)
             .setScale(2, System.RoundingMode.HALF_EVEN);
         items[i].Allocated_Discount__c = share;
@@ -87,7 +86,7 @@ public static void allocateProportional(List<LineItem__c> items, Decimal total) 
 // WRONG — scale-strict comparison reports false negatives
 Decimal apiValue = (Decimal) JSON.deserialize('"1.5"', Decimal.class);
 Decimal expected = 1.50;
-Boolean ok = expected.equals(apiValue);  // false! scale 2 != scale 1
+Boolean ok = expected.equals(apiValue);  // UNVERIFIED (2026-10-20): the claimed false result
 ```
 
 **Solution:**
@@ -98,11 +97,11 @@ public static Boolean equalsAt(Decimal a, Decimal b, Integer scale) {
         .equals(b.setScale(scale, System.RoundingMode.HALF_EVEN));
 }
 
-// Or for "same number" semantics:
-Boolean ok = expected == apiValue;  // true — Apex == is value-equal on Decimal
+// Or compare with ==, UNVERIFIED (2026-10-20): the corpus does not state == semantics on Decimal
+Boolean ok = expected == apiValue;
 ```
 
-**Why it works:** Apex's `==` on Decimal is *value-equal* — it ignores scale. `.equals()` is *scale-strict* and reports `false` whenever scales differ even if the numeric value is identical. For "same number" use `==`. When you must use `.equals()` (e.g. inside a Set or Map key), normalize both sides to the same scale first.
+**Why it works:** normalising both sides to one scale removes the scale difference before any comparison, and the guide warns that equal numbers at different scale generally hash differently (apex dev guide 264 L1244-1246). UNVERIFIED (2026-10-20): the claim that `==` ignores scale while `.equals()` is scale-strict.
 
 ---
 
@@ -110,6 +109,6 @@ Boolean ok = expected == apiValue;  // true — Apex == is value-equal on Decima
 
 **What practitioners do:** They have a `Double` from a JSON parse or a third-party library and convert it via `Decimal.valueOf(myDouble)`, expecting clean decimal arithmetic afterward.
 
-**What goes wrong:** `Decimal.valueOf(Double)` constructs the Decimal from the *binary* double representation, not the decimal one. Any value that isn't representable in binary floating point (e.g. `0.1`, `0.2`, `0.3`, most non-power-of-2 fractions) gets a long tail of binary-rounding noise: `Decimal.valueOf(0.1) → 0.1000000000000000055511151231257827021181583404541015625`. Subsequent `setScale` calls "round away" the noise, but a `.toString()` or a downstream consumer that expects clean values will show the trailing digits.
+**What goes wrong:** UNVERIFIED (2026-10-20): that `Decimal.valueOf(Double)` builds the Decimal from the binary double and yields a long tail such as `0.1000000000000000055511151231257827021181583404541015625`. The guide says a Decimal made from a non-decimal number is first converted to a String (apex dev guide 264 L1242-1243), so the claim is not supported; the habit of keeping money out of Double stands.
 
 **Correct approach:** When parsing JSON, configure the JSON parser to produce strings or BigDecimal-equivalent Decimals (`JSON.createParser` lets you call `getDecimalValue()` directly). When constructing from a literal, use `Decimal.valueOf('0.1')` (String overload) or write `Decimal d = 0.1;` (Apex literal). Never let a Double touch a money calculation.

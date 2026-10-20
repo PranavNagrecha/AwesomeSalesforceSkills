@@ -37,9 +37,9 @@ outputs:
   - "Regression test plan identifying which existing features must be re-tested"
   - "UAT sign-off checklist for the feature"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-20
 ---
 
 # UAT and Acceptance Criteria
@@ -54,9 +54,9 @@ Gather this context before beginning UAT work:
 
 | Question | Why it matters |
 |---|---|
-| What sandbox type is being used? | Full sandboxes have production data copies and reflect real user volume. Partial sandboxes have a data subset. Developer sandboxes have no production data — test data must be created manually. UAT should ideally run in a Full or Partial sandbox so that data volume, sharing rules, and record types match production behavior. |
+| What sandbox type is being used? | Partial Copy and Full sandboxes are testing environments loaded with copies of production data; Developer and Developer Pro sandboxes hold fictional data (api_meta 264 L1068-1070). UNVERIFIED (2026-10-20): that a Full sandbox reflects full production volume while a Partial holds only a sample — the size rules are Help-only. UAT should ideally run in a Full or Partial sandbox so that data volume, sharing rules, and record types match production behavior. |
 | Which user personas are in scope? | Testing one profile may not reveal a field-level security (FLS) gap visible to a different profile. Identify every profile or permission set that will use the feature and ensure test execution covers each. |
-| Is time-based automation in scope? | Time-based workflow rules and scheduled flows cannot be advanced manually in sandbox. If a feature includes time-triggered automation, plan for either manual triggering via Developer Console or a separate automation testing environment. |
+| Is time-based automation in scope? | Time-based workflow rules and scheduled flows cannot be advanced manually in sandbox (UNVERIFIED (2026-10-20): no corpus line states how a sandbox processes time-based entries). If a feature includes time-triggered automation, plan for either manual triggering via Developer Console or a separate automation testing environment. |
 | Have all acceptance criteria been confirmed as testable? | Acceptance criteria must be boolean (observable pass/fail) before test scripts are written. Criteria like "the page should be fast" or "the form should be intuitive" cannot be tested — they must be rewritten before UAT begins. |
 
 ---
@@ -68,13 +68,13 @@ Ask these before a single test case is written. Each one traces to a gotcha in
 
 | Ask | Why it matters | What a good answer adds |
 |---|---|---|
-| "Which sandbox is UAT in, when was it last refreshed, and is another refresh booked inside the window?" | A refresh during UAT deletes the build and the seeded data; a Full sandbox's 29-day floor makes teams book refreshes far in advance and forget them (gotcha 6) | `refreshed_on` and `build_deployed_on` in the plan header, plus a named person who can veto a refresh |
+| "Which sandbox is UAT in, when was it last refreshed, and is another refresh booked inside the window?" | A refresh during UAT deletes the build and the seeded data; a Full sandbox's 29-day floor (UNVERIFIED (2026-10-20): Help-only figure, not in the corpus) makes teams book refreshes far in advance and forget them (gotcha 6) | `refreshed_on` and `build_deployed_on` in the plan header, plus a named person who can veto a refresh |
 | "Does any acceptance criterion depend on data volume — a rollup, a queue backlog, a query, a batch?" | A Partial Copy holds a sample, so volume-dependent behaviour cannot be proved in it (gotcha 8) | The sandbox type decision, and an explicit list of cases the chosen environment cannot prove |
 | "Which named user, with which profile and permission sets, runs each case?" | An admin bypasses FLS and most sharing in the UI, so an admin pass proves nothing about the persona (gotcha 2) | A persona table with real usernames — the roster the sign-off record is anchored to |
-| "Does any criterion involve an email arriving, and who has to receive it?" | Sandboxes default to `System Email Only`, and only `User.Email` is `.invalid`-suffixed on refresh — Contact and Lead emails are real (gotcha 1) | A deliverability setting recorded with a date, and scrubbed contact emails before it is raised |
+| "Does any criterion involve an email arriving, and who has to receive it?" | Sandboxes default to `System Email Only`, and only `User.Email` is `.invalid`-suffixed on refresh — Contact and Lead emails are real (gotcha 1; UNVERIFIED (2026-10-20): both are Help-only behaviours, the corpus holds neither) | A deliverability setting recorded with a date, and scrubbed contact emails before it is raised |
 | "How will test data be created — UI, Data Loader, Bulk API, REST?" | The three load paths disagree about whether assignment rules run at all (gotcha 7) | The tool and its assignment-rule setting written into the case preconditions, with a UI control record to compare against |
 | "Which criteria are restrictions rather than capabilities — what must be blocked, hidden, or rejected?" | A script built only from "the user can…" never touches a validation rule, FLS or sharing (gotcha 10) | At least one `negative_path` case per story, and a go decision that is invalid without them |
-| "When must the validation deploy run relative to sign-off, and who accepts a deferred defect?" | A quick deploy only skips tests within 10 days of a successful validation, so a validation taken at the start of a three-week cycle is dead by sign-off | A dated validation slot in the plan, and a named business owner for the known-issues list |
+| "When must the validation deploy run relative to sign-off, and who accepts a deferred defect?" | A quick deploy only skips tests when the components were validated "within the last 10 days" (api_meta 264 L4969), so a validation taken at the start of a three-week cycle is dead by sign-off | A dated validation slot in the plan, and a named business owner for the known-issues list |
 
 What a proper UAT programme adds over just testing it: every result is attributable to a named
 persona in a dated environment against a stated build, so a pass is evidence rather than an opinion
@@ -87,7 +87,7 @@ and a deferred defect is a decision someone signed rather than something that wa
 
 ### Acceptance Criteria Format for Salesforce
 
-Acceptance criteria are the conditions a feature must satisfy to be considered complete. In Salesforce projects, the Trailhead BA curriculum specifies the **if/then format**: each criterion takes the form "If [precondition or user action], then [observable Salesforce outcome]."
+Acceptance criteria are the conditions a feature must satisfy to be considered complete. In Salesforce projects, the Trailhead BA curriculum specifies the **if/then format** (UNVERIFIED (2026-10-20): Trailhead is not in the corpus): each criterion takes the form "If [precondition or user action], then [observable Salesforce outcome]."
 
 This format is preferable to vague statements because it forces specificity about:
 - The user state (which profile, which record state, which field value)
@@ -210,7 +210,7 @@ Before each release, compile a regression test list using this process:
 |---|---|---|
 | Acceptance criteria is vague ("should be easy to use") | Rewrite as if/then before writing test cases | Vague criteria cannot produce pass/fail results — they produce opinion |
 | Two profiles see the same feature differently | Write separate test cases per profile | FLS and page layout assignments vary by profile — a P1 security defect may be invisible from the wrong profile |
-| Feature includes time-based automation | Use Developer Console to execute scheduled jobs in advance, or mock with a future date trigger | Time-triggered flows cannot be advanced by simply waiting in a sandbox |
+| Feature includes time-based automation | Use Developer Console to execute scheduled jobs in advance, or mock with a future date trigger | Time-triggered flows cannot be advanced by simply waiting in a sandbox (UNVERIFIED (2026-10-20)) |
 | Defect found in regression is P1 | Stop UAT, block the release, route immediately to build team | P1 defects in regression mean a prior working feature is now broken |
 | Business owner wants to skip regression testing | Document the risk formally; require explicit sign-off | Skipping regression and finding a P1 in production is more expensive than a 2-hour regression pass |
 | Test environment differs from production (missing data, different OWD) | Document sandbox limitations in test preconditions; flag as a test risk | Tests run against an unrepresentative environment produce misleading results |
@@ -237,7 +237,7 @@ Before each release, compile a regression test list using this process:
    `templates/uat-and-acceptance-criteria-template.md`) and lint it:
    `python3 scripts/check_uat_and_acceptance_criteria.py --file uat-plan.yaml`. The same script
    lints a markdown script or story document with `--file`, and a whole folder with
-   `--manifest-dir`. Fix every ERROR before the first tester logs in.
+   `--manifest-dir`. Plan-record findings are ERROR and exit 1; Markdown findings are WARN (exit 1 only with `--strict`). Fix every finding before the first tester logs in.
 5. **Execute and triage.** Record `pass_fail` per case; log each defect against a `case_id` with a
    severity and one of the categories in the table above. A finding with no case behind it is a
    missing case or a change request, not a bug.
@@ -278,19 +278,19 @@ Run through these before declaring UAT complete and signing off for production d
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Email alerts are suppressed in sandbox by default** — Salesforce sandboxes have email deliverability set to "System email only" by default. Email alerts triggered by flows or approval processes will not be delivered to end users during UAT. Testers who expect to receive an email as part of an acceptance criterion will see a false failure. Before UAT, confirm the sandbox email deliverability setting (Setup → Deliverability) is set to "All Email" for the UAT environment.
+1. **Email alerts are suppressed in sandbox by default** — Salesforce sandboxes have email deliverability set to "System email only" by default (UNVERIFIED (2026-10-20): Help-only; the corpus names Deliverability in Setup, api_meta 264 L118088, but no default). Email alerts triggered by flows or approval processes will not be delivered to end users during UAT. Testers who expect to receive an email as part of an acceptance criterion will see a false failure. Before UAT, confirm the sandbox email deliverability setting (Setup → Deliverability) is set to "All Email" for the UAT environment.
 
-2. **Sharing recalculation is asynchronous** — When a sharing rule is added or a record is reparented, the sharing recalculation job runs asynchronously. If a tester immediately checks record visibility after triggering a sharing change, they may see the old sharing state and report a false failure. Allow a few minutes after sharing-related actions before testing record visibility.
+2. **Sharing recalculation is asynchronous** — When a sharing rule is added or a record is reparented, the sharing recalculation job runs asynchronously (UNVERIFIED (2026-10-20): the corpus covers only Apex managed sharing recalculation, apex dev guide 264 L13050-13054, not rule recalculation timing). If a tester immediately checks record visibility after triggering a sharing change, they may see the old sharing state and report a false failure. Allow a few minutes after sharing-related actions before testing record visibility.
 
 3. **Record type and profile assignments may differ from production** — If the UAT sandbox was refreshed months ago, profile assignments, record type defaults, and page layout assignments may not match production. Changes made to the sandbox for other projects can silently corrupt the test environment. Before UAT, verify that the sandbox configuration matches production for the personas being tested.
 
 4. **A refresh booked during the UAT window deletes the build** — the plan header carries `refreshed_on` and `build_deployed_on` in that order so the checker can catch it. See `references/gotchas.md` gotcha 6.
 
-5. **Assignment rules do not run the same way through every load path** — REST defaults to running the active rules, a Bulk API 2.0 job runs none unless `assignmentRuleId` is set, and Data Loader has its own Assignment rule setting that overrides the CSV's owner. See gotcha 7.
+5. **Assignment rules do not run the same way through every load path** — REST defaults to running the active rules when the header is absent (api_rest 264 L670-672), `assignmentRuleId` is Optional on a Bulk API 2.0 ingest job (api_asynch 264 L1555-1556; UNVERIFIED (2026-10-20): that omitting it means no rule runs), and Data Loader's Assignment rule setting overrides the CSV's owner (salesforce_data_loader 264 L379-383). See gotcha 7.
 
 6. **A Partial Copy proves nothing volume-dependent** — sampling is per selected object, so parent and child volumes come out of proportion. See gotcha 8.
 
-7. **Mobile is a different form factor, not a different browser** — a Lightning page assigned only for `Large` is not what the phone renders, and a compact layout cannot show a long text area at all. See gotcha 11.
+7. **Mobile is a different form factor, not a different browser** — `Large` is the desktop form factor and `Small` the phone or tablet (api_meta 264 L41980-41984; UNVERIFIED (2026-10-20): that a page assigned only for `Large` is not what the phone renders — the guide states this on the ActionOverride field), and a compact layout supports every field type except text area, long text area, rich text area and multi-select picklist (api_meta 264 L45325-45335). See gotcha 11.
 
 Full versions, with sources, are in `references/gotchas.md` (11 gotchas).
 

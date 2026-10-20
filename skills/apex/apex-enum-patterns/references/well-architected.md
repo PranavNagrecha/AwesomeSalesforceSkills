@@ -3,7 +3,8 @@
 ## Relevant Pillars
 
 - **Operational Excellence** — Enum-based dispatch surfaces missed
-  cases through `when else` throws. Strings silently fall through;
+  cases through `when else` throws. A string `switch` with no matching
+  `when` and no `when else` silently does nothing (apex dev guide 264 L2865);
   enums make the missed branch loud, exactly when a new value is
   added by a teammate who didn't read every dispatcher.
 - **Security** — Enums constrain the input space. A method that
@@ -44,8 +45,8 @@ Specifically:
 
 ## Official Sources Used
 
-- Apex Enums (Apex Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_enums.htm
-- Switch Statement (Apex Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_switch.htm
-- System.NoSuchElementException (Apex Reference) — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_NoSuchElementException.htm
-- Versioning Apex Code in Managed Packages — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_versioning_intro.htm
+- Apex Enums (Apex Developer Guide) — no constructor syntax, no user-defined methods: apex dev guide 264 L1745-1825 — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_enums.htm
+- Switch Statement (Apex Developer Guide) — `when else`, no fall-through, enum recommendation: apex dev guide 264 L2865-2894 — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_switch.htm
+- Enum Methods (Apex Reference) — `values`, `valueOf`, `name`, `ordinal`: apexref 262 L214374-214389; the guide does not name the `valueOf` exception — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_enum.htm
+- Versioning Apex Code in Managed Packages — global enum restrictions: apex dev guide 264 L43901-43920 — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_versioning_intro.htm
 - Salesforce Well-Architected: Adaptable — https://architect.salesforce.com/well-architected/adaptable/composable

@@ -820,6 +820,15 @@ releases:
     - admin/requirements-traceability-matrix
     - admin/restriction-rules
     - admin/stakeholder-raci-for-sf-projects
+    - admin/system-field-behavior-and-audit
+    - admin/uat-and-acceptance-criteria
+    - apex/apex-custom-permissions-check
+    - apex/apex-decimal-arithmetic-precision
+    - apex/apex-dynamic-soql-binding-safety
+    - apex/apex-encoding-and-crypto
+    - apex/apex-enum-patterns
+    - apex/apex-hardcoded-id-elimination
+    - apex/apex-managed-sharing
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'

@@ -3,16 +3,18 @@
   "chunk_ids": [
     "006d4bc6758d5a548344",
     "017fc2e82fc0ce3d8f0c",
-    "069aba85112961e77c33",
     "0beb658f72b231fc02fe",
+    "16ae07a856bd11181fed",
     "1ab49dcc8d760f046765",
     "2192583145625759b7fb",
     "24ec96616cb10fe77743",
+    "280377c1b14b981678ef",
+    "2b5834b305ea2804f60e",
     "3155df709d17d591a009",
     "31e6c68131e805caeaa7",
-    "35c645274d3bc5dbe4f9",
     "40b09feeb36f5078d2bc",
     "417cab9740d32e12cd85",
+    "44b8f359b15c417a21b0",
     "4f3dbc7632c006e994ad",
     "5071bee846a19dbe079a",
     "5284ff42089f2b89b86b",
@@ -21,6 +23,7 @@
     "6475b2ea9b9e4e6956c2",
     "662b35c93893bf5767b7",
     "68eaa210bbc02dc9ab06",
+    "6a0603bc98e54789700b",
     "7053d4625d77760a3f3e",
     "78d8ec3aa8d0b52f8f16",
     "7c5eb929223725f12b1c",
@@ -37,6 +40,7 @@
     "b974c71834c0031c45c5",
     "bacef7edb09fc5ec3e1d",
     "bdc1007655bf91ed603a",
+    "c04d9b825eaa058357b7",
     "c6cbf6e15cae39064f4e",
     "c6eb2addc6d4576f7829",
     "d825aec9caadf3c384f3",
@@ -46,10 +50,9 @@
     "e9113fc1d23eff53a4ff",
     "e9959109d817c79857b6",
     "ed9b276c25132cb7cf6f",
-    "f0496358005d9282fe8d",
-    "f6ac66d1cc51d3ed3fa5"
+    "f0496358005d9282fe8d"
   ],
-  "content_hash": "6130b35ece9d142e40fddcd91a641a6e76989c683024e1cc6fbaaace7a2fcf22",
+  "content_hash": "936bafb51f94b1056cc44c46c845590193cdb43237cc390583ae8c409e90d891",
   "dependencies": [],
   "description": "Apex enum patterns \u2014 enum-based dispatch instead of string switching, ordinal stability, enum values in Custom Metadata, package-global enums, and the limitations (no methods on enum constants, no associated data). Covers `Enum.values()`, `valueOf(String)` failures, and the right way to map an enum to/from a picklist value. NOT for picklist-field design and value-set management \u2014 use admin/picklist-and-value-sets. NOT for reading picklist values at runtime via describe \u2014 use apex/apex-schema-describe.",
   "file_location": "skills/apex/apex-enum-patterns",
@@ -61,10 +64,10 @@
   ],
   "name": "apex-enum-patterns",
   "official_sources": [
-    "Apex Enums (Apex Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_enums.htm",
-    "Switch Statement (Apex Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_switch.htm",
-    "System.NoSuchElementException (Apex Reference) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_NoSuchElementException.htm",
-    "Versioning Apex Code in Managed Packages \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_versioning_intro.htm",
+    "Apex Enums (Apex Developer Guide) \u2014 no constructor syntax, no user-defined methods: apex dev guide 264 L1745-1825 \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_enums.htm",
+    "Switch Statement (Apex Developer Guide) \u2014 `when else`, no fall-through, enum recommendation: apex dev guide 264 L2865-2894 \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_switch.htm",
+    "Enum Methods (Apex Reference) \u2014 `values`, `valueOf`, `name`, `ordinal`: apexref 262 L214374-214389; the guide does not name the `valueOf` exception \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_enum.htm",
+    "Versioning Apex Code in Managed Packages \u2014 global enum restrictions: apex dev guide 264 L43901-43920 \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_versioning_intro.htm",
     "Salesforce Well-Architected: Adaptable \u2014 https://architect.salesforce.com/well-architected/adaptable/composable"
   ],
   "outputs": [
@@ -92,7 +95,7 @@
   "templates": [
     "skills/apex/apex-enum-patterns/templates/apex-enum-patterns-template.md"
   ],
-  "updated": "2026-05-05",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

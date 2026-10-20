@@ -4,20 +4,27 @@
 Scans Apex (.cls and .trigger) under force-app/ (or any --manifest-dir) and
 flags concrete patterns that this skill warns against:
 
-  D1  one-argument `divide(...)` calls — throws on non-terminating divides
-  D2  `setScale(n)` single-argument — throws if rounding actually needed
+  D1  one-argument `divide(...)` calls — the Decimal class has no such overload
+      (apexref 262 L212672-212677 lists only divide(divisor, scale) and
+      divide(divisor, scale, roundingMode)), so the code will not compile
+  D2  `setScale(n)` single-argument — rounds half-even implicitly (apexref 262
+      L212707-212709); pass the RoundingMode so the policy is written down
   D3  Integer literal divided by Integer literal where the result is later
       treated as Decimal (e.g. `someInt / 100` assigned to Decimal)
-  D4  `Decimal.valueOf(<non-string>)` calls — Double overload reintroduces
-      binary-float noise
-  D5  `.equals(` invoked on a Decimal-typed expression — likely scale-strict
-      compare, usually wrong
+  D4  `Decimal.valueOf(<Double>)` calls — prefer the String overload or
+      JSONParser.getDecimalValue() for money values
+  D5  `.equals(` invoked on a Decimal-typed expression — numerically equal
+      Decimals at different scale generally hash differently (apex dev guide
+      264 L1244-1246); normalise scale first
 
 Each finding emits `file:line: CODE  description`. Stdlib only.
 
 Usage:
     python3 check_apex_decimal_arithmetic_precision.py
-    python3 check_apex_decimal_arithmetic_precision.py --manifest-dir force-app
+    python3 check_apex_decimal_arithmetic_precision.py --manifest-dir force-app [--strict]
+
+Exit codes: findings are WARN and exit 0 unless --strict; a directory with no Apex is one
+WARN and exit 0; a missing directory is ERROR and exit 1.
 """
 
 from __future__ import annotations
@@ -69,13 +76,13 @@ def _scan_file(path: Path) -> List[str]:
             if "," in arg:
                 continue
             findings.append(
-                f"{path}:{line_no}: D1  one-argument divide() — use divide(divisor, scale, RoundingMode)"
+                f"{path}:{line_no}: D1  one-argument divide() — no such overload on Decimal; use divide(divisor, scale, RoundingMode)"
             )
 
         # D2 — one-arg setScale
         for _ in _RE_SETSCALE_ONEARG.finditer(line):
             findings.append(
-                f"{path}:{line_no}: D2  setScale(n) without RoundingMode — throws if rounding needed; use setScale(n, RoundingMode.X)"
+                f"{path}:{line_no}: D2  setScale(n) without RoundingMode — rounds half-even implicitly; use setScale(n, RoundingMode.X) to state the policy"
             )
 
         # D3 — integer-divided-by-integer in a likely-Decimal context
@@ -99,7 +106,7 @@ def _scan_file(path: Path) -> List[str]:
             # Heuristic: anything with a Double-typed source is the danger case.
             if re.search(r"(?:\bDouble\b|\bdouble\b|\)\s*$|\(\s*\(?\s*Double\s*\))", arg):
                 findings.append(
-                    f"{path}:{line_no}: D4  Decimal.valueOf(Double) reintroduces binary-float noise — use String overload or JSONParser.getDecimalValue()"
+                    f"{path}:{line_no}: D4  Decimal.valueOf(Double) — prefer the String overload or JSONParser.getDecimalValue() for money values"
                 )
 
         # D5 — .equals on a known Decimal var
@@ -107,7 +114,7 @@ def _scan_file(path: Path) -> List[str]:
             var = match.group(1)
             if var in decimal_vars:
                 findings.append(
-                    f"{path}:{line_no}: D5  Decimal.equals() is scale-strict — use == for value-equal compare, or setScale before equals"
+                    f"{path}:{line_no}: D5  Decimal.equals() on values that may differ in scale — setScale both sides to one scale first"
                 )
 
     return findings
@@ -127,12 +134,13 @@ def main() -> int:
         default="force-app",
         help="Root directory of Apex sources (default: force-app).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on findings or when there is nothing to check.")
     args = parser.parse_args()
 
     root = Path(args.manifest_dir)
     if not root.exists():
-        print(f"Manifest directory not found: {root}", file=sys.stderr)
-        return 2
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
 
     all_findings: List[str] = []
     files_scanned = 0
@@ -141,20 +149,17 @@ def main() -> int:
         all_findings.extend(_scan_file(f))
 
     if files_scanned == 0:
-        print(f"No Apex sources found under {root}", file=sys.stderr)
-        return 0
+        print(f"WARN: no .cls or .trigger sources under {root}; nothing to check.")
+        return 1 if args.strict else 0
 
     if not all_findings:
         print(f"OK: scanned {files_scanned} Apex files, no Decimal anti-patterns found.")
         return 0
 
     for line in all_findings:
-        print(f"WARN: {line}", file=sys.stderr)
-    print(
-        f"\nWARN: found {len(all_findings)} Decimal-arithmetic issue(s) across {files_scanned} file(s).",
-        file=sys.stderr,
-    )
-    sys.exit(1)
+        print(f"WARN: {line}")
+    print(f"\nWARN: found {len(all_findings)} Decimal-arithmetic issue(s) across {files_scanned} file(s).")
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

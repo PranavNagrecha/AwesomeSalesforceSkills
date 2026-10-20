@@ -13,22 +13,24 @@
 Trigger-based share inserts are real-time and transactional but constrained by governor limits. They are appropriate when sharing grants are small (one share row per triggering record) and closely tied to a single DML event. Batch recalculation is appropriate when the sharing model can drift (e.g., territory reassignments affecting thousands of records) and correctness requires a full rebuild. In practice, both are used together: triggers maintain shares incrementally, and the recalculation batch provides a safety net for rebuilding after platform events.
 
 **Custom row cause vs. `Manual`:**
-Using `Manual` as the row cause is simpler (no Setup prerequisite) but means the platform cannot distinguish Apex-managed grants from user-initiated manual shares. More importantly, the grants are cleared and cannot be automatically rebuilt during manual sharing recalculation. Custom row causes add a Setup dependency but enable registered recalculation and make the Share table auditable.
+Using `Manual` as the row cause is simpler (no sharing-reason prerequisite) but means the platform cannot distinguish Apex-managed grants from user-initiated manual shares, and Manual shares are removed when the record owner changes (apex dev guide 264 L12606, L12756-12757). UNVERIFIED (2026-10-20): that Manual grants are cleared by a manual sharing recalculation. Custom row causes add a metadata dependency but make the Share table auditable and survive an owner change (L12610-12611).
 
 **`without sharing` scope:**
 `without sharing` should be scoped as narrowly as possible — ideally only to the recalculation batch class and never to general business logic classes. Using `without sharing` broadly to work around sharing configuration problems is an anti-pattern that eliminates the platform's access control guarantees.
 
 ## Anti-Patterns
 
-1. **Using `Manual` row cause for long-lived Apex grants** — Grants with `RowCause = 'Manual'` are cleared by manual sharing recalculation. If a user runs recalculation from Setup, all programmatic grants using `Manual` disappear with no automatic rebuild. Always use a custom Apex sharing reason for grants that must survive platform recalculation.
+1. **Using `Manual` row cause for long-lived Apex grants** — Grants with `RowCause = 'Manual'` are removed when the record owner changes (apex dev guide 264 L12606) and when they become redundant after an OWD change (L13050-13052). UNVERIFIED (2026-10-20): that a manual recalculation run from Setup clears them. Use a custom Apex sharing reason for grants that must survive an owner change.
 
 2. **Broad `without sharing` on the feature class** — Placing `without sharing` on the trigger handler or service class (rather than only the recalculation batch) bypasses record-level security for all operations in that class, not just sharing DML. This exposes records to all users who can trigger the code path, violating the principle of least privilege. Scope `without sharing` to the recalculation class only.
 
-3. **Not registering a recalculation class on the Apex sharing reason** — Deploying code that creates share rows with a custom row cause but not registering the recalculation class in Setup means that an OWD change or full recalculation will permanently destroy all Apex-managed grants for the object. There is no automatic rebuild, no error, and no alert. The data access loss may not be discovered until users report it.
+3. **Not associating a recalculation class with the object** — Apex recalculation classes defined for a custom object run on an OWD change (apex dev guide 264 L13071-13072) and from the object's detail page (L13059). UNVERIFIED (2026-10-20): that without one an OWD change or full recalculation permanently destroys all Apex-managed grants with no error or alert.
 
 ## Official Sources Used
 
-- Apex Developer Guide — Creating Apex Managed Sharing: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_creating_with_apex.htm
+- Apex Developer Guide — Creating Apex Managed Sharing: share objects, access levels, row causes, the recruiting trigger and recalculation sample: apex dev guide 264 L12596-13110 — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_creating_with_apex.htm
+- Metadata API Developer Guide — SharingReason: api_meta 264 L47631-47650
+- Object Reference — AccountShare: object_reference 264 L17338-17474
 - Apex Developer Guide — Understanding Apex Managed Sharing: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm
 - Apex Developer Guide — Sharing Recalculation: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_sharing_recalc.htm
 - Apex Developer Guide — Using the with sharing, without sharing, and inherited sharing Keywords: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm

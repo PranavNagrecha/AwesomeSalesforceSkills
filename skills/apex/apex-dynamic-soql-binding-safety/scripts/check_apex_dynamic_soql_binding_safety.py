@@ -15,10 +15,11 @@ Scans Apex (.cls) sources for unsafe dynamic-SOQL patterns:
        string concatenation. Indicates a "false sense of security" pattern —
        escaping is not a substitute for binding.
 
-Stdlib only. Exits 1 if any P0 or P1 issue is found.
+Stdlib only. Findings are WARN and exit 0 unless --strict; a directory with no .cls files
+is one WARN and exit 0; a missing directory is ERROR and exit 1.
 
 Usage:
-    python3 check_apex_dynamic_soql_binding_safety.py [--manifest-dir DIR]
+    python3 check_apex_dynamic_soql_binding_safety.py [--manifest-dir DIR] [--strict]
 """
 
 from __future__ import annotations
@@ -66,6 +67,7 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory containing Apex classes (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on findings or when there is nothing to check.")
     return parser.parse_args()
 
 
@@ -154,13 +156,13 @@ def main() -> int:
     root = Path(args.manifest_dir)
 
     if not root.exists():
-        print(f"ERROR: manifest directory not found: {root}", file=sys.stderr)
-        return 1
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
 
     files = find_apex_files(root)
     if not files:
-        print(f"No .cls files found under {root}.")
-        return 0
+        print(f"WARN: no .cls files found under {root}; nothing to check.")
+        return 1 if args.strict else 0
 
     total_p0 = 0
     total_p1 = 0
@@ -170,12 +172,12 @@ def main() -> int:
                 total_p0 += 1
             else:
                 total_p1 += 1
-            print(f"{severity} [{rule}] {f}:{line_no}: {msg}", file=sys.stderr)
+            print(f"WARN: {severity} [{rule}] {f}:{line_no}: {msg}")
 
     print(
         f"\nScanned {len(files)} file(s). P0 issues: {total_p0}. P1 issues: {total_p1}."
     )
-    if total_p0 > 0 or total_p1 > 0:
+    if (total_p0 > 0 or total_p1 > 0) and args.strict:
         return 1
     return 0
 

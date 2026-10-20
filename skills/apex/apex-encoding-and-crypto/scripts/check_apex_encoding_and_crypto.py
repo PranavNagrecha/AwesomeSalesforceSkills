@@ -12,6 +12,9 @@ Scans .cls and .trigger files for:
 - Blob.toString() on a value that came from Crypto.*
 
 stdlib only.
+
+Exit codes: findings are WARN and exit 0 unless --strict; a directory with no Apex is one
+WARN and exit 0; a missing directory is ERROR and exit 1.
 """
 
 from __future__ import annotations
@@ -32,8 +35,8 @@ WEAK_ALGO_RE = re.compile(
     re.IGNORECASE,
 )
 # Crypto.generateMac accepts only hmacMD5, hmacSHA1, hmacSHA256, hmacSHA512.
-# hmacSHA384 does not exist on the platform: it compiles and deploys, then
-# throws at run time. Apex Reference Guide -> Crypto Class -> generateMac.
+# hmacSHA384 is not a documented value (apexref 262 L203863-203867); the
+# algorithm name is a String, so the compiler cannot check it.
 UNSUPPORTED_MAC_ALGO_RE = re.compile(
     r"Crypto\.generateMac\s*\(\s*'\s*hmac[- ]?sha[- ]?384\s*'",
     re.IGNORECASE,
@@ -76,6 +79,7 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory to scan for Apex classes and triggers.",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on findings or when there is nothing to check.")
     return parser.parse_args()
 
 
@@ -87,13 +91,13 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     normalized = [normalize_finding(f) for f in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(n["severity"], 0) for n in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
     if normalized:
         print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+    return 1 if (normalized and strict) else 0
 
 
 def iter_apex_files(root: Path) -> list[Path]:
@@ -114,7 +118,7 @@ def audit_file(path: Path) -> list[str]:
         findings.append(f"HIGH {path}: weak algorithm (MD5/SHA-1/HmacMD5/HmacSHA1) used in Crypto call")
 
     if UNSUPPORTED_MAC_ALGO_RE.search(text):
-        findings.append(f"CRITICAL {path}: Crypto.generateMac('hmacSHA384') — unsupported algorithm; generateMac accepts only hmacMD5, hmacSHA1, hmacSHA256, hmacSHA512. Compiles, then fails at run time")
+        findings.append(f"CRITICAL {path}: Crypto.generateMac('hmacSHA384') — not a documented value; generateMac lists only hmacMD5, hmacSHA1, hmacSHA256, hmacSHA512 (apexref 262 L203863-203867)")
 
     if HARDCODED_SECRET_RE.search(text):
         findings.append(f"HIGH {path}: hardcoded secret literal near secret/key/token identifier; move to Named Credential or protected CMT")
@@ -144,16 +148,15 @@ def main() -> int:
     args = parse_args()
     root = Path(args.manifest_dir)
     if not root.exists():
-        return emit_result(
-            [f"HIGH {root}: manifest directory not found"],
-            "Scanned 0 Apex files; manifest directory was missing.",
-        )
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
 
     files = iter_apex_files(root)
     if not files:
         return emit_result(
             [f"REVIEW {root}: no Apex files found"],
             "Scanned 0 Apex files; no .cls or .trigger files were found.",
+            args.strict,
         )
 
     findings: list[str] = []
@@ -161,7 +164,7 @@ def main() -> int:
         findings.extend(audit_file(path))
 
     summary = f"Scanned {len(files)} Apex file(s); {len(findings)} crypto/encoding finding(s) detected."
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, args.strict)
 
 
 if __name__ == "__main__":

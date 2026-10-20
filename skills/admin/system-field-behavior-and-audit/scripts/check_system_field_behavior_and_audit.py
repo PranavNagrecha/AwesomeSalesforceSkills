@@ -10,7 +10,10 @@ Uses stdlib only — no pip dependencies.
 
 Usage:
     python3 check_system_field_behavior_and_audit.py [--help]
-    python3 check_system_field_behavior_and_audit.py --manifest-dir path/to/metadata
+    python3 check_system_field_behavior_and_audit.py --manifest-dir path/to/metadata [--strict]
+
+Exit codes: findings are WARN and exit 0 unless --strict; an empty directory is one
+WARN and exit 0; a missing directory is ERROR and exit 1.
 """
 
 from __future__ import annotations
@@ -29,6 +32,11 @@ def parse_args() -> argparse.Namespace:
         "--manifest-dir",
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Promote WARN findings to a non-zero exit code.",
     )
     return parser.parse_args()
 
@@ -71,7 +79,7 @@ def check_apex_file(filepath: Path) -> list[str]:
         if RE_LMD_FILTER.search(line):
             issues.append(
                 f"{filepath}:{i}: SOQL filters on LastModifiedDate — "
-                f"consider SystemModstamp for delta sync (indexed, captures all changes)"
+                f"consider SystemModstamp for delta sync (SystemModstamp covers user and automated-process changes; on the default index list)"
             )
 
         # Check 2: IsDeleted referenced without ALL ROWS in the surrounding context
@@ -97,42 +105,38 @@ def check_apex_file(filepath: Path) -> list[str]:
     return issues
 
 
-def check_system_field_behavior_and_audit(manifest_dir: Path) -> list[str]:
-    """Return a list of issue strings found in the manifest directory."""
-    issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    # Scan all Apex class and trigger files
-    apex_patterns = ["**/*.cls", "**/*.trigger"]
-    files_found = False
-    for pattern in apex_patterns:
+def scan(manifest_dir: Path) -> tuple[list[str], int]:
+    """Return (findings, number of Apex files scanned)."""
+    findings: list[str] = []
+    scanned = 0
+    for pattern in ("**/*.cls", "**/*.trigger"):
         for filepath in manifest_dir.glob(pattern):
-            files_found = True
-            issues.extend(check_apex_file(filepath))
-
-    if not files_found:
-        # Not an error — the manifest may not contain Apex files
-        pass
-
-    return issues
+            scanned += 1
+            findings.extend(check_apex_file(filepath))
+    return findings, scanned
 
 
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
-    issues = check_system_field_behavior_and_audit(manifest_dir)
 
-    if not issues:
+    if not manifest_dir.exists():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
+
+    findings, scanned = scan(manifest_dir)
+
+    if scanned == 0:
+        print(f"WARN: no .cls or .trigger files under {manifest_dir}; nothing to check.")
+        return 1 if args.strict else 0
+
+    if not findings:
         print("No system-field anti-patterns found.")
         return 0
 
-    for issue in issues:
-        print(f"ISSUE: {issue}")
-
-    return 1
+    for finding in findings:
+        print(f"WARN: {finding}")
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

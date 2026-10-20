@@ -2,50 +2,50 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: Apex Managed Share Rows Are Silently Cleared on OWD Change or Full Recalculation
+## Gotcha 1: An OWD Change Triggers Recalculation
 
-**What happens:** When an administrator changes the Org-Wide Default for an object, or triggers a full sharing recalculation from Setup (Sharing Settings > Recalculate), the platform deletes **all** Apex-managed share rows for the affected object — including rows with custom row causes. If a recalculation class is registered on the Apex sharing reason, the platform invokes it automatically to rebuild the grants. If no class is registered, the grants are gone with no error or notification.
+**What happens:** When an administrator changes the Org-Wide Default for an object, "Salesforce automatically recalculates sharing for all records", adds managed sharing where appropriate, and removes any sharing "if the access they grant is considered redundant" (apex dev guide 264 L13049-13052). Apex recalculation classes defined for a custom object also run on an OWD change (L13071-13072). UNVERIFIED (2026-10-20): that the platform deletes **all** Apex-managed rows including custom row causes, that no error or notification appears when no class is registered, and that sharing rule edits or sandbox refreshes trigger the same behaviour.
 
-**When it occurs:** Any time an admin modifies OWD, adds or removes a sharing rule, or manually recalculates sharing via Setup. This also happens when object-level sharing recalculation is triggered by certain org migrations or sandbox refreshes.
+**When it occurs:** Any OWD change on the object.
 
-**How to avoid:** Always register a `Database.Batchable` recalculation class on every Apex sharing reason (Setup > Object Manager > [Object] > Apex Sharing Reasons > Edit > Recalculation Apex Class). Test the recalculation path in UAT by simulating an OWD change in a sandbox, then verifying shares are rebuilt. Monitor with periodic SOQL audits on the Share table.
+**How to avoid:** Register a `Database.Batchable` recalculation class for the object (the Apex Sharing Recalculation related list on the custom object's detail page, L13053-13055; the earlier "Edit > Recalculation Apex Class on the sharing reason" path is CONTRADICTED). Test the rebuild by changing the OWD in a sandbox and checking the Share table by `RowCause`.
 
 ---
 
-## Gotcha 2: `without sharing` Is Mandatory in Recalculation Classes
+## Gotcha 2: The Recalculation Sample Is `without sharing`
 
-**What happens:** A recalculation batch class declared `with sharing` (or with no keyword, which defaults to `without sharing` only at the top level in some contexts, but is unreliable) silently under-queries the parent object. Records the running user cannot see are excluded from the `Database.QueryLocator` result. The batch completes without error, but the share table is partially rebuilt — only records the submitting admin happens to own or have access to are covered.
+**What happens:** The guide's recalculation class is `public without sharing class JobSharingRecalc` and its `start` query uses `AccessLevel.SYSTEM_MODE` (apex dev guide 264 L13095, L13105-13106). UNVERIFIED (2026-10-20): that a `with sharing` batch silently under-queries and completes without error. The earlier remark that a class with no keyword "defaults to `without sharing` only at the top level in some contexts" is superseded: at API 67.0 and later classes without an explicit sharing declaration run `with sharing` (L11930-11931); below 67.0 the mode depends on the inheritance chain and calling context (L11931-11937).
 
-**When it occurs:** Whenever the batch is submitted by a non-admin user, or by an admin who does not have access to all records due to a misconfigured role hierarchy or sharing rule. Also occurs in automated processes (scheduled jobs, platform events) where the running user is an integration user with limited visibility.
+**When it occurs:** A batch submitted by a non-admin user or an integration user with limited visibility.
 
-**How to avoid:** Declare the recalculation class `global without sharing` (or `public without sharing`). The `without sharing` keyword on the class ensures all records are visible for the query regardless of who invokes the batch. Document this intentional bypass in a code comment citing this gotcha.
+**How to avoid:** Declare the recalculation class `without sharing` (or `public without sharing`) and add a code comment explaining the intentional bypass. UNVERIFIED (2026-10-20): that `global` is required.
 
 ---
 
 ## Gotcha 3: Custom Row Cause Must Exist in the Target Org Before Deployment
 
-**What happens:** Code that references a custom Apex sharing reason (e.g., `Project__Share.rowCause.TerritoryAccess__c`) compiles successfully even if the reason does not exist in the org. At DML runtime, inserting a share row with the non-existent row cause throws `System.DmlException: FIELD_INTEGRITY_EXCEPTION, value not in set for restricted picklist field: RowCause`. The exception rolls back the transaction.
+**What happens:** Code that references a custom Apex sharing reason (for example `Project__Share.rowCause.TerritoryAccess__c`) fails at DML time if the reason is missing; `RowCause` is a restricted picklist (object_reference 264 L17456-17459). UNVERIFIED (2026-10-20): that the code still compiles and the exact `System.DmlException: FIELD_INTEGRITY_EXCEPTION, value not in set for restricted picklist field: RowCause` text.
 
-**When it occurs:** When deploying to a new sandbox, production org, or CI environment where the Apex sharing reason metadata record has not been created. Apex sharing reasons are created through Setup UI (Object Manager), not through standard metadata deployments in a typical `force-app` directory. They are part of the `CustomObject` metadata type and must be included explicitly in the deployment package's `CustomObject` XML, or created manually before deployment.
+**When it occurs:** Deploying to a new sandbox, production org, or CI environment where the sharing reason has not been created.
 
-**How to avoid:** Include the sharing reason in the object's `CustomObject` metadata XML under `<sharingReasons>` in your deployment package. Alternatively, add a pre-deployment Setup step in the runbook. Add a smoke test that queries `EntityDefinition` or attempts a test insert in the target org's Apex test to confirm the reason exists before DML.
-
----
-
-## Gotcha 4: AccessLevel `All` Cannot Be Granted Via Apex — Use `Edit` for Maximum Programmatic Access
-
-**What happens:** Attempting to insert a share row with `AccessLevel = 'All'` throws `System.DmlException: INVALID_ACCESS_LEVEL, Invalid access level: All`. `All` is the owner-level access reserved for the record owner and is not grantable through Share object DML.
-
-**When it occurs:** When a developer assumes that to give a user "full control" of a record they should use `All`. The valid Apex-grantable levels are `Read` and `Edit` only.
-
-**How to avoid:** Use `Edit` as the maximum Access Level in Apex managed sharing. If ownership transfer is needed, update the `OwnerId` field directly. Document the valid values in code comments: `Read`, `Edit`.
+**How to avoid:** Sharing reasons are a Metadata API type (`SharingReason`, api_meta 264 L47631-47637; the earlier "not part of standard metadata deployments" wording is CONTRADICTED), so include it with the object in the deployment package. For a custom object you can also create it in Salesforce Classic: "Apex sharing reasons aren't available in Lightning Experience" (apex dev guide 264 L12879-12880). Add a smoke test that attempts a test insert with the reason.
 
 ---
 
-## Gotcha 5: Stale Share Rows Must Be Deleted Before Re-Granting — Upsert Is Not Supported
+## Gotcha 4: `All` Cannot Be Granted, and the Level Must Exceed the OWD
 
-**What happens:** The Share object does not support `upsert`. Attempting to upsert or re-insert a share row for an existing `(ParentId, UserOrGroupId, RowCause)` combination throws `DUPLICATE_VALUE`. Changing the `AccessLevel` of an existing grant requires deleting the old row and inserting a new one — there is no update path via the Share object.
+**What happens:** "The All access level is an internal value and can't be granted" (apex dev guide 264 L12730), and on AccountShare `All` "isn't valid for create or update calls" (object_reference 264 L17379). The field "must be set to an access level that's higher than the organization's default access level" (L12731-12732). UNVERIFIED (2026-10-20): the exact `INVALID_ACCESS_LEVEL, Invalid access level: All` text; an access level at or below the default instead raises `FIELD_FILTER_VALIDATION_EXCEPTION` containing `AccessLevel` (L12803-12804).
 
-**When it occurs:** During recalculation when access levels may have changed (e.g., a user was previously given Read and now needs Edit), and during retry logic that re-runs share inserts without cleaning up first.
+**When it occurs:** When a developer assumes `All` gives "full control", or grants `Read` on an object whose OWD is already Public Read Only.
 
-**How to avoid:** In recalculation logic, always delete all existing rows for the relevant `RowCause` and `ParentId` set before inserting fresh rows. In trigger logic, query existing rows and compare — only insert rows for new grants, delete rows for revoked grants, and delete-then-insert when the access level has changed.
+**How to avoid:** Use `Edit` as the maximum, and treat the access-level error as benign when the grant is redundant, as the guide's sample does (L12990-12999). If ownership transfer is needed, update `OwnerId`.
+
+---
+
+## Gotcha 5: Re-Granting Can Update the Existing Row
+
+**What happens:** The guide says that when "a manual share access level is set to Read and you insert a new one set to Write. The original share rows are updated to Write" (apex dev guide 264 L13024-13025). The AccountShare reference lists `update()` and `upsert()` among its supported calls (object_reference 264 L17349-17350), so the earlier claim that Share objects have no update path and do not support upsert is CONTRADICTED for AccountShare. UNVERIFIED (2026-10-20): the `(ParentId, UserOrGroupId, RowCause)` unique constraint and the `DUPLICATE_VALUE` error on an exact repeat.
+
+**When it occurs:** Recalculation when access levels have changed, and retry logic that re-runs share inserts without cleaning up first.
+
+**How to avoid:** In recalculation, delete the existing rows for the relevant `RowCause` and `ParentId` set before inserting fresh rows. In trigger logic, query existing rows and compare — insert only new grants and delete revoked ones.

@@ -31,10 +31,10 @@ Use this template when working on tasks in this area.
 - [ ] Final scale matches the destination field; intermediate scale is at least 2 higher
 - [ ] Rounding mode aligns with the documented business rule (and the design note says so)
 - [ ] Allocation/split logic uses residual-on-last-item; tests assert sum == header
-- [ ] Equality compares use `==` for "same number" or `setScale()` before `.equals()`
+- [ ] Equality compares and Set/Map keys `setScale()` both sides to one scale first
 - [ ] Tests cover terminating, repeating, half-way, and zero-divisor cases
 
 ## Notes
 
 Record any deviations from the standard pattern (e.g. matching an external system's
-HALF_UP requirement when the platform default is HALF_EVEN) and the reason.
+HALF_UP requirement when `setScale(n)` and `round()` default to HALF_EVEN, apexref 262 L212707-212709) and the reason.

@@ -28,9 +28,9 @@ outputs:
   - "review findings for weak algorithms, non-constant-time comparisons, or hardcoded keys"
   - "a test plan that pins known-answer vectors for the chosen algorithm"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-10-20
 ---
 
 # Apex Encoding And Crypto
@@ -46,7 +46,25 @@ Gather this context before writing any `Crypto` or `EncodingUtil` call:
 - What is the **algorithm** the other side actually uses? HMAC-SHA256, RSA-SHA256, AES-256-CBC, and SHA-512 all need different `Crypto` method names and payload shapes. An HMAC is not a digest; a digest is not a signature.
 - Where is the **key material**? A hardcoded `'my-secret'` literal in Apex fails every security review. Key material should come from a Named Credential (for HMAC shared secrets), a protected Custom Metadata record, or a Certificate stored in Setup (for RSA/ECDSA private keys signed via `Crypto.signWithCertificate`).
 - What **encoding** does the consumer want? Base64 and base64url differ in three characters. Hex is lowercase by default. URL-form-encoded bodies need `EncodingUtil.urlEncode(value, 'UTF-8')`, not bare concatenation.
-- Do you need a **constant-time comparison**? String equality (`==`) short-circuits and leaks bytes to an attacker timing the response. Use `Crypto.getRandomInteger` plus byte-wise loop, or compare full SHA-256 digests of both values instead of the raw HMACs.
+- Do you need a **constant-time comparison**? `Crypto.verifyHMac(algorithmName, data, privateKey, macToVerify)` is the documented MAC check (apexref 262 L204442-204449); UNVERIFIED (2026-10-20): that it, `==`, or any other comparison is or is not constant-time — the corpus says nothing about timing. `Crypto.getRandomInteger` has no role in a comparison (the earlier suggestion to pair it with a byte-wise loop is removed).
+
+---
+
+## Questions to Ask Before Configuring
+
+The gotchas for this skill sit in `SKILL.md` § Salesforce-Specific Gotchas (1-7) and `references/gotchas.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which algorithm does the counterparty use, spelled exactly?" | `generateMac` takes only four documented values; there is no `hmacSHA384` (Core Concepts) | The documented spelling or a renegotiated algorithm |
+| "Where does the key live: certificate, Named Credential or protected metadata?" | A literal key fails review (Before Starting) | The key source and its rotation owner |
+| "Is the consumer expecting base64url?" | Apex has no base64url method (gotcha 2) | The `+`/`/`/`=` transform on every JWT segment |
+| "Does any Blob become a String before storage?" | `toString()` is a cast, not an encoding (gotcha 3) | `base64Encode` or `convertToHex` at the boundary |
+| "CBC or GCM, and who supplies the IV?" | The managed IV is framed differently per mode (gotcha 6) | The mode, the framing and the interop spec |
+| "Does the consumer sign with RSA, ECDSA or PSS?" | Only the listed variants exist (gotcha 7) | A confirmed algorithm or an external signer |
+| "What is the source of nonces and verifiers?" | `getRandomInteger` uses SecureRandom (gotcha 5) | `Crypto.getRandom*` instead of `Math.random()` |
+
+A proper configuration adds a documented algorithm spelling, a managed key source, a boundary encoding and a known-answer test, where "just doing it" gives a signature that verifies in the unit test and is rejected by the partner.
 
 ---
 
@@ -71,21 +89,21 @@ Gather this context before writing any `Crypto` or `EncodingUtil` call:
 
 `Crypto.sign(algorithmName, input, privateKey)` produces an asymmetric signature using a raw private key blob. `Crypto.signWithCertificate(algorithmName, input, certDevName)` uses a certificate stored in Setup → Certificate and Key Management — this is the right pattern for OAuth 2.0 JWT bearer flow because the private key stays in the platform-managed certificate store and never appears as a literal in Apex.
 
-`Crypto.encrypt` / `Crypto.decrypt` perform AES encryption with `AES128`, `AES192`, or `AES256` in CBC mode with an explicit IV. `Crypto.encryptWithManagedIV` / `decryptWithManagedIV` let the platform generate and prepend the IV. Salesforce Shield Platform Encryption is a separate, superior capability for encrypting standard field storage — use it when the requirement is "the admin should never see this field" rather than wrapping `Crypto.encrypt` around every DML.
+`Crypto.encrypt` / `Crypto.decrypt` perform AES encryption: CBC (`AES128`/`AES128-CBC`, `AES192`/`AES192-CBC`, `AES256`/`AES256-CBC`, PKCS7 padding, caller-supplied 16-byte IV) and GCM (`AES256-GCM` only, no IV supplied) — the earlier "CBC only" wording was CONTRADICTED by apexref 262 L203077-203081 and L203098-203113. Keys must be 16, 24 or 32 bytes to match the algorithm (L203344-203346), and input is limited to 1,048,576 bytes (L203184-203185). `Crypto.encryptWithManagedIV` / `decryptWithManagedIV` let the platform generate the IV. The guide warns that CBC is vulnerable to a padding oracle attack and recommends encrypt-then-MAC (`generateMac` over the ciphertext with a different key, `verifyHMac` before decrypting) or a GCM algorithm (L203203-203220). Salesforce Shield Platform Encryption is a separate capability for encrypting standard field storage (UNVERIFIED (2026-10-20): that it is "superior" and FIPS-validated — Platform Encryption is not in the corpus) — use it when the requirement is "the admin should never see this field" rather than wrapping `Crypto.encrypt` around every DML.
 
 ### `EncodingUtil` Is For Bytes-To-Text And Text-To-Text
 
-`EncodingUtil.base64Encode(Blob)` / `EncodingUtil.base64Decode(String)` convert between bytes and standard base64. There is **no** `base64UrlEncode` method — if the consumer wants base64url (JWT headers, WebPush), post-process: replace `+` with `-`, `/` with `_`, and strip `=` padding.
+`EncodingUtil.base64Encode(Blob)` / `EncodingUtil.base64Decode(String)` convert between bytes and base64. The class has exactly six methods — `base64Decode`, `base64Encode`, `convertFromHex`, `convertToHex`, `urlDecode`, `urlEncode` (apexref 262 L214194-214208) — so there is **no** `base64UrlEncode`. If the consumer wants base64url (JWT headers, WebPush), post-process: replace `+` with `-`, `/` with `_`, and strip `=` padding (UNVERIFIED (2026-10-20): the base64url alphabet itself is RFC 4648, not in the corpus).
 
-`EncodingUtil.convertToHex(Blob)` returns lowercase hex. Downstream consumers that want uppercase must `.toUpperCase()` the result. `EncodingUtil.convertFromHex(String)` is the reverse.
+`EncodingUtil.convertToHex(Blob)` "returns a hexadecimal (base 16) representation of the inputBlob" (apexref 262 L214291-214292); UNVERIFIED (2026-10-20): that it is lowercase — the guide does not say, so test against a known-good sample and `.toUpperCase()` if the consumer needs uppercase. `EncodingUtil.convertFromHex(String)` is the reverse; it accepts 0-9, a-f and A-F, needs an even number of characters, and throws `InvalidParameterValueException` otherwise (L214262-214275).
 
-`EncodingUtil.urlEncode(value, charset)` produces percent-encoded text. Always pass `'UTF-8'` — the other supported charsets are present for legacy and expose locale-dependent bugs.
+`EncodingUtil.urlEncode(value, charset)` encodes into the application/x-www-form-urlencoded format, with the space character converted to `+` and unsafe characters encoded using the supplied scheme (apexref 262 L214333-214334, L214364-214365). Pass `'UTF-8'`, the guide's own example. UNVERIFIED (2026-10-20): that other charsets "expose locale-dependent bugs".
 
-`Blob.toString(encoding)` and `Blob.valueOf(string)` round-trip between `Blob` and `String`, but only for encodings the string actually represents. `Blob.toString('UTF-8')` on an arbitrary AES ciphertext will corrupt it — always keep ciphertexts as `Blob` and only encode at the boundary.
+`Blob.toString()` and `Blob.valueOf(string)` convert between `Blob` and `String`. `toString()` takes no argument and "casts the Blob into a String"; `valueOf` "casts the specified String to a Blob" (apexref 262 L201256-201259) — the earlier `Blob.toString(encoding)` / `Blob.toString('UTF-8')` form is CONTRADICTED: no such overload is listed. UNVERIFIED (2026-10-20): that the cast is UTF-8 and that it corrupts ciphertext; keep ciphertexts as `Blob` and only encode at the boundary with `base64Encode` or `convertToHex`.
 
 ### Key Material Belongs In Managed Storage, Not Apex
 
-A hardcoded secret is the most common finding in security reviews of crypto code. Three correct alternatives, by use case:
+A hardcoded secret is the most common finding in security reviews of crypto code (UNVERIFIED (2026-10-20): that claim and the three storage options below are practice, not corpus text; `signWithCertificate` taking a `certDevName` is grounded, apexref 262 L204058). Three correct alternatives, by use case:
 
 - **Certificate** (Setup → Certificate and Key Management) — for RSA/ECDSA private keys used by `Crypto.signWithCertificate`. The key is never readable from Apex.
 - **Named Credential (Custom Header or External Credential)** — for shared secrets used in HMAC. The secret is scoped to a principal and rotatable without code change.
@@ -93,7 +111,7 @@ A hardcoded secret is the most common finding in security reviews of crypto code
 
 ### Constant-Time Comparison Matters For Verification
 
-When your code compares a received signature to a recomputed one, `a == b` may short-circuit at the first differing byte, giving an attacker a measurable timing oracle. Salesforce doesn't expose a native constant-time compare, but two safe patterns exist: (1) SHA-256 both values and compare the digests — the comparison is now over fixed-length opaque bytes, which is effectively constant-time for short inputs; or (2) XOR all bytes and test equality at the end. For most webhook verification paths, pattern (1) is simpler and readable.
+When your code compares a received signature to a recomputed one, `a == b` may short-circuit at the first differing byte, giving an attacker a measurable timing oracle. UNVERIFIED (2026-10-20): that Salesforce exposes no native constant-time compare — `verifyHMac` (apexref 262 L204442) is a native MAC check and its timing behaviour is not documented. Two common patterns: (1) SHA-256 both values and compare the digests, which is over fixed-length bytes; or (2) XOR all bytes and test equality at the end. UNVERIFIED (2026-10-20): that either is constant-time; the corpus does not state it. For most webhook verification paths, pattern (1) is simpler and readable.
 
 ---
 
@@ -247,13 +265,13 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 
 ## Salesforce-Specific Gotchas
 
-1. **`Crypto.signWithCertificate` requires the cert in Setup, not a Static Resource** — loading a `.p12` file from a Static Resource and trying to sign with its bytes will fail. Import the key into Certificate and Key Management and reference it by DeveloperName.
+1. **`Crypto.signWithCertificate` takes a certificate DeveloperName** (`certDevName`, apexref 262 L204053-204059); `Crypto.sign` instead takes a private key that must be base64-decoded, in PKCS #8 form and at most 4 KB (L204008-204009). UNVERIFIED (2026-10-20): that a `.p12` from a Static Resource fails. Import the key into Certificate and Key Management and reference it by DeveloperName.
 2. **Base64url is not a built-in** — `EncodingUtil.base64Encode` always produces standard base64. Forgetting to translate `+`/`/` and strip `=` is the single most common JWT signing bug in Apex.
-3. **`Blob.valueOf(String)` defaults to UTF-8, but `Blob.toString(Blob)` requires you to pass the encoding** — a MAC computed over UTF-8 body bytes will differ from one computed over a re-serialized JSON that normalized character escapes.
+3. **`Blob.toString()` takes no encoding argument** (apexref 262 L201256-201257); UNVERIFIED (2026-10-20): that `Blob.valueOf(String)` is UTF-8. A MAC computed over the original body bytes will differ from one computed over a re-serialized JSON that normalized character escapes — sign `req.requestBody`, not a rebuilt string.
 4. **`Crypto.generateAesKey` returns a fresh key per call, not a stable one** — developers use it to generate a key and then forget that the next transaction has no reference to that key. For persistent AES use, generate the key once externally and store it via protected CMT or Named Credential.
-5. **`Crypto.getRandomInteger` is cryptographically secure; `Math.random()` is not** — use `Crypto.getRandomInteger` or `Crypto.getRandomLong` for nonces, session IDs, and PKCE verifiers. Never use `Math.random()` for anything security-relevant.
-6. **The `encryptWithManagedIV` ciphertext prepends the IV as the first 16 bytes** — systems that expect an IV-separated structure will decode this incorrectly. Use `encrypt` with an explicit IV if you need interop with a spec that declares its own IV framing.
-7. **`Crypto.sign` with `RSA` returns PKCS#1 v1.5 signatures, not PSS** — if the consumer expects PSS (`RSASSA-PSS`), there is no native Apex support; you must call an external signing service.
+5. **`Crypto.getRandomInteger` and `getRandomLong` invoke `java.security.SecureRandom`** (apexref 262 L203920-203921, L203957-203958) — use them for nonces, session IDs, and PKCE verifiers. UNVERIFIED (2026-10-20): the statement that `Math.random()` is not cryptographically secure; do not use it for anything security-relevant.
+6. **The `encryptWithManagedIV` ciphertext carries the IV inside it** — for CBC the IV is the first 128 bits (16 bytes); for GCM the result is the IV length (always 12), the 12-byte IV, then the ciphertext (apexref 262 L203645-203647). Systems that expect an IV-separated structure will decode this incorrectly. Use `encrypt` with an explicit IV if you need interop with a spec that declares its own IV framing.
+7. **The documented signing algorithms are RSA, RSA-SHA1/256/384/512 and ECDSA-SHA256/384/512 (plus ECDSA-SHA256-PLAIN)** (apexref 262 L203121-203135, L204002-204003). UNVERIFIED (2026-10-20): that RSA signatures are PKCS#1 v1.5 and that PSS is unsupported — no PSS variant is listed, so if the consumer expects `RSASSA-PSS`, plan to call an external signing service.
 
 ---
 
@@ -274,4 +292,4 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 - `apex/apex-rest-services` — use when the crypto path is wrapped inside an inbound `@RestResource` webhook endpoint.
 - `apex/callouts-and-http-integrations` — use when the crypto output is attached to an outbound HTTP request.
 - `apex/custom-metadata-in-apex` — use when signing keys or secrets live in protected Custom Metadata.
-- `security/shield-platform-encryption` — use when the requirement is to encrypt Salesforce-stored field data, not Apex payloads in transit.
+- `security/platform-encryption` — use when the requirement is to encrypt Salesforce-stored field data, not Apex payloads in transit.

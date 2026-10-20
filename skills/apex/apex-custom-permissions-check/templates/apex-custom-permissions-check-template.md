@@ -10,7 +10,7 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Record the answers to the Before Starting and Questions to Ask Before Configuring tables from SKILL.md here.
 
 - Setting / configuration:
 - Known constraints:
@@ -18,15 +18,15 @@ TODO: Record the answers to the Before Starting questions from SKILL.md here.
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Which pattern from SKILL.md applies (service entry point, LWC render hint, validation-rule gate)? Why?
 
 ## Checklist
 
 Copy the review checklist from SKILL.md and tick items as you complete them.
 
-- [ ] TODO
-- [ ] TODO
+- [ ] `FeatureManagement.checkPermission` at every gated Apex entry point
+- [ ] Granted and denied branches both tested under `System.runAs`
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Record any deviations from the standard pattern and why.

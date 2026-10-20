@@ -46,7 +46,13 @@ private class ApprovalServiceTest {
 
     private static User buildUser(List<String> permSetNames) {
         // templates/apex/tests/TestUserFactory.cls
-        return TestUserFactory.createUser('Standard User', permSetNames);
+        // Setup-object DML (User, PermissionSetAssignment) is mixed with record DML in
+        // the same test transaction unless enclosed in System.runAs (apex dev guide 264 L9059-9062).
+        User u;
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            u = TestUserFactory.createUser('Standard User', permSetNames);
+        }
+        return u;
     }
 
     @IsTest
@@ -87,9 +93,9 @@ private class ApprovalServiceTest {
 }
 ```
 
-**Why it works:** `FeatureManagement.checkPermission(String apiName)` "Checks whether a custom permission is enabled" for the running user and returns a Boolean showing "whether the permission is enabled (true) or disabled (false)" — so the same call serves both branches, and `System.runAs` is what makes the deny branch reachable in a test. `update as user` is separate and complementary: it enforces the running user's object and field permissions, which the custom-permission check knows nothing about.
+**Why it works:** `FeatureManagement.checkPermission(String apiName)` "Checks whether a custom permission is enabled" and returns a Boolean showing "whether the permission is enabled (true) or disabled (false)" (apexref 262 L215450, L215465) — so the same call serves both branches, and `System.runAs` is what makes the deny branch reachable in a test. `update as user` is separate and complementary: it enforces the running user's object and field permissions, which the custom-permission check knows nothing about.
 
-Note that `TestUserFactory` in `templates/apex/tests/` assigns permission sets as part of user creation; if you assign a `PermissionSetAssignment` yourself, insert it **outside** the `System.runAs` block, because setup-object DML mixed with the record DML in one transaction throws `System.DmlException: MIXED_DML_OPERATION`.
+Note that `TestUserFactory` in `templates/apex/tests/` assigns permission sets as part of user creation, which is why `buildUser` wraps the call in `System.runAs`: the guide says DML on setup sObjects such as `PermissionSetAssignment` "can't be mixed with DML on non-setup sObjects in the same transaction" (apex dev guide 264 L8943-8944, L8969) and that tests may mix them "if the code that performs the DML operations is enclosed within System.runAs method blocks" (L9059-9060). The earlier advice to insert the assignment **outside** the `runAs` block was CONTRADICTED by those lines. UNVERIFIED (2026-10-20): the literal `MIXED_DML_OPERATION` error text — no corpus line prints it.
 
 ---
 
@@ -131,7 +137,7 @@ export default class ApproveButton extends LightningElement {
 </template>
 ```
 
-Validation rule, `objects/Opportunity/validationRules/Big_Deal_Approval_Gate.validationRule-meta.xml`:
+Validation rule, `objects/Opportunity/validationRules/Big_Deal_Approval_Gate.validationRule-meta.xml` (UNVERIFIED (2026-10-20): `$Permission.<name>` in a validation rule formula — the corpus confirms the expression only for Lightning page visibility, api_meta 264 L70085):
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

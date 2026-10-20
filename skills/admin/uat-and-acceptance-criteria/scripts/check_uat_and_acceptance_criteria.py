@@ -26,11 +26,16 @@ Stdlib only. A minimal YAML subset is parsed in-process (mappings, nested mappin
 of mappings, lists of scalars, single-line values) — the plan record is written to stay
 inside that subset on purpose.
 
+Exit codes (severity split): a plan-record (*.yaml) finding is a schema or sign-off-gate
+break and is ERROR, exit 1 always; a Markdown heuristic finding is WARN, exit 0 unless
+--strict; nothing to check is one WARN and exit 0; a missing --file or --manifest-dir path
+is ERROR and exit 1.
+
 Usage:
     python3 check_uat_and_acceptance_criteria.py --file uat-plan.yaml
     python3 check_uat_and_acceptance_criteria.py --file uat-script.md
     python3 check_uat_and_acceptance_criteria.py --manifest-dir ./uat/
-Exit code 1 if any ERROR is reported; 0 otherwise.
+Exit code 1 if any ERROR is reported (or any WARN under --strict); 0 otherwise.
 """
 
 from __future__ import annotations
@@ -606,6 +611,12 @@ def main() -> int:
         help="Repo root used to resolve 'source_skills' paths. Defaults to the repo this "
              "script lives in.",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Also exit 1 on WARN findings (Markdown heuristics) or nothing to check. "
+             "Plan-record (YAML) findings and a missing path are ERROR, exit 1, always.",
+    )
     args = parser.parse_args()
 
     repo_root = (
@@ -616,38 +627,47 @@ def main() -> int:
 
     targets: list[Path] = []
     if args.file:
-        targets.append(Path(args.file))
+        file_path = Path(args.file)
+        if not file_path.exists():
+            print(f"ERROR: file not found: {file_path}")
+            sys.exit(1)
+        targets.append(file_path)
     if args.manifest_dir:
         directory = Path(args.manifest_dir)
         if not directory.is_dir():
             print(f"ERROR: not a directory: {directory}")
-            return 1
+            sys.exit(1)
         for pattern in ("*.yaml", "*.yml", "*.md"):
             targets.extend(sorted(directory.rglob(pattern)))
 
     if not targets:
-        print("No artefact given. Pass --file <uat-plan.yaml> or --manifest-dir <dir>.")
-        print("Example: python3 check_uat_and_acceptance_criteria.py --file uat-plan.yaml")
-        return 0
+        print("WARN: no artefact to check. Pass --file <uat-plan.yaml> or --manifest-dir <dir> "
+              "containing *.yaml, *.yml or *.md files.")
+        return 1 if args.strict else 0
 
-    total = 0
+    errors = 0
+    warns = 0
     for target in targets:
-        if not target.exists():
-            print(f"ERROR: {target}: file not found")
-            total += 1
-            continue
         issues = lint_file(target, repo_root)
+        is_plan = target.suffix.lower() in (".yaml", ".yml")
+        level = "ERROR" if is_plan else "WARN"
         if issues:
             for issue in issues:
-                print(f"ERROR: {target}: {issue}")
-            total += len(issues)
+                print(f"{level}: {target}: {issue}")
+            if is_plan:
+                errors += len(issues)
+            else:
+                warns += len(issues)
         else:
             print(f"OK: {target}")
 
+    total = errors + warns
     if total:
-        print(f"\n{total} issue(s) found across {len(targets)} artefact(s).")
-        return 1
-    print(f"\nNo issues found across {len(targets)} artefact(s).")
+        print(f"\n{errors} error(s), {warns} warning(s) across {len(targets)} artefact(s).")
+        if errors:
+            return 1
+        return 1 if args.strict else 0
+    print(f"\nNo findings across {len(targets)} artefact(s).")
     return 0
 
 

@@ -51,14 +51,16 @@ public without sharing class ProjectTerritoryShareHandler {
         }
 
         if (!toInsert.isEmpty()) {
-            // allOrNone = false: DUPLICATE_VALUE on any row does not roll back others
+            // allOrNone = false: a failed row does not roll back the others
             Database.SaveResult[] results = Database.insert(toInsert, false);
             for (Database.SaveResult sr : results) {
                 if (!sr.isSuccess()) {
                     for (Database.Error err : sr.getErrors()) {
-                        // Log but do not rethrow DUPLICATE_VALUE — it means the grant
-                        // already exists, which is the desired end state.
-                        if (err.getStatusCode() != StatusCode.DUPLICATE_VALUE) {
+                        // The guide treats an access level at or below the OWD as benign:
+                        // FIELD_FILTER_VALIDATION_EXCEPTION mentioning AccessLevel
+                        // (apex dev guide 264 L12990-12999). Log everything else.
+                        if (!(err.getStatusCode() == StatusCode.FIELD_FILTER_VALIDATION_EXCEPTION
+                              && err.getMessage().contains('AccessLevel'))) {
                             System.debug(LoggingLevel.ERROR,
                                 'Share insert error: ' + err.getMessage());
                         }
@@ -186,7 +188,7 @@ global without sharing class ProjectShareRecalculationBatch
 Database.executeBatch(new ProjectShareRecalculationBatch(), 200);
 ```
 
-**Why it works:** `without sharing` on the class ensures all `Project__c` records appear in the `start` query even if the submitting user cannot normally see them. The delete-then-insert pattern avoids `DUPLICATE_VALUE` errors. The in-memory `Map` deduplication prevents inserting two rows for the same `(project, user)` pair when a user has multiple territory assignments to the same project. Batch size 200 keeps each execute well within the 10,000 DML row limit.
+**Why it works:** `without sharing` on the class ensures all `Project__c` records appear in the `start` query even if the submitting user cannot normally see them. The delete-then-insert pattern avoids colliding with rows that already exist (UNVERIFIED (2026-10-20): the error an exact repeat raises). The in-memory `Map` deduplication prevents inserting two rows for the same `(project, user)` pair when a user has multiple territory assignments to the same project. Batch size 200 keeps each execute well within the 10,000 DML row limit.
 
 ---
 
@@ -204,6 +206,6 @@ insert new Project__Share(
 );
 ```
 
-**What goes wrong:** If the trigger fires more than once for the same record pair (e.g., through retries, workflow re-evaluations, or test data setup), the insert throws `System.DmlException: DUPLICATE_VALUE` and rolls back the entire transaction. In production this causes silent data loss — the triggering record is rolled back along with the share.
+**What goes wrong:** If the trigger fires more than once for the same record pair (e.g., through retries, workflow re-evaluations, or test data setup), UNVERIFIED (2026-10-20): that the insert throws `System.DmlException: DUPLICATE_VALUE` and rolls back the entire transaction — the guide says only that a higher manual access level updates the original row (apex dev guide 264 L13024-13025). A raw `insert` also has no partial-success handling, unlike `Database.insert(list, false)` (L12975-12977).
 
-**Correct approach:** Either query existing rows before inserting and skip duplicates, or use `Database.insert(list, false)` and inspect `SaveResult` errors, treating `DUPLICATE_VALUE` as a non-fatal condition. The batch recalculation pattern (Example 2) avoids this entirely by deleting first.
+**Correct approach:** Either query existing rows before inserting and skip duplicates, or use `Database.insert(list, false)` and inspect `SaveResult` errors, treating a repeat grant as non-fatal (UNVERIFIED (2026-10-20): that it surfaces as `DUPLICATE_VALUE`). The batch recalculation pattern (Example 2) avoids this entirely by deleting first.

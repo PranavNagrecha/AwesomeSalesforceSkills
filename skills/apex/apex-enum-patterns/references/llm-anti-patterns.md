@@ -13,9 +13,9 @@ RenewalAction a = RenewalAction.valueOf(record.Action__c);
 ```
 
 **Correct pattern.** Wrap in try/catch with a fallback or typed
-exception. `valueOf` throws `System.NoSuchElementException` for
-unknown input — fatal in production when a picklist value drifts
-from the enum.
+exception. `valueOf` throws for unknown input (apexref 262 L214381-214382;
+UNVERIFIED (2026-10-20): that the type is `System.NoSuchElementException`) — fatal in
+production when a picklist value drifts from the enum.
 
 **Detection hint.** Any `valueOf` call on an enum where the input
 is a field, parameter, or HTTP body without surrounding try/catch.
@@ -34,8 +34,9 @@ switch on action {
 ```
 
 **Correct pattern.** Always include `when else { throw new
-IllegalArgumentException('Unhandled: ' + action); }`. Apex `switch`
-is not exhaustive at compile time, and a missed case is silent.
+IllegalArgumentException('Unhandled: ' + action); }`. A `switch` with no
+matching `when` and no `when else` takes "no action" (apex dev guide 264
+L2865); `when else` is recommended, not required (L2890).
 
 **Detection hint.** Any `switch on` over an enum without a `when
 else` branch is missing the exhaustiveness check.
@@ -72,7 +73,7 @@ public enum Severity {
 ```
 
 **Correct pattern.** Apex enums have no constructors, methods, or
-per-constant data. Use a parallel map: `Map<Severity, Integer>
+per-constant data (apex dev guide 264 L1753, L1825). Use a parallel map: `Map<Severity, Integer>
 LEVELS = new Map<Severity, Integer>{ Severity.LOW => 1, ... }`.
 
 **Detection hint.** Any constructor, method, or instance field on
@@ -86,9 +87,7 @@ an Apex enum is invalid — won't compile.
 enum LicenseTier { ENTERPRISE, FREE, PRO }`.
 
 **Correct pattern.** In managed packages, `global` enum values are
-a stable contract. Add new values at the end; never reorder.
-Subscribers compile against the old order via ordinals (even
-indirectly through serialized data).
+a stable contract: "you can't remove or reorder global enum values" (apex dev guide 264 L43920). Add new values at the end; never reorder. UNVERIFIED (2026-10-20): that subscribers compile against the old order via ordinals.
 
 **Detection hint.** Any reorder of a `global` enum in a managed
 package is a breaking change.
@@ -123,8 +122,8 @@ ActionRequest r = (ActionRequest) JSON.deserialize(body, ActionRequest.class);
 ```
 
 If `ActionRequest.action` is typed as the `RenewalAction` enum,
-deserialization fails because `'escalate'` is not the canonical
-form `'ESCALATE'`. The LLM rarely surfaces this.
+UNVERIFIED (2026-10-20): that deserialization fails because `'escalate'` is not the
+canonical form `'ESCALATE'` — the corpus does not document enum JSON handling.
 
 **Correct pattern.** Either type the field as `String` and convert
 manually with normalization, or document and enforce the canonical

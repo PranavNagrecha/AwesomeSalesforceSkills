@@ -35,7 +35,7 @@ Tag findings as Operational Excellence when:
 
 - **`Crypto.sign` vs `Crypto.signWithCertificate`:** the raw-key form is more flexible (any PKCS#8 key) but exposes the key bytes to Apex memory. The certificate form keeps the key in the platform's secure store and is the correct default for long-lived service credentials.
 - **`Crypto.encrypt` vs `Crypto.encryptWithManagedIV`:** managed IV is simpler and safer; the explicit form is only correct when protocol interop requires a caller-framed IV.
-- **Shield Platform Encryption vs application-level AES:** Shield encrypts at the field-storage layer and is FIPS-validated; application-level AES is a crutch when Shield is not licensed and comes with the full responsibility of key management, IV management, and key rotation.
+- **Shield Platform Encryption vs application-level AES:** Shield encrypts at the field-storage layer (UNVERIFIED (2026-10-20): and is FIPS-validated — not in the corpus); application-level AES is a crutch when Shield is not licensed and comes with the full responsibility of key management, IV management, and key rotation.
 - **Constant-time compare via double-hash vs byte-XOR:** the double-hash approach is readable but costs two SHA-256 operations; the XOR approach is faster but harder to get right. For webhook paths the double-hash form is the right default.
 
 ## Anti-Patterns
@@ -47,9 +47,9 @@ Tag findings as Operational Excellence when:
 
 ## Official Sources Used
 
-- Apex Developer Guide — Crypto Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Crypto.htm
+- Apex Reference Guide — Crypto Class: AES modes and variants (apexref 262 L203077-203113), signing algorithms (L203121-203135), padding-oracle guidance (L203203-203220), `verifyHMac` (L204442): https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Crypto.htm
 - Apex Reference Guide — Crypto Class (`generateMac`: "These are valid values for algorithmName. hmacMD5, hmacSHA1, hmacSHA256, hmacSHA512"; `sign`/`signWithCertificate`: RSA, RSA-SHA1, RSA-SHA256, RSA-SHA384, RSA-SHA512, ECDSA-SHA256, ECDSA-SHA256-PLAIN, ECDSA-SHA384, ECDSA-SHA512; `generateDigest`: MD5, SHA1, SHA3-256, SHA3-384, SHA3-512, SHA-256, SHA-512): https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm
-- Apex Developer Guide — EncodingUtil Class: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_EncodingUtil.htm
+- Apex Reference Guide — EncodingUtil Class: the six methods (apexref 262 L214194-214208) and `urlEncode` rules (L214361-214365); Blob Class: `toString()` and `valueOf` (L201256-201259): https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_EncodingUtil.htm
 - Certificate And Key Management: https://help.salesforce.com/s/articleView?id=sf.security_keys_about.htm&type=5
 - OAuth 2.0 JWT Bearer Flow: https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_jwt_flow.htm&type=5
 - RFC 4231 (HMAC test vectors) and RFC 7519 (JWT) — for test pinning

@@ -8,18 +8,21 @@ Uses stdlib only — no pip dependencies.
 
 Usage:
     python3 check_apex_managed_sharing.py [--help]
-    python3 check_apex_managed_sharing.py --manifest-dir path/to/force-app
+    python3 check_apex_managed_sharing.py --manifest-dir path/to/force-app [--strict]
+
+Exit codes: findings are WARN and exit 0 unless --strict; a directory with no .cls files
+is one WARN and exit 0; a missing directory is ERROR and exit 1.
 
 Checks performed:
-  1. Detects share inserts (insert.*Share) and warns if no DUPLICATE_VALUE
-     guard pattern (Database.insert with false, or pre-query) is nearby.
+  1. Detects share inserts and warns if no partial-success pattern
+     (Database.insert(list, false[, AccessLevel])) is present.
   2. Detects classes that implement Database.Batchable and insert share records
      but are NOT declared without sharing.
   3. Detects share inserts that use AccessLevel = 'All' (invalid at runtime).
   4. Detects share inserts using RowCause = 'Manual' on custom Share objects
-     (warns that grants won't survive manual recalculation).
+     (warns that Manual shares are removed when the record owner changes).
   5. Reports Apex classes that insert share records but have no corresponding
-     delete (potential share row accumulation / DUPLICATE_VALUE risk).
+     delete (potential share row accumulation).
 """
 
 from __future__ import annotations
@@ -34,16 +37,18 @@ from pathlib import Path
 # Patterns
 # ---------------------------------------------------------------------------
 
-# Matches lines that insert a Share sObject: insert <varname> where var or
-# list type ends in Share or __Share
+# Matches lines that insert a Share sObject: the line names an identifier containing
+# 'share' (Project__Share, AccountShare, shareList). The earlier \bShare\b form never
+# matched __Share or AccountShare because underscore and letters are word characters.
 RE_SHARE_INSERT = re.compile(
-    r'\binsert\b.*\bShare\b',
+    r'\binsert\b[^;\n]*\w*share\w*',
     re.IGNORECASE,
 )
 
-# Detects Database.insert( with allOrNone=false (safe pattern)
+# Detects Database.insert( with allOrNone=false (safe pattern), with or without the
+# third AccessLevel argument the guide's samples pass (apex dev guide 264 L12788, L12978)
 RE_DB_INSERT_FALSE = re.compile(
-    r'Database\.insert\s*\([^)]+,\s*false\s*\)',
+    r'Database\.insert\s*\([^)]+,\s*false\s*(?:,[^)]*)?\)',
     re.IGNORECASE,
 )
 
@@ -74,7 +79,7 @@ RE_ROW_CAUSE_MANUAL = re.compile(
 
 # Detects delete of a Share object
 RE_SHARE_DELETE = re.compile(
-    r'\bdelete\b.*\bShare\b',
+    r'\bdelete\b[^;\n]*\w*share\w*',
     re.IGNORECASE,
 )
 
@@ -109,18 +114,18 @@ def analyse_file(path: Path) -> list[str]:
     if has_share_insert and not has_db_insert_false:
         issues.append(
             f"{path.name}: Share insert detected but Database.insert(list, false) "
-            "not found. Raw 'insert' on Share objects throws on DUPLICATE_VALUE "
-            "and rolls back the transaction. Use Database.insert(list, false) and "
-            "inspect SaveResult errors."
+            "not found. A raw 'insert' has no partial-success handling; the guide's "
+            "samples use Database.insert(list, false, AccessLevel.USER_MODE) and "
+            "inspect SaveResult errors (apex dev guide 264 L12975-12978)."
         )
 
     # Check 2: Batchable class that inserts shares but is NOT without sharing
     if has_batchable and has_share_insert and not has_without_sharing:
         issues.append(
             f"{path.name}: Class implements Database.Batchable and inserts Share "
-            "records but is NOT declared 'without sharing'. The start() query will "
-            "silently exclude records the running user cannot see, producing "
-            "incomplete share coverage. Declare the class 'without sharing'."
+            "records but is NOT declared 'without sharing'. The guide's recalculation "
+            "sample is 'public without sharing' (apex dev guide 264 L13095); a "
+            "'with sharing' start() query is limited to records the running user can see."
         )
 
     # Check 3: AccessLevel = 'All'
@@ -128,25 +133,24 @@ def analyse_file(path: Path) -> list[str]:
         if RE_ACCESS_LEVEL_ALL.search(line):
             issues.append(
                 f"{path.name}:{i}: AccessLevel = 'All' is invalid for Share inserts "
-                "and causes a runtime DmlException. Valid values are 'Read' and 'Edit'."
+                "which the guide calls an internal value that can't be granted (apex dev guide 264 L12730). Use 'Read' or 'Edit'."
             )
 
     # Check 4: RowCause = 'Manual' on a custom Share object
     if has_custom_share and RE_ROW_CAUSE_MANUAL.search(source):
         issues.append(
             f"{path.name}: Custom Share object (__Share) uses RowCause = 'Manual'. "
-            "Manual row causes are cleared during manual sharing recalculation. "
-            "Create an Apex sharing reason in Setup and use the custom row cause "
-            "constant (e.g., Object__Share.rowCause.MyReason__c) instead."
+            "Manual shares are removed when the record owner changes (apex dev guide 264 "
+            "L12606, L12756-12757). Create an Apex sharing reason and use the custom row "
+            "cause constant (e.g., Object__Share.rowCause.MyReason__c) instead."
         )
 
     # Check 5: Share inserts without any corresponding delete (accumulation risk)
     if has_share_insert and not has_share_delete:
         issues.append(
             f"{path.name}: Share inserts found but no Share deletes found in this "
-            "class. If shares are never cleaned up, duplicate row causes accumulate "
-            "and DUPLICATE_VALUE errors will appear on re-run. Ensure a companion "
-            "delete path exists (trigger on delete, or recalculation class)."
+            "class. If shares are never cleaned up, stale grants accumulate. Ensure a "
+            "companion delete path exists (trigger on delete, or recalculation class)."
         )
 
     return issues
@@ -160,17 +164,7 @@ def check_apex_managed_sharing(manifest_dir: Path) -> list[str]:
     """Return a list of issue strings found across all .cls files."""
     issues: list[str] = []
 
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
     cls_files = list(manifest_dir.rglob('*.cls'))
-    if not cls_files:
-        issues.append(
-            f"No .cls files found under {manifest_dir}. "
-            "Pass the root of your Salesforce source directory with --manifest-dir."
-        )
-        return issues
 
     share_files_found = 0
     for cls_file in cls_files:
@@ -201,11 +195,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Check Apex classes for common Apex managed sharing issues: "
-            "missing DUPLICATE_VALUE guards, missing 'without sharing' on "
+            "missing partial-success inserts, missing 'without sharing' on "
             "recalculation batches, invalid AccessLevel values, and share row "
             "accumulation risk."
         ),
     )
+    parser.add_argument('--strict', action='store_true', help='Exit 1 on findings or when there is nothing to check.')
     parser.add_argument(
         '--manifest-dir',
         default='.',
@@ -220,6 +215,15 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
+
+    if not manifest_dir.exists():
+        print(f'ERROR: manifest directory not found: {manifest_dir}')
+        sys.exit(1)
+
+    if not list(manifest_dir.rglob('*.cls')):
+        print(f'WARN: no .cls files found under {manifest_dir}; nothing to check.')
+        return 1 if args.strict else 0
+
     issues = check_apex_managed_sharing(manifest_dir)
 
     if not issues:
@@ -227,9 +231,9 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f'ISSUE: {issue}')
+        print(f'WARN: {issue}')
 
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == '__main__':

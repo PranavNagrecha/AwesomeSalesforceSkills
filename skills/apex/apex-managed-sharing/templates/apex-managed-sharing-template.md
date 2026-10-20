@@ -46,7 +46,7 @@ public without sharing class <Object>ShareHandler {
             parentIds.add(rec.<ParentLookupField__c>);
         }
 
-        // Query existing grants to prevent DUPLICATE_VALUE
+        // Query existing grants so only new ones are inserted
         Set<String> existingKeys = new Set<String>();
         for (<Object>__Share s : [
             SELECT ParentId, UserOrGroupId
@@ -157,10 +157,10 @@ Database.executeBatch(new <Object>ShareRecalculationBatch(), 200);
 ## Checklist
 
 - [ ] OWD for the object is Private or Public Read Only (Apex sharing has no effect on Public Read/Write)
-- [ ] Apex sharing reason created in Setup before this code is deployed to target org
-- [ ] Recalculation batch class registered on the sharing reason in Setup
+- [ ] Apex sharing reason exists in the target org before this code is deployed (Classic UI for a custom object, Metadata API `SharingReason` for a standard object)
+- [ ] Recalculation batch class associated with the object in its Apex Sharing Recalculation related list
 - [ ] `without sharing` declared on the recalculation batch class
-- [ ] Share inserts use `Database.insert(list, false)` and log non-DUPLICATE_VALUE errors
+- [ ] Share inserts use `Database.insert(list, false)` and log every error except the benign `FIELD_FILTER_VALIDATION_EXCEPTION` on `AccessLevel`
 - [ ] Stale shares deleted before fresh insert in recalculation (not upsert)
 - [ ] DML row count confirmed below 10,000 per transaction (trigger) and per execute (batch)
 - [ ] AccessLevel is `Read` or `Edit` — not `All`

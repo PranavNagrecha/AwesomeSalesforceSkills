@@ -48,10 +48,10 @@ workbook rows implement. Story ids are assigned here so each UAT case has someth
 | Decision | Value | Source |
 |---|---|---|
 | Sandbox type | Full (`UAT1`) | `admin/sandbox-strategy` § Sandbox Type Decision Matrix routes "UAT, regression, or production rehearsal with realistic volume" to a Full sandbox — best parity, highest cost |
-| Why not Partial Copy | The release contains an assignment rule that fires on a 200-row backlog load (US-CI-05) and an escalation rule that reads case age across the whole open backlog. A Partial Copy holds 5 GB, or 10,000 records per selected object plus children, so the open-case volume that makes the escalation queue behave like production is not there. | `admin/sandbox-strategy` § Type Capacities and Refresh Windows |
+| Why not Partial Copy | The release contains an assignment rule that fires on a 200-row backlog load (US-CI-05) and an escalation rule that reads case age across the whole open backlog. A Partial Copy holds 5 GB, or 10,000 records per selected object plus children (UNVERIFIED (2026-10-20): Help-only figures), so the open-case volume that makes the escalation queue behave like production is not there. | `admin/sandbox-strategy` § Type Capacities and Refresh Windows |
 | Why not Developer | No production data at all; every routing test would run against records the tester invented, which is exactly the data shape the rules were written against. | `admin/sandbox-strategy` § Sandbox Type Decision Matrix |
-| Refresh floor | Full sandboxes can be refreshed every 29 days — so the UAT window has to be planned around the refresh, not the other way round. | `admin/sandbox-strategy` § Type Capacities and Refresh Windows |
-| Entitlement check | Enterprise Edition ships with **0** Full sandboxes by default; Acme's Full sandbox is an add-on purchase. Confirm the allocation before promising a Full-sandbox UAT. | `admin/sandbox-strategy` § What Your Org Actually Owns |
+| Refresh floor | Full sandboxes can be refreshed every 29 days (UNVERIFIED (2026-10-20): Help-only figure) — so the UAT window has to be planned around the refresh, not the other way round. | `admin/sandbox-strategy` § Type Capacities and Refresh Windows |
+| Entitlement check | Enterprise Edition ships with **0** Full sandboxes by default (UNVERIFIED (2026-10-20): Help-only entitlement figure); Acme's Full sandbox is an add-on purchase. Confirm the allocation before promising a Full-sandbox UAT. | `admin/sandbox-strategy` § What Your Org Actually Owns |
 
 **Refresh date: 2026-08-24. The build was deployed on 2026-08-26. Nothing is refreshed again until
 sign-off.** The refresh is the first line of the plan header because a refresh after the build
@@ -62,14 +62,14 @@ deletes the build (gotcha 6).
 US-CI-02's acceptance criterion is an email arriving. Three levels exist — `No Access`,
 `System Email Only`, `All Email` — and a new sandbox created through Setup defaults to
 `System Email Only`, which suppresses workflow email alerts and `Messaging.sendEmail()` while still
-letting password resets through. A sandbox refreshed from an older one may inherit whatever it had
+letting password resets through (UNVERIFIED (2026-10-20): the level names, the default and the suppression are Help-only; the corpus names Deliverability in Setup, api_meta 264 L118088, and no level). A sandbox refreshed from an older one may inherit whatever it had
 before, including `All Email`, so the setting is **read** after every refresh rather than assumed
 (`devops/sandbox-data-isolation-gotchas` § Email Deliverability — What Is and Is Not Controlled
 Automatically).
 
 Raising it to `All Email` is not free. On refresh Salesforce appends `.invalid` to every
 **User.Email** value, but **Contact, Lead and Person Account email fields are copied verbatim from
-production** (same section). Acme's auto-response rule sends to the case contact. So:
+production** (same section; UNVERIFIED (2026-10-20): the `.invalid` suffix on `User.Email` and the verbatim copy of Contact, Lead and Person Account emails are Help-only). Acme's auto-response rule sends to the case contact. So:
 
 1. Deliverability → `All Email` (recorded in the plan, with the date and who set it).
 2. Before any email test, the contact emails on the seeded test accounts are rewritten to
@@ -80,10 +80,10 @@ production** (same section). Acme's auto-response rule sends to the case contact
 
 Usernames in a sandbox carry the sandbox name appended: `jo.tan@acme.com` becomes
 `jo.tan@acme.com.uat1` in a sandbox named `uat1`, and that suffix is ignored when the metadata is
-deployed onward (api_meta.txt L2705–2719, "Maintaining User References"). The same passage is why
+deployed onward (api_meta 264 L2839–2841, "Maintaining User References"). The same passage is why
 a user that exists **only** in the sandbox is a release risk: if a deployed component references a
 username the destination org does not have, Salesforce raises an error and the deployment stops
-until the reference is resolved. UAT users are therefore created from real production users, not
+until the reference is resolved (api_meta 264 L2847–2848). UAT users are therefore created from real production users, not
 invented.
 
 | Persona | Test user (sandbox) | Profile | Permission sets / PSG | What only this persona can prove |
@@ -121,25 +121,25 @@ the platform facts:
 
 - **Batch size.** Data Loader's maximum import batch is **200 records for SOAP API and 10,000 for
   Bulk API**; with Bulk API 2.0 selected neither batch-size setting is used at all because Bulk API
-  2.0 sizes batches itself (`salesforce_data_loader.txt` L351–360). Pinning the case to one
+  2.0 sizes batches itself (`salesforce_data_loader.txt` 264 L351–360). Pinning the case to one
   200-row SOAP batch is what makes it a *limit* test: it puts the whole file through the automation
   in the largest single transaction the tool will send.
 - **The limits that batch is being tested against.** A synchronous transaction gets 100 SOQL
   queries, 150 DML statements and 10,000 ms of CPU; asynchronous gets 200, 150 and 60,000 ms
-  (`apexdev.txt` L19544, L19554, L19579). A rule chain that is fine for one record and dies at 200
+  (`salesforce_apex_developer_guide.txt` 264 L19747, L19757, L19782). A rule chain that is fine for one record and dies at 200
   is exactly what this case is for.
 - **Assignment rules do not run by themselves.** Data Loader has an **Assignment rule** setting:
   "Specify the ID of the assignment rule to use for inserts, updates, and upserts… applies to
   inserts, updates, and upserts on cases and leads. **The assignment rule overrides Owner values in
-  your CSV file**" (`salesforce_data_loader.txt` L379–383). Leave it empty and the CSV's OwnerId —
+  your CSV file**" (`salesforce_data_loader.txt` 264 L379–383). Leave it empty and the CSV's OwnerId —
   or the load user — wins. The three API paths do not agree with each other, which is the point of
   gotcha 7:
 
   | Path | Default when nothing is specified |
   |---|---|
-  | Data Loader | The Assignment rule setting is blank by default; rules do not run |
-  | Bulk API 2.0 job | `assignmentRuleId` is **Optional** on the job resource (`api_asynch.txt` L1591–1595) — absent means no rule |
-  | REST API | "If the header is not provided with a request, REST API defaults to using the active assignment rules" (`api_rest.txt` L691–694) |
+  | Data Loader | UNVERIFIED (2026-10-20): that the Assignment rule setting is blank by default and no rule runs — L379–383 describe the setting, not its default |
+  | Bulk API 2.0 job | `assignmentRuleId` is **Optional** on the job resource (`api_asynch.txt` 264 L1555–1556) — UNVERIFIED (2026-10-20): that absent means no rule |
+  | REST API | "If the header is not provided with a request, REST API defaults to using the active assignment rules" (`api_rest.txt` 264 L670–672) |
 
   So a case that passes when the developer inserts records through REST can fail when the data
   owner loads the same rows through Data Loader. UAT-CI-005 pins the tool **and** the setting.
@@ -227,7 +227,7 @@ followed by a deploy that runs no tests:
 - A quick deploy (`deployRecentValidation()`) skips the Apex test run, and only if: the components
   "have been validated successfully for the target environment **within the last 10 days**", the
   tests in the target org passed, and coverage is met — at least 75% overall with triggers covered,
-  or 75% per deployed class and trigger when `RunSpecifiedTests` was used (api_meta.txt L4860–4868).
+  or 75% per deployed class and trigger when `RunSpecifiedTests` was used (api_meta 264 L4969–4974). `checkOnly` = true validates "without saving the components in the target org" (api_meta 264 L3220-3221).
 
 That 10-day window is the real constraint on a UAT schedule: a validation taken at the start of a
 three-week UAT cycle is dead by sign-off and the tests re-run in the deployment window. The plan
@@ -242,9 +242,9 @@ before the first tester logs in.
 
 - [ ] **Sandbox type matches the risk.** Full for volume-sensitive UAT; if this is a Partial Copy,
       write down which cases it *cannot* prove — a Partial Copy is capped at 5 GB or 10,000 records
-      per selected object plus children (`admin/sandbox-strategy` § Type Capacities).
+      per selected object plus children (`admin/sandbox-strategy` § Type Capacities; UNVERIFIED (2026-10-20): Help-only figures).
 - [ ] **Refresh date recorded, and no refresh scheduled inside the UAT window.** A Full sandbox can
-      be refreshed every 29 days; refreshing over live work destroys the metadata and test data in
+      be refreshed every 29 days (UNVERIFIED (2026-10-20): Help-only figure); refreshing over live work destroys the metadata and test data in
       it (`admin/sandbox-strategy` § Type Capacities; `admin/sandbox-strategy` →
       `references/gotchas.md` § Refreshing Over Active Work).
 - [ ] **Deliverability read, not assumed.** Setup → Deliverability. New sandboxes default to
@@ -259,14 +259,14 @@ before the first tester logs in.
 - [ ] **Test users exist per persona, with the sandbox username suffix, and none is an admin.**
       Sandbox usernames carry the sandbox name (`user@acme.com` → `user@acme.com.uat1`) and the
       suffix is ignored on deploy; a username that exists only in the sandbox stops a later
-      deployment (api_meta.txt L2705–2719).
+      deployment (api_meta 264 L2839–2841, L2847–2848).
 - [ ] **Mobile is a separate pass where the story mentions it.** A Lightning record page assigned
       with `formFactor` = `Large` covers the Lightning Experience desktop only; `Small` is the
-      Salesforce mobile app on a phone or tablet (api_meta.txt L39827–39836).
+      Salesforce mobile app on a phone or tablet (api_meta 264 L41980–41984, ActionOverride `formFactor`).
 - [ ] **Data-load tool and its assignment-rule setting pinned in the test case**, not left to the
-      tester (`salesforce_data_loader.txt` L379–383).
+      tester (`salesforce_data_loader.txt` 264 L379–383).
 - [ ] **Validation deploy scheduled to land inside the 10-day quick-deploy window** relative to the
-      expected sign-off date (api_meta.txt L4860–4868).
+      expected sign-off date (api_meta 264 L4969).
 
 ---
 

@@ -40,10 +40,12 @@ platform-idiomatic gate.
 **Correct pattern:**
 
 ```
-FeatureManagement.checkPermission('My_Perm') is the documented,
-transaction-cached API. Avoid Schema describe workarounds — slower,
-more code, no caching benefit.
+FeatureManagement.checkPermission('My_Perm') is the documented API
+(apexref 262 L215449-215454; secimpl 262 L1089-1090). Avoid Schema describe
+workarounds — more code for the same answer.
 ```
+
+UNVERIFIED (2026-10-20): the earlier claims that the call is "transaction-cached" and that a describe route is slower or deprecated — no corpus line states either.
 
 **Detection hint:** Apex querying SetupEntityAccess or PermissionSetAssignment to determine a custom permission grant.
 
@@ -100,10 +102,11 @@ for (Opportunity o : opps) { if (canX) { ... } }
 **Correct pattern:**
 
 ```
-User-granular feature toggles belong in Custom Permissions. Custom
-Settings hierarchy supports per-user overrides but is administered
-separately from Permission Sets and invisible to formulas/validation
-rules. Custom Permissions are the unified surface.
+User-granular feature toggles belong in Custom Permissions: they are
+assigned through permission sets or profiles (secimpl 262 L1077-1078).
+A hierarchy Custom Setting is administered separately from Permission Sets.
 ```
+
+UNVERIFIED (2026-10-20): that a Custom Setting is "invisible to formulas/validation rules".
 
 **Detection hint:** Hierarchy Custom Setting with Boolean fields named like `Has_Feature_X__c`.

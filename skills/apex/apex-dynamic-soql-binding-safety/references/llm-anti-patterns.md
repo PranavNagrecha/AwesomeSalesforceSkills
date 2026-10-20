@@ -87,7 +87,7 @@ public List<Account> search(String term) {
 }
 public List<Account> wrapper() {
     String soql = 'SELECT Id FROM Account WHERE Name = :term';
-    return Database.query(soql); // QueryException: Variable does not exist: term
+    return Database.query(soql); // fails: term is not in scope (error text UNVERIFIED (2026-10-20))
 }
 ```
 
@@ -157,4 +157,4 @@ List<Account> accs = Database.queryWithBinds(
 );
 ```
 
-**Detection hint:** `WITH USER_MODE` or `WITH SECURITY_ENFORCED` co-occurring with string concatenation of variables in the same query. `WITH SECURITY_ENFORCED` is a second finding in its own right — it was removed in API 67.0 (Summer '26), so on a class pinned at 67.0 or above the query fails at parse time; replace it with `WITH USER_MODE` as well as fixing the concatenation.
+**Detection hint:** `WITH USER_MODE` or `WITH SECURITY_ENFORCED` co-occurring with string concatenation of variables in the same query. `WITH SECURITY_ENFORCED` is a second finding in its own right — at API 67.0 and later you can't use it in a SOQL SELECT in Apex (apex dev guide 264 L11926-11927); replace it with `WITH USER_MODE` as well as fixing the concatenation. UNVERIFIED (2026-10-20): that the failure appears at parse time rather than compile time.

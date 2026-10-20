@@ -29,9 +29,9 @@ outputs:
   - Sharing recalculation batch class implementation
   - Checker report on Apex sharing patterns in existing classes
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-20
 ---
 
 # Apex Managed Sharing
@@ -44,10 +44,28 @@ This skill activates when a practitioner needs to grant or revoke record-level a
 
 Gather this context before working on anything in this domain:
 
-- Confirm the object's OWD (Org-Wide Default). Apex managed sharing only extends access beyond what OWD already grants. If OWD is Public Read/Write, programmatic sharing has no practical effect.
-- Identify whether a custom Apex sharing reason is required (required for custom objects when you want the grant to survive manual sharing recalculation or when you need auditable row causes beyond `Manual`).
-- Confirm that the Apex sharing reason has been created in Setup (Object Manager > Object > Apex Sharing Reasons) before trying to insert rows that reference it. Referencing a non-existent reason causes a runtime DML exception.
-- Know the governor limits in play: 10,000 DML rows per synchronous transaction, 10,000 DML rows per batch execute method. Sharing recalculation frequently requires batch Apex.
+- Confirm the object's OWD (Org-Wide Default). Apex managed sharing only extends access beyond what OWD already grants: the share's access level "must be set to an access level that's higher than the organization's default access level" (apex dev guide 264 L12731-12732), and the OWD "must not be set to the most permissive access level" — Public Read/Write for custom objects (L12867-12868). A share at or below the default fails with `FIELD_FILTER_VALIDATION_EXCEPTION` whose message contains `AccessLevel` (L12803-12804, L12996-12999). Only users with "Modify All Data" can add or change Apex managed sharing on a record (L12610, L12873-12874).
+- Decide between `Manual` and an Apex sharing reason. Manual shares are user managed sharing: "if the owner of the record changes, the sharing is automatically deleted" (apex dev guide 264 L12751-12752, L12756-12757). "Apex managed sharing must use an Apex sharing reason" and "is maintained when the record owner changes or is deactivated" (L12874-12875).
+- Confirm that the Apex sharing reason exists before inserting rows that reference it. "Apex sharing reasons aren't available in Lightning Experience. Use Salesforce Classic to create sharing reasons within the UI", which is supported only for custom objects; for standard objects deploy a `SharingReason` component through the Metadata API (L12879-12883, L12916-12917; the earlier "Object Manager > Apex Sharing Reasons" path is CONTRADICTED). UNVERIFIED (2026-10-20): the exact exception when the reason is missing.
+- Know the governor limits in play: records processed by DML are capped at 10,000 in both synchronous and asynchronous Apex (apex dev guide 264 L19759). Sharing recalculation frequently requires batch Apex.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each question traces to a gotcha in `SKILL.md` § Salesforce-Specific Gotchas and `references/gotchas.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What is the object's OWD, and what access will the grant give?" | A grant at or below the default level is rejected (gotcha 4) | A level strictly above the OWD, or a different mechanism |
+| "Custom or standard object, and how long must the grant live?" | Manual shares go on an owner change; a reason on a standard object needs Metadata API 68.0+ and an org test, and the object reference still says Manual only (gotchas 1, 3; Core Concepts) | `Manual` or an Apex sharing reason, with the Classic-UI or Metadata API path chosen |
+| "Who runs the code that writes the shares?" | Only Modify All Data can add or change Apex managed sharing (Before Starting) | A named running user or service context |
+| "What rebuilds the shares after an OWD change?" | A recalculation class runs on an OWD change (gotcha 1) | A `Database.Batchable` associated with the object |
+| "Does the recalculation class see every parent record?" | The guide's sample is `without sharing` (gotcha 2) | The sharing keyword and a comment justifying it |
+| "Could the same grant be written twice?" | Repeat inserts update or collide (gotcha 5) | A query-then-insert path or `Database.insert(list, false)` |
+| "Is the sharing reason deployed with the code?" | `RowCause` is a restricted picklist (gotcha 3) | The `SharingReason` component in the deployment package |
+
+A proper configuration adds an OWD that leaves room above it, a named row cause, a recalculation class and a rebuild test, where "just doing it" gives grants that vanish on an owner change or never insert.
 
 ---
 
@@ -63,10 +81,10 @@ Every Share record has four core fields:
 |---|---|---|
 | `ParentId` | ID | The ID of the record being shared |
 | `UserOrGroupId` | ID | The ID of the User, Role, or Group being granted access |
-| `AccessLevel` | String | `Read`, `Edit`, or `All` (All = owner-level; rarely granted via Apex) |
-| `RowCause` | String | Why the share was granted. `Manual` is the platform default. Custom reasons use the `__c` suffix. |
+| `AccessLevel` | String | `Read` or `Edit`; `All` is "an internal value and can't be granted" (apex dev guide 264 L12727-12730). On standard share objects the property is named `<Object>AccessLevel`, for example `LeadAccessLevel` (L12723-12725) or `AccountAccessLevel` (object_reference 264 L17371-17379) |
+| `RowCause` | String | Why the share was granted. `Manual` is the default (apex dev guide 264 L12782; object_reference 264 L17472-17474). Custom reasons use the `__c` suffix. |
 
-For custom objects there is also a `RowCause` value of `Owner` (auto-created by the platform) and any Apex sharing reasons you have defined.
+Objects on the detail side of a master-detail relationship have no share object (apex dev guide 264 L12713). For custom objects there is also a `RowCause` value of `Owner` (platform-created managed sharing, L12630) and any Apex sharing reasons you have defined.
 
 ### Apex Sharing Reasons (Custom Row Causes)
 
@@ -74,11 +92,11 @@ An Apex sharing reason is a metadata record created in Setup under Object Manage
 
 Using a custom row cause instead of `Manual`:
 
-- The platform preserves the rows during manual sharing recalculation (clicking Recalculate on the sharing reason).
-- The rows are still cleared when the object's OWD changes or when a full sharing recalculation is triggered at the org level.
+- Apex managed sharing is maintained when the record owner changes or is deactivated; Manual sharing is removed on an owner change (apex dev guide 264 L12610-12611, L12606). The earlier "survives manual sharing recalculation" wording is replaced: the corpus does not describe a manual recalculation that clears `Manual` rows.
+- When the OWD changes, Salesforce recalculates sharing and removes sharing that has become redundant, and "any Apex recalculation classes defined for associated custom object are also executed" (L13049-13052, L13071-13072). UNVERIFIED (2026-10-20): that all Apex-managed rows are deleted on an OWD change or a full recalculation.
 - The reason name becomes auditable — queries on the Share table can filter by `RowCause` to isolate Apex-managed grants.
 
-Standard objects (Account, Opportunity, etc.) do not support custom Apex sharing reasons. For standard objects, use `RowCause = 'Manual'` (constant `Schema.OpportunityShare.rowCause.Manual`).
+For standard objects the corpus disagrees with itself, and the disagreement has a version line. The Metadata API says sharing reasons for standard objects "are available in API version 68.0 and later" (Winter '27), for objects that have a share object (AccountShare, OpportunityShare) and whose OWD can be Private or Public Read-Only (api_meta 264 L47635-47637, L47650-47651; `standards/release-delta-winter27.md`). The Apex guide's newer notes agree: standard-object reasons are managed through the Metadata API, and recalculation "is supported for both custom and standard objects" (apex dev guide 264 L12880-12881, L12916-12920). Older text in the same corpus says the opposite: two Apex-guide notes say reasons and recalculation "are only available for custom objects" (L12613, L13057), and the AccountShare reference says that when creating a sharing entry "the only permitted value is Manual" (object_reference 264 L17340-17342, L17472-17474). The earlier flat claim "standard objects do not support custom Apex sharing reasons" is therefore CONTRADICTED at 68.0 and later, not settled. Safe reading: on a standard object use `RowCause = 'Manual'` (constant `Schema.OpportunityShare.rowCause.Manual`) unless the `SharingReason` is deployed at Metadata API 68.0 or later and a test insert with that row cause succeeds in the target org. UNVERIFIED (2026-10-20): which standard share objects accept a custom row cause on insert — the object reference still says Manual only.
 
 ### with sharing / without sharing / inherited sharing
 
@@ -88,17 +106,17 @@ Apex class sharing keywords control whether the running user's record access is 
 - `without sharing` — bypasses sharing rules. Required in sharing recalculation batch classes because the class must query every record regardless of the running user's access.
 - `inherited sharing` — adopts the sharing mode of the calling context. Use in service/utility classes that may be called from both `with sharing` and `without sharing` contexts.
 
-A critical point: inserting Share records does **not** require `without sharing`. Any Apex code that has access to the parent record's ID can insert a share row. The `without sharing` requirement applies specifically to the **query** step inside recalculation — to read all records being reshared.
+A critical point: the guide's share-writing class `JobSharing` is `with sharing` (apex dev guide 264 L12758), and both it and the `JobApexSharing` trigger insert with `AccessLevel.USER_MODE` (L12788, L12929, L12978), so inserting Share records does not by itself call for `without sharing`; what it requires is permission: only users with "Modify All Data" can add or change Apex managed sharing (L12610, L12873-12874). The earlier "any Apex code that has access to the parent record's ID can insert a share row" is CONTRADICTED by that. The recalculation sample is `public without sharing class JobSharingRecalc` and queries with `AccessLevel.SYSTEM_MODE` (L13095, L13105-13106). Classes with no sharing declaration run `with sharing` at API 67.0 and later (L11930-11931).
 
 ### Sharing Recalculation
 
 When programmatic sharing logic changes (e.g., territory assignments are restructured), stale share rows that were created with a custom row cause must be deleted and recreated. The platform provides a recalculation hook:
 
-1. Create a class that implements `Database.Batchable<SObject>`.
-2. Annotate it with `global class` and implement `start`, `execute`, and `finish`.
-3. Declare the class `without sharing` so it can query all records.
+1. Create a class that implements `Database.Batchable<SObject>` (apex dev guide 264 L13078-13079); the same interface can be implemented more than once in an org (L13080-13081).
+2. Implement `start`, `execute`, and `finish`; the guide's sample is `public without sharing`, not `global` (L13095) — UNVERIFIED (2026-10-20): that `global` is needed.
+3. Declare the class `without sharing` so it can query all records, as the sample does.
 4. In `execute`: delete existing share rows for the row cause, then insert fresh ones.
-5. Register the class on the Apex Sharing Reason in Setup. This makes a Recalculate button appear on the sharing reason and allows the platform to call the class automatically when triggered.
+5. Associate the class with the custom object "on the custom object's detail page, in the Apex Sharing Recalculation related list" (L13053-13055); you can then run it from that page (L13059) or call `Database.executeBatch` (L13068-13069), and monitor it under Apex Jobs (L13073-13074). The earlier "register the class on the Apex Sharing Reason" is CONTRADICTED: the association is per object. UNVERIFIED (2026-10-20): that a Recalculate button appears on the reason.
 
 The `start` method typically returns a `Database.QueryLocator` over the parent records; `execute` processes each batch of parent records, computes the correct users, and performs the share DML.
 
@@ -115,7 +133,7 @@ The `start` method typically returns a `Database.QueryLocator` over the parent r
 1. Collect the `ParentId` values from the triggering records.
 2. Query the Share table to determine which grants already exist (avoids duplicates).
 3. Build a list of new Share sObjects for rows that do not yet exist.
-4. Insert with `Database.insert(shareList, false)` to allow partial success (duplicate rows produce a `DUPLICATE_VALUE` error; using `false` lets other rows succeed).
+4. Insert with `Database.insert(shareList, false, AccessLevel.USER_MODE)` to allow partial success (the guide's sample does exactly this, apex dev guide 264 L12975-12978). UNVERIFIED (2026-10-20): that duplicate rows produce `DUPLICATE_VALUE`; the guide says inserting a higher manual access level updates the original row (L13024-13025).
 5. For removals, query the Share table by `RowCause` and `ParentId`, then delete.
 
 **Why not the alternative:** Using declarative Sharing Rules would require a static criteria field. When sharing logic depends on related-object data (junction records, custom metadata), declarative rules cannot model the relationship.
@@ -133,7 +151,7 @@ The `start` method typically returns a `Database.QueryLocator` over the parent r
    b. Delete all existing `CustomObject__Share` rows where `RowCause = CustomObject__Share.rowCause.TerritoryAccess__c` and `ParentId IN :parentIds`.
    c. Compute the correct users by querying the related assignment records.
    d. Insert new share rows.
-4. Register the class as the recalculation class on the Apex Sharing Reason in Setup.
+4. Associate the class with the object in the Apex Sharing Recalculation related list on the object's detail page (apex dev guide 264 L13053-13055).
 
 **Why not the alternative:** Running recalculation in a trigger context hits DML row limits immediately for large datasets. A batch job stays within per-execute limits and can run asynchronously.
 
@@ -145,9 +163,9 @@ The `start` method typically returns a `Database.QueryLocator` over the parent r
 |---|---|---|
 | Need to share a record with a specific user based on a junction record | Apex trigger inserts `__Share` row with custom row cause | Declarative sharing rules cannot model junction-record logic |
 | Sharing logic has changed org-wide and all shares need rebuilding | Batch Apex recalculation class registered on sharing reason | Volume exceeds synchronous DML limits; batch stays within per-execute limits |
-| Standard object (Account, Opportunity) needs programmatic sharing | Insert share row with `RowCause = 'Manual'` | Standard objects do not support custom Apex sharing reasons |
+| Standard object (Account, Opportunity) needs programmatic sharing | Insert share row with `RowCause = 'Manual'` | Creation of AccountShare rows permits only `Manual` (object_reference 264 L17472-17474); the Metadata API documents sharing reasons for standard objects at API 68.0 and later (api_meta 264 L47635-47637, L47650-47651) — see Core Concepts (UNVERIFIED (2026-10-20): which share objects accept one on insert) |
 | A service method must read-then-share records in a mixed calling context | Declare service class `inherited sharing`; sharing class `without sharing` | Preserves caller's context for queries; bypasses for share DML only where needed |
-| Share records must survive a manual recalculation run | Use a custom Apex sharing reason (not `Manual`) | `Manual` rows are cleared by manual sharing recalculation; custom row causes are preserved |
+| Share records must survive an owner change | Use a custom Apex sharing reason (not `Manual`) | `Manual` rows are removed when the owner changes (apex dev guide 264 L12606); Apex managed sharing is maintained (L12610-12611). UNVERIFIED (2026-10-20): behaviour under a manual recalculation run |
 | Audit which records a user can access via Apex sharing | Query `__Share` filtered by `RowCause` | Row cause makes grants distinguishable from role-hierarchy or declarative grants |
 
 ---
@@ -155,13 +173,12 @@ The `start` method typically returns a `Database.QueryLocator` over the parent r
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Confirm the OWD is stricter than the access you will grant and that the running user has Modify All Data (Before Starting).
+2. Choose the row cause: `Manual` for standard objects (a reason only at Metadata API 68.0+ after a test insert succeeds) and short-lived user grants, an Apex sharing reason for long-lived custom-object grants. Create the reason first (Classic UI for a custom object, a `SharingReason` component for a standard one).
+3. Write the grant path (trigger or service) with `Database.insert(list, false, AccessLevel.USER_MODE)`, `Read` or `Edit` only, and a delete path for revoked grants. Use the examples in `references/examples.md`.
+4. Write the recalculation class (`Database.Batchable`, `without sharing`, delete-then-insert for the row cause) and associate it with the object's Apex Sharing Recalculation related list.
+5. Test: a grant at or below the OWD, a revoked grant, an owner change, and an OWD change in a sandbox; assert on the Share table by `RowCause`.
+6. Run `python3 scripts/check_apex_managed_sharing.py --manifest-dir force-app` and walk the Review Checklist below.
 
 ---
 
@@ -170,12 +187,12 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 Run through these before marking work in this area complete:
 
 - [ ] OWD for the object is Private or Public Read Only — if OWD is Public Read/Write, Apex sharing has no effect
-- [ ] Apex sharing reason is created in Setup before code that references it is deployed
-- [ ] Share inserts use `Database.insert(list, false)` to handle `DUPLICATE_VALUE` gracefully
+- [ ] Apex sharing reason exists in the target org (Classic UI or Metadata API `SharingReason`) before code that references it is deployed
+- [ ] Share inserts use `Database.insert(list, false)` and inspect `SaveResult` errors (the guide treats `FIELD_FILTER_VALIDATION_EXCEPTION` on `AccessLevel` as benign, apex dev guide 264 L12990-12999)
 - [ ] Recalculation class is declared `without sharing` so all parent records are queryable
-- [ ] Stale share rows are deleted before inserting fresh ones in recalculation (delete then insert, not upsert)
-- [ ] Recalculation class is registered on the Apex sharing reason in Setup
-- [ ] DML row count is within limits: 10,000 rows per synchronous transaction, 10,000 per batch execute
+- [ ] Stale share rows are deleted before inserting fresh ones in recalculation (delete then insert)
+- [ ] Recalculation class is associated with the object in the Apex Sharing Recalculation related list
+- [ ] DML row count is within limits: 10,000 records processed by DML per transaction, synchronous or asynchronous (apex dev guide 264 L19759)
 
 ---
 
@@ -183,15 +200,15 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Apex managed share rows are cleared on OWD change or full recalculation** — When an administrator changes the OWD for an object or runs a full sharing recalculation from Setup, all Apex-managed share rows for that object are deleted. The recalculation class registered on the Apex sharing reason is then called automatically to rebuild them. If no class is registered, the grants are permanently lost until manually re-triggered.
+1. **An OWD change recalculates sharing** — Salesforce recalculates sharing for all records on the object and removes sharing that has become redundant, and Apex recalculation classes defined for a custom object also run (apex dev guide 264 L13049-13052, L13071-13072). UNVERIFIED (2026-10-20): that all Apex-managed share rows are deleted and that grants are permanently lost when no class is registered; register a recalculation class anyway.
 
-2. **`without sharing` is required in recalculation classes** — The recalculation class must query all parent records to rebuild shares. If the class runs `with sharing`, records the running user cannot see are silently excluded from the query scope, producing incomplete share coverage with no error thrown.
+2. **The recalculation sample is `without sharing`** — the guide's `JobSharingRecalc` is `public without sharing` and queries with `AccessLevel.SYSTEM_MODE` (apex dev guide 264 L13095, L13105-13106). UNVERIFIED (2026-10-20): that a `with sharing` class silently under-queries; the reasoning (the query is limited to records the running user can see) is sound but not stated for batch classes.
 
-3. **Custom row causes must exist in Setup before deployment** — The `RowCause` value on a share row is validated at DML time against the Apex sharing reasons defined in Setup. Deploying code that references a custom row cause before the metadata record exists in the target org causes a `DmlException: FIELD_INTEGRITY_EXCEPTION` at runtime. Include the sharing reason in the deployment package or create it manually in Setup first.
+3. **Custom row causes must exist in the org before deployment** — `RowCause` is a restricted picklist on the share object (object_reference 264 L17456-17459 for AccountShare), and sharing reasons are a Metadata API type (`SharingReason`, api_meta 264 L47631). UNVERIFIED (2026-10-20): the exact `DmlException: FIELD_INTEGRITY_EXCEPTION` text. Include the sharing reason in the deployment package, or create it in the Classic UI for a custom object, first.
 
-4. **AccessLevel must be at least Read; `All` (owner-level) is only grantable via ownership change** — Valid values for `AccessLevel` via Apex are `Read` and `Edit`. `All` is reserved for the record owner and cannot be granted via a Share row insert. Attempting to insert a row with `AccessLevel = 'All'` throws a `DmlException`.
+4. **`All` can't be granted, and the level must exceed the OWD** — valid values are `Edit`, `Read` and `All`, but "the All access level is an internal value and can't be granted"; the field "must be set to an access level that's higher than the organization's default" (apex dev guide 264 L12727-12732; AccountShare: object_reference 264 L17379). Using a level at or below the default raises `FIELD_FILTER_VALIDATION_EXCEPTION` mentioning `AccessLevel` (L12803-12804). UNVERIFIED (2026-10-20): the exact exception when `All` is inserted.
 
-5. **Duplicate share rows cause `DUPLICATE_VALUE` errors** — The platform enforces a unique constraint on `(ParentId, UserOrGroupId, RowCause)`. Inserting a share row for a combination that already exists throws `DUPLICATE_VALUE`. Always query existing rows before inserting, or use `Database.insert(list, false)` and inspect `SaveResult` errors to handle duplicates gracefully.
+5. **Inserting a higher manual access level updates the existing row** — "a manual share access level is set to Read and you insert a new one set to Write. The original share rows are updated to Write" (apex dev guide 264 L13024-13025). UNVERIFIED (2026-10-20): the `(ParentId, UserOrGroupId, RowCause)` unique constraint and the `DUPLICATE_VALUE` error for an exact repeat. Query existing rows before inserting, or use `Database.insert(list, false)` and inspect `SaveResult` errors.
 
 ---
 
@@ -208,6 +225,6 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- sharing-and-visibility — Use for declarative sharing rules, OWD decisions, role hierarchy design, and manual sharing; this skill handles programmatic extension of that foundation
-- apex-security-patterns — Use alongside this skill when designing the `with sharing` / `without sharing` / `inherited sharing` class hierarchy for the full feature
-- async-apex — Use when sharing recalculation volume requires batch or queueable patterns beyond what triggers can handle
+- `admin/sharing-and-visibility` — Use for declarative sharing rules, OWD decisions, role hierarchy design, and manual sharing; this skill handles programmatic extension of that foundation
+- `apex/apex-security-patterns` — Use alongside this skill when designing the `with sharing` / `without sharing` / `inherited sharing` class hierarchy for the full feature
+- `apex/async-apex` — Use when sharing recalculation volume requires batch or queueable patterns beyond what triggers can handle

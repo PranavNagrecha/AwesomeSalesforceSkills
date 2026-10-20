@@ -15,15 +15,18 @@ Scans `.cls` files for three classes of issues:
   P2 -- A variable whose name ends with `Id` or `IDs` declared with the
         `String` type, which opens the 15/18-char comparison bug.
 
-Exit code:
-  0  -- no P0 / P1 findings
-  1  -- one or more P0 / P1 findings (P2 reported but does not fail)
+Exit code (findings are WARN):
+  0  -- default, whatever the findings; an empty directory is one WARN
+  1  -- with --strict when there is any finding or nothing to check; a missing
+        directory is ERROR and always exits 1
 
 Stdlib only. No pip dependencies.
 
 Usage:
-    python3 check_apex_hardcoded_id_elimination.py --src path/to/classes
+    python3 check_apex_hardcoded_id_elimination.py --manifest-dir path/to/classes [--strict]
     python3 check_apex_hardcoded_id_elimination.py            # uses .
+
+`--src` is kept as an alias for `--manifest-dir`.
 """
 
 from __future__ import annotations
@@ -251,10 +254,11 @@ def parse_args() -> argparse.Namespace:
         description="Scan Apex .cls files for hardcoded Salesforce IDs and related anti-patterns.",
     )
     parser.add_argument(
-        "--src",
+        "--manifest-dir", "--src", dest="src",
         default=".",
         help="Root directory to scan recursively for .cls files (default: current directory).",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on any finding or when there is nothing to check.")
     return parser.parse_args()
 
 
@@ -263,13 +267,13 @@ def main() -> int:
     root = Path(args.src)
 
     if not root.exists():
-        print(f"ERROR: source directory not found: {root}", file=sys.stderr)
-        return 2
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
 
     cls_files = sorted(root.rglob("*.cls"))
     if not cls_files:
-        print(f"No .cls files found under {root}.")
-        return 0
+        print(f"WARN: no .cls files found under {root}; nothing to check.")
+        return 1 if args.strict else 0
 
     all_p0: List[str] = []
     all_p1: List[str] = []
@@ -282,15 +286,15 @@ def main() -> int:
         all_p2.extend(p2)
 
     if all_p0:
-        print("=== P0 findings (hardcoded Salesforce IDs) ===")
+        print("WARN: === P0 findings (hardcoded Salesforce IDs) ===")
         for issue in all_p0:
             print(issue)
     if all_p1:
-        print("=== P1 findings (uncached name-based ID SOQL) ===")
+        print("WARN: === P1 findings (uncached name-based ID SOQL) ===")
         for issue in all_p1:
             print(issue)
     if all_p2:
-        print("=== P2 findings (String-typed ID variables) ===")
+        print("WARN: === P2 findings (String-typed ID variables) ===")
         for issue in all_p2:
             print(issue)
 
@@ -304,7 +308,7 @@ def main() -> int:
     )
     print(summary, file=sys.stderr)
 
-    if all_p0 or all_p1:
+    if (all_p0 or all_p1 or all_p2) and args.strict:
         return 1
     return 0
 

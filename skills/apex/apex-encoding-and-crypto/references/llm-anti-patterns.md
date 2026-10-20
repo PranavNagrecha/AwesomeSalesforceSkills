@@ -107,7 +107,7 @@ String macStr = mac.toString();  // corrupts non-UTF-8 bytes
 CustomObj__c.Signature__c = macStr;
 ```
 
-**Why it happens:** LLMs treat `Blob` → `String` as a generic toString, missing that `Blob.toString()` assumes UTF-8.
+**Why it happens:** LLMs treat `Blob` → `String` as a generic toString. `Blob.toString()` "casts the Blob into a String" (apexref 262 L201256-201257); UNVERIFIED (2026-10-20): that the cast assumes UTF-8.
 
 **Correct pattern:** Base64 or hex encode first:
 
@@ -128,7 +128,7 @@ Blob iv = Blob.valueOf('0000000000000000');   // fixed 16-byte IV
 Blob cipher = Crypto.encrypt('AES256', key, iv, Blob.valueOf(plaintext));
 ```
 
-**Why it happens:** LLMs default to a constant IV to make the code "simple." CBC mode with a fixed IV leaks equality of plaintexts.
+**Why it happens:** LLMs default to a constant IV to make the code "simple." UNVERIFIED (2026-10-20): that CBC with a fixed IV leaks equality of plaintexts.
 
 **Correct pattern:** Use `Crypto.encryptWithManagedIV`:
 

@@ -193,6 +193,6 @@ String stored = cipher.toString();  // corrupted — not UTF-8
 CustomObj__c.Token__c = stored;
 ```
 
-**What goes wrong:** `Blob.toString()` interprets the bytes as UTF-8. Random AES ciphertext bytes almost never form a valid UTF-8 sequence, so the returned string is corrupted; the reverse `Blob.valueOf(stored)` returns different bytes, and decryption fails with an opaque error.
+**What goes wrong:** `Blob.toString()` "casts the Blob into a String" (apexref 262 L201256-201257). UNVERIFIED (2026-10-20): that it interprets the bytes as UTF-8 and corrupts random ciphertext; the reverse `Blob.valueOf(stored)` is then not guaranteed to return the same bytes, and decryption fails (documented as `System.SecurityException`, L203193-203198).
 
 **Correct approach:** Encode ciphertext with `EncodingUtil.base64Encode` for storage. Ciphertext bytes should only touch a `String` via a binary-safe encoding step.

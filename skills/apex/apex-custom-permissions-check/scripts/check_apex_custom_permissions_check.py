@@ -7,7 +7,10 @@ Scans Apex for:
 - FeatureManagement.checkPermission inside loops
 
 Usage:
-    python3 check_apex_custom_permissions_check.py [--manifest-dir path/to/metadata]
+    python3 check_apex_custom_permissions_check.py [--manifest-dir path/to/metadata] [--strict]
+
+Exit codes: findings are WARN and exit 0 unless --strict; an empty directory is one WARN
+and exit 0; a missing directory is ERROR and exit 1.
 """
 
 from __future__ import annotations
@@ -28,6 +31,7 @@ CHECK_IN_LOOP = re.compile(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check Custom Permission anti-patterns.")
     parser.add_argument("--manifest-dir", default=".", help="Root directory of metadata.")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on findings or when there is nothing to check.")
     return parser.parse_args()
 
 
@@ -54,7 +58,7 @@ def check_apex(root: Path) -> list[str]:
         for m in CHECK_IN_LOOP.finditer(text):
             line_no = text[: m.start()].count("\n") + 1
             issues.append(
-                f"{path.relative_to(root)}:{line_no}: FeatureManagement.checkPermission inside loop; hoist above"
+                f"{path.relative_to(root)}:{line_no}: FeatureManagement.checkPermission inside loop; the check is per user, not per record, so hoist it above the loop"
             )
 
     return issues
@@ -64,16 +68,20 @@ def main() -> int:
     args = parse_args()
     root = Path(args.manifest_dir)
     if not root.exists():
-        print(f"ERROR: directory not found: {root}", file=sys.stderr)
-        return 1
+        print(f"ERROR: directory not found: {root}")
+        sys.exit(1)
+
+    if not (list(root.rglob("*.cls")) or list(root.rglob("*.trigger"))):
+        print(f"WARN: no .cls or .trigger files under {root}; nothing to check.")
+        return 1 if args.strict else 0
 
     issues = check_apex(root)
     if not issues:
-        print("No Custom Permission anti-patterns detected.")
+        print("No findings.")
         return 0
     for issue in issues:
-        print(f"ISSUE: {issue}", file=sys.stderr)
-    return 1
+        print(f"WARN: {issue}")
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

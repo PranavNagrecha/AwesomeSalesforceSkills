@@ -16,7 +16,7 @@ share.RowCause = Schema.CustomObj__Share.RowCause.Manual;
 insert share;
 ```
 
-**Why it happens:** LLMs default to `Manual` because it is the most commonly shown row cause in examples. But `Manual` shares are deleted when record ownership changes, cannot be distinguished from user-created UI shares, and cannot be recalculated by a batch sharing recalculation class.
+**Why it happens:** LLMs default to `Manual` because it is the most commonly shown row cause in examples. But `Manual` shares are deleted when record ownership changes (apex dev guide 264 L12606, L12756-12757) and are user managed sharing, so they are not tracked as Apex-managed grants. UNVERIFIED (2026-10-20): that they cannot be rebuilt by a batch recalculation class.
 
 **Correct pattern:**
 
@@ -82,7 +82,7 @@ share.RowCause = 'Custom_Reason__c'; // Invalid for standard objects
 insert share;
 ```
 
-**Why it happens:** LLMs apply the custom-object sharing pattern to standard objects. Standard objects like Account, Case, and Opportunity do NOT support custom Apex sharing reasons — only `Manual` is available as a programmable row cause.
+**Why it happens:** LLMs apply the custom-object sharing pattern to standard objects. For AccountShare, "the only permitted value is Manual" when creating a sharing entry (object_reference 264 L17472-17474). The Metadata API does document sharing reasons for standard objects that have a share object, at API version 68.0 and later (api_meta 264 L47635-47637, L47650-47651), so a reason on a standard object must be deployed as metadata first and tested; UNVERIFIED (2026-10-20): which standard objects accept a reason in an insert.
 
 **Correct pattern:**
 
@@ -91,7 +91,7 @@ AccountShare share = new AccountShare();
 share.AccountId = accountId;
 share.UserOrGroupId = userId;
 share.AccountAccessLevel = 'Edit';
-share.OpportunityAccessLevel = 'None'; // Required companion field on AccountShare
+share.OpportunityAccessLevel = 'None'; // optional: Defaulted on create (object_reference 264 L17443); one of the three levels must exceed the OWD (L17380-17383)
 share.RowCause = Schema.AccountShare.RowCause.Manual;
 insert share;
 ```
@@ -150,7 +150,7 @@ public without sharing class SharingRecalcBatch implements Database.Batchable<SO
 share.AccessLevel = 'All'; // Attempt to grant Full Access
 ```
 
-**Why it happens:** LLMs see `All` as a valid value in documentation. However, `All` (Full Access) cannot be granted programmatically via Apex managed sharing — only `Read` and `Edit` are valid. Inserting with `All` throws a DML exception.
+**Why it happens:** LLMs see `All` as a valid value in documentation. However, "the All access level is an internal value and can't be granted" (apex dev guide 264 L12730; AccountShare: object_reference 264 L17379), so only `Read` and `Edit` are usable. UNVERIFIED (2026-10-20): that inserting with `All` throws a DML exception of a particular type.
 
 **Correct pattern:**
 

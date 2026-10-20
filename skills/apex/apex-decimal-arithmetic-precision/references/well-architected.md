@@ -9,7 +9,7 @@
 
 - **One rounding policy vs many** — Centralizing rounding in a `MoneyMath` utility class keeps the policy in one place. The cost is one more level of indirection in calls. The benefit is provably consistent behavior. Worth it for any system that touches a Currency or Tax field.
 - **Scale at storage vs scale at compute** — Storing intermediates at higher scale (e.g. computed-tax-with-scale-6 in a workspace field) preserves precision but inflates storage and complicates reporting. The standard Salesforce pattern is "compute at high scale, persist at field scale, document the rounding mode at the boundary."
-- **Match-platform rounding vs match-business rounding** — When the business rule is HALF_UP but the Currency field's display rounds HALF_EVEN, choose: (a) match the business rule and accept that the displayed value differs from the stored value on halfway cases, or (b) match the platform and document the deviation from the business rule. There is no "correct" choice — only a documented one.
+- **Match-platform rounding vs match-business rounding** — When the business rule is HALF_UP but the Currency field's display rounds HALF_EVEN (UNVERIFIED (2026-10-20): the display mode is not in the corpus), choose: (a) match the business rule and accept that the displayed value differs from the stored value on halfway cases, or (b) match the platform and document the deviation from the business rule. There is no "correct" choice — only a documented one.
 
 ## Anti-Patterns
 
@@ -18,7 +18,7 @@
 
 ## Official Sources Used
 
-- Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm — Decimal type, RoundingMode enum, divide/setScale signatures.
-- Apex Reference Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm — `Decimal.divide`, `Decimal.setScale`, `Decimal.valueOf`, `System.RoundingMode`.
-- Object Reference (CurrencyType + DatedConversionRate) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm — multi-currency arithmetic and per-record currency.
+- Apex Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm — Decimal as an arbitrary precision number whose scale comes from its source (apex dev guide 264 L1224-1246); equal numbers at different scale generally hash differently (L1244-1246).
+- Apex Reference Guide — https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm — the two `divide` overloads (apexref 262 L212742-212781), `setScale(scale)` half-even (L212707-212709), `valueOf` overloads (L212716-212721), and the eight `System.RoundingMode` values (L212506-212640).
+- Object Reference (CurrencyType + DatedConversionRate) — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm — DatedConversionRate exists as an object (object_reference 264 L7778); the multi-currency arithmetic claims in SKILL.md are UNVERIFIED (2026-10-20).
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html — Reliability and Security pillars framing.

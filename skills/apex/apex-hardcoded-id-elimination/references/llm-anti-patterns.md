@@ -57,7 +57,7 @@ LLMs reach for the inline query because it reads "naturally" near the data. But 
 
 ## 5. Not caching describe results across calls
 
-`Schema.SObjectType.X.getRecordTypeInfosByDeveloperName()` is cheap but not free. Repeating it for every record in a trigger handler wastes CPU.
+`Schema.SObjectType.X.getRecordTypeInfosByDeveloperName()` is cheap but not free (UNVERIFIED (2026-10-20): the cost claim). Repeating it for every record in a trigger handler wastes CPU.
 
 **Fix:** assign once to a `static final Id` or a `static Map<String, Id>` populated lazily in a helper method.
 
@@ -91,7 +91,7 @@ LLMs sometimes prefer the `ByName` variant because the argument looks like a fri
 
 ## 8. Inventing a non-existent `Profile.DeveloperName` field
 
-Standard `Profile` does NOT have a `DeveloperName` field exposed for query in the way `Group`, `UserRole`, and Custom Metadata do. LLMs occasionally hallucinate `WHERE DeveloperName = 'SysAdmin'` for Profile.
+Standard `Profile` does NOT have a `DeveloperName` field (object_reference 264 L234799-234887) in the way `Group` (L155245) and `UserRole` (L306256) do and Custom Metadata records do. LLMs occasionally hallucinate `WHERE DeveloperName = 'SysAdmin'` for Profile.
 
 **Fix:** for Profile, use `Name`. For Group / UserRole / Queue / Custom Metadata, use `DeveloperName`.
 

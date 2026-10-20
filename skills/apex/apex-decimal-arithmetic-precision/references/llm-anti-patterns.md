@@ -5,14 +5,14 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: One-argument `divide()` in generated code
 
-**What the LLM generates:** Apex that divides Decimals using the single-argument form, often because Java/C#/Python examples in the training data use a single-argument division operator.
+**What the LLM generates:** Apex that divides Decimals using a single-argument `divide`, often because Java/C#/Python examples in the training data use a single-argument division method. The Decimal class has no such overload (apexref 262 L212672-212677), so the code does not compile.
 
 ```apex
-// WRONG
-Decimal share = total.divide(parts);  // throws on 1.0 / 3
+// WRONG — no one-argument divide exists
+Decimal share = total.divide(parts);
 ```
 
-**Why it happens:** LLMs treat `divide` as analogous to Java's `BigDecimal.divide(BigDecimal)`, but Apex's single-arg `divide(Decimal)` throws on non-terminating results — the Java equivalent does the same, but most production examples in training data use the result-scale-aware form indirectly via `MathContext`.
+**Why it happens:** LLMs treat `divide` as analogous to Java's `BigDecimal.divide(BigDecimal)`. Apex exposes only the scale-taking overloads.
 
 **Correct pattern:**
 
@@ -20,7 +20,7 @@ Decimal share = total.divide(parts);  // throws on 1.0 / 3
 Decimal share = total.divide(parts, 6, System.RoundingMode.HALF_EVEN);
 ```
 
-**Detection hint:** Grep for `\.divide\(` and inspect the argument count. Any `divide(x)` where `x` is a single expression (no commas at the top level) is suspect.
+**Detection hint:** Grep for `\.divide\(` and inspect the argument count. Any `divide(x)` with no top-level comma will not compile; a two-argument call leaves the rounding mode unstated.
 
 ---
 
@@ -42,7 +42,7 @@ Decimal effective = price * (taxRate / 100);
 Integer taxRate = 7;
 Decimal effective = price * (Decimal.valueOf(taxRate) / 100);
 // Or:
-Decimal effective = price.multiply(taxRate).divide(100, 6, System.RoundingMode.HALF_EVEN);
+Decimal effective = (price * taxRate).divide(100, 6, System.RoundingMode.HALF_EVEN);  // Decimal has no multiply()
 ```
 
 **Detection hint:** Look for any binary `/` where both operands are Integer-typed and the result is assigned to a Decimal. The Apex compiler will not warn.
@@ -51,15 +51,15 @@ Decimal effective = price.multiply(taxRate).divide(100, 6, System.RoundingMode.H
 
 ## Anti-Pattern 3: `Decimal.valueOf(double)` for parsed JSON values
 
-**What the LLM generates:** Apex that reads `Object` values from `JSON.deserializeUntyped()` (which produces Doubles for numbers) and converts via `Decimal.valueOf((Double) raw)`, expecting a clean conversion.
+**What the LLM generates:** Apex that reads `Object` values from `JSON.deserializeUntyped()` (UNVERIFIED (2026-10-20): that it produces Doubles for numbers) and converts via `Decimal.valueOf((Double) raw)`, expecting a clean conversion.
 
 ```apex
-// WRONG — reintroduces binary-float noise
+// WRONG — money routed through a Double (binary-float noise is UNVERIFIED; the habit is the point)
 Map<String,Object> body = (Map<String,Object>) JSON.deserializeUntyped(payload);
 Decimal amount = Decimal.valueOf((Double) body.get('amount'));
 ```
 
-**Why it happens:** The training data treats `Decimal.valueOf` as a generic conversion. The Double overload exists in the API and the call compiles, so LLMs accept it.
+**Why it happens:** The training data treats `Decimal.valueOf` as a generic conversion. The Double overload exists (apexref 262 L212716-212717) and the call compiles, so LLMs accept it. UNVERIFIED (2026-10-20): that it adds binary-float noise; the safe habit stands.
 
 **Correct pattern:**
 
@@ -80,7 +80,7 @@ Or, if you must use untyped: convert via String — `Decimal.valueOf(String.valu
 
 ---
 
-## Anti-Pattern 4: Comparing Decimals with `.equals()` for numeric equality
+## Anti-Pattern 4: Comparing or keying Decimals without normalising scale
 
 **What the LLM generates:** Reconciliation or assertion code that compares two Decimals using `.equals()`, expecting numeric-value comparison.
 
@@ -89,15 +89,12 @@ Or, if you must use untyped: convert via String — `Decimal.valueOf(String.valu
 System.assert(expectedTotal.equals(actualTotal));  // 1.50 vs 1.5 → false
 ```
 
-**Why it happens:** LLMs default to `.equals()` for object equality (correct for most types), but Decimal's `.equals()` is scale-strict — it inherits Java's `BigDecimal.equals` semantics. The numeric-equal `==` behaves differently in Apex than in Java (Java `==` is reference-equal; Apex `==` on Decimal is value-equal).
+**Why it happens:** LLMs default to `.equals()` for object equality. UNVERIFIED (2026-10-20): that Decimal's `.equals()` is scale-strict and `==` value-equal. What the guide does say is that numerically equal Decimals with different scale generally have different hashcodes (apex dev guide 264 L1244-1246).
 
 **Correct pattern:**
 
 ```apex
-// "same number" semantics:
-System.assertEquals(expectedTotal, actualTotal);  // Apex Assert uses ==
-
-// or scale-normalize first if you must use .equals:
+// normalise scale first, then compare:
 System.assert(
     expectedTotal.setScale(2, System.RoundingMode.HALF_EVEN)
         .equals(actualTotal.setScale(2, System.RoundingMode.HALF_EVEN))
@@ -108,16 +105,16 @@ System.assert(
 
 ---
 
-## Anti-Pattern 5: Assuming `setScale(n)` rounds with the same mode everywhere
+## Anti-Pattern 5: Misdescribing what single-argument `setScale(n)` does
 
-**What the LLM generates:** Code that calls `setScale(2)` (single-arg) and assumes platform-default rounding, then writes a comment about "HALF_UP rounding for currency" that disagrees with the actual mode.
+**What the LLM generates:** Code that calls `setScale(2)` (single-arg) and writes a comment about "HALF_UP rounding for currency" or "throws if rounding is needed". The guide says `setScale(scale)` rounds "using half-even rounding, if necessary" (apexref 262 L212707-212709).
 
 ```apex
-// WRONG — single-arg setScale throws if rounding is required
-Decimal stored = computed.setScale(2);  // throws on 1.005
+// WRONG comment — single-arg setScale does not throw; it rounds half-even
+Decimal stored = computed.setScale(2);  // 1.005 is rounded, not rejected
 ```
 
-**Why it happens:** Java's `BigDecimal.setScale(int)` uses `UNNECESSARY` (throws on rounding) — the same is true in Apex. LLMs sometimes treat single-arg setScale as a safe truncation and add a misleading comment.
+**Why it happens:** Java's `BigDecimal.setScale(int)` uses `UNNECESSARY` (throws on rounding); Apex's overload does not. LLMs carry the Java behaviour across, or treat it as truncation.
 
 **Correct pattern:**
 
@@ -125,4 +122,4 @@ Decimal stored = computed.setScale(2);  // throws on 1.005
 Decimal stored = computed.setScale(2, System.RoundingMode.HALF_EVEN);
 ```
 
-**Detection hint:** Grep for `setScale\(\s*\d+\s*\)` — a single integer argument is the danger signature. Always pair with a `RoundingMode`.
+**Detection hint:** Grep for `setScale\(\s*\d+\s*\)` — a single integer argument rounds half-even implicitly. Always pair with a `RoundingMode` so the policy is written down.
