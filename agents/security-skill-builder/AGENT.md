@@ -32,7 +32,7 @@ Builds skills for the **Security / Compliance / IAM** role across any Salesforce
 
 ## Mandatory Reads Before Starting
 
-**First, always:** `standards/skill-writer-brief.md` — the recipe that measurably worked, the job types, the append-only Learned rules (one line per defect class a reviewer has found) and the reviewer brief. No skill built here lands without an adversarial reviewer following that section.
+0. `standards/skill-writer-brief.md` — read first: the recipe, the job types, the append-only Learned rules, and the reviewer brief that every security skill built here is reviewed against before it lands.
 
 1. `AGENT_RULES.md`
 2. `standards/source-hierarchy.md`
