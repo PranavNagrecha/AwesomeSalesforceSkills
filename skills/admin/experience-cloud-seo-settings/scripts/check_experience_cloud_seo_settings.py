@@ -1,187 +1,186 @@
 #!/usr/bin/env python3
 """Checker script for Experience Cloud SEO Settings skill.
 
-Inspects Salesforce metadata retrieved into a local directory and flags
-common SEO configuration issues described in this skill's gotchas and
-anti-patterns.
+Inspects Salesforce metadata retrieved into a local directory (--manifest-dir):
 
-Uses stdlib only — no pip dependencies.
+- CustomSite files (`*.site-meta.xml` or `*.site` under a `sites` folder; api_meta 264 L49364-49407)
+    ERROR  unparseable XML
+    WARN   `robotsTxtPage` names a Visualforce page that is not in `pages/`
+    INFO   no `robotsTxtPage` (no custom robots.txt is wired to the site); the page lacks
+           `contentType="text/plain"` (UNVERIFIED 2026-10-20: the attribute set is Help-only)
+- robots page paths vs ExperienceBundle `urlPathPrefix` (api_meta 264 L62430-62435)
+    WARN   the page uses `/s/` paths but a bundle's urlPathPrefix does not end in `/s`
+           (or the reverse is not checked, because the prefix alone cannot say)
+- ExperienceBundle meta files (`*.site-meta.xml` under `experiences`; api_meta 264 L62384-62444)
+    ERROR  unparseable XML; missing Required `label` or `type`; `type` not ChatterNetworkPicasso
+    INFO   a config JSON with no `preferredDomain` (L62656-62658)
+- ExperienceBundle views (`experiences/**/views/*.json`; api_meta 264 L63443-63448)
+    ERROR  invalid JSON
+    INFO   an SEO assistant component whose pageTitle and description are both empty
+
+The earlier rules were removed because their premises are not in the corpus: that the robots
+page must be named `robots`, that a sandbox disables SEO, and that Knowledge articles need a
+topic to enter a sitemap (the corpus has no sitemap line at all).
+
+Exit codes: ERROR findings exit 1 always; WARN and INFO findings exit 0 unless --strict; a
+directory with nothing to check prints one WARN and exits 0; a missing path is an ERROR and
+exits 1. Stdlib only.
 
 Usage:
-    python3 check_experience_cloud_seo_settings.py [--help]
-    python3 check_experience_cloud_seo_settings.py --manifest-dir path/to/metadata
+    python3 check_experience_cloud_seo_settings.py --manifest-dir path/to/metadata [--strict]
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+SEO_DEFINITIONS = ("community_builder:seoAssistant", "forceCommunity:seoAssistant")  # L63443-63444
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=(
-            "Check Experience Cloud SEO settings in a retrieved Salesforce metadata "
-            "tree for common issues: missing robots VF page, noindex-only protection "
-            "on sensitive pages, and site URL structure hints."
-        ),
+        description="Check Experience Cloud SEO settings in a retrieved Salesforce metadata tree.",
     )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce metadata (default: current directory).",
-    )
+    parser.add_argument("--manifest-dir", default=".", help="Root directory of the Salesforce metadata (default: current directory).")
+    parser.add_argument("--strict", action="store_true", help="exit 1 on WARN and INFO findings too")
     return parser.parse_args()
 
 
-# ---------------------------------------------------------------------------
-# Individual checks
-# ---------------------------------------------------------------------------
-
-def check_robots_vf_page(manifest_dir: Path) -> list[str]:
-    """Verify a Visualforce page named 'robots' exists for custom robots.txt."""
-    issues: list[str] = []
-    pages_dir = manifest_dir / "pages"
-    if not pages_dir.exists():
-        issues.append(
-            "No 'pages/' directory found — cannot confirm custom robots.txt "
-            "Visualforce page exists. Expected a VF page named 'robots'."
-        )
-        return issues
-
-    robots_page = pages_dir / "robots.page"
-    robots_meta = pages_dir / "robots.page-meta.xml"
-
-    if not robots_page.exists():
-        issues.append(
-            "Missing custom robots.txt: no 'pages/robots.page' found. "
-            "Create a Visualforce page named exactly 'robots' with "
-            "contentType='text/plain' to serve a custom robots.txt."
-        )
-    else:
-        content = robots_page.read_text(encoding="utf-8", errors="replace")
-        if "contentType" not in content or "text/plain" not in content:
-            issues.append(
-                "pages/robots.page exists but may be missing contentType='text/plain'. "
-                "Confirm the apex:page tag includes contentType=\"text/plain\" — "
-                "without it the page will not be served as robots.txt."
-            )
-        if "Sitemap:" not in content and "sitemap" not in content.lower():
-            issues.append(
-                "pages/robots.page does not appear to include a Sitemap: directive. "
-                "Add 'Sitemap: https://<site-url>/sitemap.xml' so search engines "
-                "discover the sitemap automatically."
-            )
-        # Warn if /s/ prefix is used — may indicate Aura pattern applied to LWR site
-        if "/s/login" in content or "/s/search" in content or "/s/profile" in content:
-            issues.append(
-                "pages/robots.page contains Aura-style /s/ path prefixes "
-                "(e.g., /s/login). If the target site uses an LWR template, "
-                "these Disallow rules will have no effect — LWR sites use clean "
-                "paths without the /s segment. Verify the site template type."
-            )
-
-    if not robots_meta.exists():
-        issues.append(
-            "Missing pages/robots.page-meta.xml. The VF page metadata file is "
-            "required for deployment. Generate it with your SFDX tooling."
-        )
-
-    return issues
+def local(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1]
 
 
-def check_experience_site_xml(manifest_dir: Path) -> list[str]:
-    """Scan ExperienceBundle or Network metadata for common SEO hints."""
-    issues: list[str] = []
-
-    # Check for ExperienceBundle (sfdx project structure)
-    exp_bundles = list((manifest_dir / "experiences").glob("*.site")) if (
-        manifest_dir / "experiences"
-    ).exists() else []
-    network_dir = manifest_dir / "networks"
-
-    if not exp_bundles and not network_dir.exists():
-        # Not necessarily an issue — metadata may not be present in this slice
-        return issues
-
-    # Check Network metadata XML for SEO-relevant settings
-    if network_dir.exists():
-        for net_file in network_dir.glob("*.network"):
-            try:
-                tree = ET.parse(net_file)
-                root = tree.getroot()
-                ns = {"sf": "http://soap.sforce.com/2006/04/metadata"}
-
-                # Check allowedExtensions or picklist relevant to SEO features
-                # The Network metadata does not expose per-page SEO — just flag presence
-                status_nodes = root.findall(".//sf:status", ns) or root.findall(".//status")
-                for node in status_nodes:
-                    if node.text and node.text.strip().lower() not in ("live", "active"):
-                        issues.append(
-                            f"{net_file.name}: site status is '{node.text.strip()}'. "
-                            "SEO features (sitemap.xml, robots.txt) are only active "
-                            "when the site is Live in a production org."
-                        )
-            except ET.ParseError as exc:
-                issues.append(f"Could not parse {net_file.name}: {exc}")
-
-    return issues
+def text_of(el: ET.Element, name: str) -> str | None:
+    for c in el:
+        if local(c.tag) == name:
+            return (c.text or "").strip()
+    return None
 
 
-def check_knowledge_topic_assignment_hint(manifest_dir: Path) -> list[str]:
-    """Remind about Knowledge topic assignment if Knowledge object metadata is present."""
-    issues: list[str] = []
-    objects_dir = manifest_dir / "objects"
-    if not objects_dir.exists():
-        return issues
-
-    knowledge_dirs = list(objects_dir.glob("Knowledge__kav")) + list(
-        objects_dir.glob("KnowledgeArticleVersion")
-    )
-    if knowledge_dirs:
-        issues.append(
-            "Knowledge object metadata detected. Reminder: Knowledge articles are "
-            "excluded from Experience Cloud sitemap.xml unless each article is assigned "
-            "to at least one Topic or Data Category. Verify topic assignment governance "
-            "is in place before expecting Knowledge pages to appear in the sitemap."
-        )
-    return issues
+def site_files(root: Path, under: str) -> list[Path]:
+    out = []
+    for p in root.rglob("*"):
+        if p.is_file() and (p.name.endswith(".site-meta.xml") or p.name.endswith(".site")) and under in p.parts:
+            out.append(p)
+    return sorted(out)
 
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
+def bundle_prefixes(root: Path) -> list[str]:
+    prefixes = []
+    for p in site_files(root, "experiences"):
+        try:
+            el = ET.parse(p).getroot()
+        except (ET.ParseError, OSError):
+            continue
+        value = text_of(el, "urlPathPrefix")
+        if value:
+            prefixes.append(value)
+    return prefixes
 
-def check_experience_cloud_seo_settings(manifest_dir: Path) -> list[str]:
-    """Return a list of issue strings found in the manifest directory."""
-    issues: list[str] = []
 
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
+def find_components(obj: object) -> list[dict]:
+    found: list[dict] = []
+    if isinstance(obj, dict):
+        if obj.get("definition") in SEO_DEFINITIONS:
+            found.append(obj)
+        for v in obj.values():
+            found.extend(find_components(v))
+    elif isinstance(obj, list):
+        for v in obj:
+            found.extend(find_components(v))
+    return found
 
-    issues.extend(check_robots_vf_page(manifest_dir))
-    issues.extend(check_experience_site_xml(manifest_dir))
-    issues.extend(check_knowledge_topic_assignment_hint(manifest_dir))
 
-    return issues
+def check_custom_sites(root: Path) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    prefixes = bundle_prefixes(root)
+    for path in site_files(root, "sites"):
+        try:
+            el = ET.parse(path).getroot()
+        except (ET.ParseError, OSError) as exc:
+            out.append(("ERROR", f"{path.name}: XML does not parse ({exc})"))
+            continue
+        page = text_of(el, "robotsTxtPage")
+        if not page:
+            out.append(("INFO", f"{path.name}: no robotsTxtPage; no custom robots.txt page is wired to this site (api_meta 264 L49406-49407)"))
+            continue
+        matches = list(root.rglob(f"{page}.page"))
+        if not matches:
+            out.append(("WARN", f"{path.name}: robotsTxtPage '{page}' has no {page}.page file in this tree"))
+            continue
+        content = matches[0].read_text(encoding="utf-8", errors="replace")
+        if "text/plain" not in content:
+            out.append(("INFO", f"{matches[0].name}: no contentType=\"text/plain\" (UNVERIFIED 2026-10-20: the attribute set is Help-only)"))
+        if "/s/" in content and prefixes and not any(p.rstrip("/").endswith("/s") for p in prefixes):
+            out.append(("WARN", f"{matches[0].name}: uses /s/ paths but no ExperienceBundle urlPathPrefix ends in /s (api_meta 264 L62430-62435)"))
+    return out
+
+
+def check_bundles(root: Path) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    for path in site_files(root, "experiences"):
+        try:
+            el = ET.parse(path).getroot()
+        except (ET.ParseError, OSError) as exc:
+            out.append(("ERROR", f"{path.name}: XML does not parse ({exc})"))
+            continue
+        label, btype = text_of(el, "label"), text_of(el, "type")
+        if not label:
+            out.append(("ERROR", f"{path.name}: <label> is Required (api_meta 264 L62422)"))
+        if not btype:
+            out.append(("ERROR", f"{path.name}: <type> is Required (L62424)"))
+        elif btype != "ChatterNetworkPicasso":
+            out.append(("ERROR", f"{path.name}: type '{btype}' is not ChatterNetworkPicasso, the only supported value (L62424-62425)"))
+    for path in root.glob("**/experiences/**/config/*.json"):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            continue
+        if isinstance(data, dict) and "mainAppPageId" in data and not data.get("preferredDomain"):
+            out.append(("INFO", f"{path.name}: no preferredDomain; it names the domain used for indexing the site's pages (api_meta 264 L62656-62658)"))
+    return out
+
+
+def check_views(root: Path) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    for path in root.glob("**/experiences/**/views/*.json"):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except OSError:
+            continue
+        except ValueError as exc:
+            out.append(("ERROR", f"{path.name}: invalid JSON ({exc})"))
+            continue
+        for comp in find_components(data):
+            attrs = comp.get("attributes") or {}
+            if not (attrs.get("pageTitle") or "").strip() and not (attrs.get("description") or "").strip():
+                out.append(("INFO", f"{path.name}: SEO assistant has empty pageTitle and description (api_meta 264 L63443-63448)"))
+    return out
 
 
 def main() -> int:
     args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = check_experience_cloud_seo_settings(manifest_dir)
-
-    if not issues:
+    root = Path(args.manifest_dir)
+    if not root.exists():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    scanned = site_files(root, "sites") + site_files(root, "experiences") + list(root.glob("**/experiences/**/*.json"))
+    if not scanned:
+        print(f"WARN: no CustomSite or ExperienceBundle files under {root}; nothing to check")
+        return 1 if args.strict else 0
+    findings = check_custom_sites(root) + check_bundles(root) + check_views(root)
+    if not findings:
         print("No SEO configuration issues found.")
         return 0
-
-    for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
-
-    return 1
+    for sev, msg in findings:
+        print(f"{sev}: {msg}")
+    if any(sev == "ERROR" for sev, _ in findings):
+        return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

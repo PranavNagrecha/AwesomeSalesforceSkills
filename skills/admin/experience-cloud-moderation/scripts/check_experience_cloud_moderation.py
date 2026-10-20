@@ -1,17 +1,36 @@
 #!/usr/bin/env python3
 """Checker script for Experience Cloud Moderation skill.
 
-Scans a Salesforce metadata directory for common moderation configuration issues:
-- Missing or empty keyword lists
-- Moderation rules without an active keyword list or member criteria reference
-- Rules using Flag or Review without detectable moderator permission set assignment
-- Reputation configuration present without an associated moderation rule
+Scans a Salesforce metadata directory (--manifest-dir) for:
 
-Uses stdlib only — no pip dependencies.
+- ModerationRule files, suffix `.rule` or `.rule-meta.xml` (api_meta 264 L92203-92384)
+    ERROR  unparseable XML; missing Required action / active / masterLabel; an invalid
+           action or type value; an entitiesAndFields entry missing Required entityName
+    WARN   a rule with neither entitiesAndFields nor userCriteria (nothing to match on);
+           more than three distinct keywordList references in one rule (L92219);
+           more than 30 rules in the tree (the org limit, L92218)
+    INFO   inactive rules; the reserved FreezeAndNotify action
+- KeywordList files, suffix `.keywords` or `.keywords-meta.xml` (api_meta 264 L84916-84990)
+    ERROR  unparseable XML; missing Required masterLabel; a <keyword> that is empty
+    WARN   no keywords; more than 2,000 keywords; a keyword over 100 characters; a keyword
+           containing `*` (wildcards are not supported, L84967); more than 30 lists
+- Network files (reputation, api_meta 264 L93597-93603, L94391-94448)
+    ERROR  a pointsRule eventType outside the documented 16 events; a level missing the
+           Required lowerThreshold
+- Permission sets: INFO if none of the permission sets or profiles contains a moderation
+  permission, using names that are UNVERIFIED (2026-10-20): `ModerateNetworkFeeds` is the
+  Help-sourced API name of Moderate Experiences Feeds and is not in the corpus.
+
+Removed from the earlier version: the `.moderationRule` / `.keywordList` suffixes (the guide
+gives `.rule` and `.keywords`), the `criteriaItems` element (not a ModerationRule field), and
+the heuristic that Flag/Review rules without a Block rule are a gap.
+
+Exit codes: ERROR findings exit 1 always; WARN and INFO findings exit 0 unless --strict; a
+directory with nothing to check prints one WARN and exits 0; a missing path is an ERROR and
+exits 1. Stdlib only.
 
 Usage:
-    python3 check_experience_cloud_moderation.py [--help]
-    python3 check_experience_cloud_moderation.py --manifest-dir path/to/metadata
+    python3 check_experience_cloud_moderation.py --manifest-dir path/to/metadata [--strict]
 """
 
 from __future__ import annotations
@@ -21,194 +40,168 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+ACTIONS = {"Block", "Review", "Replace", "Flag", "FreezeAndNotify"}  # L92250-92254
+RULE_TYPES = {"Content", "Rate"}  # L92318-92319
+EVENT_TYPES = {  # L94414-94429
+    "FeedItemWriteAPost", "FeedItemWriteAComment", "FeedItemReceiveAComment", "FeedItemLikeSomething",
+    "FeedItemReceiveALike", "FeedItemMentionSomeone", "FeedItemSomeoneMentionsYou", "FeedItemShareAPost",
+    "FeedItemSomeoneSharesYourPost", "FeedItemPostAQuestion", "FeedItemAnswerAQuestion",
+    "FeedItemReceiveAnAnswer", "FeedItemMarkAnswerAsBest", "FeedItemYourAnswerMarkedBest",
+    "FeedItemEndorseSomeoneForKnowledgeOnATopic", "FeedItemEndorsedForKnowledgeOnATopic",
+}
+MODERATE_PERMISSION_NAMES = ("ModerateNetworkFeeds",)  # UNVERIFIED 2026-10-20: Help-sourced name
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=(
-            "Check Experience Cloud moderation metadata for common configuration issues. "
-            "Expects a Salesforce SFDX/metadata project directory."
-        ),
+        description="Check Experience Cloud moderation metadata for common configuration issues.",
     )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce metadata project (default: current directory).",
-    )
+    parser.add_argument("--manifest-dir", default=".", help="Root directory of the Salesforce metadata project (default: current directory).")
+    parser.add_argument("--strict", action="store_true", help="exit 1 on WARN and INFO findings too")
     return parser.parse_args()
 
 
-def find_xml_files(root: Path, suffix: str) -> list[Path]:
-    """Return all XML files under *root* that end with *suffix*."""
-    return list(root.rglob(f"*{suffix}"))
+def files_with(root: Path, *suffixes: str) -> list[Path]:
+    return sorted(p for p in root.rglob("*") if p.is_file() and any(p.name.endswith(s) for s in suffixes))
 
 
-def _text(element: ET.Element | None) -> str:
-    """Return stripped text of an Element, or empty string if None."""
-    if element is None:
-        return ""
-    return (element.text or "").strip()
+def local(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1]
 
 
-def check_moderation_rules(manifest_dir: Path) -> list[str]:
-    """Check ModerationRule metadata files for ordering and completeness issues."""
-    issues: list[str] = []
+def kids(el: ET.Element, name: str) -> list[ET.Element]:
+    return [c for c in el if local(c.tag) == name]
 
-    rule_files = find_xml_files(manifest_dir, ".moderationRule")
-    if not rule_files:
-        # No moderation rule files found — not necessarily an error; org may use manual setup
-        return issues
 
-    flag_or_review_rules: list[str] = []
-    block_rules: list[str] = []
-    inactive_rules: list[str] = []
+def text_of(el: ET.Element, name: str) -> str | None:
+    found = kids(el, name)
+    return (found[0].text or "").strip() if found else None
 
-    for rule_file in rule_files:
+
+def check_rules(root: Path) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    rules = files_with(root, ".rule", ".rule-meta.xml")
+    if len(rules) > 30:
+        out.append(("WARN", f"{len(rules)} moderation rule files; the org limit is 30 rules, content and rate together (api_meta 264 L92218)"))
+    for path in rules:
         try:
-            tree = ET.parse(rule_file)
-            root_el = tree.getroot()
-            # Strip namespace if present
-            ns = ""
-            if root_el.tag.startswith("{"):
-                ns = root_el.tag.split("}")[0] + "}"
-
-            name = rule_file.stem
-            active_el = root_el.find(f"{ns}active")
-            action_el = root_el.find(f"{ns}action")
-            criteria_el = root_el.find(f"{ns}criteriaItems")
-
-            is_active = _text(active_el).lower() in ("true", "1", "yes")
-            action = _text(action_el).lower()
-
-            if not is_active:
-                inactive_rules.append(name)
-                continue
-
-            if criteria_el is None:
-                issues.append(
-                    f"ModerationRule '{name}' has no criteria defined — rule will never fire."
-                )
-
-            if action == "block":
-                block_rules.append(name)
-            elif action in ("flag", "review"):
-                flag_or_review_rules.append(name)
-
-        except ET.ParseError as exc:
-            issues.append(f"Could not parse ModerationRule file '{rule_file}': {exc}")
-
-    if inactive_rules:
-        issues.append(
-            f"Inactive moderation rules found (verify intentional): {', '.join(inactive_rules)}"
-        )
-
-    # Heuristic: if Flag/Review rules exist but no Block rules, warn that Block coverage may be missing
-    if flag_or_review_rules and not block_rules:
-        issues.append(
-            "Flag/Review moderation rules exist but no Block rules were found. "
-            "Verify that all prohibited-content scenarios have an appropriate Block rule."
-        )
-
-    return issues
+            el = ET.parse(path).getroot()
+        except (ET.ParseError, OSError) as exc:
+            out.append(("ERROR", f"{path.name}: XML does not parse ({exc})"))
+            continue
+        for field in ("action", "active", "masterLabel"):
+            if not text_of(el, field):
+                out.append(("ERROR", f"{path.name}: <{field}> is Required (api_meta 264 L92248-92266)"))
+        action = text_of(el, "action")
+        if action and action not in ACTIONS:
+            out.append(("ERROR", f"{path.name}: action '{action}' is not one of {sorted(ACTIONS)}"))
+        if action == "FreezeAndNotify":
+            out.append(("INFO", f"{path.name}: FreezeAndNotify is reserved for future use (L92254)"))
+        rtype = text_of(el, "type")
+        if rtype and rtype not in RULE_TYPES:
+            out.append(("ERROR", f"{path.name}: type '{rtype}' is not one of {sorted(RULE_TYPES)}"))
+        if (text_of(el, "active") or "").lower() == "false":
+            out.append(("INFO", f"{path.name}: rule is inactive (verify intentional)"))
+        entries = kids(el, "entitiesAndFields")
+        if not entries and not text_of(el, "userCriteria"):
+            out.append(("WARN", f"{path.name}: no <entitiesAndFields> and no <userCriteria>; the rule has nothing to match on"))
+        lists = set()
+        for entry in entries:
+            if not text_of(entry, "entityName"):
+                out.append(("ERROR", f"{path.name}: an <entitiesAndFields> entry is missing Required <entityName> (L92296)"))
+            kl = text_of(entry, "keywordList")
+            if kl:
+                lists.add(kl)
+        if len(lists) > 3:
+            out.append(("WARN", f"{path.name}: {len(lists)} distinct keyword lists; a rule can have up to three keyword criteria (L92219)"))
+    return out
 
 
-# The Setup label for this permission is "Moderate Experiences Feeds", but the
-# METADATA API NAME — the string that actually appears inside a .permissionset
-# file — is ModerateNetworkFeeds. Searching a permission set for the label,
-# or for a camel-cased version of the label, never matches, so a correctly
-# configured org gets reported as missing the permission.
-MODERATE_FEEDS_API_NAME = "ModerateNetworkFeeds"
-
-
-def check_permission_sets(manifest_dir: Path) -> list[str]:
-    """Check for at least one permission set granting Moderate Experiences Feeds."""
-    issues: list[str] = []
-
-    perm_set_files = find_xml_files(manifest_dir, ".permissionset")
-    if not perm_set_files:
-        return issues
-
-    found_moderate_permission = False
-    for ps_file in perm_set_files:
+def check_keywords(root: Path) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    lists = files_with(root, ".keywords", ".keywords-meta.xml")
+    if len(lists) > 30:
+        out.append(("WARN", f"{len(lists)} keyword list files; the org limit is 30 (api_meta 264 L84924)"))
+    for path in lists:
         try:
-            content = ps_file.read_text(encoding="utf-8")
-            if MODERATE_FEEDS_API_NAME.lower() in content.lower():
-                found_moderate_permission = True
-                break
+            el = ET.parse(path).getroot()
+        except (ET.ParseError, OSError) as exc:
+            out.append(("ERROR", f"{path.name}: XML does not parse ({exc})"))
+            continue
+        if not text_of(el, "masterLabel"):
+            out.append(("ERROR", f"{path.name}: <masterLabel> is Required (L84956)"))
+        words = [text_of(k, "keyword") for k in kids(el, "keywords")]
+        if not words:
+            out.append(("WARN", f"{path.name}: no keywords; rules referencing this list will match nothing"))
+        if len(words) > 2000:
+            out.append(("WARN", f"{path.name}: {len(words)} keywords; a list can have up to 2,000 (L84925)"))
+        for word in words:
+            if not word:
+                out.append(("ERROR", f"{path.name}: a <keyword> is empty; it is Required (L84964)"))
+            elif len(word) > 100:
+                out.append(("WARN", f"{path.name}: keyword over 100 characters (L84965-84966)"))
+            elif "*" in word:
+                out.append(("WARN", f"{path.name}: keyword '{word}' contains '*'; wildcard characters aren't supported (L84967)"))
+    return out
+
+
+def check_networks(root: Path) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    for path in files_with(root, ".network", ".network-meta.xml"):
+        try:
+            el = ET.parse(path).getroot()
+        except (ET.ParseError, OSError) as exc:
+            out.append(("ERROR", f"{path.name}: XML does not parse ({exc})"))
+            continue
+        for rules in kids(el, "reputationPointsRules"):
+            for rule in kids(rules, "pointsRule"):
+                event = text_of(rule, "eventType")
+                if event not in EVENT_TYPES:
+                    out.append(("ERROR", f"{path.name}: pointsRule eventType '{event}' is not a documented event (L94412-94429); logging in is not one"))
+                if text_of(rule, "points") in (None, ""):
+                    out.append(("ERROR", f"{path.name}: pointsRule is missing Required <points> (L94431)"))
+        for defs in kids(el, "reputationLevels"):
+            for level in kids(defs, "level"):
+                if text_of(level, "lowerThreshold") in (None, ""):
+                    out.append(("ERROR", f"{path.name}: reputation level is missing Required <lowerThreshold> (L94384)"))
+    return out
+
+
+def check_permissions(root: Path) -> list[tuple[str, str]]:
+    files = files_with(root, ".permissionset", ".permissionset-meta.xml", ".profile", ".profile-meta.xml")
+    if not files:
+        return []
+    for path in files:
+        try:
+            content = path.read_text(encoding="utf-8")
         except OSError:
-            pass
-
-    if not found_moderate_permission:
-        issues.append(
-            "No permission set found that grants the feed-moderation permission "
-            f"(<name>{MODERATE_FEEDS_API_NAME}</name>, shown in Setup as "
-            "'Moderate Experiences Feeds'). "
-            "Moderators will not be able to access the moderation queue or approve Review-status content."
-        )
-
-    return issues
-
-
-def check_keyword_lists(manifest_dir: Path) -> list[str]:
-    """Check keyword list files for empty or minimal content."""
-    issues: list[str] = []
-
-    keyword_files = find_xml_files(manifest_dir, ".keywordList")
-    if not keyword_files:
-        return issues
-
-    for kw_file in keyword_files:
-        try:
-            tree = ET.parse(kw_file)
-            root_el = tree.getroot()
-            ns = ""
-            if root_el.tag.startswith("{"):
-                ns = root_el.tag.split("}")[0] + "}"
-
-            keywords = root_el.findall(f"{ns}keyword")
-            if not keywords:
-                issues.append(
-                    f"KeywordList '{kw_file.stem}' contains no keywords — moderation rules "
-                    "referencing this list will not match any content."
-                )
-            elif len(keywords) == 1:
-                issues.append(
-                    f"KeywordList '{kw_file.stem}' contains only 1 keyword. "
-                    "Verify this is intentional and not an incomplete configuration."
-                )
-        except ET.ParseError as exc:
-            issues.append(f"Could not parse KeywordList file '{kw_file}': {exc}")
-
-    return issues
-
-
-def check_experience_cloud_moderation(manifest_dir: Path) -> list[str]:
-    """Return a list of issue strings found in the manifest directory."""
-    issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    issues.extend(check_moderation_rules(manifest_dir))
-    issues.extend(check_permission_sets(manifest_dir))
-    issues.extend(check_keyword_lists(manifest_dir))
-
-    return issues
+            continue
+        if any(name.lower() in content.lower() for name in MODERATE_PERMISSION_NAMES):
+            return []
+    return [("INFO", "no permission set or profile contains a moderation permission by the name 'ModerateNetworkFeeds' "
+                     "(UNVERIFIED 2026-10-20: that name is Help-sourced and not in the corpus; compare with a .permissionset retrieved "
+                     "from the org that is known to grant Moderate Experiences Feeds)")]
 
 
 def main() -> int:
     args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = check_experience_cloud_moderation(manifest_dir)
-
-    if not issues:
+    root = Path(args.manifest_dir)
+    if not root.exists():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    scanned = files_with(root, ".rule", ".rule-meta.xml", ".keywords", ".keywords-meta.xml", ".network", ".network-meta.xml")
+    if not scanned:
+        print(f"WARN: no ModerationRule, KeywordList or Network files under {root}; nothing to check")
+        return 1 if args.strict else 0
+    findings = check_rules(root) + check_keywords(root) + check_networks(root) + check_permissions(root)
+    if not findings:
         print("No issues found.")
         return 0
-
-    for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
-
-    return 1
+    for sev, msg in findings:
+        print(f"{sev}: {msg}")
+    if any(sev == "ERROR" for sev, _ in findings):
+        return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

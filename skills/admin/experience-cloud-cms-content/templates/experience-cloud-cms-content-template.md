@@ -10,22 +10,22 @@ Use this template when publishing or reviewing CMS content for an Experience Clo
 
 **Target site:** (site name and runtime — LWR or Aura)
 
-**Content type:** News | Banner | Image | Custom: ___________
+**Content type:** News | Image | Document | Custom: ___________
 
-**Go-live date/time (org timezone):** ___________
+**Go-live date/time:** ___________ (UNVERIFIED 2026-10-20: native per-item scheduling and the org-timezone rule are Help-only; state the timezone explicitly)
 
-**Expiry date/time (org timezone):** ___________ (leave blank if permanent)
+**Expiry date/time:** ___________ (leave blank if permanent)
 
 ---
 
 ## Prerequisites
 
 - [ ] Digital Experiences app is enabled in the org
-- [ ] Admin has Manage Experiences or Create and Set Up Experiences permission
+- [ ] Admin has the permission the org uses for CMS authoring (UNVERIFIED 2026-10-20: Manage Experiences / Create and Set Up Experiences is documented for keyword lists and moderation rules, not for CMS)
 - [ ] CMS workspace exists for this content domain
-- [ ] Target site is added as a channel of type `ExperienceChannel` in the workspace
-- [ ] If custom content type: `ManagedContentType` metadata has been deployed via SFDX or Metadata API
-- [ ] If audience targeting: all required audiences are defined in the Experience Cloud site settings
+- [ ] A channel with `Type` `COMMUNITY` delivers the workspace to the target site (object_reference 264 L180515)
+- [ ] If custom content type: `ManagedContentType` (or `ContentTypeBundle`) has been deployed, with exactly one `NAMEFIELD` node and a detail page in the site
+- [ ] If audience targeting: the `Audience` metadata exists for the site with `ExperienceVariation` targets, deployed with ExperienceBundle
 
 ---
 
@@ -37,10 +37,10 @@ Use this template when publishing or reviewing CMS content for an Experience Clo
 | Content type | |
 | Workspace | |
 | Channel(s) assigned | |
-| Number of variants | |
-| Audiences targeted (if any) | |
-| Scheduled publish date/time | |
-| Scheduled unpublish date/time | |
+| Number of variants (language variants) | |
+| Audiences targeted (if any, via experience variations) | |
+| Planned publish date/time | |
+| Planned unpublish date/time | |
 
 ---
 
@@ -49,28 +49,28 @@ Use this template when publishing or reviewing CMS content for an Experience Clo
 - [ ] Content item created in correct workspace
 - [ ] All required fields populated (title, body, image alt text as applicable)
 - [ ] Image assets uploaded and optimized (verify file size and format)
-- [ ] Variant(s) created with correct audience assignments
-- [ ] Scheduled publish date set in org timezone (confirmed in Company Information > Timezone)
-- [ ] Scheduled unpublish date set if content is time-limited
+- [ ] Language variant(s) created with the correct `Language`
+- [ ] Publish timing agreed and tested on a non-production item (UNVERIFIED 2026-10-20: native scheduling is Help-only)
+- [ ] Unpublish timing agreed if content is time-limited
 - [ ] Content reviewed for spelling, legal compliance, and brand alignment
 
 ---
 
 ## Publishing Checklist
 
-- [ ] Content item status is Published (not Draft or Archived)
-- [ ] Channel assignment confirmed — target site channel appears under Channel Assignments
-- [ ] All variants are published (not just the default variant)
+- [ ] Variant status is Published and `IsPublished` is true (not Draft or Revised)
+- [ ] The channel `Type` is correct for the audience (UNVERIFIED 2026-10-20: the Channel Assignments panel is Help-only)
+- [ ] All language variants are published (not just the default variant)
 - [ ] No unpublished dependencies (referenced images or related content items are also published)
 
 ---
 
 ## Experience Builder Wiring Checklist
 
-- [ ] CMS Single Item or CMS Collection component is placed on the target page
+- [ ] The CMS component for this runtime is placed on the target page (UNVERIFIED 2026-10-20: component names are Help-only)
 - [ ] Component is bound to the correct managed content item (not hardcoded text)
 - [ ] Preview in Experience Builder confirms correct content renders
-- [ ] Audience preview mode confirms correct variant renders for each targeted audience
+- [ ] A preview as a member of each targeted audience confirms the right experience variation renders
 - [ ] Page is published after component binding changes
 
 ---
@@ -78,8 +78,8 @@ Use this template when publishing or reviewing CMS content for an Experience Clo
 ## Post-Launch Verification
 
 - [ ] Content is visible to an unauthenticated visitor (if the site is public) or a test user in the correct audience
-- [ ] Scheduled publish fires at the correct time (verify with a test item if possible)
-- [ ] Rollback path documented: previous content item version or replacement item identified and ready
+- [ ] Any scheduled publish fires at the correct time (verify with a test item if possible; UNVERIFIED 2026-10-20: native per-item scheduling is Help-only)
+- [ ] Rollback path documented: previous variant or replacement item identified and ready
 
 ---
 

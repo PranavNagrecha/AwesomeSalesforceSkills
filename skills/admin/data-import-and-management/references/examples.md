@@ -20,7 +20,7 @@
 
 **Allocation budget, worked before the window is booked.** Bulk API 2.0 creates one batch per 10,000
 records, and the 15,000-batch / 150,000,000-record allocations are per rolling 24 hours and shared
-between Bulk API and Bulk API 2.0 (App Limits Cheat Sheet):
+between Bulk API and Bulk API 2.0 (cheat sheet 264 L301-303, L348; one batch per 10,000 records, api_asynch 264 L1225):
 
 ```text
 Accounts    400,000 rows / 10,000 =    40 batches
@@ -32,7 +32,7 @@ Rehearsal + one full re-run       = x 3
 Records moved 2,500,000 x 3       = 7,500,000       of 150,000,000     -> 5% used
 
 File sizing (Bulk API 2.0): 150 MB per job after base64, which inflates the upload
-by roughly 50%, so keep each uploaded CSV under 100 MB.
+by roughly 50%, so keep each uploaded CSV under 100 MB (cheat sheet 264 L391-401).
   Contacts 1.2M rows x ~180 bytes = ~216 MB  ->  split into 3 jobs of 400,000
 ```
 

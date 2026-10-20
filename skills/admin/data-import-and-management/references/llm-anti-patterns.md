@@ -7,23 +7,25 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** "Use the Data Import Wizard to load your 500,000 account records."
 
-**Why it happens:** LLMs default to the most user-friendly tool. The Data Import Wizard has a 50,000 record limit per operation and only supports Accounts, Contacts, Leads, Solutions, and custom objects. For large volumes or objects not supported by the wizard, Data Loader or the Bulk API is required.
+**Why it happens:** LLMs default to the most user-friendly tool. The Data Loader Guide points to the Data Import Wizard for fewer than 50,000 records, an object the import wizards support, and fewer than 50 fields (data loader 264 L128-134), and to Data Loader for an unsupported object (L121). For large volumes or objects not supported by the wizard, Data Loader or the Bulk API is required.
 
 **Correct pattern:**
 
 ```
 Tool selection by volume and object:
-- < 50,000 records AND supported object → Data Import Wizard.
-  (Accounts, Contacts, Leads, Solutions, Campaign Members, Custom Objects)
-- 50,000 - 5,000,000 records → Data Loader, with Use Bulk API selected.
-  (Data Loader defaults to the SOAP-based API; Bulk API is a setting you turn on.)
-- > 5,000,000 records → Data Loader with Bulk API 2.0 or third-party ETL.
-- Unsupported objects (Opportunities, Cases, etc.) → Data Loader regardless of volume.
+- Under 50,000 records, a wizard-supported object, fewer than 50 fields, simple mapping
+  → Data Import Wizard (data loader 264 L128-134). The supported-object list is in Setup
+  (Data Import Wizard in Quick Find, L129-130).
+- Under 2,000 records → bulkified synchronous REST or SOAP calls; over 2,000 → a candidate
+  for Bulk API 2.0 (cheat sheet 264 L294-297).
+- Unsupported object, scheduled load, or backup export → Data Loader (L121-124), up to
+  150,000,000 records per CSV (L117-118). It uses the SOAP API by default; Bulk API or
+  Bulk API 2.0 is a setting you turn on (L637-638).
+- Over 150 million records → a Salesforce partner or AppExchange product (L118-120).
 
-Data Import Wizard limits:
-- Fewer than 50,000 records per import, and fewer than 50 fields on the target object.
-- Does not support all standard objects.
-- Does not support hard delete.
+UNVERIFIED (2026-10-20): the earlier tiers (50,000-5,000,000 → Bulk API; over 5,000,000 → Bulk API 2.0 or ETL), the wizard
+object list (Accounts, Contacts, Leads, Solutions, Campaign Members, custom objects), the claim that Opportunities and Cases
+are unsupported, and the claim that the wizard has no hard delete are not in the corpus and were removed from the pattern.
 ```
 
 **Detection hint:** If the output recommends Data Import Wizard for more than 50,000 records or for unsupported objects like Opportunity or Case, the tool choice is wrong. Search for `Import Wizard` combined with large record counts.
@@ -48,7 +50,8 @@ both new and existing records:
    - Matching records (by External ID) are updated.
    - Non-matching records are inserted.
 4. Never use Name or auto-number fields as match keys —
-   they are not reliable for deduplication.
+   they are not reliable for deduplication. (UNVERIFIED 2026-10-20: practitioner advice;
+   the corpus requires only a custom external ID field for upsert, data loader 264 L1946-1947.)
 ```
 
 **Detection hint:** If the output recommends separate insert and update passes instead of upsert, or uses Name as the match key, the approach creates duplicate risk. Search for `upsert` and `External ID` in the output.
@@ -84,7 +87,7 @@ For each child load, map the parent lookup using the parent's External ID.
 
 **What the LLM generates:** "Load the records using Data Loader. The system will process them normally."
 
-**Why it happens:** LLMs do not consider the side effects of automation during bulk loads. Active validation rules, flows, triggers, workflow rules, and duplicate rules fire on every record during a data load. This causes load failures, performance degradation, and unwanted side effects (e.g., email alerts firing for every imported record).
+**Why it happens:** LLMs do not consider the side effects of automation during bulk loads. Active validation rules, flows, triggers, workflow rules, and duplicate rules fire on every record during a data load (triggers fire per 200-record chunk, apexdev 264 L3796-3800). This causes load failures, performance degradation, and unwanted side effects (e.g., email alerts firing for every imported record). UNVERIFIED (2026-10-20): the blanket statement for validation rules, flows and workflow rules is practitioner knowledge.
 
 **Correct pattern:**
 
@@ -145,7 +148,7 @@ Data load rollback strategy:
 </map>
 ```
 
-**Why it happens:** Three separate pattern-matches, each individually plausible. The password field looks like any other config value. `200` is the number that appears next to `sfdc.loadBatchSize` in the parameter reference, because that table describes the SOAP path. And `Upsert` is capitalised the way it is in the UI. All three are wrong here: the Data Loader Guide requires the password to be `encrypt.bat` output decryptable by `process.encryptionKeyFile`; the Bulk API ceiling is 10,000, and 200 wastes the 15,000-batch 24-hour allocation; and operation values are lowercase.
+**Why it happens:** Three separate pattern-matches, each individually plausible. The password field looks like any other config value. `200` is the number that appears next to `sfdc.loadBatchSize` in the parameter reference, because that table describes the SOAP path. And `Upsert` is capitalised the way it is in the UI. All three are wrong here: the Data Loader Guide requires the password to be `encrypt.bat` output decryptable by `process.encryptionKeyFile` (data loader 264 L2395-2435); the Bulk API ceiling is 10,000 (L351-352), and 200 wastes the 15,000-batch 24-hour allocation (cheat sheet 264 L301-303); and operation values are lowercase (L1921).
 
 **Correct pattern:**
 
@@ -164,7 +167,7 @@ Data load rollback strategy:
 </map>
 ```
 
-**Detection hint:** Run `python3 scripts/check_load_plan.py --manifest-dir <config dir>`. It flags all four: a password that is not hex, a password with no key file, a batch size wrong for the enabled API, and an operation value outside the documented lowercase set. If the generated config also sets `sfdc.externalIdField` on an `insert`, the checker WARNs on that too — that combination is how an LLM produces a load that looks idempotent and is not.
+**Detection hint:** Run `python3 scripts/check_load_plan.py --manifest-dir <config dir>`. It flags all four (UNVERIFIED 2026-10-20: the "hex" shape is inferred from the guide's sample value `e8a68b73992a7a54`, which the guide itself says is not a valid encrypted value, L2519-2520): a password that is not hex, a password with no key file, a batch size wrong for the enabled API, and an operation value outside the documented lowercase set. If the generated config also sets `sfdc.externalIdField` on an `insert`, the checker WARNs on that too — that combination is how an LLM produces a load that looks idempotent and is not.
 
 ---
 
@@ -172,7 +175,7 @@ Data load rollback strategy:
 
 **What the LLM generates:** "The load completed. Check `accountUpsert_error.csv` — if it is empty, all records loaded successfully."
 
-**Why it happens:** The two-file mental model (success + error) is correct for Data Loader's SOAP path and wrong for Bulk API 2.0, which exposes a third resource. A job that failed mid-run, was aborted, or exhausted the daily batch allocation leaves rows that are in neither the success nor the failed file. An empty error file on such a job means "nothing was rejected", not "everything landed".
+**Why it happens:** The two-file mental model (success + error) is correct for Data Loader's SOAP path and wrong for Bulk API 2.0, which exposes a third resource. A job that failed mid-run, was aborted, or exhausted the daily batch allocation leaves rows that are in neither the success nor the failed file (asynch 264 L2165-2166, L2179). An empty error file on such a job means "nothing was rejected", not "everything landed".
 
 **Correct pattern:**
 

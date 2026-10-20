@@ -11,22 +11,36 @@ Two modes, both stdlib-only:
       check_load_plan.py --manifest-dir C:/Migration/Config
       Data Loader `process-conf.xml` beans and their `.sdl` mapping files.
 
-Grounding for the config-mode thresholds (Data Loader Guide, Summer '26 / v62 PDF,
-https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_data_loader.pdf):
+Exit codes: ERROR/CRITICAL findings (unparseable XML, an invalid `process.operation`
+value, a non-integer batch size, a batch size above the documented maximum for the API in
+use, hard_delete with Bulk API off, a mapping line with no `=`, a missing path) exit 1 always;
+every other severity (WARN, HIGH, MEDIUM, LOW, INFO, REVIEW) exits 0 unless --strict. A
+directory with nothing to check prints one WARN and exits 0; a missing path prints
+`ERROR: ...` and exits 1.
+
+Grounding for the config-mode thresholds (Data Loader Guide, Winter '27 / 264 PDF,
+https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_data_loader.pdf,
+line numbers below are that file's):
 
   * "The maximum import batch size is 200 records for SOAP API and 10000 records for
     Bulk API. ... If the Use Bulk API 2.0 option is selected, then neither batch size is
-    used because Bulk API 2.0 handles batch size automatically."  (Settings reference)
+    used because Bulk API 2.0 handles batch size automatically."  (L351-360)
     The command-line parameter table for `sfdc.loadBatchSize` still states a maximum of
-    200 and recommends 50-100; that sentence describes the SOAP path only. This checker
+    200 and recommends 50-100 (L1753-1757); that sentence describes the SOAP path only. This checker
     applies 200 when Bulk API is off and 10,000 when it is on, and reports an INFO when a
     batch size is set at all under Bulk API 2.0.
   * "Processing in parallel can cause database contention. When contention is severe, the
-    load can fail."  (sfdc.bulkApiSerialMode)
-  * `sfdc.externalIdField` is "used in upsert operations".
-  * `sfdc.assignmentRule` sample value `03Mc00000026J7w` - a Salesforce Id, not a name.
-  * The password "must be encrypted before you add it to the process-conf.xml file", via
-    `encrypt.bat` against a key file named by `process.encryptionKeyFile`.
+    load can fail."  (sfdc.bulkApiSerialMode, L1656-1659)
+  * `sfdc.externalIdField` is "used in upsert operations" (L1728-1730).
+  * `sfdc.assignmentRule` sample value `03Mc00000026J7w` - a Salesforce Id, not a name (L1633).
+  * The password "must be encrypted before you add it to the process-conf.xml file" (L2395),
+    via `encrypt.bat` against a key file named by `process.encryptionKeyFile`.
+
+Heuristics the guide does not state (UNVERIFIED 2026-10-20), reported at WARN/INFO only:
+that `encrypt.bat` output is a hex string (the guide's sample value is hex but the guide
+says it is "not a valid encrypted value", L2519-2520), the config keys `sfdc.useBulkApiV2` /
+`sfdc.useBulkV2Api` (the parameter table lists only `sfdc.useBulkApi`, L1902), and the
+behaviour of a duplicated `.sdl` destination field.
 """
 
 from __future__ import annotations
@@ -58,7 +72,8 @@ MAX_BATCH_BULK = 10000
 # 15-character case-sensitive or 18-character case-insensitive alphanumeric.
 SALESFORCE_ID = re.compile(r"^[a-zA-Z0-9]{15}$|^[a-zA-Z0-9]{18}$")
 
-# `encrypt.bat` emits a hex string; the guide's sample value is `e8a68b73992a7a54`.
+# Heuristic (UNVERIFIED 2026-10-20): `encrypt.bat` emits a hex string. The guide's sample value is
+# `e8a68b73992a7a54`, which the guide itself says is not a valid encrypted value (L2519-2520).
 ENCRYPTED_PASSWORD = re.compile(r"^[0-9a-fA-F]{16,}$")
 
 VALID_OPERATIONS = {
@@ -81,15 +96,22 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+BLOCKING = {"ERROR", "CRITICAL"}
+
+
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     normalized = [normalize_finding(finding) for finding in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
     if normalized:
         print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    # INFO / REVIEW findings are notes, not failures; they must not break a pipeline.
-    blocking = [i for i in normalized if SEVERITY_WEIGHTS.get(i["severity"], 0) > 0]
-    return 1 if blocking else 0
+    # ERROR/CRITICAL always fail. WARN/HIGH/MEDIUM/LOW fail only under --strict;
+    # INFO/REVIEW are notes and never fail.
+    if any(i["severity"] in BLOCKING for i in normalized):
+        return 1
+    if strict and any(SEVERITY_WEIGHTS.get(i["severity"], 0) > 0 for i in normalized):
+        return 1
+    return 0
 
 
 def audit_csv(path: Path, required: list[str], external_id: str | None) -> list[str]:
@@ -199,24 +221,26 @@ def audit_process_conf(path: Path) -> tuple[list[str], list[tuple[str, str]]]:
             else:
                 if use_bulk_v2:
                     findings.append(
-                        f"INFO {where}: sfdc.loadBatchSize={batch} is ignored under Bulk API 2.0, "
-                        "which batches automatically; the value is misleading, not harmful"
+                        f"INFO {where}: sfdc.loadBatchSize={batch} is not used under Bulk API 2.0, "
+                        "which handles batch size automatically (data loader 264 L358-360); the "
+                        "config key that selects Bulk API 2.0 is UNVERIFIED (2026-10-20)"
                     )
                 elif use_bulk and batch > MAX_BATCH_BULK:
                     findings.append(
                         f"ERROR {where}: sfdc.loadBatchSize={batch} exceeds the documented Bulk API "
-                        f"maximum of {MAX_BATCH_BULK}"
+                        f"maximum of {MAX_BATCH_BULK} (data loader 264 L351-352)"
                     )
                 elif not use_bulk and batch > MAX_BATCH_SOAP:
                     findings.append(
                         f"ERROR {where}: sfdc.loadBatchSize={batch} exceeds the documented SOAP API "
-                        f"maximum of {MAX_BATCH_SOAP}; sfdc.useBulkApi is not true, so this is the "
-                        "SOAP path"
+                        f"maximum of {MAX_BATCH_SOAP} (data loader 264 L351-352, L1753-1755); "
+                        "sfdc.useBulkApi is not true, so this is the SOAP path"
                     )
                 elif use_bulk and batch <= MAX_BATCH_SOAP:
                     findings.append(
-                        f"INFO {where}: sfdc.loadBatchSize={batch} with Bulk API on wastes the "
-                        f"batch allocation; the Bulk API ceiling is {MAX_BATCH_BULK}"
+                        f"INFO {where}: sfdc.loadBatchSize={batch} with Bulk API on uses many small "
+                        f"batches against the daily batch allocation (cheat sheet 264 L375-378); the "
+                        f"Bulk API ceiling is {MAX_BATCH_BULK}"
                     )
 
         # 2. Bulk API on with no explicit serial-mode decision.
@@ -232,13 +256,14 @@ def audit_process_conf(path: Path) -> tuple[list[str], list[tuple[str, str]]]:
         if external_id and operation and operation != "upsert":
             findings.append(
                 f"WARN {where}: sfdc.externalIdField=`{external_id}` is set on a "
-                f"`{operation}` operation, where it is ignored; a re-run will not match, it "
-                "will duplicate"
+                f"`{operation}` operation; the guide describes it as used in upsert operations "
+                "(data loader 264 L1728-1730), so this match key is not doing what the plan implies"
             )
         if operation == "upsert" and not external_id:
             findings.append(
                 f"WARN {where}: process.operation is upsert but sfdc.externalIdField is empty; "
-                "matching falls back to the record Id"
+                "the guide says upsert matches on a custom external ID field (data loader 264 "
+                "L1946-1947)"
             )
 
         # 5. Assignment rule must be an Id, not a name.
@@ -252,7 +277,7 @@ def audit_process_conf(path: Path) -> tuple[list[str], list[tuple[str, str]]]:
         if assignment and operation in {"insert", "update", "upsert"}:
             findings.append(
                 f"INFO {where}: sfdc.assignmentRule is set, so it overrides any OwnerId column in "
-                "the CSV for Cases and Leads"
+                "the CSV for Cases and Leads (data loader 264 L379-383)"
             )
 
         # 6. Password must be the encrypt.bat output, with a key file beside it.
@@ -261,7 +286,8 @@ def audit_process_conf(path: Path) -> tuple[list[str], list[tuple[str, str]]]:
             if not ENCRYPTED_PASSWORD.match(password):
                 findings.append(
                     f"WARN {where}: sfdc.password does not look like encrypt.bat output "
-                    "(expected a hex string); a plaintext password must never be committed"
+                    "(heuristic: a hex string, UNVERIFIED 2026-10-20); a plaintext password "
+                    "must never be committed"
                 )
             if not cfg.get("process.encryptionKeyFile", "").strip():
                 findings.append(
@@ -269,11 +295,12 @@ def audit_process_conf(path: Path) -> tuple[list[str], list[tuple[str, str]]]:
                     "the encrypted value cannot be decrypted without its key file"
                 )
 
-        # Hard delete is only reachable through the Bulk APIs.
+        # The guide presents hard delete as a Bulk API / Bulk API 2.0 capability (L605, L614-615, L651).
         if operation == "hard_delete" and not (use_bulk or use_bulk_v2):
             findings.append(
-                f"ERROR {where}: process.operation=hard_delete requires sfdc.useBulkApi (or Bulk "
-                "API 2.0) to be enabled"
+                f"ERROR {where}: process.operation=hard_delete but sfdc.useBulkApi is not true; "
+                "enabling the Bulk API is what allows a hard delete (data loader 264 L614-615, "
+                "L605-606, L651-652)"
             )
 
         mapping_file = cfg.get("process.mappingFile", "").strip()
@@ -330,8 +357,9 @@ def audit_sdl(path: Path) -> list[str]:
         key = field.lower()
         if key in seen:
             findings.append(
-                f"ERROR {path}:{line_no}: destination field `{field}` is already mapped on line "
-                f"{seen[key]}; which mapping wins is undefined"
+                f"WARN {path}:{line_no}: destination field `{field}` is already mapped on line "
+                f"{seen[key]}; what Data Loader does with a duplicated destination is "
+                "UNVERIFIED (2026-10-20), so treat it as a copy-paste error"
             )
         else:
             seen[key] = line_no
@@ -363,7 +391,7 @@ def audit_manifest_dir(directory: Path) -> tuple[list[str], int]:
     sdl_files = sorted(p for p in directory.rglob("*.sdl") if p.is_file())
 
     if not xml_files and not sdl_files:
-        return [f"WARN {directory}: no *.xml or *.sdl files found"], 0
+        return [f"WARN {directory}: no *.xml or *.sdl files found; nothing to check"], 0
 
     referenced: set[str] = set()
     for xml_file in xml_files:
@@ -405,6 +433,9 @@ def main() -> int:
         "--manifest-dir",
         help="Directory holding process-conf.xml and .sdl mapping files to audit",
     )
+    parser.add_argument(
+        "--strict", action="store_true", help="exit 1 on WARN/HIGH/MEDIUM/LOW findings too"
+    )
     args = parser.parse_args()
 
     if not args.files and not args.manifest_dir:
@@ -416,7 +447,8 @@ def main() -> int:
     if args.manifest_dir:
         directory = Path(args.manifest_dir)
         if not directory.is_dir():
-            findings.append(f"ERROR {directory}: --manifest-dir is not a directory")
+            print(f"ERROR: --manifest-dir is not a directory: {directory}")
+            sys.exit(1)
         else:
             config_findings, config_scanned = audit_manifest_dir(directory)
             findings.extend(config_findings)
@@ -425,13 +457,13 @@ def main() -> int:
     for value in args.files:
         path = Path(value)
         if not path.is_file():
-            findings.append(f"HIGH {path}: file not found")
+            findings.append(f"ERROR {path}: file not found")
             continue
         scanned += 1
         findings.extend(audit_csv(path, args.required, args.external_id))
 
     summary = f"Scanned {scanned} load artefact(s); {len(findings)} finding(s) detected."
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, strict=args.strict)
 
 
 if __name__ == "__main__":

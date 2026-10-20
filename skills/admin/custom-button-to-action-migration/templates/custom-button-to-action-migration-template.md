@@ -13,16 +13,16 @@ Use this template when migrating Classic custom buttons (especially JavaScript b
 **Button count:**
 
 ```bash
-sf data query --use-tooling-api --query \
-  "SELECT BehaviorType, ContentSource, COUNT(Id) FROM WebLink WHERE EntityDefinition.QualifiedApiName='Account' GROUP BY BehaviorType, ContentSource"
+sf data query --query \
+  "SELECT DisplayType, LinkType, COUNT(Id) FROM WebLink WHERE PageOrSobjectType='Account' GROUP BY DisplayType, LinkType"
 ```
 
-| BehaviorType | ContentSource | Count |
+| DisplayType | LinkType | Count |
 |---|---|---|
-| Detail | OnClickJavaScript | |
-| Detail | URL | |
-| List | OnClickJavaScript | |
-| Mass | OnClickJavaScript | |
+| button | javascript | |
+| button | url | |
+| link | url | |
+| massActionButton | javascript | |
 
 ---
 
@@ -30,12 +30,12 @@ sf data query --use-tooling-api --query \
 
 | Button Name | Type | JS / URL Body Summary | Replacement Pattern | Notes |
 |---|---|---|---|---|
-| MarkHotProspect | Detail | Calls Apex, alerts, reloads | Headless LWC Quick Action (Pattern 1) | |
-| OpenLinkedInLookup | Detail URL | External URL | URL Quick Action (Pattern 4) | |
-| MassMarkAsKey | Mass | getRecordIds + Apex | Mass Quick Action with LWC (Pattern 3) | |
+| MarkHotProspect | button, javascript | Calls Apex, alerts, reloads | Headless LWC Quick Action (Pattern 1) | |
+| OpenLinkedInLookup | button, url | External URL | Headless navigation Quick Action (Pattern 4) | |
+| MassMarkAsKey | massActionButton, javascript | getRecordIds + Apex | List-view action calling Apex (Pattern 3; surface UNVERIFIED 2026-10-20) | |
 | | | | | |
 
-Patterns: `1=Headless LWC`, `2=Screen Flow`, `3=Mass Quick Action`, `4=URL Action`, `5=Coexistence (retain Classic)`, `Retire=No replacement`.
+Patterns: `1=Headless LWC`, `2=Screen Flow`, `3=List-view action`, `4=Headless navigation`, `5=Coexistence (retain Classic)`, `Retire=No replacement`.
 
 ---
 
@@ -46,7 +46,7 @@ Patterns: `1=Headless LWC`, `2=Screen Flow`, `3=Mass Quick Action`, `4=URL Actio
 | (existing class).markAsHotProspect | `@AuraEnabled` static (cacheable=false) with `with sharing` + `WITH USER_MODE` | Public to LWC |
 | | | |
 
-Read idiom by the class's `.cls-meta.xml` `apiVersion` (not the org's release): 57.0+ → `WITH USER_MODE`; ≤ 56.0 → `WITH SECURITY_ENFORCED`, which was removed in 67.0 and fails to compile there.
+Read idiom by the class's `.cls-meta.xml` `apiVersion` (not the org's release): at 67.0 and later `WITH SECURITY_ENFORCED` can't be used and `WITH USER_MODE` is the replacement (apexdev 264 L11926-11927). UNVERIFIED (2026-10-20): the 57.0 floor for `WITH USER_MODE` is a Help figure.
 
 ---
 
@@ -78,19 +78,19 @@ For each migrated button:
 
 - [ ] Functional parity in sandbox
 - [ ] User acceptance: representative user from each affected profile confirms action is discoverable and works
-- [ ] Mobile (iOS Salesforce App)
-- [ ] Mobile (Android Salesforce App)
+- [ ] Mobile (iOS Salesforce App): LWC quick actions are not supported there (LWC guide `use-config-for-quick-actions`)
+- [ ] Mobile (Android Salesforce App): same
 - [ ] Service Console subtab navigation (if applicable)
-- [ ] Mass Action: tested with selection > 200 (verify chunking or user notification)
+- [ ] Mass Action: tested with a selection above the org's observed cap (200 is UNVERIFIED 2026-10-20, Help-only; verify chunking or user notification)
 
 ---
 
 ## Sign-Off Checklist
 
 - [ ] Every Classic button has a documented decision: replaced, retained for Classic, or retired
-- [ ] LWS-incompatible patterns removed (no `alert()`, no `confirm()`, no `sforce.*`)
+- [ ] Native `alert()`/`confirm()` replaced with `LightningAlert`/`LightningConfirm`/`ShowToastEvent`, and no `sforce.*` left (the native calls are not supported in cross-origin iframes in Chrome and Safari)
 - [ ] No Apex method called from LWC returns `PageReference`
-- [ ] Mass Action 200-record limit handled explicitly in code/UX
+- [ ] Mass Action selection cap handled explicitly in code/UX (UNVERIFIED 2026-10-20: 200 is Help-only)
 - [ ] Coexistence tracking field deployed and being populated
 - [ ] Mobile testing completed
 - [ ] Migration audit log persisted (Custom_Button_Migration_Log__c)

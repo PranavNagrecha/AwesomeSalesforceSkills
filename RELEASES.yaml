@@ -902,6 +902,11 @@ releases:
     - admin/compliant-data-sharing-setup
     - admin/connected-apps-and-auth
     - admin/cpq-approval-workflows
+    - admin/custom-button-to-action-migration
+    - admin/data-import-and-management
+    - admin/experience-cloud-cms-content
+    - admin/experience-cloud-moderation
+    - admin/experience-cloud-seo-settings
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'
@@ -930,6 +935,12 @@ releases:
       L207)
     size: S
     owner_model: sonnet
+    status: todo
+  - id: R2-44
+    title: 'experience-cloud-cms-content description asserts ''audience targeting on content variants'' (contradicted: Audience
+      targets ExperienceVariation/NavigationLinkSet/Report/Dashboard; variants are language variants)'
+    size: S
+    owner_model: opus
     status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
@@ -1356,5 +1367,12 @@ inbox:
     L207. Corpus: archived history is kept until you delete it (secguide 262 L4836-4837; L4553-4555); archiveRetentionYears
     is a manual-deletion reminder (api_meta 264 L46335-46337). Fix all sites with cites or fold into those skills'' audit
     batch.'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by R3-06 batch 12: the description''s first sentence carries a claim the corpus contradicts (api_meta 264 L26447-26452;
+    obj 264 L180665-180670). The reviewer restored the sentence because the brief forbids first-sentence edits and framework/specification/migration/catalogs/current-skills.csv
+    mirrors descriptions. Owner/orchestrator decision: reword the first sentence keeping the trigger nouns, then regenerate
+    the catalog, and re-run the retrieval fixtures that cite this skill.'
   size: S
   slotted_into: 1.5.0

@@ -18,13 +18,13 @@ Use this template when configuring moderation for a new or existing Experience C
 
 | User Name | License Type | Permission Set Assigned | Queue Access Confirmed |
 |---|---|---|---|
-|  |  | Moderate Experiences Feeds |  |
-|  |  | Moderate Experiences Feeds |  |
+|  |  | Moderate Experiences Feeds, Can Approve Feed Post and Comment |  |
+|  |  | Moderate Experiences Feeds, Can Approve Feed Post and Comment |  |
 
-- [ ] All moderators are internal Salesforce users (not community-only license)
-- [ ] Moderate Experiences Feeds permission set is created or identified
+- [ ] License pairing for each moderator checked in a sandbox (UNVERIFIED 2026-10-20: whether community-only licenses can hold these permissions is Help-only)
+- [ ] Permission set is created or identified for Moderate Experiences Feeds (Moderation feed) and Can Approve Feed Post and Comment (publishing held items)
 - [ ] Permission set is assigned to all moderators
-- [ ] Moderators can access the moderation queue in Experience Workspaces
+- [ ] Moderators can open the Moderation feed (UNVERIFIED 2026-10-20: the Experience Workspaces location is Help-only)
 
 ---
 
@@ -35,26 +35,26 @@ Use this template when configuring moderation for a new or existing Experience C
 |  |  |  |  |
 |  |  |  |  |
 
-- [ ] Each keyword list created in Setup > Experience Cloud Sites > [Site] > Moderation > Keyword Lists
-- [ ] All keywords tested in sandbox for false positive partial matches
+- [ ] Each keyword list created (UNVERIFIED 2026-10-20: the Setup > Experience Cloud Sites > [Site] > Moderation path is Help-only) and within the limits: 2,000 keywords per list, 100 characters per keyword, 30 lists per org (api_meta 264 L84924-84925, L84965)
+- [ ] All keywords tested in sandbox for false positives (matching ignores capitalization and trailing punctuation; no wildcards)
 - [ ] Lists reviewed by compliance or community team
 
 ---
 
 ## Moderation Rules
 
-List rules in **priority order** (top = fires first):
+List rules by action precedence (Block runs first, then Review, then Replace, then Flag; the oldest rule runs first among rules with the same action; api_meta 264 L92226-92229):
 
-| Priority | Rule Name | Criteria Type | Criteria Detail | Content Type | Action | Active |
+| Precedence | Rule Name | Criteria Type | Criteria Detail | Entity and field | Action | Active |
 |---|---|---|---|---|---|---|
-| 1 |  | Keyword List |  | Posts + Comments | Block |  |
-| 2 |  | Member Criteria |  | Posts + Comments | Review |  |
-| 3 |  | Keyword List |  | Posts + Comments | Flag |  |
+| 1 |  | Keyword List |  | FeedItem RawBody, FeedComment RawCommentBody | Block |  |
+| 2 |  | userCriteria |  | FeedItem RawBody, FeedComment RawCommentBody | Review |  |
+| 3 |  | Keyword List |  | FeedItem RawBody, FeedComment RawCommentBody | Flag |  |
 
-- [ ] Block rules appear above Review and Flag rules in the ordered list
-- [ ] Rule order reviewed in Setup after all rules are created
+- [ ] Rule count within the org limit of 30 (content and rate rules together) and three keyword criteria per rule (api_meta 264 L92218-92219)
+- [ ] Rules created with the Metadata API are not edited in the UI (api_meta 264 L92215-92216)
 - [ ] Each rule tested with a sample post in sandbox before go-live
-- [ ] Review action behavior (content hidden) communicated to stakeholders
+- [ ] Review action behavior (PendingReview: visible to the author and permitted users) communicated to stakeholders
 
 ---
 
@@ -72,15 +72,15 @@ List rules in **priority order** (top = fires first):
 
 | Action | Points Awarded |
 |---|---|
-| Post a question |  |
-| Post an answer |  |
-| Receive a like |  |
-| Best answer selected |  |
-| Log in |  |
+| FeedItemPostAQuestion |  |
+| FeedItemAnswerAQuestion |  |
+| FeedItemReceiveALike |  |
+| FeedItemYourAnswerMarkedBest |  |
+| Other documented events (api_meta 264 L94412-94429) |  |
 
-- [ ] Reputation configured before or at site launch (not retroactive)
+- [ ] Reputation configured before or at site launch (UNVERIFIED 2026-10-20: whether points are retroactive is Help-only; test with a prior-activity account)
 - [ ] If configuring on an active community: member communication plan in place
-- [ ] Any Member Criteria rules referencing reputation levels tested with correct level thresholds
+- [ ] Any Member Criteria rules referencing reputation levels tested with correct level thresholds (UNVERIFIED 2026-10-20: reputation as member criteria is Help-only)
 
 ---
 
@@ -88,8 +88,8 @@ List rules in **priority order** (top = fires first):
 
 - [ ] Submitted a test post from a new member account — confirm Review hold behavior
 - [ ] Submitted a test post containing a keyword list term — confirm Block rejection message
-- [ ] Submitted a test post from a member matching Flag criteria — confirm post is live and moderator queue entry is created
-- [ ] Moderator accessed queue, viewed held item, and approved it successfully
+- [ ] Submitted a test post from a member matching Flag criteria — record whether it is live and whether it reaches the Moderation feed (UNVERIFIED 2026-10-20: live visibility is Help-only)
+- [ ] Approver viewed the held item and published it successfully
 - [ ] Moderation policy documented (what triggers each action, SLA for queue review, moderator contacts)
 
 ---

@@ -2,13 +2,15 @@
 
 Common mistakes AI coding assistants make when generating or advising on Custom Button to Action migrations.
 
+UNVERIFIED (2026-10-20): Anti-Patterns 3, 5 and 8 restate Help-only Lightning behaviour (ignored `PageReference`, the 200-record cap, mobile subset support) and are marked inside each.
+
 ## Anti-Pattern 1: Recommending Direct JavaScript-to-LWC "Translation"
 
 **What the LLM generates:** Line-by-line conversion of the Classic button's JavaScript into LWC JS — `alert()` becomes `console.log()`, `sforce.apex.execute` becomes some made-up wrapper, `document.getElementById` becomes a `template.querySelector` on cross-component elements.
 
 **Why it happens:** Pattern-matching on syntax similarities.
 
-**Correct pattern:** Re-architect the action, don't translate. Identify the user-facing intent of the button (call Apex, prompt for input, navigate, mass-update). Choose the right Lightning surface (Headless LWC, Screen Flow, URL Action, Mass Quick Action). Build that from scratch. Direct translation produces broken code that almost works but fails in subtle ways (Locker/LWS restrictions, missing global APIs, sandboxed DOM).
+**Correct pattern:** Re-architect the action, don't translate. Identify the user-facing intent of the button (call Apex, prompt for input, navigate, mass-update). Choose the right Lightning surface (Headless LWC, Screen Flow, a headless LWC that navigates for URL buttons, or a mass quick action for a create or update on a selection, api_meta 264 L47565-47572). Build that from scratch. Direct translation produces broken code that almost works but fails in subtle ways (missing global APIs, DOM access limited to the component's own template).
 
 ## Anti-Pattern 2: Using `alert()` and `confirm()` in LWC
 
@@ -44,7 +46,7 @@ async invoke() {
 }
 ```
 
-`alert()` and `confirm()` may work in LWS-disabled orgs but are blocked in LWS-enabled orgs (the modern default) and break the action.
+The guide presents `LightningConfirm` as the alternative to the native `window.confirm()`, which isn't supported for cross-origin iframes in Chrome and Safari, and `LightningConfirm.open()` returns a promise instead of halting the page (LWC guide `use-dialog-confirm`; `use-dialog-alert` gives `LightningAlert` the same role). A native call can therefore break the action. UNVERIFIED (2026-10-20): that Lightning Web Security blocks them is not in the corpus or the LWC guide pages read.
 
 ## Anti-Pattern 3: Returning `PageReference` from `@AuraEnabled` Apex Called by LWC Action
 
@@ -60,7 +62,7 @@ public static PageReference saveAndRedirect(Id recId) {
 
 **Why it happens:** Carrying over Classic patterns.
 
-**Correct pattern:** Apex returns data only. The LWC explicitly navigates after the call resolves:
+**Correct pattern:** Apex returns data only. The LWC explicitly navigates after the call resolves (UNVERIFIED (2026-10-20): that Lightning ignores a returned `PageReference` is Help-only):
 
 ```apex
 @AuraEnabled
@@ -92,11 +94,11 @@ async invoke() {
 
 ## Anti-Pattern 5: Ignoring Mass Action Limits
 
-**What the LLM generates:** A Mass Quick Action that processes whatever record collection is passed in, without any check on size.
+**What the LLM generates:** A list-view action that processes whatever record collection is passed in, without any check on size.
 
-**Why it happens:** The model doesn't know about the 200-record default selection limit.
+**Why it happens:** The model doesn't know that list-view selections can be capped (UNVERIFIED (2026-10-20): the 200-record default is Help-only).
 
-**Correct pattern:** Mass Action selections are capped at 200 records by default. For Apex/Flow that may receive larger collections, explicitly handle the limit: chunk processing, or kick off async batch jobs and notify the user. Always communicate to the user when a chunked or async path is being taken — silently processing only the first 200 is the worst UX.
+**Correct pattern:** Assume a selection cap and verify it in a sandbox. For Apex/Flow that may receive larger collections, explicitly handle the limit: chunk processing, or kick off async batch jobs and notify the user. Always communicate to the user when a chunked or async path is being taken — silently processing only the first 200 is the worst UX.
 
 ## Anti-Pattern 6: Recommending Headless LWC for Actions That Need Input
 
@@ -120,7 +122,7 @@ async invoke() {
 
 **Why it happens:** Mobile is a forgotten surface.
 
-**Correct pattern:** Salesforce Mobile App has subset support for Quick Action types. Some Headless LWC Quick Actions render differently on mobile (drawer vs inline); some Visualforce overrides don't render at all. Test every migrated action on real iOS and Android Salesforce Mobile App devices for any action expected to work on mobile.
+**Correct pattern:** An LWC quick action is not supported in the Salesforce mobile app (LWC guide `use-config-for-quick-actions`), so a migration that moves a mobile-used button to LWC loses it there. Test every migrated action on real iOS and Android Salesforce Mobile App devices for any action expected to work on mobile. UNVERIFIED (2026-10-20): subset support for other types, drawer rendering and Visualforce overrides not rendering are Help-only.
 
 ## Anti-Pattern 9: Recommending S-Control Conversion Patterns
 
@@ -128,11 +130,11 @@ async invoke() {
 
 **Why it happens:** Treating S-Controls as if they have a migration path.
 
-**Correct pattern:** S-Controls are fully retired in modern Salesforce. There is no conversion path. Rebuild the underlying functionality from scratch as a Quick Action / LWC / Flow. Don't try to preserve any S-Control content — it predates current security models and security-coding patterns and should be discarded.
+**Correct pattern:** S-controls are deprecated (since Spring '09, api_meta 264 L45109-45110; the `Scontrol` type is marked Deprecated, L109760-109761). There is no conversion path to preserve. Rebuild the underlying functionality from scratch as a Quick Action / LWC / Flow. Don't try to preserve any S-Control content — it predates current security models and security-coding patterns and should be discarded.
 
 ## Anti-Pattern 10: Hardcoded Record IDs in Migrated Actions
 
-**What the LLM generates:** A Quick Action's URL or LWC code that contains a hardcoded record ID like `'001000000000abc'` because the original Classic JS button hardcoded it.
+**What the LLM generates:** An LWC quick action or Flow that contains a hardcoded record ID like `'001000000000abc'` because the original Classic JS button hardcoded it.
 
 **Why it happens:** Verbatim translation of the Classic source.
 

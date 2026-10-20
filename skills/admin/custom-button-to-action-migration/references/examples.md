@@ -1,18 +1,18 @@
 # Examples — Custom Button to Action Migration
 
-## Example 1: Inventory Custom Buttons via Tooling API
+## Example 1: Inventory Custom Buttons via the WebLink Object
 
 ```bash
-sf data query --use-tooling-api --query \
-  "SELECT Name, EntityDefinition.QualifiedApiName, BehaviorType, ContentSource, Url FROM WebLink ORDER BY EntityDefinition.QualifiedApiName"
+sf data query --query \
+  "SELECT Name, PageOrSobjectType, DisplayType, LinkType, OpenType, Url FROM WebLink ORDER BY PageOrSobjectType"
 ```
 
 Group by:
 
-- `BehaviorType`: `Detail` (page button), `List`, `Mass`
-- `ContentSource`: `URL`, `OnClickJavaScript`, `VisualforcePage`, `S Control`
+- `DisplayType`: `link`, `button`, `massActionButton` (api_meta 264 L47857-47860)
+- `LinkType`: `url`, `sControl`, `javascript`, `page` (api_meta 264 L47926-47932)
 
-Read each `OnClickJavaScript` body to categorize per the SKILL.md Decision Guidance table.
+Read each `javascript` body (the `Url` column) to categorize per the SKILL.md Decision Guidance table.
 
 ---
 
@@ -45,7 +45,7 @@ public with sharing class OpportunityActions {
 }
 ```
 
-`WITH USER_MODE` is the read idiom for a class at `apiVersion` 57.0+; the clause it replaces, `WITH SECURITY_ENFORCED`, was removed in 67.0 (Summer '26) and no longer compiles there. The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release — a class still pinned at ≤ 56.0 keeps the old clause (`WITH USER_MODE` is not available to it) until someone raises the version.
+`WITH USER_MODE` is the read idiom; in API version 67.0 and later you can't use `WITH SECURITY_ENFORCED` in Apex SOQL and the guide says to use `WITH USER_MODE` instead (apexdev 264 L11926-11927). The gate is the `apiVersion` in the class's `.cls-meta.xml`, not the org's release. UNVERIFIED (2026-10-20): the 57.0 floor for `WITH USER_MODE` and the claim that a class pinned at 56.0 or lower cannot use it are Help release-note figures.
 
 **Headless LWC (`markHotProspect.js`):**
 
@@ -56,7 +56,7 @@ import { RefreshEvent } from 'lightning/refresh';
 import markAsHotProspect from '@salesforce/apex/OpportunityActions.markAsHotProspect';
 
 export default class MarkHotProspect extends LightningElement {
-    @api recordId;
+    @api recordId; // set by the platform after construction; not available in connectedCallback()
 
     @api async invoke() {
         try {
@@ -140,11 +140,11 @@ Screen 2 (optional): Confirmation message
     - Display Text: "Case closed with reason: {!Reason}"
 ```
 
-**Configure as Quick Action:** Setup → Object Manager → Case → Buttons, Links, and Actions → New Action. Action Type = "Flow"; Flow = `Close_Case_With_Reason`.
+**Configure as Quick Action:** Setup → Object Manager → Case → Buttons, Links, and Actions → New Action. Action Type = "Flow" (`QuickActionType` Flow, which api_meta 264 L102962 labels Beta as of API 41.0); Flow = `Close_Case_With_Reason`.
 
 ---
 
-## Example 4: List Button JS → Mass Quick Action with LWC
+## Example 4: List Button JS → Apex for a Selected-Records Action
 
 **Original Classic JS list button:**
 
@@ -160,7 +160,7 @@ if (records.length === 0) {
 }
 ```
 
-**Migrated Apex:**
+**Migrated Apex (partial-success safe):**
 
 ```apex
 public with sharing class AccountActions {
@@ -168,69 +168,15 @@ public with sharing class AccountActions {
     public static Integer markAsKey(List<Id> ids) {
         List<Account> accounts = [SELECT Id, Is_Key_Account__c FROM Account WHERE Id IN :ids WITH USER_MODE];
         for (Account a : accounts) a.Is_Key_Account__c = true;
-        update accounts;
-        return accounts.size();
+        Database.SaveResult[] results = Database.update(accounts, false, AccessLevel.USER_MODE);
+        Integer ok = 0;
+        for (Database.SaveResult sr : results) if (sr.isSuccess()) ok++;
+        return ok;
     }
 }
 ```
 
-**Mass Quick Action LWC (`markAccountsAsKey.js`):**
-
-```js
-import { LightningElement, api } from 'lwc';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import markAsKey from '@salesforce/apex/AccountActions.markAsKey';
-
-export default class MarkAccountsAsKey extends LightningElement {
-    @api selectedIds;  // populated by Mass Quick Action framework
-
-    @api async invoke() {
-        if (!this.selectedIds || this.selectedIds.length === 0) {
-            this.dispatchEvent(new ShowToastEvent({
-                title: 'No records selected',
-                variant: 'warning'
-            }));
-            return;
-        }
-        try {
-            const count = await markAsKey({ ids: this.selectedIds });
-            this.dispatchEvent(new ShowToastEvent({
-                title: `Marked ${count} accounts as key`,
-                variant: 'success'
-            }));
-        } catch (error) {
-            this.dispatchEvent(new ShowToastEvent({
-                title: 'Action failed',
-                message: error.body?.message || error.message,
-                variant: 'error'
-            }));
-        }
-    }
-}
-```
-
-**`markAccountsAsKey.js-meta.xml`:**
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>62.0</apiVersion>
-    <isExposed>true</isExposed>
-    <targets>
-        <target>lightning__RecordAction</target>
-    </targets>
-    <targetConfigs>
-        <targetConfig targets="lightning__RecordAction">
-            <actionType>Action</actionType>
-            <objects>
-                <object>Account</object>
-            </objects>
-        </targetConfig>
-    </targetConfigs>
-</LightningComponentBundle>
-```
-
-**Note:** As of Spring '25 the Mass Action surface for LWC is invoked via Setup → Object Manager → Account → Search Layouts → List View → add the action. Configuration UI varies; consult release notes for the exact path on your org.
+**Surface:** an LWC quick action cannot host this. LWC quick actions run on record pages only and cannot be global (LWC guide `use-config-for-quick-actions`), so the `lightning__RecordAction` target in Example 2 does not apply to a list view. A mass quick action is not it either: it adds an existing create or update action (api_meta 264 L47565-47572), not Apex. UNVERIFIED (2026-10-20): which list-view surface passes the selected IDs to this method (a Screen Flow calling an invocable wrapper, or a Visualforce page with a standard set controller) is Help-only; confirm it in a sandbox before committing to a pattern.
 
 ---
 
@@ -242,17 +188,29 @@ export default class MarkAccountsAsKey extends LightningElement {
 https://external-crm.example.com/lookup?type=account&id={!Account.Id}&name={!URLENCODE(Account.Name)}
 ```
 
-**Lightning equivalent — URL Quick Action:**
+**Lightning equivalent — headless LWC Quick Action that navigates:**
 
-In Setup → Object Manager → Account → Buttons, Links, and Actions → New Action:
+```js
+import { LightningElement, api, wire } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
+import { getRecord } from 'lightning/uiRecordApi';
+import NAME_FIELD from '@salesforce/schema/Account.Name';
 
-- Action Type: URL
-- URL: `https://external-crm.example.com/lookup?type=account&id={!Account.Id}&name={!Account.Name}`
-- Behavior: Display in new window
+export default class OpenCrmLookup extends NavigationMixin(LightningElement) {
+    @api recordId;
+    name;
 
-**Add to page layout** (Mobile and Lightning Actions section).
+    @wire(getRecord, { recordId: '$recordId', fields: [NAME_FIELD] })
+    wiredAccount({ data }) { if (data) this.name = data.fields.Name.value; }
 
-**Note:** `URLENCODE` may not be available as a merge function in Quick Action URLs depending on the org's release; if needed, encode at the destination side or build via LWC URL action.
+    @api invoke() {
+        const url = `https://external-crm.example.com/lookup?type=account&id=${this.recordId}&name=${encodeURIComponent(this.name)}`;
+        this[NavigationMixin.Navigate]({ type: 'standard__webPage', attributes: { url } });
+    }
+}
+```
+
+Use the Example 2 `js-meta.xml` (`lightning__RecordAction`, `actionType` `Action`). `QuickActionType` has no URL value (api_meta 264 L102947-102971), so the encoding is done in JavaScript rather than with `URLENCODE`. `standard__webPage` is the web-page `PageReference` type (LWC guide `reference-page-reference-type`).
 
 ---
 
@@ -298,9 +256,9 @@ Custom Object: Custom_Button_Migration_Log__c
 Fields:
     - Classic_Button_Name__c (Text)
     - Object__c (Text)
-    - Behavior_Type__c (Picklist: Detail, List, Mass)
-    - Content_Source__c (Picklist: URL, OnClickJavaScript, VisualforcePage, S_Control)
-    - Lightning_Replacement_Type__c (Picklist: Quick Action, LWC Quick Action, Screen Flow, URL Action, Retained Classic Only, Retired)
+    - Display_Type__c (Picklist: link, button, massActionButton)
+    - Link_Type__c (Picklist: url, sControl, javascript, page)
+    - Lightning_Replacement_Type__c (Picklist: Quick Action, LWC Quick Action, Screen Flow, Headless Navigation Action, Retained Classic Only, Retired)
     - Lightning_Replacement_Name__c (Text)
     - Migration_Date__c (Date)
     - Status__c (Picklist: In Progress, Migrated, Tested, Active in Production, Classic Retired)

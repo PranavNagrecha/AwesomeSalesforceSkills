@@ -1,75 +1,99 @@
 # Examples — Experience Cloud CMS Content
 
-## Example 1: Creating Banner Content for a Portal Homepage
+Cites are to the Winter '27 (264) `api_meta` and `object_reference` guides.
 
-**Context:** A financial services firm is launching a customer portal built on an LWR Experience Cloud site. The marketing team needs to manage a rotating hero banner on the homepage without developer involvement for each update.
+## Example 1: A Custom Content Type for Event Announcements
 
-**Problem:** Without a managed CMS setup, content updates require a developer to edit static resource files or hardcoded Experience Builder page properties and redeploy. Marketing cannot publish independently, and there is no versioning or scheduling.
+**Context:** A portal team needs an announcement with a title, a summary, a body and a hero image, which the standard News, Image and Document types do not give them.
 
-**Solution:**
+**Problem:** The standard types are fixed (object_reference 264 L180343-180362), so the fields have to come from a custom type, which is metadata.
 
-Step 1 — Create the workspace and channel:
+**Solution:** `force-app/main/default/managedContentTypes/EventAnnouncement.managedContentType-meta.xml` (suffix and folder: api_meta 264 L89072-89074), shaped on the guide's sample (L89243-89292):
 
-In Digital Experiences > Workspaces, create a workspace named `PortalContent`. Click Channels > New Channel. Select `Experience Cloud Site` as the channel type, choose the target LWR site, and save. The channel now links the workspace to the site.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ManagedContentType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <developerName>EventAnnouncement</developerName>
+    <masterLabel>Event Announcement</masterLabel>
+    <description>Dated announcement with a summary, body and hero image</description>
+    <managedContentNodeTypes>
+        <nodeName>headline</nodeName>
+        <nodeLabel>Headline</nodeLabel>
+        <nodeType>NAMEFIELD</nodeType>
+        <isRequired>true</isRequired>
+    </managedContentNodeTypes>
+    <managedContentNodeTypes>
+        <nodeName>summary</nodeName>
+        <nodeLabel>Summary</nodeLabel>
+        <nodeType>MTEXT</nodeType>
+        <isRequired>false</isRequired>
+    </managedContentNodeTypes>
+    <managedContentNodeTypes>
+        <nodeName>body</nodeName>
+        <nodeLabel>Body</nodeLabel>
+        <nodeType>RTE</nodeType>
+    </managedContentNodeTypes>
+    <managedContentNodeTypes>
+        <nodeName>heroimage</nodeName>
+        <nodeLabel>Hero Image</nodeLabel>
+        <nodeType>IMG</nodeType>
+        <isLocalizable>false</isLocalizable>
+    </managedContentNodeTypes>
+</ManagedContentType>
+```
 
-Step 2 — Author a Banner content item:
+Why it is shaped this way: exactly one `NAMEFIELD` node, and `isRequired` true on it (api_meta 264 L89221-89232); `IMG` cannot be localized, so `isLocalizable` is false (L89174-89175); `MTEXT` holds up to 2000 characters and `RTE` up to 65536 (L89165-89169); a `NAMEFIELD` is 200 characters or fewer (L89222-89223). Check it with `python3 scripts/check_experience_cloud_cms_content.py --manifest-dir force-app/main/default`, deploy it, and add the detail page for the type in the site (api_meta 264 L89296-89299). The custom type's `ContentTypeFullyQualifiedName` is its developer name, `EventAnnouncement` (object_reference 264 L180363-180365).
 
-In the workspace, click Add Content > Banner. Fill in:
-- Title: `Q2 Promotion — Loyalty Rewards`
-- Body: Short promotional text (plain text or rich text depending on the CMS version)
-- Image: Upload or select from the asset library
-
-Save as draft, then click Publish. Confirm the item shows Published status and the channel appears under Channel Assignments.
-
-Step 3 — Wire to Experience Builder:
-
-In Experience Builder, drag the CMS Single Item component onto the homepage. In the component properties panel, select the workspace and the Banner content item. Set the component to render the correct fields (title, image, body). Save and publish the page.
-
-**Why it works:** The Banner content item is now the single source of truth for that homepage section. When marketing needs a new banner, they update the CMS item and publish — no page deploy required. The CMS item is versioned, so rolling back to a previous banner is a one-click operation from the workspace.
-
----
-
-## Example 2: Scheduling Seasonal Content with Audience Targeting
-
-**Context:** A retail portal needs a holiday promotion banner visible only to loyalty members from December 1 through December 31. Non-members should see a default banner year-round.
-
-**Problem:** Without scheduling and audience targeting, swapping banners requires a developer to manually update the page and re-deploy on the correct date — a fragile, timezone-sensitive process that creates unnecessary release risk.
-
-**Solution:**
-
-Step 1 — Define audiences in Experience Cloud:
-
-In the Experience Cloud site settings, create two audiences:
-- `LoyaltyMembers` — membership criterion: Contact record has Loyalty_Tier__c = `Gold` or `Silver`
-- `AllVisitors` — default audience (all authenticated or guest users not in another audience)
-
-Step 2 — Author the content item with two variants:
-
-Create a Banner content item named `Homepage Hero`. In the Variants panel, add Variant A:
-- Name: `Holiday Promotion`
-- Target audience: `LoyaltyMembers`
-- Scheduled publish: December 1, 00:00 org local time
-- Scheduled unpublish: January 1, 00:00 org local time
-- Content: Holiday promotional text and image
-
-Add Variant B:
-- Name: `Default Banner`
-- Target audience: `AllVisitors`
-- No schedule (always active)
-- Content: Standard homepage banner
-
-Step 3 — Publish and validate:
-
-Publish the content item. In Experience Builder preview, switch the audience context to `LoyaltyMembers` and confirm the holiday variant renders. Switch to `AllVisitors` and confirm the default renders. Use the site's Audience Preview mode to simulate the scheduled date if needed.
-
-**Why it works:** The platform enforces variant visibility based on audience membership and the scheduled dates. On December 1 the holiday variant goes live automatically for loyalty members; on January 1 it archives automatically. No deployment window is needed, and both variants are managed in one content item with full version history.
+UNVERIFIED (2026-10-20): the Digital Experiences screens (Add Content menu, Publish button, Channel Assignments panel) and the CMS component names used to render the item in Experience Builder are Help-only.
 
 ---
 
-## Anti-Pattern: Using Unmanaged Content for Shared Promotional Banners
+## Example 2: An Audience That Targets an Experience Variation
 
-**What practitioners do:** They author promotional banners directly in Experience Builder as page content or rich-text components rather than creating CMS workspace items. This is faster to set up initially and requires no workspace or channel configuration.
+**Context:** A retail portal wants a loyalty-tier version of one page section, with everyone else seeing the default.
 
-**What goes wrong:** Unmanaged content is site-local. It cannot be reused across multiple portals or communities. It has no version history, no scheduling, and no audience targeting. After a sandbox refresh the content is gone and must be re-authored. As the content inventory grows, there is no centralized view of what content is published across the organization's sites. Content governance becomes impossible.
+**Problem:** CMS variants are language variants (object_reference 264 L180665-180670), so audience-specific content is not done by adding a variant to the content item.
 
-**Correct approach:** Even for a single site, create a CMS workspace and publish all reusable or governed content as managed content items. Reserve unmanaged content only for truly one-off, ephemeral page content that will never be reused, scheduled, or targeted.
+**Solution:** `Audience` metadata with a site container, a default audience, and a target of type `ExperienceVariation` (api_meta 264 L26225-26256, L26447-26452), shaped on the guide's sample (L26478-26576):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Audience xmlns="http://soap.sforce.com/2006/04/metadata">
+    <audienceName>Loyalty Members</audienceName>
+    <container>Customer</container>
+    <criteria>
+        <criterion>
+            <criteriaNumber>1</criteriaNumber>
+            <criterionValue>
+                <profile>customer community user</profile>
+            </criterionValue>
+            <operator>Equal</operator>
+            <type>Profile</type>
+        </criterion>
+    </criteria>
+    <formulaFilterType>AllCriteriaMatch</formulaFilterType>
+    <isDefaultAudience>false</isDefaultAudience>
+    <targets>
+        <target>
+            <groupName>REPLACE_WITH_GROUP_NAME_FOR_THE_PAGE_SECTION</groupName>
+            <priority>1</priority>
+            <targetType>ExperienceVariation</targetType>
+            <targetValue>REPLACE_WITH_VARIATION_DEVELOPER_NAME</targetValue>
+        </target>
+    </targets>
+</Audience>
+```
+
+Include ExperienceBundle in the package when the audience has experience variation targets (api_meta 264 L26426). The group name and variation developer name are looked up from the Experience Cloud Developer Guide page the metadata guide points to (L26440-26442, L26470-26472). Personalization by audience "varies what the user can see in the browser but doesn't secure data in any way" (L26595-26596), so do not use it to hide sensitive data.
+
+UNVERIFIED (2026-10-20): scheduling the switch on given dates (earlier versions of this example scheduled a December window per variant) is Help-only; `ManagedContentVariant` has no schedule or audience field (object_reference 264 L180683-180780).
+
+---
+
+## Anti-Pattern: Using Unmanaged Content for Shared Promotional Content
+
+**What practitioners do:** They author promotional content directly in Experience Builder as page content or rich-text components rather than creating CMS workspace items, because it needs no workspace or channel configuration.
+
+**What goes wrong:** UNVERIFIED (2026-10-20): that this content is site-local, cannot be reused across sites, has no version history, scheduling or targeting, and is lost on sandbox refresh is Help-only. What the corpus does show is that a managed item has a consistent identifier so variants can be created over time (object_reference 264 L180277-180279), which a page-local component does not give.
+
+**Correct approach:** Even for a single site, create a CMS workspace and publish reusable or governed content as managed content items. Reserve page-local content for one-off page text.

@@ -2,27 +2,29 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: JavaScript Buttons Render as Nothing in Lightning — Silently
+UNVERIFIED (2026-10-20): Gotchas 1, 2, 3, 4, 5, 6 and 7 describe Lightning runtime behaviour (non-rendering JavaScript buttons, a 200-record selection cap, merge-field syntax, Console navigation, hidden list-view actions, cross-window limits, ignored `PageReference`). None is stated in the Metadata API, Object Reference, Apex or LWC guides, so each is Help-only or field-observed and is marked again inside the gotcha.
 
-**What happens:** A Page Layout includes a JavaScript button. In Classic, users see and click it. In Lightning, the button is absent from the action bar — no error, no "unsupported" indicator. Users assume the action is missing entirely; they may file support tickets or work around the missing functionality.
+## Gotcha 1: JavaScript Buttons Need a Rebuild for Lightning
 
-**Why:** Salesforce's design choice for unsupported buttons in Lightning is silent omission. There's no UI affordance signaling that the button exists in Classic.
+**What happens:** A Page Layout includes a JavaScript button. In Classic, users see and click it. In Lightning, users may find it absent from the action bar — no error, no "unsupported" indicator — assume the action is missing entirely, file support tickets or work around the missing functionality. UNVERIFIED (2026-10-20): the absence and the silence are Help-only; the corpus only shows that `linkType = javascript` is a valid WebLink value (api_meta 264 L47926-47932).
+
+**Why:** UNVERIFIED (2026-10-20): that Salesforce omits unsupported buttons silently, with no affordance that the button exists in Classic, is Help-only.
 
 **Mitigation:** Audit Page Layouts for JS buttons. For each, either build a Lightning replacement or explicitly notify users that the button is Classic-only (and provide an alternative path). Don't rely on users discovering missing functionality.
 
-## Gotcha 2: Mass Action Default Limit Is 200 Records
+## Gotcha 2: Mass Action Selections May Be Capped
 
-**What happens:** A user selects 500 records on a list view and clicks a Mass Quick Action. The action processes only the first 200; the other 300 are silently ignored. The user sees no error, just incomplete results.
+**What happens:** A user selects 500 records on a list view and clicks a list-view action. If the cap is 200, the action processes only the first 200 and the other 300 are silently ignored. The user sees no error, just incomplete results. UNVERIFIED (2026-10-20): the 200 figure and the silent truncation are Help-only.
 
-**Why:** Mass Action / List View Action selection is governor-limited. The framework passes only the first 200 selected record IDs to the invoked Apex / Flow / LWC.
+**Why:** UNVERIFIED (2026-10-20): that list-view action selection is capped, and that the framework passes only the first 200 selected record IDs to the invoked Apex / Flow, is Help-only.
 
-**Mitigation:** For Mass Actions that may operate on >200 records, design with explicit batch processing. Either: (a) Apex method launches an asynchronous batch job and returns immediately with a "started" toast; (b) Flow uses a Loop with a "process in chunks" subflow; (c) LWC notifies the user that >200 records will be processed asynchronously and queues a job. Always communicate the chunking behavior in the UX.
+**Mitigation:** For Mass Actions that may operate on more records than the cap, design with explicit batch processing. Either: (a) Apex method launches an asynchronous batch job and returns immediately with a "started" toast; (b) Flow uses a Loop with a "process in chunks" subflow; (c) LWC notifies the user that >200 records will be processed asynchronously and queues a job. Always communicate the chunking behavior in the UX.
 
-## Gotcha 3: Quick Action Merge Fields Differ from Classic Button Merge Fields
+## Gotcha 3: Classic URL Merge Fields Have No Quick Action Equivalent
 
-**What happens:** A Classic URL button uses `{!Account.Custom_Field__c}` and works perfectly. The migrated Quick Action uses the same syntax in the URL field — but the merge field doesn't resolve. The URL contains literal `{!Account.Custom_Field__c}` instead of the value.
+**What happens:** A Classic URL button uses `{!Account.Custom_Field__c}` and works perfectly. The migration looks for a quick action that holds the same URL and merge field, and there is none: `QuickActionType` has no URL value (api_meta 264 L102947-102971).
 
-**Why:** Quick Actions use a different merge field syntax than Classic Custom Buttons. Quick Action URLs use `{!Account.Custom_Field__c}` for some merge contexts but not all; some require `{Record.Custom_Field__c}`. Behavior varies by Quick Action type and target context.
+**Why:** Classic merge fields resolve inside the WebLink `url`, which "can include fields as tokens within the URL" (object_reference 264 L314994; api_meta 264 L47984-47986). A Lightning replacement has no URL field to resolve them in, so each value is read and encoded in code. UNVERIFIED (2026-10-20): any quick-action merge syntax, such as `{Record.Custom_Field__c}`, is Help-only.
 
 **Mitigation:** Test every merge field after migration on a real record. Don't assume Classic merge syntax carries over. When in doubt, use an LWC Quick Action where the recordId is exposed via `@api recordId` and the LWC queries the field explicitly.
 
@@ -30,15 +32,15 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A Quick Action invokes `NavigationMixin.Navigate({type: 'standard__recordPage', attributes: {recordId: x}})`. In standard Lightning Experience, this opens the record. In Service Cloud Console, it opens as a new subtab — sometimes the user expected it to replace the current subtab. Or the navigation is blocked entirely because the console workspace doesn't allow the navigation type.
 
-**Why:** Service Cloud Console has its own navigation context (`workspaceAPI`, subtab management, primary tab management). Standard NavigationMixin calls don't always honor the console's expected navigation patterns.
+**Why:** Service Cloud Console has its own navigation context (`workspaceAPI`, subtab management, primary tab management). Standard NavigationMixin calls don't always honor the console's expected navigation patterns. UNVERIFIED (2026-10-20): Console navigation behaviour is Help-only.
 
-**Mitigation:** For actions invoked in Console, import `lightning/platformWorkspaceApi` and use `openTab`, `openSubtab`, `closeTab` for explicit console-aware navigation. Test the action in both standard Lightning Experience AND Service Console contexts before declaring migration complete.
+**Mitigation:** For actions invoked in Console, import `lightning/platformWorkspaceApi` and use `openTab`, `openSubtab`, `closeTab` for explicit console-aware navigation (UNVERIFIED (2026-10-20): the module and method names are not in the corpus). Test the action in both standard Lightning Experience AND Service Console contexts before declaring migration complete.
 
 ## Gotcha 5: List View Actions Hidden on Empty List Views
 
-**What happens:** A user creates a custom list view with a filter that returns no records. The Mass Quick Action button is missing from that list view entirely. Users assume the action is broken or removed.
+**What happens:** A user creates a custom list view with a filter that returns no records. The list-view action button is missing from that list view entirely. Users assume the action is broken or removed.
 
-**Why:** List View Actions require at least one selectable record to display. If the filter returns zero rows, the action button is hidden — there's nothing to act on.
+**Why:** List View Actions require at least one selectable record to display. If the filter returns zero rows, the action button is hidden — there's nothing to act on. UNVERIFIED (2026-10-20): Help-only.
 
 **Mitigation:** Document this behavior. For frequently-empty list views, consider whether the action should be a regular Quick Action (always visible) or a List View Action (visible only when records exist). Sometimes the right fix is to adjust the filter so the list isn't empty.
 
@@ -46,33 +48,33 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A Classic JS button opened a popup window for input, then called `window.opener.location.reload()` to refresh the parent. Migration assumes a similar pattern can be re-built in LWC. It can't — popups are sandboxed differently and cross-window communication is restricted by Lightning Web Security.
 
-**Why:** Lightning sandboxes the iframe / window context to prevent cross-frame data leaks. `window.opener` is null or restricted for LWC-launched windows.
+**Why:** Lightning sandboxes the iframe / window context to prevent cross-frame data leaks. `window.opener` is null or restricted for LWC-launched windows. UNVERIFIED (2026-10-20): the `window.opener` restriction is Help-only; the LWC guide says only that components must not reach the page through `window`/`document` for DOM queries (`create-components-dom-work`).
 
-**Mitigation:** Re-architect the flow. Instead of popup + parent reload, use a Screen Flow Quick Action (modal in the same window) or an LWC Quick Action with internal screens. Both complete in the same window context with no cross-window communication.
+**Mitigation:** Re-architect the flow. Instead of popup + parent reload, use a Screen Flow Quick Action (modal in the same window) or an LWC Quick Action with internal screens (a screen quick action opens in a modal window, LWC guide `use-quick-actions-screen`). Both complete in the same window context with no cross-window communication.
 
-## Gotcha 7: `PageReference` Returns from Apex Are Ignored in Lightning Actions
+## Gotcha 7: `PageReference` Returns from Apex Need Explicit LWC Navigation
 
-**What happens:** A Classic JS button called `sforce.apex.execute(...)`; the Apex method returned `new PageReference('/' + recordId)`; Classic followed the redirect. The migrated LWC Quick Action calls the same Apex method (now `@AuraEnabled`) — but no redirect happens. The user is stuck on the original page.
+**What happens:** A Classic JS button called `sforce.apex.execute(...)`; the Apex method returned `new PageReference('/' + recordId)`; Classic followed the redirect. The migrated LWC Quick Action calls the same Apex method (now `@AuraEnabled`) — but no redirect happens (UNVERIFIED (2026-10-20): Help-only). The user is stuck on the original page.
 
-**Why:** `PageReference` is a Visualforce framework object. LWC and Lightning navigation use `NavigationMixin` from JS. Apex methods called from LWC return data; navigation must be explicitly invoked from the LWC.
+**Why:** `PageReference` is a Visualforce framework object. LWC and Lightning navigation use `NavigationMixin` from JS (LWC guide `use-navigate-quick-action`). Apex methods called from LWC return data; navigation must be explicitly invoked from the LWC. UNVERIFIED (2026-10-20): that Lightning ignores a returned `PageReference` is Help-only.
 
 **Mitigation:** Refactor Apex to return data only (e.g., the new record ID). The LWC then explicitly navigates after the call resolves: `this[NavigationMixin.Navigate]({type: 'standard__recordPage', attributes: {recordId: newId, actionName: 'view'}})`.
 
-## Gotcha 8: Headless LWC Quick Action Doesn't Support All Context Variables
+## Gotcha 8: Headless LWC Quick Action Doesn't Pass Every Context Variable
 
-**What happens:** A migration assumes a Headless LWC Quick Action will receive both `recordId` and `userId`, like a JS button could read both via Classic merge fields. The LWC receives `recordId` but not `userId` — and the migration logic depends on the user context.
+**What happens:** A migration assumes a Headless LWC Quick Action will receive `recordId` in `connectedCallback()` and a `userId`, like a JS button could read both via Classic merge fields. Neither arrives that way, and the migration logic depends on them.
 
-**Why:** Headless LWC Quick Actions expose `@api recordId` (when invoked from a record page) and `@api selectedIds` (when invoked from a list). They don't expose a `userId` automatically — the running user is implicit.
+**Why:** LWC quick actions, unlike other components on record pages, don't pass `recordId` in `connectedCallback()`; the guide says to set it in code (`use-quick-actions-headless`), and a screen action reads it through an `@api` setter (`use-quick-actions-screen`). Nothing passes a `userId`; the running user is implicit. LWC quick actions run on record pages only, so there is no selection input to read (`use-config-for-quick-actions`).
 
-**Mitigation:** Use `import userId from '@salesforce/user/Id'` to access the current user ID inside the LWC. For other user attributes, use `import userField from '@salesforce/schema/User.FirstName'` etc. The pattern is different from Classic but the data is accessible.
+**Mitigation:** Use `import userId from '@salesforce/user/Id'` to access the current user ID inside the LWC (`get-current-user`). For other user attributes, use `import userField from '@salesforce/schema/User.FirstName'` etc. The pattern is different from Classic but the data is accessible.
 
 ## Gotcha 9: Salesforce Mobile App Quick Actions Don't Always Match Lightning Desktop
 
 **What happens:** A Quick Action works perfectly on Lightning desktop. On Salesforce Mobile App, it either doesn't appear, appears but doesn't invoke, or invokes with a degraded UI.
 
-**Why:** Mobile app's Lightning runtime has subset support for Quick Action types. Headless LWC Quick Actions may render in a mobile drawer instead of inline; some action types (Custom Visualforce overrides, certain navigation patterns) don't work on mobile.
+**Why:** Using a Lightning web component as a quick action isn't supported in the Salesforce mobile app (LWC guide `use-config-for-quick-actions`). UNVERIFIED (2026-10-20): that other action types have subset support, or that Custom Visualforce overrides and certain navigation patterns fail, is Help-only.
 
-**Mitigation:** Test every migrated Quick Action on Salesforce Mobile App for both iOS and Android. Some actions may need mobile-specific variants (use `$Browser.FormFactor` in component visibility or build a separate mobile-friendly action).
+**Mitigation:** Test every migrated Quick Action on Salesforce Mobile App for both iOS and Android. Some actions need a non-LWC variant for mobile, or a form-factor check in the component (`@salesforce/client/formFactor` returns Large, Medium or Small; LWC guide `create-client-form-factor`).
 
 ## Gotcha 10: Coexistence Period Without Adoption Tracking Drags On
 

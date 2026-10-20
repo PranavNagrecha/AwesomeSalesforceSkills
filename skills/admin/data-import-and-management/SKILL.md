@@ -28,9 +28,9 @@ triggers:
 inputs: ["source data files", "load sequence", "automation constraints", "object and External ID field API names", "target org and load window", "which API the load will use"]
 outputs: ["load plan", "data load findings", "reconciliation checklist", "process-conf.xml bean plus .sdl mapping file", "Bulk API 2.0 job body and results-retrieval commands", "pre-load and post-load verification SOQL"]
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-20
 ---
 
 You are a Salesforce Admin expert in data migration and bulk data operations. Your goal is to load, update, and reconcile Salesforce data safely at the right scale without creating duplicates, broken relationships, or production outages.
@@ -55,13 +55,15 @@ Ask these before a single row moves. Every one of them traces to a behaviour in
 
 | Ask | Why it matters | What a good answer adds |
 |---|---|---|
-| "Which API is this load actually going through — SOAP, Bulk API, or Bulk API 2.0?" | The same settings mean different things per API: batch-size ceiling, whether *Insert null values* exists, whether over-length values truncate or fail, whether hard delete is reachable at all | The one line in `process-conf.xml` or the job body that every other decision hangs off |
-| "Is any field being deliberately emptied by this load?" | A blank CSV cell is "no instruction", not "set to null". The mechanism that clears a field differs by API and there is no third option | Either `sfdc.insertNulls=true` (SOAP) or `#N/A` in the cell (Bulk), decided before the file is built |
-| "Is the match key marked External ID **and** Unique, and unique in the source file?" | `externalId` and `unique` are separate properties. Without both, a repeated key makes every future upsert of that row fail rather than pick one | The field XML, plus the `GROUP BY … HAVING COUNT(Id) > 1` result proving zero collisions |
-| "Which triggers and flows fire on this object, and do any use a static recursion guard?" | Governor limits reset between the 200-record chunks of one Bulk request; static variables do not. A static guard silently skips every chunk after the first | A per-row decision: automation runs for all rows, or it is bypassed and backfilled — not "it probably ran" |
+| "Which API is this load actually going through — SOAP, Bulk API, or Bulk API 2.0?" | The same settings mean different things per API: batch-size ceiling (data loader 264 L351-360), whether *Insert null values* exists (L366-377), whether over-length values truncate or fail (L627-630), whether hard delete is reachable at all (L605-606) | The one line in `process-conf.xml` or the job body that every other decision hangs off |
+| "Is any field being deliberately emptied by this load?" | A blank CSV cell is "no instruction", not "set to null" under Bulk API (data loader 264 L371-377). The mechanism that clears a field differs by API and there is no third option | Either `sfdc.insertNulls=true` (SOAP) or `#N/A` in the cell (Bulk), decided before the file is built |
+| "Is the match key marked External ID **and** Unique, and unique in the source file?" | `externalId` and `unique` are separate properties (api_meta 264 L45637, L45915). Without both, a repeated key can match more than one record, and the documented REST outcome is a 300 error with the record neither created nor updated (api_rest 264 L3082) | The field XML, plus the `GROUP BY … HAVING COUNT(Id) > 1` result proving zero collisions |
+| "Which triggers and flows fire on this object, and do any use a static recursion guard?" | Governor limits reset between the 200-record chunks of one Bulk request; static variables do not. A static guard silently skips every chunk after the first (apexdev 264 L3796-3800, API 21.0 and later) | A per-row decision: automation runs for all rows, or it is bypassed and backfilled — not "it probably ran" |
 | "Does the CSV carry `OwnerId`, and is an assignment rule configured anywhere in the job?" | The assignment-rule setting overrides the Owner values in the file. Both configured means the file loses, silently | One of the two, deleted from the config, and a note saying which |
-| "What did the rehearsal cost in wall-clock time, at production volume, with production automation on?" | Batches have a five-minute budget and a finite retry count before the whole job fails. A thin-sandbox rehearsal measures nothing | A number that fits inside the window, and the file split that makes it fit |
-| "If this is a delete: soft or hard, and where is the export that is the rollback?" | Hard delete needs a Bulk API and a separate permission, and there is no Recycle Bin afterwards | The export file path, and the permission on the load user — or a decision to soft-delete instead |
+| "What did the rehearsal cost in wall-clock time, at production volume, with production automation on?" | Bulk API 2.0 batches have a five-minute budget and 20 automatic retries before the whole job fails (api_asynch 264 L1227-1229). A thin-sandbox rehearsal measures nothing | A number that fits inside the window, and the file split that makes it fit |
+| "If this is a delete: soft or hard, and where is the export that is the rollback?" | Hard delete needs a Bulk API and a separate permission (Bulk API Hard Delete), and there is no Recycle Bin afterwards (data loader 264 L182-186, L605-606) | The export file path, and the permission on the load user — or a decision to soft-delete instead |
+
+UNVERIFIED (2026-10-20): the row-3 claim that a non-unique key makes every later upsert of that row fail in Data Loader or Bulk API 2.0, and that the field cannot be switched to Unique while duplicates exist, are not in the corpus. The 300 is documented for the REST external-ID upsert (api_rest 264 L1135, L3082); the same sentence appears under *Upsert Records* in the Bulk API 2.0 guide (api_asynch 264 L2436), but the guide gives no per-row Bulk API 2.0 error text for it.
 
 What a proper load design adds over just running Data Loader: the artefacts are checkable before the window (`scripts/check_load_plan.py`), the job is idempotent so a half-failure is re-runnable rather than a cleanup project, every automation that fires was a decision rather than a discovery, and the four counts at the end — source, success, failed, unprocessed — actually reconcile.
 
@@ -102,12 +104,12 @@ Use this when a load failed, data was duplicated, or a cutover produced bad reco
 
 | Scenario | Best Tool | Why | Grounded threshold |
 |---|---|---|---|
-| Under 2,000 rows, one object, no error-file discipline needed | REST sObject Collections (`composite/sobjects`) | Synchronous, immediate per-row result, 200 records per call, `allOrNone` rollback | "Jobs with fewer than 2,000 records should involve 'bulkified' synchronous calls in REST (for example, Composite) or SOAP" — App Limits Cheat Sheet |
-| One-time admin import under 50,000 rows, supported object, simple mapping | Data Import Wizard | Fastest for low-volume, low-complexity work; can prevent duplicates on account name+site or contact/lead email | "You're loading less than 50,000 records… Your target object has fewer than 50 fields" — Data Loader Guide, *When to Use Data Loader* |
-| Object the Wizard doesn't support, recurring load, scheduled nightly job, or export-for-backup | Data Loader (UI or CLI) | Update/upsert/delete/hard delete, mapping files, success and error files, `process.bat` automation | "Data Loader supports CSV files with a maximum 150,000,000 records" — same section |
-| Millions of records, programmatic control, or an overnight cutover | Bulk API 2.0 | Automatic 10,000-record batching, job state machine, three separate result files | 150,000,000 records and 15,000 batches per rolling 24 hours, shared across both Bulk APIs — App Limits Cheat Sheet |
+| Under 2,000 rows, one object, no error-file discipline needed | REST sObject Collections (`composite/sobjects`) | Synchronous, immediate per-row result, 200 records per call, `allOrNone` rollback | "Jobs with fewer than 2,000 records should involve 'bulkified' synchronous calls in REST (for example, Composite) or SOAP" — App Limits Cheat Sheet 264 L294-297; sObject Collections cap of 200 and upsert on an external ID: api_rest 264 L22144-22147 |
+| One-time admin import under 50,000 rows, supported object, simple mapping | Data Import Wizard | Fastest for low-volume, low-complexity work; can prevent duplicates on account name+site or contact/lead email | "You're loading less than 50,000 records… Your target object has fewer than 50 fields" — Data Loader Guide 264 L128-133; duplicate prevention on account name and site, contact email, lead email: L131-132 |
+| Object the Wizard doesn't support, recurring load, scheduled nightly job, or export-for-backup | Data Loader (UI or CLI) | Update/upsert/delete/hard delete, mapping files, success and error files, `process.bat` automation | "Data loader supports CSV files with a maximum 150,000,000 records" — same section, L117-118; the object-not-supported-by-the-wizard, scheduled-load and backup cases: L121-124 |
+| Millions of records, programmatic control, or an overnight cutover | Bulk API 2.0 | Automatic 10,000-record batching, job state machine, three separate result files | 150,000,000 records (cheat sheet 264 L348) and 15,000 batches per rolling 24 hours, shared across both Bulk APIs (L301-303); one batch per 10,000 records (api_asynch 264 L1225) |
 | Multi-system transformation, survivorship logic, or complex enrichment | ETL platform | Transformation belongs outside manual CSV tooling | — |
-| More than 150 million records | Salesforce partner / AppExchange product | "If you must load more than 150 million records, we recommend you work with a Salesforce partner" — Data Loader Guide | — |
+| More than 150 million records | Salesforce partner / AppExchange product | "If you must load more than 150 million records, we recommend you work with a Salesforce partner" — Data Loader Guide 264 L118-120 | — |
 
 **Rule:** If the data needs transformation, deduplication, or cross-system orchestration before import, stop pretending CSV mapping is enough.
 
@@ -129,9 +131,9 @@ Always design around these:
 ## Recommended Workflow
 
 1. **Size and select** — row count, file size, and transformation complexity against the Decision Matrix above; work the allocation budget in `references/examples.md` (batches, 24-hour record allocation, per-file size ceiling). The file split falls out of this step, not out of the load window
-2. **Ground the match key** — deploy the External ID field from `references/metadata-examples.md` §1 with `<externalId>` **and** `<unique>` set, then confirm `idLookup` is true via `sf sobject describe`. Nothing downstream is idempotent without this
+2. **Ground the match key** — deploy the External ID field from `references/metadata-examples.md` §1 with `<externalId>` **and** `<unique>` set, then read `externalId`, `unique` and `idLookup` from the REST describe resource (`metadata-examples.md` §1; `idLookup` is the "can be used to specify a record in an upsert call" property, object_reference 264 L2481). Nothing downstream is idempotent without this
 3. **Write the load artefacts** — the `process-conf.xml` bean and its `.sdl` mapping (§2–3) for CLI Data Loader, or the Bulk API 2.0 job body, CSV header rules and results commands (§4). Fill `templates/data-load-plan-template.md`, including the load-order table (§5) with a re-runnable / not-re-runnable verdict per step
-4. **Answer the automation questions** — run the pre-load SOQL in §6 for duplicate rules, assignment rules and active validation rules; record a decision per rule (data satisfies it / load user holds the bypass Custom Permission / rule ships inactive). Cite `admin/validation-rules` for the bypass contract, `admin/duplicate-management` for the rules themselves
+4. **Answer the automation questions** — run the pre-load SOQL in §6 for duplicate rules and assignment rules, and the Tooling API query there for active validation rules (UNVERIFIED 2026-10-20: the Tooling API is not in the corpus, see the §6 note); record a decision per rule (data satisfies it / load user holds the bypass Custom Permission / rule ships inactive). Cite `admin/validation-rules` for the bypass contract, `admin/duplicate-management` for the rules themselves
 5. **Check the artefacts, not just the data** — `python3 scripts/check_load_plan.py --manifest-dir <config dir>` over the configs and mappings, and `python3 scripts/check_load_plan.py <file>.csv --external-id <key> --required <cols>` over every source file. Both clean before the window opens
 6. **Rehearse at production shape** — production-like volume with production automation on, and record the wall-clock. A rehearsal on thin data with flows off has measured nothing
 7. **Load, then reconcile** — pull all three Bulk result files, prove `source == success + failed + unprocessed`, and run the orphan and duplicate-key queries in §7. Group the error file by error class before fixing anything
@@ -142,16 +144,16 @@ Always design around these:
 
 | Gotcha | Why it bites |
 |---|---|
-| Data Import Wizard is not a migration tool | It tops out around 50,000 records and gives you little control over retries, deletes, or complex relationships. |
+| Data Import Wizard is not a migration tool | The guide points to it for under 50,000 records, supported objects and simple mappings (data loader 264 L128-134); it gives you little control over retries, deletes, or complex relationships. |
 | Upsert without a real External ID is how you create quiet duplicates | If the match field is blank, non-unique, or human-editable, your upsert strategy is fiction. |
 | Duplicate rules can block good data and allow bad data | Alert vs block behavior, fuzzy matching, and user bypass settings must be tested with real source samples. |
 | Flows, validation rules, and sharing recalculation can make a technically correct load fail operationally | Volume changes everything. |
 | Lookup loads fail in the wrong order | Child records with unresolved parents do not "fix themselves later." |
-| Hard delete is not rollback-friendly | If you do not have export + restore steps, you do not have a rollback plan. It also needs Bulk API plus the Bulk API Hard Delete permission before it is even reachable. |
-| The batch-size number means a different thing per API | 200 is the SOAP ceiling, 10,000 the Bulk API ceiling, and Bulk API 2.0 ignores the setting entirely. Toggling one checkbox re-scopes the number without touching it. |
-| Empty cells do not clear fields | Blanks are ignored. Clearing needs `insertNulls` (SOAP) or a literal `#N/A` in the cell (Bulk) — and only one of those is available at a time. |
-| Static variables survive across the 200-record chunks of one Bulk request | Governor limits reset per chunk; statics do not. A trigger with a static recursion guard runs for the first 200 records and skips the rest, without error. |
-| `failedResults` is not the whole failure story | Unprocessed rows live in a third file. A job that failed or was aborted leaves rows that appear in neither the success nor the failed file. |
+| Hard delete is not rollback-friendly | If you do not have export + restore steps, you do not have a rollback plan. It also needs Bulk API plus the Bulk API Hard Delete permission before it is even reachable (data loader 264 L182-186, L605-606; api_asynch 264 L1630-1635). |
+| The batch-size number means a different thing per API | 200 is the SOAP ceiling, 10,000 the Bulk API ceiling, and Bulk API 2.0 ignores the setting entirely (data loader 264 L351-360). Toggling one checkbox re-scopes the number without touching it. |
+| Empty cells do not clear fields | Blanks are ignored. Clearing needs `insertNulls` (SOAP) or a literal `#N/A` in the cell (Bulk) — and only one of those is available at a time (data loader 264 L366-377). |
+| Static variables survive across the 200-record chunks of one Bulk request | Governor limits reset per chunk; statics do not. A trigger with a static recursion guard runs for the first 200 records and skips the rest, without error (apexdev 264 L3796-3800). |
+| `failedResults` is not the whole failure story | Unprocessed rows live in a third file (api_asynch 264 L2164-2166). A job that failed or was aborted leaves rows that appear in neither the success nor the failed file. |
 
 ## Proactive Triggers
 
@@ -165,7 +167,7 @@ Surface these WITHOUT being asked:
 | Duplicate rules were never tested with source data | Flag. Fuzzy matching behaves differently on real dirty data than on clean samples. |
 | Millions of rows planned through Data Loader UI | Push to Bulk API or ETL strategy immediately. |
 | A `process-conf.xml` sets both `sfdc.assignmentRule` and maps `OwnerId` | Flag. The rule wins and the mapped owner is discarded; one of the two must go. |
-| The plan says "upsert" but the External ID field is not marked Unique | Flag as Critical. The first collision makes that row permanently un-upsertable. |
+| The plan says "upsert" but the External ID field is not marked Unique | Flag as Critical. The first collision is documented as a 300 error with nothing created or updated (api_rest 264 L3082); UNVERIFIED (2026-10-20): that it makes the row permanently un-upsertable in Data Loader is not in the corpus. |
 | Triggers on the target object use `private static Boolean hasRun` | Flag. Verify per-record guarding, or the automation runs for 200 rows out of N. |
 | The rehearsal ran in a Developer sandbox against a few thousand rows | Flag. That measured neither the batch time budget nor the sharing recalculation. |
 | A plaintext password appears in a `process-conf.xml` about to be committed | Flag as Critical. Regenerate with `encrypt.bat` and rotate the credential. |
@@ -204,7 +206,7 @@ Surface these WITHOUT being asked:
 - **data/external-id-strategy**: Use when the question is *which* field should be the key, or how to source one that does not exist. This skill assumes the key is chosen.
 - **data/data-loader-and-tools**: Use for Data Loader installation, JRE and version compatibility, and the tool landscape around it.
 - **data/data-loader-batch-window-sizing**: Use when tuning batch size and window length for one specific load's measured throughput. This skill only gives the documented ceilings.
-- **data/data-loader-csv-column-mapping**: Use for column-by-column mapping problems in a specific file. This skill covers the `.sdl` file format and its duplicate-target trap.
+- **data/data-loader-csv-column-mapping**: Use for column-by-column mapping problems in a specific file. This skill covers the `.sdl` file format and flags a duplicated destination field for review (what Data Loader does with one is UNVERIFIED (2026-10-20): not in the corpus).
 - **data/data-loader-picklist-validation-pre-load**: Use when the pre-load question is specifically about picklist and restricted-value validity.
 - **data/bulk-api-and-large-data-loads**: Use for the developer-side Bulk API job design, chunking strategy and PK chunking at very large volume.
 - **data/lead-data-import-and-dedup**: Use for Lead-specific import, conversion and dedup behaviour.

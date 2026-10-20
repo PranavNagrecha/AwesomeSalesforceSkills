@@ -39,14 +39,14 @@ field the whole plan hangs on, so that XML is here too.
 
 - `<externalId>true</externalId>` — the property that makes the field usable as an upsert key. It is
   returned only when the field type is `AutoNumber`, `Email`, `Number`, or `Text` (Metadata API
-  Developer Guide, `CustomField` field table, api_meta.txt:43402-43405), so a Formula or Picklist
+  Developer Guide, `CustomField` field table, api_meta 264 L45637-45639), so a Formula or Picklist
   match key is not an option.
 - `<unique>true</unique>` — **not** implied by `externalId`. They are separate booleans in the same
-  table (api_meta.txt:43702). Without it, upsert on a repeated value returns the 300 / multiple-match
-  error described in §3.
+  table (`externalId` L45637, `unique` L45915). Without it, one key value can match more than one record,
+  and the REST upsert-by-external-ID outcome is a 300 error with nothing created or updated (api_rest 264 L3082). UNVERIFIED (2026-10-20): the Data Loader / Bulk API 2.0 per-row outcome is not in the corpus.
 - `<caseSensitive>false</caseSensitive>` — decide deliberately. With `true`, `ACCT-22` and `acct-22`
   are two different keys and your source extract must be case-stable forever.
-- `<length>50</length>` — required for `type` `Text`; size it to the source system's key, not to 255.
+- `<length>50</length>` — the field length (api_meta 264 L45716); size it to the source system's key, not to 255.
 
 `manifest/package.xml`
 
@@ -77,20 +77,20 @@ sf project deploy start --metadata "PermissionSet:Data_Migration_Loader" --targe
 show *External ID* and *Unique* checked. From the CLI:
 
 ```bash
-sf sobject describe --sobject Account --target-org migration-sandbox \
+# REST describe resource: GET /services/data/vXX.X/sobjects/Account/describe (api_rest 264 L1525)
+curl -s -H "Authorization: Bearer $SF_TOKEN" "$SF_HOST/services/data/v68.0/sobjects/Account/describe" \
   | python3 -c "import json,sys; f=[x for x in json.load(sys.stdin)['fields'] if x['name']=='Legacy_Account_Id__c'][0]; print({k:f[k] for k in ('externalId','unique','idLookup','updateable','createable')})"
 ```
 
-`idLookup` must be `true` — that is the property that lets the field appear in an upsert key and in a
-relationship column header (§4).
+`idLookup` is the describe property for "can be used to specify a record in an upsert call" (object_reference 264 L2481); check it is `true`. The Bulk API 2.0 rule for a custom parent field in a relationship column header is that its External ID box is checked (§4, api_asynch 264 L1490). UNVERIFIED (2026-10-20): that a custom External ID field reports `idLookup` true is not stated in the corpus.
 
 ---
 
 ## 2. `process-conf.xml` — CLI Data Loader upsert on an External ID
 
 One `<bean>` per process. Shaped from the sample config in the Data Loader Guide
-(salesforce_data_loader.txt:2487-2534) and extended with the Bulk API, serial mode, batch size and
-assignment rule settings from the process configuration parameter table (lines 1630-1910).
+(data loader 264 L2489-2535) and extended with the Bulk API, serial mode, batch size and
+assignment rule settings from the process configuration parameter table (L1630-1906).
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -169,32 +169,33 @@ assignment rule settings from the process configuration parameter table (lines 1
 - `sfdc.externalIdField` is only consulted for `process.operation` = `upsert`. Set on an `insert` it is
   inert — and the false comfort that you "configured the match key" is how a re-run doubles the data.
   Valid `process.operation` values, lowercase: `extract`, `extract_all`, `insert`, `update`, `upsert`,
-  `delete`, `hard_delete` (salesforce_data_loader.txt:1919-1953).
+  `delete`, `hard_delete` (data loader 264 L1921-1953).
 - `sfdc.useBulkApi=true` switches the meaning of `sfdc.loadBatchSize`. The Settings reference gives the
   ceiling as **200 records for SOAP API and 10,000 for Bulk API**, and says Bulk API 2.0 ignores batch
-  size entirely because it batches for you (lines 351-360). The command-line parameter table for
+  size entirely because it batches for you (L351-360). The command-line parameter table for
   `sfdc.loadBatchSize` still reads "The maximum is 200 records. We recommend a value from 50 through
-  100" (lines 1764-1769) — that sentence is written for the SOAP path. Set the value for the API you
+  100" (L1753-1757) — that sentence is written for the SOAP path. Set the value for the API you
   actually turned on.
 - `sfdc.bulkApiSerialMode=true` processes batches one at a time. The guide's reason is database
   contention: "Processing in parallel can cause database contention. When contention is severe, the
-  load can fail" (lines 1652-1666). Pay the wall-clock cost on any load that touches a shared parent
+  load can fail" (L1656-1659, L602-604). Pay the wall-clock cost on any load that touches a shared parent
   (Contacts under a few large Accounts, Cases under one Account) or that fires ownership changes.
 - `sfdc.assignmentRule` takes the **ID** of the rule, sample value `03Mc00000026J7w`, applies to
   inserts, updates and upserts on Cases and Leads only, and **overrides `OwnerId` values in your CSV**
-  (lines 1631-1638). Leave it empty when the CSV owns the ownership. See `admin/assignment-rules` for
+  (L379-383, L1630-1633). Leave it empty when the CSV owns the ownership. See `admin/assignment-rules` for
   the rule definition itself.
-- `sfdc.insertNulls=false` is the shipped sample value (line 1755). It is also *unavailable* when Bulk
+- `sfdc.insertNulls=false` is the shipped sample value (L1751). It is also *unavailable* when Bulk
   API or Bulk API 2.0 is on — empty values are simply ignored on update, and the way to null a field is
-  the literal `#N/A` in the CSV cell (lines 366-375, 618-624).
-- `sfdc.timezone` defaults to the time zone of the machine Data Loader is installed on (lines
-  1846-1861). Pin it.
+  the literal `#N/A` in the CSV cell (L366-377, L621-625).
+- `sfdc.timezone` defaults to the time zone of the machine Data Loader is installed on (L1852-1853,
+  L1859-1860). Pin it.
 - `process.batchMode.exitWithErrorOnFailedRows=true` makes `process.bat` exit **4** when rows failed;
   the default is `false`, under which a load with failed rows exits **0** and a CI wrapper calls it a
-  success (lines 1963-1985).
+  success (data loader 264 L1957-1975). The guide places the property in `config.properties` and says these exit codes
+  apply to Data Loader version 62 and later (L1958); UNVERIFIED (2026-10-20): that the same key set in a `process-conf.xml` bean behaves the same is not in the corpus.
 
 **Never commit this file with a live `sfdc.password`.** The value must be produced by `encrypt.bat`
-against the key file (lines 2394-2433):
+against the key file (L2395-2435):
 
 ```bat
 rem 1. Create the key file once
@@ -207,14 +208,14 @@ rem 3. Run one bean by id
 process.bat "C:\Migration\Config" accountUpsert
 ```
 
-If you authenticate with OAuth instead, remove `sfdc.password` entirely (line 2486). The Data Loader
-command-line interface is Windows-only (stated repeatedly, e.g. line 2478).
+If you authenticate with OAuth instead, remove `sfdc.password` entirely (L2487). The Data Loader
+command-line interface is Windows-only (stated repeatedly, e.g. L2480).
 
 ---
 
 ## 3. `accountUpsertMap.sdl` — the mapping file
 
-`process.mappingFile` points here. Syntax from salesforce_data_loader.txt:2201-2266: one pair per line,
+`process.mappingFile` points here. Syntax from data loader 264 L2203-2265: one pair per line,
 `=` as separator, **CSV column on the left and Salesforce field on the right for an import** (the sides
 reverse for an export). Constants go in double quotes on the left. Spaces are escaped with `\`.
 
@@ -238,17 +239,15 @@ SYSTEMMODSTAMP=
 **How to read it**
 
 - `SYSTEMMODSTAMP=` with an empty right-hand side drops that source column. The guide's own worked
-  example does this (line 2259) — it is the documented way to carry a column in the CSV and not write
-  it.
+  insert example lists it with an empty destination (L2225). UNVERIFIED (2026-10-20): the guide does not say in words that an empty destination drops the column.
 - `"Legacy CRM"=Migration_Source__c` writes a constant into every row. Constants are supported for
   insert, update and upsert, must contain at least one alphanumeric character, and can fan out to
-  several fields: `"California"=BillingState, ShippingState` (lines 2262-2276).
+  several fields: `"California"=BillingState, ShippingState` (L2250-2265).
 - `"Food\ &\ Beverage"=Industry` — a space inside a constant is escaped with a backslash. So is a space
-  inside a **source column name**: `Account\ Name=Name` (line 2216).
-- Nothing in the `.sdl` format stops you writing the same destination field twice. Data Loader will not
-  tell you which mapping won. `scripts/check_load_plan.py --manifest-dir` fails the file for it.
+  inside a **source column name**: `Account\ Name=Name` (L2218-2219); the constant form is at L2267-2269.
+- Nothing in the `.sdl` syntax rules (L2205-2213) addresses writing the same destination field twice. UNVERIFIED (2026-10-20): what Data Loader does then is not in the corpus. `scripts/check_load_plan.py --manifest-dir` warns on it.
 - Building the map in the Data Loader UI and clicking **Save Mapping** on the Mapping dialog emits this
-  file (line 2465) — faster and less error-prone than typing 80 lines by hand.
+  file (L2467; also L940) — faster and less error-prone than typing 80 lines by hand.
 
 ---
 
@@ -272,12 +271,12 @@ SYSTEMMODSTAMP=
 
 | Field | Rule | Source |
 |---|---|---|
-| `operation` | `insert`, `delete`, `hardDelete`, `update`, `upsert` | api_asynch.txt:1623-1640 |
-| `externalIdFieldName` | **Required** for `upsert`; the values must also exist in the CSV | api_asynch.txt:1611-1614 |
-| `lineEnding` | `LF` (default) or `CRLF`. Match the file, not your assumptions — a Windows editor writes CRLF | api_asynch.txt:1615-1621, 556-566 |
-| `columnDelimiter` | `COMMA` (default), `BACKQUOTE`, `CARET`, `PIPE`, `SEMICOLON`, `TAB` | api_asynch.txt:1598-1607 |
-| `assignmentRuleId` | Case or Lead only; the rule may be **active or inactive**; API 49.0+ | api_asynch.txt:1588-1595 |
-| `contentType` | `CSV` is the only valid value | api_asynch.txt:1609-1610 |
+| `operation` | `insert`, `delete`, `hardDelete`, `update`, `upsert`; `hardDelete` needs the "Bulk API Hard Delete" permission | asynch 264 L1606-1611, L1630-1635 |
+| `externalIdFieldName` | **Required** for `upsert`; the values must also exist in the CSV | asynch 264 L1586-1588 |
+| `lineEnding` | `LF` (default) or `CRLF`. Match the file, not your assumptions — a Windows editor writes CRLF | asynch 264 L1275-1277, L560-561 |
+| `columnDelimiter` | `COMMA` (default), `BACKQUOTE`, `CARET`, `PIPE`, `SEMICOLON`, `TAB` | asynch 264 L1573-1581 |
+| `assignmentRuleId` | Case or Lead only; the rule may be **active or inactive**; API 49.0+ | asynch 264 L1555-1556, L1570 |
+| `contentType` | `CSV` is the only valid value | asynch 264 L1583-1584 |
 
 ### The CSV
 
@@ -288,23 +287,22 @@ SRC-1002,Devon,Price,devon.price@example.org,ACCT-31
 SRC-1003,Kim,Tran,kim.tran@example.org,ACCT-31
 ```
 
-- Row 1 is the field names; every later row is one record (api_asynch.txt:1275-1277).
+- Row 1 is the field names; every later row is one record (asynch 264 L1246-1247).
 - `Account.Legacy_Account_Id__c` resolves the parent **by the parent's External ID**, so you do not need
   a two-pass load that exports Salesforce IDs and re-joins them. The rules
-  (api_asynch.txt:1505-1512): child-to-parent only, never parent-to-child; one hop only, no
+  (asynch 264 L1488-1491): child-to-parent only, never parent-to-child; one hop only, no
   child-to-parent-grandparent; and the parent field must be indexed — a custom field is indexed when
   its *External ID* box is checked, a standard field when its `idLookup` property is `true`.
 - For a **custom** parent object the header uses the relationship name: replace the child lookup field's
-  `__c` with `__r`, e.g. `Mother_Of_Child__r.External_ID__c` (api_asynch.txt:1515-1524).
+  `__c` with `__r`, e.g. `Mother_Of_Child__r.External_ID__c` (asynch 264 L1498-1501).
 - Upload the CSV to `contentUrl` (`/jobs/ingest/<jobId>/batches/`) with `Content-Type: text/csv`, then
-  `PATCH` `{"state":"UploadComplete"}`. **This PATCH is required — without it Salesforce never starts
-  processing** (api_asynch.txt:1203-1206).
+  `PATCH` `{"state":"UploadComplete"}`. **This PATCH is required — the `state` property is how you tell Salesforce the job is ready for processing** (asynch 264 L1798-1799, L275).
 
 ### The lifecycle you poll
 
 `Open` → `UploadComplete` → `InProgress` → `JobComplete` (or `Failed` / `Aborted`)
-(api_asynch.txt:272-284). `Aborted` also lands there when someone with *Manage Data Integrations*
-cancels the job out from under you.
+(asynch 264 L272-287). `Aborted` also lands there when someone with *Manage Data Integrations*
+cancels the job out from under you (L286-287).
 
 ### The three results endpoints — read all three
 
@@ -312,11 +310,11 @@ cancels the job out from under you.
 |---|---|---|
 | `GET /jobs/ingest/<jobId>/successfulResults/` | CSV with `sf__Id`, `sf__Created` + your original columns | `sf__Created` distinguishes an upsert's inserts from its updates |
 | `GET /jobs/ingest/<jobId>/failedResults/` | CSV with `sf__Error`, `sf__Id` + your original columns | Rows that were processed and rejected |
-| `GET /jobs/ingest/<jobId>/unprocessedrecords/` | CSV of rows never processed at all | "Unprocessed rows are not the same as failed rows" (api_asynch.txt:2205-2206). A job that fails or is aborted leaves rows here that appear in **neither** of the other two files |
+| `GET /jobs/ingest/<jobId>/unprocessedrecords/` | CSV of rows never processed at all | "Unprocessed rows are not the same as failed rows" (asynch 264 L2165-2166). A job that fails or is aborted leaves rows here that appear in **neither** of the other two files |
 
 Row order in the unprocessed file is not guaranteed to match the upload, and results are not recorded
-at all for batches that exceeded the daily batch allocation (api_asynch.txt:2217-2221). All three files
-are retrievable for **7 days** after job completion (App Limits Cheat Sheet, lines 812-815).
+at all for batches that exceeded the daily batch allocation (asynch 264 L2177, L2179). All three files
+are retrievable for **7 days** after job completion (cheat sheet 264 L386-389).
 
 ```bash
 JOB=7505fEXAMPLE4C2AAM
@@ -371,7 +369,7 @@ SELECT COUNT() FROM Account WHERE Legacy_Account_Id__c != null
 SELECT COUNT() FROM Account
 
 -- 2. Which duplicate rules will run against this load, and are they blocking?
---    DuplicateRule needs "View Setup and Configuration" (Summer '20+, object_reference.txt:102661).
+--    DuplicateRule needs "View Setup and Configuration" (Summer '20 and later, object_reference 264 L103364). `AssignmentRule` is read-only and queryable (object_reference 264 L42463, L42467).
 SELECT DeveloperName, MasterLabel, sObjectType, IsActive
 FROM DuplicateRule
 WHERE sObjectType IN ('Account','Contact','Lead')
@@ -389,7 +387,7 @@ FROM User
 WHERE Username = 'migration.loader@example.com.migration'
 ```
 
-Validation rules are **not** queryable through SOQL — pull them with the Tooling API or the manifest:
+Validation rules: UNVERIFIED (2026-10-20) that they are not queryable through SOQL and that the Tooling API query below returns them (the Tooling API reference is not in the corpus; only the `--use-tooling-api` flag is, sfdx_dev 264 L12575). Pull them with the Tooling API or the manifest:
 
 ```bash
 sf data query --use-tooling-api --target-org migration-sandbox \
@@ -462,10 +460,12 @@ Triage by error **class**, not by row:
 |---|---|---|
 | `FIELD_CUSTOM_VALIDATION_EXCEPTION` | validation rule | Bypass permission missing, or the source data is genuinely wrong — decide which before re-running |
 | `DUPLICATES_DETECTED` | duplicate rule in block mode | `admin/duplicate-management`; do not "just deactivate the rule" |
-| `INVALID_CROSS_REFERENCE_KEY` / `MALFORMED_ID` | lookup unresolved | Parent missing, or you used a 15-character Id where the parent was created with 18 |
-| `UNABLE_TO_LOCK_ROW` | contention | Turn on serial mode, or sort the file by parent Id so one batch does not fight another |
-| `ENTITY_IS_DELETED` | recycled key | Target record is in the Recycle Bin; upsert will not resurrect it |
-| `REQUEST_LIMIT_EXCEEDED` | allocation | 15,000-batch / 150,000,000-record 24-hour allocation (App Limits, lines 737-739, 782-786) |
+| `INVALID_CROSS_REFERENCE_KEY` / `MALFORMED_ID` | lookup unresolved | Parent missing, or the Id is malformed (`MALFORMED_ID` appears at api_rest 264 L1199) |
+| `UNABLE_TO_LOCK_ROW` | contention | Turn on serial mode (data loader 264 L602-604), or group the child rows by parent so one batch does not fight another (LDV guide 264 L894-896) |
+| `ENTITY_IS_DELETED` | recycled key | Target record is in the Recycle Bin |
+| `REQUEST_LIMIT_EXCEEDED` | allocation | API request limits exceeded (api_rest 264 L1147); the batch allocation is 15,000 per rolling 24 hours (cheat sheet 264 L301-303) |
+
+UNVERIFIED (2026-10-20): the error-class names `INVALID_CROSS_REFERENCE_KEY` and `ENTITY_IS_DELETED`, the 15-versus-18-character Id cause for `MALFORMED_ID`, and that an upsert will not resurrect a Recycle Bin key, are not in the corpus. `FIELD_CUSTOM_VALIDATION_EXCEPTION` is in apexdev 264 L42130 and `DUPLICATES_DETECTED` in api_rest 264 L7129, but neither passage maps them to a load "class"; that mapping is this skill's triage convention.
 
 The four numbers that must reconcile in the runbook: **source rows**, **success file rows**, **error
 file rows**, and the target-org `COUNT()` from query A. Query C and D exist because those four can all

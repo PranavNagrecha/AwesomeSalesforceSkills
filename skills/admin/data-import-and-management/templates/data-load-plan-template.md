@@ -16,13 +16,13 @@ finished plan.
 | Load type | Insert / Update / **Upsert** / Delete / Hard Delete |
 | Tool | Data Import Wizard / **Data Loader (CLI)** / Bulk API 2.0 / ETL |
 | API in use | SOAP / **Bulk API** / Bulk API 2.0 — *this changes what batch size means and whether `insertNulls` exists* |
-| Batch size | `[5000]` — max 200 for SOAP, 10,000 for Bulk API, ignored by Bulk API 2.0 |
+| Batch size | `[5000]` — max 200 for SOAP, 10,000 for Bulk API, ignored by Bulk API 2.0 (data loader 264 L351-360) |
 | Serial mode | **On** / Off — on when the load touches a shared parent or changes ownership |
 | Owner | `[name, and who covers them if the window runs long]` |
 | Target environment | Sandbox / Production — `[full-copy sandbox "migration", then prod]` |
 | Planned window | `[Sat 2026-09-05 22:00 – Sun 06:00 UTC]` |
 | Config file | `[C:\Migration\Config\process-conf.xml]`, bean id `[accountUpsert]` |
-| Password encrypted? | Yes / No — must be Yes; `encrypt.bat -e <pwd><token> <keyfile>` |
+| Password encrypted? | Yes / No — must be Yes; `encrypt.bat -e <pwd><token> <keyfile>` (data loader 264 L2428-2430) |
 
 ## Source and Matching Strategy
 
@@ -32,13 +32,15 @@ finished plan.
 | Source file(s) | `[C:\Migration\In\accounts.csv, 400,000 rows, UTF-8, CRLF]` |
 | Row count captured | `[400,000 — from wc -l, minus header]` |
 | External ID / match key | `[Legacy_Account_Id__c]` |
-| Field is `externalId` **and** `unique`? | Yes / No — both, or upsert fails with a 300 on any repeated key |
+| Field is `externalId` **and** `unique`? | Yes / No — both; a key that matches several records returns a 300 on the REST upsert (api_rest 264 L3082) |
 | Is the match key unique in source? | Yes / No — prove it: `sort -t, -k1,1 file.csv \| cut -d, -f1 \| uniq -d` |
-| Are there blanks in the match key? | Yes / No — a blank key inserts, it does not match |
+| Are there blanks in the match key? | Yes / No — decide what a blank key does before the load |
 | Parent lookup resolution method | `[Parent.External_Id__c column header — no ID re-join pass needed]` |
 | Date columns and their format | `[CloseDate, LastActivityDate — written as yyyy-MM-ddTHH:mm:ss.SSS+0000]` |
 | `sfdc.timezone` pinned to | `[GMT]` |
 | Fields to be cleared | `[none]` — if any, `#N/A` under Bulk API, `insertNulls=true` under SOAP |
+
+UNVERIFIED (2026-10-20): what an upsert does with a blank match-key value is not stated in the Data Loader or Bulk API 2.0 guides, so the blank-key row asks for a decision instead of asserting an outcome.
 
 ## Load Order
 
@@ -80,7 +82,7 @@ Every row here is a decision that must be made before the window, not discovered
 - [ ] Duplicate-key query run: `GROUP BY <key> HAVING COUNT(Id) > 1`
 - [ ] Error file grouped by error class, not read row by row
 - [ ] Spot-check records identified and opened in the UI — `[5 named records per object]`
-- [ ] Results downloaded within 7 days (Bulk API results expire)
+- [ ] Results downloaded within 7 days of job completion (cheat sheet 264 L386-389)
 
 ## Rollback Plan
 
@@ -101,5 +103,5 @@ rehearsal. Name the query that finds what this load created.
 - [ ] `scripts/check_load_plan.py --manifest-dir <config dir>` run clean against `process-conf.xml` and the `.sdl` files
 - [ ] `scripts/check_load_plan.py <csv> --external-id <key> --required <cols>` run clean against every source file
 - [ ] Load user's permissions verified for the operation (and `Bulk API Hard Delete` if hard-deleting)
-- [ ] Allocation budget calculated against the 15,000-batch / 150,000,000-record 24-hour limits
+- [ ] Allocation budget calculated against the 15,000-batch (cheat sheet 264 L301-303) / 150,000,000-record (L348) 24-hour limits
 - [ ] Each uploaded file is under the size ceiling for the API in use
