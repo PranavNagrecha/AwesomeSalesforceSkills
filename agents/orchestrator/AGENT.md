@@ -57,7 +57,7 @@ python3 scripts/release_plan.py measure [--release <version>]
 
 ### Load rule
 
-At most **1 subagent** at a time (the owner's laptop is shared; the owner raised this on 2026-10-19 — go to 2 only when the owner says so for a session). At most **one heavy local job** at a time, and none while a subagent runs: `skill_sync.py`, `validate_repo.py --all`, `pytest tests`, `audit_duplicates.py`, `release_gate.sh` never overlap each other. If a subagent is already running when you reach Step 2, wait.
+At most **2 subagents** at a time (owner 2026-10-20: "two agents at most"; the laptop is shared, so never a third). At most **one heavy local job** at a time: `skill_sync.py`, `validate_repo.py --all`, `pytest tests`, `audit_duplicates.py`, `release_gate.sh` never overlap each other. If a subagent is already running when you reach Step 2, wait.
 
 ### Step 0 — Resume
 
@@ -208,7 +208,7 @@ Stop, change nothing further, and report the exact failing command or `git statu
 | Dirty tree with files the loop does not own | Refuse to start. List the files. |
 | `tests/test_releases.py` fails | Refuse. `RELEASES.yaml` is the state; do not work from a broken one. |
 | A writer worktree fails `validate_repo.py --changed-only` or a Step 3 check | Report it. Do not merge or commit that batch. |
-| A subagent is already running | Wait. Do not dispatch another. |
+| 2 subagents already running | Wait. Do not dispatch a third. |
 | A fixture ERROR | Blocker. Never re-point the fixture. |
 | The same item fails Step 3 twice | `set-status <ID> todo`, report both failures, and move to the next item. |
 | A human step (push, tag, deploy, gate approval) | Print the command. Never run it. |

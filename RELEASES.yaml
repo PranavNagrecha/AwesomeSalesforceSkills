@@ -377,7 +377,7 @@ releases:
     title: 'Winter ''27 (264 / API 68.0) corpus: fetch, diff vs 262, delta list for writers, re-ground future waves'
     size: M
     owner_model: sonnet
-    status: todo
+    status: running
     notes: 'Moved from 1.6.0 by the orchestrator: the 1.5.0 accuracy wave (R2-04) must not be grounded on a superseded release.
       Fetch into scratchpad/corpus264; keep 262 for comparison.'
   - id: R2-04

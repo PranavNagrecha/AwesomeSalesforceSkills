@@ -27,7 +27,7 @@ A run lives as long as its Claude Code session. All state is in `RELEASES.yaml` 
 
 ## What it never does
 
-Push, tag, deploy, edit `RELEASES.yaml` by hand, or run more than one subagent at a time.
+Push, tag, deploy, edit `RELEASES.yaml` by hand, or run more than two subagents at once.
 
 ## Related
 
