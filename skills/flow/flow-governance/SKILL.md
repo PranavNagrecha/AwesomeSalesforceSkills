@@ -37,9 +37,9 @@ outputs:
   - "deployable Flow.settings, PermissionSet and FlowDefinition governance metadata"
   - "flow-governance-policy.yaml that scripts/check_flow_governance.py enforces"
 dependencies: []
-version: 2.1.0
+version: 2.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 Use this skill when the problem is no longer one flow, but the portfolio of flows in the org. Governance matters once teams start asking which flow is active, who owns it, why two versions exist, or whether a copied automation can be retired safely. Good governance turns Flow from a sprawl risk into an operable platform capability.
@@ -73,7 +73,7 @@ Ask these before writing a standard. Each one traces to a platform behaviour in 
 | "Is Pause enabled, and does anyone inventory paused interviews?" | A version with paused interviews cannot be deleted (`api_meta.txt` L68041), so retirement stalls silently | Whether the retirement cadence is a calendar entry or a query, and who owns the abandoned interviews |
 | "Where do flow error emails go today?" | With `enableFlowUseApexExceptionEmail` false they go to the last modifier — often someone who left (L116961) | The concrete fix for "no visible owner", rather than a wiki page asserting one |
 | "What is the oldest `apiVersion` among Active flows, and is anyone tracking `ApiVersionRuntime`?" | Two flows on one object at different API versions adopt different versioned run-time behaviour in the same save (`object_reference.txt` L144985–145008) | The `min_api_version` floor and the size of the remediation behind it |
-| "Which flows run as `SystemModeWithoutSharing`, and who approved that?" | It means "the flow can access all data" (`api_meta.txt` L68382); it is one line in a large XML file and no release review reads it | The run-mode allow-list, and the named exceptions that get a security review instead of a config ticket |
+| "Which flows run as `SystemModeWithoutSharing`, and who approved that?" | It means "the flow can access all data" (`api_meta.txt` 264 L70919); it is one line in a large XML file and no release review reads it | The run-mode allow-list, and the named exceptions that get a security review instead of a config ticket |
 
 What a proper configuration adds over just writing a naming convention: the standard becomes a `flow-governance-policy.yaml` that `scripts/check_flow_governance.py` fails a merge on, the portfolio becomes a set of SOQL assertions a pipeline can run, and the two failures that no per-flow review can catch — an undeclared `triggerOrder` tie and a flow that deployed as Draft — become build errors instead of incident reports.
 
@@ -129,6 +129,8 @@ Flow versions accumulate easily. Without activation standards and retirement rev
 - Keep current active version + 1 previous (for emergency rollback).
 - After 2 releases since a version was active, delete it.
 - Inactive versions > 90 days old and > 2 versions behind are retirement candidates.
+
+**Run mode is part of the version.** The Flow metadata field `runInMode` has four values in the Winter '27 Metadata API guide (`api_meta.txt` 264 L70907–L70927): `DefaultMode` (the launch context decides user or system), `SystemModeWithSharing` (record sharing respected, object and field permissions not), `SystemModeWithoutSharing` (all data, API 49.0+), and, from API 68.0, `UserMode`, shown in Flow Builder as "User Context—Enforces User Permissions": the flow runs with the running user's security context explicitly enforced and does not inherit sharing from whatever called it. At 67.0 and earlier only the first three exist, so user context depended on `DefaultMode` and how the flow was launched. Name `UserMode` explicitly on the allow-list as the least-privilege choice for 68.0 flows. A policy or checker that only knows the three older values will reject a valid 68.0 flow.
 
 ### Documentation Should Support Operations
 

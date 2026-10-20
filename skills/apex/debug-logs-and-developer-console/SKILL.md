@@ -32,9 +32,9 @@ outputs:
   - "Developer Console usage guidance for queries and anonymous Apex"
   - "Apex Replay Debugger setup and checkpoint instructions"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-10-03
+updated: 2026-10-19
 ---
 
 Use this skill when a developer needs to capture runtime Apex behavior with debug logs, use the Developer Console or the sf CLI to read them, run anonymous Apex, or step through a log with the Apex Replay Debugger. It covers the native debugging toolchain, not logging architecture or production observability.
@@ -78,6 +78,27 @@ A trace flag (Tooling API `TraceFlag`) ties a traced entity (`TracedEntityId`: a
 | `CLASS_TRACING` | Overrides levels for an Apex class or trigger; doesn't generate logs |
 
 A debug level (Tooling API `DebugLevel`) holds one level per category. The Apex Developer Guide lists these categories: Database, Database Access, Workflow, NBA, Validation, Callout, Apex Code, Apex Profiling, Visualforce, System. Levels run `NONE`, `ERROR`, `WARN`, `INFO`, `DEBUG`, `FINE`, `FINER`, `FINEST`, and are cumulative. Not every category offers every level.
+
+**Debug levels in source control (API 68.0 / Winter '27+).** From API 68.0, `DebugLevel` is also a Metadata API type: files with the suffix `.debugLevel` in a `debugLevels` folder, retrieved and deployed like any other component, so every sandbox can get the same named levels from the pipeline (`api_meta.txt` 264 L13259–L13269; listed as a 68.0 versioned change in the Apex Developer Guide 264 L45126–L45127). At 67.0 and earlier it existed only as a Tooling API record created in Setup or by API. The trace flag itself is still a Tooling record: the 264 Metadata API guide has no `TraceFlag` type (it names `TraceFlag` only inside the `DebugLevel` descriptions, L10364 and L13260), so the time-boxed part of logging stays out of deployments.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- debugLevels/IncidentCapture.debugLevel (Metadata API format), API 68.0+; field set from api_meta.txt 264 L13449-L13465 -->
+<DebugLevel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>IncidentCapture</label>
+    <apexCode>DEBUG</apexCode>
+    <apexProfiling>INFO</apexProfiling>
+    <callout>INFO</callout>
+    <database>INFO</database>
+    <dataAccess>INFO</dataAccess>
+    <nba>NONE</nba>
+    <system>DEBUG</system>
+    <validation>INFO</validation>
+    <visualforce>NONE</visualforce>
+    <wave>NONE</wave>
+    <workflow>INFO</workflow>
+</DebugLevel>
+```
 
 ### Order of precedence
 

@@ -40,9 +40,9 @@ outputs:
   - "ApexExecutionOverlayAction setup + ApexExecutionOverlayResult retrieval"
   - "list of which sObjects are Tooling-only vs Data-API-only vs both"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-10
+updated: 2026-10-19
 runtime_orphan: true
 ---
 
@@ -64,6 +64,22 @@ Gather this context before any code is written:
 - **Auth model.** OAuth user-context tokens work for IDE-like tooling. Service-account JWT bearer flow is the right choice for unattended automation (CI scrapers, coverage harvesters, log archivers). The token's identity must have *Modify Metadata* + *Author Apex* (or specific equivalents) for compile workflows; *View All Data* is required to read other users' `ApexLog` bodies.
 - **API limit posture.** Tooling API calls count against the org's 24h API limit. A coverage scraper that polls every 5 minutes will burn limits fast; design with caching, conditional polling, and `If-Modified-Since`/`LastModifiedDate` filters from day one.
 
+## Questions to Ask Before Configuring
+
+Ask these before writing the first request; each gotcha number points to `references/gotchas.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Does the script read `ApexClass` through `/tooling/query/` or `/query/`?" | The Data API returns no `Body` and no error (Gotcha 1) | The endpoint per object, fixed before the first query |
+| "Can two tools capture logs for the same user at once?" | Only one active `TraceFlag` per user and `LogType` (Gotcha 2) | Query-then-update logic instead of `DUPLICATE_VALUE` |
+| "How long must a log capture run?" | `ExpirationDate` is capped at about 24 hours (Gotcha 6) | A re-arm schedule for long captures |
+| "Is the coverage dashboard reading live rows or snapshots?" | `ApexCodeCoverageAggregate` holds only the latest run (Gotcha 5) | A snapshot store, so trends survive the next run |
+| "How often does it poll, and how many API calls does that cost per day?" | Tooling calls spend the same 24-hour API allocation (Gotcha 7) | A polling interval and cache sized to the budget |
+| "Which user runs anonymous Apex, and with which permissions?" | `executeAnonymous` runs as the caller, not as a superuser (Gotcha 10) | A named integration user and permission set |
+| "Which API version is in the request URLs, and does it reach 68.0?" | At 68.0 Test Discovery takes `testLevel` instead of `showAllMethods` (Gotcha 11; Anti-Pattern 7) | Version-aware parameters before the version is bumped |
+
+What a proper configuration adds over just doing it: every scratch record the tool creates is cleaned up, every poll has a ceiling, and every request names the API version it was written for.
+
 ---
 
 ## Core Concepts
@@ -81,7 +97,7 @@ The most common gotcha in Tooling API work is sending a query to the wrong endpo
 | `ApexCodeCoverageAggregate` | Tooling | Per-class coverage aggregated across all tests. The "75% coverage" gate reads this. |
 | `ApexLog` | Tooling | Debug log header. Body is fetched via `GET /services/data/vXX.0/tooling/sobjects/ApexLog/<id>/Body`. |
 | `TraceFlag` | Tooling | "Capture logs for this user/class for this window." |
-| `DebugLevel` | Tooling | Reusable log-level config referenced by a `TraceFlag`. |
+| `DebugLevel` | Tooling | Reusable log-level config referenced by a `TraceFlag`. From API 68.0 it is also a Metadata API type (`.debugLevel` files in `debugLevels/`), so a standard level can live in source control (`api_meta.txt` 264 L13259–L13269). |
 | `ApexExecutionOverlayAction` | Tooling | Set a heap dump or SOQL inspector on a specific line. |
 | `ApexExecutionOverlayResult` | Tooling | The captured heap state after the overlay fires. |
 | `EntityDefinition` | Tooling | Schema row per sObject (standard + custom). Data API equivalent is partial. |
@@ -161,6 +177,7 @@ Coverage is **not** persisted across deploys to non-production orgs the same way
 Flow tests moved from Flow Builder-only to CLI- and Tooling-API-addressable in Winter '26. Use them when a CI gate must cover autolaunched flow logic, not only Apex.
 
 - **CLI:** `sf flow run test --target-org ALIAS --code-coverage --tests FlowTesting.MyFlowTest` (requires **View All Data**). Discover tests with the Tooling **Retrieve Unit Tests** resource (`/tooling/runTestsAsynchronous/` family) — available in Tooling API **65.0+**; the `category=flow` filter arrives in **66.0+**. Flow tests live in the **`FlowTesting`** namespace (`FlowTesting.<FlowTestName>` or `FlowTesting.<Namespace>.<FlowTestName>` for packaged tests).
+- **Test Discovery parameter change (API 68.0 / Winter '27+):** at API 68.0 and later, the `testLevel` parameter replaces `showAllMethods` on the Retrieve Unit Tests (Test Discovery) resource. `showAllMethods` is deprecated and only works at API 67.0 and earlier (`salesforce_apex_developer_guide.txt` 264 L45119–L45120). A tool that builds the discovery URL from a pinned `vXX.0` must switch parameters when it bumps the version; keeping `showAllMethods` is only safe while the URL stays at 67.0 or lower. UNVERIFIED (2026-10-21): the accepted `testLevel` values; the Tooling API guide page for Retrieve Unit Tests is not in the 264 corpus.
 - **Unified runner (Beta):** `sf logic run test --test-category Flow` runs Apex and Flow tests in one invocation — see `devops/github-actions-for-salesforce` for CI wiring.
 
 Do not assume Flow coverage appears in Apex-only harvesters — query Flow test results separately or use `--code-coverage` on the flow/ logic test commands.
@@ -295,5 +312,5 @@ Non-obvious behaviors that bite real Tooling-API consumers:
 - devops/deployment-error-troubleshooting — for diagnosing why a Metadata API deploy failed (after the deploy)
 - apex/sf-cli-and-sfdx-essentials — many `sf` CLI commands wrap Tooling API calls; reading their `--json` output mirrors what tooling against Tooling API receives
 - devops/salesforce-cli-automation — for consuming `sf` (which itself uses Tooling API) from CI scripts
-- apex/apex-test-coverage — for the `@isTest` design side; this skill covers harvesting the resulting coverage rows
+- apex/test-class-standards — for the `@isTest` design side; this skill covers harvesting the resulting coverage rows
 - admin/salesforce-object-queryability — for the broader "this query failed, why?" diagnostic flow that includes Tooling vs Data routing

@@ -99,3 +99,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems wh
 **When it occurs:** Operational tools that run anonymous Apex from a service account. The script "works on my machine" (sysadmin in Dev Console) but fails in production (integration user without Modify All Data).
 
 **How to avoid:** Run the integration user's profile/permset through the script's required permission check before deploying the tool. For tools that genuinely need elevated context, use a System Mode helper class (compiled, not anonymous) annotated `without sharing` and invoked from the anonymous body. Document the required permission set in the tool's setup runbook.
+
+---
+
+## Gotcha 11: Test Discovery changes its parameter at API 68.0
+
+**What happens:** A test-discovery script built against API 67.0 passes `showAllMethods` to the Retrieve Unit Tests (Test Discovery) resource. Someone raises the URL to `v68.0`, and the parameter the script relies on is no longer the one the resource takes.
+
+**When it occurs:** Any version bump that crosses 68.0. From API 68.0 the `testLevel` parameter replaces `showAllMethods`, which is deprecated and available only at 67.0 and earlier (Apex Developer Guide 264, `salesforce_apex_developer_guide.txt` L45119–L45120).
+
+**How to avoid:** Choose the parameter from the version in the request URL, not from a constant, and re-test discovery output in the same change that raises the version. UNVERIFIED (2026-10-21): the accepted `testLevel` values; the Tooling API page for Retrieve Unit Tests is not in the 264 corpus.

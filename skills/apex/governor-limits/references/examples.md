@@ -82,7 +82,7 @@ public class ContactSyncQueueable implements Queueable, Database.AllowsCallouts 
             WHERE Id IN :contactIds
         ];
 
-        // Async limits: 200 SOQL, 60,000 ms CPU, 12 MB heap; still 100 callouts per transaction.
+        // Async limits: 200 SOQL, 60,000 ms CPU, 25 MB heap (Winter '27+); still 100 callouts per transaction.
         List<Error_Log__c> logs = new List<Error_Log__c>();
         for (Contact c : contacts) {
             try {

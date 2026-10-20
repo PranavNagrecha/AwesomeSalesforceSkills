@@ -19,7 +19,7 @@ Use this template when setting up a new pipeline, planning a release promotion, 
 
 | Property | Value |
 |---|---|
-| DevOps Center edition | Managed package (`enableDevOpsCenterGA`) / Next-generation (`enableALMDevopsCorePref`) |
+| DevOps Center edition | Managed package (`enableDevOpsCenterGA`) / Lifecycle Center, formerly "next-generation" (`enableALMDevopsCorePref`) |
 | Source control provider / repository URL | GitHub / Bitbucket — |
 | Named Credential and the account behind it | (service account, not personal) |
 | Branch protection rules active on stage branches? | Yes / No / Not yet configured |

@@ -127,3 +127,15 @@ finally:
 **Correct pattern:** Either (a) ensure the calling principal has the required permissions explicitly (document a permission set the integration user must have), or (b) wrap the privileged logic in a compiled `without sharing` Apex helper and invoke it from the anonymous body. Never assume the call has elevated privilege by virtue of being "anonymous."
 
 **Detection hint:** Any `executeAnonymous` body that performs `Database.delete`, sets `OwnerId` across users, modifies `User`/`Profile`/`PermissionSet`, or queries with `WITH SYSTEM_MODE` should be reviewed for the calling principal's permission posture. The bug surfaces only at runtime in production with a real integration user.
+
+---
+
+## Anti-Pattern 7: Sending `showAllMethods` to Test Discovery at API 68.0
+
+**What the LLM generates:** A Test Discovery (Retrieve Unit Tests) call at `/services/data/v68.0/tooling/...` that passes `showAllMethods=true` to list every test method.
+
+**Why it happens:** `showAllMethods` was the documented parameter through API 67.0, so it is what training text shows.
+
+**Correct pattern:** At API 68.0 and later use the `testLevel` parameter; it replaces `showAllMethods`, which is deprecated and available only at 67.0 and earlier (Apex Developer Guide 264, `salesforce_apex_developer_guide.txt` L45119–L45120). Tie the parameter to the API version in the URL, not to a constant, so a version bump cannot silently send the retired one.
+
+**Detection hint:** `showAllMethods` in any request whose URL version is `v68.0` or later, or a version constant raised to 68 without touching the discovery call.

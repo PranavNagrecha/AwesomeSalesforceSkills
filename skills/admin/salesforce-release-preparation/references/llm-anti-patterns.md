@@ -155,3 +155,13 @@ launch the flow it was built for.
 ```
 
 **Detection hint:** Any enforcement release stated without a Setup > Release Updates lookup or a current-release notes citation is a guess. Any permission set drafted for a screen-flow persona that does not list Run Flows is incomplete.
+
+## Anti-Pattern 8: Treating Winter '27 platform changes as fixed, or a removed settings field as live
+
+**What the LLM generates:** "Governor limits are fixed platform-wide, so a sandbox test that asserts the old heap ceiling has to be rewritten now." Or a Winter '27 run sheet that still lists `LightningExperienceSettings.enableAuraSecStaticResCRUCPref` as a pending release update to test.
+
+**Why it happens:** Limits have almost never had a per-org switch, and the static-resource update was announced long before it was cancelled, so older text treats both as settled.
+
+**Correct pattern:** Read the release's Metadata API settings fields before planning. In Winter '27, `ApexSettings.enableEnforceSummer26ApexHeapLimit` (API 68.0) lets a nonproduction org keep the Summer '26 heap limits (6 MB / 12 MB instead of 10 MB / 25 MB) for that release only; Spring '27 enforces the higher limits in every org (`api_meta.txt` 264 L113856–L113862). `enableAuraSecStaticResCRUCPref` is removed at API 68.0 because its release update was cancelled; static resources have come from the lightning domain since Summer '26 (264 L124706–L124709), so there is nothing left to activate or test.
+
+**Detection hint:** A Winter '27 plan with no row for the heap change, or any row that asks someone to activate "Enable Secure Static Resources for Lightning Components".

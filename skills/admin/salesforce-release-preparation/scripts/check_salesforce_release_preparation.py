@@ -18,7 +18,9 @@ artefact the skill actually produces, and it rots in specific ways:
                                     in the documented inventory embedded below,
                                     and must carry a ``source`` citation.  A row
                                     claiming ``metadata_backed: false`` must say
-                                    why in ``not_in_metadata_reason``.
+                                    why in ``not_in_metadata_reason``.  A row
+                                    on a field a later guide removed
+                                    (``REMOVED_FIELDS``) must be ``not-applicable``.
 5. Referential integrity         -- every ``reads`` repo path exists under
                                     --repo-root, when one is given.
 
@@ -91,7 +93,7 @@ RELEASE_UPDATE_SETTINGS: dict[str, dict[str, str]] = {
     },
     "LightningExperienceSettings": {
         "enableApiUserLtngOutAccessPref": "API Only Users Can Access Only Salesforce APIs - deprecated in API 48.0 and later (api_meta.txt L121359-121366)",
-        "enableAuraSecStaticResCRUCPref": "Enable Secure Static Resources for Lightning Components (api_meta.txt L121395-121401)",
+        "enableAuraSecStaticResCRUCPref": "Enable Secure Static Resources for Lightning Components (api_meta.txt L121395-121401) - REMOVED in API 68.0 and later, release update cancelled (264 api_meta.txt L124706-124709)",
         "enableStackedModalManagerEnabled": "Enable LWC Stacked Modals (api_meta.txt L121509-121514)",
     },
     "MyDomainSettings": {
@@ -103,6 +105,17 @@ RELEASE_UPDATE_SETTINGS: dict[str, dict[str, str]] = {
 INERT_FIELDS = {
     ("ApexSettings", "enableSecureNoArgConstructorPref"),
     ("MyDomainSettings", "useStabilizedSandboxMyDomainHostnames"),
+}
+
+# Fields a later guide removes because their release update was cancelled.
+# A settings file still carrying one, or a run-sheet row that plans to test it,
+# is planning work that no longer exists.
+REMOVED_FIELDS = {
+    ("LightningExperienceSettings", "enableAuraSecStaticResCRUCPref"): (
+        "removed in API 68.0 and later because the Enable Secure Static Resources for "
+        "Lightning Components release update was cancelled; static resources have been "
+        "served from the lightning domain since Summer '26 (264 api_meta.txt L124706-124709)"
+    ),
 }
 
 RUN_SHEET_GLOBS = (
@@ -437,6 +450,13 @@ def _check_metadata_backed_row(row: dict, row_id: str, label: str) -> list[str]:
             f"Expected something like: {known_fields[settings_field]}"
         )
 
+    removed = REMOVED_FIELDS.get((settings_type, settings_field))
+    if removed and _text(row, "status") != "not-applicable":
+        issues.append(
+            f"{label}: release update '{row_id}' cites {settings_type}.{settings_field}, which is "
+            f"{removed}. There is nothing to activate or test; set its status to 'not-applicable'."
+        )
+
     if (settings_type, settings_field) in INERT_FIELDS and _text(row, "status") != "enforced":
         issues.append(
             f"{label}: release update '{row_id}' cites {settings_type}.{settings_field}, which the guide "
@@ -519,7 +539,13 @@ def check_settings_release_updates(manifest_dir: Path) -> list[str]:
             if field not in known_fields:
                 continue
             value = (child.text or "").strip()
-            if (settings_type, field) in INERT_FIELDS:
+            removed = REMOVED_FIELDS.get((settings_type, field))
+            if removed:
+                issues.append(
+                    f"{settings_path.name}: {settings_type}.{field} is set to '{value}', but the field is "
+                    f"{removed}. Delete it from the file before the project moves to API 68.0."
+                )
+            elif (settings_type, field) in INERT_FIELDS:
                 issues.append(
                     f"{settings_path.name}: {settings_type}.{field} is set to '{value}' but the guide "
                     "documents this field as inert once enforced - the deploy will succeed and change "

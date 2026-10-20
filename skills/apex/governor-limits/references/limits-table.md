@@ -21,7 +21,7 @@ The guide: "These limits count for each Apex transaction. For Batch Apex, these 
 | Maximum number of methods with the future annotation allowed per Apex invocation | 50 | 0 in batch and future contexts; 50 in queueable context | L19568 |
 | Maximum number of Apex jobs added to the queue with System.enqueueJob | 50 | 1 | L19573 |
 | Total number of sendEmail methods allowed | 10 | 10 | L19575 |
-| Total heap size | 6 MB | 12 MB | L19577 |
+| Total heap size | 10 MB | 25 MB | 264 L19780 (Winter '27; 262 L19577 listed 6 MB / 12 MB) |
 | Maximum CPU time on the Salesforce servers | 10,000 milliseconds | 60,000 milliseconds | L19579 |
 | Maximum execution time for each Apex transaction | 10 minutes | 10 minutes | L19581 |
 | Maximum number of push notification method calls allowed per Apex transaction | 10 | 10 | L19583 |
@@ -59,7 +59,7 @@ Heap size, CPU time, transaction execution time, and the number of unique namesp
 | Limit | Value | Line |
 |---|---|---|
 | Asynchronous Apex method executions (batch, future, Queueable, scheduled) per 24 hours | 250,000 or applicable user licenses multiplied by 200, whichever is greater | L19732 to L19736 |
-| Maximum number of Apex cursors per day | 10,000 | L19753 |
+| Maximum number of Apex cursor instances per 24-hour period (renamed from "Apex cursors per day" in 264) | 10,000 | L19753; 264 L19965 |
 | Maximum cumulative new cursor rows and pagination cursor rows per 24-hour period | 100 million | L19763 |
 | Maximum number of Apex pagination cursor instances per 24-hour period | 200,000 | L19765 |
 | Concurrent long-running (over 5 seconds) synchronous transactions | 1 per 100 licenses; minimum 10, maximum 50 | L19767 to L19774 |

@@ -131,7 +131,7 @@
     "ff505a2f4d16235fe878",
     "ffd1529cc17026fd4ebc"
   ],
-  "content_hash": "aaf3316a717da7c494a0bf5aadb8808275c59e084035d9a9d5cc9398c2dde6f5",
+  "content_hash": "11c9ca45b1c3553261aed38394e8316592dfd83b10c879b1e46901bcdb48db4f",
   "dependencies": [],
   "description": "Use when choosing between Salesforce record-access mechanisms or reviewing the access model end to end. Trigger keywords: OWD, org-wide defaults, sharingModel, externalSharingModel, record access model, sharing architecture, which sharing mechanism, UserRecordAccess, __Share, RowCause, why can user see too much. NOT for sharing rules - use admin/sharing-rules. NOT for role hierarchy - use admin/role-hierarchy-design.",
   "file_location": "skills/admin/sharing-and-visibility",
@@ -180,7 +180,7 @@
   "templates": [
     "skills/admin/sharing-and-visibility/templates/sharing-model-template.md"
   ],
-  "updated": "2026-10-21",
+  "updated": "2026-10-19",
   "vector_embedding": null,
   "version": "1.1.1"
 }

@@ -20,7 +20,9 @@ Checks
     (``api_meta.txt`` L68075).
 4.  ``<runInMode>`` inside ``versions.allowed_run_in_mode`` and ``<status>`` inside
     ``versions.allowed_status``. Enum values: ``DefaultMode``,
-    ``SystemModeWithSharing``, ``SystemModeWithoutSharing`` (L68374); ``Active``,
+    ``SystemModeWithSharing``, ``SystemModeWithoutSharing``, and ``UserMode`` (API 68.0+;
+    264 ``api_meta.txt`` L70907-L70927; a ``UserMode`` flow below apiVersion 68.0 is an
+    ERROR); ``Active``,
     ``Draft``, ``Obsolete``, ``InvalidDraft``, ``UnderReview`` (L68416).
 5.  Co-residency: more than one Active record-triggered flow on the same
     ``start/object`` + ``start/triggerType`` must each declare a ``<triggerOrder>``, and
@@ -62,7 +64,8 @@ from xml.etree import ElementTree as ET
 # Documented enum values (Metadata API Developer Guide, Flow section)
 # --------------------------------------------------------------------------- #
 
-RUN_IN_MODE = {"DefaultMode", "SystemModeWithSharing", "SystemModeWithoutSharing"}
+RUN_IN_MODE = {"DefaultMode", "SystemModeWithSharing", "SystemModeWithoutSharing", "UserMode"}
+USER_MODE_MIN_API = 68.0  # "This value is available in API version 68.0 and later." (264 api_meta.txt L70927)
 FLOW_STATUS = {"Active", "Draft", "Obsolete", "InvalidDraft", "UnderReview"}
 RECORD_TRIGGER_TYPES = {"RecordBeforeSave", "RecordAfterSave", "RecordBeforeDelete"}
 TRIGGER_ORDER_FLOOR, TRIGGER_ORDER_CEILING = 1, 2000
@@ -337,7 +340,7 @@ def check_policy(policy: dict, source: str) -> list[str]:
         if mode not in RUN_IN_MODE:
             issues.append(
                 f"ERROR {label} versions.allowed_run_in_mode contains {mode!r}, which is not a "
-                f"documented FlowRunInMode value {sorted(RUN_IN_MODE)} (api_meta.txt L68374)."
+                f"documented FlowRunInMode value {sorted(RUN_IN_MODE)} (264 api_meta.txt L70907)."
             )
     for status in _string_list(versions.get("allowed_status")):
         if status not in FLOW_STATUS:
@@ -531,13 +534,23 @@ def check_versions(flow: FlowFacts, policy: dict) -> list[str]:
         issues.append(
             f"ERROR {flow.path}: <runInMode> {flow.run_in_mode!r} is outside the policy set "
             f"{allowed_modes}. SystemModeWithoutSharing means 'the flow can access all data' "
-            "(api_meta.txt L68382) and is a security review, not a build choice."
+            "(264 api_meta.txt L70919) and is a security review, not a build choice."
         )
     if flow.run_in_mode and flow.run_in_mode not in RUN_IN_MODE:
         issues.append(
             f"ERROR {flow.path}: <runInMode> {flow.run_in_mode!r} is not a documented "
-            f"FlowRunInMode value {sorted(RUN_IN_MODE)} (api_meta.txt L68374)."
+            f"FlowRunInMode value {sorted(RUN_IN_MODE)} (264 api_meta.txt L70907)."
         )
+    if flow.run_in_mode == "UserMode" and flow.api_version:
+        try:
+            below = float(flow.api_version) < USER_MODE_MIN_API
+        except ValueError:
+            below = False  # non-numeric apiVersion is already reported above
+        if below:
+            issues.append(
+                f"ERROR {flow.path}: <runInMode> UserMode needs apiVersion 68.0 or later; this flow "
+                f"declares {flow.api_version} (264 api_meta.txt L70927)."
+            )
 
     allowed_status = _string_list(versions.get("allowed_status"))
     if flow.status and flow.status not in FLOW_STATUS:

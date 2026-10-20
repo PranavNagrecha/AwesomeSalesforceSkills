@@ -141,3 +141,13 @@ Decimal pctUsed = (Decimal.valueOf(consumed) / Decimal.valueOf(total)) * 100;
 ```
 
 **Detection hint:** Look for `Integer` type on the percentage variable, or division of two Integer values without a cast to `Decimal` first.
+
+## Anti-Pattern 7: Describing elastic async Apex limits from the Summer '26 text
+
+**What the LLM generates:** "Elastic limits add up to 10 million extra executions, and only Queueable and future methods get them; Batch Apex stays on the hard 24-hour ceiling."
+
+**Why it happens:** That was the Summer '26 (262) wording, and the beta is new enough that little else exists in training text.
+
+**Correct pattern:** In Winter '27 (Apex Developer Guide 264) elastic limits apply to Batch Apex, Queueable Apex, and future methods; scheduled jobs remain capped (L20222–L20223). The extra headroom is the licensed limit or 2 million, whichever is less (L20224–L20235). Over the base limit, Batch Apex runs one active job at a time (L20243). Only production orgs get the extra capacity; sandboxes simulate it with `ApexSettings.asyncApexExecutionsOverride`. Monitor `DailyAsyncApexElasticExecutions` and alert on throttling for batch-heavy nightly windows.
+
+**Detection hint:** "10 million" beside "elastic", or a statement that Batch Apex is excluded from elastic limits.

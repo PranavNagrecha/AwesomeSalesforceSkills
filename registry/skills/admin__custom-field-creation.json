@@ -197,7 +197,7 @@
     "fcbe0b4caa29349419d8",
     "ff47162ab3559bbb1d54"
   ],
-  "content_hash": "4372ac4add705454d793bf6a9c9db592733345b67436237ae9418796c65ffcb5",
+  "content_hash": "0353bc6db48efa557fb0e506d509d4b49d0f7e2532d932cc99635c1459ffcdab",
   "dependencies": [],
   "description": "Use when creating a new custom field on any Salesforce object: choosing field type, setting API name, configuring Field-Level Security, adding to page layouts, and deploying. Triggers: 'add a field', 'new custom field', 'what field type should I use', 'FLS not working', 'field not showing on page layout'. NOT for creating the object itself - use admin/object-creation-and-design. NOT for formula field logic - use admin/formula-fields. NOT for picklist value set management - use admin/picklist-and-value-sets. Also covers: field-meta.xml, CustomField metadata, deleteConstraint, externalId, unique, precision and scale, relationshipOrder, writeRequiresMasterRead, fieldPermissions, package.xml for fields.",
   "file_location": "skills/admin/custom-field-creation",
@@ -256,7 +256,7 @@
   "templates": [
     "skills/admin/custom-field-creation/templates/custom-field-creation-template.md"
   ],
-  "updated": "2026-10-21",
+  "updated": "2026-10-19",
   "vector_embedding": null,
   "version": "1.1.1"
 }

@@ -17,6 +17,7 @@ triggers:
   - "DevOps Center versus SFDX CLI deployment which should I use for my admin team"
   - "query why a DevOps Center promotion or back sync is stuck"
   - "migrate from the DevOps Center managed package to the next-generation DevOps Center"
+  - "enable Lifecycle Center in Dev Hub settings"
 tags:
   - devops-center
   - pipeline
@@ -38,7 +39,7 @@ outputs:
   - "GitHub repository and branch strategy recommendations"
   - "Review checklist before first production promotion"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -53,9 +54,9 @@ This skill activates when a practitioner needs to set up, operate, or troublesho
 
 Gather this context before working on anything in this domain:
 
-- **Which DevOps Center the org runs.** There are two. The DevOps Center managed package is enabled by the Dev Hub setting `enableDevOpsCenterGA` (API 56.0+), which the Metadata API guide now calls "an older version of DevOps Center". The next-generation DevOps Center is enabled by `enableALMDevopsCorePref` (API 65.0+) and stores its pipeline, stages, work items, and requests as standard objects (`DevopsPipeline`, `DevopsPipelineStage`, `WorkItem`, `DevopsRequestInfo`, API 66.0–67.0). Migration between them (`enableDevopsCenterMigrationPref`, API 67.0) is a developer preview. Everything below about objects and field values is the next-generation data model.
+- **Which DevOps Center the org runs.** There are two, and the newer one has been renamed. The Winter '27 guides call it **Lifecycle Center**: `DevHubSettings.enableALMDevopsCorePref` (API 65.0+) "Indicates whether the Lifecycle Center is enabled", giving "the AI-powered, Lifecycle Center for change and release management" (`api_meta.txt` 264 L117302–L117305). The Summer '26 guides called the same product the "next-generation DevOps Center" (262 L114168–L114171); the setting name did not change. The DevOps Center managed package is `enableDevOpsCenterGA` (API 56.0+), which the guide now describes as "an older version of Lifecycle Center" (264 L117307–L117311). Lifecycle Center stores its pipeline, stages, work items, and requests as standard objects (`DevopsPipeline`, `DevopsPipelineStage`, `WorkItem`, `DevopsRequestInfo`, API 66.0–67.0), whose Object Reference pages also say "Lifecycle Center" now. Migration from the package (`enableDevopsCenterMigrationPref`, API 67.0) is still a developer preview (264 L117334–L117341). Everything below about objects and field values is the Lifecycle Center data model; this skill still says "DevOps Center" for the tool in general.
 - **Development environments have source tracking.** Developer and Developer Pro sandboxes with source tracking, and scratch orgs, are the supported development environments; Developer Edition orgs have no source tracking and can't be used as development environments in DevOps Center.
-- **A source control repository exists.** The next-generation provider record (`SourceCodeRepoProvider`) supports `GITHUB` (default) and `BITBUCKET`, and names the Named Credential DevOps Center uses to connect.
+- **A source control repository exists.** The Lifecycle Center provider record (`SourceCodeRepoProvider`) supports `GITHUB` (default) and `BITBUCKET`, and names the Named Credential DevOps Center uses to connect.
 - **Who administers the pipeline and who only works items.** Decide the two groups before setup and assign DevOps Center access from what Setup lists for the edition in use; do not copy permission set names from older guides.
 - **The common wrong assumption** — practitioners often assume DevOps Center is a wrapper around `sf project deploy start`. It records its own work items, branches, promotions, and deployments, so out-of-band deploys to the same orgs leave its records and branches out of step with the org.
 
@@ -65,7 +66,7 @@ Gather this context before working on anything in this domain:
 
 | Ask | Why it matters | What a good answer adds |
 |---|---|---|
-| Is the org on the DevOps Center managed package or the next-generation DevOps Center? | The two are enabled by different Dev Hub settings and only the next-generation one exposes the `Devops*` / `WorkItem` objects this skill queries (gotcha 8). | The right troubleshooting path and data model from the first step. |
+| Is the org on the DevOps Center managed package or Lifecycle Center (formerly "next-generation DevOps Center")? | The two are enabled by different Dev Hub settings and only Lifecycle Center exposes the `Devops*` / `WorkItem` objects this skill queries (gotcha 8). | The right troubleshooting path and data model from the first step. |
 | Which org is each developer's development environment, and does it have source tracking? | Only source-tracked Developer/Developer Pro sandboxes and scratch orgs qualify; enabling the setting affects sandboxes created or refreshed afterwards (gotcha 3). | A development-environment list that will actually capture changes. |
 | Which source control provider and account own the repository? | The provider is GitHub or Bitbucket and the connection runs through a Named Credential; a personal account breaks the pipeline when that person leaves (gotcha 5). | A service-owned provider connection and a named repository. |
 | Which stage should start bundling work items together? | Bundling is a per-stage flag (`IsBundled`); deciding late reshuffles promotions already in flight (gotcha 4). | One agreed bundling stage and a release cadence for it. |
@@ -81,7 +82,7 @@ A proper pipeline setup adds a written stage map, a bundling decision, and a tes
 
 ### Work Items
 
-A work item is a logical unit of work — a user story, task, or bug — that tracks metadata and configuration-data changes until the work is complete and part of the release pipeline. Each work item has its own branch in the repository (the object reference's example branch name is `feature/WI-000001`). In the next-generation data model, `WorkItem.Status` moves through `NEW`, `IN_PROGRESS`, `IN_REVIEW` (changes committed and a pull request created for review), `READY_TO_PROMOTE`, `PROMOTED`, and finally `CLOSED` when the work is promoted through the entire pipeline. Two exception states matter for troubleshooting: `MERGE_CONFLICT` (conflicts must be resolved before promotion) and `COMBINED` (merged into another work item to resolve conflicts or dependencies). `NEVERED` marks an inactive item that won't be promoted.
+A work item is a logical unit of work — a user story, task, or bug — that tracks metadata and configuration-data changes until the work is complete and part of the release pipeline. Each work item has its own branch in the repository (the object reference's example branch name is `feature/WI-000001`). In the Lifecycle Center data model, `WorkItem.Status` moves through `NEW`, `IN_PROGRESS`, `IN_REVIEW` (changes committed and a pull request created for review), `READY_TO_PROMOTE`, `PROMOTED`, and finally `CLOSED` when the work is promoted through the entire pipeline. Two exception states matter for troubleshooting: `MERGE_CONFLICT` (conflicts must be resolved before promotion) and `COMBINED` (merged into another work item to resolve conflicts or dependencies). `NEVERED` marks an inactive item that won't be promoted.
 
 ### Pipeline Stages
 
@@ -97,7 +98,7 @@ When two work items change the same component, the later one reaches `MERGE_CONF
 
 ### Deployments and Test Levels
 
-Each deployment to a stage environment is a `DevopsEnvDeployment` record with a `TestLevel` (`Default` — no tests in sandboxes, all local tests in production; `NoTestRun`; `RunLocalTests`; `RunAllTestsInOrg`; `RunSpecifiedTests` with the class list in `RunTests`) and an `IsFullDeploy` flag (deploy everything in the branch instead of just the changes). Validate-only deployment is not supported in the next-generation DevOps Center.
+Each deployment to a stage environment is a `DevopsEnvDeployment` record with a `TestLevel` (`Default` — no tests in sandboxes, all local tests in production; `NoTestRun`; `RunLocalTests`; `RunAllTestsInOrg`; `RunSpecifiedTests` with the class list in `RunTests`) and an `IsFullDeploy` flag (deploy everything in the branch instead of just the changes). Validate-only deployment is not supported in the Lifecycle Center.
 
 ```soql
 SELECT Name, OperationType, Status, Message, ErrorDetails, RequestCompletionDate
@@ -175,7 +176,7 @@ LIMIT 20
 
 Run through these before marking work in this area complete:
 
-- [ ] The DevOps Center edition (managed package or next-generation) is recorded, and only one is in active use for the project
+- [ ] The DevOps Center edition (managed package or Lifecycle Center) is recorded, and only one is in active use for the project
 - [ ] The source control provider (GitHub or Bitbucket) is connected through a service-owned Named Credential
 - [ ] Every development environment is a source-tracked Developer/Developer Pro sandbox or a scratch org
 - [ ] Exactly one stage has an empty `NextStageId` (production) and the `NextStageId` chain has no cycle
@@ -193,7 +194,7 @@ Full list in `references/gotchas.md`. The three that cost the most time:
 
 1. **Failures live on the request record** — `DevopsRequestInfo.ErrorDetails` holds the error for a failed promotion, commit, or back sync.
 2. **`Default` test level skips tests in sandboxes** — a QA stage on `Default` promotes without running Apex tests.
-3. **Validate-only deployments are not supported** in the next-generation DevOps Center — plan check-only runs outside it.
+3. **Validate-only deployments are not supported** in Lifecycle Center (`object_reference.txt` 264 L97151) — plan check-only runs outside it.
 
 ---
 

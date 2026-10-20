@@ -55,7 +55,8 @@ the Apex class in the pull request.
 - **Salesforce Developer Limits and Allocations Quick Reference**, "Per-Transaction
   Apex Limits" table and footnotes 4–5 (`salesforce_app_limits_cheatsheet.txt`
   L57–L106, L161, L170–L177) — the sync/async CPU ceilings (10,000 / 60,000 ms),
-  heap ceilings (6 MB / 12 MB), the 10-minute transaction execution limit, and the
+  heap ceilings (6 MB / 12 MB in Summer '26; superseded by 10 MB / 25 MB in the
+  Winter '27 Apex Developer Guide, 264 `salesforce_apex_developer_guide.txt` L19780), the 10-minute transaction execution limit, and the
   statement that DML server CPU counts while database and callout wait time does
   not. Also the note at L36–L37 that scheduled Apex runs on synchronous limits.
   https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf

@@ -13,10 +13,10 @@
 grep '"sourceApiVersion"' sfdx-project.json
 # Output: "sourceApiVersion": "58.0"
 
-# Step 2: Find all components below the retirement threshold
+# Step 2: Find all components below 41.0 (31.0-40.0 unsupported from Summer '27, retired Summer '28)
 grep -r '<apiVersion>' force-app/ --include='*-meta.xml' \
   | awk -F'[<>]' '{print $3, $0}' \
-  | awk '$1 < 31 {print}' \
+  | awk '$1 < 41 {print}' \
   | sort -n
 
 # Step 3: Count affected components by version

@@ -5,7 +5,7 @@ Scans a project directory for the DevOps Center facts that can be checked offlin
 
   * settings/DevHub.settings[-meta.xml]
       WARN  both enableDevOpsCenterGA (managed package) and enableALMDevopsCorePref
-            (next-generation) are true — pick one product per org
+            (Lifecycle Center, formerly next-generation) are true — pick one product per org
       WARN  enableDevopsCenterMigrationPref is true — developer preview
   * settings/SourceTracking.settings[-meta.xml]
       WARN  enableSourceTrackingSandboxes is false or absent — development
@@ -71,7 +71,7 @@ def check_settings(root: Path, out: list[tuple[str, str]]) -> int:
             out.append(("ERROR", f"{path}: not well-formed XML ({exc})"))
             continue
         if _bool(xml, "enableDevOpsCenterGA") and _bool(xml, "enableALMDevopsCorePref"):
-            out.append(("WARN", f"{path}: both the DevOps Center managed package and next-generation DevOps Center are enabled; use one per project"))
+            out.append(("WARN", f"{path}: both the DevOps Center managed package and Lifecycle Center (enableALMDevopsCorePref) are enabled; use one per project"))
         if _bool(xml, "enableDevopsCenterMigrationPref"):
             out.append(("WARN", f"{path}: enableDevopsCenterMigrationPref is a developer preview; keep it out of production manifests"))
     for path in _settings(root, "SourceTracking"):

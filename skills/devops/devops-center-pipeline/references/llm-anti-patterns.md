@@ -7,16 +7,17 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** Either "DevOps Center can't run test suites or quality gates, so add GitHub Actions" or "DevOps Center enforces quality gates" — stated flatly, with no reference to which product the org runs.
 
-**Why it happens:** Training data mostly describes the managed package. The next-generation DevOps Center adds standard objects for test suites, test providers, and quality gates per stage (`DevopsTestSuiteStage`, `DevopsQualityGate`, API 67.0).
+**Why it happens:** Training data mostly describes the managed package. Lifecycle Center (the Summer '26 "next-generation DevOps Center") adds standard objects for test suites, test providers, and quality gates per stage (`DevopsTestSuiteStage`, `DevopsQualityGate`, API 67.0).
 
 **Correct pattern:**
 
 ```text
-1. Check DevHub settings: enableDevOpsCenterGA (managed package, older)
-   vs enableALMDevopsCorePref (next-generation, API 65.0+).
-2. Next-generation: evaluate DevopsTestSuite / DevopsQualityGate per stage
+1. Check DevHubSettings: enableDevOpsCenterGA (managed package, "an older
+   version of Lifecycle Center") vs enableALMDevopsCorePref (Lifecycle
+   Center, API 65.0+).
+2. Lifecycle Center: evaluate DevopsTestSuite / DevopsQualityGate per stage
    before adding an external CI gate.
-3. Next-generation: validate-only deployment is not supported, so a
+3. Lifecycle Center: validate-only deployment is not supported, so a
    production check-only run belongs in CLI/CI.
 ```
 
@@ -117,3 +118,15 @@ set RunLocalTests or RunSpecifiedTests (+ RunTests) for sandbox stages.
 ```
 
 **Detection hint:** A claim that tests passed in a sandbox stage with no `TestLevel` evidence.
+
+---
+
+## Anti-Pattern 7: Calling the new product "next-generation DevOps Center" as its current name
+
+**What the LLM generates:** "Set `DevHubSettings.enableALMDevopsCorePref` to turn on the next-generation DevOps Center."
+
+**Why it happens:** That was the Summer '26 wording of the field description, and it is the phrase in most release-note coverage.
+
+**Correct pattern:** The setting is right; the name is not current. The Winter '27 Metadata API guide describes `enableALMDevopsCorePref` (API 65.0+) as enabling "the AI-powered, Lifecycle Center for change and release management", and `enableDevOpsCenterGA` (API 56.0+) as the DevOps Center managed package, "an older version of Lifecycle Center" (`api_meta.txt` 264 L117302–L117311). Use "Lifecycle Center" when searching current docs and Setup, and mention the old name once so readers of older material can follow.
+
+**Detection hint:** "next-generation DevOps Center" presented as the current product name, or an `enableALMDevopsCorePref` instruction that never says "Lifecycle Center".

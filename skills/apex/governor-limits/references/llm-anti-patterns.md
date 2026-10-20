@@ -199,3 +199,13 @@ for (Account a : accounts) {
 ```
 
 **Detection hint:** `Limits\.getQueries\(\)` or `Limits\.getDMLStatements\(\)` used as a conditional guard inside a loop to decide whether to execute SOQL or DML.
+
+## Anti-Pattern 7: Quoting the Summer '26 heap ceiling as current
+
+**What the LLM generates:** "Apex heap is 6 MB synchronous and 12 MB asynchronous, so split the payload."
+
+**Why it happens:** The 6 MB / 12 MB figures were stable for years and fill blogs, Trailhead, and older guide editions.
+
+**Correct pattern:** On Winter '27 and later, total heap is 10 MB synchronous and 25 MB asynchronous (Apex Developer Guide 264, L19780). The limits table states it with no API-version condition, so do not tell someone to bump a class's API version to get it. Only a nonproduction org that set `ApexSettings.enableEnforceSummer26ApexHeapLimit` stays on the old figures, and only until Spring '27. Read the live ceiling with `Limits.getLimitHeapSize()` instead of hard-coding bytes.
+
+**Detection hint:** `6 MB` or `12 MB` beside "heap", or a literal `6000000` / `12000000` compared against `Limits.getHeapSize()`.

@@ -7,6 +7,7 @@
     "0b8eea039979f0eb4feb",
     "0be8e87de0aba127120a",
     "121e4d26c76e2b033d9e",
+    "172e7bb0420f84da8fe1",
     "235b0942e8e5bd491fda",
     "31ebc7786b3e953fba7e",
     "3214cec403c4b7cbfb89",
@@ -44,6 +45,7 @@
     "8c6c5e5de21033e8e95c",
     "934ba924a4dc4519a369",
     "96594ddd81efc64cae03",
+    "9766e3abf797e5b2f747",
     "98bd192d7f1b59267dce",
     "99cc753f5a3ff478a967",
     "9c75c4700443d264f0f2",
@@ -60,6 +62,7 @@
     "c1a3d6b87098d238b19d",
     "c8be0917ae890768e35e",
     "cbc81eaed0c9b05929d9",
+    "cc66b5ef627f0355c372",
     "ce316cd6244b1049ad52",
     "ceec251f8589ad179008",
     "d12ac8a82de457f13ccf",
@@ -86,7 +89,7 @@
     "f7b9402e9e4ac8868def",
     "fff8803c7dc43b501f2c"
   ],
-  "content_hash": "76696994bb39c9cacec2cc94ef680b58e2d7a4dd56ffd23c7e4d6154b11f5913",
+  "content_hash": "5b93ddbd10415e4a05249b24b4b0228188f20a70396bd4f8b6986f2b74791d53",
   "dependencies": [],
   "description": "Use when setting up debug logs and trace flags, reading Apex log output and log levels, running queries in the Developer Console, executing anonymous Apex, or using the Apex Replay Debugger in VS Code. Triggers: 'set up debug log', 'Developer Console', 'anonymous Apex', 'trace flag', 'Apex Replay Debugger', 'tail Apex logs from the CLI', 'capture logs for a platform event trigger'. NOT for production logging strategy or custom structured logging frameworks \u2014 use apex/debug-and-logging. NOT for writing test classes \u2014 use apex/test-class-standards.",
   "file_location": "skills/apex/debug-logs-and-developer-console",
@@ -141,7 +144,7 @@
   "templates": [
     "skills/apex/debug-logs-and-developer-console/templates/debug-logs-and-developer-console-template.md"
   ],
-  "updated": "2026-10-03",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

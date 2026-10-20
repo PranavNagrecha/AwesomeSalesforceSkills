@@ -413,7 +413,7 @@ releases:
       of the roster docs (slash redirects stay); doc counts regenerated'
     size: M
     owner_model: sonnet
-    status: todo
+    status: running
     notes: 'Honest surface: ~8-16 agents listed, the rest marked experimental until someone proves or asks for them.'
   - id: R2-03
     title: 'Distribution push: list sfskills-mcp + plugin on MCP registries/directories and awesome lists; contributor on-ramp

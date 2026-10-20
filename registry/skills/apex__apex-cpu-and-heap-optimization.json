@@ -111,10 +111,12 @@
     "d853d50300eca57862a9",
     "da7415eaf0dd6fa4db6d",
     "dbb6382f9d93518b26f7",
+    "dc0984f27b0596cebfff",
     "dc97032eef34d5634204",
     "e044b1f7ddb7f49495d2",
     "e27ed6ff6b4448a68bdd",
     "e2e9d7a63a10713d43de",
+    "e39b5d3c4b3045d2f303",
     "e4560eb52f017f85a558",
     "e872968ce4e08d4f70a5",
     "e90f7785350cc786dcd6",
@@ -127,7 +129,7 @@
     "f92d6cf0b9e517ae51f3",
     "f9a7c2bf35a1e4e72d39"
   ],
-  "content_hash": "aeb69c9bce16abd1abf85c45cf4e4116a86166bee6f958627d05f2ee913ae668",
+  "content_hash": "9a94e5884c015c407e7a335c5b92091fb8fa34b3d94f10f2d86ef981836a393c",
   "dependencies": [],
   "description": "Use when diagnosing or preventing Apex CPU time and heap size problems, including nested-loop refactors, JSON memory pressure, string work, and `Limits.getCpuTime()` checkpoints. Triggers: 'CPU time limit exceeded', 'heap size too large', 'string concatenation', 'regex in loop', 'Limits.getCpuTime', 'System.LimitException', 'Apex heap size too large', 'SOQL for loop', 'Database.Stateful heap', 'batch job fails on later chunks'. NOT for generic SOQL/DML governor-limit basics \u2014 use apex/governor-limits. NOT for runtime limit guard clauses \u2014 use apex/apex-limits-monitoring.",
   "file_location": "skills/apex/apex-cpu-and-heap-optimization",
@@ -178,7 +180,7 @@
   "templates": [
     "skills/apex/apex-cpu-and-heap-optimization/templates/apex-cpu-and-heap-optimization-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

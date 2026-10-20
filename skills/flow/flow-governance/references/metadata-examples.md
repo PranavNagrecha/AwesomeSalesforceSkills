@@ -267,7 +267,8 @@ ORDER BY VersionNumber DESC
 ```
 
 `Status` enum: `Active`, `Draft`, `Obsolete`, `InvalidDraft`, `UnderReview`
-(L145265–145273). `RunInMode`: `DefaultMode`, `SystemModeWithSharing` (L145251–145262).
+(L145265–145273). `RunInMode`: `DefaultMode`, `SystemModeWithSharing` (L145251–145262; unchanged at 264
+L145955–L145966, so a `UserMode` flow is found from the Flow metadata, not this view).
 `ApiVersion` is "the API version for the flow definition. Every flow version has an API
 version specified at creation"; `ApiVersionRuntime` is "the API version for running the
 flow. This value determines which versioned run-time behavior improvements are adopted by
@@ -360,6 +361,7 @@ flow_governance_policy:
     allowed_run_in_mode:
       - DefaultMode
       - SystemModeWithSharing
+      - UserMode   # API 68.0+ only (264 api_meta.txt L70923-L70927); the checker errors on a UserMode flow below 68.0
     allowed_status:
       - Draft
       - Active

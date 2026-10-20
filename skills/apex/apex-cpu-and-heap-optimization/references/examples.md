@@ -92,7 +92,7 @@ LIMIT_USAGE_FOR_NS|(default)|
   Number of SOQL queries: 0 out of 100
   Number of DML statements: 0 out of 150
   Maximum CPU time: 0 out of 10000
-  Maximum heap size: 0 out of 6000000
+  Maximum heap size: 0 out of 10000000
 ```
 
 **Why it works:** It gives every ceiling for the failing transaction at once, per namespace, so you learn whether your own code or a packaged namespace was the consumer. Two reading rules: `Maximum heap size: 0` means the platform declined to measure a small transaction rather than that no heap was used (`apexdev.txt` L38239–L38241), and CPU and heap are shared across namespaces even when SOQL and DML are not (`salesforce_app_limits_cheatsheet.txt` L241–L248), so a small number under `(default)` does not clear your code.

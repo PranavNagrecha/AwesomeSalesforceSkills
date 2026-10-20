@@ -37,10 +37,10 @@ own -meta.xml file. Both must be updated for a true version upgrade.
 
 ```text
 REST endpoint: /services/data/v63.0/sobjects/Account
-Minimum safe version as of 2025: 31.0
+Minimum safe version as of Winter '27: 41.0 (31.0-40.0 unsupported from Summer '27, retired Summer '28)
 ```
 
-**Detection hint:** Flag any `apiVersion` value below 31.0 or any REST/SOAP URL containing `/v[0-9]{1,2}\.0/` where the version number is 30 or below.
+**Detection hint:** Flag any `apiVersion` value below 41.0 or any REST/SOAP URL containing `/v[0-9]{1,2}\.0/` where the version number is 40 or below (264 `api_meta.txt` L1287–L1295).
 
 ---
 
@@ -148,7 +148,7 @@ Query ApiTotalUsage event logs to detect deprecated version usage:
 
 > "Versions 7.0–30.0 were retired in Summer '22. The next retirement wave will follow the same 3-year notice pattern."
 
-**Why it happens:** Summer '22 was a single loud event in which *both* things happened — 7.0–20.0 were retired **and** 21.0–30.0 were deprecated. Because deprecation and retirement announcements arrive together in the same notice, the model collapses them into one verb and one date. The forward-looking sentence then makes the staleness invisible: it *sounds* like current-state planning advice while actually describing a wave that already completed. Note that the derived floor (31.0) happens to be correct, which is why this survives review and why a checker built on it still behaves sanely — the number is right, the mechanism and timeline are not.
+**Why it happens:** Summer '22 was a single loud event in which *both* things happened — 7.0–20.0 were retired **and** 21.0–30.0 were deprecated. Because deprecation and retirement announcements arrive together in the same notice, the model collapses them into one verb and one date. The forward-looking sentence then makes the staleness invisible: it *sounds* like current-state planning advice while actually describing a wave that already completed. The derived floor (31.0) was right through Summer '26, which is why this survived review; since Winter '27 it is a wave behind too, because 31.0–40.0 are now scheduled (unsupported Summer '27, retired Summer '28).
 
 **Correct version:**
 
@@ -156,8 +156,9 @@ Query ApiTotalUsage event logs to detect deprecated version usage:
 |---|---|---|
 | 7.0 – 20.0 | pre Summer '22 | Summer '22 |
 | 21.0 – 30.0 | Summer '22 | Summer '25 |
+| 31.0 – 40.0 | Summer '27 (deprecated and unsupported) | Summer '28 |
 
-The 3-year notice is the gap in the second row. Deprecated ≠ retired: a deprecated version still serves traffic. On retirement, REST returns `410:GONE`, SOAP returns `500:UNSUPPORTED_API_VERSION`, Bulk returns `400:InvalidVersion` — note these differ by protocol, so a client that only string-matches `UNSUPPORTED_API_VERSION` will silently mishandle the REST case. The supported band is 31.0 through 67.0, with nothing deprecated-but-serving beneath it.
+The policy is 3 years of support from first release plus at least 1 year's notice before support ends (264 `api_meta.txt` L1282–L1285), not "3 years of deprecation notice". Deprecated ≠ retired: a deprecated version still serves traffic. On retirement, REST returns `410:GONE`, SOAP returns `500:UNSUPPORTED_API_VERSION`, Bulk returns `400:InvalidVersion` — note these differ by protocol, so a client that only string-matches `UNSUPPORTED_API_VERSION` will silently mishandle the REST case. As of Winter '27 the band with no retirement date is 41.0 through 68.0; 31.0 through 40.0 still serve calls but are on the Summer '27 / Summer '28 schedule (264 `api_meta.txt` L1287–L1295). The Summer '26 text ("31.0 through 66.0 Supported" in the 262 PDF guides; the web pages said 67.0) is the stale form a model will repeat.
 
 **Detection hint:** grep for a version *range* spanning both waves (`7.0-30.0`, `7.0–30.0`) attached to a single date — the range itself is the tell, because Salesforce never retired 7.0 through 30.0 in one action. Second, structural and more generalisable: **any sentence of the form "the next X will follow the same pattern" in a dated reference document is a staleness trap** — it converts a snapshot into a forecast, and the forecast keeps reading as current long after the event it predicted has happened. Check such sentences against today's date before trusting them.
 

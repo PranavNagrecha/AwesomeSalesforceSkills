@@ -11,12 +11,14 @@ Every number below is from the *Salesforce Developer Limits and Allocations Quic
 Reference*, "Per-Transaction Apex Limits" table
 (`salesforce_app_limits_cheatsheet.txt` L57–L106, footnote 4 at L161, footnote 5
 at L170–L177) and the Apex Developer Guide's copy of the same table
-(`apexdev.txt` L19577–L19601).
+(`apexdev.txt` L19577–L19601). Heap is the exception: the Winter '27 guide (264)
+raised it to 10 MB / 25 MB (`salesforce_apex_developer_guide.txt` L19780), and the
+264 cheatsheet no longer carries the Apex tables.
 
 | Resource | Synchronous | Asynchronous | Read it at runtime with |
 |---|---|---|---|
 | Maximum CPU time on the Salesforce servers | 10,000 ms | 60,000 ms | `Limits.getCpuTime()` / `Limits.getLimitCpuTime()` |
-| Total heap size | 6 MB | 12 MB | `Limits.getHeapSize()` / `Limits.getLimitHeapSize()` |
+| Total heap size (Winter '27+; was 6 MB / 12 MB) | 10 MB | 25 MB | `Limits.getHeapSize()` / `Limits.getLimitHeapSize()` |
 | Maximum execution time for each Apex transaction | 10 minutes | 10 minutes | not exposed on `Limits` |
 | Records retrieved by `Database.getQueryLocator` | 10,000 | 10,000 | `Limits.getQueryLocatorRows()` |
 
@@ -147,7 +149,8 @@ public with sharing class AccountRollupService extends BaseService {
   cannot get from a block delta.
 - It logs a delta plus the ceiling from `getLimitCpuTime()` / `getLimitHeapSize()`
   rather than a raw number, so the same line reads correctly in a synchronous
-  (10,000 ms / 6 MB) and asynchronous (60,000 ms / 12 MB) context.
+  (10,000 ms / 10 MB) and asynchronous (60,000 ms / 25 MB) context, and keeps
+  reading correctly across the Winter '27 heap change.
 - `ApplicationLogger.info` buffers; `flush()` performs one DML at the end. Call
   `flush()` once per entry point, not per checkpoint.
 
@@ -157,7 +160,8 @@ public with sharing class AccountRollupService extends BaseService {
 
 The guide's own remedy for the heap limit: "Use SOQL for loops to operate on
 records in batches of 200. This helps avoid the heap size limit of 6 MB"
-(`apexdev.txt` L20271–L20285). The list form runs the body once per list of 200
+(`apexdev.txt` L20271–L20285; still worded "6 MB" in the 264 guide at L20498, although
+that guide's limits table now says 10 MB, L19780). The list form runs the body once per list of 200
 sObjects (`apexdev.txt` L10023–L10030).
 
 ```apex

@@ -12,7 +12,7 @@ Use this template when auditing, upgrading, or standardizing API versions across
 
 - **Project sourceApiVersion:** (from `sfdx-project.json`)
 - **Current Salesforce release / API version:** (e.g., Spring '25 / 63.0)
-- **Minimum safe API version:** 31.0 (7.0–20.0 retired Summer '22; 21.0–30.0 retired Summer '25)
+- **Minimum safe API version:** 41.0 (7.0–20.0 retired Summer '22; 21.0–30.0 retired Summer '25; 31.0–40.0 unsupported from Summer '27, retired Summer '28)
 - **Managed package?** Yes / No — if yes, minimum subscriber version: ___
 
 ## Version Inventory
@@ -31,7 +31,7 @@ Use this template when auditing, upgrading, or standardizing API versions across
 - **Components at sourceApiVersion:** ___
 - **Components within 2 versions of sourceApiVersion:** ___
 - **Components drifted (>2 versions behind):** ___
-- **Components at retirement risk (<31.0):** ___
+- **Components at retirement risk (<41.0):** ___
 
 ## Transport API Versions (External Integrations)
 
@@ -42,7 +42,7 @@ Use this template when auditing, upgrading, or standardizing API versions across
 
 ## Upgrade Plan
 
-### Tier 1: Retirement-Critical (below v31.0)
+### Tier 1: Retirement-Critical (below v41.0)
 
 - Components: ___
 - Target version: ___
@@ -75,7 +75,7 @@ Use this template when auditing, upgrading, or standardizing API versions across
 ## Review Checklist
 
 - [ ] sourceApiVersion in sfdx-project.json matches target
-- [ ] No component below minimum safe version (31.0)
+- [ ] No component below minimum safe version (41.0)
 - [ ] All components within 2 versions of sourceApiVersion
 - [ ] Every LWC .js-meta.xml has explicit apiVersion
 - [ ] External integration endpoints checked for deprecated versions

@@ -12,6 +12,7 @@
     "06555f212fa86cd912af",
     "0816b500a2b1bf3768b9",
     "0935d905932881b03ef8",
+    "0f34a7931fde40509ad7",
     "0f711e26ba17cd9ca57c",
     "1331f821b0e35ce10edd",
     "140b05c539958e505317",
@@ -120,6 +121,8 @@
     "8cda6863fcb80d0d693d",
     "932f530ad9738663ddb5",
     "934c8355466bbd90dec8",
+    "94bf21e304cb2ec35b07",
+    "95128ed532a4c839f393",
     "9531db7cb1f268fc97d6",
     "98147f30198fe3a065c2",
     "9826359ed807678393da",
@@ -189,7 +192,7 @@
     "ff1a1d936ab3a1af0341",
     "ff8011fff9dc66da41bf"
   ],
-  "content_hash": "fc469defb2eefc96b4ead6752f58795de11216d72675c3ccb618a4514b5ebbc6",
+  "content_hash": "de23b8fa86ed792c876ed17e0ffd990293a2205b494ae86b77c1a3c297c925a1",
   "dependencies": [],
   "description": "Use when establishing operational standards for a Salesforce Flow portfolio, including naming conventions, ownership, version discipline, retirement of stale flows, and release readiness checks. Triggers: 'flow naming convention', 'too many old flows', 'who owns this flow', 'flow version governance', 'flow deployed but not active', 'two flows on the same object', 'triggerOrder', 'Flow.settings', 'deploy processes and flows as active', 'paused flow interviews', 'cannot delete flow version', 'flow inventory query'. NOT for element-by-element flow logic design or dedicated fault-handling review - use flow/fault-handling.",
   "file_location": "skills/flow/flow-governance",
@@ -237,7 +240,7 @@
   "templates": [
     "skills/flow/flow-governance/templates/flow-governance-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "2.1.0"
+  "version": "2.1.1"
 }

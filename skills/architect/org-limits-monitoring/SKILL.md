@@ -38,9 +38,9 @@ outputs:
   - "Filled org-limits-monitoring-template.md"
 dependencies:
   - limits-and-scalability-planning
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-08-01
+updated: 2026-10-19
 ---
 
 Use this skill when an org needs proactive, automated visibility into its consumption of Salesforce platform limits. Unlike per-transaction governor limits that are enforced inline during code execution, org-level limits are shared ceilings that accumulate over time -- daily API calls, data storage, file storage, custom object counts, platform event delivery allocations, and more. When these limits are exhausted, the impact is org-wide: all integrations fail, all users are blocked from creating records, or platform events are silently dropped. The correct response is not reactive firefighting but proactive monitoring with automated threshold alerts.
@@ -52,6 +52,22 @@ Use this skill when an org needs proactive, automated visibility into its consum
 - **Which limits matter most?** Not every org needs to monitor every limit. Identify the limits that are most likely to be exhausted given the org's usage pattern -- integration-heavy orgs should monitor API calls; high-growth orgs should monitor storage; event-driven architectures should monitor platform event delivery allocations.
 - **What is the current consumption baseline?** Before setting thresholds, establish what "normal" looks like. A single day's snapshot is not enough -- collect at least two weeks of data to identify peaks and trends.
 - **What notification channels are available?** Email is the simplest but most easily ignored. Platform Events can drive real-time LWC dashboards. Custom Notifications appear in-app. Outbound Messages or callouts can reach Slack or PagerDuty.
+
+## Questions to Ask Before Configuring
+
+Ask these before setting a threshold; each gotcha number points to `references/gotchas.md`.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which limit keys must be watched, and are they all in `OrgLimits.getMap()`?" | The Apex class returns a subset of what REST `/limits` exposes (Gotcha 1) | A source per key, Apex or REST |
+| "Will the monitor call REST `/limits` from inside the org?" | Each call spends a `DailyApiRequests` unit (Gotcha 2) | A polling interval the API budget can afford |
+| "Are platform events in scope, and is the window hourly or daily?" | Hourly publish limits reset on clock boundaries, not a rolling window (Gotcha 3) | Thresholds timed to the reset |
+| "Which licences and add-ons set the API allocation?" | `DailyApiRequests` varies by edition, licence and purchase (Gotcha 4) | A ceiling read from the org, not hard-coded |
+| "Is storage judged from the API or from Setup?" | The two can disagree (Gotcha 5) | One agreed source for storage alerts |
+| "How many scheduled jobs exist already?" | An org can hold 100 scheduled Apex jobs at once (Gotcha 6; Apex Developer Guide 264 L19980) | A single scheduler instead of one job per limit |
+| "Is 'Use elastic limits for asynchronous Apex jobs (Beta)' on, and does nightly Batch Apex rely on it?" | Since Winter '27 elastic capacity covers Batch, Queueable and future, capped at 2 million extra (Gotcha 7) | Alerts that tell throttling from a real breach |
+
+What a proper configuration adds over just doing it: thresholds held in custom metadata, keys that are null-checked, and alerts that name the limit, its source, and whether the org is throttled or blocked.
 
 ---
 
@@ -186,9 +202,9 @@ The org has basic monitoring (e.g., a weekly manual check or a simple email aler
 | DailyAsyncApexTests | Per 24-hour rolling window | REST /limits |
 | ConcurrentAsyncGetReportInstances | Concurrent | REST /limits |
 
-**Read both async keys, not just the first.** `DailyAsyncApexExecutions` is the *licensed* daily limit: "250,000 or the number of applicable user licenses in your org multiplied by 200, whichever is greater." `DailyAsyncApexElasticExecutions` is the separate key for "Daily number of Queueable Apex and future method executions that can be enqueued, including elastic executions processed at a throttled rate" — the elastic ceiling is "the org's daily asynchronous Apex method executions limit plus either the org's licensed daily asynchronous Apex method executions limit or 10 million executions, whichever is less."
+**Read both async keys, not just the first.** `DailyAsyncApexExecutions` is the *licensed* daily limit: "250,000 or the number of applicable user licenses in your org multiplied by 200, whichever is greater." `DailyAsyncApexElasticExecutions` is the separate key for "The total number of Batch Apex, Queueable Apex and future method executions that can be enqueued during a 24-hour period, including elastic executions processed at a throttled rate (beta)". In Winter '27 (Apex Developer Guide 264) the ceiling is the licensed limit "plus either the org's licensed daily asynchronous Apex method executions limit or 2 million executions, whichever is less", so the extra elastic headroom is capped at 2 million (`salesforce_apex_developer_guide.txt` L19943–L19953, L20224–L20235): a 250,000 org gets 500,000; a 12 million org gets 14 million. Summer '26 (262 L20025) capped the extra at 10 million and the elastic scope at Queueable and future only.
 
-Elastic limits change the **failure mode**, not just the number: past the licensed limit, Queueable and future jobs are processed at a throttled rate rather than rejected outright. A monitor that alarms at 100% of the licensed key is therefore reporting a throughput condition, not an outage. Elastic limits are Beta and apply only to Queueable Apex and future methods — Batch and Scheduled Apex still consume `DailyAsyncApexExecutions` under the hard ceiling.
+Elastic limits change the **failure mode**, not just the number: past the licensed limit, Batch, Queueable and future jobs are processed at a throttled rate rather than rejected outright. A monitor that alarms at 100% of the licensed key is therefore reporting a throughput condition, not an outage. Elastic limits are Beta and, in Winter '27, apply to Batch Apex, Queueable Apex, and future methods; only scheduled jobs stay capped at the rolling 24-hour limit (L20222–L20223). Once over the base limit, Batch Apex is throttled to one active job at a time and in-flight jobs slow down until the 24-hour count falls back under the limit (L20243–L20252). The extra capacity exists only in production; in a sandbox you test elastic behaviour by setting `ApexSettings.asyncApexExecutionsOverride` below the licensed limit, and the elastic ceiling there is twice the override or the licensed limit, whichever is lower (L20261–L20281; `api_meta.txt` L113743–L113751).
 
 ### Concurrent Long-Running Apex
 

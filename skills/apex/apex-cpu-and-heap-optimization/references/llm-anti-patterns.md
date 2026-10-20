@@ -243,3 +243,13 @@ Assert.isTrue(cpuUsed < cpuCeiling / 4, 'Used ' + cpuUsed + ' ms of ' + cpuCeili
 ```
 
 **Detection hint:** `Limits\.get(CpuTime|HeapSize)` on a line after `Test.stopTest()`, or a `Limits` assertion compared against a numeric literal instead of `Limits.getLimit*()`.
+
+## Anti-Pattern 9: Sizing a Queueable or Batch against the pre-Winter '27 heap figures
+
+**What the LLM generates:** "Async Apex gets 12 MB of heap, double the 6 MB synchronous limit, so a Queueable can hold roughly twice as many rows."
+
+**Why it happens:** 6 MB / 12 MB is what most training text says; the Winter '27 change is newer than that text.
+
+**Correct pattern:** On Winter '27 and later the heap ceiling is 10 MB synchronous and 25 MB asynchronous (Queueable, Batch, future), so the two contexts are not a simple 2x pair (Apex Developer Guide 264, `salesforce_apex_developer_guide.txt` L19780). Scheduled Apex still gets the synchronous 10 MB (L19739). Do not rewrite a working design just because the ceiling rose: work near both the heap and CPU limits is likelier to hit CPU, since heap checks cost CPU (L19853–L19855). Size against `Limits.getLimitHeapSize()` at runtime.
+
+**Detection hint:** "12 MB" or "6 MB" near "heap", or a chunk size justified by "async heap is twice sync".

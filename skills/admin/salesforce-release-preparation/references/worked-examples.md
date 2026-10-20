@@ -206,11 +206,13 @@ A `LightningExperienceSettings` component has the suffix `.settings` and is stor
          API 61.0 and later. -->
     <enableStackedModalManagerEnabled>true</enableStackedModalManagerEnabled>
 
-    <!-- Corresponds to the "Enable Secure Static Resources for Lightning
-         Components" release update (api_meta.txt L121395-121401). Serves
-         static resources from the visualforce domain instead of the
-         lightning domain. API 50.0 and later. -->
-    <enableAuraSecStaticResCRUCPref>true</enableAuraSecStaticResCRUCPref>
+    <!-- enableAuraSecStaticResCRUCPref is deliberately absent. Its release
+         update, "Enable Secure Static Resources for Lightning Components"
+         (api_meta.txt L121395-121401), was cancelled: the field is removed
+         at API 68.0 and later, and since Summer '26 every static resource
+         is served from the lightning domain whatever the API version
+         (264 api_meta.txt L124706-124709). Delete it from older copies of
+         this file rather than carrying it forward. -->
 </LightningExperienceSettings>
 ```
 

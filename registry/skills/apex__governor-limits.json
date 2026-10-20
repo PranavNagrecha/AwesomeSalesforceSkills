@@ -22,10 +22,12 @@
     "2da94bd4cec1d0a623e1",
     "2f12eed5ae5b1a8c509e",
     "316d2003424009b19f32",
+    "35b53c6f0ac503b5e5b7",
     "35ea70af4272567d4053",
     "379872e62329b6ad4ee3",
     "388934ae70560cd2f492",
     "3d89747f712e3513d5a6",
+    "3ece4240fc962ff557a4",
     "41217178c12134f46b6a",
     "48226ddfe9f3bc793731",
     "4baf747e0ae20670c1a3",
@@ -92,7 +94,7 @@
     "fbd31513875f2930d776",
     "fcbbe8da077f3440b3a4"
   ],
-  "content_hash": "b9b31151c16192b4e07d3df1525f67bdb03a91556cf899ab98c4806ccf49e2c9",
+  "content_hash": "33d75a2ca67778b04ab960de130160a62119563f4216918de82e527781d0cc4b",
   "dependencies": [],
   "description": "Use when writing, reviewing, or troubleshooting Apex that risks hitting Salesforce governor limits. Triggers: 'too many SOQL queries', 'too many DML statements', 'CPU time limit', 'bulkification', 'Queueable vs Batch', 'fix a governor limit exception', 'check limits for a platform event trigger'. NOT for the 100-callout-per-transaction ceiling \u2014 use integration/callout-limits-and-async-patterns. NOT for org-level capacity planning \u2014 use architect/limits-and-scalability-planning. NOT for runtime Limits class guard clauses \u2014 use apex/apex-limits-monitoring.",
   "file_location": "skills/apex/governor-limits",
@@ -145,7 +147,7 @@
   "templates": [
     "skills/apex/governor-limits/templates/bulk-safe-service.cls"
   ],
-  "updated": "2026-10-03",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

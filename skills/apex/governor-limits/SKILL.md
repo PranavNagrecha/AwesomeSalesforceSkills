@@ -25,9 +25,9 @@ triggers:
 inputs: ["failing transaction", "record volume", "entry point"]
 outputs: ["limit triage findings", "bulk-safe design guidance", "async pattern recommendation"]
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-10-03
+updated: 2026-10-19
 ---
 
 You are a Salesforce expert in Apex transaction design. Your goal is to keep Apex bulk-safe, limit-aware, and operationally predictable under real production volume. Use this skill when you see too many SOQL queries errors or need to bulkify a trigger to avoid limits.
@@ -97,17 +97,19 @@ Every value below is quoted with its line reference in `references/limits-table.
 | DML rows | 10,000 | 10,000 | Large fan-out often needs Batch |
 | CPU time | 10,000 ms | 60,000 ms | Complex transforms and nested loops fail here |
 | Max transaction execution time | 10 min | 10 min | A hard wall-clock ceiling separate from CPU time; long callout waits or slow processing trip it even when CPU stays low |
-| Heap size | 6 MB | 12 MB | Large collections and JSON payloads dominate memory |
+| Heap size | 10 MB | 25 MB | Winter '27+ values (raised from Summer '26's 6 MB / 12 MB); large collections and JSON payloads dominate memory, and an overrun is an uncatchable `System.LimitException` |
 | Callouts | 100 | 100 | Integration loops still hit a hard cap |
 | Callout cumulative timeout | 120 sec | 120 sec | Total wait across all callouts in a transaction; many small calls with generous timeouts add up |
 | `EventBus.publish` (immediate) | 150 | 150 | Publish-immediate platform events have their own cap, distinct from DML statements |
 | Trigger recursion stack depth | 16 | 16 | Recursive DML that re-fires triggers throws `Maximum trigger depth exceeded` at 16 |
 | Queueable jobs enqueued | 50 | 1 child/job | Matters for fan-out and chaining strategy |
-| Apex cursors (`Database.Cursor`) | 10,000/day org-wide | same | Distinct from ordinary SOQL row limits; `Cursor.fetch` still counts against SOQL query and row limits (max 100 fetch calls per transaction) |
+| Apex cursor instances (`Database.Cursor`) | 10,000 per 24-hour period org-wide | same | Distinct from ordinary SOQL row limits; `Cursor.fetch` still counts against SOQL query and row limits (max 100 fetch calls per transaction) |
 | Apex cursor rows per transaction | 50 million | 50 million | Across all cursors in one transaction; the guide gives the same value for sync and async |
 | Apex cursor rows per 24h | 100 million cumulative (org-wide) | same | New plus pagination cursor rows combined |
 
 **Apex Cursors.** `Database.getCursor(query)` returns a `Database.Cursor` you can `fetch(position, count)` from any offset and pass between chained Queueable jobs. The cursor fixes its set of record IDs when created. Each `fetch` counts against the SOQL query limit and its rows against the query-row limit, with at most 100 fetch calls per transaction. Monitor with `Limits.getApexCursors()` and `Limits.getApexCursorRows()`. Use cursors for resumable processing of very large result sets, not as a substitute for bulkification in triggers. UNVERIFIED (2026-10-03): the release in which cursors became generally available and whether a `Database.Cursor` can be returned to LWC through `@AuraEnabled`; version 1.1.0 of this skill stated "Spring '26, API 66.0" and LWC serialization without a source.
+
+**Heap moved in Winter '27.** The Winter '27 Apex Developer Guide (264, API 68.0) lists total heap as 10 MB synchronous and 25 MB asynchronous (`salesforce_apex_developer_guide.txt` L19780); Summer '26 (262) listed 6 MB and 12 MB. The guide's limits table gives the new figures with no API-version condition, and the only documented way back to the old ones is an org-level setting, not a class's saved API version: during Winter '27 only, a nonproduction org can stay on the lower Summer '26 heap limits with `ApexSettings.enableEnforceSummer26ApexHeapLimit`; Spring '27 enforces the higher limits everywhere (`api_meta.txt` L113856-L113862). The callout request/response cap did not move: 6 MB sync, 12 MB async (Apex Developer Guide 264 L20048), and the request and response still count toward heap (footnote, L20059). Some best-practice prose in the guide still says "heap size limit of 6 MB" (L20498); the limits table is the authority.
 
 **Trigger batch size is 200 for standard DML, but 2,000 for platform events and Change Data Capture events.** Code in a platform-event or CDC subscriber trigger must be bulk-safe against 2,000 records per execution, not 200. The same governor budgets apply, so a per-record query or DML that "works" at 200 fails hard at 2,000.
 

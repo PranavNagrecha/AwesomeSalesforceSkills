@@ -38,9 +38,9 @@ ContactService.doSomethingElse(); // uses 70 SOQL; the 101st query throws
 
 **When it occurs:** When "it's async" is treated as "it's unlimited."
 
-**How to avoid:** Use Batch Apex (or cursors with chained Queueables) for row volumes above those limits. Async raises SOQL count (200), heap (12 MB), and CPU (60,000 ms), not rows.
+**How to avoid:** Use Batch Apex (or cursors with chained Queueables) for row volumes above those limits. Async raises SOQL count (200), heap (25 MB from Winter '27, was 12 MB), and CPU (60,000 ms), not rows.
 
-**Source:** Apex Developer Guide (262), Per-Transaction Apex Limits: query rows 50,000 sync and async (L19546); DML rows 10,000 sync and async (L19556); heap 6 MB and 12 MB (L19577); CPU 10,000 and 60,000 ms (L19579).
+**Source:** Apex Developer Guide (262), Per-Transaction Apex Limits: query rows 50,000 sync and async (L19546); DML rows 10,000 sync and async (L19556); CPU 10,000 and 60,000 ms (L19579). Heap: Apex Developer Guide (264, Winter '27) L19780, 10 MB sync and 25 MB async (262 L19577 listed 6 MB and 12 MB).
 
 ---
 

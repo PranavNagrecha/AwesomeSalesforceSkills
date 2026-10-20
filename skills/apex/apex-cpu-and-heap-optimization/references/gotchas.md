@@ -71,7 +71,7 @@ the fix is to move your work async, not to micro-tune it.
 ## Scheduled Apex Runs On Synchronous Limits
 
 **What happens:** A `Schedulable.execute` body is written against the 60,000 ms /
-12 MB asynchronous column and fails at 10,000 ms. The quick reference note is
+25 MB asynchronous column (12 MB before Winter '27) and fails at 10,000 ms. The quick reference note is
 explicit: "Although scheduled Apex is an asynchronous feature, synchronous limits
 apply to scheduled Apex jobs" (`salesforce_app_limits_cheatsheet.txt` L36–L37).
 
@@ -109,7 +109,7 @@ long". A fix for one is usually the wrong fix for the other.
 ## A Heap Size Of 0 In The Debug Log Means "Not Measured"
 
 **What happens:** The log's `LIMIT_USAGE_FOR_NS` block reports `Maximum heap size:
-0 out of 6000000` and the reviewer concludes the transaction is heap-clean. The
+0 out of 10000000` (the Winter '27 sample, `apexdev.txt` 264 L38767; Summer '26 logs read `6000000`) and the reviewer concludes the transaction is heap-clean. The
 guide: "Heap usage is accurately reported in the debug log and an exception is
 thrown whenever an Apex Heap Size error occurs. At other times, the heap size
 shown in the debug log is the largest heap size that was calculated during the

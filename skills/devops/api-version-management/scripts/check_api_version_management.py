@@ -22,14 +22,17 @@ from pathlib import Path
 
 # Two completed retirement waves: 7.0-20.0 retired in Summer '22;
 # 21.0-30.0 deprecated in Summer '22 and retired in Summer '25.
-# The End-of-Life pages list "Versions 31.0 through 67.0" as supported,
-# so 31.0 is the absolute floor as of Summer '26.
+# Winter '27 schedules a third: 31.0-40.0 "Deprecated and unsupported from
+# Summer '27. Retired from Summer '28." (264 api_meta.txt L1287-L1295).
+# 31.0 is still the floor below which calls fail today; 41.0 is the lowest
+# version with no retirement date, so 31.0-40.0 is reported as DEPRECATED.
 ABSOLUTE_MIN_VERSION = 31
+DEPRECATED_BAND_TOP = 40
 
 # Fallback "current" version used only when no sourceApiVersion can be read
-# — Summer '26 = 67.0, the top of the supported band. Leaving this stale
+# — Winter '27 = 68.0, the top of the supported band. Leaving this stale
 # understates drift for every project without an sfdx-project.json.
-DEFAULT_CURRENT_VERSION = 67
+DEFAULT_CURRENT_VERSION = 68
 
 # Maximum acceptable drift from sourceApiVersion
 MAX_DRIFT = 2
@@ -182,6 +185,15 @@ def check_api_version_management(
             f"RETIRED VERSION: {filepath.name} is at API version {version}.0 "
             f"(minimum safe: {min_version}.0). This version is retired or approaching retirement."
         )
+
+    # --- Check for the scheduled 31.0-40.0 wave ---
+    for filepath, version in component_versions:
+        if min_version <= version <= DEPRECATED_BAND_TOP:
+            issues.append(
+                f"DEPRECATED VERSION: {filepath.name} is at API version {version}.0. Versions "
+                f"31.0-{DEPRECATED_BAND_TOP}.0 are unsupported from Summer '27 and retired from "
+                "Summer '28 (api_meta.txt 264 L1293-L1295); move it to 41.0 or later."
+            )
 
     # --- Check for version drift ---
     drifted = [

@@ -41,9 +41,9 @@ outputs:
   - "remediation plan for memory and compute hotspots"
   - "refactored class plus a bulk test asserting CPU and heap headroom"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 Use this skill when Apex is already bulkified but still failing because the transaction does too much compute or holds too much memory. CPU and heap problems are often caused by algorithm shape, payload handling, or repeated expensive work rather than by the usual SOQL/DML mistakes alone.
@@ -55,7 +55,7 @@ Use this skill when Apex is already bulkified but still failing because the tran
 - Is the failure specifically CPU time, heap size, or a mixed symptom that needs profiling?
 - What part of the transaction is hot: nested loops, JSON parsing, regex, logging, serialization, or object graph size?
 - Can the work be reduced, chunked, cached, or moved to async rather than merely micro-optimized?
-- Which ceiling actually applies? Synchronous is 10,000 ms / 6 MB and asynchronous is 60,000 ms / 12 MB, but scheduled Apex runs on the synchronous pair.
+- Which ceiling actually applies? Synchronous is 10,000 ms / 10 MB and asynchronous (Batch, future, Queueable) is 60,000 ms / 25 MB on Winter '27 and later, but scheduled Apex runs on the synchronous pair. Summer '26 heap was 6 MB / 12 MB.
 
 ## Questions to Ask Before Configuring
 
@@ -63,7 +63,7 @@ Ask these before changing a line; each one maps to a gotcha in `references/gotch
 
 | Ask | Why it matters | What a good answer adds |
 |---|---|---|
-| "Which limit failed, in which context — sync, batch/future, or scheduled?" | The ceiling differs 6x between the columns, and scheduled Apex sits in the synchronous one despite being async | The real budget, so the target is a number rather than "faster" |
+| "Which limit failed, in which context — sync, batch/future, or scheduled?" | CPU differs 6x and heap 2.5x between the columns, and scheduled Apex sits in the synchronous one despite being async | The real budget, so the target is a number rather than "faster" |
 | "Do you have a measurement, or an exception message?" | An exception names the limit that broke first, not the largest consumer; the debug log's `LIMIT_USAGE_FOR_NS` block names all of them | A hotspot instead of a guess, and a baseline to prove the fix |
 | "What is the record volume the failing transaction actually saw?" | CPU and heap defects are invisible at one record; the reported heap can even read `0` on a small run | The volume the bulk test must reproduce |
 | "Does any managed package or other trigger run in the same save order?" | Certified packages share your CPU and heap even though they get their own SOQL and DML | Whether the fix is in your class at all, or is "move this async" |
@@ -77,13 +77,13 @@ What a proper optimization adds over just making it faster: a measured before/af
 
 ### The budget, exactly
 
-| Resource | Sync | Async (batch, future) | Runtime accessor |
+| Resource | Sync | Async (batch, future, Queueable) | Runtime accessor |
 |---|---|---|---|
 | Maximum CPU time on Salesforce servers | 10,000 ms | 60,000 ms | `Limits.getCpuTime()` / `getLimitCpuTime()` |
-| Total heap size | 6 MB | 12 MB | `Limits.getHeapSize()` / `getLimitHeapSize()` |
+| Total heap size (Winter '27+) | 10 MB | 25 MB | `Limits.getHeapSize()` / `getLimitHeapSize()` |
 | Maximum execution time per Apex transaction | 10 minutes | 10 minutes | — |
 
-Source: *Salesforce Developer Limits and Allocations Quick Reference*, Per-Transaction Apex Limits (`salesforce_app_limits_cheatsheet.txt` L89–L94), mirrored at `apexdev.txt` L19577–L19601. Two qualifiers that change how the table is used: scheduled Apex takes the synchronous column, and CPU and heap are the two ceilings a certified managed package does *not* get its own copy of. Both are worked through in `references/gotchas.md`.
+Source: Apex Developer Guide, Winter '27 (264, API 68.0), Per-Transaction Apex Limits (`salesforce_apex_developer_guide.txt` L19780 heap, L19782 CPU; scheduled-Apex note L19739). The Winter '27 limits cheatsheet no longer carries the Apex tables and points to that guide (`salesforce_app_limits_cheatsheet.txt` L21–L29). Heap rose from Summer '26's 6 MB sync / 12 MB async (262 guide L19577) and the 264 table states the new figures with no API-version condition; during Winter '27 only, `ApexSettings.enableEnforceSummer26ApexHeapLimit` can hold a nonproduction org on the old figures (`api_meta.txt` L113856–L113862). The 264 footnote adds that heap overruns throw an uncatchable `System.LimitException` and that work near both ceilings is likelier to hit CPU, because heap checks cost CPU (L19853–L19855). Two qualifiers that change how the table is used: scheduled Apex takes the synchronous column, and CPU and heap are the two ceilings a certified managed package does *not* get its own copy of. Both are worked through in `references/gotchas.md`.
 
 ### CPU And Heap Fail For Different Reasons
 

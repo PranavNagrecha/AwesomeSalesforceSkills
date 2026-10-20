@@ -8,7 +8,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any failed or interrupted asynchronous operation — commit, deploy, promote, rebase, back sync.
 
-**How to avoid:** In the next-generation DevOps Center every such operation creates a `DevopsRequestInfo` record with `OperationType`, `Status` (`NEW`, `IN_PROGRESS`, `FINALIZING`, `SUCCESS`, `ERROR`, `INTERRUPTED`, `CANCELLED`), `Message`, and `ErrorDetails`. The object reference says to query it when a promotion or commit appears stalled. Keep the query from SKILL.md Core Concepts in the team runbook. These objects belong to the next-generation product; on the managed package, check which edition is enabled first (gotcha 8).
+**How to avoid:** In Lifecycle Center every such operation creates a `DevopsRequestInfo` record with `OperationType`, `Status` (`NEW`, `IN_PROGRESS`, `FINALIZING`, `SUCCESS`, `ERROR`, `INTERRUPTED`, `CANCELLED`), `Message`, and `ErrorDetails`. The object reference says to query it when a promotion or commit appears stalled. Keep the query from SKILL.md Core Concepts in the team runbook. These objects belong to Lifecycle Center; on the managed package, check which edition is enabled first (gotcha 8).
 
 ---
 
@@ -56,7 +56,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A team expects a check-only deployment to production before release night, as they had with change sets or the CLI, and cannot find it in DevOps Center.
 
-**When it occurs:** The `DevopsEnvDeployment` object has an `IsCheckDeploy` field, but the object reference states that validate-only deployment is not supported in the next-generation DevOps Center.
+**When it occurs:** The `DevopsEnvDeployment` object has an `IsCheckDeploy` field, but the object reference states that "Validate-only deployment is not supported in the Lifecycle Center" (`object_reference.txt` 264 L97151; the Summer '26 text said "next-generation DevOps Center").
 
 **How to avoid:** If the release process requires a production validation, run it outside DevOps Center (for example `sf project deploy validate` from the stage branch) and record the result in the release ticket; do not plan around a DevOps Center check-only step.
 
@@ -74,8 +74,8 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 8: Two DevOps Centers, Two Data Models
 
-**What happens:** A practitioner queries `WorkItem` or `DevopsRequestInfo` in an org that runs the managed package and gets nothing, or follows managed-package instructions in a next-generation org.
+**What happens:** A practitioner queries `WorkItem` or `DevopsRequestInfo` in an org that runs the managed package and gets nothing, or follows managed-package instructions in a Lifecycle Center org.
 
-**When it occurs:** The Dev Hub settings distinguish the managed package (`enableDevOpsCenterGA`, API 56.0+, described as an older version) from the next-generation DevOps Center (`enableALMDevopsCorePref`, API 65.0+). The `Devops*` and `WorkItem` standard objects are API 66.0–67.0. Moving projects from the package to next-generation (`enableDevopsCenterMigrationPref`, API 67.0) is a developer preview.
+**When it occurs:** The Dev Hub settings distinguish the managed package (`enableDevOpsCenterGA`, API 56.0+, "an older version of Lifecycle Center") from Lifecycle Center (`enableALMDevopsCorePref`, API 65.0+), which the Summer '26 guide called the "next-generation DevOps Center" (`api_meta.txt` 264 L117302–L117311). The `Devops*` and `WorkItem` standard objects are API 66.0–67.0. Moving projects from the package to Lifecycle Center (`enableDevopsCenterMigrationPref`, API 67.0) is a developer preview.
 
 **How to avoid:** Read `settings/DevHub.settings-meta.xml` (or Setup) before troubleshooting, and do not plan a production migration on a developer-preview setting.

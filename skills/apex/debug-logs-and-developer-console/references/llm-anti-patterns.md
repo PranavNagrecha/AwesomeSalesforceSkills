@@ -185,3 +185,13 @@ To query data:
 ```
 
 **Detection hint:** Advice to query `ApexLog`, `ApexClass`, or `TraceFlag` without mentioning Tooling API mode.
+
+## Anti-Pattern 7: Saying debug levels cannot be deployed
+
+**What the LLM generates:** "DebugLevel is only a Tooling API object, so you can't keep it in source control; recreate it by hand or by script in every sandbox."
+
+**Why it happens:** Through API 67.0 that was true, and every older answer describes `DebugLevel` as a Setup or Tooling record.
+
+**Correct pattern:** From API 68.0 `DebugLevel` is a Metadata API type: `.debugLevel` files in the `debugLevels` folder, each a named set of log category levels that trace flags can use (`api_meta.txt` 264 L13259–L13269). Retrieve and deploy it with the rest of the project at `<version>68.0</version>` or later. Create the `TraceFlag` per user and per session as before, since that part has no metadata type.
+
+**Detection hint:** "DebugLevel can't be deployed" or a per-sandbox script that inserts the same `DebugLevel` record, in a project whose `sourceApiVersion` is 68.0 or later.

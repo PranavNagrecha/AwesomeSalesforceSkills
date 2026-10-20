@@ -33,7 +33,7 @@ outputs:
   - "Upgrade plan with prioritized list of components to update"
   - "Validated sfdx-project.json and component metadata at target version"
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -49,7 +49,7 @@ This skill activates when you need to audit, standardize, or upgrade the API ver
 Gather this context before working on anything in this domain:
 
 - **What is the project's `sourceApiVersion`?** Found in `sfdx-project.json`, this is the baseline version the project intends to use. Individual components can override it, and that override is where drift begins.
-- **What is the current Salesforce release?** Each major release (Spring, Summer, Winter) increments the API version by 1. Anchor points: Spring '24 = 60.0, Summer '24 = 61.0, Winter '25 = 62.0, Spring '25 = 63.0, Summer '25 = 64.0, Winter '26 = 65.0, Spring '26 = 66.0, Summer '26 = 67.0. Salesforce retires versions on a rolling basis in distinct waves — 7.0 through 20.0 were **retired** in Summer '22; 21.0 through 30.0 were **deprecated** in Summer '22 and **retired** in Summer '25, consistent with the minimum 3-year deprecation notice policy. Deprecated and retired are not the same state: a deprecated version still works.
+- **What is the current Salesforce release?** Each major release (Spring, Summer, Winter) increments the API version by 1. Anchor points: Spring '24 = 60.0, Summer '24 = 61.0, Winter '25 = 62.0, Spring '25 = 63.0, Summer '25 = 64.0, Winter '26 = 65.0, Spring '26 = 66.0, Summer '26 = 67.0, Winter '27 = 68.0. Salesforce retires versions on a rolling basis in distinct waves — 7.0 through 20.0 were **retired** in Summer '22; 21.0 through 30.0 were **deprecated** in Summer '22 and **retired** in Summer '25; and the Winter '27 guides schedule the next wave: **31.0 through 40.0 are deprecated and unsupported from Summer '27 and retired from Summer '28** (`api_meta.txt` 264 L1287–L1295). Only 41.0 through 68.0 are supported without a retirement date. Deprecated and retired are not the same state: a deprecated version still answers calls but is unsupported; a retired one fails.
 - **Are there integrations using explicit API version numbers?** External systems calling `/services/data/vXX.0/` or `/services/Soap/c/XX.0` endpoints pin to a version. These must be inventoried alongside metadata.
 
 ---
@@ -84,20 +84,21 @@ Version drift occurs when these three layers diverge. The most dangerous drift i
 
 ### 2. Salesforce API Retirement Policy
 
-Salesforce publishes an API End-of-Life policy with a minimum 3-year deprecation notice. When a version is retired:
+Salesforce's API End-of-Life policy supports each version for at least 3 years from first release and notifies customers who use a version scheduled for deprecation at least 1 year before support ends (`api_meta.txt` 264 L1282–L1285). When a version is retired:
 
 - REST and SOAP calls to that version return an error.
 - Metadata components pinned to that version may exhibit undefined behavior or deployment failures.
 - `ApiTotalUsage` event logs in Event Monitoring track which versions are actively called, providing a detection mechanism before retirement hits.
 
-Two distinct waves have completed, and conflating them is the most common error in this area:
+Two waves have completed and a third is scheduled; conflating them is the most common error in this area:
 
 | Versions | Deprecated | Retired |
 |---|---|---|
 | 7.0 – 20.0 | before Summer '22 | **Summer '22** |
 | 21.0 – 30.0 | **Summer '22** | **Summer '25** |
+| 31.0 – 40.0 | **Summer '27** (deprecated and unsupported) | **Summer '28** |
 
-So the "3-year notice" is visible in the second row: deprecation in Summer '22, retirement three years later in Summer '25. As of Summer '26 the 21.0–30.0 wave has already landed — a team planning against "the next wave" using the Summer '22 date is reasoning with three-year-stale runway. Calls to a retired version fail hard: REST returns `410 GONE`, SOAP returns `500 UNSUPPORTED_API_VERSION`, Bulk returns `400 InvalidVersion`. Proactive scanning is essential because Salesforce does not automatically upgrade component versions.
+Source for all three rows: the Winter '27 Metadata API guide's version table (`api_meta.txt` 264 L1287–L1309; the same rows appear in the REST and Bulk guides, `api_rest.txt` L1232–L1238, `api_asynch.txt` L4274–L4280). The Summer '26 guide listed "31.0 through 66.0 Supported" with no date, so any plan, checker or contract that treats 31.0 as a safe floor is now one wave behind: the practical floor for new and long-lived work is 41.0. Calls to a retired version fail hard: REST returns `410 GONE`, SOAP returns `500 UNSUPPORTED_API_VERSION`, Bulk returns `400 InvalidVersion`. Proactive scanning is essential because Salesforce does not automatically upgrade component versions.
 
 ### 3. LWC Component Versioning (Spring '25+)
 
@@ -109,12 +110,12 @@ Starting in Spring '25, Lightning Web Components require an explicit `apiVersion
 
 ### 4. ApiTotalUsage Event Logs
 
-The `ApiTotalUsage` event type in Event Monitoring records every API call with the version used. Query these logs to find external integrations still calling deprecated versions:
+The `ApiTotalUsage` event type in Event Monitoring records every API call with the version used. Query these logs to find external integrations still calling deprecated versions (below 41.0 as of Winter '27; anything below 31.0 already fails):
 
 ```sql
 SELECT ApiVersion, Client, Count
 FROM ApiTotalUsage
-WHERE ApiVersion < 31
+WHERE ApiVersion < 41
 ORDER BY Count DESC
 ```
 
@@ -134,7 +135,7 @@ This data is critical for building an upgrade plan that covers runtime usage, no
 2. Scan all `*-meta.xml` files for `<apiVersion>` elements.
 3. Scan `.cmp` and `.app` Aura files for `<aura:component>` or `<aura:application>` version attributes.
 4. Compare each component's version against `sourceApiVersion` and flag drift.
-5. Flag any component below the minimum safe version (currently 31.0).
+5. Flag any component below 31.0 as retired-band and any at 31.0–40.0 as deprecated-band (unsupported from Summer '27, retired Summer '28); the safe floor is 41.0.
 
 **Why not the alternative:** Manual spot-checking misses components because a typical org has hundreds of versioned files scattered across classes, triggers, pages, components, and flows.
 
@@ -159,7 +160,7 @@ This data is critical for building an upgrade plan that covers runtime usage, no
 
 1. Add a pre-commit or CI check that scans `*-meta.xml` for `<apiVersion>`.
 2. Reject any component whose version is more than 2 major versions behind the project's `sourceApiVersion`.
-3. Reject any component below the absolute minimum (currently 31.0).
+3. Reject any component below 41.0, the lowest version with no scheduled retirement as of Winter '27.
 4. Report drift percentage in CI output.
 
 **Why not the alternative:** Without a gate, developers create new components at the CLI's default version while old components stay on legacy versions, re-introducing drift within a single sprint.
@@ -185,7 +186,7 @@ Step-by-step instructions for auditing and upgrading API versions across a Sales
 
 1. **Read `sfdx-project.json`** — extract the `sourceApiVersion` value. This is the project's intended baseline. If it is missing, the CLI defaults to the latest version, which may not match component versions.
 2. **Inventory all versioned components** — scan the metadata source directory for every `*-meta.xml`, `.cmp`, `.app`, and `.js-meta.xml` file. Extract the `<apiVersion>` element from each. Record the component name, type, and version.
-3. **Identify drift and retirement risk** — compare each component's version against `sourceApiVersion`. Flag components more than 2 versions behind as drifted. Flag anything below version 31.0 as retirement-critical.
+3. **Identify drift and retirement risk** — compare each component's version against `sourceApiVersion`. Flag components more than 2 versions behind as drifted. Flag anything below version 41.0 as retirement-critical (31.0–40.0 retire in Summer '28). Apex classes and triggers saved at 9.0–19.0 now draw a compiler warning on compile and deploy and "will be retired in a future release" (`salesforce_apex_developer_guide.txt` 264 L45124–L45125).
 4. **Check runtime API usage** — if Event Monitoring is available, query `ApiTotalUsage` logs to find external integrations using deprecated versions. Merge this data with the metadata inventory.
 5. **Build the upgrade plan** — prioritize retirement-critical components first, then drifted components, then cosmetic alignment. Group into tiers for incremental rollout. Document expected behavior changes per version jump using Salesforce release notes.
 6. **Execute and validate** — upgrade each tier by updating `<apiVersion>` in metadata files. Run the full test suite after each tier. Confirm deployment succeeds in a sandbox before production.
@@ -198,7 +199,7 @@ Step-by-step instructions for auditing and upgrading API versions across a Sales
 Run through these before marking work in this area complete:
 
 - [ ] `sourceApiVersion` in `sfdx-project.json` is set to the target version
-- [ ] No component has an `apiVersion` below the minimum safe version (31.0)
+- [ ] No component has an `apiVersion` below the minimum safe version (41.0; 31.0–40.0 is the Summer '27/'28 wave)
 - [ ] All components are within 2 major versions of `sourceApiVersion`
 - [ ] Every LWC `.js-meta.xml` file has an explicit `<apiVersion>` element
 - [ ] External integration endpoint URLs have been checked for deprecated versions

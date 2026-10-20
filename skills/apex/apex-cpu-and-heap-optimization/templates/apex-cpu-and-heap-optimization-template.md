@@ -7,7 +7,7 @@
 | Exception or hotspot | |
 | CPU, heap, or both? | |
 | Transaction type (sync / batch / future / scheduled) | |
-| Applicable ceiling (10,000 ms + 6 MB sync; 60,000 ms + 12 MB batch/future; scheduled uses the sync pair) | |
+| Applicable ceiling (Winter '27+: 10,000 ms + 10 MB sync; 60,000 ms + 25 MB batch/future/Queueable; scheduled uses the sync pair) | |
 | Approximate data or payload volume | |
 | Managed package code in the same save order? | |
 

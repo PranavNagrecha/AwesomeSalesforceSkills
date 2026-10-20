@@ -2,7 +2,7 @@
 
 ## Which DevOps Center is on: `DevHub.settings`
 
-The Metadata API stores Dev Hub settings in `settings/DevHub.settings` (in an SFDX source project the same file is `settings/DevHub.settings-meta.xml`). Enable one DevOps Center, not both. This excerpt shows the next-generation one switched on and the managed package switched off:
+The Metadata API stores Dev Hub settings in `settings/DevHub.settings` (in an SFDX source project the same file is `settings/DevHub.settings-meta.xml`). Enable one DevOps Center, not both. This excerpt shows Lifecycle Center (the Summer '26 "next-generation DevOps Center") switched on and the managed package switched off:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -13,7 +13,7 @@ The Metadata API stores Dev Hub settings in `settings/DevHub.settings` (in an SF
 </DevHubSettings>
 ```
 
-`enableDevopsCenterMigrationPref` (API 67.0) moves projects from the managed package to the next-generation product, but it is a developer preview; leave it out of production manifests.
+`enableDevopsCenterMigrationPref` (API 67.0) moves projects from the managed package to Lifecycle Center, but it is a developer preview; leave it out of production manifests.
 
 ## Source tracking for development sandboxes: `SourceTracking.settings`
 
@@ -28,7 +28,7 @@ Deploy to production, then create or refresh each Developer or Developer Pro san
 
 The setting is ignored outside production. Setting it back to false does not stop a sandbox that is already tracking until that sandbox is refreshed.
 
-## Troubleshooting queries (next-generation DevOps Center)
+## Troubleshooting queries (Lifecycle Center)
 
 Work items stuck on a conflict, newest first:
 

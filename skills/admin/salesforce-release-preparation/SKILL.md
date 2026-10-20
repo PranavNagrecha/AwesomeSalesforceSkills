@@ -47,9 +47,9 @@ triggers:
   - "build a release run sheet for the Winter release"
   - "what breaks when the org upgrades this weekend"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-19
 ---
 
 # Salesforce Release Preparation
@@ -130,6 +130,11 @@ Three consequences drive the whole workflow below:
 - **The posture is auditable.** Retrieve those types and the org's release-update stance becomes a diff a second person can review, not a screen someone remembers clicking. `references/worked-examples.md` §4–6 has the deployable files, the manifest and the retrieve commands.
 - **The posture is also accidentally mutable.** A settings file carried along by a pipeline moves release updates on deploy. See `references/gotchas.md` Gotcha 9.
 - **Not every update is in there.** Some are Setup-only, and some behaviour changes ship with no toggle at all. Run the full inventory (`grep -n -i "release update" api_meta.txt`) rather than assuming a field exists for the update in front of you; record the ones that have none, with a reason.
+
+**Winter '27 (API 68.0) settings changes to carry into this cycle's run sheet:**
+
+- **A cancelled update loses its field.** `LightningExperienceSettings.enableAuraSecStaticResCRUCPref` ("Enable Secure Static Resources for Lightning Components") is removed at API 68.0 and later because that release update was cancelled; since Summer '26 every static resource is served from the lightning domain, whatever the API version (`api_meta.txt` 264 L124706–L124709). Drop it from settings files as they move to 68.0, and mark the run-sheet row `not-applicable` with that cite.
+- **A temporary heap opt-out for nonproduction orgs.** Winter '27 raises Apex heap to 10 MB sync and 25 MB async, from 6 MB and 12 MB (`salesforce_apex_developer_guide.txt` 264 L19780). `ApexSettings.enableEnforceSummer26ApexHeapLimit` (boolean, default `false`, API 68.0) holds a nonproduction org on the lower Summer '26 heap limits. It works only during Winter '27; in Spring '27 the higher limits apply everywhere regardless of the setting (`api_meta.txt` 264 L113856–L113862). Use it to keep a preview sandbox's heap-ceiling tests meaningful for one release, and record a row to remove those tests before Spring '27.
 
 ### Release Notes Feature Impact Triage
 

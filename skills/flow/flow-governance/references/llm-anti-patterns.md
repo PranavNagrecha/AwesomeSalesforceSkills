@@ -146,3 +146,13 @@ Include testing in the governance standard:
 5. Record the test coverage in the flow's description or linked documentation
 
 **Detection hint:** Governance standard that covers naming, ownership, and documentation but does not mention testing requirements.
+
+## Anti-Pattern 7: Listing only three `runInMode` values
+
+**What the LLM generates:** "`runInMode` takes `DefaultMode`, `SystemModeWithSharing` or `SystemModeWithoutSharing`; to force user context, use `DefaultMode` and launch the flow from a user-context entry point."
+
+**Why it happens:** Those were the only values through API 67.0, and Flow Builder screenshots in training data show three run-mode options.
+
+**Correct pattern:** At API 68.0 and later the Flow metadata enum also has `UserMode` ("User Context—Enforces User Permissions"): the flow runs with the user's security context explicitly enforced and does not inherit sharing settings from the calling context (264 `api_meta.txt` L70923–L70927). A run-mode allow-list and its checker must accept `UserMode`, and should reject it on a flow whose `apiVersion` is below 68.0.
+
+**Detection hint:** A policy, checker enum, or review note that names the three older values and not `UserMode`.
