@@ -1,0 +1,17 @@
+**Short answer:** By default it runs as the **Automated Process** user, not the user who published the event. You can override this by choosing a specific running user.
+
+**Details**
+
+- **Default:** A platform event-triggered flow is a subscriber that runs asynchronously, outside the publisher's transaction. The interview runs as the Automated Process system user, so the publishing user's context isn't carried over.
+- **Override:** In Flow Builder, open the Start element and use the **Run Flow As** option (under Advanced). Choose **Another User** and pick a specific user. This is the flow equivalent of `PlatformEventSubscriberConfig` for Apex platform event triggers, which lets you set the running user and batch size.
+- **Record effects:**
+  - Records the flow creates have `CreatedById` and `LastModifiedById` set to the running user (Automated Process by default).
+  - `OwnerId` defaults to that user too, unless the flow sets it explicitly.
+  - Ownership-based sharing, assignment rules and `$User` references all resolve against the running user, not the publisher.
+  - Automated Process can't own many record types in practice, such as records that need a real, licensed owner. Set `OwnerId` explicitly in those cases or configure a real running user.
+- **Publisher info is gone:** Because the publisher's identity is lost, carry it in the event payload. Add a custom field such as `Publishing_User_Id__c` and populate it at publish time. The standard `CreatedById` on the event record is available in the flow, but use it deliberately.
+- **Access checks:** Event-triggered flows run in system context, so the running user's sharing and object/field permissions generally don't restrict the flow's record operations. Ownership and audit fields still reflect that user. If you pick a specific user, make sure that user is active. A deactivated or frozen running user will cause the subscriber to fail.
+- **Pitfalls:**
+  - Audit trails will show "Automated Process", so use a dedicated integration or service user if you want meaningful attribution.
+  - Errors surface in the Flow fault path or in Apex Exception Email, not to the publisher, so build a fault path.
+  - Behavior can differ slightly across releases, so confirm the Run Flow As option in your org's current Flow Builder.

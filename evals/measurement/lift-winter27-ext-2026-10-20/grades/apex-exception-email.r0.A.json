@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**Short answer:** the developer who last modified the Apex class and the user who ran or scheduled the job, plus any addresses configured under Apex Exception Email.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0607054,
+    "duration_s": 2.336,
+    "input_tokens": 7133,
+    "output_tokens": 165
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**Short answer:** the developer who last modified the Apex class and the user who ran or scheduled the job, plus any addresses configured under Apex Exception Email.\"}",
+  "prompt_sha": "efa13faa3ffa8ab4"
+}

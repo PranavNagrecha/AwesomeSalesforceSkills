@@ -49,9 +49,9 @@ outputs:
   - "Auto-response rule firing correctly when assignment rule fires"
   - "Per-address intake record type (newEntityRecordType) on an API 64.0+ manifest"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-10-20
 ---
 
 # Email-to-Case Configuration

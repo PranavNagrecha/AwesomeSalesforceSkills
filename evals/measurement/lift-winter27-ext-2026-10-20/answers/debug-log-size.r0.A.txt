@@ -1,0 +1,20 @@
+**Maximum size: 20 MB per debug log.**
+
+**What happens when a log exceeds it:** Salesforce truncates the log. It keeps the first 10 MB and the last 10 MB of the log and drops the middle, so you'll see the beginning and the end of the transaction but lose the events in between. (If the log was already large, the system may also stop appending further detail once it hits the limit.)
+
+Related limits worth knowing:
+
+- **Retention:** Debug logs are retained for 24 hours, then deleted automatically.
+- **Total log storage per org:** 1,000 MB. When the cap is reached, the oldest logs are overwritten and new logs stop being captured until the old ones are cleared or the trace flags are disabled.
+- **Trace flags:** A trace flag can be active for at most 24 hours at a time (you can extend or recreate it).
+- **Per-request logging:** Each request (a transaction, a Queueable, a batch `execute`, etc.) generates its own log, so a long batch job produces many logs rather than one huge one.
+
+**Practical ways to avoid truncation:**
+
+1. Lower log levels for noisy categories. Set Apex Code to `DEBUG` or `INFO`, and set Database, Workflow, System, and Validation to `NONE` or `ERROR` unless you need them.
+2. Use `FINEST` only on the narrow category you're investigating.
+3. Avoid `System.debug` inside large loops.
+4. Scope the trace flag to the specific user or Apex class/trigger rather than everything.
+5. For very large transactions, consider the Apex Replay Debugger or Developer Console's log filters, or use targeted `System.debug` with `LoggingLevel` to cut volume.
+
+Note: the log header's size reflects the stored size, and when truncation occurs, the stored log will show the gap where the middle section was removed, so don't rely on a truncated log to prove something *didn't* happen in the dropped region.

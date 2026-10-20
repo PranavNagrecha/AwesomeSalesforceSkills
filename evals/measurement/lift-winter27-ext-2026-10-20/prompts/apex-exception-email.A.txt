@@ -1,0 +1,1 @@
+When an unhandled exception occurs in asynchronous Apex such as a scheduled or batch job, who receives the unhandled exception email by default?

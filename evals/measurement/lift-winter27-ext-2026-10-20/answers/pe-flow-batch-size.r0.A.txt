@@ -1,0 +1,5 @@
+A platform event-triggered flow interview can receive up to **2,000** platform event messages in a single batch. This is the same default batch size that Apex platform event triggers get.
+
+- The 2,000 is a maximum, not a guarantee. A batch can be smaller depending on how many messages are waiting when the subscriber is delivered events.
+- The flow is bulkified for you. One interview handles the whole batch, and the triggering messages are available as `$Record`. Avoid DML or queries in loops, because the governor limits apply per interview and the batch can be large.
+- The batch size can be tuned with a `PlatformEventSubscriberConfig` metadata record (`batchSize`, 1 to 2,000). I'm confident this works for Apex triggers, but I'm less sure it applies to flows. Check the current Platform Events Developer Guide before relying on it.

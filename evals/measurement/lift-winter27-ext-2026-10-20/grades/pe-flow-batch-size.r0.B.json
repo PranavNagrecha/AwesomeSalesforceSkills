@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**Up to 200 event messages per batch.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.055395099999999996,
+    "duration_s": 2.876,
+    "input_tokens": 6815,
+    "output_tokens": 34
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**Up to 200 event messages per batch.**\"}",
+  "prompt_sha": "172bd55c673a95b1"
+}

@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "The interview runs in the context of **the user who published the event message**. It does not run as the Automated Process user.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058056500000000004,
+    "duration_s": 1.676,
+    "input_tokens": 7094,
+    "output_tokens": 50
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"The interview runs in the context of **the user who published the event message**. It does not run as the Automated Process user.\"}",
+  "prompt_sha": "0a801b5c853951bb"
+}

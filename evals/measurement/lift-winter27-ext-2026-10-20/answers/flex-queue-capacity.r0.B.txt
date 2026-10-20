@@ -1,0 +1,38 @@
+# Apex flex queue capacity
+
+**Capacity:** The flex queue holds up to **100 batch jobs** in `Holding` status. Up to 5 batch jobs can be queued or active at once. When those slots are full, `Database.executeBatch` puts the new job into the flex queue as `Holding`. Holding jobs move into the active slots as they free up (in order, unless an admin reorders them).
+
+**When it's full:** The 101st call to `Database.executeBatch` throws a `System.LimitException`, because the flex queue limit is a governor-style limit. Two consequences follow:
+
+- **You can't catch it.** A `try/catch` around `executeBatch` does nothing, because a `LimitException` terminates the transaction.
+- **The transaction rolls back.** In a Schedulable that logs "schedule fired" and then calls `executeBatch`, that log insert is rolled back too. No batch `AsyncApexJob` row is created, so the failure leaves almost no trace. This is the silent-failure mode behind the quarter-end pile-ups where many schedules fire close together.
+
+## Mitigation: check before launching
+
+Count `Holding` jobs before each launch and skip or defer when the queue is near capacity:
+
+```apex
+public class SafeBatchLauncher {
+    private static final Integer FLEX_QUEUE_MAX = 100;
+    private static final Integer SAFETY_MARGIN  = 5;
+
+    public static Id launch(Database.Batchable<SObject> job, Integer scope) {
+        Integer holding = [SELECT COUNT() FROM AsyncApexJob WHERE Status = 'Holding'];
+        if (holding >= FLEX_QUEUE_MAX - SAFETY_MARGIN) {
+            // Durable record: no exception is thrown here, so this DML commits
+            ApplicationLogger.error('SafeBatchLauncher',
+                'Flex queue near capacity (' + holding + '/100); batch not enqueued', null);
+            return null; // or retry later via a Schedulable
+        }
+        return Database.executeBatch(job, scope);
+    }
+}
+```
+
+`ApplicationLogger` is a placeholder for whatever durable logger you use. The point is to log before the launch, outside the failing call.
+
+## Related practices
+
+- **Stagger schedules** so many jobs don't fire in the same minute.
+- **Watch `Holding` depth in your watcher.** Alert when `Holding` jobs exceed a threshold, and when any job sits in `Queued`, `Holding`, or `Preparing` longer than your SLA (for example, `CreatedDate <= now - 2h`).
+- **Don't rely on `BatchApexErrorEvent` for this case.** The launch fails before any batch exists, so no event is published. Only the pre-check and the watcher can catch it.

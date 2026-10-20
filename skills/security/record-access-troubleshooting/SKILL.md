@@ -28,9 +28,9 @@ outputs:
   - Sharing chain trace
   - Remediation recommendation
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-08-01
+updated: 2026-10-20
 ---
 
 # Record Access Troubleshooting
@@ -41,6 +41,20 @@ Reach for this the moment someone says "this record won't show up for me" — or
 
 - Have four things in hand: the User Id, the Record Id, the access level the user expected, and the object's org-wide default (Setup → Sharing Settings).
 - Rule out the blunt instruments first. "Modify All Data" and "View All Data" on the profile or a permission set skip the sharing model altogether, and no amount of tracing rules will explain access that came from one of them.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which User Id, Record Id and expected access level (read, edit, delete, transfer)? | `UserRecordAccess` answers one user/record pair; without both Ids the first query cannot run (Recommended Workflow step 1). | The exact pair to query and the gap to explain, so the trace stops when it accounts for the observed access. |
+| What is the object's org-wide default, and is "Grant Access Using Hierarchies" on for it? | The hierarchy switch is per-object, and Private OWD with it off blocks role-based visibility (SKILL.md gotcha 2). | Whether role-hierarchy access is even a candidate cause at step 5. |
+| Does the user hold View All Data, Modify All Data, or object-level View All / Modify All through a profile, permission set or permission set group? | These skip the sharing model, and the Sharing detail view reports the nominal reason rather than the bypass (references/gotchas.md Gotcha 1). | Admin bypass ruled in or out at step 2, before any `__Share` tracing. |
+| Is the symptom too much access or too little, and did it start after an ownership change or a recent config change? | The Decision Guidance table maps each symptom to a different likely cause, and manual shares are cleared on transfer (SKILL.md gotcha 1). | A shorter list of layers to inspect first. |
+| Which running user ran the diagnosis, and is it the target user or someone with View All Data? | `UserRecordAccess` requires the querying user to have View All Data or be the target user (SKILL.md gotcha 3). | Trustworthy query results instead of an access failure mistaken for a finding. |
+| Is the object a child of a master-detail or an Account/Contact/Opportunity custom child, and are there Apex managed shares with a Sharing Reason? | Implicit parent sharing does not extend to custom child objects (references/gotchas.md Gotcha 3), and Apex shares depend on an active Sharing Reason (Gotcha 4). | Whether to look for implicit-parent or RowCause-based grants at step 4. |
+| Are restriction rules defined on the object, and does any Apex or Flow entry point run in System Mode? | Restriction rules subtract after sharing computes and are bypassed in System Mode (SKILL.md gotcha 4; references/gotchas.md Gotcha 5). | The reason a user with a `__Share` row sees zero records, and which entry points the control does not cover. |
+
+A proper configuration of the diagnosis adds an evidence-backed root cause and a remediation tied to the right layer, where just doing it means adding or removing a sharing rule on a guess.
 
 ## Core Concepts
 
@@ -132,12 +146,18 @@ Join against Group / User to resolve the grantee.
 ### Pattern: Admin bypass check
 
 ```
-SELECT PermissionsViewAllData, PermissionsModifyAllData
+SELECT PermissionSet.Name, PermissionSet.IsOwnedByProfile
 FROM PermissionSetAssignment
 WHERE AssigneeId = :uid
+  AND (PermissionSet.PermissionsViewAllData = true
+       OR PermissionSet.PermissionsModifyAllData = true)
 ```
 
-If either is true, sharing is moot — explain the finding.
+Any returned row means sharing is moot — explain the finding. The
+`Permissions*` booleans live on `PermissionSet`, not on
+`PermissionSetAssignment`, so they must be reached through the
+`PermissionSet.` relationship prefix (object_reference 264 L219473,
+L219833-L219841; see Gotcha 1 in `references/gotchas.md`).
 
 ## Decision Guidance
 
@@ -189,7 +209,7 @@ If either is true, sharing is moot — explain the finding.
 
 ## Related Skills
 
-- `security/sharing-rules-patterns` — designing new sharing rules
-- `security/apex-managed-sharing` — `__Share` inserts with RowCause
-- `security/restriction-rules-patterns` — filter-down access
+- `admin/sharing-rules` — designing new sharing rules
+- `security/apex-managed-sharing-patterns` — `__Share` inserts with RowCause
+- `admin/restriction-rules` — filter-down access
 - `standards/decision-trees/sharing-selection.md` — overall sharing technology selection

@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "The 101st call to `Database.executeBatch` throws a `System.LimitException`, because the flex queue limit is a governor-style limit.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.061273799999999996,
+    "duration_s": 1.422,
+    "input_tokens": 7459,
+    "output_tokens": 63
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"The 101st call to `Database.executeBatch` throws a `System.LimitException`, because the flex queue limit is a governor-style limit.\"}",
+  "prompt_sha": "0cb0c446ca1de025"
+}

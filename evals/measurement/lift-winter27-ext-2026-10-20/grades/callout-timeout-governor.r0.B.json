@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**The limit is 120 seconds. The 10-second figure is not a governor limit.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058453599999999994,
+    "duration_s": 1.836,
+    "input_tokens": 7149,
+    "output_tokens": 47
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**The limit is 120 seconds. The 10-second figure is not a governor limit.**\"}",
+  "prompt_sha": "597df1ff60ac3a5d"
+}

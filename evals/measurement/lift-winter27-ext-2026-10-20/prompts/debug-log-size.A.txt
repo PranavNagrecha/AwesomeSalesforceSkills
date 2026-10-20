@@ -1,0 +1,1 @@
+What is the maximum size of a single Apex debug log, and what happens to a log that exceeds it?

@@ -1,0 +1,8 @@
+**Lifecycle Center.**
+
+According to the skill package, the Winter '27 Metadata API guide describes `DevHubSettings.enableALMDevopsCorePref` (API 65.0+) as "Indicates whether the Lifecycle Center is enabled." The Summer '26 guide called the same setting the "next-generation DevOps Center." The cited location is `api_meta.txt` 264, L117302–L117311 for the Winter '27 wording and 262, L114168 for the old wording.
+
+The same entry calls the managed package (`enableDevOpsCenterGA`, API 56.0+) "an older version of Lifecycle Center." Migrating projects from the package (`enableDevopsCenterMigrationPref`, API 67.0+) is still a developer preview.
+
+- **"AI-powered" label:** the skill doesn't quote that phrase from the Metadata API text. The name is confirmed, but I can't confirm that the guide describes it as "AI-powered." The skill only says its governance policies cover coding agents as well as users, and it marks that claim UNVERIFIED because it comes from help articles written under the old name.
+- **API version:** the skill's citations are to the 264 guide, so I haven't verified the "API 68.0" label from the skill alone. The name itself doesn't depend on that.

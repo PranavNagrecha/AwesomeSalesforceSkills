@@ -560,7 +560,11 @@ releases:
       grounded'''
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'permission-set-architecture 1.2.4: emailRoutingAddressAccesses sub-element (api_meta 264 L97491, L97668-97675;
+      name+enabled; API 62.0) with XML excerpt + gotcha 8 (send-as lever; name semantics UNVERIFIED); email-to-case-configuration
+      1.2.1 cross-ref; permission-set-architect 1.1.1 grounding rule: grep api_meta before declaring an element ungrounded;
+      verify 12/12 both'
   - id: R2-25
     title: 'object-designer: conditional sharing answer when OWD unknown; report type when the ask is reporting; Contract-has-no-sharing-rules
       gotcha'
@@ -592,7 +596,10 @@ releases:
     title: 'record-access-troubleshooting: fix admin-bypass SOQL (PermissionSet. prefix)'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'record-access-troubleshooting 1.1.1: admin-bypass SOQL now PermissionSet.PermissionsViewAllData / PermissionsModifyAllData
+      with IsOwnedByProfile (obj 264 L219473, L219713-219841: PermissionSetAssignment has no Permissions* fields); llm-anti-patterns
+      + gotcha 1 corrected; Questions table + template TODOs cleared; verify 10/12 no FAIL'
   - id: R2-30
     title: 'check_apex_security_patterns: stale-claim rule per sentence and across comment continuation lines'
     size: S

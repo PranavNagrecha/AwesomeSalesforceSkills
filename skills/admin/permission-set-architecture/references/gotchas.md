@@ -132,6 +132,16 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
+## `emailRoutingAddressAccesses` Is The Permission Set Lever For Which Users May Send From A Routing Address
+
+**What happens:** A team locks an Email-to-Case routing address to a permission set (the address's `isPermsetControlled` setting, covered in `admin/email-to-case-configuration`) and then builds the persona bundles with `objectPermissions`, `userPermissions` and `classAccesses` only. The address stays deny-by-default for everyone, because no permission set carries the grant.
+
+**When it occurs:** Any persona that must send as a shared mailbox such as `billing@` or `support@`. The grant is the `emailRoutingAddressAccesses` element on `PermissionSet`: "the Email Routing Address permissions that are available to users assigned to a permission set", API 62.0 and later (api_meta 264 L97491), with `name` and `enabled` per entry (L97668-L97675). It is the send-as lever: the permission set decides which users may use a routing address as the From address. That reading follows `email-to-case-configuration` gotchas (Gotcha 13) quoting `isPermsetControlled`; api_meta 264 L97491 does not itself say "send". A manifest or retrieve pinned below API 62.0 cannot carry the element, and a partial permission set file is a revocation (see "A Partial Permission Set File Is A Revocation").
+
+**How to avoid:** Put `emailRoutingAddressAccesses` in the capability permission set for the persona that owns the mailbox, deploy it before or with the routing address setting, and keep the manifest at API 62.0 or later. Snippet in `references/metadata-examples.md` section 2. Which identifier `name` takes is UNVERIFIED (2026-10-20), as noted there.
+
+---
+
 ## The Checker Refuses To Call An Empty Scan Clean
 
 **What happens:** a tree with no `*.permissionset-meta.xml`, `*.mutingpermissionset-meta.xml`, `*.permissionsetgroup-meta.xml` or `*.profile-meta.xml` under `--manifest-dir` prints the existing `WARN: no PermissionSet … Nothing was checked.` line and now also `Scanned 0 file(s) — nothing asserted; check --manifest-dir` (2026-09-19), so a build log can be grepped for one string across every admin checker that reads nothing. Exit code unchanged.

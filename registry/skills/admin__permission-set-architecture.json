@@ -3,6 +3,7 @@
   "chunk_ids": [
     "0168e2f492b7d2da390d",
     "01b3fcf5a5eda817a7cb",
+    "0275fa10970ead59f2a0",
     "08866db8966bfa37ebb5",
     "0ac2c2326ee20c486f01",
     "0db1d82625a983d4737b",
@@ -78,6 +79,7 @@
     "96e9c5a889c00e80887b",
     "975beba3f49de66806e4",
     "9c8cfdd87a6a031911e3",
+    "9d6e325ae6b9463168ea",
     "9f25796abd75bf1ee75f",
     "a1dcd12601f5d59f1325",
     "a4d5c93334dfd983a4d4",
@@ -101,6 +103,7 @@
     "bfd14a8c4808584eb18a",
     "c16fa9401dc793ab35fa",
     "c587fa4be80e73e16e0d",
+    "c8c689691a5ef8a7a755",
     "cad37041ad96bad192f5",
     "cccb97fbc2322ad3840e",
     "cd05bb1fe571a0ab00d1",
@@ -122,7 +125,6 @@
     "ed56a25191a25d9a5130",
     "ee1ec61fe5679ab9d5d7",
     "ef753da36812e6e9a684",
-    "ef86749f3e874b5d0d67",
     "efa29cc185e444351af5",
     "f006da21a39c41bf3af2",
     "f0496c5c93f0b9fc2c79",
@@ -132,7 +134,7 @@
     "f7bb52e3d137f809effa",
     "f8e3b96550fa172bb515"
   ],
-  "content_hash": "452c2922ae15a81176e3cab01abb08c525b1c6e03e4d731330d253aff515e287",
+  "content_hash": "1ce543429a419c07c2cf6d40d8711cd7816ecdd2f332ce9e640754da6a157c56",
   "dependencies": [],
   "description": "Use when designing or refactoring Salesforce access architecture around minimal profiles, permission sets, permission set groups, muting, and assignment governance. Triggers: 'profile sprawl', 'permission set strategy', 'PSG architecture', 'access bundle design', 'least privilege', 'how to slice permission sets', 'permission set naming convention', 'permission set license restriction', 'PSG status Outdated', 'permissionset-meta.xml'. NOT for PSG muting mechanics and recalculation order \u2014 use admin/permission-set-group-composition. NOT for record-sharing model design \u2014 use admin/sharing-and-visibility. NOT for time-boxing an assignment \u2014 use admin/permission-set-expiration.",
   "file_location": "skills/admin/permission-set-architecture",
@@ -183,7 +185,7 @@
   "templates": [
     "skills/admin/permission-set-architecture/templates/permission-set-architecture-template.md"
   ],
-  "updated": "2026-09-19",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.2.3"
+  "version": "1.2.4"
 }

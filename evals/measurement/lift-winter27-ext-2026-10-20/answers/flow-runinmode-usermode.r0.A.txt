@@ -1,0 +1,14 @@
+I'm not aware of a fourth `runInMode` value, and I won't invent one. The `FlowRunInMode` enum I know has three values:
+
+- **`DefaultMode`**: the flow runs in the context it was launched from. For example, a screen flow launched by a user runs in user mode, and a record-triggered flow runs in system context. Sharing follows the default for that launch context.
+- **`SystemModeWithSharing`**: the flow runs in system context, so object and field permissions are not enforced. Record sharing rules are enforced for the running user.
+- **`SystemModeWithoutSharing`**: the flow runs in system context and ignores sharing, so it can see and modify records the running user couldn't.
+
+My knowledge ends around June 2026, which is roughly the Summer '26 release (API 67.0). API 68.0 is Winter '27, which shipped after that, so I can't rule out an addition there. I have no evidence that one exists.
+
+To confirm against the source:
+- Check the `FlowRunInMode` enum under the `Flow` type in the Metadata API Developer Guide for v68.0.
+- Search the Winter '27 release notes for "run in mode" or "flow context".
+- Retrieve a flow at API 68.0 and see which values the org accepts. A deploy with a bogus value fails validation and lists the allowed ones.
+
+If you saw a fourth value in a doc or tool output, send me the name and I'll help work out what it implies. I'd rather not guess its behavior from the name alone.

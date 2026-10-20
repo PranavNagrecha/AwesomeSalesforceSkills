@@ -1,0 +1,422 @@
+Use the following skill package when answering.
+
+<skill_package>
+=== middleware-integration-patterns/SKILL.md ===
+---
+name: middleware-integration-patterns
+description: "Use when selecting or comparing middleware / iPaaS tools (MuleSoft, Dell Boomi, Workato, Informatica) for Salesforce connectivity, or when determining whether a scenario requires middleware at all versus native Salesforce capabilities. Triggers: 'which iPaaS should I use', 'MuleSoft vs Boomi vs Workato', 'when do I need middleware for Salesforce'. NOT for MuleSoft Anypoint Salesforce Connector configuration — use integration/mulesoft-salesforce-connector. NOT for API-led connectivity layer design — use integration/api-led-connectivity."
+category: integration
+salesforce-version: "Spring '25+"
+well-architected-pillars:
+  - Reliability
+  - Scalability
+  - Security
+  - Operational Excellence
+triggers:
+  - "which middleware tool should I use to connect Salesforce to SAP or ERP systems"
+  - "should I use MuleSoft or Boomi or Workato for my Salesforce integration project"
+  - "when do I need middleware versus just using Apex callouts or native Salesforce APIs"
+  - "my integration requires message transformation protocol conversion and queuing between Salesforce and legacy systems"
+  - "how do I choose between iPaaS vendors for Salesforce connectivity in an enterprise environment"
+  - "does this cross-system orchestration scenario require a dedicated integration platform"
+  - "Informatica versus MuleSoft for Salesforce data sync with complex transformations"
+tags:
+  - middleware
+  - ipaas
+  - mulesoft
+  - boomi
+  - workato
+  - informatica
+  - integration-architecture
+  - vendor-selection
+  - orchestration
+  - message-transformation
+inputs:
+  - "List of source and target systems involved in the integration (ERP, databases, SaaS apps, Salesforce)"
+  - "Integration patterns required: request-reply, event-driven, batch/bulk, or bidirectional sync"
+  - "Non-functional requirements: latency SLA, transaction volume, transactional guarantees, error handling needs"
+  - "Team skills and existing platform investments (MuleSoft license, Informatica license, etc.)"
+  - "Whether the scenario requires orchestration, protocol conversion, message queuing, or complex transformation"
+outputs:
+  - "Middleware necessity decision: whether the scenario genuinely requires middleware or native Salesforce capabilities suffice"
+  - "iPaaS vendor selection recommendation with scored tradeoff rationale"
+  - "Integration pattern recommendation for the scenario (event-driven vs batch vs request-reply)"
+  - "Checklist of middleware requirements to confirm before committing to a vendor"
+dependencies:
+  - mulesoft-salesforce-connector
+  - api-led-connectivity
+  - integration-pattern-selection
+  - error-handling-in-integrations
+version: 1.0.1
+author: Pranav Nagrecha
+updated: 2026-10-20
+---
+
+# Middleware Integration Patterns
+
+This skill activates when a practitioner needs to determine whether middleware is required for a Salesforce integration scenario, or when comparing iPaaS platforms (MuleSoft, Dell Boomi, Workato, Informatica) across vendor-agnostic selection criteria. It provides pattern-level guidance for multi-system orchestration, protocol conversion, message transformation, and transactional guarantees. It does not cover the internals of any single vendor's connector configuration.
+
+---
+
+## Before Starting
+
+Gather this context before working on anything in this domain:
+
+- **Is middleware genuinely required?** Salesforce's native capabilities handle many integration scenarios without a separate platform. Platform Events, Change Data Capture, Pub/Sub API, Flow HTTP Callout, Apex callouts, and External Services collectively address real-time event push, incremental change capture, outbound REST, and inbound webhook reception. Middleware adds operational overhead; justify it with a concrete requirement it meets that the native platform cannot.
+- **What are the orchestration requirements?** Middleware is mandatory per Salesforce Architects guidance when the integration requires cross-system orchestration (fan-out to multiple backends, aggregation across systems), protocol conversion (SOAP to REST, flat-file to JSON), persistent message queuing with guaranteed delivery, or distributed transaction coordination. Apex callouts provide none of these natively at scale.
+- **What is the team's existing tooling and license position?** Enterprises with an active MuleSoft Anypoint license are rarely justified in adopting a second iPaaS. Evaluate additional vendors only when the existing platform demonstrably cannot address the requirement.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which requirement can the native platform not meet: orchestration, protocol conversion, durable queuing, cross-system transactions, or complex transformation? | Apex limits fail hard, with no queue or backpressure (Gotcha 3); with no named driver, middleware is overhead. | A named driver per integration in the necessity decision record. |
+| What is the longest the subscriber can be offline, including planned maintenance? | Platform Event replay is bounded and a longer gap is lost silently (Gotcha 1). | Whether a durable middleware queue must be the store of record. |
+| Where does the middleware keep its Pub/Sub API replay ID, and does it survive a cold restart? | A lost replay ID silently skips the gap (Gotcha 1). | A durable replay-ID store named in the design. |
+| What latency does each record-change flow need, in seconds? | Workato's standard Salesforce trigger polls rather than pushes (Gotcha 2). | A latency SLA that rules vendor triggers in or out before recipes are built. |
+| How many callouts and how much heap will the busiest Apex transaction on the object spend, today and after the next integration? | Hitting a limit rolls back the whole transaction (Gotcha 3). | Evidence for publishing an event and exiting instead of calling out. |
+| Which steps of a multi-system write can be compensated, and which cannot? | iPaaS orchestration is not two-phase commit (Gotcha 4). | A compensation table per step, or an agreed eventual-consistency model. |
+| Does one platform need both real-time events and heavy batch or MDM work? | IICS real-time event support is weaker than its batch ETL (Gotcha 5). | A real-time scenario tested per vendor, or a hybrid split. |
+
+A proper configuration chooses the vendor and pattern against stated outage, latency and transaction requirements, so the failures in the gotchas are designed out instead of found at peak volume.
+
+---
+
+## Core Concepts
+
+### When Middleware Is Mandatory
+
+According to Salesforce Architects integration guidance, middleware is the right choice when any of the following conditions apply:
+
+1. **Cross-system orchestration:** The integration must fan out to, or aggregate from, more than two backend systems in a single business transaction. Apex orchestration hitting governor limits (100 callouts per transaction, 120-second timeout) is a technical forcing function.
+2. **Protocol conversion:** Source or target systems communicate over protocols Salesforce cannot natively consume — AS2, MQ, JMS, SFTP, proprietary binary formats, SOAP with WS-Security, JDBC. Apex HTTP callouts reach only HTTP/HTTPS endpoints.
+3. **Reliable message queuing:** The integration must guarantee delivery even when either system is temporarily unavailable. Salesforce has no native durable queue for outbound messages to arbitrary systems. Platform Events provide replay up to 72 hours within Salesforce's event bus, but delivering to an external system that may be down still requires an intermediary queue.
+4. **Transactional guarantees:** The integration must coordinate a unit of work across two or more systems that each have their own transaction boundaries. Salesforce's SOAP Outbound Messages provide at-least-once delivery, but two-phase commit across external systems requires a middleware transaction coordinator.
+5. **Complex message transformation:** Source data requires structural transformation beyond field mapping — aggregation, splitting, enrichment from a third source, canonical data model normalization. Apex can handle simple transformations but is not designed for pipeline-style transformation orchestration.
+
+### iPaaS Vendor Comparison: Selection Criteria
+
+All four major iPaaS vendors connect to Salesforce through certified connectors or APIs. Selection criteria that distinguish them for Salesforce integrations:
+
+| Criterion | MuleSoft Anypoint | Dell Boomi | Workato | Informatica IICS |
+|---|---|---|---|---|
+| **Primary strength** | API-led architecture, developer control, enterprise governance | Rapid connector deployment, low-code process orchestration | Business-user automation, recipe-driven, speed to value | Enterprise data integration, data quality, MDM convergence |
+| **Salesforce connector** | Anypoint Salesforce Connector (certified, deep API coverage including Streaming/Pub-Sub) | Boomi Salesforce connector (SOAP/REST/Bulk, real-time listener) | Salesforce trigger/action with real-time event subscription | Salesforce connector with CDC support and data quality transforms |
+| **Orchestration model** | Java-based Mule flows; complex CEP and routing via DataWeave and Mule runtime | Boomi Process canvas; low-code but extensible with scripting steps | Recipe-based, trigger-action model; conditional logic via conditional steps | PowerCenter/IICS mappings; strong for ETL-style batch and CDC |
+| **Protocol coverage** | Broadest: HTTP, JMS, AMQP, SFTP, AS2, JDBC, SAP, legacy | Broad: HTTP, JMS, SFTP, EDI, SAP, legacy via Boomi AtomSphere | Narrower: primarily HTTP/webhook; limited legacy protocol support | Broad for data: JDBC, flat-file, S3, SAP, HTTP; limited event streaming |
+| **Transformation language** | DataWeave (purpose-built, expressive) | Groovy scripting or Boomi map function | Workato formulas (Ruby-based, limited) | Mapplet / Expression Transformation (SQL-like) |
+| **Real-time event support** | Streaming API, Pub/Sub gRPC, CDC via connector | Real-time via HTTP listener + Salesforce listener operations | Salesforce real-time trigger (polling every 5 minutes minimum) | CDC-based via Informatica Intelligent Data Management |
+| **Governance and API management** | Anypoint API Manager, Exchange; full API lifecycle | Limited native API management; relies on external gateways | Minimal API governance out-of-the-box | Axon governance for data assets; not API-lifecycle focused |
+| **Target buyer** | Enterprise IT / integration CoE | Mid-market and enterprise, business-technology teams | Business users, citizen integrators, SMB/mid-market | Enterprise data teams, data governance programs |
+
+### Native Salesforce vs. Middleware Decision Boundary
+
+Before selecting any middleware vendor, confirm that native capabilities cannot address the requirement:
+
+| Requirement | Native Salesforce Capability | Middleware Required? |
+|---|---|---|
+| Push Salesforce record changes to external HTTP endpoint | Flow HTTP Callout Action or Apex callout | No, if endpoint is HTTP and volume is within governor limits |
+| Subscribe to Salesforce Platform Events from external system | Pub/Sub API (gRPC streaming), CometD | No (external system consumes directly) |
+| Ingest webhook events from external system into Salesforce | Salesforce REST API from external caller | No |
+| Nightly bulk load from ERP (100K+ records) | External ETL tool or Salesforce Bulk API | Middleware or ETL if transformation is required |
+| Fanout: one Salesforce event triggers updates to 3+ backends | Middleware required | Yes — governor limits and reliability |
+| Transform SFTP flat-file from legacy system into Salesforce records | Apex cannot read SFTP; transformation complex | Yes — middleware handles SFTP, parse, transform, load |
+| Guaranteed delivery when target system is offline | No native durable external queue | Yes — middleware queue provides store-and-forward |
+
+---
+
+## Common Patterns
+
+### Pattern 1: Event-Driven Fanout via Middleware
+
+**When to use:** A Salesforce record change must trigger coordinated updates to multiple external systems (ERP, data warehouse, email platform) as a logical unit.
+
+**How it works:**
+1. Salesforce publishes a Platform Event or Pub/Sub API event on record change.
+2. Middleware subscribes to the event channel (Pub/Sub gRPC or CometD).
+3. Middleware routes the event to a fanout pattern: one copy per downstream system.
+4. Each downstream leg has independent error handling and retry logic; failures in one leg do not roll back others.
+5. A correlation ID (e.g., Salesforce record Id) is propagated to all legs for end-to-end traceability.
+
+**Why not Apex:** Apex triggers hitting multiple callout endpoints face the 100-callout-per-transaction limit and the 120-second cumulative callout timeout (each callout defaults to a 10-second timeout; Apex Developer Guide 264 L19766, L19768, L20046). Failures in one callout leg can roll back the entire transaction if not carefully isolated. Middleware removes Salesforce from the synchronous path entirely.
+
+### Pattern 2: Protocol Conversion for Legacy System Integration
+
+**When to use:** A legacy backend (mainframe, AS400, SAP RFC, EDI trading partner) communicates over a protocol Salesforce cannot natively speak.
+
+**How it works:**
+1. Middleware exposes a protocol adapter for the legacy system (JMS, MQ, AS2, JDBC, RFC).
+2. Middleware transforms the legacy message format into a canonical JSON/XML model using DataWeave, Boomi Maps, or equivalent.
+3. The canonical model is loaded into Salesforce via REST API composite requests or Bulk API, depending on volume.
+4. Return data (e.g., ERP order confirmation) is mapped back from Salesforce to the legacy protocol format for acknowledgment.
+
+**Why not Apex:** Apex has no JDBC, JMS, MQ, or SFTP connectivity. Any connectivity to these protocols from Salesforce requires an intermediary.
+
+### Pattern 3: Store-and-Forward for Resilient Delivery
+
+**When to use:** The target system has planned maintenance windows or is frequently unavailable, and lost messages are unacceptable.
+
+**How it works:**
+1. Middleware receives the Salesforce-originated event or record and places it on an internal durable queue (MuleSoft JMS, Boomi Atom Queue, Workato Job Queue).
+2. A downstream consumer reads from the queue and attempts delivery to the target.
+3. On failure, the message is retained and retried with exponential backoff.
+4. A dead-letter queue captures messages that exhaust retries, with alerting and manual reprocessing tooling.
+
+**Why not Platform Events:** Salesforce Platform Events have a 72-hour replay window for Salesforce-internal consumers. External systems accessing the Pub/Sub API bear the responsibility for maintaining their own replay position. If the external system is offline for more than 72 hours, events are lost. Middleware's durable queue is not subject to Salesforce's retention window.
+
+---
+
+## Decision Guidance
+
+| Situation | Recommended Approach | Reason |
+|---|---|---|
+| Simple Salesforce-to-external-HTTP callout, low volume | Apex callout or Flow HTTP Callout — no middleware | Native capability is sufficient; middleware adds operational overhead |
+| Complex orchestration across 3+ systems | Middleware required; MuleSoft preferred for enterprise governance needs | Governor limits and reliability make Apex inadequate; MuleSoft for API-led governance |
+| Business-user automation, SMB context, Salesforce + SaaS apps | Workato | Low-code recipe model reduces IT dependency; strong SaaS connector library |
+| ETL-style bulk data sync with data quality and MDM requirements | Informatica IICS | Best-in-class data transformation, profiling, and master data management |
+| Mid-market process automation, moderate complexity | Dell Boomi | Low-code, fast deployment, competitive total cost vs MuleSoft at mid-market scale |
+| Enterprise API governance + multi-consumer integration + Agentforce | MuleSoft Anypoint | API-led architecture, Anypoint Exchange catalog, Agent Fabric for Agentforce integration |
+| Legacy protocol conversion (AS2, MQ, JMS, SFTP, RFC) | MuleSoft or Boomi | Both have broad protocol support; Workato and Informatica weaker here |
+| Team with no iPaaS and wanting speed-to-value | Workato or Boomi | Lower learning curve than MuleSoft; functional in days, not weeks |
+
+---
+
+## Recommended Workflow
+
+Step-by-step instructions for an AI agent or practitioner working on middleware selection for Salesforce:
+
+1. **Confirm that middleware is genuinely required.** Map the integration requirements against the native capability table above. If Platform Events, Pub/Sub API, Flow HTTP Callout, or Apex callouts satisfy the requirement within governor limits, document that decision and stop here.
+2. **Identify the integration drivers.** Determine which specific requirements mandate middleware: protocol conversion, orchestration fanout, message queuing, transactional guarantees, or complex transformation. Each driver points toward different vendor strengths.
+3. **Audit existing platform investments.** Check whether the organization already holds an active MuleSoft, Boomi, Workato, or Informatica license. Introducing a second iPaaS is almost never justified; optimize the existing platform first.
+4. **Score vendors against the selection criteria.** Use the comparison table (protocol coverage, transformation capability, real-time event support, governance, buyer profile) to score the top two candidate platforms against the specific integration requirements.
+5. **Validate Salesforce connector coverage.** For the selected vendor, confirm the Salesforce connector supports the required API (Bulk, Streaming/Pub-Sub, REST, SOAP) and the Salesforce org edition. Workato's real-time polling interval (5-minute minimum) is a disqualifying constraint for sub-minute latency requirements.
+6. **Design error handling and observability.** Define the dead-letter queue strategy, retry policy, and alerting thresholds before implementation. Per Salesforce Architects guidance, every middleware integration must have a documented error handling strategy and a path for failed-message recovery.
+7. **Review against the checklist before committing.** Confirm all architecture decisions are documented, error handling is designed, and the middleware necessity decision is recorded.
+
+---
+
+## Review Checklist
+
+Run through these before marking work in this area complete:
+
+- [ ] Middleware necessity confirmed: native Salesforce capabilities evaluated and found insufficient for this scenario
+- [ ] Primary integration drivers documented: which of orchestration / protocol conversion / queuing / transactionality / transformation mandates middleware
+- [ ] Existing iPaaS license inventory checked before evaluating new vendors
+- [ ] Vendor selected against specific requirements, not default preference or brand familiarity
+- [ ] Salesforce connector capability confirmed for the selected vendor (API type, edition compatibility, real-time event latency)
+- [ ] Error handling strategy designed: dead-letter queue, retry policy, alerting, and manual recovery path
+- [ ] Correlation IDs or idempotency keys planned for end-to-end message traceability
+- [ ] Related skills consulted: mulesoft-salesforce-connector (if MuleSoft selected), api-led-connectivity (if multi-layer governance needed), error-handling-in-integrations
+
+---
+
+## Salesforce-Specific Gotchas
+
+Non-obvious platform behaviors that cause real production problems:
+
+1. **Platform Events 72-hour replay window is not middleware-level durability** — Salesforce Platform Events support replay for up to 72 hours for Pub/Sub API consumers. Teams that use Platform Events as the integration backbone without a middleware durable queue discover that external subscribers offline for more than 72 hours permanently lose events with no error or notification. Middleware with a persistent queue removes this exposure.
+2. **Workato's Salesforce real-time trigger is polling, not push** — Despite being labeled "real-time," Workato's Salesforce trigger polls for new/changed records at a minimum interval of 5 minutes. Integrations requiring sub-5-minute latency for record changes cannot use Workato's standard trigger; a separate Pub/Sub API listener flow must be designed.
+3. **Governor limits do not pause — they fail hard** — When an Apex callout integration approaches the 100-callout-per-transaction or 120-second cumulative callout-timeout limit, the transaction is not queued or paused; it fails with a `System.LimitException`, which cannot be caught (Apex Developer Guide 264 L19853, L40117–L40123). Teams that incrementally add integration logic to Apex triggers hit this cliff unexpectedly. Plan for middleware before the limit is reached, not after it is first hit in production.
+
+---
+
+## Output Artifacts
+
+| Artifact | Description |
+|---|---|
+| Middleware necessity decision record | Documented yes/no decision on whether middleware is required, with rationale citing specific requirements |
+| iPaaS vendor selection scorecard | Scored comparison of candidate vendors against integration-specific criteria |
+| Integration pattern recommendation | Selected pattern (event-driven fanout, protocol conversion, store-and-forward, etc.) with justification |
+| Error handling design | Dead-letter queue strategy, retry policy, alerting thresholds, and recovery runbook outline |
+
+---
+
+## Related Skills
+
+- integration/mulesoft-salesforce-connector — Use when MuleSoft is selected: covers Anypoint Salesforce Connector configuration, watermark, batch processing, and auth
+- integration/api-led-connectivity — Use when MuleSoft is selected and multi-layer API governance is needed: System/Process/Experience API layer design
+- admin/integration-pattern-selection — Use to determine synchronous vs asynchronous vs event-driven pattern before selecting middleware
+- integration/error-handling-in-integrations — Use when designing the error handling, retry, and dead-letter strategy for the middleware integration
+- integration/retry-and-backoff-patterns — Use for configuring middleware retry logic with Salesforce-specific backoff constraints
+
+
+=== middleware-integration-patterns/references/llm-anti-patterns.md ===
+# LLM Anti-Patterns — Middleware Integration Patterns
+
+Common mistakes AI coding assistants make when generating or advising on Middleware Integration Patterns.
+These patterns help the consuming agent self-check its own output.
+
+## Anti-Pattern 1: Recommending Apex Callouts for Multi-System Orchestration
+
+**What the LLM generates:** When asked how to synchronize a Salesforce Opportunity close to three external systems (ERP, data warehouse, notification service), the assistant generates an Apex trigger with three `Http.send()` callouts inline, each wrapped in a try/catch, with a retry loop on 503 responses.
+
+**Why it happens:** Apex callout examples are heavily represented in Salesforce developer training data. LLMs default to code generation over architecture guidance, and Apex is the most familiar Salesforce integration primitive. The multi-system orchestration constraint is not recognized as a governor-limit violation scenario until the code is tested under load.
+
+**Correct pattern:**
+
+```
+// Do NOT do this in an Apex trigger for multi-system fanout:
+// Http h = new Http();
+// HttpRequest req1 = new HttpRequest(); req1.setEndpoint('https://erp.example.com/orders'); ...
+// HttpRequest req2 = new HttpRequest(); req2.setEndpoint('https://dw.example.com/events'); ...
+// HttpRequest req3 = new HttpRequest(); req3.setEndpoint('https://notify.example.com/alerts'); ...
+
+// CORRECT: publish a Platform Event and let middleware handle fanout
+OrderSyncEvent__e event = new OrderSyncEvent__e(
+    OpportunityId__c = opp.Id,
+    ClosedAmount__c = opp.Amount
+);
+EventBus.publish(event);
+// Apex transaction ends here — no callouts, no governor limit risk
+```
+
+Middleware subscribes to `OrderSyncEvent__e` via Pub/Sub API and fans out to ERP, data warehouse, and notification service independently.
+
+**Detection hint:** Look for multiple `Http.send()` or `HttpRequest` calls in the same Apex trigger method, or `for` loops over `Http.send()` — strong signal that orchestration has leaked into Apex.
+
+---
+
+## Anti-Pattern 2: Treating Middleware Vendor Selection as MuleSoft-Specific Configuration Advice
+
+**What the LLM generates:** When asked "which middleware should I use for Salesforce integration," the assistant immediately pivots to MuleSoft Anypoint Salesforce Connector configuration steps: how to set up JWT Bearer auth, configure watermark, select the Bulk API — without evaluating whether MuleSoft is the right choice or whether middleware is needed at all.
+
+**Why it happens:** MuleSoft is a Salesforce subsidiary and is disproportionately represented in Salesforce integration documentation and training data. LLMs conflate "Salesforce middleware integration" with "MuleSoft configuration" because the two are co-located in training corpora. The vendor selection question is treated as resolved before it is asked.
+
+**Correct pattern:**
+
+```
+Step 1: Determine whether middleware is required at all.
+  - Does the integration require protocol conversion, cross-system orchestration,
+    durable queuing, or complex transformation?
+  - If not, native Salesforce capabilities (Platform Events, Flow HTTP Callout,
+    Apex callouts) may be sufficient.
+
+Step 2: If middleware is required, identify the selection criteria:
+  - Protocol support needed?
+  - Real-time event latency SLA?
+  - Team skills and existing licenses?
+  - Governance and API management requirements?
+
+Step 3: Score candidate vendors against criteria.
+  MuleSoft: enterprise governance, deepest Salesforce connector, highest cost
+  Boomi: mid-market, fast deployment, good protocol breadth
+  Workato: business-user automation, SaaS-first, 5-min polling minimum
+  Informatica: batch ETL/MDM strength, weaker real-time events
+```
+
+**Detection hint:** Response that opens with MuleSoft connector XML or Anypoint configuration steps without first asking about the integration requirements, existing licenses, or whether middleware is necessary.
+
+---
+
+## Anti-Pattern 3: Assuming Workato Triggers Are Real-Time for Salesforce Record Changes
+
+**What the LLM generates:** "Use a Workato Salesforce real-time trigger to detect when an Opportunity is closed and immediately sync it to HubSpot. This will fire instantly when the record changes."
+
+**Why it happens:** Workato's marketing materials and documentation label their Salesforce connector trigger as "real-time." LLMs reproduce this label without noting that the implementation is polling-based with a minimum interval of approximately 5 minutes, not a push subscription.
+
+**Correct pattern:**
+
+```
+Workato Salesforce "real-time" trigger = polling every ~5 minutes minimum.
+
+For sub-5-minute latency with Workato:
+  Option A: Configure Salesforce Flow to POST to a Workato webhook URL
+            (achieves near-real-time push without polling delay)
+  Option B: Switch to MuleSoft or Boomi which support native Pub/Sub API
+            gRPC subscription (true push, sub-second latency)
+
+Only use Workato standard trigger when 5-minute latency is explicitly acceptable.
+```
+
+**Detection hint:** Response recommending Workato for a use case with a latency requirement under 5 minutes without noting the polling constraint or recommending the webhook workaround.
+
+---
+
+## Anti-Pattern 4: Conflating Protocol Conversion with REST Transformation
+
+**What the LLM generates:** When asked about integrating Salesforce with a legacy system that exposes a JMS queue or AS2 protocol, the assistant generates Apex code using `HttpRequest` with a custom endpoint, as if JMS or AS2 were HTTP-accessible by default.
+
+**Why it happens:** LLMs trained on web and cloud integration examples treat all integrations as HTTP-based. Non-HTTP protocols (JMS, MQ, AS2, JDBC, RFC, SFTP) require a middleware adapter that has no equivalent in Apex's HTTP callout model. The LLM does not recognize the protocol mismatch.
+
+**Correct pattern:**
+
+```
+// JMS, AS2, JDBC, SAP RFC, SFTP — NONE of these are reachable via Apex HttpRequest.
+
+// These protocols require a middleware adapter:
+// - MuleSoft: JMS Connector, AS2 Connector, SAP Connector, SFTP Connector
+// - Boomi: JMS connector, AS2 connector, SAP connector
+// - Informatica: JDBC, flat-file, SAP adapters
+
+// Only after middleware converts the protocol to HTTP/REST can Salesforce
+// interact with the result via Named Credentials + External Services or Apex callout.
+```
+
+**Detection hint:** Apex `HttpRequest` code targeting a non-HTTP protocol endpoint (e.g., `jms://`, `sftp://`, `sap://`, `jdbc://`) or any endpoint described as a "queue" or "legacy mainframe."
+
+---
+
+## Anti-Pattern 5: Omitting Dead-Letter Queue and Error Recovery Design
+
+**What the LLM generates:** A complete middleware integration flow that handles the happy path (message received → transformed → written to target system) with a single generic `catch` block that logs the error and discards the message. No dead-letter queue, no retry policy, no alerting, no compensating transaction design.
+
+**Why it happens:** Happy-path completeness is easier to demonstrate and is more common in training examples. Error handling design is treated as an implementation detail rather than an architectural requirement. LLMs optimize for code that compiles and runs, not for code that fails gracefully in production.
+
+**Correct pattern:**
+
+```
+Every middleware integration requires:
+
+1. Retry policy with exponential backoff:
+   - Attempt 1: immediate
+   - Attempt 2: after 1 min
+   - Attempt 3: after 5 min
+   - Attempt 4: after 30 min
+   - After max retries: route to dead-letter queue
+
+2. Dead-letter queue:
+   - Persistent, durable (survives middleware restart)
+   - Stores original message + error metadata + retry count + timestamp
+   - Triggers alert to operations team when message lands here
+
+3. Compensating transaction:
+   - If Step N succeeds and Step N+1 fails, trigger a rollback action for Step N
+   - Document which steps are compensable and which are not (external emails sent = not compensable)
+
+4. Correlation ID propagation:
+   - Salesforce record Id (or a UUID generated at event publish time)
+   - Carried in every message header through every hop
+   - Used to correlate Salesforce event → middleware log → target system write
+```
+
+**Detection hint:** Middleware flow design that has no mention of dead-letter queue, retry policy, or compensating transactions, or that has a `catch` block that only logs and exits without routing to a recovery path.
+
+---
+
+## Anti-Pattern 6: Treating MuleSoft Agent Fabric as a Generic Middleware Recommendation
+
+**What the LLM generates:** When asked about Agentforce integrating with external systems, the assistant recommends "use MuleSoft Agent Fabric" as the standard answer regardless of whether the organization uses MuleSoft.
+
+**Why it happens:** MuleSoft Agent Fabric is a real Salesforce product feature for exposing MuleSoft APIs as Agentforce agent actions. LLMs trained on recent Salesforce announcements over-generalize this to mean that all Agentforce external integrations require MuleSoft, which is false. Agentforce agents can call external APIs via Flow HTTP Callout, Apex, or External Services regardless of middleware vendor.
+
+**Correct pattern:**
+
+```
+Agentforce external API integration options:
+  - Flow HTTP Callout Action: no middleware needed, calls HTTP endpoints directly
+  - Apex-defined invocable action: callouts from Apex, any HTTP endpoint
+  - External Services registered action: OpenAPI-spec-registered endpoints
+  - MuleSoft Agent Fabric: optional when MuleSoft is already the middleware platform
+                           and Experience APIs in Anypoint Exchange are the target
+
+MuleSoft Agent Fabric is a convenience feature for existing MuleSoft customers.
+It is not required for Agentforce to call external APIs.
+```
+
+**Detection hint:** Response recommending MuleSoft Agent Fabric to an organization that has not mentioned MuleSoft, or treating Agent Fabric as the only path for Agentforce external integration.
+
+</skill_package>
+
+What is the governor limit on callout time in a single Apex transaction, and is the 10-second figure a governor limit?

@@ -239,6 +239,8 @@ is the picklist of "the sender's address, org-wide email addresses, or Email-to-
 and "the email address must be verified" (object_reference L104682). Permission set design itself is
 `admin/permission-set-architecture`.
 
+See also: the permission set side of this grant is the `emailRoutingAddressAccesses` element (API 62.0+, api_meta 264 L97491), documented with a snippet in `admin/permission-set-architecture` references/gotchas.md.
+
 ---
 
 ## Gotcha 14: `newEntityRecordType` Is Version-Gated and Object-Qualified, and the Guide Says Neither

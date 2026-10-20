@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "By default, the unhandled exception email goes to the **developer who last modified the failing Apex class** (the class's `LastModifiedBy`), plus any recipients configured under **Setup \u2192 Apex Exception Email**.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0583068,
+    "duration_s": 1.933,
+    "input_tokens": 7025,
+    "output_tokens": 87
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"By default, the unhandled exception email goes to the **developer who last modified the failing Apex class** (the class's `LastModifiedBy`), plus any recipients configured under **Setup \u2192 Apex Exception Email**.\"}",
+  "prompt_sha": "d979864925a1189c"
+}

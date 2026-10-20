@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "A platform event-triggered flow interview can receive up to **2,000** platform event messages in a single batch.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0554676,
+    "duration_s": 8.665,
+    "input_tokens": 6767,
+    "output_tokens": 52
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"A platform event-triggered flow interview can receive up to **2,000** platform event messages in a single batch.\"}",
+  "prompt_sha": "cf166f24fe7fa21e"
+}

@@ -1,0 +1,9 @@
+I can't give you a reliable answer to this one. Winter '27 (API 68.0) is newer than the material I can draw on, and I don't have the Metadata API Developer Guide wording for it. A name from me would be a guess, and a made-up product name is the kind of error that tends to spread into skill content and trigger glosses.
+
+The product name should be visible in these places:
+
+1. **Metadata API Developer Guide, API 68.0.** Search the DevOps Center-related types (for example `DevopsCenter*`, `WorkItem*`, or pipeline-related types) and read the description text, which is where "next-generation DevOps Center" used to appear. Compare it with the 67.0 guide.
+2. **Winter '27 release notes PDF.** Search for "DevOps Center" and "DevOps". Use the release PDF, because help.salesforce.com pages don't fetch reliably.
+3. **Diff of the Metadata API reference between 67.0 and 68.0.** Look for the replaced phrase in the type descriptions. If you have the guide's JSON from the `get_document_content` endpoint, a grep for `next-generation` across both versions finds it quickly.
+
+If you paste the 68.0 description snippet, I can help confirm the exact product name and work out which skills or glosses need updating. Before you cite it anywhere, check it against the guide text, not a secondary summary.

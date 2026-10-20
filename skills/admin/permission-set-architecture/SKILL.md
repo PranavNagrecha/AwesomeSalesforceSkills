@@ -36,9 +36,9 @@ outputs:
   - "review findings for profile-heavy or inconsistent access models"
   - "migration plan from profile-centric access to governed bundles"
 dependencies: []
-version: 1.2.3
+version: 1.2.4
 author: Pranav Nagrecha
-updated: 2026-09-19
+updated: 2026-10-20
 ---
 
 Use this skill when the problem is no longer "which permission do I grant" and has become "how should the org structure access so future changes stay safe?" The goal is to produce a layered access model that supports least privilege, lowers operational risk, and makes persona-based changes predictable.
@@ -172,6 +172,7 @@ Deployable examples of all three, plus `package.xml`, retrieve/deploy commands, 
 5. **A session-based set loses its step-up requirement inside a group** — the Object Reference is explicit that permissions in session-based sets included in a PSG no longer require session activation.
 6. **A `description` over 255 characters fails the deploy, and PSGs fail as a cascade** — the Metadata API guide caps `PermissionSet.description` and `Profile.description` at 255 characters; a permission set rejected on that limit takes every PSG that composes it down with it (`references/gotchas.md`).
 7. **A Platform Event is an object for permission purposes** — a persona bundle that publishes a `__e` via automation needs an `objectPermissions` grant for that event just like any other object, and at the API 67.0 user-mode default a missing grant fails silently at runtime, not at deploy (`references/gotchas.md`).
+8. **Which users may send from an Email-to-Case routing address is a permission set element** — `emailRoutingAddressAccesses` (API 62.0+, `name` + `enabled`) on `PermissionSet`; omit it from the persona bundle and an address under permission-set control stays closed to users who hold no grant by another route. Snippet in `references/metadata-examples.md`; detail in `references/gotchas.md`.
 
 Deeper treatment, each with the platform behaviour behind it, in `references/gotchas.md`.
 

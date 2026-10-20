@@ -1,0 +1,19 @@
+I can't confirm a fourth value, and I'd rather not invent one.
+
+- **What I know:** `runInMode` (the `FlowRunInMode` enum) has three documented values: `DefaultMode`, `SystemModeWithSharing`, and `SystemModeWithoutSharing`. Nothing I know of adds a fourth.
+- **Why I can't rule one out:** API 68.0 is Winter '27, which is newer than my knowledge (cutoff June 2026). A value added in that release is possible, but I have no evidence of one.
+- **What the skill package says:** The record-triggered-flow-patterns skill never mentions `runInMode`, so it can't settle this.
+
+Here is what the three known values do:
+
+- `DefaultMode`: the flow runs however its trigger or entry point normally dictates. User-launched flows run in user context. Record-triggered and other automated flows run in system context, and that context's sharing behavior is the part that depends on how the flow was launched.
+- `SystemModeWithSharing`: system mode (object and field permissions are ignored), but record sharing is enforced for the running user.
+- `SystemModeWithoutSharing`: system mode with sharing ignored as well, so the flow sees every record.
+
+To check for a fourth value, use one of these:
+
+1. Read the `Flow` > `runInMode` entry in the Metadata API Developer Guide for v68.0, which lists the enum values.
+2. Look at the `FlowRunInMode` simple type in the v68.0 Metadata WSDL, or at the output of `sf sobject describe` or `sf project retrieve` against a Winter '27 org. The WSDL enumeration is authoritative.
+3. In a Winter '27 sandbox, deploy a test flow with a candidate value at `<apiVersion>68.0</apiVersion>`. An invalid value fails with an explicit enum error.
+
+If you find a fourth value, send me its name and I can help work out the right use cases and review implications.

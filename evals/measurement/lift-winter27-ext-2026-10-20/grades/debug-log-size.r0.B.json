@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "When a log goes over that limit, Salesforce doesn't reject it or cut off the end. It shrinks the log by **removing older lines**, such as early `System.debug` output. The removed lines can come from **anywhere in the log**, not just the beginning.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.059869900000000004,
+    "duration_s": 3.516,
+    "input_tokens": 7195,
+    "output_tokens": 99
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"When a log goes over that limit, Salesforce doesn't reject it or cut off the end. It shrinks the log by **removing older lines**, such as early `System.debug` output. The removed lines can come from **anywhere in the log**, not just the beginning.\"}",
+  "prompt_sha": "82070678a3c322f0"
+}

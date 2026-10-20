@@ -1,13 +1,13 @@
 ---
 id: permission-set-architect
 class: runtime
-version: 1.1.0
+version: 1.1.1
 status: stable
 requires_org: true
 modes: [design, audit]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-17
+updated: 2026-10-20
 harness: designer_base
 default_output_dir: "docs/reports/permission-set-architect/"
 output_formats:
@@ -144,6 +144,8 @@ For every Feature PS being composed, check if it grants more than the persona ne
 #### Step 5 — Emit metadata stubs
 
 Generate `.permissionset-meta.xml` skeletons for every new PS + PSG + Muting PS proposed. Include only the header + the perms that justify the PS's existence — the user fills in fine-grained FLS after review.
+
+**Grounding rule (Process):** before declaring a Metadata API element or `PermissionSet` sub-element ungrounded, unsupported, or "not in the corpus", grep the Metadata API guide text (`api_meta.txt`) for the element name (for example `grep -n "emailRoutingAddressAccesses" api_meta.txt`) and cite the matching line; only an empty grep result supports the claim, and record it in Process Observations as ambiguous with the grep that returned nothing.
 
 #### Step 6 — Emit the deployment order
 

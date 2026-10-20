@@ -1,0 +1,9 @@
+**Up to 200 event messages per batch.**
+
+Per the skill's citation of the Platform Events Developer Guide (`platform_events.txt` 264 L2185–2186), a platform event-triggered flow receives a batch of "up to a maximum of 200 event messages." Order is preserved within the batch, and the messages can come from several publishers.
+
+Design implications:
+
+- **Don't confuse this with the Apex trigger batch size.** A platform event Apex trigger receives up to 2,000 messages per batch (`apexdev.txt` 264 L20065). That figure does not apply to flows.
+- **Make the subscriber bulk-safe.** Build the Get Records filters from the set of ids across the whole batch, and do DML against a collection rather than per event.
+- **Expect each batch to run as its own asynchronous transaction.** It gets fresh governor limits. The skill marks which column (sync or async) applies as UNVERIFIED, so budget conservatively against the synchronous limits.

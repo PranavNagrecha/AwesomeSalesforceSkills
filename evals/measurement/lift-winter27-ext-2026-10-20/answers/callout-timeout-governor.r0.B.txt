@@ -1,0 +1,16 @@
+**The limit is 120 seconds. The 10-second figure is not a governor limit.**
+
+- **Governor limit:** the maximum cumulative timeout for all callouts (HTTP requests and web service calls) in one Apex transaction is **120 seconds**. The separate cap of **100 callouts per transaction** applies alongside it.
+- **The 10-second figure:** this is the **default per-callout timeout**, the value used when you don't call `HttpRequest.setTimeout()`. It is a configurable setting, not a platform ceiling.
+- **Per-callout range:** `setTimeout(ms)` accepts values up to 120,000 ms (120 s), and the value counts toward the cumulative 120-second budget.
+
+```apex
+HttpRequest req = new HttpRequest();
+req.setEndpoint('callout:My_Named_Credential/orders');
+req.setMethod('POST');
+req.setTimeout(30000); // 30 s for this call; default is 10 s, max 120 s
+```
+
+In practice, three callouts at 10 s each use 30 s of the 120 s budget. A single callout set to 120 s uses all of it, so no further callouts can complete in that transaction.
+
+**Correction to the skill text:** Gotcha 3 says that approaching either limit produces an uncatchable `System.LimitException`. That is accurate for the callout-count limit (the 101st callout throws `LimitException: Too many callouts`), but I would not assume it for timeouts. A single callout that exceeds its own timeout surfaces as a catchable `System.CalloutException` (for example, "Read timed out"). I would not cite the cumulative-120s behavior as a `LimitException` without checking the Apex Developer Guide. The architectural advice still holds: don't build multi-system fanout in a trigger, and publish a Platform Event and let middleware fan out instead.

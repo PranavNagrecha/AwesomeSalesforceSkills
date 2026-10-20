@@ -1,0 +1,524 @@
+{
+  "answer_model": "sonnet",
+  "grader_model": "opus",
+  "repeats": 1,
+  "probes": [
+    {
+      "id": "pe-flow-batch-size",
+      "skill": "flow/flow-platform-events-integration",
+      "source": "platform_events.txt L2185",
+      "runs": [
+        {
+          "A": {
+            "answer": "A platform event-triggered flow interview can receive up to **2,000** platform event messages in a single batch. This is the same default batch size that Apex platform event triggers get.\n\n- The 2,000 is a maximum, not a guarantee. A batch can be smaller depending on how many messages are waiting when the subscriber is delivered events.\n- The flow is bulkified for you. One interview handles the whole batch, and the triggering messages are available as `$Record`. Avoid DML or queries in loops, because the governor limits apply per interview and the batch can be large.\n- The batch size can be tuned with a `PlatformEventSubscriberConfig` metadata record (`batchSize`, 1 to 2,000). I'm confident this works for Apex triggers, but I'm less sure it applies to flows. Check the current Platform Events Developer Guide before relying on it.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "A platform event-triggered flow interview can receive up to **2,000** platform event messages in a single batch.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0870483,
+            "duration_s": 15.744,
+            "tokens": {
+              "input": 12871,
+              "output": 756
+            }
+          },
+          "B": {
+            "answer": "**Up to 200 event messages per batch.**\n\nPer the skill's citation of the Platform Events Developer Guide (`platform_events.txt` 264 L2185\u20132186), a platform event-triggered flow receives a batch of \"up to a maximum of 200 event messages.\" Order is preserved within the batch, and the messages can come from several publishers.\n\nDesign implications:\n\n- **Don't confuse this with the Apex trigger batch size.** A platform event Apex trigger receives up to 2,000 messages per batch (`apexdev.txt` 264 L20065). That figure does not apply to flows.\n- **Make the subscriber bulk-safe.** Build the Get Records filters from the set of ids across the whole batch, and do DML against a collection rather than per event.\n- **Expect each batch to run as its own asynchronous transaction.** It gets fresh governor limits. The skill marks which column (sync or async) applies as UNVERIFIED, so budget conservatively against the synchronous limits.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**Up to 200 event messages per batch.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1340544,
+            "duration_s": 6.327999999999999,
+            "tokens": {
+              "input": 25328,
+              "output": 358
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pe-flow-running-user",
+      "skill": "flow/flow-platform-events-integration",
+      "source": "platform_events.txt L2190-2191",
+      "runs": [
+        {
+          "A": {
+            "answer": "**Short answer:** By default it runs as the **Automated Process** user, not the user who published the event. You can override this by choosing a specific running user.\n\n**Details**\n\n- **Default:** A platform event-triggered flow is a subscriber that runs asynchronously, outside the publisher's transaction. The interview runs as the Automated Process system user, so the publishing user's context isn't carried over.\n- **Override:** In Flow Builder, open the Start element and use the **Run Flow As** option (under Advanced). Choose **Another User** and pick a specific user. This is the flow equivalent of `PlatformEventSubscriberConfig` for Apex platform event triggers, which lets you set the running user and batch size.\n- **Record effects:**\n  - Records the flow creates have `CreatedById` and `LastModifiedById` set to the running user (Automated Process by default).\n  - `OwnerId` defaults to that user too, unless the flow sets it explicitly.\n  - Ownership-based sharing, assignment rules and `$User` references all resolve against the running user, not the publisher.\n  - Automated Process can't own many record types in practice, such as records that need a real, licensed owner. Set `OwnerId` explicitly in those cases or configure a real running user.\n- **Publisher info is gone:** Because the publisher's identity is lost, carry it in the event payload. Add a custom field such as `Publishing_User_Id__c` and populate it at publish time. The standard `CreatedById` on the event record is available in the flow, but use it deliberately.\n- **Access checks:** Event-triggered flows run in system context, so the running user's sharing and object/field permissions generally don't restrict the flow's record operations. Ownership and audit fields still reflect that user. If you pick a specific user, make sure that user is active. A deactivated or frozen running user will cause the subscriber to fail.\n- **Pitfalls:**\n  - Audit trails will show \"Automated Process\", so use a dedicated integration or service user if you want meaningful attribution.\n  - Errors surface in the Flow fault path or in Apex Exception Email, not to the publisher, so build a fault path.\n  - Behavior can differ slightly across releases, so confirm the Run Flow As option in your org's current Flow Builder.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "By default it runs as the **Automated Process** user, not the user who published the event.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0947408,
+            "duration_s": 13.156,
+            "tokens": {
+              "input": 13333,
+              "output": 1159
+            }
+          },
+          "B": {
+            "answer": "The interview runs in the context of **the user who published the event message**. It does not run as the Automated Process user.\n\nThe skill package cites this to the Platform Events Developer Guide (`platform_events.txt` 264 L2190\u20132192). Records the flow creates or updates carry that publishing user in `CreatedById` and `LastModifiedById`. Only the flow's **debug logs** appear under the Automated Process user, and that is the source of the common mix-up.\n\n**Practical implications**\n\n- **Test as each publishing persona.** If a publisher lacks access to an object or field the subscriber reads, such as a `ContactAccess__c` lookup, the Get Records returns nothing instead of failing loudly. Give each publishing persona the access the subscriber needs.\n- **Don't grant access to Automated Process** on the assumption that it is the running user. That fixes nothing.\n- **`PlatformEventSubscriberConfig` doesn't apply to flows.** It sets the running user for a platform event *Apex trigger* (`api_meta.txt` 264 L99118; `platform_events.txt` 264 L2366\u20132368). If you need a fixed, controlled running user, an Apex trigger subscriber is the documented route.\n\n**Not documented in the corpus (marked UNVERIFIED in the skill)**\n\n- There is no documented run-as setting for a platform event\u2013triggered flow.\n- How the flow's `runInMode` interacts with the publisher's context isn't stated. Verify this in a sandbox before relying on it.\n\nOne caution: the skill's \"Official Sources Used\" list includes a Help article titled \"Set the Run Context for a Platform Event\u2013Triggered Flow.\" That conflicts with the UNVERIFIED note that no such setting is documented. Treat that link as unconfirmed until you've checked it, and don't design around a run-context setting on the strength of the title alone.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "The interview runs in the context of **the user who published the event message**. It does not run as the Automated Process user.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.13959560000000001,
+            "duration_s": 6.5520000000000005,
+            "tokens": {
+              "input": 25612,
+              "output": 660
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "dataweave-storage",
+      "skill": "integration/dataweave-for-apex",
+      "source": "salesforce_apex_developer_guide.txt L26823",
+      "runs": [
+        {
+          "A": {
+            "answer": "# DataWeave scripts in Apex: storage and deployment\n\n## How it's stored\n\nA DataWeave script that Apex calls is org metadata of type **`DataWeaveResource`**. Each script is two files in an SFDX project:\n\n```\nforce-app/main/default/dataweave/\n\u251c\u2500\u2500 contactsToOrders.dwl\n\u2514\u2500\u2500 contactsToOrders.dwl-meta.xml\n```\n\n**`contactsToOrders.dwl`** holds the script itself:\n\n```dataweave\n%dw 2.0\ninput records application/json\noutput application/apex\n---\nrecords map (r) -> {\n    name: r.firstName ++ ' ' ++ r.lastName,\n    email: r.email\n}\n```\n\n**`contactsToOrders.dwl-meta.xml`** holds the metadata:\n\n```xml\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DataWeaveResource xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <apiVersion>63.0</apiVersion>\n    <isGlobal>false</isGlobal>\n</DataWeaveResource>\n```\n\n- The file name (minus extension) is the script name that Apex references.\n- `isGlobal` matters mainly for managed packages. It controls whether subscriber orgs can call the script.\n- `DataWeaveResource` was introduced in a fairly recent API version (I believe around 55.0). Confirm the minimum version against the Metadata API reference for your target org.\n\n## How Apex invokes it\n\n```apex\nDataWeave.Script script = DataWeave.Script.createScript('contactsToOrders');\nDataWeave.Result result = script.execute(new Map<String, Object>{\n    'records' => jsonString\n});\nObject value = result.getValue();           // typed output (e.g. output application/apex)\nString asText = result.getValueAsString();  // string form\n```\n\nThe keys in the input map must match the `input` declarations in the script. The script runs inside the Apex transaction, so it counts against your CPU time and heap limits.\n\n## How it's deployed\n\nIt deploys like any other metadata.\n\n- **SFDX/source format:** `sf project deploy start --source-dir force-app/main/default/dataweave` or `--metadata DataWeaveResource:contactsToOrders`.\n- **package.xml:** use the metadata type name `DataWeaveResource`:\n  ```xml\n  <types>\n      <members>contactsToOrders</members>\n      <name>DataWeaveResource</name>\n  </types>\n  ```\n- **Packaging:** it can be included in unlocked and managed packages. Use `isGlobal` deliberately for the latter.\n- **Dependencies:** an Apex class that calls `createScript('name')` resolves the name at runtime. It is a string, not a compile-time reference, so deployment doesn't enforce ordering. Deploy the script together with, or before, the Apex that uses it, and cover it with a test that executes it.\n\n## Practical notes\n\n- Because the script is resolved by string name, a missing or misnamed script fails at runtime, not at deploy. Add an Apex test that calls `execute` for each script.\n- Only a subset of the DataWeave runtime is available in Apex, so test any functions or modules you rely on.\n- Scripts are versioned in source control like other metadata, so you get normal diffs and code review.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "A DataWeave script that Apex calls is org metadata of type **`DataWeaveResource`**.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.10437160000000001,
+            "duration_s": 14.815,
+            "tokens": {
+              "input": 13690,
+              "output": 1699
+            }
+          },
+          "B": {
+            "answer": "A DataWeave script used from Apex is stored as **`DataWeaveResource` metadata**, not as a static resource and not as an inline string.\n\n## Storage\n\n- The script is a `.dwl` file in the **`dw`** folder of the source tree, e.g. `force-app/main/default/dw/Account_Mapping_DW.dwl`.\n- Each script has a companion `.dwl-meta.xml` that carries the required `apiVersion` and the optional `isGlobal` (it also has `isProtected`):\n\n```xml\n<DataWeaveResource xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <apiVersion>68.0</apiVersion>\n    <isGlobal>false</isGlobal>\n</DataWeaveResource>\n```\n\n- The script starts with a header declaring the input and output MIME types:\n\n```dwl\n%dw 2.0\ninput payload application/json\noutput application/json\n---\npayload map (item) -> { accountName: item.name }\n```\n\n## Deployment\n\n- Deploy it like any other metadata, in the same source tree and deployment as the Apex class and its tests. A fresh CI or scratch org needs `force-app/main/default/dw/` deployed along with the classes, because `createScript` only loads a `.dwl` that is already in the org.\n- There is no cache-control setting, so the old static-resource advice (\"set cache control to Public\") does not apply.\n\n## How Apex references it\n\n```apex\nDataweave.Script s = Dataweave.Script.createScript('Account_Mapping_DW');\nDataweave.Result r = s.execute(new Map<String, Object>{ 'payload' => inputJson });\nString out = r.getValueAsString();\n```\n\n- Alternatively, use the generated class `DataWeaveScriptResource.<Name>`. The platform generates it for each script. Because it is a compile-time reference, the platform won't let anyone delete a script that is referenced this way.\n- `createScript(namespace, scriptName)` also exists for scripts in a namespace.\n- There is no inline or `fromString` API. The script can't be built from an Apex string.\n\n## Limits and version floors\n\n- `DataWeaveResource` exists from API 58.0. The calling Apex class must be API 53.0 or later.\n- The class's API version selects the DataWeave syntax version: 2.5 at 61.0 and earlier, 2.8 at 62.0, 2.9 at 63.0+.\n- An org can hold at most 50 scripts, each up to 100,000 characters.\n- The script runs inside the Apex transaction's heap and CPU limits. It is not a call to MuleSoft, and it needs no MuleSoft license.\n- Runtime script errors surface in Apex as `System.DataWeaveScriptException`.\n\n## Unverified\n\nThe corpus does not say which exception `createScript` throws for a missing script, so test that case in a scratch org. The Summer '24 GA date is not stated in the corpus either.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "A DataWeave script used from Apex is stored as **`DataWeaveResource` metadata**, not as a static resource and not as an inline string.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.13079749999999998,
+            "duration_s": 9.965,
+            "tokens": {
+              "input": 22139,
+              "output": 1035
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "lifecycle-center-name",
+      "skill": "devops/devops-center-advanced",
+      "source": "api_meta.txt L117302",
+      "runs": [
+        {
+          "A": {
+            "answer": "I can't give you a reliable answer to this one. Winter '27 (API 68.0) is newer than the material I can draw on, and I don't have the Metadata API Developer Guide wording for it. A name from me would be a guess, and a made-up product name is the kind of error that tends to spread into skill content and trigger glosses.\n\nThe product name should be visible in these places:\n\n1. **Metadata API Developer Guide, API 68.0.** Search the DevOps Center-related types (for example `DevopsCenter*`, `WorkItem*`, or pipeline-related types) and read the description text, which is where \"next-generation DevOps Center\" used to appear. Compare it with the 67.0 guide.\n2. **Winter '27 release notes PDF.** Search for \"DevOps Center\" and \"DevOps\". Use the release PDF, because help.salesforce.com pages don't fetch reliably.\n3. **Diff of the Metadata API reference between 67.0 and 68.0.** Look for the replaced phrase in the type descriptions. If you have the guide's JSON from the `get_document_content` endpoint, a grep for `next-generation` across both versions finds it quickly.\n\nIf you paste the 68.0 description snippet, I can help confirm the exact product name and work out which skills or glosses need updating. Before you cite it anywhere, check it against the guide text, not a secondary summary.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "neither",
+              "quote": "",
+              "quote_found": false
+            },
+            "grade_error": null,
+            "cost_usd": 0.089196,
+            "duration_s": 8.464,
+            "tokens": {
+              "input": 13098,
+              "output": 857
+            }
+          },
+          "B": {
+            "answer": "**Lifecycle Center.**\n\nAccording to the skill package, the Winter '27 Metadata API guide describes `DevHubSettings.enableALMDevopsCorePref` (API 65.0+) as \"Indicates whether the Lifecycle Center is enabled.\" The Summer '26 guide called the same setting the \"next-generation DevOps Center.\" The cited location is `api_meta.txt` 264, L117302\u2013L117311 for the Winter '27 wording and 262, L114168 for the old wording.\n\nThe same entry calls the managed package (`enableDevOpsCenterGA`, API 56.0+) \"an older version of Lifecycle Center.\" Migrating projects from the package (`enableDevopsCenterMigrationPref`, API 67.0+) is still a developer preview.\n\n- **\"AI-powered\" label:** the skill doesn't quote that phrase from the Metadata API text. The name is confirmed, but I can't confirm that the guide describes it as \"AI-powered.\" The skill only says its governance policies cover coding agents as well as users, and it marks that claim UNVERIFIED because it comes from help articles written under the old name.\n- **API version:** the skill's citations are to the 264 guide, so I haven't verified the \"API 68.0\" label from the skill alone. The name itself doesn't depend on that.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**Lifecycle Center.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.11519109999999999,
+            "duration_s": 6.773,
+            "tokens": {
+              "input": 19933,
+              "output": 610
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-runinmode-usermode",
+      "skill": "flow/record-triggered-flow-patterns",
+      "source": "api_meta.txt L70923-70927",
+      "runs": [
+        {
+          "A": {
+            "answer": "I'm not aware of a fourth `runInMode` value, and I won't invent one. The `FlowRunInMode` enum I know has three values:\n\n- **`DefaultMode`**: the flow runs in the context it was launched from. For example, a screen flow launched by a user runs in user mode, and a record-triggered flow runs in system context. Sharing follows the default for that launch context.\n- **`SystemModeWithSharing`**: the flow runs in system context, so object and field permissions are not enforced. Record sharing rules are enforced for the running user.\n- **`SystemModeWithoutSharing`**: the flow runs in system context and ignores sharing, so it can see and modify records the running user couldn't.\n\nMy knowledge ends around June 2026, which is roughly the Summer '26 release (API 67.0). API 68.0 is Winter '27, which shipped after that, so I can't rule out an addition there. I have no evidence that one exists.\n\nTo confirm against the source:\n- Check the `FlowRunInMode` enum under the `Flow` type in the Metadata API Developer Guide for v68.0.\n- Search the Winter '27 release notes for \"run in mode\" or \"flow context\".\n- Retrieve a flow at API 68.0 and see which values the org accepts. A deploy with a bogus value fails validation and lists the allowed ones.\n\nIf you saw a fourth value in a doc or tool output, send me the name and I'll help work out what it implies. I'd rather not guess its behavior from the name alone.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "neither",
+              "quote": "",
+              "quote_found": false
+            },
+            "grade_error": null,
+            "cost_usd": 0.094194,
+            "duration_s": 11.04,
+            "tokens": {
+              "input": 13193,
+              "output": 1192
+            }
+          },
+          "B": {
+            "answer": "I can't confirm a fourth value, and I'd rather not invent one.\n\n- **What I know:** `runInMode` (the `FlowRunInMode` enum) has three documented values: `DefaultMode`, `SystemModeWithSharing`, and `SystemModeWithoutSharing`. Nothing I know of adds a fourth.\n- **Why I can't rule one out:** API 68.0 is Winter '27, which is newer than my knowledge (cutoff June 2026). A value added in that release is possible, but I have no evidence of one.\n- **What the skill package says:** The record-triggered-flow-patterns skill never mentions `runInMode`, so it can't settle this.\n\nHere is what the three known values do:\n\n- `DefaultMode`: the flow runs however its trigger or entry point normally dictates. User-launched flows run in user context. Record-triggered and other automated flows run in system context, and that context's sharing behavior is the part that depends on how the flow was launched.\n- `SystemModeWithSharing`: system mode (object and field permissions are ignored), but record sharing is enforced for the running user.\n- `SystemModeWithoutSharing`: system mode with sharing ignored as well, so the flow sees every record.\n\nTo check for a fourth value, use one of these:\n\n1. Read the `Flow` > `runInMode` entry in the Metadata API Developer Guide for v68.0, which lists the enum values.\n2. Look at the `FlowRunInMode` simple type in the v68.0 Metadata WSDL, or at the output of `sf sobject describe` or `sf project retrieve` against a Winter '27 org. The WSDL enumeration is authoritative.\n3. In a Winter '27 sandbox, deploy a test flow with a candidate value at `<apiVersion>68.0</apiVersion>`. An invalid value fails with an explicit enum error.\n\nIf you find a fourth value, send me its name and I can help work out the right use cases and review implications.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "neither",
+              "quote": "",
+              "quote_found": false
+            },
+            "grade_error": null,
+            "cost_usd": 0.15554010000000001,
+            "duration_s": 11.312,
+            "tokens": {
+              "input": 28076,
+              "output": 1153
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "debug-log-size",
+      "skill": "apex/salesforce-debug-log-analysis",
+      "source": "salesforce_apex_developer_guide.txt L38602-38604",
+      "runs": [
+        {
+          "A": {
+            "answer": "**Maximum size: 20 MB per debug log.**\n\n**What happens when a log exceeds it:** Salesforce truncates the log. It keeps the first 10 MB and the last 10 MB of the log and drops the middle, so you'll see the beginning and the end of the transaction but lose the events in between. (If the log was already large, the system may also stop appending further detail once it hits the limit.)\n\nRelated limits worth knowing:\n\n- **Retention:** Debug logs are retained for 24 hours, then deleted automatically.\n- **Total log storage per org:** 1,000 MB. When the cap is reached, the oldest logs are overwritten and new logs stop being captured until the old ones are cleared or the trace flags are disabled.\n- **Trace flags:** A trace flag can be active for at most 24 hours at a time (you can extend or recreate it).\n- **Per-request logging:** Each request (a transaction, a Queueable, a batch `execute`, etc.) generates its own log, so a long batch job produces many logs rather than one huge one.\n\n**Practical ways to avoid truncation:**\n\n1. Lower log levels for noisy categories. Set Apex Code to `DEBUG` or `INFO`, and set Database, Workflow, System, and Validation to `NONE` or `ERROR` unless you need them.\n2. Use `FINEST` only on the narrow category you're investigating.\n3. Avoid `System.debug` inside large loops.\n4. Scope the trace flag to the specific user or Apex class/trigger rather than everything.\n5. For very large transactions, consider the Apex Replay Debugger or Developer Console's log filters, or use targeted `System.debug` with `LoggingLevel` to cut volume.\n\nNote: the log header's size reflects the stored size, and when truncation occurs, the stored log will show the gap where the middle section was removed, so don't rely on a truncated log to prove something *didn't* happen in the dropped region.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "It keeps the first 10 MB and the last 10 MB of the log and drops the middle, so you'll see the beginning and the end of the transaction but lose the events in between.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09465950000000001,
+            "duration_s": 9.897,
+            "tokens": {
+              "input": 13253,
+              "output": 951
+            }
+          },
+          "B": {
+            "answer": "**The maximum size of a single debug log is 20 MB.**\n\nWhen a log goes over that limit, Salesforce doesn't reject it or cut off the end. It shrinks the log by **removing older lines**, such as early `System.debug` output. The removed lines can come from **anywhere in the log**, not just the beginning. You get a log that looks complete but has holes.\n\n**What this means for analysis**\n\n- **A missing event proves nothing.** If a `DML_BEGIN`, `FLOW_ASSIGNMENT_DETAIL`, `WF_FIELD_UPDATE` or exception line isn't there, you can't conclude it never happened. This matters most for \"who wrote this field\" and \"was X ever called\" questions.\n- **Check size first.** In triage (Step 1), flag any log at or near 20 MB (the file size will sit just under it) as trimmed before reading its content. Cascade and trigger-storm logs reach this size most often.\n- **Treat conclusions from a trimmed log as provisional.** Say explicitly in the \"what the log cannot tell you\" section that the log was truncated.\n- **Recapture with a smaller footprint:**\n  - Lower the trace-flag levels on categories you don't need, such as `DB`, `SYSTEM`, `VALIDATION` and `CALLOUT`.\n  - Keep `APEX_CODE` and `WORKFLOW` at the levels the question requires. Flow assignments aren't logged below `FINER` on `WORKFLOW`.\n  - Narrow the trace flag to the specific user and a short window, and reproduce just the one action.\n  - Keep the debug level focused so the transaction of interest fits within the 20 MB cap.\n- **Don't sum or total across a trimmed log.** Governor-limit claims should come from the cumulative `LIMIT_USAGE_FOR_NS` block, not from counting lines that may have been removed.\n\nI'm working from the skill's description of this behavior (the 20 MB log cap in `gotchas.md` isn't included in what I was given) and from the documented Apex debug log limit.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "When a log goes over that limit, Salesforce doesn't reject it or cut off the end. It shrinks the log by **removing older lines**, such as early `System.debug` output. The removed lines can come from **anywhere in the log**, not just the beginning.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1444743,
+            "duration_s": 12.704,
+            "tokens": {
+              "input": 25422,
+              "output": 1135
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flex-queue-capacity",
+      "skill": "apex/scheduled-apex-failure-detection-and-monitoring",
+      "source": "salesforce_apex_developer_guide.txt L17436-17439",
+      "runs": [
+        {
+          "A": {
+            "answer": "**The Apex flex queue holds up to 100 batch jobs** in `Holding` status.\n\n**How it works:**\n- `Database.executeBatch` first checks whether a batch slot is free. Up to 5 batch jobs can be queued or active (`Queued`, `Preparing`, `Processing`) at once.\n- If all 5 slots are taken, the job goes into the flex queue with status `Holding` instead of being rejected. This is the case as long as the flex queue has room.\n- When a slot frees up, the system promotes the job at the top of the flex queue. Order is FIFO unless you reorder it.\n\n**When the flex queue is full (100 Holding jobs):**\n- The `Database.executeBatch` call fails with a `System.LimitException`, and the job is not queued.\n- I'm not certain of the exact message text, so don't match on it. The exception is a limit exception, so you can't reliably catch and recover from it the way you would an ordinary exception. Check capacity before submitting, or design so you don't depend on catching it.\n\n**Practical guidance:**\n- Check capacity first, for example by counting `AsyncApexJob` records where `Status = 'Holding'`, and defer or skip submission when the count is near 100.\n- Don't launch batches in a loop or from triggers. Chain them from `finish()` instead.\n- Reorder jobs with the `FlexQueue` class (`FlexQueue.moveJobToFront(jobId)`, `moveBeforeJob`, `moveAfterJob`, `moveJobToEnd`) or from Setup > Apex Flex Queue.\n- Holding jobs don't count toward the 5 concurrent limit until they're promoted.\n\nIf the exact error text matters for your code or tests, verify it in a scratch org by filling the queue, rather than relying on my recollection.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "The `Database.executeBatch` call fails with a `System.LimitException`, and the job is not queued.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0941342,
+            "duration_s": 11.064,
+            "tokens": {
+              "input": 13250,
+              "output": 1201
+            }
+          },
+          "B": {
+            "answer": "# Apex flex queue capacity\n\n**Capacity:** The flex queue holds up to **100 batch jobs** in `Holding` status. Up to 5 batch jobs can be queued or active at once. When those slots are full, `Database.executeBatch` puts the new job into the flex queue as `Holding`. Holding jobs move into the active slots as they free up (in order, unless an admin reorders them).\n\n**When it's full:** The 101st call to `Database.executeBatch` throws a `System.LimitException`, because the flex queue limit is a governor-style limit. Two consequences follow:\n\n- **You can't catch it.** A `try/catch` around `executeBatch` does nothing, because a `LimitException` terminates the transaction.\n- **The transaction rolls back.** In a Schedulable that logs \"schedule fired\" and then calls `executeBatch`, that log insert is rolled back too. No batch `AsyncApexJob` row is created, so the failure leaves almost no trace. This is the silent-failure mode behind the quarter-end pile-ups where many schedules fire close together.\n\n## Mitigation: check before launching\n\nCount `Holding` jobs before each launch and skip or defer when the queue is near capacity:\n\n```apex\npublic class SafeBatchLauncher {\n    private static final Integer FLEX_QUEUE_MAX = 100;\n    private static final Integer SAFETY_MARGIN  = 5;\n\n    public static Id launch(Database.Batchable<SObject> job, Integer scope) {\n        Integer holding = [SELECT COUNT() FROM AsyncApexJob WHERE Status = 'Holding'];\n        if (holding >= FLEX_QUEUE_MAX - SAFETY_MARGIN) {\n            // Durable record: no exception is thrown here, so this DML commits\n            ApplicationLogger.error('SafeBatchLauncher',\n                'Flex queue near capacity (' + holding + '/100); batch not enqueued', null);\n            return null; // or retry later via a Schedulable\n        }\n        return Database.executeBatch(job, scope);\n    }\n}\n```\n\n`ApplicationLogger` is a placeholder for whatever durable logger you use. The point is to log before the launch, outside the failing call.\n\n## Related practices\n\n- **Stagger schedules** so many jobs don't fire in the same minute.\n- **Watch `Holding` depth in your watcher.** Alert when `Holding` jobs exceed a threshold, and when any job sits in `Queued`, `Holding`, or `Preparing` longer than your SLA (for example, `CreatedDate <= now - 2h`).\n- **Don't rely on `BatchApexErrorEvent` for this case.** The launch fails before any batch exists, so no event is published. Only the pre-check and the watcher can catch it.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "The 101st call to `Database.executeBatch` throws a `System.LimitException`, because the flex queue limit is a governor-style limit.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1391478,
+            "duration_s": 11.562000000000001,
+            "tokens": {
+              "input": 23544,
+              "output": 1304
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "apex-exception-email",
+      "skill": "apex/scheduled-apex-failure-detection-and-monitoring",
+      "source": "salesforce_apex_developer_guide.txt L39995-39996",
+      "runs": [
+        {
+          "A": {
+            "answer": "By default, the unhandled exception email goes to two recipients:\n\n1. **The user who last modified the code**: for a scheduled or batch job, that is the developer who last saved the Apex class (the class that threw the exception).\n2. **The context user / the user who started the job**: for example, the user who scheduled the job or submitted the batch via `Database.executeBatch`. Salesforce documents this as the user who \"caused\" the async execution.\n\nDetails that matter in practice:\n\n- **Who exactly gets it:** Salesforce sends the email to the **last modifier of the Apex class** and to the **user who executed or scheduled the job** (the running/context user). If both are the same person, they get one email.\n- **Contents:** the Apex stack trace, exception message, the class and method, the org ID, and the user ID. Governor limit failures are included.\n- **Additional recipients:** you can add people under **Setup > Email > Apex Exception Email** (enter internal users, or external addresses). This is additive to the defaults.\n- **Not a guaranteed delivery path:** emails are throttled and may be suppressed for repeated identical failures, and they only fire for *unhandled* exceptions. If you catch the exception, no email is sent.\n- **Better practice:** don't rely on email alone. Wrap logic in try/catch and log to a custom object, or publish a platform event, e.g. `BatchApexErrorEvent` (implement `Database.RaisesPlatformEvents` on the batch class) so you can subscribe with a trigger and alert or retry. Also monitor failures under **Setup > Apex Jobs** and with Event Monitoring or `AsyncApexJob` queries.\n\n**Short answer:** the developer who last modified the Apex class and the user who ran or scheduled the job, plus any addresses configured under Apex Exception Email.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**Short answer:** the developer who last modified the Apex class and the user who ran or scheduled the job, plus any addresses configured under Apex Exception Email.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09131439999999999,
+            "duration_s": 9.789,
+            "tokens": {
+              "input": 13256,
+              "output": 759
+            }
+          },
+          "B": {
+            "answer": "By default, the unhandled exception email goes to the **developer who last modified the failing Apex class** (the class's `LastModifiedBy`), plus any recipients configured under **Setup \u2192 Apex Exception Email**. It does **not** go to the user who scheduled the job or who started the batch.\n\nBehavior to be aware of:\n\n- **Deduplicated:** repeated occurrences of the same exception are suppressed rather than emailed each time.\n- **Rate-capped:** at most 10 such emails per hour per application server.\n- **Not a monitoring channel:** because it targets the last modifier (who may be a deployment user, an integration user, or someone who left), failures can go unnoticed. This is the main reason nightly jobs fail silently.\n\nPractical implications:\n\n1. Add real recipients under Setup \u2192 Apex Exception Email (a monitored distribution list) as a minimum step.\n2. Don't rely on the email. Catch and log in `execute()` to a durable log object, re-throwing if you want `AsyncApexJob.Status = 'Failed'`.\n3. For critical batch classes, implement `Database.RaisesPlatformEvents` and subscribe to `BatchApexErrorEvent` (Batch Apex only, not Queueable or Schedulable).\n4. Add an `AsyncApexJob` watcher schedule to catch stuck `Queued`/`Holding` jobs, batches that `Completed` with `NumberOfErrors > 0`, and schedules that never fired.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "By default, the unhandled exception email goes to the **developer who last modified the failing Apex class** (the class's `LastModifiedBy`), plus any recipients configured under **Setup \u2192 Apex Exception Email**.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1286766,
+            "duration_s": 6.396,
+            "tokens": {
+              "input": 23116,
+              "output": 575
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "connectapi-test-context",
+      "skill": "apex/apex-connect-api-chatter",
+      "source": "salesforce_apex_developer_guide.txt L26331-26332",
+      "runs": [
+        {
+          "A": {
+            "answer": "## Short answer\n\nConnectApi calls don't run normally in test context. Without special handling, they typically fail with:\n\n> `ConnectApi methods are not supported in data siloed tests. Please use @IsTest(SeeAllData=true).`\n\nThere are three ways to handle it. Prefer them in this order.\n\n## 1. Use the `setTest...` methods (preferred)\n\nMany ConnectApi classes have a static `setTest<MethodName>` companion. It takes the same arguments as the real method, plus a final argument holding the result to return. Register the result, then call the real method with exactly the same arguments:\n\n```apex\n@IsTest\nstatic void feedElements_returnsStubbedPage() {\n    // Build the output object. ConnectApi output classes have public no-arg constructors and writable properties.\n    ConnectApi.FeedElementPage page = new ConnectApi.FeedElementPage();\n    ConnectApi.FeedItem item = new ConnectApi.FeedItem();\n    item.id = '0D5000000000001AAA';\n    item.body = new ConnectApi.FeedBody();\n    page.elements = new List<ConnectApi.FeedElement>{ item };\n\n    // Register the stub: same args as the real call, plus the result\n    ConnectApi.ChatterFeeds.setTestGetFeedElementsFromFeed(\n        null, ConnectApi.FeedType.News, 'me', page);\n\n    Test.startTest();\n    // Code under test calls getFeedElementsFromFeed(null, News, 'me')\n    ConnectApi.FeedElementPage result =\n        ConnectApi.ChatterFeeds.getFeedElementsFromFeed(null, ConnectApi.FeedType.News, 'me');\n    Test.stopTest();\n\n    System.assertEquals(1, result.elements.size());\n}\n```\n\nKey points:\n- **Arguments must match exactly**, including `null` community IDs, page sizes, and so on. If they don't match, the stub isn't used and you get the siloed-test error.\n- You stub the **return value only**. Nothing is actually posted, queried, or validated.\n- Set whatever properties your code reads. Unset properties are `null`.\n\n## 2. Wrap ConnectApi in your own class and mock that\n\nNot every method has a `setTest` companion. Write methods such as `postFeedElement` are the usual gap, so check the Apex reference for the method you need. Where there's no `setTest`, isolate the call behind a thin service so your business logic never touches ConnectApi in tests:\n\n```apex\npublic virtual class ChatterGateway {\n    public virtual ConnectApi.FeedElement post(ConnectApi.FeedItemInput input) {\n        return ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input);\n    }\n}\n\n@IsTest\nprivate class ChatterGatewayMock extends ChatterGateway {\n    public override ConnectApi.FeedElement post(ConnectApi.FeedItemInput input) {\n        return new ConnectApi.FeedItem();\n    }\n}\n```\n\nInject the mock (via constructor or a `@TestVisible` static) in the tests of the calling code. Leave one thin, untestable wrapper method uncovered, or cover it with option 3.\n\n## 3. `@IsTest(SeeAllData=true)` (last resort)\n\n```apex\n@IsTest(SeeAllData=true)\nstatic void realCall() { ... }\n```\n\nThis lets the real ConnectApi call execute against org data. It makes tests data-dependent and brittle, and it needs Chatter or the relevant feature enabled in the org. It also often fails in scratch orgs or CI orgs without that data. Use it only when no `setTest` exists and a wrapper isn't practical.\n\n## Gotchas\n\n- Call the `setTest...` method **before** the code under test runs, and keep the arguments identical.\n- Don't assert on side effects such as a post appearing in a feed. The stub doesn't create any records. Assert on what your code does with the returned object.\n- Check the `ConnectApi` namespace docs for each class (`ChatterFeeds`, `Communities`, `CommerceCart`, and so on) to confirm that a `setTest` exists for the method you're calling.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "This lets the real ConnectApi call execute against org data.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1175063,
+            "duration_s": 21.688,
+            "tokens": {
+              "input": 14051,
+              "output": 2599
+            }
+          },
+          "B": {
+            "answer": "# Making ConnectApi work in Apex tests\n\nThere are two documented mechanisms, and which one applies depends on the method. There is **no** `Test.setMock(...)` mock for ConnectApi.\n\n## 1. `@IsTest(SeeAllData=true)` for most methods\n\nMost Connect in Apex methods need real org data and fail in an isolated test. Put the test that makes the real call under `SeeAllData=true` (Apex Developer Guide 264 L26331-26332):\n\n```apex\n@IsTest(SeeAllData=true)\nstatic void postMention_realCall() {\n    // Use an existing record and user from the org, since SeeAllData exposes them\n    Account a = [SELECT Id FROM Account LIMIT 1];\n    User u = [SELECT Id FROM User WHERE IsActive = true LIMIT 1];\n\n    Test.startTest();\n    EscalationFeedService.postMentionToRecord(a.Id, u.Id, 'please review');\n    Test.stopTest();\n\n    // Assert on the outcome, e.g. a FeedItem now exists for the parent\n    System.assert(![SELECT Id FROM FeedItem WHERE ParentId = :a.Id].isEmpty());\n}\n```\n\n## 2. `setTest*` registration for methods that don't touch org data\n\nSome methods, such as `getFeedElementsFromFeed`, don't touch org data in tests. You register the output they should return with the matching `setTest*` method *before* calling them. Each method's \"Usage\" section says whether this applies (L26333-26335, example at L26360-26377):\n\n```apex\n@IsTest\nstatic void readFeed_usesRegisteredResult() {\n    ConnectApi.FeedElementPage page = new ConnectApi.FeedElementPage();\n    page.elements = new List<ConnectApi.FeedElement>();\n\n    ConnectApi.ChatterFeeds.setTestGetFeedElementsFromFeed(\n        null, ConnectApi.FeedType.News, 'me', page);\n\n    Test.startTest();\n    ConnectApi.FeedElementPage result =\n        ConnectApi.ChatterFeeds.getFeedElementsFromFeed(\n            null, ConnectApi.FeedType.News, 'me');\n    Test.stopTest();\n\n    System.assertEquals(page, result);\n}\n```\n\nThe `setTest*` signature mirrors the real method, with the output you want returned as the extra last argument.\n\n## 3. Keep `SeeAllData=true` to a minimum\n\nDon't put the whole suite under `SeeAllData=true`. Split the code instead:\n\n- **Build the `FeedItemInput` in its own method** and test that in a normal isolated test, asserting on the message segments (mention Id, text, order).\n- **Keep one or two `SeeAllData=true` tests** that make the real post call.\n- **Test error handling** (`ConnectApi.ConnectApiException`) in the isolated tests, for example by passing input that triggers it.\n\n```apex\n// Production code\n@TestVisible\nstatic ConnectApi.FeedItemInput buildMentionInput(Id userId, String msg) { /* ... */ }\n\n// Isolated test, no SeeAllData needed\n@IsTest\nstatic void buildMentionInput_putsMentionFirst() {\n    ConnectApi.FeedItemInput in = EscalationFeedService.buildMentionInput(UserInfo.getUserId(), 'hi');\n    System.assert(in.body.messageSegments[0] instanceof ConnectApi.MentionSegmentInput);\n    System.assertEquals(2, in.body.messageSegments.size());\n}\n```\n\n## Gotchas\n\n- **Don't use `Test.setMock(ConnectApi.ConnectApi.class, ...)`.** No `ConnectApi.ConnectApi` class appears in the Apex Developer Guide 264 or the Apex Reference Guide 262, and the 262 reference lists no `setTestPostFeedElement`. LLM-generated tests often invent these.\n- **Without either mechanism**, the test fails at the call site, so check the method's Usage section first.\n- **Connect in Apex does not support `System.runAs`.** It runs as the context user (L26329-26330), so tests can't impersonate an author.\n- **Async paths** (`@future` or Queueable) still follow the same rules, so exercise them inside `Test.startTest()`/`stopTest()` and remember the call runs as the enqueuing user.\n- **Chatter must be enabled** in the org where the `SeeAllData` test runs, or the call throws `ConnectApiException`.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "Most Connect in Apex methods need real org data and fail in an isolated test. Put the test that makes the real call under `SeeAllData=true` (Apex Developer Guide 264 L26331-26332):",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1392544,
+            "duration_s": 14.928,
+            "tokens": {
+              "input": 21609,
+              "output": 1883
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "callout-timeout-governor",
+      "skill": "integration/middleware-integration-patterns",
+      "source": "salesforce_apex_developer_guide.txt L19768; L20046",
+      "runs": [
+        {
+          "A": {
+            "answer": "**The limit is 120 seconds, cumulative across all callouts in one transaction.** The 10-second figure is not a governor limit.\n\n**Governor limits (callouts)**\n- Maximum cumulative timeout for all callouts (HTTP and web service) in a transaction: **120 seconds**.\n- Maximum callouts per transaction: **100**.\n- Response size limits are separate: 6 MB synchronous, 12 MB asynchronous.\n\n**Where 10 seconds comes from**\n- **Default per-callout timeout.** `HttpRequest` defaults to 10 seconds per request. It is a default setting, not a platform cap. You can change it with `req.setTimeout(milliseconds)`, from 1 to 120000 ms.\n- **Synchronous CPU time limit.** This is also 10,000 ms (10 s, or 60 s async). It is a real governor limit, but it measures Apex CPU time, not time waiting on a callout. Callout wait time does not count toward it. The shared \"10 seconds\" number is probably why the two get conflated.\n\n**Practical consequences**\n- A single callout with `setTimeout(120000)` can use the entire 120-second budget. Later callouts in the same transaction would then fail.\n- Because the budget is cumulative, ten callouts at 15 seconds each would use 150 seconds and exceed the limit, even though each one is well under the per-request maximum.\n- Set timeouts deliberately. A good default is the shortest value the endpoint can reliably meet, then handle `System.CalloutException` for timeouts.\n- For slow endpoints, move the work to Queueable, Batch, or Continuation (for Visualforce/Aura/LWC long-running calls) rather than raising the timeout.\n- You cannot make a callout after uncommitted DML in the same transaction (`You have uncommitted work pending`). That is a separate restriction, not a time limit.\n\n```apex\nHttpRequest req = new HttpRequest();\nreq.setEndpoint('callout:My_Named_Credential/resource');\nreq.setMethod('GET');\nreq.setTimeout(30000); // 30 s for this call; counts against the 120 s transaction total\nHttpResponse res = new Http().send(req);\n```\n\nLimits can change between releases, so confirm the current numbers in the Apex Developer Guide's \"Execution Governors and Limits\" page.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**The limit is 120 seconds, cumulative across all callouts in one transaction.** The 10-second figure is not a governor limit.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.095917,
+            "duration_s": 11.09,
+            "tokens": {
+              "input": 13429,
+              "output": 1188
+            }
+          },
+          "B": {
+            "answer": "**The limit is 120 seconds. The 10-second figure is not a governor limit.**\n\n- **Governor limit:** the maximum cumulative timeout for all callouts (HTTP requests and web service calls) in one Apex transaction is **120 seconds**. The separate cap of **100 callouts per transaction** applies alongside it.\n- **The 10-second figure:** this is the **default per-callout timeout**, the value used when you don't call `HttpRequest.setTimeout()`. It is a configurable setting, not a platform ceiling.\n- **Per-callout range:** `setTimeout(ms)` accepts values up to 120,000 ms (120 s), and the value counts toward the cumulative 120-second budget.\n\n```apex\nHttpRequest req = new HttpRequest();\nreq.setEndpoint('callout:My_Named_Credential/orders');\nreq.setMethod('POST');\nreq.setTimeout(30000); // 30 s for this call; default is 10 s, max 120 s\n```\n\nIn practice, three callouts at 10 s each use 30 s of the 120 s budget. A single callout set to 120 s uses all of it, so no further callouts can complete in that transaction.\n\n**Correction to the skill text:** Gotcha 3 says that approaching either limit produces an uncatchable `System.LimitException`. That is accurate for the callout-count limit (the 101st callout throws `LimitException: Too many callouts`), but I would not assume it for timeouts. A single callout that exceeds its own timeout surfaces as a catchable `System.CalloutException` (for example, \"Read timed out\"). I would not cite the cumulative-120s behavior as a `LimitException` without checking the Apex Developer Guide. The architectural advice still holds: don't build multi-system fanout in a trigger, and publish a Platform Event and let middleware fan out instead.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**The limit is 120 seconds. The 10-second figure is not a governor limit.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.14120749999999999,
+            "duration_s": 10.578000000000001,
+            "tokens": {
+              "input": 24844,
+              "output": 1116
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "skills": {
+      "flow/flow-platform-events-integration": {
+        "correct_a": 0,
+        "correct_b": 2,
+        "wrong_a": 2,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "integration/dataweave-for-apex": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/devops-center-advanced": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "flow/record-triggered-flow-patterns": {
+        "correct_a": 0,
+        "correct_b": 0,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 1,
+        "neither_b": 1,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/salesforce-debug-log-analysis": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/scheduled-apex-failure-detection-and-monitoring": {
+        "correct_a": 2,
+        "correct_b": 2,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "apex/apex-connect-api-chatter": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "integration/middleware-integration-patterns": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      }
+    },
+    "overall": {
+      "correct_a": 5,
+      "correct_b": 9,
+      "wrong_a": 3,
+      "wrong_b": 0,
+      "neither_a": 2,
+      "neither_b": 1,
+      "paired": 10,
+      "errors": 0,
+      "probes": 10,
+      "quotes_not_found": 3,
+      "pct_correct_a": 50.0,
+      "pct_correct_b": 90.0,
+      "pct_wrong_a": 30.0,
+      "pct_wrong_b": 0.0,
+      "pct_neither_a": 20.0,
+      "pct_neither_b": 10.0
+    },
+    "cost_usd": 2.3310214,
+    "call_seconds": 223.84499999999997,
+    "input_tokens": 373047,
+    "output_tokens": 22190,
+    "elapsed_s": 259.1748443750039
+  }
+}

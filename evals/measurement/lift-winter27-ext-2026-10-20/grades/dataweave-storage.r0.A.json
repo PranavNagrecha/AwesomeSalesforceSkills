@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "A DataWeave script that Apex calls is org metadata of type **`DataWeaveResource`**.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.06457460000000001,
+    "duration_s": 2.308,
+    "input_tokens": 7588,
+    "output_tokens": 173
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"A DataWeave script that Apex calls is org metadata of type **`DataWeaveResource`**.\"}",
+  "prompt_sha": "4f5c8f2559f4652b"
+}

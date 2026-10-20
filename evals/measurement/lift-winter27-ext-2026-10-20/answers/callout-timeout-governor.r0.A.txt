@@ -1,0 +1,27 @@
+**The limit is 120 seconds, cumulative across all callouts in one transaction.** The 10-second figure is not a governor limit.
+
+**Governor limits (callouts)**
+- Maximum cumulative timeout for all callouts (HTTP and web service) in a transaction: **120 seconds**.
+- Maximum callouts per transaction: **100**.
+- Response size limits are separate: 6 MB synchronous, 12 MB asynchronous.
+
+**Where 10 seconds comes from**
+- **Default per-callout timeout.** `HttpRequest` defaults to 10 seconds per request. It is a default setting, not a platform cap. You can change it with `req.setTimeout(milliseconds)`, from 1 to 120000 ms.
+- **Synchronous CPU time limit.** This is also 10,000 ms (10 s, or 60 s async). It is a real governor limit, but it measures Apex CPU time, not time waiting on a callout. Callout wait time does not count toward it. The shared "10 seconds" number is probably why the two get conflated.
+
+**Practical consequences**
+- A single callout with `setTimeout(120000)` can use the entire 120-second budget. Later callouts in the same transaction would then fail.
+- Because the budget is cumulative, ten callouts at 15 seconds each would use 150 seconds and exceed the limit, even though each one is well under the per-request maximum.
+- Set timeouts deliberately. A good default is the shortest value the endpoint can reliably meet, then handle `System.CalloutException` for timeouts.
+- For slow endpoints, move the work to Queueable, Batch, or Continuation (for Visualforce/Aura/LWC long-running calls) rather than raising the timeout.
+- You cannot make a callout after uncommitted DML in the same transaction (`You have uncommitted work pending`). That is a separate restriction, not a time limit.
+
+```apex
+HttpRequest req = new HttpRequest();
+req.setEndpoint('callout:My_Named_Credential/resource');
+req.setMethod('GET');
+req.setTimeout(30000); // 30 s for this call; counts against the 120 s transaction total
+HttpResponse res = new Http().send(req);
+```
+
+Limits can change between releases, so confirm the current numbers in the Apex Developer Guide's "Execution Governors and Limits" page.

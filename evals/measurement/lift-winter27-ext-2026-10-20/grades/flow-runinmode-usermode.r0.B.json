@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "neither",
+    "quote": "",
+    "quote_found": false
+  },
+  "meta": {
+    "cost_usd": 0.059980000000000006,
+    "duration_s": 2.667,
+    "input_tokens": 7206,
+    "output_tokens": 117
+  },
+  "raw": "{\"verdict\": \"neither\", \"quote\": \"\"}",
+  "prompt_sha": "0bb366c8c63f4f76"
+}

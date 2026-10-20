@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "Most Connect in Apex methods need real org data and fail in an isolated test. Put the test that makes the real call under `SeeAllData=true` (Apex Developer Guide 264 L26331-26332):",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.066244,
+    "duration_s": 1.977,
+    "input_tokens": 8069,
+    "output_tokens": 85
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"Most Connect in Apex methods need real org data and fail in an isolated test. Put the test that makes the real call under `SeeAllData=true` (Apex Developer Guide 264 L26331-26332):\"}",
+  "prompt_sha": "75d5b6f0ae487f1b"
+}

@@ -1,0 +1,20 @@
+You are an eval grader checking ONE fact. Below is a practitioner question, the CORRECT fact, the WRONG fact a careless answer would give, and a candidate answer.
+Decide what the candidate answer asserts about that fact:
+- "correct": it states the correct fact (extra detail is fine).
+- "wrong": it asserts the wrong fact, or something that contradicts the correct fact.
+- "neither": it states neither, is silent on the point, or hedges without committing. If it asserts both, judge by what it finally tells the reader to do or believe; if that is unclear, answer neither.
+Ignore style, length and everything else. Do not use outside knowledge to overrule the CORRECT fact given here.
+Reply with ONLY strict JSON, no prose, no code fence:
+{"verdict": "correct" | "wrong" | "neither", "quote": "<the sentence of the candidate answer you judged, copied verbatim; empty if neither>"}
+
+=== QUESTION ===
+What is the governor limit on callout time in a single Apex transaction, and is the 10-second figure a governor limit?
+
+=== CORRECT FACT ===
+The governor limit is 120 seconds cumulative across all callouts in the transaction; 10 seconds is only the default per-callout timeout (settable per request), and a LimitException cannot be caught.
+
+=== WRONG FACT ===
+10 seconds is the synchronous callout governor limit; exceeding it throws a LimitException that you can catch.
+
+=== CANDIDATE ANSWER ===
+[CANDIDATE ANSWER GOES HERE]

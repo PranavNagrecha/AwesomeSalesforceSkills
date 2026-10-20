@@ -1,0 +1,17 @@
+**The maximum size of a single debug log is 20 MB.**
+
+When a log goes over that limit, Salesforce doesn't reject it or cut off the end. It shrinks the log by **removing older lines**, such as early `System.debug` output. The removed lines can come from **anywhere in the log**, not just the beginning. You get a log that looks complete but has holes.
+
+**What this means for analysis**
+
+- **A missing event proves nothing.** If a `DML_BEGIN`, `FLOW_ASSIGNMENT_DETAIL`, `WF_FIELD_UPDATE` or exception line isn't there, you can't conclude it never happened. This matters most for "who wrote this field" and "was X ever called" questions.
+- **Check size first.** In triage (Step 1), flag any log at or near 20 MB (the file size will sit just under it) as trimmed before reading its content. Cascade and trigger-storm logs reach this size most often.
+- **Treat conclusions from a trimmed log as provisional.** Say explicitly in the "what the log cannot tell you" section that the log was truncated.
+- **Recapture with a smaller footprint:**
+  - Lower the trace-flag levels on categories you don't need, such as `DB`, `SYSTEM`, `VALIDATION` and `CALLOUT`.
+  - Keep `APEX_CODE` and `WORKFLOW` at the levels the question requires. Flow assignments aren't logged below `FINER` on `WORKFLOW`.
+  - Narrow the trace flag to the specific user and a short window, and reproduce just the one action.
+  - Keep the debug level focused so the transaction of interest fits within the 20 MB cap.
+- **Don't sum or total across a trimmed log.** Governor-limit claims should come from the cumulative `LIMIT_USAGE_FOR_NS` block, not from counting lines that may have been removed.
+
+I'm working from the skill's description of this behavior (the 20 MB log cap in `gotchas.md` isn't included in what I was given) and from the documented Apex debug log limit.

@@ -1,0 +1,76 @@
+## Short answer
+
+ConnectApi calls don't run normally in test context. Without special handling, they typically fail with:
+
+> `ConnectApi methods are not supported in data siloed tests. Please use @IsTest(SeeAllData=true).`
+
+There are three ways to handle it. Prefer them in this order.
+
+## 1. Use the `setTest...` methods (preferred)
+
+Many ConnectApi classes have a static `setTest<MethodName>` companion. It takes the same arguments as the real method, plus a final argument holding the result to return. Register the result, then call the real method with exactly the same arguments:
+
+```apex
+@IsTest
+static void feedElements_returnsStubbedPage() {
+    // Build the output object. ConnectApi output classes have public no-arg constructors and writable properties.
+    ConnectApi.FeedElementPage page = new ConnectApi.FeedElementPage();
+    ConnectApi.FeedItem item = new ConnectApi.FeedItem();
+    item.id = '0D5000000000001AAA';
+    item.body = new ConnectApi.FeedBody();
+    page.elements = new List<ConnectApi.FeedElement>{ item };
+
+    // Register the stub: same args as the real call, plus the result
+    ConnectApi.ChatterFeeds.setTestGetFeedElementsFromFeed(
+        null, ConnectApi.FeedType.News, 'me', page);
+
+    Test.startTest();
+    // Code under test calls getFeedElementsFromFeed(null, News, 'me')
+    ConnectApi.FeedElementPage result =
+        ConnectApi.ChatterFeeds.getFeedElementsFromFeed(null, ConnectApi.FeedType.News, 'me');
+    Test.stopTest();
+
+    System.assertEquals(1, result.elements.size());
+}
+```
+
+Key points:
+- **Arguments must match exactly**, including `null` community IDs, page sizes, and so on. If they don't match, the stub isn't used and you get the siloed-test error.
+- You stub the **return value only**. Nothing is actually posted, queried, or validated.
+- Set whatever properties your code reads. Unset properties are `null`.
+
+## 2. Wrap ConnectApi in your own class and mock that
+
+Not every method has a `setTest` companion. Write methods such as `postFeedElement` are the usual gap, so check the Apex reference for the method you need. Where there's no `setTest`, isolate the call behind a thin service so your business logic never touches ConnectApi in tests:
+
+```apex
+public virtual class ChatterGateway {
+    public virtual ConnectApi.FeedElement post(ConnectApi.FeedItemInput input) {
+        return ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input);
+    }
+}
+
+@IsTest
+private class ChatterGatewayMock extends ChatterGateway {
+    public override ConnectApi.FeedElement post(ConnectApi.FeedItemInput input) {
+        return new ConnectApi.FeedItem();
+    }
+}
+```
+
+Inject the mock (via constructor or a `@TestVisible` static) in the tests of the calling code. Leave one thin, untestable wrapper method uncovered, or cover it with option 3.
+
+## 3. `@IsTest(SeeAllData=true)` (last resort)
+
+```apex
+@IsTest(SeeAllData=true)
+static void realCall() { ... }
+```
+
+This lets the real ConnectApi call execute against org data. It makes tests data-dependent and brittle, and it needs Chatter or the relevant feature enabled in the org. It also often fails in scratch orgs or CI orgs without that data. Use it only when no `setTest` exists and a wrapper isn't practical.
+
+## Gotchas
+
+- Call the `setTest...` method **before** the code under test runs, and keep the arguments identical.
+- Don't assert on side effects such as a post appearing in a feed. The stub doesn't create any records. Assert on what your code does with the returned object.
+- Check the `ConnectApi` namespace docs for each class (`ChatterFeeds`, `Communities`, `CommerceCart`, and so on) to confirm that a `setTest` exists for the method you're calling.

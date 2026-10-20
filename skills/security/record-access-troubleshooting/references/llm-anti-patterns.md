@@ -43,11 +43,16 @@ Sharing is irrelevant when the user has:
 
 Always check first:
 
-SELECT PermissionsViewAllData, PermissionsModifyAllData
+SELECT PermissionSet.Name, PermissionSet.IsOwnedByProfile
 FROM PermissionSetAssignment
 WHERE AssigneeId = :uid
+  AND (PermissionSet.PermissionsViewAllData = true
+       OR PermissionSet.PermissionsModifyAllData = true)
 
-If true, the fix is at the permission layer — removing a sharing rule
+(Permissions* fields belong to PermissionSet, reached via the
+`PermissionSet.` prefix — object_reference 264 L219473, L219833-L219841.)
+
+If any row returns, the fix is at the permission layer — removing a sharing rule
 won't stop access; remove the permission or assign to fewer users.
 ```
 

@@ -1,0 +1,1 @@
+What is the governor limit on callout time in a single Apex transaction, and is the 10-second figure a governor limit?

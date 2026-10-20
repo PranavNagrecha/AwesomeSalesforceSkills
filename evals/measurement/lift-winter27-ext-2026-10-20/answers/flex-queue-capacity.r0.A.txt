@@ -1,0 +1,18 @@
+**The Apex flex queue holds up to 100 batch jobs** in `Holding` status.
+
+**How it works:**
+- `Database.executeBatch` first checks whether a batch slot is free. Up to 5 batch jobs can be queued or active (`Queued`, `Preparing`, `Processing`) at once.
+- If all 5 slots are taken, the job goes into the flex queue with status `Holding` instead of being rejected. This is the case as long as the flex queue has room.
+- When a slot frees up, the system promotes the job at the top of the flex queue. Order is FIFO unless you reorder it.
+
+**When the flex queue is full (100 Holding jobs):**
+- The `Database.executeBatch` call fails with a `System.LimitException`, and the job is not queued.
+- I'm not certain of the exact message text, so don't match on it. The exception is a limit exception, so you can't reliably catch and recover from it the way you would an ordinary exception. Check capacity before submitting, or design so you don't depend on catching it.
+
+**Practical guidance:**
+- Check capacity first, for example by counting `AsyncApexJob` records where `Status = 'Holding'`, and defer or skip submission when the count is near 100.
+- Don't launch batches in a loop or from triggers. Chain them from `finish()` instead.
+- Reorder jobs with the `FlexQueue` class (`FlexQueue.moveJobToFront(jobId)`, `moveBeforeJob`, `moveAfterJob`, `moveJobToEnd`) or from Setup > Apex Flex Queue.
+- Holding jobs don't count toward the 5 concurrent limit until they're promoted.
+
+If the exact error text matters for your code or tests, verify it in a scratch org by filling the queue, rather than relying on my recollection.

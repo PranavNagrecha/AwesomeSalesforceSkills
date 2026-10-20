@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "It keeps the first 10 MB and the last 10 MB of the log and drops the middle, so you'll see the beginning and the end of the transaction but lose the events in between.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.063723,
+    "duration_s": 3.898,
+    "input_tokens": 7145,
+    "output_tokens": 313
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"It keeps the first 10 MB and the last 10 MB of the log and drops the middle, so you'll see the beginning and the end of the transaction but lose the events in between.\"}",
+  "prompt_sha": "30c1bc72351b9709"
+}

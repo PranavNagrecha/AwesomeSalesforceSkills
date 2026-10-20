@@ -1,0 +1,72 @@
+# DataWeave scripts in Apex: storage and deployment
+
+## How it's stored
+
+A DataWeave script that Apex calls is org metadata of type **`DataWeaveResource`**. Each script is two files in an SFDX project:
+
+```
+force-app/main/default/dataweave/
+├── contactsToOrders.dwl
+└── contactsToOrders.dwl-meta.xml
+```
+
+**`contactsToOrders.dwl`** holds the script itself:
+
+```dataweave
+%dw 2.0
+input records application/json
+output application/apex
+---
+records map (r) -> {
+    name: r.firstName ++ ' ' ++ r.lastName,
+    email: r.email
+}
+```
+
+**`contactsToOrders.dwl-meta.xml`** holds the metadata:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<DataWeaveResource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isGlobal>false</isGlobal>
+</DataWeaveResource>
+```
+
+- The file name (minus extension) is the script name that Apex references.
+- `isGlobal` matters mainly for managed packages. It controls whether subscriber orgs can call the script.
+- `DataWeaveResource` was introduced in a fairly recent API version (I believe around 55.0). Confirm the minimum version against the Metadata API reference for your target org.
+
+## How Apex invokes it
+
+```apex
+DataWeave.Script script = DataWeave.Script.createScript('contactsToOrders');
+DataWeave.Result result = script.execute(new Map<String, Object>{
+    'records' => jsonString
+});
+Object value = result.getValue();           // typed output (e.g. output application/apex)
+String asText = result.getValueAsString();  // string form
+```
+
+The keys in the input map must match the `input` declarations in the script. The script runs inside the Apex transaction, so it counts against your CPU time and heap limits.
+
+## How it's deployed
+
+It deploys like any other metadata.
+
+- **SFDX/source format:** `sf project deploy start --source-dir force-app/main/default/dataweave` or `--metadata DataWeaveResource:contactsToOrders`.
+- **package.xml:** use the metadata type name `DataWeaveResource`:
+  ```xml
+  <types>
+      <members>contactsToOrders</members>
+      <name>DataWeaveResource</name>
+  </types>
+  ```
+- **Packaging:** it can be included in unlocked and managed packages. Use `isGlobal` deliberately for the latter.
+- **Dependencies:** an Apex class that calls `createScript('name')` resolves the name at runtime. It is a string, not a compile-time reference, so deployment doesn't enforce ordering. Deploy the script together with, or before, the Apex that uses it, and cover it with a test that executes it.
+
+## Practical notes
+
+- Because the script is resolved by string name, a missing or misnamed script fails at runtime, not at deploy. Add an Apex test that calls `execute` for each script.
+- Only a subset of the DataWeave runtime is available in Apex, so test any functions or modules you rely on.
+- Scripts are versioned in source control like other metadata, so you get normal diffs and code review.

@@ -1,0 +1,16 @@
+The interview runs in the context of **the user who published the event message**. It does not run as the Automated Process user.
+
+The skill package cites this to the Platform Events Developer Guide (`platform_events.txt` 264 L2190–2192). Records the flow creates or updates carry that publishing user in `CreatedById` and `LastModifiedById`. Only the flow's **debug logs** appear under the Automated Process user, and that is the source of the common mix-up.
+
+**Practical implications**
+
+- **Test as each publishing persona.** If a publisher lacks access to an object or field the subscriber reads, such as a `ContactAccess__c` lookup, the Get Records returns nothing instead of failing loudly. Give each publishing persona the access the subscriber needs.
+- **Don't grant access to Automated Process** on the assumption that it is the running user. That fixes nothing.
+- **`PlatformEventSubscriberConfig` doesn't apply to flows.** It sets the running user for a platform event *Apex trigger* (`api_meta.txt` 264 L99118; `platform_events.txt` 264 L2366–2368). If you need a fixed, controlled running user, an Apex trigger subscriber is the documented route.
+
+**Not documented in the corpus (marked UNVERIFIED in the skill)**
+
+- There is no documented run-as setting for a platform event–triggered flow.
+- How the flow's `runInMode` interacts with the publisher's context isn't stated. Verify this in a sandbox before relying on it.
+
+One caution: the skill's "Official Sources Used" list includes a Help article titled "Set the Run Context for a Platform Event–Triggered Flow." That conflicts with the UNVERIFIED note that no such setting is documented. Treat that link as unconfirmed until you've checked it, and don't design around a run-context setting on the strength of the title alone.

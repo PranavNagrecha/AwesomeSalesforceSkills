@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "The `Database.executeBatch` call fails with a `System.LimitException`, and the job is not queued.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058004,
+    "duration_s": 1.781,
+    "input_tokens": 7124,
+    "output_tokens": 51
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"The `Database.executeBatch` call fails with a `System.LimitException`, and the job is not queued.\"}",
+  "prompt_sha": "428cc5c17728726b"
+}

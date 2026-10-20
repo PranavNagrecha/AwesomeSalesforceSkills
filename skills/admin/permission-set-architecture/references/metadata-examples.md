@@ -115,6 +115,19 @@ How to read it:
 - **Some system permissions drag object permissions with them.** The Object Reference calls this out for `TransferAnyLead`: a permission set holding it also has read and create on Lead. Audit queries over `ObjectPermissions` will show rows nobody wrote by hand. UNVERIFIED (2026-09-04): the API name `TransferAnyCase` used above does not appear in the extracted Metadata API or Object Reference text — the guide's worked permission-dependency example is `TransferAnyLead`. Confirm the exact name with `describeSObjects()` on `PermissionSet` (the guide's documented way to list available permission names) before deploying.
 - **`classAccesses` grants the top-level class only** — methods in inner classes are covered by the top-level grant, not by separate entries.
 - **`flowAccesses`** (API 47.0+) defaults to `false`; screen flows launched from a persona need an explicit entry. `customMetadataTypeAccesses` and `customSettingAccesses` (both 47.0+) follow the same `name` / `enabled` shape and grant read only.
+- **`emailRoutingAddressAccesses`** (API 62.0+) lists the Email-to-Case routing addresses available to users assigned to the set (api_meta 264 L97491). Each entry is `PermissionSetEmailRoutingAddressAccess` with a required `enabled` boolean and a required `name` string (api_meta 264 L97668-L97675); "only enabled email routing addresses are retrieved" (L97669). Excerpt, not a full file:
+
+```xml
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: sibling elements omitted -->
+    <emailRoutingAddressAccesses>
+        <enabled>true</enabled>
+        <name>ACME Billing</name>
+    </emailRoutingAddressAccesses>
+</PermissionSet>
+```
+
+  UNVERIFIED (2026-10-20): api_meta 264 L97675 says only that `name` "represents an organization's Email-to-Case routing address"; whether the value is the address's `routingName` or its `emailAddress` is not stated, and the `ACME Billing` value above is a `routingName` assumption. Retrieve a permission set from a sandbox that has the grant to see which form the platform writes.
 
 ---
 

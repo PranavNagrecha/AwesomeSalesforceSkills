@@ -1,0 +1,14 @@
+By default, the unhandled exception email goes to two recipients:
+
+1. **The user who last modified the code**: for a scheduled or batch job, that is the developer who last saved the Apex class (the class that threw the exception).
+2. **The context user / the user who started the job**: for example, the user who scheduled the job or submitted the batch via `Database.executeBatch`. Salesforce documents this as the user who "caused" the async execution.
+
+Details that matter in practice:
+
+- **Who exactly gets it:** Salesforce sends the email to the **last modifier of the Apex class** and to the **user who executed or scheduled the job** (the running/context user). If both are the same person, they get one email.
+- **Contents:** the Apex stack trace, exception message, the class and method, the org ID, and the user ID. Governor limit failures are included.
+- **Additional recipients:** you can add people under **Setup > Email > Apex Exception Email** (enter internal users, or external addresses). This is additive to the defaults.
+- **Not a guaranteed delivery path:** emails are throttled and may be suppressed for repeated identical failures, and they only fire for *unhandled* exceptions. If you catch the exception, no email is sent.
+- **Better practice:** don't rely on email alone. Wrap logic in try/catch and log to a custom object, or publish a platform event, e.g. `BatchApexErrorEvent` (implement `Database.RaisesPlatformEvents` on the batch class) so you can subscribe with a trigger and alert or retry. Also monitor failures under **Setup > Apex Jobs** and with Event Monitoring or `AsyncApexJob` queries.
+
+**Short answer:** the developer who last modified the Apex class and the user who ran or scheduled the job, plus any addresses configured under Apex Exception Email.

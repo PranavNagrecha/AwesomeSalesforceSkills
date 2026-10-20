@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**Lifecycle Center.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.056505299999999994,
+    "duration_s": 2.065,
+    "input_tokens": 6942,
+    "output_tokens": 30
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**Lifecycle Center.**\"}",
+  "prompt_sha": "fdc5de0c89ca9f8f"
+}

@@ -1,0 +1,78 @@
+# Making ConnectApi work in Apex tests
+
+There are two documented mechanisms, and which one applies depends on the method. There is **no** `Test.setMock(...)` mock for ConnectApi.
+
+## 1. `@IsTest(SeeAllData=true)` for most methods
+
+Most Connect in Apex methods need real org data and fail in an isolated test. Put the test that makes the real call under `SeeAllData=true` (Apex Developer Guide 264 L26331-26332):
+
+```apex
+@IsTest(SeeAllData=true)
+static void postMention_realCall() {
+    // Use an existing record and user from the org, since SeeAllData exposes them
+    Account a = [SELECT Id FROM Account LIMIT 1];
+    User u = [SELECT Id FROM User WHERE IsActive = true LIMIT 1];
+
+    Test.startTest();
+    EscalationFeedService.postMentionToRecord(a.Id, u.Id, 'please review');
+    Test.stopTest();
+
+    // Assert on the outcome, e.g. a FeedItem now exists for the parent
+    System.assert(![SELECT Id FROM FeedItem WHERE ParentId = :a.Id].isEmpty());
+}
+```
+
+## 2. `setTest*` registration for methods that don't touch org data
+
+Some methods, such as `getFeedElementsFromFeed`, don't touch org data in tests. You register the output they should return with the matching `setTest*` method *before* calling them. Each method's "Usage" section says whether this applies (L26333-26335, example at L26360-26377):
+
+```apex
+@IsTest
+static void readFeed_usesRegisteredResult() {
+    ConnectApi.FeedElementPage page = new ConnectApi.FeedElementPage();
+    page.elements = new List<ConnectApi.FeedElement>();
+
+    ConnectApi.ChatterFeeds.setTestGetFeedElementsFromFeed(
+        null, ConnectApi.FeedType.News, 'me', page);
+
+    Test.startTest();
+    ConnectApi.FeedElementPage result =
+        ConnectApi.ChatterFeeds.getFeedElementsFromFeed(
+            null, ConnectApi.FeedType.News, 'me');
+    Test.stopTest();
+
+    System.assertEquals(page, result);
+}
+```
+
+The `setTest*` signature mirrors the real method, with the output you want returned as the extra last argument.
+
+## 3. Keep `SeeAllData=true` to a minimum
+
+Don't put the whole suite under `SeeAllData=true`. Split the code instead:
+
+- **Build the `FeedItemInput` in its own method** and test that in a normal isolated test, asserting on the message segments (mention Id, text, order).
+- **Keep one or two `SeeAllData=true` tests** that make the real post call.
+- **Test error handling** (`ConnectApi.ConnectApiException`) in the isolated tests, for example by passing input that triggers it.
+
+```apex
+// Production code
+@TestVisible
+static ConnectApi.FeedItemInput buildMentionInput(Id userId, String msg) { /* ... */ }
+
+// Isolated test, no SeeAllData needed
+@IsTest
+static void buildMentionInput_putsMentionFirst() {
+    ConnectApi.FeedItemInput in = EscalationFeedService.buildMentionInput(UserInfo.getUserId(), 'hi');
+    System.assert(in.body.messageSegments[0] instanceof ConnectApi.MentionSegmentInput);
+    System.assertEquals(2, in.body.messageSegments.size());
+}
+```
+
+## Gotchas
+
+- **Don't use `Test.setMock(ConnectApi.ConnectApi.class, ...)`.** No `ConnectApi.ConnectApi` class appears in the Apex Developer Guide 264 or the Apex Reference Guide 262, and the 262 reference lists no `setTestPostFeedElement`. LLM-generated tests often invent these.
+- **Without either mechanism**, the test fails at the call site, so check the method's Usage section first.
+- **Connect in Apex does not support `System.runAs`.** It runs as the context user (L26329-26330), so tests can't impersonate an author.
+- **Async paths** (`@future` or Queueable) still follow the same rules, so exercise them inside `Test.startTest()`/`stopTest()` and remember the call runs as the enqueuing user.
+- **Chatter must be enabled** in the org where the `SeeAllData` test runs, or the call throws `ConnectApiException`.

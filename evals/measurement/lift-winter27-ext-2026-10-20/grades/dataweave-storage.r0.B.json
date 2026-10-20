@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "A DataWeave script used from Apex is stored as **`DataWeaveResource` metadata**, not as a static resource and not as an inline string.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.061406999999999996,
+    "duration_s": 2.696,
+    "input_tokens": 7465,
+    "output_tokens": 64
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"A DataWeave script used from Apex is stored as **`DataWeaveResource` metadata**, not as a static resource and not as an inline string.\"}",
+  "prompt_sha": "7ef7fe9af61d555a"
+}

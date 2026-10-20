@@ -1,0 +1,1 @@
+When a platform event-triggered flow creates or updates records, which user's context does the flow interview run in?

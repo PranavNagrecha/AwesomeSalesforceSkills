@@ -48,13 +48,14 @@
     {
       "id": "flow-runinmode-usermode",
       "era": "winter27",
-      "skill": "flow/record-triggered-flow-patterns",
+      "skill": "flow/flow-governance",
       "question": "Besides DefaultMode, SystemModeWithSharing and SystemModeWithoutSharing, is there a fourth Flow runInMode value in API 68.0, and what does it do?",
       "wrong_answer": "No. The only values are DefaultMode, SystemModeWithSharing and SystemModeWithoutSharing; user context is only reachable through DefaultMode.",
       "correct_answer": "Yes: UserMode (API 68.0 and later) runs the flow with the user's security context explicitly enforced, without inheriting sharing from the calling context.",
       "source": "api_meta.txt L70923-70927",
       "quote": "UserMode—The flow runs with the user's security context explicitly enforced, without inheriting sharing settings from the calling context.",
-      "wrong_source": "api_meta.txt 262 L68374-68382 lists three values"
+      "wrong_source": "api_meta.txt 262 L68374-68382 lists three values",
+      "_note": "Owner re-pointed 2026-10-20 after run 1: record-triggered-flow-patterns carries UserMode only in references/metadata-examples.md, which run_lift does not feed (arm B = SKILL.md + llm-anti-patterns.md); flow-governance SKILL.md holds the runInMode allow-list including UserMode. Run-1 result for this probe: A neither, B neither."
     },
     {
       "id": "debug-log-size",

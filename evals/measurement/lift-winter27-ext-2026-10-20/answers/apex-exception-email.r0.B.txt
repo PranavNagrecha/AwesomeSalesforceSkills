@@ -1,0 +1,14 @@
+By default, the unhandled exception email goes to the **developer who last modified the failing Apex class** (the class's `LastModifiedBy`), plus any recipients configured under **Setup → Apex Exception Email**. It does **not** go to the user who scheduled the job or who started the batch.
+
+Behavior to be aware of:
+
+- **Deduplicated:** repeated occurrences of the same exception are suppressed rather than emailed each time.
+- **Rate-capped:** at most 10 such emails per hour per application server.
+- **Not a monitoring channel:** because it targets the last modifier (who may be a deployment user, an integration user, or someone who left), failures can go unnoticed. This is the main reason nightly jobs fail silently.
+
+Practical implications:
+
+1. Add real recipients under Setup → Apex Exception Email (a monitored distribution list) as a minimum step.
+2. Don't rely on the email. Catch and log in `execute()` to a durable log object, re-throwing if you want `AsyncApexJob.Status = 'Failed'`.
+3. For critical batch classes, implement `Database.RaisesPlatformEvents` and subscribe to `BatchApexErrorEvent` (Batch Apex only, not Queueable or Schedulable).
+4. Add an `AsyncApexJob` watcher schedule to catch stuck `Queued`/`Holding` jobs, batches that `Completed` with `NumberOfErrors > 0`, and schedules that never fired.

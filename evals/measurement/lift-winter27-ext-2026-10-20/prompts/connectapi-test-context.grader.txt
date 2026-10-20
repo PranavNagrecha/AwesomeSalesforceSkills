@@ -1,0 +1,20 @@
+You are an eval grader checking ONE fact. Below is a practitioner question, the CORRECT fact, the WRONG fact a careless answer would give, and a candidate answer.
+Decide what the candidate answer asserts about that fact:
+- "correct": it states the correct fact (extra detail is fine).
+- "wrong": it asserts the wrong fact, or something that contradicts the correct fact.
+- "neither": it states neither, is silent on the point, or hedges without committing. If it asserts both, judge by what it finally tells the reader to do or believe; if that is unclear, answer neither.
+Ignore style, length and everything else. Do not use outside knowledge to overrule the CORRECT fact given here.
+Reply with ONLY strict JSON, no prose, no code fence:
+{"verdict": "correct" | "wrong" | "neither", "quote": "<the sentence of the candidate answer you judged, copied verbatim; empty if neither>"}
+
+=== QUESTION ===
+How do you make Connect in Apex (ConnectApi) methods work inside an Apex test method?
+
+=== CORRECT FACT ===
+Most ConnectApi methods need real org data and fail unless the test is marked @IsTest(SeeAllData=true); some methods instead require a setTest* registration method named in the method's Usage section.
+
+=== WRONG FACT ===
+Register a mock with Test.setMock(ConnectApi.ConnectApi.class, mockInstance) so no org data is needed.
+
+=== CANDIDATE ANSWER ===
+[CANDIDATE ANSWER GOES HERE]

@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "By default it runs as the **Automated Process** user, not the user who published the event.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0590308,
+    "duration_s": 2.667,
+    "input_tokens": 7227,
+    "output_tokens": 43
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"By default it runs as the **Automated Process** user, not the user who published the event.\"}",
+  "prompt_sha": "7c8c8d2eaf8da296"
+}

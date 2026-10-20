@@ -41,6 +41,18 @@ as the reason — it shows "owner" or "sharing rule" or whatever the
 *nominal* reason would have been if the bypass weren't there, which
 is actively misleading. Run the permission query yourself.
 
+Write the check as `SELECT ... FROM PermissionSetAssignment WHERE
+AssigneeId = :userId AND (PermissionSet.PermissionsViewAllData = true
+OR PermissionSet.PermissionsModifyAllData = true)`. The un-prefixed form
+`SELECT PermissionsViewAllData ... FROM PermissionSetAssignment` fails
+because the object's field list (object_reference 264 L219713-L219833)
+holds only AssigneeId, ExpirationDate, IsActive, IsRevoked, the two
+change-id lookups, PermissionSetGroupId and PermissionSetId; the
+per-permission booleans are `Permissions<PermissionName>` fields on
+`PermissionSet` (object_reference 264 L219473), reached through the
+`PermissionSet` relationship (L219841). The exact error text is
+UNVERIFIED (2026-10-20): not quoted in the corpus.
+
 ---
 
 ## Gotcha 2: Sharing recalculation runs async — the Share button doesn't appear immediately after OWD changes

@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "This lets the real ConnectApi call execute against org data.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0699533,
+    "duration_s": 3.633,
+    "input_tokens": 7944,
+    "output_tokens": 299
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"This lets the real ConnectApi call execute against org data.\"}",
+  "prompt_sha": "6330d54fcd46acb9"
+}

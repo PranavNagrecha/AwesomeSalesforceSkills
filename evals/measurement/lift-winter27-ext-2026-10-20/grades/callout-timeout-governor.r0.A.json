@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**The limit is 120 seconds, cumulative across all callouts in one transaction.** The 10-second figure is not a governor limit.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.060069500000000005,
+    "duration_s": 1.941,
+    "input_tokens": 7316,
+    "output_tokens": 61
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**The limit is 120 seconds, cumulative across all callouts in one transaction.** The 10-second figure is not a governor limit.\"}",
+  "prompt_sha": "fbe094c44a888b5c"
+}

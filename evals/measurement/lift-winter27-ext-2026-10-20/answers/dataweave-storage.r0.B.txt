@@ -1,0 +1,52 @@
+A DataWeave script used from Apex is stored as **`DataWeaveResource` metadata**, not as a static resource and not as an inline string.
+
+## Storage
+
+- The script is a `.dwl` file in the **`dw`** folder of the source tree, e.g. `force-app/main/default/dw/Account_Mapping_DW.dwl`.
+- Each script has a companion `.dwl-meta.xml` that carries the required `apiVersion` and the optional `isGlobal` (it also has `isProtected`):
+
+```xml
+<DataWeaveResource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>68.0</apiVersion>
+    <isGlobal>false</isGlobal>
+</DataWeaveResource>
+```
+
+- The script starts with a header declaring the input and output MIME types:
+
+```dwl
+%dw 2.0
+input payload application/json
+output application/json
+---
+payload map (item) -> { accountName: item.name }
+```
+
+## Deployment
+
+- Deploy it like any other metadata, in the same source tree and deployment as the Apex class and its tests. A fresh CI or scratch org needs `force-app/main/default/dw/` deployed along with the classes, because `createScript` only loads a `.dwl` that is already in the org.
+- There is no cache-control setting, so the old static-resource advice ("set cache control to Public") does not apply.
+
+## How Apex references it
+
+```apex
+Dataweave.Script s = Dataweave.Script.createScript('Account_Mapping_DW');
+Dataweave.Result r = s.execute(new Map<String, Object>{ 'payload' => inputJson });
+String out = r.getValueAsString();
+```
+
+- Alternatively, use the generated class `DataWeaveScriptResource.<Name>`. The platform generates it for each script. Because it is a compile-time reference, the platform won't let anyone delete a script that is referenced this way.
+- `createScript(namespace, scriptName)` also exists for scripts in a namespace.
+- There is no inline or `fromString` API. The script can't be built from an Apex string.
+
+## Limits and version floors
+
+- `DataWeaveResource` exists from API 58.0. The calling Apex class must be API 53.0 or later.
+- The class's API version selects the DataWeave syntax version: 2.5 at 61.0 and earlier, 2.8 at 62.0, 2.9 at 63.0+.
+- An org can hold at most 50 scripts, each up to 100,000 characters.
+- The script runs inside the Apex transaction's heap and CPU limits. It is not a call to MuleSoft, and it needs no MuleSoft license.
+- Runtime script errors surface in Apex as `System.DataWeaveScriptException`.
+
+## Unverified
+
+The corpus does not say which exception `createScript` throws for a missing script, so test that case in a scratch org. The Summer '24 GA date is not stated in the corpus either.
