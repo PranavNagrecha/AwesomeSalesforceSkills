@@ -68,7 +68,10 @@ The same flow on a pre-61.0 runtime version        (synchronous limits)
 
 Read the error number before diagnosing anything. `Too many SOQL queries: 101`
 says the flow is still on synchronous limits, and the cheapest fix is the runtime
-version bump rather than a redesign. `: 201` says it is already on asynchronous
+version bump rather than a redesign (UNVERIFIED (2026-10-20): 100 vs 200 are the
+Apex sync/async SOQL ceilings, apexdev 264 L19747, but neither the 264 Apex nor
+Metadata API guide states which regime a scheduled flow gets; the 61.0 switch is
+from the release-update help article). `: 201` says it is already on asynchronous
 limits and the per-interview work genuinely has to come down. `Too many DML
 statements: 151` says the queries were never the problem.
 
@@ -301,7 +304,8 @@ And what escalation does **not** buy:
 - **Not unlimited concurrency.** Up to 5 batch jobs can be queued or active at
   once, with up to 100 more Holding in the flex queue.
 - **Not per-transaction limits.** Batch Apex gets the asynchronous ceilings — 200
-  SOQL, 60,000 ms CPU, 12 MB heap — which are the *same* ceilings a
+  SOQL, 60,000 ms CPU, 25 MB heap (12 MB through Summer '26; apexdev 264
+  L19780) — which are the *same* ceilings a
   schedule-triggered flow on runtime version 61.0 or later already has. Escalating
   does not raise them, and 150 DML statements is the same number in both engines.
   A badly scoped batch breaches them exactly like a badly batched flow.

@@ -33,9 +33,9 @@ outputs:
   - "Cleanup script that deletes original Attachments only after verification"
   - "Updated reports / list views / LWC references to use ContentDocument relationships"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-29
+updated: 2026-10-20
 ---
 
 # Attachment to Files Migration
@@ -52,6 +52,24 @@ Gather this context before working on anything in this domain:
 - Confirm "Notes" are Classic Notes (`Note` sObject) vs Enhanced Notes (`ContentNote`, already a Files record). Only Classic `Note` records need migrating; Enhanced Notes are already Files.
 - Inventory parent-object distribution: `SELECT ParentId.Type, COUNT(Id) FROM Attachment GROUP BY ParentId.Type`. Some parents (Email, Task) have idiosyncratic Files behavior — Email attachments may already be linked via `EmailMessage` instead.
 - Confirm the org has Files enabled and that `ContentDocumentLink` has an OWD permitting users to receive shared files. If OWD is private and the migration runs as an integration user, all migrated files will be invisible to the original owners until ContentDocumentLink rows are created with the correct visibility.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each row traces to a gotcha in `references/gotchas.md`; the answers set the batch scope, the field mapping, and the cleanup gate before the first `ContentVersion` is inserted.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What is the total `BodyLength`, and what is the largest single file?" | Bodies load into heap in full, against 10 MB synchronous / 25 MB asynchronous (gotcha 2) | A batch `scope` (10, or 1 above 5 MB) or a Bulk API 2.0 route |
+| "Has Files storage been checked against the migrated volume?" | Files storage is a separate allocation from the Attachment storage being freed (gotcha 1) | A storage check, or an overage decision, signed off before the run |
+| "Do any attachments belong to inactive users?" | Migrated files owned by inactive users disappear from current users' view (gotcha 3) | An owner-reassignment rule applied at insert time |
+| "What is the OWD on each parent object, and which attachments are private?" | `Visibility='AllUsers'` is rejected on private-OWD parents (gotcha 5) | A per-parent `ShareType` and `Visibility` mapping |
+| "Must the original upload dates survive for audit?" | `CreatedDate` defaults to the migration day unless audit fields are set on create (gotcha 6) | The Set Audit Fields permission and a `CreatedDate` mapping |
+| "Will anything still create Attachments during the cutover, and is that path a trigger that also touches users?" | A live trigger can hit `MIXED_DML_OPERATION`, and a Queueable handed `Trigger.new` gets a null `Body` (gotchas 4, 8) | A cutover design that re-queries `Body` by Id in the async job |
+| "Are any of the attachments on `EmailMessage` parents, and who approves deleting the originals?" | Deleting originals breaks email attachment links (gotcha 9) | An excluded-parent list and an approval flag on the cleanup batch |
+
+What a proper configuration adds over just looping and inserting: every file lands with its owner, date, and visibility intact, the run fits the heap, and nothing is deleted until reconciliation proves it is safe.
 
 ---
 
@@ -93,7 +111,7 @@ Classic Attachment sharing was simple: inherits parent record sharing, plus an `
 
 ### 4. Heap and DML Considerations at Volume
 
-Attachment bodies live in `Attachment.Body` (a Blob). When you query `SELECT Body FROM Attachment LIMIT N`, every body is loaded into Apex heap (6 MB default). At an average 500 KB per attachment, you can hold ~10 attachments in heap simultaneously before risk. Migration jobs MUST stream — query a small batch, insert, release references, repeat — never bulk-load the full body set.
+Attachment bodies live in `Attachment.Body` (a Blob). When you query `SELECT Body FROM Attachment LIMIT N`, every body is loaded into Apex heap (10 MB synchronous, 25 MB in a Batch `execute` — Apex Developer Guide 264 L19780; a Winter '27 release-level change for every org, 6 MB / 12 MB in Summer '26, and during Winter '27 only a nonproduction org can opt back with `ApexSettings.enableEnforceSummer26ApexHeapLimit`, Metadata API 264 L113855-113862). At an average 500 KB per attachment that is ~20 bodies synchronous or ~50 per batch execute by arithmetic alone, before any other heap use. Migration jobs MUST stream — query a small batch, insert, release references, repeat — never bulk-load the full body set.
 
 | Approach | Records per chunk | Where it fits |
 |---|---|---|
@@ -211,7 +229,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 1. **`ContentDocument` is created implicitly by `ContentVersion` insert — there is no direct insert path.** Inserting a `ContentDocument` record directly is not supported. The pattern is: insert `ContentVersion` (which auto-creates a `ContentDocument` parent), re-query the inserted `ContentVersion` to read its `ContentDocumentId`, then build the `ContentDocumentLink`. Trying to model the migration with a `ContentDocument` insert step fails with no clear error.
 
-2. **`Attachment.Body` query loads the full blob into heap.** A query like `SELECT Body FROM Attachment WHERE ...` materializes every blob in the result set. With heap limited to 6 MB (12 MB async), even a small batch of large files OOMs the transaction. Always set a small `scope` and treat each row's body as a one-time stream — assign to `ContentVersion.VersionData` immediately and let it go out of scope.
+2. **`Attachment.Body` query loads the full blob into heap.** A query like `SELECT Body FROM Attachment WHERE ...` materializes every blob in the result set. With heap limited to 10 MB (25 MB async; 6 MB / 12 MB before Winter '27), even a small batch of large files OOMs the transaction. Always set a small `scope` and treat each row's body as a one-time stream — assign to `ContentVersion.VersionData` immediately and let it go out of scope.
 
 3. **Setting `FirstPublishLocationId` AND inserting an explicit `ContentDocumentLink` for the same parent creates two links.** The convenience parameter `FirstPublishLocationId` on `ContentVersion` auto-creates the `ContentDocumentLink`. If your migration also inserts an explicit `ContentDocumentLink` to the same parent for control over `ShareType` / `Visibility`, you get two link rows. Pick one approach per parent and stick to it.
 

@@ -37,9 +37,9 @@ outputs:
   - "Shared responsibility matrix for availability (Salesforce infrastructure vs. customer data)"
   - "Compliance control checklist tied to applicable regulations"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-10-03
+updated: 2026-10-20
 ---
 
 # NFR Definition for Salesforce
@@ -85,7 +85,7 @@ The five categories that must always appear in a Salesforce NFR register, mapped
 
 1. **Performance** (Performance Efficiency pillar) — Page load times, report execution times, batch job completion windows, API response times. Must be expressed as Service Level Indicators (SLIs): "95th-percentile Lightning page load under 3 seconds measured in a Full sandbox." Vague targets ("fast") cannot be tested.
 
-2. **Scalability** (Performance Efficiency + Reliability pillars): Salesforce governor limits are hard, non-negotiable platform ceilings, not soft guidelines. Every scalability NFR must be expressed relative to these limits. Key limits: SOQL rows per transaction (50,000), DML statements per transaction (150), CPU time per transaction (10,000 ms Apex), heap size (6 MB sync / 12 MB async), cumulative callout timeout per transaction (120 s), daily API request allocation (varies by edition/user count). Architect for 50% headroom against any limit that correlates with data growth.
+2. **Scalability** (Performance Efficiency + Reliability pillars): Salesforce governor limits are hard, non-negotiable platform ceilings, not soft guidelines. Every scalability NFR must be expressed relative to these limits. Key limits: SOQL rows per transaction (50,000), DML statements per transaction (150), CPU time per transaction (10,000 ms Apex), heap size (10 MB sync / 25 MB async since Winter '27 — a release-level change for every org regardless of class API version, Apex Developer Guide 264 L19780; 6 MB / 12 MB in Summer '26; during Winter '27 only, a nonproduction org can opt back with `ApexSettings.enableEnforceSummer26ApexHeapLimit`, Metadata API 264 L113855-113862), cumulative callout timeout per transaction (120 s), daily API request allocation (varies by edition/user count). Architect for 50% headroom against any limit that correlates with data growth.
 
 3. **Availability** (Reliability pillar): Salesforce Trust publishes a 99.9% infrastructure uptime SLA (UNVERIFIED (2026-10-03): no fetched source states this figure; quote the customer's contract instead, see `references/gotchas.md` Gotcha 3). This covers the platform, it does NOT cover: custom Apex code reliability, integration availability, org-to-org data sync, or data recovery time after a misconfigured bulk delete. The NFR register must distinguish infrastructure availability (Salesforce's SLA) from application availability (team's responsibility) and define RPO/RTO for backup scenarios.
 

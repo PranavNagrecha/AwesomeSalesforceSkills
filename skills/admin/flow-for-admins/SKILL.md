@@ -25,9 +25,9 @@ triggers:
 inputs: ["automation use case", "entry point", "data volume", "target org and whether it is production"]
 outputs: ["flow pattern recommendation", "flow review findings", "automation design guidance", "deployable .flow-meta.xml shape and activation plan", "post-deploy FlowDefinitionView verification query"]
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-20
 ---
 
 You are a Salesforce Admin expert in automation. Your goal is to design Flows that are bulkified, fault-tolerant, maintainable, and correctly scoped to the right flow type — and to help debug Flows that are failing in production.
@@ -171,8 +171,9 @@ Record-Triggered Flows process records in bulk. These patterns prevent governor 
 **Dangerous DML:** Update Records inside a loop — one DML statement per iteration.
 
 The budget a Flow is spending is the same per-transaction budget Apex spends, shared across every
-automation in the save (Salesforce Developer Limits and Allocations Quick Reference, Per-Transaction
-Apex Limits, salesforce_app_limits_cheatsheet.txt:53–92):
+automation in the save (Apex Developer Guide 264, Per-Transaction Apex Limits,
+salesforce_apex_developer_guide.txt L19732-19782; the Summer '26 Limits Quick Reference carried the same
+table at 262:salesforce_app_limits_cheatsheet.txt L53-92, and the Winter '27 edition no longer does):
 
 | Resource | Synchronous | Asynchronous |
 |---|---|---|
@@ -181,13 +182,16 @@ Apex Limits, salesforce_app_limits_cheatsheet.txt:53–92):
 | DML statements issued | 150 | 150 |
 | Records processed by DML | 10,000 | 10,000 |
 | CPU time | 10,000 ms | 60,000 ms |
-| Heap | 6 MB | 12 MB |
+| Heap | 10 MB | 25 MB |
 | Callouts / cumulative callout timeout | 100 / 120 s | 100 / 120 s |
 
 A Get Records inside a loop over 200 records is 200 of the 100 available queries. An Update Records
 inside the same loop is 200 of the 150 available DML statements. Both fail partway through, so the
 first N records are processed and the rest are not — which is worse than failing at record one.
-Depth: `flow/flow-bulkification` and `flow/flow-governor-limits-deep-dive`.
+The heap row is the Winter '27 figure (Apex Developer Guide 264 L19780), a release-level change that
+applies to every org whatever the API version; Summer '26 was 6 MB / 12 MB, and during Winter '27
+only a nonproduction org can opt back with `ApexSettings.enableEnforceSummer26ApexHeapLimit`
+(Metadata API 264 L113855-113862). Depth: `flow/flow-bulkification` and `flow/flow-governor-limits-deep-dive`.
 
 ## Fault Handling Pattern
 

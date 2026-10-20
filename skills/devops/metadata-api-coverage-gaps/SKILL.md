@@ -31,9 +31,9 @@ outputs:
   - "Workaround recommendations (Tooling API, post-deploy scripts, Setup UI steps, or data loader)"
   - "package.xml or sfdx-project.json adjustments to exclude unsupported types and avoid silent failures"
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # Metadata API Coverage Gaps
@@ -174,7 +174,7 @@ Run through these before marking work in this area complete:
 Non-obvious platform behaviors that cause real production problems:
 
 1. **Retrieve pulls the latest Flow version, not the active one** -- A Flow member without a version number "is the latest version" (Metadata API guide, Flow `fullName`), not the currently active version. If version 3 is active but version 5 is the latest (inactive) version, `sf project retrieve` pulls version 5. Deploying it ships version 5's content under whatever `<status>` the file carries, not version 3. Control activation with `<status>` on the Flow — the Metadata API guide recommends, as of API 44.0, discontinuing `FlowDefinition` for activation, and a `FlowDefinition` in the same deploy overrides the flows' status fields.
-2. **OrgPreferenceSettings was removed as a whole type** -- It is available in API 37.0 to 47.0, deprecated in 47.0, and removed in 48.0. A project that raises `sourceApiVersion` to 48.0 or later can no longer carry `OrgPreference.settings`. The fix is to move each preference to its Boolean field on the replacement Settings type (for example `enableCompileOnDeploy` on `ApexSettings`) and delete the old file.
+2. **OrgPreferenceSettings was removed as a whole type** -- It is available in API 37.0 to 47.0, deprecated in 47.0, and removed in 48.0. A project that raises `sourceApiVersion` to 48.0 or later can no longer carry `OrgPreference.settings`. The fix is to move each preference to its Boolean field on the replacement Settings type (for example `enableCompileOnDeploy` on `ApexSettings`) and delete the old file. A Settings field can also be release-bound while its type stays supported: `ApexSettings.enableEnforceSummer26ApexHeapLimit` (field available in API 68.0) keeps a nonproduction org on the lower Summer '26 Apex heap limits, but it is honoured only in Winter '27 — in Spring '27 the higher heap limits are enforced regardless of the setting (Metadata API Developer Guide 264, `api_meta.txt` L113855-113862). The Winter '27 heap increase itself (10 MB sync / 25 MB async, Apex Developer Guide 264 L19780) is a release-level change, not tied to `sourceApiVersion`, so do not treat the field as a version gate.
 3. **Source tracking does not track permission set assignments** -- Changes to `PermissionSetAssignment` records (which users are assigned to which permission sets) are data, not metadata. Source tracking will never detect these changes. Use data loader or a post-deploy script to manage assignments.
 4. **Unlocked packages silently exclude unsupported types** -- When creating a package version, unsupported types in the package directory are silently excluded rather than causing an error. The package installs successfully but is missing configuration, leading to runtime failures in the subscriber org.
 5. **ForecastingSettings has persistent gaps** -- `ForecastingSettings` is a long-standing example of a partially supported type. Retrieving it succeeds, but deploying it often fails with cryptic errors depending on the target org's forecasting configuration. Manual Setup configuration is typically required.

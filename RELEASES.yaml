@@ -673,6 +673,25 @@ releases:
     - apex/scheduled-apex-failure-detection-and-monitoring
     - data/salesforce-files-architecture
     - flow/flow-apex-defined-types
+    - admin/email-service-inbound
+    - admin/flow-for-admins
+    - agentforce/mcp-tool-definition-apex
+    - architect/nfr-definition-for-salesforce
+    - architect/omnistudio-scalability-patterns
+    - architect/sales-cloud-architecture
+    - data/attachment-to-files-migration
+    - devops/metadata-api-coverage-gaps
+    - flow/flow-get-records-optimization
+    - flow/flow-batch-processing-alternatives
+    - flow/flow-collection-processing
+    - flow/flow-interview-debugging
+    - flow/flow-transactional-boundaries
+    - integration/file-and-document-integration
+    - integration/middleware-integration-patterns
+    - integration/outbound-webhook-from-salesforce
+    - integration/salesforce-functions-replacement
+    - omnistudio/dataraptor-transform-optimization
+    - omnistudio/integration-procedure-cacheable-patterns
   - id: R2-33
     title: flow-loop + flow-testing checkers exit 1 on WARN-only; PE flow $Record batch shape UNVERIFIED; DataWeave checker
       .resource-meta.xml detection
@@ -687,6 +706,12 @@ releases:
   - id: R2-35
     title: 'Batch H follow-ups: 7 checkers off the exit-code contract (scheduled-apex fails open on missing path), connect-api
       checker flags the documented SeeAllData pattern, wrapper-class Questions header nonstandard'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-36
+    title: 'Batch E/I checker findings: middleware http.send regex, dataraptor Transform detection never fires, transactional-boundaries
+      fails open on missing path, 1,000,000/333,333 Get Records caps unsourced'
     size: S
     owner_model: sonnet
     status: todo
@@ -965,5 +990,15 @@ inbox:
     contract; apex-connect-api-chatter rule connectapi-with-seealldata raises MEDIUM on the pattern apexdev 264 L26331-26335
     requires — invert or drop; apex/apex-wrapper-class-patterns Questions table header starts ''| Question |'' not ''| Ask
     | Why it matters | What a good answer adds |''.'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by reviewers E and I (R3-05): integration/middleware-integration-patterns checker regex ''http\.send\('' matches
+    only a variable literally named http (bad fixture exits 0); omnistudio/dataraptor-transform-optimization checker looks
+    for ''"type":"Transform"'' without the json.dumps space so Transform detection never fires, and its bulk-mode advice contradicts
+    the package''s Gotcha 12; flow/flow-transactional-boundaries checker returns WARN+0 on a missing path; flow/flow-interview-debugging
+    script only checks its own layout (not a checker); flow/flow-get-records-optimization gotcha 3 states 1,000,000 / 333,333
+    row caps found only in a 2013 blog — ground or mark UNVERIFIED; email-service-inbound and attachment-to-files checkers
+    exit 2 on missing path; omnistudio-scalability checker message still says fire-and-forget does not escape SOQL limits.'
   size: S
   slotted_into: 1.5.0

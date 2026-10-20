@@ -253,8 +253,12 @@ configured limits, the interim results are saved and the step continues in a
 new transaction."
 
 The chainable thresholds are bounded by the underlying Apex governor limits:
-synchronous — 100 SOQL queries, 10,000 ms CPU, 6 MB heap, 150 DML statements;
-Queueable Chainable — 200 SOQL queries, 60,000 ms CPU, 12 MB heap.
+synchronous — 100 SOQL queries, 10,000 ms CPU, 10 MB heap, 150 DML statements;
+Queueable Chainable — 200 SOQL queries, 60,000 ms CPU, 25 MB heap. The heap
+figures are the Winter '27 Apex limits (apexdev 264 L19780; 6 MB / 12 MB through
+Summer '26, a release-level rise not tied to API version). Whether the OmniStudio
+chainable heap threshold tracks that rise is UNVERIFIED (2026-10-20): the
+Trailhead source predates Winter '27 and no OmniStudio guide is in the corpus.
 
 **How to avoid:** Diagnose from the symptom. Slow *warm* calls → Cache Block.
 Cold call breaching a limit → Chainable. A DML step immediately preceding an

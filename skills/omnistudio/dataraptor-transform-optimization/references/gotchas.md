@@ -104,9 +104,15 @@ transaction and draws on its allocation:
 | Limit | Synchronous | Asynchronous |
 |---|---|---|
 | CPU time | 10,000 ms | 60,000 ms |
-| Heap | 6 MB | 12 MB |
+| Heap | 10 MB (6 MB through Summer '26) | 25 MB (12 MB through Summer '26) |
 | SOQL queries | 100 | 200 |
 | DML statements | 150 | 150 |
+
+These are the plain Apex per-transaction limits (Apex Developer Guide 264
+L19747–L19782). The heap rise is a Winter '27 release-level change for every org
+and class regardless of API version; during Winter '27 only, a nonproduction org
+can keep the Summer '26 heap with `ApexSettings.enableEnforceSummer26ApexHeapLimit`
+(api_meta 264 L113855–L113862), so measure in an org with the target's setting.
 
 The Transform is frequently the last step and therefore the one that trips the
 limit — which makes it the one that gets optimized, often for days, while the
@@ -118,7 +124,7 @@ every transaction that survives a year.
 **How to avoid:** read the transaction total, not the step. If the Integration
 Procedure spends 9,200 ms before reaching the Transform, no amount of mapping
 tuning will fix this and the honest recommendation is to move the IP to an
-asynchronous shape — which multiplies the CPU budget by six and doubles heap — or
+asynchronous shape — which multiplies the CPU budget by six and raises heap from 10 MB to 25 MB — or
 to split the transaction.
 
 ---
@@ -152,12 +158,14 @@ Detection is easy and worth automating: any SOQL inside a class implementing
 
 ## Gotcha 6: Chained Transforms Hold One Full Copy Each
 
-**What happens:** `System.LimitException: Apex heap size too large`, at a row
+**What happens:** `System.LimitException: Apex heap size too large` (exact
+message text UNVERIFIED (2026-10-20): not in apexdev 264, which documents only
+that the heap `LimitException` is uncatchable, L19853), at a row
 count that seems modest. Each individual Transform is small.
 
 Every Transform in a chain materializes its complete output structure before the
 next step reads it. Three chained Transforms over a wide payload hold three full
-copies at peak, against 6 MB synchronously.
+copies at peak, against 10 MB synchronously (6 MB through Summer '26).
 
 **When it occurs:** on wide payloads more than on long ones. A 180-field extract
 that produces a 14-field output is carrying 166 fields through every copy.

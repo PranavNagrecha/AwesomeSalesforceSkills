@@ -305,8 +305,11 @@ The chainable thresholds are bounded by the underlying Apex governor limits:
 |---|---|---|
 | SOQL queries | 100 | 200 |
 | CPU time | 10,000 ms | 60,000 ms |
-| Heap | 6 MB | 12 MB |
+| Heap | 10 MB (6 MB through Summer '26) | 25 MB (12 MB through Summer '26) |
 | DML statements | 150 | — |
+
+Heap is the Winter '27 Apex limit (apexdev 264 L19780); whether the OmniStudio
+chainable heap threshold follows it is UNVERIFIED (2026-10-20).
 
 When a step exceeds the configured limits, "the interim results are saved and
 the step continues in a new transaction."

@@ -26,9 +26,9 @@ outputs:
 dependencies:
   - flow/flow-governor-limits-deep-dive
   - flow/flow-performance-optimization
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Flow Get Records Optimization
@@ -47,6 +47,22 @@ updated: 2026-08-14
 - One-record, one-lookup flows. Leave them alone.
 - Platform event triggers where SOQL is not the bottleneck.
 
+## Questions to Ask Before Configuring
+
+Each row traces to a gotcha in `references/gotchas.md`; ask them before touching a Get Records element, because the answers decide whether there is anything to optimize.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Is this flow record-triggered or schedule-triggered, and how many records arrive in one save or batch?" | Up to 200 interviews share one transaction's 100-query budget (gotcha 1) | The real multiplier for every Get Records in the flow |
+| "How many rows does the target object hold, and how many does this filter match?" | Selectivity is measured in rows: a standard index is used below 30% of the first million records and 15% beyond, a custom index below 10% and 5% (Large Data Volumes guide 264 L463-469; gotcha 3) | A filter that leads with a genuinely selective field, checked in the Query Plan tool |
+| "Which filter fields are standard-indexed, Unique, or External Id?" | Only a short list of fields is indexed by default (gotcha 4) | A field choice that can use an index, or a request for a custom index |
+| "Does any filter use a leading wildcard, not-equal, or is-null operator?" | Those operators cannot use an index (gotchas 5, 6) | A rewritten filter, or an accepted full scan on a small object |
+| "Which fields do downstream elements actually read from the result?" | Automatic storage retrieves every field, and a screen flow pays for it on every transition (gotcha 7) | A named field list on large collections over wide objects |
+| "What should happen when the query returns nothing?" | Zero rows is a successful query; the fault connector never fires (gotcha 2) | An `IsNull` Decision after the element |
+| "Does the flow pause, or read related-record fields through `$Record`?" | Paused interviews store their collections, and `$Record` does not carry related records (gotchas 8, 9) | Trimmed collections before a Pause, and an explicit parent Get Records on the foreign key |
+
+What a proper configuration adds over just moving queries around: every Get Records is sized against the transaction it actually runs in, so the flow survives a 200-record batch instead of passing a one-record test.
+
 ## The Budget You Are Spending
 
 Per **transaction**, not per element and not per interview:
@@ -56,7 +72,12 @@ Per **transaction**, not per element and not per interview:
 | SOQL queries | 100 | 200 |
 | SOQL query rows | 50,000 | 50,000 |
 | CPU time | 10,000 ms | 60,000 ms |
-| Heap | 6 MB | 12 MB |
+| Heap | 10 MB | 25 MB |
+
+Heap is the Winter '27 figure (Apex Developer Guide 264 L19780), a release-level change for
+every org whatever the API version; Summer '26 was 6 MB / 12 MB, and during Winter '27 only a
+nonproduction org can opt back with `ApexSettings.enableEnforceSummer26ApexHeapLimit`
+(Metadata API 264 L113855-113862).
 
 Record-triggered and schedule-triggered flows run one interview per record, and
 the platform batches those interviews — up to 200 — into a single transaction
@@ -94,7 +115,7 @@ of the multiplication is often what actually breaches.
    relationship fields, `CreatedDate`, and `SystemModstamp`. Custom fields marked
    Unique or External Id get a custom index. Nothing else is indexed by default —
    "standard field" and "standard index" are different things.
-4. **Specify fields on large collections, not on every lookup.** Heap is 6 MB
+4. **Specify fields on large collections, not on every lookup.** Heap is 10 MB
    synchronous and a screen flow re-serializes variables between screens, so a
    named field list is a real saving on a wide object. It is also brittle: a field
    added downstream and forgotten in the query returns null rather than erroring.

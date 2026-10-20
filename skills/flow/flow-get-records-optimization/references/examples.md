@@ -12,7 +12,7 @@ element, not per interview):
 | SOQL queries | 100 | 200 |
 | SOQL query rows | 50,000 | 50,000 |
 | CPU time | 10,000 ms | 60,000 ms |
-| Heap | 6 MB | 12 MB |
+| Heap | 10 MB (Winter '27; 6 MB in Summer '26) | 25 MB (12 MB in Summer '26) |
 
 A record-triggered or schedule-triggered flow runs one interview per record and
 the platform batches those interviews — up to 200 — into a single transaction.
@@ -35,39 +35,42 @@ design with no margin. DML statements are 150 in both columns.
 **Wrong:**
 
 ```xml
-<loops>
-    <name>Loop_Cases</name>
-    <label>Loop Cases</label>
-    <locationX>176</locationX>
-    <locationY>278</locationY>
-    <collectionReference>caseCollection</collectionReference>
-    <iterationOrder>Asc</iterationOrder>
-    <nextValueConnector>
-        <targetReference>Get_Account_For_Case</targetReference>
-    </nextValueConnector>
-</loops>
+<!-- excerpt: elements from one .flow-meta.xml; the other elements and flow properties are omitted -->
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <loops>
+        <name>Loop_Cases</name>
+        <label>Loop Cases</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <collectionReference>caseCollection</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Get_Account_For_Case</targetReference>
+        </nextValueConnector>
+    </loops>
 
-<recordLookups>
-    <name>Get_Account_For_Case</name>
-    <label>Get Account For Case</label>
-    <locationX>352</locationX>
-    <locationY>278</locationY>
-    <connector>
-        <targetReference>Assign_Account_Name</targetReference>
-    </connector>
-    <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-    <filterLogic>and</filterLogic>
-    <filters>
-        <field>Id</field>
-        <operator>EqualTo</operator>
-        <value>
-            <elementReference>Loop_Cases.AccountId</elementReference>
-        </value>
-    </filters>
-    <getFirstRecordOnly>true</getFirstRecordOnly>
-    <object>Account</object>
-    <storeOutputAutomatically>true</storeOutputAutomatically>
-</recordLookups>
+    <recordLookups>
+        <name>Get_Account_For_Case</name>
+        <label>Get Account For Case</label>
+        <locationX>352</locationX>
+        <locationY>278</locationY>
+        <connector>
+            <targetReference>Assign_Account_Name</targetReference>
+        </connector>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Loop_Cases.AccountId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+</Flow>
 ```
 
 200 iterations, 200 queries. And because the flow itself is batched at 200
@@ -76,45 +79,48 @@ interviews, that ceiling arrives long before the loop does.
 **Right:**
 
 ```xml
-<!-- 1. Collect the parent Ids in an Assignment inside the loop. -->
-<assignments>
-    <name>Collect_Account_Ids</name>
-    <label>Collect Account Ids</label>
-    <locationX>352</locationX>
-    <locationY>278</locationY>
-    <assignmentItems>
-        <assignToReference>accountIds</assignToReference>
-        <operator>Add</operator>
-        <value>
-            <elementReference>Loop_Cases.AccountId</elementReference>
-        </value>
-    </assignmentItems>
-    <connector>
-        <targetReference>Loop_Cases</targetReference>
-    </connector>
-</assignments>
+<!-- excerpt: elements from one .flow-meta.xml; the other elements and flow properties are omitted -->
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- 1. Collect the parent Ids in an Assignment inside the loop. -->
+    <assignments>
+        <name>Collect_Account_Ids</name>
+        <label>Collect Account Ids</label>
+        <locationX>352</locationX>
+        <locationY>278</locationY>
+        <assignmentItems>
+            <assignToReference>accountIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_Cases.AccountId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Cases</targetReference>
+        </connector>
+    </assignments>
 
-<!-- 2. ONE query, after the loop, with an In filter. -->
-<recordLookups>
-    <name>Get_Accounts</name>
-    <label>Get Accounts</label>
-    <locationX>528</locationX>
-    <locationY>278</locationY>
-    <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-    <filterLogic>and</filterLogic>
-    <filters>
-        <field>Id</field>
-        <operator>In</operator>
-        <value>
-            <elementReference>accountIds</elementReference>
-        </value>
-    </filters>
-    <getFirstRecordOnly>false</getFirstRecordOnly>
-    <object>Account</object>
-    <queriedFields>Id</queriedFields>
-    <queriedFields>Name</queriedFields>
-    <storeOutputAutomatically>true</storeOutputAutomatically>
-</recordLookups>
+    <!-- 2. ONE query, after the loop, with an In filter. -->
+    <recordLookups>
+        <name>Get_Accounts</name>
+        <label>Get Accounts</label>
+        <locationX>528</locationX>
+        <locationY>278</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>accountIds</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Account</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+</Flow>
 ```
 
 **Why it works:** one query, filtered on `Id` — a standard-indexed field — with
@@ -150,20 +156,23 @@ a custom index. Adding an index to that field will not make the query selective.
 What does work:
 
 ```xml
-<filters>
-    <field>OwnerId</field>
-    <operator>EqualTo</operator>
-    <value>
-        <elementReference>$User.Id</elementReference>
-    </value>
-</filters>
-<filters>
-    <field>Status__c</field>
-    <operator>EqualTo</operator>
-    <value>
-        <stringValue>Open</stringValue>
-    </value>
-</filters>
+<!-- excerpt: the filters of one recordLookups element; name, object and connectors are omitted -->
+<recordLookups>
+    <filters>
+        <field>OwnerId</field>
+        <operator>EqualTo</operator>
+        <value>
+            <elementReference>$User.Id</elementReference>
+        </value>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operator>EqualTo</operator>
+        <value>
+            <stringValue>Open</stringValue>
+        </value>
+    </filters>
+</recordLookups>
 ```
 
 Leading with `OwnerId` — standard-indexed, and for one user a tiny fraction of 4
@@ -219,7 +228,7 @@ memory, most of which no element reads.
 </recordLookups>
 ```
 
-**Why it works:** heap is 6 MB synchronous, 12 MB asynchronous, and a screen
+**Why it works:** heap is 10 MB synchronous, 25 MB asynchronous (Winter '27), and a screen
 flow additionally serializes its variables between screens — so a fat collection
 is paid for on every screen transition, not once.
 

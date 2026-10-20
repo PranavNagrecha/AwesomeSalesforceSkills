@@ -6,24 +6,24 @@ Common mistakes AI coding assistants make when generating or advising on OmniStu
 
 **What the LLM generates:** When asked how to fix governor limit errors in an Integration Procedure under portal concurrency, the LLM recommends enabling `useFuture: true` (fire-and-forget async mode), describing it as "running the IP asynchronously to avoid hitting limits."
 
-**Why it happens:** LLMs associate "async" with "no governor limits" because async Apex has higher CPU and heap limits than synchronous Apex. They do not distinguish between future-method async (same SOQL/DML limits, higher CPU/heap) and Queueable async (same SOQL/DML limits, higher CPU/heap). SOQL limit errors are not addressed by either — but fire-and-forget is incorrectly perceived as the lighter-weight "async" solution.
+**Why it happens:** LLMs associate "async" with "no governor limits" because async Apex has higher CPU and heap limits than synchronous Apex. They do not distinguish between running the whole IP in one future-method transaction (asynchronous budget: 200 SOQL, 150 DML, higher CPU/heap — Apex Developer Guide 264 L19733-19782) and splitting designated steps into separate Queueable transactions. A SOQL overrun on one transaction is not fixed by doubling its ceiling — but fire-and-forget is incorrectly perceived as the lighter-weight "async" solution.
 
 **Correct pattern:**
 ```
 Fire-and-forget (useFuture: true):
   Purpose: Remove UI blocking
-  SOQL limit: 100 (same as sync)
+  SOQL limit: 200 (asynchronous column, L19747; one transaction for the whole IP)
   CPU limit: 60,000ms (higher)
   Governor limit escape: NO
 
 Queueable Chainable:
   Purpose: Escape governor limits + remove UI blocking
-  SOQL limit: 100 (same as sync — NOT higher)
+  SOQL limit: 200 per step's transaction (UNVERIFIED (2026-10-20): the 264 table names only Batch and future as asynchronous, L19733)
   CPU limit: 60,000ms (higher)
-  Heap limit: 12MB (higher)
+  Heap limit: 25 MB (higher; Winter '27 — 12 MB in Summer '26)
   Governor limit escape: YES — fresh transaction context
   
-Note: Neither async mode increases the SOQL limit.
+Note: Neither async mode removes the SOQL limit; both cap at 200, not 100.
 To reduce SOQL consumption, consolidate queries or use DataRaptor caching.
 ```
 

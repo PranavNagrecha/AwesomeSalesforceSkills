@@ -183,13 +183,14 @@ Accepted (2026-10-03), Design Authority
 ## Context
 - NFR-BATCH-001 needs 2.4 million Cases recalculated inside 01:00 to 04:00.
 - The current Schedulable class does the work itself. Scheduled Apex runs
-  under synchronous limits: 10,000 ms CPU, 100 SOQL queries, 6 MB heap.
+  under synchronous limits: 10,000 ms CPU, 100 SOQL queries, 10 MB heap
+  (Winter '27; Apex Developer Guide 264 L19739, L19780).
 - Daily async Apex allocation: 250,000 or licences x 200; here
   1,500 x 200 = 300,000 executions.
 
 ## Decision
 The Schedulable only calls Database.executeBatch(new EntitlementRecalcBatch(), 200).
-Each batch execution gets asynchronous limits (60,000 ms CPU, 200 queries, 12 MB heap).
+Each batch execution gets asynchronous limits (60,000 ms CPU, 200 queries, 25 MB heap — Winter '27, L19780).
 
 ## Consequences
 - 12,000 batch executions per night against a 300,000 daily allocation.

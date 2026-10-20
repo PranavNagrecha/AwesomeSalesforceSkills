@@ -12,7 +12,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 2: `Attachment.Body` Loaded Eagerly on Every Query
 
-**What happens:** A SOQL `SELECT Id, Name, Body FROM Attachment LIMIT 100` materializes 100 binary blobs into Apex heap. Average size 800 KB → 80 MB needed in heap. Apex limit is 6 MB sync, 12 MB async. Transaction fails with `System.LimitException: Apex heap size too large`.
+**What happens:** A SOQL `SELECT Id, Name, Body FROM Attachment LIMIT 100` materializes 100 binary blobs into Apex heap. Average size 800 KB → 80 MB needed in heap. Apex limit is 10 MB sync, 25 MB async (Apex Developer Guide 264 L19780 — a Winter '27 release-level change for every org regardless of API version; 6 MB / 12 MB in Summer '26). Transaction fails with an uncatchable `System.LimitException` (L19853); the message text `Apex heap size too large` is UNVERIFIED (2026-10-19): not stated in the 264 guide.
 
 **Why:** SOQL on `Body` does not stream — every row's blob is loaded synchronously. There is no LIMIT-on-bytes clause.
 

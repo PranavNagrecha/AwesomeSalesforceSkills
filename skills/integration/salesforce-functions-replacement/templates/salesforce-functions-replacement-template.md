@@ -27,7 +27,7 @@ From the review checklist in SKILL.md, plus the failure modes in `references/got
 
 - [ ] Workload runtime checked against Heroku's non-configurable 30-second router timeout
 - [ ] Callout budget checked against 120 s cumulative and 100 callouts per transaction
-- [ ] If rewritten in Apex, the execution context gives 60,000 ms / 12 MB, not 10,000 ms / 6 MB
+- [ ] If rewritten in Apex, the execution context gives 60,000 ms / 25 MB, not 10,000 ms / 10 MB (Winter '27 heap; 12 MB / 6 MB through Summer '26)
 - [ ] Payload batched — one callout per transaction, never one per record
 - [ ] Named Credential in place; no endpoint or secret in code
 - [ ] Cutover and rollback documented for this workload alone

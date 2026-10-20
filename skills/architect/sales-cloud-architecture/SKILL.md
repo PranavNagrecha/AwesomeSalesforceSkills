@@ -41,9 +41,9 @@ dependencies:
   - architect/sales-cloud-integration-patterns
   - architect/limits-and-scalability-planning
   - architect/well-architected-review
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-20
 ---
 
 # Sales Cloud Architecture
@@ -59,6 +59,24 @@ Gather this context before working on anything in this domain:
 - **Edition and license entitlements** — Sales Cloud features vary significantly between Professional, Enterprise, and Unlimited editions. Confirm which features (Territory Management, Forecasting, Einstein Activity Capture) are actually licensed before designing around them.
 - **Record volume projections** — Get concrete numbers: leads per month, opportunities per quarter, activities per user per day. Architecture decisions that work at 50K records collapse at 5M.
 - **Existing automation inventory** — Most Sales Cloud orgs already have a mix of Workflow Rules, Process Builder, Flows, and Apex triggers. You cannot design new automation without mapping what already fires on Opportunity, Lead, and Account objects.
+
+---
+
+## Questions to Ask Before Configuring
+
+Each row traces to a gotcha in `references/gotchas.md` or a section of this skill; the answers decide the data model and the automation layout before anyone builds either.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "What automation already runs on Lead, Account, Contact and Opportunity, and which of it fires on lead conversion?" | Conversion runs every object's automation in one transaction against one 100-SOQL / 150-DML budget (gotcha 1) | A summed per-object limit profile for the conversion path |
+| "Will lead conversion be bulk — Data Loader, API, or batch — and at what volume?" | A bulk conversion multiplies the combined automation cost (gotcha 1; Scalability and Limit Planning) | A tested transaction profile with 50% headroom against each limit |
+| "Are Person Accounts enabled, or planned?" | Conversion creates an Account without a separate Contact, so Contact-based post-conversion automation breaks (gotcha 5) | Branching on `Account.IsPersonAccount` and test cases for both paths |
+| "How many roll-up summary fields does Account already carry, including unused ones?" | Account has a fixed roll-up allocation that late reporting asks exhaust (gotcha 2) | A roll-up budget, and batch-populated fields for slow-changing aggregates |
+| "Are Opportunity Splits used for commission or revenue reporting?" | Removing a team member deletes their splits with no recovery (gotcha 3) | A snapshot step before any team change, or a placeholder member pattern |
+| "How often is the role or territory hierarchy restructured, and who reads forecasts during that window?" | Hierarchy changes start a background forecast recalculation with inconsistent numbers until it ends (gotcha 4) | A change window and a communication plan for sales leadership |
+| "Which systems send data in, receive data out, or sync both ways, and which is the system of record for each?" | Integrations bolted on after go-live disagree on data ownership (Integration Boundary Design) | An integration inventory with direction, pattern, and system of record per boundary |
+
+What a proper configuration adds over just extending the objects: the lead-to-cash path is sized against its real transaction, the reporting model fits the platform's allocations, and every integration has an owner before go-live.
 
 ---
 
@@ -78,7 +96,7 @@ Sales Cloud rarely operates in isolation. The architecture must define clear int
 
 ### Scalability and Limit Planning
 
-Sales Cloud architectures must plan for governor limits at design time, not as a remediation exercise. Key limits include: 50K records per SOQL query, 150 DML statements per transaction, 6MB heap size, and the 2000-row limit on aggregate queries. Territory Management hierarchies, roll-up summary fields on Account, and Opportunity Team cascade-delete operations all amplify these limits. The architecture should document expected transaction profiles (e.g., "bulk lead conversion of 200 records triggers N queries and M DML") and validate they stay within 50% of governor ceilings to leave headroom for future growth.
+Sales Cloud architectures must plan for governor limits at design time, not as a remediation exercise. Key limits include: 50,000 records retrieved by SOQL per transaction (Apex Developer Guide 264 L19747), 150 DML statements per transaction, 10 MB synchronous / 25 MB asynchronous heap (L19780 — a Winter '27 release-level change for every org regardless of API version; 6 MB / 12 MB in Summer '26, and during Winter '27 only a nonproduction org can opt back with `ApexSettings.enableEnforceSummer26ApexHeapLimit`, Metadata API 264 L113855-113862), and the 2,000-row ceiling on an aggregate query iterated in a SOQL for loop, which cannot use queryMore (L10183-10184). Territory Management hierarchies, roll-up summary fields on Account, and Opportunity Team cascade-delete operations all amplify these limits. The architecture should document expected transaction profiles (e.g., "bulk lead conversion of 200 records triggers N queries and M DML") and validate they stay within 50% of governor ceilings to leave headroom for future growth.
 
 ---
 
@@ -170,7 +188,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 3. **Forecast hierarchy recalculation** — Changing the forecast hierarchy (role hierarchy or territory hierarchy) triggers a background recalculation that can take hours for large orgs. During this window, forecast numbers are inconsistent. Architects must plan territory realignment for low-activity periods and communicate the inconsistency window.
 
-4. **Roll-up summary field limits on Account** — Account supports a maximum of 25 roll-up summary fields. Architects who design KPI dashboards using roll-up summaries on Account often hit this limit, forcing a late-stage redesign to use batch Apex or reporting snapshots instead.
+4. **Roll-up summary field limits on Account** — Account supports a maximum of 25 roll-up summary fields (UNVERIFIED (2026-10-20): the per-object roll-up summary allocation is not in the Winter '27 Apex, Metadata, Object or Limits corpus; confirm the org's current allocation in Setup before designing against it). Architects who design KPI dashboards using roll-up summaries on Account often hit this limit, forcing a late-stage redesign to use batch Apex or reporting snapshots instead.
 
 5. **Big Deal Alert vs. automation** — Big Deal Alerts are a legacy feature that sends emails based on Opportunity amount thresholds. They fire independently of Record-Triggered Flows and Apex triggers. Architects who do not inventory Big Deal Alerts often create duplicate notifications when building new automation.
 

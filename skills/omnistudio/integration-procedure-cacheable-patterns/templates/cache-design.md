@@ -112,8 +112,9 @@ class in your org" — it does not fire for metadata-only deploys.
 
 - [ ] Cold-call governor-limit risk assessed separately from caching
 - If at risk, lever chosen:
-  - [ ] Chainable (sync bounds: 100 SOQL / 10,000 ms CPU / 6 MB heap / 150 DML)
-  - [ ] Queueable Chainable (200 SOQL / 60,000 ms CPU / 12 MB heap)
+  - [ ] Chainable (sync bounds: 100 SOQL / 10,000 ms CPU / 10 MB heap / 150 DML; Winter '27 Apex heap)
+  - [ ] Queueable Chainable (200 SOQL / 60,000 ms CPU / 25 MB heap; 12 MB through Summer '26)
+  - Heap bounds above are the Apex limits (apexdev 264 L19780); the OmniStudio chainable heap threshold default is UNVERIFIED (2026-10-20) — confirm it in the target org before relying on it
   - [ ] Chain On Step (DML immediately before a callout)
 - [ ] Source system can survive full cold-start load after a total eviction
 

@@ -858,7 +858,7 @@ Three checks read off those two queries:
 **In the debug log**, with the `Workflow` category at `FINER` or above, the collection sizes are
 directly observable: `FLOW_BULK_ELEMENT_DETAIL` logs "Interview ID, element type, element name,
 number of records" and `FLOW_BULK_ELEMENT_END` adds execution time
-(`apexdev.txt` L38724–L38729). `FLOW_INTERVIEW_FINISHED_LIMIT_USAGE` reports usage against SOQL
-queries, SOQL query rows, DML statements, DML rows, CPU time and heap size (`apexdev.txt` L38821–L38834) — and
+(apexdev 264 L39130–L39135; 262 L38724–L38729). `FLOW_INTERVIEW_FINISHED_LIMIT_USAGE` reports usage against SOQL
+queries, SOQL query rows, DML statements, DML rows, CPU time and heap size (apexdev 264 L39217–L39240; 262 L38821–L38834) — and
 notably **not** against any element count, which is the empirical form of the negative recorded in
 `references/gotchas.md`.

@@ -43,8 +43,8 @@ Use this template to document non-functional requirements for a Salesforce imple
 | SOQL rows per sync transaction | 50,000 | Apex Governor Limits |
 | DML statements per sync transaction | 150 | Apex Governor Limits |
 | CPU time per sync transaction | 10,000 ms | Apex Governor Limits |
-| Heap size (sync) | 6 MB | Apex Governor Limits |
-| Heap size (async) | 12 MB | Apex Governor Limits |
+| Heap size (sync) | 10 MB (Winter '27; 6 MB in Summer '26) | Apex Developer Guide 264 L19780 |
+| Heap size (async) | 25 MB (Winter '27; 12 MB in Summer '26) | Apex Developer Guide 264 L19780 |
 | Daily inbound API calls (Enterprise, 100 Salesforce licences) | 200,000 (100,000 + 100 x 1,000) | Limits Quick Reference, Total API Request Allocations |
 | Bulk API 2.0 ingest job size | 150 MB of CSV per job (upload at most 100 MB) | Limits Quick Reference, Bulk API 2.0 |
 | Bulk API 2.0 records uploaded per 24 hours | 150,000,000 | Limits Quick Reference, Bulk API 2.0 |

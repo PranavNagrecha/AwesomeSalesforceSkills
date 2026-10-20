@@ -134,6 +134,10 @@ chatty callout pattern hides the defect instead of fixing it.
   threshold values, which correspond to the underlying Apex governor limits:
   100 SOQL / 10,000 ms CPU / 6 MB heap / 150 DML synchronous, and 200 SOQL /
   60,000 ms CPU / 12 MB heap for the queueable variant. Verified 2026-08-14.
+  Those heap values are Summer '26 history: the Apex heap is 10 MB / 25 MB from
+  Winter '27 (Apex Developer Guide 264 L19780), a release-level change with a
+  Winter '27-only nonproduction opt-out (api_meta 264 L113855-L113862); whether
+  the OmniStudio chainable heap threshold follows it is UNVERIFIED (2026-10-20).
 - **Platform Cache Limits — Apex Developer Guide** —
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_platform_cache_limits.htm
   — source for maximum key size 50 characters; TTL minimum 300 s and maxima

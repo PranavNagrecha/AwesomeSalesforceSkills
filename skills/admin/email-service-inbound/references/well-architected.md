@@ -111,9 +111,10 @@
   object — `MessageIdentifier` (idLookup), `ThreadIdentifier` and
   `ClientThreadIdentifier`, which is what makes the header-based case
   lookup in `references/examples.md` § 2 possible — same PDF as above.
-- Salesforce Developer Limits and Allocations Quick Reference — Apex
-  Governor Limits table, footnote 4 "Email services heap size is 50 MB"
-  (corroborates gotcha 11).
+- Apex Developer Guide 264 (Winter '27), Per-Transaction Apex Limits —
+  total heap 10 MB sync / 25 MB async (L19780, a release-level change; 6 MB /
+  12 MB in Summer '26) and footnote 4 "Email services heap size is 50 MB"
+  (L19853) (grounds gotcha 11; the 264 Limits Quick Reference dropped the row).
 - Salesforce Well-Architected — Reliable / Secure —
   https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html
 - Sibling skill `skills/admin/email-to-case-configuration/SKILL.md` — the

@@ -26,7 +26,7 @@ for (Attachment a : all) { /* migrate */ }
 
 **Why it happens:** Default loop-and-insert pattern; LIMIT 1000 looks "safe."
 
-**Correct pattern:** Use Batch Apex with `scope=10` (or 1 for large files). Heap is 6 MB sync / 12 MB async; even 50 average-sized files OOM the transaction. The body field cannot be streamed via SOQL — small batch is the only mechanism.
+**Correct pattern:** Use Batch Apex with `scope=10` (or 1 for large files). Heap is 10 MB sync / 25 MB async (Winter '27, Apex Developer Guide 264 L19780; 6 MB / 12 MB in Summer '26); even 50 average-sized files OOM the transaction. The body field cannot be streamed via SOQL — small batch is the only mechanism.
 
 ## Anti-Pattern 3: Skipping the `Source_Attachment_Id__c` Origin Tracking
 

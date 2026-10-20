@@ -190,8 +190,9 @@ own element count has not changed.
 Flow elements draw from the same per-transaction Apex governor budget as
 everything else running in that transaction — 100 SOQL queries synchronous (200
 asynchronous), 150 DML statements, 50,000 query rows, 10,000 DML rows, 10,000 ms
-CPU synchronous (60,000 ms asynchronous), 6 MB heap synchronous (12 MB
-asynchronous). An Apex trigger, a second record-triggered flow on the same
+CPU synchronous (60,000 ms asynchronous), 10 MB heap synchronous (25 MB
+asynchronous) from Winter '27 (apexdev 264 L19780; 6 MB / 12 MB through Summer
+'26 — a release-level rise, not API-versioned). An Apex trigger, a second record-triggered flow on the same
 object, and a managed package can each consume most of it before your flow's
 first element runs.
 

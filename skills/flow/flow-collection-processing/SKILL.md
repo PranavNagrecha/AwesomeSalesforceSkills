@@ -41,9 +41,9 @@ outputs:
   - "DML strategy: single Update Records on collection vs. loop+individual DML"
   - "Review findings on anti-patterns in existing Flow logic"
 dependencies: []
-version: 2.1.0
+version: 2.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-20
 ---
 
 # Flow Collection Processing

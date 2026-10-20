@@ -79,6 +79,8 @@ whose `<start>` declares `<object>Case</object>` with a record `<triggerType>`,
 which is what puts `$Record` in scope, and a `varEscalation` record variable.
 
 ```xml
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: only the two recordCreates elements; the rest of the flow is omitted -->
     <recordCreates>
         <name>Create_Escalation</name>
         <label>Create Escalation</label>
@@ -134,6 +136,7 @@ which is what puts `$Record` in scope, and a `varEscalation` record variable.
         <object>Flow_Error_Log__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
+</Flow>
 ```
 
 **Why it works:** `$Flow.InterviewGuid` is the same identifier Salesforce prints
@@ -190,6 +193,8 @@ it and throws a much less informative error somewhere else.
 **Right:**
 
 ```xml
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+<!-- excerpt: the Get Records and Decision elements only -->
 <recordLookups>
     <name>Get_Contract</name>
     <label>Get Contract</label>
@@ -240,6 +245,7 @@ it and throws a much less informative error somewhere else.
         <label>Contract Found</label>
     </rules>
 </decisions>
+</Flow>
 ```
 
 Two changes carry the weight. `assignNullValuesIfNoRecordsFound` set to `true`

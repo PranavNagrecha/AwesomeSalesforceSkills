@@ -34,9 +34,9 @@ outputs:
   - Governor-limit budget per boundary
   - Idempotency + recoverability notes
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # Flow Transactional Boundaries

@@ -19,8 +19,9 @@ governor budget. One query and one DML per interview × a 200-interview batch is
 
 **Which ceiling that lands against:** schedule-triggered flows run under the
 **asynchronous** per-transaction limits from runtime version 61.0 onward — 200
-SOQL, 60,000 ms CPU, 12 MB heap — which is what the *Improve Scheduled Flow
-Performance with Updated Limits* release update changed. So the 200 queries sit
+SOQL, 60,000 ms CPU, 25 MB heap (12 MB through Summer '26; the Winter '27 heap
+rise is release-level, not API-versioned — apexdev 264 L19780) — which is what the *Improve Scheduled Flow
+Performance with Updated Limits* release update changed (UNVERIFIED (2026-10-20): the 264 Apex Developer and Metadata API guides are silent on which limit regime a schedule-triggered flow runs under; the 61.0 switch rests on the release-update help article only, and the figures are the Apex async column, apexdev 264 L19747, L19780-19782). So the 200 queries sit
 exactly on the ceiling rather than over it, and the DML limit (150, unchanged on
 both sides) is what actually breaks. A flow still on a pre-61.0 runtime version
 gets the synchronous 100 and fails on SOQL instead. The error number tells you

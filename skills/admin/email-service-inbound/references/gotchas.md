@@ -215,20 +215,26 @@ anything business-critical.
 
 ---
 
-## Gotcha 11: email-service Apex gets a 50 MB heap, not 6 MB
+## Gotcha 11: email-service Apex gets a 50 MB heap, not the synchronous 10 MB
 
-**What happens.** "Email services heap size is 50 MB" (Salesforce Developer
-Limits and Allocations Quick Reference, Apex Governor Limits, footnote 4;
-same footnote in the Apex Developer Guide governor-limit table). Handlers
+**What happens.** "Email services heap size is 50 MB" (Apex Developer
+Guide 264, Per-Transaction Apex Limits, footnote 4, L19853; the Winter '27
+Limits Quick Reference no longer carries the Apex heap rows). The ordinary
+synchronous heap is 10 MB (L19780) — a Winter '27 release-level change that
+applies to every org whatever the class API version; it was 6 MB in
+Summer '26, and during Winter '27 only a nonproduction org can opt back to
+the old figure with `ApexSettings.enableEnforceSummer26ApexHeapLimit`
+(Metadata API 264, L113855-113862). Handlers
 therefore survive attachment payloads that would blow a synchronous
 transaction, which is exactly why people write attachment-heavy logic
 inside them.
 
 **When it occurs.** Two ways round. Teams refuse to process a 20 MB
-attachment because "the heap is 6 MB" — needlessly. Or they move the
-attachment logic into a Queueable and it fails there, because the raised
-ceiling belongs to the email-service context and does not travel with the
-Blob.
+attachment because "the heap is 10 MB" (6 MB before Winter '27) — needlessly. Or they move the
+attachment logic into a Queueable and it can fail there: the Queueable gets
+the ordinary 25 MB asynchronous heap (L19780; L16163-16164), half the email-service
+ceiling, because the raised 50 MB belongs to the email-service context and
+does not travel with the Blob.
 
 **How to avoid.** Do the Blob work inside `handleInboundEmail`. If you must
 hand off, pass the `ContentVersion` Id, never the `Blob`. Every other

@@ -45,8 +45,8 @@ exists.
 **Rewriting in Apex vs keeping the language.** Apex removes an entire platform
 from the estate — no dynos, no deploy pipeline, no separate observability. It
 costs you the library ecosystem and hands you the governor limits, and the
-synchronous ones (10,000 ms CPU, 6 MB heap) are much tighter than the
-asynchronous ones (60,000 ms, 12 MB). Rewrite when the Function used only
+synchronous ones (10,000 ms CPU, 10 MB heap) are much tighter than the
+asynchronous ones (60,000 ms, 25 MB). Rewrite when the Function used only
 standard-library work and finished in a couple of seconds; do not rewrite to
 avoid managing a service you will end up needing anyway.
 
@@ -73,7 +73,7 @@ that merely happened to call a model API.
 ## Official Sources Used
 
 - Salesforce Functions Release Notes — https://developer.salesforce.com/docs/platform/functions/guide/release-notes-intro.html — confirms the retirement notice verbatim: "Salesforce Functions is retiring on January 31, 2025. To keep the functionality of the functions deployed to your org, migrate them to a different product before the end-of-life date." (verified 2026-08-14)
-- Apex Developer Guide — Execution Governors and Limits — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm — confirms 10,000 ms synchronous / 60,000 ms asynchronous maximum CPU time, 6 MB / 12 MB heap, 100 callouts per transaction, and 120 seconds maximum cumulative callout timeout (verified 2026-08-14)
+- Apex Developer Guide — Execution Governors and Limits — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm — confirms 10,000 ms synchronous / 60,000 ms asynchronous maximum CPU time, 10 MB / 25 MB heap, 100 callouts per transaction, and 120 seconds maximum cumulative callout timeout (verified 2026-08-14; re-verified 2026-10-20 against Apex Developer Guide 264 L19766-19782 — heap rose from Summer '26's 6 MB / 12 MB as a Winter '27 release-level change regardless of API version, with a Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit`, api_meta 264 L113855-113862)
 - Apex Developer Guide — Callout Timeouts — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm — confirms "The default timeout is 10 seconds... the minimum is 1 millisecond and the maximum is 120,000 milliseconds" and that the 120-second cumulative limit "is additive across all callouts invoked by the Apex transaction" (verified 2026-08-14)
 - Object Reference — FunctionInvocationRequest — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_functioninvocationrequest.htm — confirms the object exists from API 51.0 and records Function invocation information, which is what makes it usable as a discovery signal (verified 2026-08-14)
 - Heroku Dev Center — Request Timeout — https://devcenter.heroku.com/articles/request-timeout — confirms the 30-second router timeout, the `H12` error code, that "The timeout value is not configurable", that "your application will not know that the request it is processing has reached a time-out, and your application will continue to work on the request", and — in the separate "Timeout behavior" section — that "Subsequent requests may then be routed to the same process which will be unable to respond (depending on the concurrency behavior of the application's language/framework) causing further degradation" (verified 2026-08-14)

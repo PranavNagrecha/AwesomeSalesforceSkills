@@ -40,13 +40,13 @@ Non-obvious platform behaviours that make a non-functional requirement untestabl
 
 ## Gotcha 4: Licences Raise Daily Allocations But Never Per-Transaction Limits
 
-**What happens:** Teams assume more licences raise every limit. Daily allocations do scale with licences: inbound API calls, and asynchronous Apex executions (250,000 or licences multiplied by 200, whichever is greater). Per-transaction limits do not: 50,000 SOQL rows, 150 DML statements, 10,000 ms CPU synchronous (60,000 ms asynchronous), 6 MB heap synchronous (12 MB asynchronous), 100 callouts with 120 seconds cumulative callout time. A transaction that needs 60,000 rows fails whether the org has 10 users or 10,000.
+**What happens:** Teams assume more licences raise every limit. Daily allocations do scale with licences: inbound API calls, and asynchronous Apex executions (250,000 or licences multiplied by 200, whichever is greater). Per-transaction limits do not: 50,000 SOQL rows, 150 DML statements, 10,000 ms CPU synchronous (60,000 ms asynchronous), 10 MB heap synchronous (25 MB asynchronous; Winter '27, was 6 MB / 12 MB in Summer '26), 100 callouts with 120 seconds cumulative callout time. A transaction that needs 60,000 rows fails whether the org has 10 users or 10,000.
 
 **When it occurs:** When scalability NFRs say "must handle X records" without naming the processing mode.
 
 **How to avoid:** Every scalability NFR names its mode (synchronous, Batch Apex, Queueable, platform event, Bulk API 2.0) and the limit it is measured against. Express daily volumes against the licence-driven allocations and per-transaction volumes against the fixed ceilings.
 
-**Source:** Apex Guide, Execution Governors and Limits: per-transaction table (SOQL rows 50,000; DML statements 150; heap 6 MB / 12 MB; CPU 10,000 / 60,000 ms; callouts 100; cumulative callout timeout 120 seconds) and Salesforce Platform Apex Limits ("250,000 or the number of applicable user licenses in your org multiplied by 200, whichever is greater"). Limits Quick Reference, Increasing Total API Request Allocations ("The total number of API requests allowed is defined by the users' licenses in the org").
+**Source:** Apex Guide, Execution Governors and Limits: per-transaction table (SOQL rows 50,000; DML statements 150; heap 10 MB / 25 MB — Apex Developer Guide 264 L19780, a Winter '27 release-level change for every org (6 MB / 12 MB in Summer '26), with a Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit`, Metadata API 264 L113855-113862; CPU 10,000 / 60,000 ms; callouts 100; cumulative callout timeout 120 seconds) and Salesforce Platform Apex Limits ("250,000 or the number of applicable user licenses in your org multiplied by 200, whichever is greater"). Limits Quick Reference, Increasing Total API Request Allocations ("The total number of API requests allowed is defined by the users' licenses in the org").
 
 ---
 
@@ -88,7 +88,7 @@ Non-obvious platform behaviours that make a non-functional requirement untestabl
 
 ## Gotcha 8: Scheduled Apex Runs Under Synchronous Limits
 
-**What happens:** A batch-window NFR assumes the nightly scheduled job gets asynchronous limits (60,000 ms CPU, 12 MB heap, 200 SOQL queries). Scheduled Apex is asynchronous in timing but runs under synchronous limits, so the job fails at 10,000 ms CPU or 100 queries as volume grows.
+**What happens:** A batch-window NFR assumes the nightly scheduled job gets asynchronous limits (60,000 ms CPU, 25 MB heap, 200 SOQL queries). Scheduled Apex is asynchronous in timing but runs under synchronous limits, so the job fails at 10,000 ms CPU or 100 queries as volume grows.
 
 **When it occurs:** Batch-window and nightly-processing NFRs where the scheduled class does the work itself instead of starting a Batch Apex or Queueable job.
 

@@ -33,9 +33,9 @@ outputs:
   - Review checklist confirming SOQL injection safety, sharing context, and governor limit awareness
 dependencies:
   - salesforce-mcp-server-setup
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # MCP Tool Definition in Apex
@@ -54,8 +54,26 @@ Gather this context before working on anything in this domain:
 |---|---|
 | Package installed | `sf package installed list --target-org YOUR_ORG` shows salesforce-mcp-lib. The McpToolDefinition class will not exist without it. |
 | Tool contract | Define before coding: (1) tool name (snake_case, used by the MCP client to invoke), (2) every required and optional parameter with its JSON Schema type, (3) return shape. |
-| Governor limits | Each MCP tool invocation is one Apex transaction: SOQL (100/txn), DML (150 stmts), CPU (10s sync), heap (6MB sync). Async patterns must poll async results in a subsequent tool call. |
+| Governor limits | Each MCP tool invocation is one Apex transaction: SOQL (100/txn), DML (150 stmts), CPU (10s sync), heap (10 MB sync — Winter '27 release-level change for every org, Apex Developer Guide 264 L19780; 6 MB in Summer '26; Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit`, Metadata API 264 L113855-113862). Async patterns must poll async results in a subsequent tool call. |
 | Sharing context | The tool runs as the Connected App's run-as user. Decide whether to use that user's sharing context or bypass it. |
+
+---
+
+## Questions to Ask Before Configuring
+
+Each row traces to a failure in `references/gotchas.md` or a section below; skipping it produces a tool that compiles and then misbehaves when a client calls it.
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Does this need protocol-level control, or is it ordinary org logic a hosted custom MCP server could expose?" | A hosted server backs tools with Flows, invocable or `@AuraEnabled` Apex, or Apex REST with no JSON-RPC code of your own (Core Concepts, Hosted MCP Servers) | A route decision before any `McpToolDefinition` class is written |
+| "What is the tool's exact name, and is any other registered tool already using it?" | A second `registerTool()` with the same name silently replaces the first (gotcha 5) | A unique `domain_action_object` name, checked against existing `getName()` values |
+| "Which parameters are required, and what does a valid value look like for each?" | `validate()` is the only gate before `execute()`, and returning `''` instead of `null` fails every call (gotcha 1) | A `required` list in `inputSchema()` and the format checks `validate()` must run |
+| "Will any parameter be used to filter or name something in a query?" | Concatenated input is a SOQL injection path from the MCP client (gotcha 3) | Bind variables for values, and schema-describe validation for any dynamic field name |
+| "What should the client get back when the record does not exist or the run-as user cannot see it?" | A single-row SOQL assignment throws `QueryException` and returns a malformed error (gotcha 2) | A `List` query with an explicit `found => false` result shape |
+| "How many queries and DML statements does one call need, counting `validate()`?" | Both methods share one transaction's budget: 100 SOQL, 150 DML, 10 MB synchronous heap (gotcha 4; Before Starting) | A narrow single-operation tool, or a split across calls |
+| "Whose sharing and field access should the tool run under?" | The tool runs as the Connected App's run-as user (Before Starting) | A deliberate `with sharing` / user-mode decision recorded in the class |
+
+What a proper configuration adds over just writing the class: the client sees a stable, uniquely named tool whose bad inputs come back as clean JSON-RPC errors instead of exceptions, and whose data access matches what the run-as user is allowed to see.
 
 ---
 
@@ -271,7 +289,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- salesforce-mcp-server-setup — prerequisite: install the Apex package and configure the npm proxy before writing tool classes
+- agentforce/salesforce-mcp-server-setup — prerequisite: install the Apex package and configure the npm proxy before writing tool classes
 - agentforce/custom-agent-actions-apex — native Agentforce Agent Actions as an alternative when MCP protocol compatibility is not required
 
 ---

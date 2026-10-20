@@ -41,6 +41,7 @@
     "8d09ad5e0bee807a68f0",
     "8d4f095c518d439bff30",
     "905464cff11a041612d4",
+    "922a4539b537c6bf1201",
     "92a359819e803fcfec0f",
     "95562147697b813504cb",
     "96241245e54ea69e25de",
@@ -88,7 +89,7 @@
     "f860df342bbdfa29e59e",
     "f93947f699314a97cbf0"
   ],
-  "content_hash": "6fcb2deb02d18cdcee5ed1b3de0e89f0c5cfcb842dd30ca16f985afbe46a37a8",
+  "content_hash": "dbd3f033927901b47f44109e0e7eb52684071eb33da97402920bf0b8747085fd",
   "dependencies": [],
   "description": "Use this skill when a deployment, source push, or package version fails because a metadata type is unsupported, partially supported, or behaves differently across Metadata API, source tracking, unlocked packages, and 2GP managed packages. NOT for deployment error troubleshooting, Metadata API tutorials, or dependency mapping \u2014 use devops/deployment-error-diagnosis.",
   "file_location": "skills/devops/metadata-api-coverage-gaps",
@@ -107,9 +108,10 @@
     "Salesforce DX Developer Guide -- https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm",
     "Salesforce Well-Architected Framework Overview -- https://architect.salesforce.com/well-architected/overview",
     "Metadata API Developer Guide, Metadata Coverage Report and Unsupported Metadata Types (Summer '26 PDF, api_meta.txt L9548\u20139559) -- the report's channels; unsupported types are changed manually in each org; some types are also unsupported in source tracking, packaging, and change sets. Supports Core Concepts and Gotchas 5, 6, 7.",
-    "Metadata API Developer Guide, OrgPreferenceSettings (api_meta.txt L123747\u2013123762) -- removed in API 48.0, preferences moved to Settings Boolean fields in 47.0. Supports the removed-type example.",
+    "Metadata API Developer Guide, OrgPreferenceSettings (Winter '27 api_meta.txt L127184-127198; 262: L123747\u2013123762) -- removed in API 48.0, preferences moved to Settings Boolean fields in 47.0. Supports the removed-type example.",
+    "Metadata API Developer Guide 264 (Winter '27), ApexSettings `enableEnforceSummer26ApexHeapLimit` (api_meta.txt L113855-113862) -- nonproduction-only, Winter '27-only heap opt-out; Spring '27 enforces the higher limits regardless. Supports the release-bound Settings field example in Gotchas.",
     "Salesforce DX Developer Guide, `sourceApiVersion` (sfdx_dev.txt L2408\u20132416) and `.forceignore` structure using `.gitignore` rules (L1784\u20131798). Supports Gotchas 3 and 4.",
-    "Metadata API Developer Guide, FlowDefinition (api_meta.txt L73925\u201373931) -- the API 44.0 recommendation to stop using FlowDefinition for activation, and that flow definitions in a deploy override the flows' status fields. Supports the active-flow item in SKILL.md."
+    "Metadata API Developer Guide, FlowDefinition (Winter '27 api_meta.txt L76653-76663; 262: L73925\u201373931) -- the API 44.0 recommendation to stop using FlowDefinition for activation, and that flow definitions in a deploy override the flows' status fields. Supports the active-flow item in SKILL.md."
   ],
   "outputs": [
     "Coverage gap assessment listing each affected metadata type with its support status across Metadata API, source tracking, unlocked packages, and 2GP",
@@ -138,7 +140,7 @@
   "templates": [
     "skills/devops/metadata-api-coverage-gaps/templates/metadata-api-coverage-gaps-template.md"
   ],
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

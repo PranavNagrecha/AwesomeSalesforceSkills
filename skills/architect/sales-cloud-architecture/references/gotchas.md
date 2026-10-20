@@ -4,7 +4,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Lead Conversion Fires All Object Triggers in One Transaction
 
-**What happens:** When a Lead is converted, the platform creates or updates Account, Contact, and Opportunity records within a single Apex transaction. All before-insert, after-insert, before-update, and after-update triggers on Lead, Account, Contact, and Opportunity fire within the same 150-DML / 100-SOQL governor limit envelope.
+**What happens:** When a Lead is converted, the platform creates or updates Account, Contact, and Opportunity records within a single Apex transaction. All before-insert, after-insert, before-update, and after-update triggers on Lead, Account, Contact, and Opportunity fire within the same 150-DML / 100-SOQL governor limit envelope (Apex Developer Guide 264 L19747, L19757).
 
 **When it occurs:** Any org that has automations on Account, Contact, and Opportunity individually. Each automation is safe in isolation, but combined during lead conversion, the aggregate query and DML counts can exceed limits — especially during bulk lead conversion via Data Loader or API.
 
@@ -14,7 +14,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 2: Roll-Up Summary Field Limit on Account Is 25
 
-**What happens:** Account is limited to 25 roll-up summary fields across all child objects (Opportunity, Contact, Case, custom objects). Architects who design dashboards using roll-up summaries for KPIs (total pipeline, win rate, average deal size, last activity date, open cases) hit this ceiling midway through implementation.
+**What happens:** Account is limited to 25 roll-up summary fields (UNVERIFIED (2026-10-20): figure not in the Winter '27 Apex, Metadata, Object or Limits corpus; confirm the org's allocation in Setup) across all child objects (Opportunity, Contact, Case, custom objects). Architects who design dashboards using roll-up summaries for KPIs (total pipeline, win rate, average deal size, last activity date, open cases) hit this ceiling midway through implementation.
 
 **When it occurs:** Typically during Phase 2 or Phase 3 of a Sales Cloud implementation when reporting requirements expand beyond initial scope. The limit is per-object, not per-child-relationship, so even unused legacy roll-ups count.
 
@@ -34,7 +34,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 4: Forecast Hierarchy Recalculation Lag
 
-**What happens:** When the forecast hierarchy (derived from role hierarchy or territory hierarchy) changes, Salesforce initiates a background recalculation of all forecast rollups. For orgs with 1000+ users and millions of opportunity records, this recalculation can take 4-12 hours. During this window, forecast numbers displayed in Forecast tabs and reports are inconsistent — some rollup to old hierarchy nodes, others to new ones.
+**What happens:** When the forecast hierarchy (derived from role hierarchy or territory hierarchy) changes, Salesforce initiates a background recalculation of all forecast rollups. For orgs with 1000+ users and millions of opportunity records, this recalculation can take 4-12 hours (UNVERIFIED (2026-10-20): duration is an observed range, not a documented figure in the corpus; measure it in a full-copy sandbox). During this window, forecast numbers displayed in Forecast tabs and reports are inconsistent — some rollup to old hierarchy nodes, others to new ones.
 
 **When it occurs:** Any time role assignments change for users who own opportunities, or when territory hierarchy nodes are restructured. It is particularly problematic during quarterly territory realignment when many changes happen simultaneously.
 

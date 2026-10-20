@@ -26,8 +26,8 @@
   collecting Ids, then querying children on the indexed foreign key is two
   statements and two selective queries. Two cheap beats one expensive, given the
   100-statement budget.
-- **Named fields vs automatic storage:** heap is 6 MB synchronous and 12 MB
-  asynchronous, and a screen flow re-serializes variables between screens.
+- **Named fields vs automatic storage:** heap is 10 MB synchronous and 25 MB
+  asynchronous (Winter '27), and a screen flow re-serializes variables between screens.
   Name fields on large collections over wide objects; accept automatic storage on
   single-record lookups where the saving is negligible and the brittleness is
   not.
@@ -71,7 +71,7 @@
 ## Official Sources Used
 
 - Get Records Element — https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_data_get.htm&type=5
-- Per-Transaction Apex Governor Limits — 100 SOQL synchronous / 200 asynchronous, 50,000 query rows, 10,000 ms / 60,000 ms CPU, 6 MB / 12 MB heap — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- Per-Transaction Apex Governor Limits — 100 SOQL synchronous / 200 asynchronous, 50,000 query rows, 10,000 ms / 60,000 ms CPU, 10 MB / 25 MB heap (Apex Developer Guide 264 L19780, a Winter '27 release-level change for every org; 6 MB / 12 MB in Summer '26; Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit`, api_meta.txt L113855-113862) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
 - Best Practices for Deployments with Large Data Volumes — https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/
 - Maximizing the Performance of Force.com SOQL, Reports, and List Views (Salesforce Developers) — standard index selective below 30% of the first million targeted records and 15% beyond, capping at 1,000,000; custom index below 10% / 5%, capping at 333,333; standard-indexed fields are primary keys (Id, Name, OwnerId), foreign keys (CreatedById, LastModifiedById, lookup and master-detail fields), and audit fields (CreatedDate, SystemModstamp) — https://developer.salesforce.com/blogs/engineering/2013/07/maximizing-the-performance-of-force-com-soql-reports-and-list-views
 - Developer Console Query Plan Tool FAQ — a Cost above 1 means the filter is not selective and a full table scan will be used — https://help.salesforce.com/s/articleView?id=000386864&type=1

@@ -42,4 +42,5 @@
 - Migrate Attachments to Salesforce Files — https://help.salesforce.com/s/articleView?id=sf.admin_files_migration.htm
 - Set Audit Fields upon Record Creation — https://help.salesforce.com/s/articleView?id=sf.audit_fields_create.htm
 - Apex Batch Processing — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm
+- Apex Developer Guide 264 (Winter '27), Per-Transaction Apex Limits — total heap 10 MB sync / 25 MB async (salesforce_apex_developer_guide.txt L19780; 6 MB / 12 MB in Summer '26) and the uncatchable `System.LimitException` on overrun (L19853). Grounds the heap arithmetic in SKILL.md § 4 and gotcha 2.
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

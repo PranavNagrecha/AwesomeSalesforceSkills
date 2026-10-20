@@ -132,7 +132,7 @@ generalizes cleanly — which hides the trade.
 **Correct pattern:** naming fields has a real cost: add a field to a downstream
 element and forget the query, and you get a silent null rather than an error.
 Name fields where the heap saving is real — large collections on wide objects,
-against a 6 MB synchronous heap, with a screen flow re-serializing between
+against a 10 MB synchronous heap (Winter '27; 6 MB in Summer '26), with a screen flow re-serializing between
 screens. Accept automatic storage on single-record lookups.
 
 **Detection hint:** a `queriedFields` list on a lookup with

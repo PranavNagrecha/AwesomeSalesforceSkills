@@ -28,8 +28,8 @@ the Transform type only.
   > performance for the swap, so a baseline taken on the old call site is not
   > comparable to anything measured afterwards.
 - Enclosing transaction is:
-  - [ ] Synchronous (10,000 ms CPU / 6 MB heap)
-  - [ ] Asynchronous (60,000 ms CPU / 12 MB heap)
+  - [ ] Synchronous (10,000 ms CPU / 10 MB heap; 6 MB through Summer '26)
+  - [ ] Asynchronous (60,000 ms CPU / 25 MB heap; 12 MB through Summer '26)
 
 ## 2. Before-profile — at PRODUCTION row and field counts
 

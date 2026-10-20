@@ -4,9 +4,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Async Fire-and-Forget Removes UI Blocking But Does NOT Escape Governor Limits
 
-**What happens:** An Integration Procedure configured with `useFuture: true` (fire-and-forget) continues to fail with governor limit errors — most commonly `Too many SOQL queries: 101` — even after the async mode is enabled. The errors now occur silently in the background, surfacing as blank IP results or missing data rather than a visible OmniScript error message.
+**What happens:** An Integration Procedure configured with `useFuture: true` (fire-and-forget) continues to fail with governor limit errors — most commonly the SOQL limit — even after the async mode is enabled. The errors now occur silently in the background, surfacing as blank IP results or missing data rather than a visible OmniScript error message.
 
-**When it occurs:** Any time practitioners treat fire-and-forget as a general-purpose "run this in the background" fix for governor limit problems. Future Apex has the same SOQL (100), DML (150), and DML rows (10,000) limits as synchronous Apex. Only CPU (60,000ms) and heap (12MB) are higher. If the IP was hitting SOQL limits synchronously, it will continue hitting them asynchronously.
+**When it occurs:** Any time practitioners treat fire-and-forget as a general-purpose "run this in the background" fix for governor limit problems. Future Apex runs under the asynchronous column of the limits table (L19733): SOQL rises only from 100 to 200 (L19747), DML statements (150) and DML rows (10,000) are unchanged (L19757-19759), and CPU (60,000 ms) and heap (25 MB since Winter '27; 12 MB in Summer '26, L19780-19782) are higher. A whole IP run in one future context that needed more than 200 queries keeps failing asynchronously.
 
 **How to avoid:** Distinguish the actual constraint before choosing an async mode:
 - UI blocking only: use fire-and-forget

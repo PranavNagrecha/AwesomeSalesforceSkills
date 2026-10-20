@@ -59,15 +59,17 @@ an async job with a callback. `templates/apex/HttpClient.cls` defaults
 **What happens:** "Simple enough to move to Apex" gets validated against the
 asynchronous limit and then deployed into a synchronous path. The Apex governor
 limits are **10,000 ms** maximum CPU time for synchronous Apex and **60,000 ms**
-for asynchronous, with heap at **6 MB** sync and **12 MB** async. A trigger-path
-rewrite of a Function gets the 10-second number and half the heap.
+for asynchronous, with heap at **10 MB** sync and **25 MB** async (Apex
+Developer Guide 264 L19780-19782; 6 MB / 12 MB through Summer '26 — the Winter
+'27 heap rise is release-level, not API-versioned). A trigger-path rewrite of a
+Function gets the 10-second number and less than half the heap.
 
 **When it occurs:** Enrichment logic that used to run in a Function invoked from
 a trigger. Keeping the trigger entry point keeps the synchronous limits.
 
 **How to avoid:** Decide the execution context before you decide the language. If
 the rewrite is going into Apex, put it in a Queueable so it gets 60,000 ms and
-12 MB, and confirm the workload fits with realistic bulk data — not a
+25 MB, and confirm the workload fits with realistic bulk data — not a
 single-record test. CPU time is measured on Salesforce application servers only;
 time spent waiting on a callout does not count toward it, which is why a
 callout-heavy rewrite can pass CPU and still fail on the 120-second callout

@@ -33,9 +33,9 @@ outputs:
   - Migration runbook with cutover sequence
   - Cost + ops comparison
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-21
+updated: 2026-10-20
 status: stub
 ---
 
@@ -48,6 +48,20 @@ Activate when migrating off Salesforce Functions (end-of-life January 2025). Eve
 - **Inventory every Function.** List runtime, invocation pattern, average compute time, data dependencies.
 - **Classify by driver.** Why was Functions chosen? Apex-unfriendly library? CPU intensity? Language preference? Each reason maps to a different replacement.
 - **Set a migration deadline.** Functions stopped accepting new deploys in late 2024; runtime support ends January 2025. Past EOL, any outage is terminal.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Where is every Function invoked from — Apex, Flow, event subscribers? | The inventory lives at invocation sites, not in the project directory (Gotcha 4). | A list that reaches zero rather than "zero that we found". |
+| What is the longest observed runtime per Function? | A Heroku web request dies at 30 seconds and the code is not told (Gotcha 1). | A sync-or-worker split decided before the port. |
+| How many external calls will the replacement make per transaction, and with what timeouts? | 120 seconds is a cumulative transaction budget (Gotcha 2). | A per-callout timeout budget that sums under 120 s. |
+| Is the caller a trigger, or can the entry point move to a Queueable? | A trigger path keeps synchronous CPU and heap (Gotcha 3). | The execution context chosen before the language. |
+| How many records does the busiest caller process in one transaction? | The replacement inherits the caller's callout and DML budget (Gotcha 5). | One batched callout per transaction, or an event boundary. |
+| Does the Function touch PII or regulated data? | A standard dyno is not a compliance boundary (Gotcha 6). | A written compliance posture for the plan and space. |
+| Is any Function still being invoked today? | Functions retired on January 31, 2025 (Gotcha 4). | A triage order that starts with workloads already failing. |
+
+A proper configuration places each workload in the context whose limits it actually fits, instead of porting code and finding the limit in production.
 
 ## Core Concepts
 
@@ -136,6 +150,6 @@ If the Function was < 5s of compute and used only standard libraries, rewrite as
 
 ## Related Skills
 
-- `integration/integration-pattern-selection` — integration mechanism choice
-- `integration/named-credentials-and-external-auth` — auth to Heroku / external
-- `agentforce/agent-action-design` — AI-adjacent migrations
+- `admin/integration-pattern-selection` — integration mechanism choice
+- `integration/named-credentials-setup` — auth to Heroku / external
+- `agentforce/agent-actions` — AI-adjacent migrations

@@ -45,9 +45,9 @@ outputs:
   - "Deployable EmailServicesFunction XML with nested address records"
   - "package.xml entries and the post-deploy SOQL that reveals the routing address"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-20
 ---
 
 # Inbound Email Service
@@ -252,7 +252,8 @@ Limits:
   language and character set. This is a platform ceiling, **not** a
   per-service setting — there is no `maxEmailSize` element.
   (`references/gotchas.md` § 4.)
-- **Heap**: email services get **50 MB**, not the 6 MB synchronous budget.
+- **Heap**: email services get **50 MB**, not the 10 MB synchronous budget
+  (Winter '27; 6 MB in Summer '26 — Apex Developer Guide 264 L19780, L19853).
   Do the Blob work inside the handler; hand off a `ContentVersion` Id, not
   a `Blob`. (`references/gotchas.md` § 11.)
 - **Daily messages**: org-wide across all email services *and* On-Demand
@@ -440,7 +441,7 @@ per-sender-plus-content, not per-domain.
 6. **`runAsUser` is Required per address, not per service** — two addresses on one service can run the same Apex as different users. (§ 6.)
 7. **`inReplyTo` comes from the sender's client**; check `references` too and keep a subject-token fallback. (§ 7.)
 8. **The daily message limit is org-wide** and shared with On-Demand Email-to-Case: licences x 1,000, max 1,000,000. (§ 10.)
-9. **Email-service Apex gets a 50 MB heap, not 6 MB** — keep the Blob work in the handler. (§ 11.)
+9. **Email-service Apex gets a 50 MB heap, not the 10 MB synchronous limit** — keep the Blob work in the handler. (§ 11.)
 10. **Sandbox routing addresses cannot be copied to production**, and refreshes regenerate them. (§ 12.)
 11. **`authorizationFailureAction` is service-level** even when `authorizedSenders` was set on the address. (§ 13.)
 12. **Bodies and text attachments arrive truncated with a flag** you must read before parsing. (§ 14.)

@@ -7,9 +7,9 @@
 Collection processing decides how many elements execute per transaction and how many database calls
 back them. A Filter, Sort, Map or Transform is one node regardless of collection size; the Loop it
 replaces is `body_elements × iterations`. The measurable difference is CPU time — 10,000 ms
-synchronous / 60,000 ms asynchronous (`apexdev.txt` L19579) — not an element count, because no
+synchronous / 60,000 ms asynchronous (apexdev 264 L19782; 262 L19579) — not an element count, because no
 element count is budgeted. `FLOW_BULK_ELEMENT_END` logs "element type, element name, number of
-records, and execution time" (`apexdev.txt` L38727–L38729), which makes the comparison observable
+records, and execution time" (apexdev 264 L39134–L39135; 262 L38727–L38729), which makes the comparison observable
 rather than argued.
 
 ### Scalability
@@ -102,13 +102,14 @@ that hand-authors collection processors.
   `FlowElementReferenceOrValue` with valid values 2–20,000, API 63.0 and later; the
   `getFirstRecordOnly` / `storeOutputAutomatically` / `outputReference` coupling that decides whether
   a Get Records yields a collection at all — same PDF
-- **Apex Developer Guide — Execution Governors and Limits** (`apexdev.txt` L19544–L19579): 50,000
-  records retrieved by SOQL per transaction, 150 DML statements, 10,000 DML rows, 6 MB / 12 MB heap,
-  10,000 ms / 60,000 ms CPU. Used for the limits framing and for the negative: none of these is a
+- **Apex Developer Guide — Execution Governors and Limits** (apexdev 264 L19747–L19782; 262
+  L19544–L19579): 50,000 records retrieved by SOQL per transaction, 150 DML statements, 10,000 DML
+  rows, 10 MB / 25 MB heap (264 L19780; 6 MB / 12 MB through Summer '26, a release-level change with
+  a Winter '27-only nonproduction opt-out, api_meta 264 L113855–L113862), 10,000 ms / 60,000 ms CPU. Used for the limits framing and for the negative: none of these is a
   collection size, and a grep of this guide for a retired 2,000-executed-element Flow limit returns
   nothing in either direction —
   <https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf>
-- **Apex Developer Guide — Flow debug-log events** (`apexdev.txt` L38714–L38850):
+- **Apex Developer Guide — Flow debug-log events** (apexdev 264 L39121–L39257, `FLOW_INTERVIEW_FINISHED_LIMIT_USAGE` at L39217; 262 L38714–L38850):
   `FLOW_BULK_ELEMENT_DETAIL` / `_END` reporting per-element record counts and execution time, and
   `FLOW_INTERVIEW_FINISHED_LIMIT_USAGE` enumerating every limit a flow interview reports against —
   a list that contains no element count and no collection size — same PDF

@@ -29,9 +29,9 @@ outputs:
   - Failure handling + dead-letter
   - Observability plan
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Outbound Webhook From Salesforce
@@ -97,6 +97,22 @@ re-derive it.
    than absolute state, out-of-order delivery corrupts them — and every retrying
    design reorders. The cheap fix is to send absolute state plus a version
    number, and it is much cheaper to agree now.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does the transaction that raises the event do DML before the send? | A callout is not allowed after DML in the same transaction (Gotcha 1). | An async or event boundary chosen before any code. |
+| How many endpoints are called per transaction, and with what timeouts? | 120 seconds is cumulative across all callouts (Gotcha 2). | A timeout budget per callout that sums under 120 s. |
+| What does a mass update of the source object do to the send path? | One Queueable per record does not survive a bulk update (Gotcha 11). | A batched or outbox design sized for the peak burst. |
+| Does the receiver's 200 mean "processed" or only "received"? | HTTP 200 does not mean processed (Gotcha 8). | A status contract that tells retry from done. |
+| Which exact bytes does the receiver verify the signature over? | Serializing twice produces a signature the receiver rejects (Gotcha 5). | One serialization, signed and sent as is. |
+| Does the receiver apply deltas or absolute state? | Every retrying design reorders (Gotcha 7). | Absolute state plus a version number, agreed now. |
+| Must failed deliveries retry for longer than a day? | Outbound Messages drop at 24 hours and Flow HTTP Callout has no retry (Gotchas 9, 10). | A mechanism whose retry window matches the failure budget. |
+
+A proper configuration chooses the mechanism, retry window and idempotency contract from the receiver's answers, so lost and duplicated events are designed out instead of discovered in reconciliation.
 
 ---
 
@@ -396,7 +412,7 @@ Full detail in [`references/gotchas.md`](references/gotchas.md).
   dead-lettering treatment this skill applies to webhooks specifically
 - `integration/event-relay-configuration` — Event Relay to Amazon EventBridge in
   full, when the destination is an AWS estate rather than an HTTPS endpoint
-- `apex/callout-limits-and-async-patterns` — the per-transaction callout budget
+- `integration/callout-limits-and-async-patterns` — the per-transaction callout budget
   and which async shape fits inside it
 - `standards/decision-trees/integration-pattern-selection.md` — Direction 1,
   Q1–Q4: the routing this skill implements rather than re-derives

@@ -54,9 +54,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 6: Querying ContentVersion VersionData in Bulk Hits Heap Limits
 
-**What happens:** A `System.LimitException: Apex heap size too large` error occurs when a SOQL query retrieves VersionData (the file binary) for multiple ContentVersion records simultaneously.
+**What happens:** A `System.LimitException: Apex heap size too large` error (exact message text UNVERIFIED (2026-10-20): not in apexdev 264, which documents only that heap `LimitException` is uncatchable, L19853) occurs when a SOQL query retrieves VersionData (the file binary) for multiple ContentVersion records simultaneously.
 
-**When it occurs:** Batch Apex or trigger logic queries multiple ContentVersion records with `SELECT Id, VersionData FROM ContentVersion WHERE ...` and iterates over the results. Each VersionData blob consumes heap memory. Even a few multi-MB files exceed the 6 MB synchronous or 12 MB async heap limit.
+**When it occurs:** Batch Apex or trigger logic queries multiple ContentVersion records with `SELECT Id, VersionData FROM ContentVersion WHERE ...` and iterates over the results. Each VersionData blob consumes heap memory. Even a few multi-MB files exceed the 10 MB synchronous or 25 MB async heap limit (Apex Developer Guide 264 L19780; 6 MB / 12 MB through Summer '26 — the Winter '27 rise is release-level, not API-versioned, and the heap `System.LimitException` is uncatchable, 264 L19853). Raising the ceiling does not make this safe: one large file still fills it.
 
 **How to avoid:** Query ContentVersion records without VersionData first. Process files one at a time in a Queueable chain or Batch Apex with batch size 1. When using batch Apex, set the scope size to 1 for jobs that access VersionData.
 

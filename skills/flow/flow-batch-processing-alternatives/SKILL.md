@@ -28,9 +28,9 @@ outputs:
   - Implementation pattern (scheduled path, Platform Event, Queueable)
   - Monitoring and retry plan
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Flow Batch Processing Alternatives
@@ -42,6 +42,20 @@ Scheduled Flow expecting it to handle "whatever comes," then hit a CPU or DML
 limit silently, with no retry. This skill lays out the real limits,
 chunking patterns that extend Flow's reach, and the clean escalation path to
 Apex Queueable or Batch when the workload outgrows Flow.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| How many queries and DML statements does one interview's path spend? | The batch shares one transaction's budget (Gotcha 1). | The `per-interview cost × batch size` figure that actually fails. |
+| What runtime version is the flow saved at? | It decides the limit regime and whether the batch size field works at all (Gotchas 1, 2). | The right ceiling for the arithmetic, and a usable batch-size lever. |
+| How many records do all of the org's scheduled flows touch per day? | The daily interview ceiling is org-wide and shared, and Batch Apex does not raise it (Gotchas 4, 5). | A daily total checked against the ceiling before adding another job. |
+| Does any record depend on another being processed first? | A scheduled flow guarantees no ordering (Gotcha 10). | Order-independent per-record work, or a design that sequences it. |
+| What marks a record done, and when is that flag set? | The next scheduled run is not a retry (Gotcha 12). | A done-flag set last, so a failed chunk is picked up again. |
+| Does the job write setup objects alongside data records? | Mixed DML survives chunking (Gotcha 11). | Setup-object DML split into its own asynchronous step. |
+| When must the job not run, and how many batch jobs already exist? | Long chunked jobs contend with business hours, and only five batch jobs run at once (Gotchas 13, 6). | A time-window gate and a job count inside the concurrency limit. |
+
+A proper configuration sizes the job against the transaction, daily and concurrency limits it really meets, instead of finding them on the night volume grows.
 
 ## Recommended Workflow
 

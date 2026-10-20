@@ -21,9 +21,9 @@ inputs:
 outputs:
   - "root cause + remediation + logging upgrade"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Flow Interview Debugging
@@ -38,6 +38,20 @@ given an error email or a user complaint, find the element, the version, the
 data, and the running user that produced the failure. The second is
 instrumentation: change the flow so the next failure answers those questions
 without an investigation.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Who receives the flow error email today, and are they still here? | The email goes to the last modifier, not the owner (Gotcha 1). | A notification path someone actually reads. |
+| Which flow version does the error email name, and which is active? | The email's version may not be the one you are looking at (Gotcha 5). | Triage against the version that failed. |
+| Did the failure happen on an immediate, scheduled or async path? | The debugger does not run scheduled or async paths (Gotcha 3). | A debug-log or log-object plan for the paths the debugger cannot reach. |
+| Does "nothing found" route to a fault connector? | Zero rows from Get Records is not a fault (Gotcha 2). | A Decision that owns the empty case, and faults left for real exceptions. |
+| What does each fault path record, and does it rethrow or end quietly? | `$Flow.FaultMessage` exists only inside a fault path, and a swallowing handler hides the failure (Gotchas 6, 9). | A logged message, element name and outcome per handler. |
+| Can a logged failure be joined back to its email? | The interview GUID is the only reliable join, and no variable names the faulting element (Gotchas 7, 8). | A log row keyed on `$Flow.InterviewGuid` with a hard-coded element name. |
+| What else runs in the same transaction as this flow? | The interview spends the transaction's governor budget (Gotcha 10). | An inventory of automation on the object before the flow is blamed. |
+
+A proper configuration makes the next failure report its element, version, data and user, so triage starts from evidence rather than reproduction.
 
 ## Recommended Workflow
 

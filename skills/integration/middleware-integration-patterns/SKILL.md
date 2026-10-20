@@ -43,9 +43,9 @@ dependencies:
   - api-led-connectivity
   - integration-pattern-selection
   - error-handling-in-integrations
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-15
+updated: 2026-10-20
 ---
 
 # Middleware Integration Patterns
@@ -61,6 +61,22 @@ Gather this context before working on anything in this domain:
 - **Is middleware genuinely required?** Salesforce's native capabilities handle many integration scenarios without a separate platform. Platform Events, Change Data Capture, Pub/Sub API, Flow HTTP Callout, Apex callouts, and External Services collectively address real-time event push, incremental change capture, outbound REST, and inbound webhook reception. Middleware adds operational overhead; justify it with a concrete requirement it meets that the native platform cannot.
 - **What are the orchestration requirements?** Middleware is mandatory per Salesforce Architects guidance when the integration requires cross-system orchestration (fan-out to multiple backends, aggregation across systems), protocol conversion (SOAP to REST, flat-file to JSON), persistent message queuing with guaranteed delivery, or distributed transaction coordination. Apex callouts provide none of these natively at scale.
 - **What is the team's existing tooling and license position?** Enterprises with an active MuleSoft Anypoint license are rarely justified in adopting a second iPaaS. Evaluate additional vendors only when the existing platform demonstrably cannot address the requirement.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which requirement can the native platform not meet: orchestration, protocol conversion, durable queuing, cross-system transactions, or complex transformation? | Apex limits fail hard, with no queue or backpressure (Gotcha 3); with no named driver, middleware is overhead. | A named driver per integration in the necessity decision record. |
+| What is the longest the subscriber can be offline, including planned maintenance? | Platform Event replay is bounded and a longer gap is lost silently (Gotcha 1). | Whether a durable middleware queue must be the store of record. |
+| Where does the middleware keep its Pub/Sub API replay ID, and does it survive a cold restart? | A lost replay ID silently skips the gap (Gotcha 1). | A durable replay-ID store named in the design. |
+| What latency does each record-change flow need, in seconds? | Workato's standard Salesforce trigger polls rather than pushes (Gotcha 2). | A latency SLA that rules vendor triggers in or out before recipes are built. |
+| How many callouts and how much heap will the busiest Apex transaction on the object spend, today and after the next integration? | Hitting a limit rolls back the whole transaction (Gotcha 3). | Evidence for publishing an event and exiting instead of calling out. |
+| Which steps of a multi-system write can be compensated, and which cannot? | iPaaS orchestration is not two-phase commit (Gotcha 4). | A compensation table per step, or an agreed eventual-consistency model. |
+| Does one platform need both real-time events and heavy batch or MDM work? | IICS real-time event support is weaker than its batch ETL (Gotcha 5). | A real-time scenario tested per vendor, or a hybrid split. |
+
+A proper configuration chooses the vendor and pattern against stated outage, latency and transaction requirements, so the failures in the gotchas are designed out instead of found at peak volume.
 
 ---
 
@@ -120,7 +136,7 @@ Before selecting any middleware vendor, confirm that native capabilities cannot 
 4. Each downstream leg has independent error handling and retry logic; failures in one leg do not roll back others.
 5. A correlation ID (e.g., Salesforce record Id) is propagated to all legs for end-to-end traceability.
 
-**Why not Apex:** Apex triggers hitting multiple callout endpoints face the 100-callout-per-transaction limit and the 10-second synchronous timeout. Failures in one callout leg can roll back the entire transaction if not carefully isolated. Middleware removes Salesforce from the synchronous path entirely.
+**Why not Apex:** Apex triggers hitting multiple callout endpoints face the 100-callout-per-transaction limit and the 120-second cumulative callout timeout (each callout defaults to a 10-second timeout; Apex Developer Guide 264 L19766, L19768, L20046). Failures in one callout leg can roll back the entire transaction if not carefully isolated. Middleware removes Salesforce from the synchronous path entirely.
 
 ### Pattern 2: Protocol Conversion for Legacy System Integration
 
@@ -198,7 +214,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 1. **Platform Events 72-hour replay window is not middleware-level durability** — Salesforce Platform Events support replay for up to 72 hours for Pub/Sub API consumers. Teams that use Platform Events as the integration backbone without a middleware durable queue discover that external subscribers offline for more than 72 hours permanently lose events with no error or notification. Middleware with a persistent queue removes this exposure.
 2. **Workato's Salesforce real-time trigger is polling, not push** — Despite being labeled "real-time," Workato's Salesforce trigger polls for new/changed records at a minimum interval of 5 minutes. Integrations requiring sub-5-minute latency for record changes cannot use Workato's standard trigger; a separate Pub/Sub API listener flow must be designed.
-3. **Governor limits do not pause — they fail hard** — When an Apex callout integration approaches the 100-callout-per-transaction or 10-second synchronous limit, the transaction is not queued or paused; it fails with an unhandled exception. Teams that incrementally add integration logic to Apex triggers hit this cliff unexpectedly. Plan for middleware before the limit is reached, not after it is first hit in production.
+3. **Governor limits do not pause — they fail hard** — When an Apex callout integration approaches the 100-callout-per-transaction or 120-second cumulative callout-timeout limit, the transaction is not queued or paused; it fails with a `System.LimitException`, which cannot be caught (Apex Developer Guide 264 L19853, L40117–L40123). Teams that incrementally add integration logic to Apex triggers hit this cliff unexpectedly. Plan for middleware before the limit is reached, not after it is first hit in production.
 
 ---
 
@@ -217,6 +233,6 @@ Non-obvious platform behaviors that cause real production problems:
 
 - integration/mulesoft-salesforce-connector — Use when MuleSoft is selected: covers Anypoint Salesforce Connector configuration, watermark, batch processing, and auth
 - integration/api-led-connectivity — Use when MuleSoft is selected and multi-layer API governance is needed: System/Process/Experience API layer design
-- integration/integration-pattern-selection — Use to determine synchronous vs asynchronous vs event-driven pattern before selecting middleware
+- admin/integration-pattern-selection — Use to determine synchronous vs asynchronous vs event-driven pattern before selecting middleware
 - integration/error-handling-in-integrations — Use when designing the error handling, retry, and dead-letter strategy for the middleware integration
 - integration/retry-and-backoff-patterns — Use for configuring middleware retry logic with Salesforce-specific backoff constraints

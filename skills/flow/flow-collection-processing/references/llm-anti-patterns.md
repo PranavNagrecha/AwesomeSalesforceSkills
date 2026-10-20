@@ -43,7 +43,7 @@ subflow or screen. `scripts/check_flow_collection_processing.py` rule **W2** is 
 
 **Why it happens:** per-item update is the simplest mental model, and it is correct in most
 languages. Here it converts record volume into DML statement count against a per-transaction budget
-of 150 (`apexdev.txt` L19554).
+of 150 (apexdev 264 L19757; 262 L19554).
 
 **Correct pattern:** stage into a collection, write once after the loop. This is `flow/flow-bulkification`'s
 territory end to end; do not re-derive the scale math in a collection-processing answer.
@@ -247,7 +247,7 @@ documented description is **"Reserved for future use"** (`api_meta.txt` L68090).
 > 50,000 in-memory records across all collections. A Get Records returning 50k+ will fault."
 
 **Why it happens:** 50,000 *is* a real Salesforce number — the per-transaction cap on **total
-records retrieved by SOQL queries** (`apexdev.txt` L19546). The relabelling is self-reinforcing: the
+records retrieved by SOQL queries** (apexdev 264 L19749; 262 L19546). The relabelling is self-reinforcing: the
 model contrasts it explicitly against the 10,000-DML-row limit, and that contrast makes it read like
 a carefully distinguished, separately-named governor. It is not. Flow has no limit called a
 collection element count, and nothing caps how many records a collection variable may hold.
@@ -264,9 +264,10 @@ casual review. The *reasoning* is wrong in ways that change real decisions:
   is.
 
 **Correct version:** 50,000 = total records retrieved by SOQL per **transaction**. Collection size
-is otherwise bounded by **heap** (6 MB synchronous / 12 MB asynchronous, `apexdev.txt` L19577) —
-the limit that actually constrains large in-memory collections. DML rows remain 10,000 per
-transaction (L19556).
+is otherwise bounded by **heap** (10 MB synchronous / 25 MB asynchronous from Winter '27, apexdev
+264 L19780; 6 MB / 12 MB through Summer '26, 262 L19577 — the rise is release-level, not
+API-versioned) — the limit that actually constrains large in-memory collections. DML rows remain 10,000 per
+transaction (264 L19759; 262 L19556).
 
 **Detection hint:** grep for `collection element count`, or for `50,000` described as
 per-*interview* rather than per-*transaction*. The generalisable rule: **when a limit is introduced

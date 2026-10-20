@@ -31,9 +31,9 @@ outputs:
   - Fallback behavior when cache is unavailable
 dependencies: []
 runtime_orphan: true
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Integration Procedure Cacheable Patterns
@@ -45,6 +45,22 @@ Caching cuts that cost by orders of magnitude — but only if the cache scope,
 key, partition, and invalidation are designed together. This skill
 covers those four decisions and the failure modes each one produces when it is
 made by reflex.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which steps inside the candidate Cache Block have side effects the caller needs every time? | Steps inside a Cache Block do not run on a hit (Gotcha 1). | Side-effecting steps kept outside the block. |
+| Is the data the same for every user, per user, or per session? | Org cache on a guest page is addressed by a key the caller controls, and session cache dies with the session (Gotchas 6, 7). | The cache scope chosen from who may see the value. |
+| Which inputs make up the cache key, and how long can they get? | Keys must be alphanumeric and at most 50 characters, and input-map order is not guaranteed (Gotchas 2, 3). | A deterministic, bounded key built in a fixed order. |
+| How stale may the value be, in minutes? | TTL below 5 minutes is under the platform floor, and session cache tops out at 8 hours (Gotchas 7, 8). | A TTL inside the supported range. |
+| How large is the response at its biggest? | A cached payload over 100 KB silently does not persist (Gotcha 9). | A trimmed payload, or a decision not to cache. |
+| What must happen when the cache is empty or cleared by a deploy? | A null partition is normal, and cache is not persisted (Gotchas 4, 10). | A cold path that works and is tested. |
+| Is the problem slow warm calls or a cold call breaching a limit? | Caching does not fix a cold-path governor limit (Gotcha 11). | Cache Block, Chainable, or both, chosen from the symptom. |
+
+A proper configuration designs scope, key, partition and invalidation together, so a cache hit is fast and a cache miss is still correct.
 
 ---
 
@@ -214,8 +230,11 @@ cache — and the cold call is the one that breaches the limit.
 | Long-running, can be asynchronous | Queueable Chainable |
 
 Chainable thresholds are bounded by the underlying Apex governor limits:
-synchronous 100 SOQL / 10,000 ms CPU / 6 MB heap / 150 DML; Queueable
-Chainable 200 SOQL / 60,000 ms CPU / 12 MB heap. When a step exceeds the
+synchronous 100 SOQL / 10,000 ms CPU / 10 MB heap / 150 DML; Queueable
+Chainable 200 SOQL / 60,000 ms CPU / 25 MB heap (Apex heap from Winter '27,
+apexdev 264 L19780; 6 MB / 12 MB through Summer '26 — whether OmniStudio's
+chainable heap threshold follows the Winter '27 Apex rise is UNVERIFIED
+(2026-10-20): no OmniStudio guide in the corpus). When a step exceeds the
 configured limits, "the interim results are saved and the step continues in a
 new transaction." Use both: the block so warm calls skip the work, chainable
 so the cold call survives.

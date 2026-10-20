@@ -13,7 +13,7 @@ Narrative walk-throughs of the element-selection decision. The deployable XML li
 **Problem:** The naive design queries Order Lines inside the loop for each Order and issues an
 `Update Records` per iteration. With a data load of 200 Orders that is up to 200 SOQL queries and
 200 DML statements — against per-transaction budgets of 100 synchronous queries and 150 DML
-statements (`apexdev.txt` L19544, L19554).
+statements (apexdev 264 L19747, L19757; 262 L19544, L19554).
 
 **The usual fix — Loop and accumulate:**
 

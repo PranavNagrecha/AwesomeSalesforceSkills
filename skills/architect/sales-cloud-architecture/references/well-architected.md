@@ -38,4 +38,5 @@ Extending Opportunity with record types and custom fields preserves compatibilit
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/well-architected/overview
 - Salesforce Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
 - Salesforce Order of Execution — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm
+- Apex Developer Guide 264 (Winter '27), Per-Transaction Apex Limits — 50,000 SOQL rows per transaction (salesforce_apex_developer_guide.txt L19747) and total heap 10 MB sync / 25 MB async (L19780; 6 MB / 12 MB in Summer '26), plus the 2,000-row ceiling on an aggregate query in a SOQL for loop (L10183-10184). Grounds the governor-limit sentence in SKILL.md.
 - Enterprise Territory Management — https://help.salesforce.com/s/articleView?id=sf.tm2_intro.htm

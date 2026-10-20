@@ -240,8 +240,9 @@ instead. `flow/subflows-and-reusability` owns the subflow contract.
 
 **What happens:** Designs get decomposed to stay under a collection-size ceiling that the corpus
 does not contain. The Apex Developer Guide's per-transaction limit table lists 100/200 SOQL
-queries, **50,000 records retrieved by SOQL**, 150 DML statements, 10,000 DML rows, 6 MB / 12 MB
-heap and 10,000 ms / 60,000 ms CPU (`apexdev.txt` L19544–L19579). None of those is a collection
+queries, **50,000 records retrieved by SOQL**, 150 DML statements, 10,000 DML rows, 10 MB / 25 MB
+heap and 10,000 ms / 60,000 ms CPU (apexdev 264 L19747–L19782; heap was 6 MB / 12 MB through
+Summer '26, 262 L19544–L19579; the Winter '27 rise is release-level, not API-versioned). None of those is a collection
 size, and none is per-interview — they are per **transaction**, shared with every trigger, Apex
 class and other flow in the same call stack.
 
@@ -249,7 +250,7 @@ The corroborating negative is in the log-event catalogue.
 `FLOW_INTERVIEW_FINISHED_LIMIT_USAGE` "displays the usage for one of these limits: SOQL queries,
 SOQL query rows, SOSL queries, DML statements, DML rows, CPU time in ms, heap size in bytes,
 callouts, email invocations, future calls, jobs in queue, push notifications"
-(`apexdev.txt` L38821–L38834). Salesforce's own runtime reports every limit a flow interview can
+(apexdev 264 L39217–L39240; 262 L38821–L38834). Salesforce's own runtime reports every limit a flow interview can
 consume, and neither an element count nor a collection size is among them. A separate grep of
 `apexdev.txt` for a retired 2,000-executed-element Flow limit returns **nothing** — the developer
 guide makes no statement in either direction, which is the same conclusion the `flow-loop-element-patterns`

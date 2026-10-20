@@ -23,11 +23,13 @@ version of *this file* committed it, and taught it as fact.
 *Fabrication.* Invented metadata for a setting the model assumes must exist:
 
 ```xml
-<!-- WRONG — none of these fields exist on OmniIntegrationProcedure -->
-<isCacheable>true</isCacheable>
-<cacheEnabled>true</cacheEnabled>
-<cacheTTL>3600</cacheTTL>
-<responseCacheTtlMinutes>60</responseCacheTtlMinutes>
+<OmniIntegrationProcedure xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt. WRONG — none of these fields exist on OmniIntegrationProcedure -->
+    <isCacheable>true</isCacheable>
+    <cacheEnabled>true</cacheEnabled>
+    <cacheTTL>3600</cacheTTL>
+    <responseCacheTtlMinutes>60</responseCacheTtlMinutes>
+</OmniIntegrationProcedure>
 ```
 
 *Over-correction.* Having checked the metadata reference and found no TTL
@@ -359,8 +361,11 @@ Diagnose from the symptom:
 
 Chainable thresholds are bounded by the underlying Apex limits:
 
-  Chainable (sync)     : 100 SOQL, 10,000 ms CPU, 6 MB heap, 150 DML
-  Queueable Chainable  : 200 SOQL, 60,000 ms CPU, 12 MB heap
+  Chainable (sync)     : 100 SOQL, 10,000 ms CPU, 10 MB heap, 150 DML
+  Queueable Chainable  : 200 SOQL, 60,000 ms CPU, 25 MB heap
+  (Winter '27 Apex heap, apexdev 264 L19780; 6 / 12 MB through Summer '26;
+   UNVERIFIED (2026-10-20): whether the OmniStudio chainable heap threshold
+   follows the Apex rise -- no OmniStudio guide in the corpus)
 
 "If an Integration Procedure step exceeds the configured limits, the
 interim results are saved and the step continues in a new transaction."

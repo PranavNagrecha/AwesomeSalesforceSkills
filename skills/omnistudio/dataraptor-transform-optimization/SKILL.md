@@ -29,9 +29,9 @@ outputs:
   - "bulkification recommendations"
 dependencies: []
 runtime_orphan: true
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # DataRaptor Transform Optimization
@@ -124,6 +124,22 @@ Caching is `omnistudio/integration-procedure-cacheable-patterns` and
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the org on the managed-package runtime or the standard runtime? | The documentation, object names and Apex entry points differ by runtime (Gotchas 1, 2). | The right guide and the right call site before anything is tuned. |
+| What is the failing exception — CPU time, heap, or SOQL queries? | CPU and heap failures look identical and want opposite fixes (Gotcha 7). | A fix aimed at expressions or at materializations, not both. |
+| How much CPU and heap has the transaction spent before the Transform runs? | The Transform spends the caller's budget (Gotcha 4). | A decision between tuning mappings and moving or splitting the transaction. |
+| How many rows and fields does production send, and how many fields does the output use? | Chained Transforms each hold a full copy; wide payloads cost every copy (Gotcha 6). | An upstream projection target measured at production shape (Gotcha 9). |
+| Does any custom function the Transform calls run SOQL? | A per-row query turns rows into queries against the SOQL limit (Gotcha 5). | A bulk Apex step before the Transform, or a `getAll()` lookup. |
+| Does any mapping merge several input lists into one output list? | Direct multi-list mappings have no guaranteed order (Gotcha 3). | A `LIST()` formula where order matters. |
+| Will the Transform be deployed through Metadata API? | The Omnistudio Metadata setting must be enabled first, and the managed package runtime still uses DataPacks (Gotcha 10). | A deploy path checked before the change is built. |
+
+A proper configuration fixes the cost that the transaction actually pays, measured at production shape, instead of tuning the step that happened to throw.
+
+---
+
 ## Core Concepts
 
 ### The evaluator hierarchy
@@ -171,8 +187,9 @@ happened to be stable in the sandbox stops being stable.
 
 Every Transform in a chain builds its complete output structure before the next
 step reads it. Three chained Transforms over a 2,000-row payload hold three
-full copies in heap at their peak — against 6 MB synchronously or 12 MB
-asynchronously. Merging two adjacent Transforms removes an entire copy, and it is
+full copies in heap at their peak — against the Apex heap of 10 MB synchronously
+or 25 MB asynchronously (apexdev 264 L19780; 6 MB / 12 MB through Summer '26 — a
+Winter '27 release-level rise, not API-versioned). Merging two adjacent Transforms removes an entire copy, and it is
 usually the largest single win available on a chain that is failing with a heap
 error rather than a CPU error.
 
@@ -195,7 +212,8 @@ failure is attributed to the Transform even though the Transform did nothing
 except call the function you gave it.
 
 Moving the Integration Procedure to an asynchronous shape multiplies the CPU
-budget by six and the heap by two. That is not an optimization, it is a
+budget by six and the heap by two and a half (10 MB to 25 MB; it was two, 6 MB to
+12 MB, through Summer '26). That is not an optimization, it is a
 relocation — but it is often the correct one, and it is cheaper than a rewrite.
 
 ### The standard objects are marked internal-use-only
@@ -380,5 +398,5 @@ Full detail in [`references/gotchas.md`](references/gotchas.md).
 - `omnistudio/vlocity-to-native-omnistudio-migration` — the managed package to
   standard runtime move, if the runtime question above turned out to be the
   actual problem
-- `apex/bulk-patterns-and-governor-limits` — the limits a Transform inherits, and
+- `apex/governor-limits` — the limits a Transform inherits, and
   how to bulkify the Apex a custom function calls

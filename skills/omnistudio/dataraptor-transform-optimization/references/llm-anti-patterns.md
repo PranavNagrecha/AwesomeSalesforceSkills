@@ -170,8 +170,9 @@ was given. Asking whether the artifact is the right one is not a shape most
 completions take.
 
 **Correct pattern:** a Transform inside a synchronous Integration Procedure spends
-the calling transaction's budget — 10,000 ms CPU and 6 MB heap synchronously,
-60,000 ms and 12 MB asynchronously. If the transaction is nearly exhausted before
+the calling transaction's budget — 10,000 ms CPU and 10 MB heap synchronously,
+60,000 ms and 25 MB asynchronously (apexdev 264 L19780–L19782; heap was 6 MB /
+12 MB through Summer '26). If the transaction is nearly exhausted before
 the Transform starts, no mapping change will help, and the useful answers are
 different in kind: move the IP to an asynchronous shape, split the transaction, or
 page the payload.

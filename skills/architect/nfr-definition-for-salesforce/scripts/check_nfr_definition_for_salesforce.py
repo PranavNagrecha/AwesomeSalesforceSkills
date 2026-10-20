@@ -153,12 +153,12 @@ def check_nfr_document(nfr_doc_path: Path) -> list[str]:
             "Every NFR must have a metric, threshold, measurement method, and owner."
         )
 
-    # --- Check 6: TODO markers remaining ---
+    # --- Check 6: unfilled 'todo' placeholder markers remaining ---
     todo_count = content_lower.count("todo")
     if todo_count > 0:
         issues.append(
-            f"NFR document contains {todo_count} TODO marker(s). "
-            "All TODO placeholders must be replaced with real content before sign-off."
+            f"NFR document contains {todo_count} unfilled 'todo' placeholder marker(s). "
+            "Every placeholder must be replaced with real content before sign-off."
         )
 
     # --- Check 7: Governor limit utilisation mention ---

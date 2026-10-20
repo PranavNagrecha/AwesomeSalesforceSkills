@@ -197,7 +197,7 @@ one quoted, and nothing on the Flow canvas announces which regime a flow is in.
 
 **Correct pattern:** schedule-triggered flows run under **asynchronous**
 per-transaction limits from runtime version 61.0 onward — 200 SOQL, 60,000 ms
-CPU, 12 MB heap — under the *Improve Scheduled Flow Performance with Updated
+CPU, 25 MB heap (12 MB through Summer '26; apexdev 264 L19780) — under the *Improve Scheduled Flow Performance with Updated
 Limits* release update. Establish the flow's runtime version before you do the
 arithmetic. Then cost DML separately: 150 statements, unchanged on both sides, is
 the limit a one-Update-per-interview flow actually breaches. The conclusion

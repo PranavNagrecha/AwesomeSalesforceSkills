@@ -135,8 +135,9 @@ the usual workaround.
 with no obvious culprit in the element list.
 
 **When it occurs:** Automatic field storage retrieves every field on the object.
-On a wide object with a large collection that is a lot of memory against a 6 MB
-synchronous / 12 MB asynchronous heap — and a screen flow serializes its
+On a wide object with a large collection that is a lot of memory against a 10 MB
+synchronous / 25 MB asynchronous heap (Winter '27, Apex Developer Guide 264
+L19780; 6 MB / 12 MB in Summer '26) — and a screen flow serializes its
 variables between screens, so the cost is paid on every transition rather than
 once.
 

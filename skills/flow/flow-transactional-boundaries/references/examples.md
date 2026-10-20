@@ -124,7 +124,7 @@ public class CaseSLARecalcBatch implements Database.Batchable<sObject> {
 
 **Boundary behavior:**
 
-- Each `execute` is its own async transaction, with 200 SOQL / 150 DML / 60,000 ms CPU / 12 MB heap.
+- Each `execute` is its own async transaction, with 200 SOQL / 150 DML / 60,000 ms CPU / 25 MB heap (apexdev 264 L19780; 12 MB through Summer '26).
 - The Flow runs N times (once per case), each call sharing THIS execute's budget. That's why the loop is risky: 200 flow invocations, each with even 1 DML, exhausts the budget.
 
 **Refactor for scale:** Convert the flow to accept a Case Id collection, OR call the flow once and move the loop inside (collection-based). The correct bulk pattern: one interview, List<Id> input, loop inside the flow, one DML at the end.

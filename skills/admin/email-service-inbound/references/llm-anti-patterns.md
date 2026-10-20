@@ -177,10 +177,12 @@ See `references/gotchas.md` § 4.
 
 ---
 
-## Anti-Pattern 10: budgeting the handler's heap at 6 MB
+## Anti-Pattern 10: budgeting the handler's heap at the synchronous limit
 
 **What the LLM generates.** "Attachments must stay under the 6 MB
-synchronous heap limit, so process them asynchronously."
+synchronous heap limit, so process them asynchronously." (6 MB is the
+Summer '26 figure; Winter '27 raised synchronous heap to 10 MB, Apex
+Developer Guide 264 L19780 — and neither applies to an email service.)
 
 **Why it happens.** The synchronous heap figure is the most-repeated
 number in Apex guidance, and the email-service exception is a footnote.

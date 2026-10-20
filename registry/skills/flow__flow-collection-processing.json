@@ -195,7 +195,7 @@
     "fed4be57e2e12f91ba2e",
     "ff37393e575b163920d7"
   ],
-  "content_hash": "8406973ff7e757841b47591ee315a0d35ed2552ed4115c7cdf82c11b900b2d1f",
+  "content_hash": "959178ba5cd8dcef5ae95b94932e26a4a4b00a8396dedaacaeeda02769683875",
   "dependencies": [],
   "description": "Use when building or reviewing Flow logic that processes lists of records using Loop, Assignment, Collection Filter, Collection Sort, or Transform elements. Triggers: 'iterate over collection in flow', 'flow loop add to collection', 'collection filter element', 'transform element flow', 'update records from collection variable', 'collection sort flow', 'collection processor', 'RecommendationMapCollectionProcessor', 'transformType Sum', 'InnerJoin flow', 'AssignCount', 'RemoveUncommon', 'sortOptions', 'outputSObjectType'. NOT for pulling DML or SOQL out of a Loop element \u2014 use flow/flow-loop-element-patterns. NOT for transaction-budget and bulkification analysis \u2014 use flow/flow-bulkification.",
   "file_location": "skills/flow/flow-collection-processing",
@@ -214,8 +214,8 @@
     "**Metadata API Developer Guide \u2014 `FlowAssignmentOperator`** (`api_meta.txt` L69767\u2013L69865): `Add`",
     "**Metadata API Developer Guide \u2014 `FlowTest` and subtypes** (`api_meta.txt` L73960\u2013L74330):",
     "**Metadata API Developer Guide \u2014 `FlowRecordLookup`** (`api_meta.txt` L71091\u2013L71252): `limit` as a",
-    "**Apex Developer Guide \u2014 Execution Governors and Limits** (`apexdev.txt` L19544\u2013L19579): 50,000",
-    "**Apex Developer Guide \u2014 Flow debug-log events** (`apexdev.txt` L38714\u2013L38850):",
+    "**Apex Developer Guide \u2014 Execution Governors and Limits** (apexdev 264 L19747\u2013L19782; 262",
+    "**Apex Developer Guide \u2014 Flow debug-log events** (apexdev 264 L39121\u2013L39257, `FLOW_INTERVIEW_FINISHED_LIMIT_USAGE` at L39217; 262 L38714\u2013L38850):",
     "**Repo templates** \u2014 `templates/flow/RecordTriggered_Skeleton.flow-meta.xml` (the `<start>` block",
     "**Salesforce Well-Architected Framework** \u2014 pillar framing for the tradeoff table above \u2014"
   ],
@@ -247,7 +247,7 @@
   "templates": [
     "skills/flow/flow-collection-processing/templates/flow-collection-processing-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "2.1.0"
+  "version": "2.1.1"
 }

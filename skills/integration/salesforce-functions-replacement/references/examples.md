@@ -114,7 +114,8 @@ external libraries beyond string handling. Median runtime 900 ms.
 
 **Problem:** This does belong in Apex, but the original invocation was from an
 Account trigger. Leaving it there gives the rewrite the **synchronous** limits —
-10,000 ms CPU and 6 MB heap — instead of the asynchronous 60,000 ms and 12 MB.
+10,000 ms CPU and 10 MB heap — instead of the asynchronous 60,000 ms and 25 MB
+(Apex Developer Guide 264 L19780-19782; heap was 6 MB / 12 MB through Summer '26).
 At 200 records per batch the CPU headroom disappears.
 
 **Solution:** Move the entry point, not just the language.
@@ -155,10 +156,11 @@ public with sharing class AccountScoreQueueable implements Queueable {
 ```
 
 **Why it works:** The Queueable runs asynchronously, so the rewrite gets 60,000
-ms CPU and 12 MB heap, and a slow scoring pass no longer lengthens the user's
+ms CPU and 25 MB heap, and a slow scoring pass no longer lengthens the user's
 save. `WITH USER_MODE` and `update as user` are the current security idiom —
-`WITH SECURITY_ENFORCED` was removed in API 67.0 (Summer '26), which also made
-user mode and `with sharing` the defaults for classes on that API version.
+`WITH SECURITY_ENFORCED` cannot be used in Apex SOQL at API 67.0 (Summer '26) and
+later, which also made user mode the default and sharing enforced for classes with
+no sharing declaration (Apex Developer Guide 264 L11926, L45133, L45142, L45145).
 `TriggerHandler` is the repo's canonical base class (`templates/apex/TriggerHandler.cls`).
 
 ---

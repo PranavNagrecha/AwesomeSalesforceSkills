@@ -35,9 +35,9 @@ outputs:
   - "virus scanning callout pattern with Apex trigger or Flow"
   - "review findings for an existing file integration implementation"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-20
 ---
 
 # File And Document Integration
@@ -54,6 +54,22 @@ Gather this context before working on anything in this domain:
 - What is the maximum file size for this use case? REST API multipart upload supports files up to 2 GB. Base64 insert via sObject create is limited to approximately 37 MB (the base64 encoding inflates a 28 MB binary to the 37.5 MB request body limit). SOAP API has a strict 50 MB message size limit.
 - Does the org require virus scanning? Salesforce has no built-in virus scanning for CRM file uploads. If security policy mandates scanning, you must implement an Apex callout to an external scanning service (ClamAV, VirusTotal, etc.) triggered on ContentVersion insert.
 - Is the requirement to store files in Salesforce, or to surface external files inside Salesforce? Storing files uses ContentVersion. Surfacing external files uses Files Connect (Salesforce Connect for files). These are fundamentally different architectures.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| What is the largest file this integration will ever send? | Base64 VersionData fails on the request body limit well below the file limit (Gotcha 2). | REST multipart chosen up front for anything that may grow. |
+| Will the code create files by inserting ContentDocument? | ContentDocument cannot be inserted; ContentVersion creates it (Gotcha 1). | An insert-ContentVersion-then-query-ContentDocumentId sequence. |
+| Is the target record known at upload time? | `FirstPublishLocationId` is write-once on insert (Gotcha 3). | The link set on insert, or an explicit ContentDocumentLink step. |
+| Who must see or edit each linked file? | `ShareType` defaults vary by context (Gotcha 4). | An explicit `ShareType` per link, tested as the real user. |
+| Must Salesforce write files back to the external system? | Files Connect only reads external files (Gotcha 5). | An outbound push design, not a Files Connect configuration. |
+| Will any Apex read VersionData for more than one record at a time? | Every blob loads into heap (Gotcha 6). | One file per transaction, in a Queueable or batch scope 1. |
+| When a file leaves one record, should it leave the others? | Deleting ContentDocument removes every version and link (Gotcha 7). | A delete-the-link default, with ContentDocument deletion reserved. |
+
+A proper configuration picks the transport, link and sharing model from the file sizes and access rules, so the failures above are designed out rather than found at production file sizes.
 
 ---
 
