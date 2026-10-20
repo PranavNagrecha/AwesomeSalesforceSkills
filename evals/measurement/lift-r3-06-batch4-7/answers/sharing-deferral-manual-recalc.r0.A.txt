@@ -1,0 +1,14 @@
+**No. Resuming sharing rule calculations doesn't bring sharing back in line by itself.** Resuming only lifts the suspension. Changes made during the suspension (new or changed records, owners, role or group membership) aren't evaluated retroactively, so access stays stale until you trigger a recalculation.
+
+**What to do after the bulk load**
+1. **Resume group membership calculations first, if you suspended them.** Let that finish before moving on, because sharing rules depend on up-to-date group and role membership.
+2. **Resume sharing rule calculations.**
+3. **Run a full recalculation.** In Setup > Sharing Settings, use **Recalculate** on the Sharing Rules related list for each affected object. It runs asynchronously, so watch Setup > Background Jobs (or the Sharing Settings page banner) until it completes.
+
+**Caveats**
+- The recalculation can take a long time on large data volumes, so schedule it off-hours. Users may have wrong access (too little or too much) until it finishes.
+- Deferred sharing is a feature you request through Salesforce Support. Once it's enabled, the suspend and resume controls appear under Setup > Defer Sharing Calculations.
+- Only rule-based and group-derived access is deferred. Owner-based access and implicit sharing aren't affected.
+- If you load a lot of records, consider loading with the deferral on and doing one recalculation at the end, rather than recalculating repeatedly mid-load.
+
+I'm going from memory of the Defer Sharing Calculations docs. Check the current wording in your release's help ("Defer Sharing Calculations") to confirm the exact recalculation behaviour.

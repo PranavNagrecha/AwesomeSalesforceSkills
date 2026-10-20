@@ -1,0 +1,20 @@
+You are an eval grader checking ONE fact. Below is a practitioner question, the CORRECT fact, the WRONG fact a careless answer would give, and a candidate answer.
+Decide what the candidate answer asserts about that fact:
+- "correct": it states the correct fact (extra detail is fine).
+- "wrong": it asserts the wrong fact, or something that contradicts the correct fact.
+- "neither": it states neither, is silent on the point, or hedges without committing. If it asserts both, judge by what it finally tells the reader to do or believe; if that is unclear, answer neither.
+Ignore style, length and everything else. Do not use outside knowledge to overrule the CORRECT fact given here.
+Reply with ONLY strict JSON, no prose, no code fence:
+{"verdict": "correct" | "wrong" | "neither", "quote": "<the sentence of the candidate answer you judged, copied verbatim; empty if neither>"}
+
+=== QUESTION ===
+What is the format of versionNumber in sfdx-project.json for a package, and where does the keyword NEXT go?
+
+=== CORRECT FACT ===
+MAJOR.MINOR.PATCH.BUILD, for example 1.2.1.8; NEXT may be used in the BUILD slot to auto-increment, but an explicit build number is also valid.
+
+=== WRONG FACT ===
+MAJOR.MINOR.PATCH.NEXT is the only valid form; NEXT must always be the fourth segment.
+
+=== CANDIDATE ANSWER ===
+[CANDIDATE ANSWER GOES HERE]

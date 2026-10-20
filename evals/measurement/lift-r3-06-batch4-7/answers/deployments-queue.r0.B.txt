@@ -1,0 +1,24 @@
+**The second deployment doesn't fail. It waits in a queue.**
+
+The Metadata API guide says only one deployment runs at a time in an org. Any others wait, and they "are not necessarily executed in the order in which they were submitted" (api_meta 264 L4246-4249).
+
+**What this means in practice**
+
+- **Order isn't guaranteed.** If you queue deploy A and then deploy B, B may run first. Don't rely on submission order when the deploys depend on each other, such as schema before logic. Submit one, wait for it to finish, then submit the next.
+- **Validations take a slot too.** A `checkOnly` validation (`sf project deploy validate`) writes nothing, but it still queues like any deployment. A quick deploy (`sf project deploy quick`) is a deployment as well, so a release-window quick deploy can sit behind someone else's job.
+- **Running deploys lock their resources.** The guide says the deployment "locks write-access to resources getting deployed until deployment completes" (L4214-4216). That is why it recommends off-peak deploys and limiting or postponing changes while one runs.
+- **Queue wait counts against your window.** A slow job ahead of you can eat the release window, even though your own deploy would be quick.
+
+**What the guide doesn't say**
+
+The skill marks these as UNVERIFIED, so don't state them as fact:
+
+- that a second operation fails with a lock-contention error, or that a validation takes compile locks on Apex classes. The guide describes queuing, not failure.
+- that a deploy overlapping other activity leaves partial metadata. Production deploys require `rollbackOnError` true (L3252-3255), so a failed deploy rolls back completely.
+
+**What to do**
+
+1. Before starting a validation or deploy, check **Setup → Deployment Status** for in-progress and queued deployments.
+2. Book the release window and make sure no other pipeline (CI jobs, other teams' change sets, DevOps Center) targets the org then.
+3. Submit one deployment at a time and confirm it completes before the next.
+4. For release day, use validate-then-quick-deploy so your slot is as short as possible.

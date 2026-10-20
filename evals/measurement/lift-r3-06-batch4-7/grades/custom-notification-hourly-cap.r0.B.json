@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**10,000 notification actions per hour per org.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.056091600000000005,
+    "duration_s": 1.979,
+    "input_tokens": 6898,
+    "output_tokens": 35
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**10,000 notification actions per hour per org.**\"}",
+  "prompt_sha": "558ce880e762d5a7"
+}

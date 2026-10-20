@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "A concrete build such as `1.0.0.1` is also valid. It just needs a manual bump. Don't treat `NEXT` as the only legal value in that slot.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.056764,
+    "duration_s": 1.787,
+    "input_tokens": 6919,
+    "output_tokens": 71
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"A concrete build such as `1.0.0.1` is also valid. It just needs a manual bump. Don't treat `NEXT` as the only legal value in that slot.\"}",
+  "prompt_sha": "a13a98b315c441a7"
+}

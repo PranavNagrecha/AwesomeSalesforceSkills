@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**Account triggers fire, not Contact triggers.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058308,
+    "duration_s": 2.105,
+    "input_tokens": 7197,
+    "output_tokens": 37
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**Account triggers fire, not Contact triggers.**\"}",
+  "prompt_sha": "33c607acae680f95"
+}

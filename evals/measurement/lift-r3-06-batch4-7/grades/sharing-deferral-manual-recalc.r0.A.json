@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**No. Resuming sharing rule calculations doesn't bring sharing back in line by itself.** Resuming only lifts the suspension.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0579525,
+    "duration_s": 2.084,
+    "input_tokens": 7044,
+    "output_tokens": 63
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**No. Resuming sharing rule calculations doesn't bring sharing back in line by itself.** Resuming only lifts the suspension.\"}",
+  "prompt_sha": "4e47495cf357374b"
+}

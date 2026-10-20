@@ -1,0 +1,13 @@
+I can't confirm this against current Salesforce documentation, so verify it before you design around it.
+
+**Short answer:** As far as I know, an Advanced Account Forecasting (AAF) forecast set is not continuously or event-driven recalculated. It is refreshed by a batch process, and how often that runs is something you control, not a built-in fixed interval.
+
+**What I believe is going on:**
+- AAF generates forecast values (the `AdvAccountForecastFact` records and related data) through a Data Processing Engine (DPE) definition, the batch engine Manufacturing Cloud uses for these calculations.
+- The forecast set record (`AdvAccountForecastSet`) and its partner settings define what gets forecast: the accounts or partners, the period type and horizon, and the measures. They do not appear to define a refresh cadence themselves.
+- Frequency is therefore determined by how and when that DPE job is run. Typically you schedule it, for example with a scheduled flow that invokes the DPE definition, or you run it manually from Setup. If nothing schedules it, the forecast stays as of its last run.
+- Changes to underlying data, such as new sales agreement or order actuals, are generally not picked up until the next run.
+
+**What I'm not sure about:** whether a current release added a native refresh-frequency field or a built-in scheduler on the forecast set. Check the `AdvAccountForecastSet` fields in Object Reference, and look in Setup under Data Processing Engine for the AAF definition and its run history.
+
+**Practical recommendation:** schedule the DPE run (daily or weekly, depending on how fast your actuals change) with a scheduled flow, and monitor the run history for failures so a stale forecast doesn't go unnoticed.

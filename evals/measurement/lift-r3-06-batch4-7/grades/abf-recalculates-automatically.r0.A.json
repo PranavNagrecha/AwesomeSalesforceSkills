@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "They do not appear to define a refresh cadence themselves.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0606695,
+    "duration_s": 2.547,
+    "input_tokens": 7100,
+    "output_tokens": 182
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"They do not appear to define a refresh cadence themselves.\"}",
+  "prompt_sha": "a82831f0ed839321"
+}

@@ -1,0 +1,29 @@
+**Format:** `major.minor.patch.build`, for example `1.2.0.0`. All four parts are required for a package version in a package directory entry of `sfdx-project.json`.
+
+- **major / minor / patch** are the usual semantic-version parts.
+- **build** is the build number. In `versionNumber` you either give a literal number or the keyword `NEXT`.
+
+**Where `NEXT` goes:** only in the fourth segment, the build number.
+
+```json
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "package": "MyPackage",
+      "versionName": "Spring release",
+      "versionNumber": "1.2.0.NEXT",
+      "default": true
+    }
+  ]
+}
+```
+
+When you run `sf package version create`, the CLI replaces `NEXT` with the next available build number for that major.minor.patch. The first build is `0`, and each later build under the same `1.2.0` increments (`1.2.0.1`, `1.2.0.2`, and so on). Because of this, you normally don't edit the build number by hand.
+
+**Notes:**
+- `NEXT` is only valid in the build position. `1.NEXT.0.0` or `NEXT.0.0.0` are not valid.
+- To release a new major, minor, or patch, change those segments by hand (for example `1.3.0.NEXT`). The build counter restarts for that new combination.
+- For unlocked packages, the Beta/Released state is a separate property of the created version, not part of `versionNumber`. Promote with `sf package version promote`.
+- For managed packages, once a version is promoted to Released, its major.minor.patch is locked. Later versions must increase it.
+- `ancestorVersion` (or `ancestorId`) is a separate attribute. It accepts `HIGHEST` and `NONE`, and is also unrelated to `NEXT`.

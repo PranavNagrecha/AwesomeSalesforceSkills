@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "A **Remote Site Setting** (Setup \u2192 Security \u2192 Remote Site Settings) whose URL matches the endpoint's scheme, host, and port. Without it, Apex throws a `System.CalloutException: Unauthorized endpoint, please check Setup->Security->Remote site settings.`",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.06047949999999999,
+    "duration_s": 2.035,
+    "input_tokens": 7227,
+    "output_tokens": 115
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"A **Remote Site Setting** (Setup \u2192 Security \u2192 Remote Site Settings) whose URL matches the endpoint's scheme, host, and port. Without it, Apex throws a `System.CalloutException: Unauthorized endpoint, please check Setup->Security->Remote site settings.`\"}",
+  "prompt_sha": "3e820c63f9d15c08"
+}

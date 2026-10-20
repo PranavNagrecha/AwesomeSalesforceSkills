@@ -1,0 +1,17 @@
+A **Remote Site Setting** (Setup → Security → Remote Site Settings) whose URL matches the endpoint's scheme, host, and port. Without it, Apex throws a `System.CalloutException: Unauthorized endpoint, please check Setup->Security->Remote site settings.`
+
+**Details**
+
+- **Match scope:** The setting must cover the endpoint's protocol (`https://`), domain, and port if non-default. Path is not required; the setting covers the whole origin.
+- **Active:** The Remote Site Setting must be marked Active.
+- **Alternative:** A **CSP Trusted Site** does not authorize Apex callouts. It governs browser-side requests from Lightning/Experience Cloud. A Remote Site Setting is what Apex needs. (A Named Credential implicitly authorizes its own endpoint, which is why you don't need one there.)
+- **Protocol:** Use HTTPS. Salesforce permits HTTP only if the Remote Site Setting is configured for it, and HTTP is poor practice for anything sensitive.
+- **Deployment:** Remote Site Settings are metadata (`RemoteSiteSetting`) and must be deployed to each org/sandbox. A common failure is that the callout works in dev but fails after deployment because the setting wasn't included in the package.
+
+**Other things that still apply**
+
+- **No DML before the callout** in the same transaction, or you get "uncommitted work pending" (unless the callout runs first or in a separate async context).
+- **Tests:** Callouts aren't allowed in tests. Use `HttpCalloutMock` with `Test.setMock`. A Remote Site Setting isn't needed for mocked calls.
+- **Authentication:** With a hard-coded URL you must manage credentials yourself (headers, tokens, secrets in code or Custom Metadata/Settings). This is the main reason to prefer a Named Credential.
+
+**Recommendation:** Prefer a Named Credential (with an External Credential in the newer model). It handles the endpoint authorization, auth, and per-environment URL changes, so you avoid hard-coding URLs and secrets and don't need a separate Remote Site Setting.

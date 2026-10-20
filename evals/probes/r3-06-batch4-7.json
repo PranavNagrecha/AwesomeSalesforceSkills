@@ -1,0 +1,105 @@
+{
+  "_comment": "R3-06 claims-audit wave, probes for batches 4-7 (36 skills, 197 contradicted claims). One probe per contradicted-claim class the writer+reviewer recipe fixed. Arm A = model alone, arm B = model + the owning skill's SKILL.md + llm-anti-patterns.md (run_lift). Quotes are verbatim lines from scratchpad/corpus264 (264) or scratchpad/corpus (262). Built 2026-10-20.",
+  "probes": [
+    {
+      "id": "field-history-storage",
+      "skill": "data/data-storage-management",
+      "question": "Does field history tracking data count against an org's data storage limit?",
+      "wrong_answer": "Yes, each history row consumes about 2 KB of data storage, so heavy tracking inflates storage.",
+      "correct_answer": "No. Field history tracking data does not count against data storage limits.",
+      "source": "salesforce_security_impl_guide.txt 262 L4555-4556",
+      "quote": "Field history tracking data doesn’t count against your data storage limits.",
+      "wrong_source": "skill before audit: 'history records count toward data storage' with 2 KB arithmetic"
+    },
+    {
+      "id": "person-account-triggers",
+      "skill": "data/person-accounts",
+      "question": "When a person account record is inserted or updated, which triggers fire: Account triggers, Contact triggers, or both?",
+      "wrong_answer": "Both, because a person account is an Account with a hidden Contact; write the Contact trigger to skip PersonContacts.",
+      "correct_answer": "Account triggers only. Inserts, updates, and deletes on person accounts fire Account triggers, not Contact triggers.",
+      "source": "salesforce_apex_developer_guide.txt 264 L15724",
+      "quote": "Inserts, updates, and deletes on person accounts fire Account triggers, not Contact triggers.",
+      "wrong_source": "skill before audit: Contact trigger pattern skipping PersonContacts"
+    },
+    {
+      "id": "profile-deploy-overlay",
+      "skill": "devops/permission-set-deployment-ordering",
+      "question": "When you deploy Profile metadata to a target org, does it replace the profile's existing settings or overlay them?",
+      "wrong_answer": "It is a full replace: any field permission not in the file is cleared in the target.",
+      "correct_answer": "It overlays the existing settings. Disabled permissions are not exported, so to force a disablement you add it explicitly with <value>false</value>.",
+      "source": "api_meta.txt 264 L100265",
+      "quote": "We designed Profile metadata deployment to overlay the existing Profile settings in a target org.",
+      "wrong_source": "skill before audit: 'Profile deploy is a full-replace that clears FLS'"
+    },
+    {
+      "id": "deployments-queue",
+      "skill": "devops/pre-deployment-checklist",
+      "question": "What happens if you start a second Metadata API deployment while one is already running in the same org?",
+      "wrong_answer": "The second fails immediately with a lock contention error.",
+      "correct_answer": "It is queued. Only one deployment runs at a time; queued deployments appear under Pending Deployments and are not necessarily executed in submission order.",
+      "source": "api_meta.txt 264 L4246-4247",
+      "quote": "You can initiate multiple deployments, but only one deployment can run at a time. The other deployments remain in the queue waiting",
+      "wrong_source": "skill before audit: 'a second validation fails with a lock contention error'"
+    },
+    {
+      "id": "custom-notification-hourly-cap",
+      "skill": "flow/flow-email-and-notifications",
+      "question": "How many custom notification actions can a subscriber org execute per hour?",
+      "wrong_answer": "1,000 per hour.",
+      "correct_answer": "10,000 notification actions per hour.",
+      "source": "pkg2_dev.txt 264 L5916",
+      "quote": "A subscriber org can execute up to 10,000 notification actions per hour.",
+      "wrong_source": "skill before audit: '1,000/hour' in ~10 places"
+    },
+    {
+      "id": "package-versionnumber-build",
+      "skill": "devops/salesforce-dx-project-structure",
+      "question": "What is the format of versionNumber in sfdx-project.json for a package, and where does the keyword NEXT go?",
+      "wrong_answer": "MAJOR.MINOR.PATCH.NEXT is the only valid form; NEXT must always be the fourth segment.",
+      "correct_answer": "MAJOR.MINOR.PATCH.BUILD, for example 1.2.1.8; NEXT may be used in the BUILD slot to auto-increment, but an explicit build number is also valid.",
+      "source": "sfdx_dev.txt 264 L14868",
+      "quote": "formatted as MAJOR.MINOR.PATCH.BUILD. For example, 1.2.1.8.",
+      "wrong_source": "skill before audit and its checker: 'NEXT only', flagged the guide's own 1.2.1.8"
+    },
+    {
+      "id": "remote-site-for-hardcoded-endpoint",
+      "skill": "integration/named-credentials-setup",
+      "question": "If Apex calls out to a hard-coded URL instead of a Named Credential, what must exist for the callout to succeed?",
+      "wrong_answer": "Nothing extra: hard-coded endpoints bypass callout enforcement, which is why they are risky.",
+      "correct_answer": "The site must be registered in Remote Site Settings or the callout fails; only a Named Credential endpoint needs no remote site setting.",
+      "source": "salesforce_apex_developer_guide.txt 264 L34727",
+      "quote": "Before any Apex callout can call an external site, that site must be registered in the Remote Site Settings page, or the",
+      "wrong_source": "skill before audit: 'hard-coded endpoints bypass callout enforcement'"
+    },
+    {
+      "id": "packaged-named-credential-secrets",
+      "skill": "integration/named-credentials-setup",
+      "question": "When a Named Credential or External Credential is included in a managed package, are its tokens and secrets packaged with it?",
+      "wrong_answer": "Yes, the credential definition including its stored token travels with the package metadata.",
+      "correct_answer": "No. The Metadata API cannot fully expose a credential's definition or render tokens in plain text, so packaged credentials do not include the secrets.",
+      "source": "pkg2_dev.txt 264 L9543-9544",
+      "quote": "the standard Metadata API can’t fully expose the definition of a",
+      "wrong_source": "skill before audit: the claim was marked unverifiable in 4 places"
+    },
+    {
+      "id": "abf-recalculates-automatically",
+      "skill": "integration/manufacturing-cloud-setup",
+      "question": "In Manufacturing Cloud Advanced Account Forecasting, is a forecast set recalculated automatically, and what controls how often?",
+      "wrong_answer": "No. Recalculation is never automatic; you run a Data Processing Engine job nightly by hand.",
+      "correct_answer": "Yes. AdvAccountForecastSet.calculationFrequency sets the frequency at which the forecast set is recalculated automatically (Weekly, Monthly, Quarterly or Yearly).",
+      "source": "api_meta.txt 264 L16757",
+      "quote": "The frequency at which the forecast set is recalculated automatically.",
+      "wrong_source": "skill before audit: 'ABF recalc is nightly via DPE, no automatic run'"
+    },
+    {
+      "id": "sharing-deferral-manual-recalc",
+      "skill": "data/sharing-recalculation-performance",
+      "question": "After you suspend sharing rule calculations for a bulk load and then resume them, does Salesforce automatically bring sharing back in line?",
+      "wrong_answer": "Yes. Clearing the deferral collapses all pending changes into one recalculation job that runs automatically.",
+      "correct_answer": "No. After resuming, you must manually initiate a full sharing rule recalculation to prevent errors.",
+      "source": "salesforce_security_impl_guide.txt 262 L3533-3534",
+      "quote": "you must resume sharing rule",
+      "wrong_source": "skill before audit: 'clearing deferral collapses into one job' in 9 places"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+**10,000 custom notification actions per hour** for a subscriber org, as I recall it from the Send Custom Notification invocable action docs. I'm answering from memory with no docs access, so check the current number in the Invocable Actions reference or the Custom Notifications considerations in Help before you design around it.
+
+Things to keep in mind:
+
+- **Each execution counts.** A flow or process that calls the action in a bulk-triggered, record-triggered or scheduled context can use up the hourly allowance quickly. Don't call it once per record in a large data load.
+- **Recipients are a separate limit.** A single action can target a limited number of recipients (I recall 500 per action), so for large audiences you would have to split them up.
+- **Design for failure.** Once you hit the hourly cap, further calls fail. In flows, add a fault path so a failed notification doesn't roll back or block the main transaction.
+- **Reduce calls where possible.** Consolidate notifications, for example one per batch or per owner rather than one per record, or use a digest approach.

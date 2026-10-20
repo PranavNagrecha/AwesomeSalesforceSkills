@@ -1,0 +1,19 @@
+**It overlays.** A Profile deploy is designed to overlay the existing profile settings in the target org rather than replace them (api_meta 264 L100265-100268). That is the opposite of how permission sets behave.
+
+**What overlay means in practice**
+- A permission that is disabled or absent is not exported in the profile XML. If you deploy XML that simply omits a permission, the target keeps whatever it already has.
+- To revoke something, say so explicitly, for example `<value>false</value>` on the permission entry.
+- Some removals need their own explicit form. Deleting login hours requires an explicit empty `loginHours` tag (L100743-100744).
+- A profile retrieve only carries field-level security for objects included in the same RetrieveRequest (L100261-100263). Retrieve the related objects alongside the profile, or your source XML will be thinner than the org.
+
+**Contrast with permission sets**
+For a PermissionSet, the guide says to include all of its metadata on deploy "to avoid accidentally overwriting the permission set's contents" (L97417-97418). So the risk runs the opposite way:
+- Profile: omitting a permission leaves it in place, so stale grants linger.
+- Permission set: omitting a permission puts it at risk of being lost.
+
+The package's wording of "completely replaces, no merge" and "silent, no warning" for permission sets is its own inference, flagged UNVERIFIED. The guide states the overwrite risk but no field-by-field delete semantics.
+
+**Practical guidance**
+1. Don't assume that deleting a line from profile XML revokes anything in the target. Set `false` explicitly, or manage removals through permission sets.
+2. Retrieve first and diff before deploying, whichever type you're deploying.
+3. After the deploy, retrieve again and confirm the grants you expect.

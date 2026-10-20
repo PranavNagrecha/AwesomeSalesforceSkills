@@ -1,0 +1,1 @@
+If Apex calls out to a hard-coded URL instead of a Named Credential, what must exist for the callout to succeed?

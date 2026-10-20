@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "In `versionNumber` you either give a literal number or the keyword `NEXT`.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058052,
+    "duration_s": 2.318,
+    "input_tokens": 7145,
+    "output_tokens": 45
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"In `versionNumber` you either give a literal number or the keyword `NEXT`.\"}",
+  "prompt_sha": "816fabedccb46096"
+}

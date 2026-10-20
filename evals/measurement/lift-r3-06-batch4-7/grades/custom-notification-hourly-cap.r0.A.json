@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**10,000 custom notification actions per hour** for a subscriber org, as I recall it from the Send Custom Notification invocable action docs.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0555887,
+    "duration_s": 1.773,
+    "input_tokens": 6767,
+    "output_tokens": 63
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**10,000 custom notification actions per hour** for a subscriber org, as I recall it from the Send Custom Notification invocable action docs.\"}",
+  "prompt_sha": "c0b1317987a30d08"
+}

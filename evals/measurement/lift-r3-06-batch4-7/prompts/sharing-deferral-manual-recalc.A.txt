@@ -1,0 +1,1 @@
+After you suspend sharing rule calculations for a bulk load and then resume them, does Salesforce automatically bring sharing back in line?

@@ -1,0 +1,20 @@
+You are an eval grader checking ONE fact. Below is a practitioner question, the CORRECT fact, the WRONG fact a careless answer would give, and a candidate answer.
+Decide what the candidate answer asserts about that fact:
+- "correct": it states the correct fact (extra detail is fine).
+- "wrong": it asserts the wrong fact, or something that contradicts the correct fact.
+- "neither": it states neither, is silent on the point, or hedges without committing. If it asserts both, judge by what it finally tells the reader to do or believe; if that is unclear, answer neither.
+Ignore style, length and everything else. Do not use outside knowledge to overrule the CORRECT fact given here.
+Reply with ONLY strict JSON, no prose, no code fence:
+{"verdict": "correct" | "wrong" | "neither", "quote": "<the sentence of the candidate answer you judged, copied verbatim; empty if neither>"}
+
+=== QUESTION ===
+When you deploy Profile metadata to a target org, does it replace the profile's existing settings or overlay them?
+
+=== CORRECT FACT ===
+It overlays the existing settings. Disabled permissions are not exported, so to force a disablement you add it explicitly with <value>false</value>.
+
+=== WRONG FACT ===
+It is a full replace: any field permission not in the file is cleared in the target.
+
+=== CANDIDATE ANSWER ===
+[CANDIDATE ANSWER GOES HERE]

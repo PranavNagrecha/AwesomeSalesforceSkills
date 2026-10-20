@@ -1,0 +1,9 @@
+**No.** Field history tracking data does not count against your org's data storage limit. The Salesforce Security Guide says so directly: "Field history tracking data doesn't count against your data storage limits" (secguide 262 L4555-4556). The same statement is repeated at L4634-4635 and, in the Field Audit Trail context, at L4755-4756.
+
+**Why this matters:**
+- Earlier versions of this skill had it backwards. Don't list history objects (e.g., `AccountHistory`, `OpportunityFieldHistory`) as a storage-reclamation target, and don't assume they explain a data storage alert.
+- A tracked high-volume object can accumulate millions of history rows without moving the data storage number. Look at the actual consumers in Setup > Storage Usage instead. Common ones are Task/Event, EmailMessage, custom log tables, and objects with dense Long Text Area content.
+
+**Retention is a separate issue:** without Field Audit Trail, history is kept for up to 18 months in the UI and up to 24 months via the API (secguide 262 L4553-4554). That is a compliance or retention question, not a storage one. For details, see the data/field-history-tracking skill.
+
+**Caveat:** the corpus supports the "doesn't count" statement, but I haven't verified anything about per-object storage reporting for history objects beyond it. If the Storage Usage page seems to contradict this for your org, read the per-object breakdown there as the source of truth.

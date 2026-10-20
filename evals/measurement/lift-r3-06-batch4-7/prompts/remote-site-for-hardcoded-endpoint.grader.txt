@@ -1,0 +1,20 @@
+You are an eval grader checking ONE fact. Below is a practitioner question, the CORRECT fact, the WRONG fact a careless answer would give, and a candidate answer.
+Decide what the candidate answer asserts about that fact:
+- "correct": it states the correct fact (extra detail is fine).
+- "wrong": it asserts the wrong fact, or something that contradicts the correct fact.
+- "neither": it states neither, is silent on the point, or hedges without committing. If it asserts both, judge by what it finally tells the reader to do or believe; if that is unclear, answer neither.
+Ignore style, length and everything else. Do not use outside knowledge to overrule the CORRECT fact given here.
+Reply with ONLY strict JSON, no prose, no code fence:
+{"verdict": "correct" | "wrong" | "neither", "quote": "<the sentence of the candidate answer you judged, copied verbatim; empty if neither>"}
+
+=== QUESTION ===
+If Apex calls out to a hard-coded URL instead of a Named Credential, what must exist for the callout to succeed?
+
+=== CORRECT FACT ===
+The site must be registered in Remote Site Settings or the callout fails; only a Named Credential endpoint needs no remote site setting.
+
+=== WRONG FACT ===
+Nothing extra: hard-coded endpoints bypass callout enforcement, which is why they are risky.
+
+=== CANDIDATE ANSWER ===
+[CANDIDATE ANSWER GOES HERE]

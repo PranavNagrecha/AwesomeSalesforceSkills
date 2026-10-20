@@ -1,0 +1,30 @@
+**Account triggers fire, not Contact triggers.**
+
+The Apex Developer Guide (the skill cites apexdev 264 L15724) states: "Inserts, updates, and deletes on person accounts fire Account triggers, not Contact triggers." This applies even though a person account has an underlying PersonContact record, which is system-managed and linked via `PersonContactId`.
+
+**Practical consequences**
+
+1. **Put person-account logic in the Account trigger.** Branch on `IsPersonAccount`, or on `RecordTypeId` in `before insert`:
+
+```apex
+trigger AccountTrigger on Account (before insert, before update) {
+    for (Account a : Trigger.new) {
+        if (a.IsPersonAccount) {
+            // PersonEmail, PersonPhone, etc.
+        } else {
+            // business account logic
+        }
+    }
+}
+```
+
+2. **A Contact trigger never sees person records.** A guard like `c.Account.IsPersonAccount` inside a Contact trigger is dead code for that purpose. It also reads a relationship field that `Trigger.new` doesn't populate.
+
+3. **Record type changes are a gap.** Per the same docs (apexdev 264 L15748-15749), update triggers don't fire when a record's type changes between business and person account. If you rely on triggers to react to that conversion, you need another mechanism.
+
+4. **Queries still return PersonContacts.** Triggers are only part of the picture. Batch or queueable code that runs `SELECT ... FROM Contact` will return PersonContact records. Filter with `WHERE IsPersonAccount = false` (the field exists on Contact) or `Account.IsPersonAccount = false`.
+
+**Caveats**
+
+- `IsPersonAccount` in `before insert` is not documented either way in the corpus. It is read-only and defaulted on create. The safe approach is to check whether `RecordTypeId` is a person account record type.
+- Schema field tokens aren't available for person account fields (`Schema.Account.fieldname` throws), so reference them as strings (apexdev 264 L11034-11035).

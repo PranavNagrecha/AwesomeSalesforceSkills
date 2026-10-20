@@ -1,0 +1,32 @@
+**Short answer: Account triggers fire, and Contact triggers do not.** A person account is stored as a single Account record (with `IsPersonAccount = true`). Salesforce also maintains a hidden, linked Contact record behind it, but that Contact doesn't run your Contact triggers.
+
+## What actually happens
+
+- **Insert/update of a person account** → `before/after insert` and `before/after update` fire on **Account** only.
+- The platform-managed "PersonContact" is created and kept in sync internally. Apex triggers, and also flows and workflow rules, don't fire for that Contact in response to person account DML.
+- **Delete** → Account delete triggers fire.
+
+## Caveats
+
+1. **Contact triggers fire only for real Contact DML.** If your code does DML directly on the PersonContact record (via its `PersonContactId`), Contact triggers can fire. Usually you shouldn't do this.
+2. **Fields are merged on the Account.** Contact-style fields appear on Account with a `__pc` suffix for custom fields (`Birthdate__pc`) and the `Person` prefix for standard ones (`PersonEmail`, `PersonMobilePhone`, `PersonBirthdate`). In an Account trigger, read and write these, not Contact fields.
+3. **Mixed Business and Person Accounts.** Triggers on Account fire for both. Always guard with `IsPersonAccount`:
+
+```apex
+trigger AccountTrigger on Account (before insert, before update) {
+    for (Account a : Trigger.new) {
+        if (a.IsPersonAccount) {
+            // person-account-specific logic
+            // e.g. a.PersonEmail, a.FirstName, a.LastName
+        } else {
+            // business account logic
+        }
+    }
+}
+```
+
+4. **Compile-time dependency.** Referencing `IsPersonAccount` or `Person*` fields in Apex only compiles in orgs with Person Accounts enabled. For code that must deploy to orgs both with and without them, use dynamic access (`a.get('IsPersonAccount')`, `SObject.isSet`/describe checks).
+5. **Cross-object logic that expects Contact triggers.** If you have Contact-trigger logic (e.g. roll-ups, sync to an external system) that you want applied to person accounts, you must duplicate or call it from the Account trigger. A shared handler class that accepts the relevant field values works well.
+6. **Relationship queries.** SOQL against Contact returns person-account contacts too (they have `AccountId` set and `Account.IsPersonAccount = true`), which can surprise code that assumes Contacts are only children of business accounts. Filter with `Account.IsPersonAccount = false` if needed.
+
+I'm confident about the core behavior (Account triggers only). I'd verify edge cases such as direct PersonContact DML in a sandbox for your API version before depending on them.

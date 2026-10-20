@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**It overlays (merges).** A Profile deploy is additive and does not replace the profile wholesale.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0597006,
+    "duration_s": 2.163,
+    "input_tokens": 7294,
+    "output_tokens": 51
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**It overlays (merges).** A Profile deploy is additive and does not replace the profile wholesale.\"}",
+  "prompt_sha": "a8407d85963b4f5c"
+}

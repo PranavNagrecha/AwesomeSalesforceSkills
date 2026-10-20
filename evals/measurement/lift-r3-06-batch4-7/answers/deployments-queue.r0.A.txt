@@ -1,0 +1,28 @@
+Short answer: the second deployment doesn't fail outright, it **queues**. Salesforce runs only one deployment at a time per org (for deployments that lock metadata), so the new one waits in the queue until the active one finishes.
+
+**What you'll see**
+
+- In Setup → Deployment Status, the second deployment appears under **Pending Deployments** (in the queue) while the first is under **In Progress**.
+- Via the Metadata API, `checkDeployStatus()` / `DeployResult` on the second one reports a status of `Pending` until it gets its turn, then moves to `InProgress`, then `Succeeded`/`Failed`.
+- With the CLI (`sf project deploy start`), the second command just waits and polls, and may hit your `--wait` timeout while it's still queued. A timeout there does not cancel the deployment; it keeps going in the org. Resume with `sf project deploy resume --job-id <id>`.
+
+**Queue behavior to know about**
+
+- Queued deployments run in the order submitted (first in, first out).
+- A **validation-only** (check-only) deploy (`checkOnly=true`) does not commit changes, but it still goes through the same queue and can wait behind, or hold up, other deployments. Don't assume validations run in parallel.
+- Deployments that run Apex tests can take a long time, so a long-running first deployment can hold up everything behind it. Since the queue is serial, a stuck or slow deploy is a common cause of "my deploy has been Pending for ages."
+- Quick-deploy of a previously validated package also queues like any other deployment.
+
+**Related gotchas**
+
+- Running tests concurrently is a separate issue: a deployment's test run and other Apex test runs in the org (for example, someone running tests from the Developer Console) can compete for the same test execution resources, which slows things down or causes `UNABLE_TO_LOCK_ROW`-style failures in tests that touch the same records.
+- Some operations can fail rather than queue if they conflict with a running deploy. Examples include a package install or Apex class compile triggered while the deploy holds the metadata lock. In those cases you get a message like "deployment already in progress" or the operation is blocked until the deploy completes.
+- You can **cancel** a pending or in-progress deployment from Setup → Deployment Status (Cancel button) or with `sf project deploy cancel --job-id <id>`. Cancelling the first lets the queued one start.
+
+**Practical advice for CI/CD**
+
+- Serialize your pipelines per org (for example, a concurrency group in GitHub Actions or a lock in your CI tool) so you don't stack up queued deployments and mysterious timeouts.
+- Set `--wait` high enough to cover queue time plus run time, or use async deploy and poll by job ID.
+- If a deployment sits in Pending, check Deployment Status for a long-running or stuck deploy ahead of it before resubmitting, since resubmitting just adds another entry to the queue.
+
+I'm confident about the queuing and FIFO behavior; the exact wording of the blocking errors for non-deploy operations varies by operation, so treat those messages as approximate.

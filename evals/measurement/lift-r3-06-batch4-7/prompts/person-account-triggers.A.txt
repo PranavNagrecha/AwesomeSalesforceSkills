@@ -1,0 +1,1 @@
+When a person account record is inserted or updated, which triggers fire: Account triggers, Contact triggers, or both?

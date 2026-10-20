@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "A Profile deploy is designed to overlay the existing profile settings in the target org rather than replace them (api_meta 264 L100265-100268).",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0585001,
+    "duration_s": 4.452,
+    "input_tokens": 7089,
+    "output_tokens": 65
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"A Profile deploy is designed to overlay the existing profile settings in the target org rather than replace them (api_meta 264 L100265-100268).\"}",
+  "prompt_sha": "06b6b5cb431a0e1d"
+}

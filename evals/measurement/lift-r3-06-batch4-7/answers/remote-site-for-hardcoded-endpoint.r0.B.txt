@@ -1,0 +1,40 @@
+The endpoint must be registered as a **Remote Site Setting** (Setup > Security > Remote Site Settings) in the org running the Apex. Without it, the callout fails. The skill's grounding (apexdev 264 L34727-34731, L34761-34763) says a hard-coded endpoint has to be registered there, while a Named Credential endpoint needs no remote site setting.
+
+**What that means in practice**
+
+- Register the base URL, for example `https://api.example.com`, and keep the entry active.
+- Do this in every org the code runs in. Remote Site Settings are metadata (`RemoteSiteSetting`), so they can be deployed, but they are still a separate artifact to keep in sync.
+- The Apex looks like this:
+
+```apex
+HttpRequest req = new HttpRequest();
+req.setEndpoint('https://api.example.com/v1/data'); // needs the Remote Site Setting
+req.setMethod('GET');
+HttpResponse res = new Http().send(req);
+```
+
+**Authentication is not covered**
+
+A Remote Site Setting only permits the callout. It does nothing for authentication, so your code has to supply it, as in the following:
+
+```apex
+req.setHeader('Authorization', 'Bearer ' + token);
+```
+
+That means the token or secret must live somewhere your code can reach: Apex, Custom Settings, or Custom Metadata. This is why the skill's anti-pattern 2 flags hard-coded endpoints. Rotating a secret then requires a code or data change.
+
+**With a Named Credential**
+
+```apex
+req.setEndpoint('callout:My_Named_Credential/v1/data');
+```
+
+- No Remote Site Setting is needed.
+- Salesforce manages authentication (apexdev 264 L34744-34747), so your code carries no secrets.
+- For the enhanced model, the calling user needs a permission set that enables the External Credential principal (`externalCredentialPrincipalAccesses`).
+
+**Caveat**
+
+The corpus does not state the exact error text when the Remote Site Setting is missing, only that the callout fails. Don't rely on a specific message in tests or runbooks.
+
+For anything beyond a throwaway integration, prefer the Named Credential.

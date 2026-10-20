@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "For Advanced Account Forecasting, the forecast set is recalculated automatically. The `calculationFrequency` field on the `AdvAccountForecastSet` metadata type controls how often.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.059128,
+    "duration_s": 1.912,
+    "input_tokens": 7192,
+    "output_tokens": 80
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"For Advanced Account Forecasting, the forecast set is recalculated automatically. The `calculationFrequency` field on the `AdvAccountForecastSet` metadata type controls how often.\"}",
+  "prompt_sha": "3d480d8c122e921b"
+}

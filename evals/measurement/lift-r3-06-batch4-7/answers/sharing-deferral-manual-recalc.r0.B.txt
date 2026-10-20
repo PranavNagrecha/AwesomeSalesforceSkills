@@ -1,0 +1,19 @@
+**No, not automatically.** After you resume sharing rule calculations, you have to manually start a full sharing rule recalculation. The Salesforce Security Guide says that after deferral "you must resume sharing rule calculations and manually initiate a full sharing rule recalculation" (secguide 262 L3533-3534).
+
+**What to do**
+
+1. Suspend group membership and sharing rule calculation. This permission covers those two processes, and the Large Data Volumes guide describes it as the way to avoid very long sharing rule evaluations or timeouts during large configuration changes or loads (ldv 264 L595-602).
+2. Run the load or make the structural changes.
+3. Resume calculations.
+4. Start the full recalculation yourself. The Recalculate button is disabled while calculations are deferred (secguide 262 L3545), so resume first.
+5. Watch progress on Setup > Background Jobs (secguide 262 L3541-3542). If Apex managed sharing is involved, also watch Apex Jobs.
+
+**Caveats**
+
+- Earlier versions of this skill said that clearing deferral collapses all queued changes into one automatic job. The guide contradicts that, so don't rely on it.
+- While recalculation runs you can't change org-wide defaults, and you can't modify sharing rules while an OWD recalculation is running (secguide 262 L3585-3586).
+- Access can be inconsistent while deferral is active. I couldn't confirm this from the guides I have, so treat it as unverified, but plan as though users may see too much or too little until the recalculation finishes.
+- If any affected object uses Apex managed sharing, confirm a `Database.Batchable` recalculation class is associated with the object (Apex Sharing Recalculations related list). That class is run when the OWD changes (apexdev 264 L13071-13072). Whether grants are silently dropped without one is unverified, so test it in a sandbox.
+- For loads, the guide also suggests loading with Public Read/Write where possible and adding sharing rules one at a time, letting each finish before the next (ldv 264 L852-853, L862-870).
+
+**Bottom line:** Treat resume as step one of two. Resume, then manually initiate the full recalculation, and don't call the load done until the Background Jobs entry completes.

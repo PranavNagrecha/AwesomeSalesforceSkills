@@ -1,0 +1,17 @@
+**Yes.** For Advanced Account Forecasting, the forecast set is recalculated automatically. The `calculationFrequency` field on the `AdvAccountForecastSet` metadata type controls how often.
+
+- **Allowed values:** Weekly, Monthly, Quarterly or Yearly.
+- **Default:** Monthly.
+- **Availability:** `AdvAccountForecastSet` is API 53.0+ and requires the Manufacturing Cloud feature setting.
+- **Source:** this comes from the metadata reference (meta 264 L16733, L16737, L16754-16763), the one place the skill package grounds this claim.
+
+**Practical consequences**
+
+- **Set the frequency deliberately.** If Monthly is too coarse for your planning cadence, change `calculationFrequency` to Weekly rather than building a job. The longest and shortest options are Yearly and Weekly, so nightly or real-time recalculation is not an option on this field.
+- **Don't expect an empty forecast on day one just because you haven't activated a DPE job.** That "go-live failure" in the skill's gotcha 1 and anti-pattern 3 applies to the legacy Account-Based Forecasting DPE definition, not to an advanced forecast set. Check which forecasting model the org actually uses before writing the runbook.
+- **Stale numbers between runs are expected.** The forecast only moves at the configured frequency, so a Monthly set can legitimately lag orders placed mid-period.
+
+**Caveats**
+
+- The skill's claims that legacy ABF recalc is opt-in, that the DPE definition has a particular Setup path or name, and that it is "typically nightly" are marked UNVERIFIED in the package. Confirm them in the org's Setup UI before relying on them.
+- The metadata reference gives the values and the default, but I can't confirm from this package exactly when within the period the run fires, or how to trigger an ad hoc recalculation. Test that in a sandbox if it matters for go-live.

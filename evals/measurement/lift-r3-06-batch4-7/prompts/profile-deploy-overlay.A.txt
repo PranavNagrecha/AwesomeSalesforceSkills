@@ -1,0 +1,1 @@
+When you deploy Profile metadata to a target org, does it replace the profile's existing settings or overlay them?

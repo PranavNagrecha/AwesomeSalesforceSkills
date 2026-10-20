@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "After you resume sharing rule calculations, you have to manually start a full sharing rule recalculation.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.05918210000000001,
+    "duration_s": 1.446,
+    "input_tokens": 7245,
+    "output_tokens": 49
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"After you resume sharing rule calculations, you have to manually start a full sharing rule recalculation.\"}",
+  "prompt_sha": "15e9a2577d44b241"
+}

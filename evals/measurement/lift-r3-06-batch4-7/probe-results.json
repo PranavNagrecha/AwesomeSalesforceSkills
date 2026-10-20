@@ -1,0 +1,534 @@
+{
+  "answer_model": "sonnet",
+  "grader_model": "opus",
+  "repeats": 1,
+  "probes": [
+    {
+      "id": "field-history-storage",
+      "skill": "data/data-storage-management",
+      "source": "salesforce_security_impl_guide.txt 262 L4555-4556",
+      "runs": [
+        {
+          "A": {
+            "answer": "**No. Standard field history tracking data does not count against your org's data storage limit.** The history records (`AccountHistory`, `OpportunityHistory`, `MyObject__History`, and so on) are stored separately and aren't included in the storage usage figure. Field Audit Trail data also doesn't count against data storage. It is archived to the `FieldHistoryArchive` big object, which has its own limits.\n\nSome caveats:\n\n- **Limits still apply, just different ones.** You can track up to 20 fields per object. With the Field Audit Trail add-on this goes up to 60 fields per object. Standard history is retained for 18 months in the UI and 24 months via the API or reports. Field Audit Trail lets you define a retention policy of up to 10 years.\n- **Don't confuse it with other storage-consuming data.** Related things that do count toward data storage are the records themselves, and in some cases `Task` and `Event` records. Field history of a tracked field doesn't add to that, but a custom object you build to hand-roll audit logging does.\n- **Deleting the parent record deletes its history.** History is not a long-term audit store without Field Audit Trail, or an external export or archive.\n- **The numbers may change.** Storage accounting rules are occasionally adjusted. To confirm for your org, compare **Setup > Storage Usage** before and after enabling tracking on a high-volume object. The \"Data and File Storage Allocations\" help article also lists what is counted.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "No. Standard field history tracking data does not count against your org's data storage limit.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0900661,
+            "duration_s": 9.423,
+            "tokens": {
+              "input": 13024,
+              "output": 946
+            }
+          },
+          "B": {
+            "answer": "**No.** Field history tracking data does not count against your org's data storage limit. The Salesforce Security Guide says so directly: \"Field history tracking data doesn't count against your data storage limits\" (secguide 262 L4555-4556). The same statement is repeated at L4634-4635 and, in the Field Audit Trail context, at L4755-4756.\n\n**Why this matters:**\n- Earlier versions of this skill had it backwards. Don't list history objects (e.g., `AccountHistory`, `OpportunityFieldHistory`) as a storage-reclamation target, and don't assume they explain a data storage alert.\n- A tracked high-volume object can accumulate millions of history rows without moving the data storage number. Look at the actual consumers in Setup > Storage Usage instead. Common ones are Task/Event, EmailMessage, custom log tables, and objects with dense Long Text Area content.\n\n**Retention is a separate issue:** without Field Audit Trail, history is kept for up to 18 months in the UI and up to 24 months via the API (secguide 262 L4553-4554). That is a compliance or retention question, not a storage one. For details, see the data/field-history-tracking skill.\n\n**Caveat:** the corpus supports the \"doesn't count\" statement, but I haven't verified anything about per-object storage reporting for history objects beyond it. If the Storage Usage page seems to contradict this for your org, read the per-object breakdown there as the source of truth.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "Field history tracking data does not count against your org's data storage limit.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1331081,
+            "duration_s": 11.391,
+            "tokens": {
+              "input": 24627,
+              "output": 518
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "person-account-triggers",
+      "skill": "data/person-accounts",
+      "source": "salesforce_apex_developer_guide.txt 264 L15724",
+      "runs": [
+        {
+          "A": {
+            "answer": "**Short answer: Account triggers fire, and Contact triggers do not.** A person account is stored as a single Account record (with `IsPersonAccount = true`). Salesforce also maintains a hidden, linked Contact record behind it, but that Contact doesn't run your Contact triggers.\n\n## What actually happens\n\n- **Insert/update of a person account** \u2192 `before/after insert` and `before/after update` fire on **Account** only.\n- The platform-managed \"PersonContact\" is created and kept in sync internally. Apex triggers, and also flows and workflow rules, don't fire for that Contact in response to person account DML.\n- **Delete** \u2192 Account delete triggers fire.\n\n## Caveats\n\n1. **Contact triggers fire only for real Contact DML.** If your code does DML directly on the PersonContact record (via its `PersonContactId`), Contact triggers can fire. Usually you shouldn't do this.\n2. **Fields are merged on the Account.** Contact-style fields appear on Account with a `__pc` suffix for custom fields (`Birthdate__pc`) and the `Person` prefix for standard ones (`PersonEmail`, `PersonMobilePhone`, `PersonBirthdate`). In an Account trigger, read and write these, not Contact fields.\n3. **Mixed Business and Person Accounts.** Triggers on Account fire for both. Always guard with `IsPersonAccount`:\n\n```apex\ntrigger AccountTrigger on Account (before insert, before update) {\n    for (Account a : Trigger.new) {\n        if (a.IsPersonAccount) {\n            // person-account-specific logic\n            // e.g. a.PersonEmail, a.FirstName, a.LastName\n        } else {\n            // business account logic\n        }\n    }\n}\n```\n\n4. **Compile-time dependency.** Referencing `IsPersonAccount` or `Person*` fields in Apex only compiles in orgs with Person Accounts enabled. For code that must deploy to orgs both with and without them, use dynamic access (`a.get('IsPersonAccount')`, `SObject.isSet`/describe checks).\n5. **Cross-object logic that expects Contact triggers.** If you have Contact-trigger logic (e.g. roll-ups, sync to an external system) that you want applied to person accounts, you must duplicate or call it from the Account trigger. A shared handler class that accepts the relevant field values works well.\n6. **Relationship queries.** SOQL against Contact returns person-account contacts too (they have `AccountId` set and `Account.IsPersonAccount = true`), which can surprise code that assumes Contacts are only children of business accounts. Filter with `Account.IsPersonAccount = false` if needed.\n\nI'm confident about the core behavior (Account triggers only). I'd verify edge cases such as direct PersonContact DML in a sandbox for your API version before depending on them.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**Short answer: Account triggers fire, and Contact triggers do not.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09505159999999999,
+            "duration_s": 11.761999999999999,
+            "tokens": {
+              "input": 13567,
+              "output": 1001
+            }
+          },
+          "B": {
+            "answer": "**Account triggers fire, not Contact triggers.**\n\nThe Apex Developer Guide (the skill cites apexdev 264 L15724) states: \"Inserts, updates, and deletes on person accounts fire Account triggers, not Contact triggers.\" This applies even though a person account has an underlying PersonContact record, which is system-managed and linked via `PersonContactId`.\n\n**Practical consequences**\n\n1. **Put person-account logic in the Account trigger.** Branch on `IsPersonAccount`, or on `RecordTypeId` in `before insert`:\n\n```apex\ntrigger AccountTrigger on Account (before insert, before update) {\n    for (Account a : Trigger.new) {\n        if (a.IsPersonAccount) {\n            // PersonEmail, PersonPhone, etc.\n        } else {\n            // business account logic\n        }\n    }\n}\n```\n\n2. **A Contact trigger never sees person records.** A guard like `c.Account.IsPersonAccount` inside a Contact trigger is dead code for that purpose. It also reads a relationship field that `Trigger.new` doesn't populate.\n\n3. **Record type changes are a gap.** Per the same docs (apexdev 264 L15748-15749), update triggers don't fire when a record's type changes between business and person account. If you rely on triggers to react to that conversion, you need another mechanism.\n\n4. **Queries still return PersonContacts.** Triggers are only part of the picture. Batch or queueable code that runs `SELECT ... FROM Contact` will return PersonContact records. Filter with `WHERE IsPersonAccount = false` (the field exists on Contact) or `Account.IsPersonAccount = false`.\n\n**Caveats**\n\n- `IsPersonAccount` in `before insert` is not documented either way in the corpus. It is read-only and defaulted on create. The safe approach is to check whether `RecordTypeId` is a person account record type.\n- Schema field tokens aren't available for person account fields (`Schema.Account.fieldname` throws), so reference them as strings (apexdev 264 L11034-11035).",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**Account triggers fire, not Contact triggers.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1422637,
+            "duration_s": 7.707000000000001,
+            "tokens": {
+              "input": 26107,
+              "output": 728
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "profile-deploy-overlay",
+      "skill": "devops/permission-set-deployment-ordering",
+      "source": "api_meta.txt 264 L100265",
+      "runs": [
+        {
+          "A": {
+            "answer": "**It overlays (merges).** A Profile deploy is additive and does not replace the profile wholesale.\n\n**How it behaves**\n- Only the entries in the deployed `.profile-meta.xml` are applied. Anything not in the file is left as it is in the target org.\n- If the file lists `fieldPermissions` for `Account.Foo__c`, only that field's permissions change. Every other field permission on the target profile is untouched.\n- This is why a Profile retrieve looks \"partial\". It only contains entries for the components in your `package.xml` or manifest (plus some always-included items like user permissions), and a deploy of that file only touches those same entries.\n- **Omitting something does not remove it.** To revoke access, include the entry explicitly with `editable=false`, `readable=false`, `enabled=false`, or `visible=false`. Deleting the line from the XML does nothing, and `destructiveChanges.xml` removes components, not permissions on a profile.\n\n**Caveats**\n- **References must resolve.** Every object, field, Apex class, page, or app referenced in the profile must exist in the target org or be in the same deployment. Otherwise the deploy fails with errors like \"no CustomObject named X found\".\n- **Some elements behave more like replace-the-set.** `loginIpRanges` and `loginHours` are the usual ones. Verify them in a sandbox before relying on either behavior.\n- **Defaults are single-valued.** `default` on a record type visibility, app visibility, or layout assignment is one value per scope. Deploying a new default moves it, which can unset the previous one.\n- **Admin and standard profiles are special.** Admin gets many permissions implicitly, and some standard-profile settings can't be changed.\n- **A new profile starts from defaults.** If the profile doesn't exist in the target, the deploy creates it with only what you specified plus system defaults.\n\n**Practical guidance**\n- Commit small, scoped profile files and deploy them alongside the components they reference.\n- To get an exact end state (for example, zeroing out access), express it explicitly with `false` entries. Don't rely on omission.\n- Prefer permission sets or permission set groups for access changes. They use the same overlay semantics but are easier to reason about and diff, and profiles then only carry the minimum (login hours, IP ranges, default app/record type, and similar).\n- Validate with a `--dry-run` / check-only deploy, then diff by retrieving the profile from the target afterward.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**It overlays (merges).** A Profile deploy is additive and does not replace the profile wholesale.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0967529,
+            "duration_s": 13.188,
+            "tokens": {
+              "input": 13398,
+              "output": 1302
+            }
+          },
+          "B": {
+            "answer": "**It overlays.** A Profile deploy is designed to overlay the existing profile settings in the target org rather than replace them (api_meta 264 L100265-100268). That is the opposite of how permission sets behave.\n\n**What overlay means in practice**\n- A permission that is disabled or absent is not exported in the profile XML. If you deploy XML that simply omits a permission, the target keeps whatever it already has.\n- To revoke something, say so explicitly, for example `<value>false</value>` on the permission entry.\n- Some removals need their own explicit form. Deleting login hours requires an explicit empty `loginHours` tag (L100743-100744).\n- A profile retrieve only carries field-level security for objects included in the same RetrieveRequest (L100261-100263). Retrieve the related objects alongside the profile, or your source XML will be thinner than the org.\n\n**Contrast with permission sets**\nFor a PermissionSet, the guide says to include all of its metadata on deploy \"to avoid accidentally overwriting the permission set's contents\" (L97417-97418). So the risk runs the opposite way:\n- Profile: omitting a permission leaves it in place, so stale grants linger.\n- Permission set: omitting a permission puts it at risk of being lost.\n\nThe package's wording of \"completely replaces, no merge\" and \"silent, no warning\" for permission sets is its own inference, flagged UNVERIFIED. The guide states the overwrite risk but no field-by-field delete semantics.\n\n**Practical guidance**\n1. Don't assume that deleting a line from profile XML revokes anything in the target. Set `false` explicitly, or manage removals through permission sets.\n2. Retrieve first and diff before deploying, whichever type you're deploying.\n3. After the deploy, retrieve again and confirm the grants you expect.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "A Profile deploy is designed to overlay the existing profile settings in the target org rather than replace them (api_meta 264 L100265-100268).",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1219968,
+            "duration_s": 13.1,
+            "tokens": {
+              "input": 21221,
+              "output": 659
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "deployments-queue",
+      "skill": "devops/pre-deployment-checklist",
+      "source": "api_meta.txt 264 L4246-4247",
+      "runs": [
+        {
+          "A": {
+            "answer": "Short answer: the second deployment doesn't fail outright, it **queues**. Salesforce runs only one deployment at a time per org (for deployments that lock metadata), so the new one waits in the queue until the active one finishes.\n\n**What you'll see**\n\n- In Setup \u2192 Deployment Status, the second deployment appears under **Pending Deployments** (in the queue) while the first is under **In Progress**.\n- Via the Metadata API, `checkDeployStatus()` / `DeployResult` on the second one reports a status of `Pending` until it gets its turn, then moves to `InProgress`, then `Succeeded`/`Failed`.\n- With the CLI (`sf project deploy start`), the second command just waits and polls, and may hit your `--wait` timeout while it's still queued. A timeout there does not cancel the deployment; it keeps going in the org. Resume with `sf project deploy resume --job-id <id>`.\n\n**Queue behavior to know about**\n\n- Queued deployments run in the order submitted (first in, first out).\n- A **validation-only** (check-only) deploy (`checkOnly=true`) does not commit changes, but it still goes through the same queue and can wait behind, or hold up, other deployments. Don't assume validations run in parallel.\n- Deployments that run Apex tests can take a long time, so a long-running first deployment can hold up everything behind it. Since the queue is serial, a stuck or slow deploy is a common cause of \"my deploy has been Pending for ages.\"\n- Quick-deploy of a previously validated package also queues like any other deployment.\n\n**Related gotchas**\n\n- Running tests concurrently is a separate issue: a deployment's test run and other Apex test runs in the org (for example, someone running tests from the Developer Console) can compete for the same test execution resources, which slows things down or causes `UNABLE_TO_LOCK_ROW`-style failures in tests that touch the same records.\n- Some operations can fail rather than queue if they conflict with a running deploy. Examples include a package install or Apex class compile triggered while the deploy holds the metadata lock. In those cases you get a message like \"deployment already in progress\" or the operation is blocked until the deploy completes.\n- You can **cancel** a pending or in-progress deployment from Setup \u2192 Deployment Status (Cancel button) or with `sf project deploy cancel --job-id <id>`. Cancelling the first lets the queued one start.\n\n**Practical advice for CI/CD**\n\n- Serialize your pipelines per org (for example, a concurrency group in GitHub Actions or a lock in your CI tool) so you don't stack up queued deployments and mysterious timeouts.\n- Set `--wait` high enough to cover queue time plus run time, or use async deploy and poll by job ID.\n- If a deployment sits in Pending, check Deployment Status for a long-running or stuck deploy ahead of it before resubmitting, since resubmitting just adds another entry to the queue.\n\nI'm confident about the queuing and FIFO behavior; the exact wording of the blocking errors for non-deploy operations varies by operation, so treat those messages as approximate.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "Queued deployments run in the order submitted (first in, first out).",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.100944,
+            "duration_s": 15.901,
+            "tokens": {
+              "input": 13595,
+              "output": 1316
+            }
+          },
+          "B": {
+            "answer": "**The second deployment doesn't fail. It waits in a queue.**\n\nThe Metadata API guide says only one deployment runs at a time in an org. Any others wait, and they \"are not necessarily executed in the order in which they were submitted\" (api_meta 264 L4246-4249).\n\n**What this means in practice**\n\n- **Order isn't guaranteed.** If you queue deploy A and then deploy B, B may run first. Don't rely on submission order when the deploys depend on each other, such as schema before logic. Submit one, wait for it to finish, then submit the next.\n- **Validations take a slot too.** A `checkOnly` validation (`sf project deploy validate`) writes nothing, but it still queues like any deployment. A quick deploy (`sf project deploy quick`) is a deployment as well, so a release-window quick deploy can sit behind someone else's job.\n- **Running deploys lock their resources.** The guide says the deployment \"locks write-access to resources getting deployed until deployment completes\" (L4214-4216). That is why it recommends off-peak deploys and limiting or postponing changes while one runs.\n- **Queue wait counts against your window.** A slow job ahead of you can eat the release window, even though your own deploy would be quick.\n\n**What the guide doesn't say**\n\nThe skill marks these as UNVERIFIED, so don't state them as fact:\n\n- that a second operation fails with a lock-contention error, or that a validation takes compile locks on Apex classes. The guide describes queuing, not failure.\n- that a deploy overlapping other activity leaves partial metadata. Production deploys require `rollbackOnError` true (L3252-3255), so a failed deploy rolls back completely.\n\n**What to do**\n\n1. Before starting a validation or deploy, check **Setup \u2192 Deployment Status** for in-progress and queued deployments.\n2. Book the release window and make sure no other pipeline (CI jobs, other teams' change sets, DevOps Center) targets the org then.\n3. Submit one deployment at a time and confirm it completes before the next.\n4. For release day, use validate-then-quick-deploy so your slot is as short as possible.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "The Metadata API guide says only one deployment runs at a time in an org. Any others wait, and they \"are not necessarily executed in the order in which they were submitted\" (api_meta 264 L4246-4249).",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1296002,
+            "duration_s": 9.118,
+            "tokens": {
+              "input": 22115,
+              "output": 1016
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "custom-notification-hourly-cap",
+      "skill": "flow/flow-email-and-notifications",
+      "source": "pkg2_dev.txt 264 L5916",
+      "runs": [
+        {
+          "A": {
+            "answer": "**10,000 custom notification actions per hour** for a subscriber org, as I recall it from the Send Custom Notification invocable action docs. I'm answering from memory with no docs access, so check the current number in the Invocable Actions reference or the Custom Notifications considerations in Help before you design around it.\n\nThings to keep in mind:\n\n- **Each execution counts.** A flow or process that calls the action in a bulk-triggered, record-triggered or scheduled context can use up the hourly allowance quickly. Don't call it once per record in a large data load.\n- **Recipients are a separate limit.** A single action can target a limited number of recipients (I recall 500 per action), so for large audiences you would have to split them up.\n- **Design for failure.** Once you hit the hourly cap, further calls fail. In flows, add a fault path so a failed notification doesn't roll back or block the main transaction.\n- **Reduce calls where possible.** Consolidate notifications, for example one per batch or per owner rather than one per record, or use a digest approach.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**10,000 custom notification actions per hour** for a subscriber org, as I recall it from the Send Custom Notification invocable action docs.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.08862719999999999,
+            "duration_s": 9.148,
+            "tokens": {
+              "input": 12853,
+              "output": 920
+            }
+          },
+          "B": {
+            "answer": "**10,000 notification actions per hour per org.** The Salesforce developer guide states that a subscriber org can execute up to 10,000 notification actions per hour (pkg2_dev 264 L5916). The older figure of 1,000 that circulates is wrong.\n\nA few points that matter in practice:\n\n- **Unit of count:** the limit is on notification *actions*, not recipients. Whether one action fanned out to many users counts as one is not confirmed in the corpus, so verify it before designing around it.\n- **Overflow behavior:** the commonly quoted Help text says that once the cap is hit, no more notifications are sent that hour, unsent ones are lost, and sending resumes the next hour. That is a silent drop, not an exception. I couldn't verify this against the corpus, so treat it as Help-only. Don't rely on a fault connector to detect it. Build your own instrumentation instead, such as a counter object (the `Notification_Log__c` approach in Pattern 3) or a digest design.\n- **Bulk flows:** a 200-record load with several cascading automations that each send a notification can exhaust the budget quickly. Gate bulk sends or aggregate to a digest.\n- **Related caps, not to be confused:** title is 250 characters and body 750 (Apex `CustomNotification` limits). Clients may truncate the displayed text earlier. Email has a separate limit of 5,000 external addresses per day.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**10,000 notification actions per hour per org.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.13471690000000003,
+            "duration_s": 6.64,
+            "tokens": {
+              "input": 25059,
+              "output": 500
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "package-versionnumber-build",
+      "skill": "devops/salesforce-dx-project-structure",
+      "source": "sfdx_dev.txt 264 L14868",
+      "runs": [
+        {
+          "A": {
+            "answer": "**Format:** `major.minor.patch.build`, for example `1.2.0.0`. All four parts are required for a package version in a package directory entry of `sfdx-project.json`.\n\n- **major / minor / patch** are the usual semantic-version parts.\n- **build** is the build number. In `versionNumber` you either give a literal number or the keyword `NEXT`.\n\n**Where `NEXT` goes:** only in the fourth segment, the build number.\n\n```json\n{\n  \"packageDirectories\": [\n    {\n      \"path\": \"force-app\",\n      \"package\": \"MyPackage\",\n      \"versionName\": \"Spring release\",\n      \"versionNumber\": \"1.2.0.NEXT\",\n      \"default\": true\n    }\n  ]\n}\n```\n\nWhen you run `sf package version create`, the CLI replaces `NEXT` with the next available build number for that major.minor.patch. The first build is `0`, and each later build under the same `1.2.0` increments (`1.2.0.1`, `1.2.0.2`, and so on). Because of this, you normally don't edit the build number by hand.\n\n**Notes:**\n- `NEXT` is only valid in the build position. `1.NEXT.0.0` or `NEXT.0.0.0` are not valid.\n- To release a new major, minor, or patch, change those segments by hand (for example `1.3.0.NEXT`). The build counter restarts for that new combination.\n- For unlocked packages, the Beta/Released state is a separate property of the created version, not part of `versionNumber`. Promote with `sf package version promote`.\n- For managed packages, once a version is promoted to Released, its major.minor.patch is locked. Later versions must increase it.\n- `ancestorVersion` (or `ancestorId`) is a separate attribute. It accepts `HIGHEST` and `NONE`, and is also unrelated to `NEXT`.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "In `versionNumber` you either give a literal number or the keyword `NEXT`.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0886635,
+            "duration_s": 9.622,
+            "tokens": {
+              "input": 13246,
+              "output": 653
+            }
+          },
+          "B": {
+            "answer": "**Format:** `MAJOR.MINOR.PATCH.BUILD`, for example `1.2.1.8`. That is four dot-separated segments (sfdx_dev 264 L14867).\n\n**Where NEXT goes:** in the fourth slot, the BUILD segment. `1.2.1.NEXT` tells the CLI to auto-increment the build number each time you create a package version. If you don't use `NEXT`, you must increment `versionNumber` yourself before creating each new package version.\n\n```json\n{\n  \"path\": \"packages/core\",\n  \"package\": \"CoreDataModel\",\n  \"versionName\": \"Spring 25\",\n  \"versionNumber\": \"1.3.0.NEXT\"\n}\n```\n\n**Related points:**\n- A concrete build such as `1.0.0.1` is also valid. It just needs a manual bump. Don't treat `NEXT` as the only legal value in that slot.\n- `LATEST` is a separate keyword for the build slot of a **dependency** version, for example `\"versionNumber\": \"1.3.0.LATEST\"` inside a `dependencies` entry. It picks the latest build of that package. It is not for the package's own `versionNumber`.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "A concrete build such as `1.0.0.1` is also valid. It just needs a manual bump. Don't treat `NEXT` as the only legal value in that slot.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1272793,
+            "duration_s": 5.468999999999999,
+            "tokens": {
+              "input": 23294,
+              "output": 457
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "remote-site-for-hardcoded-endpoint",
+      "skill": "integration/named-credentials-setup",
+      "source": "salesforce_apex_developer_guide.txt 264 L34727",
+      "runs": [
+        {
+          "A": {
+            "answer": "A **Remote Site Setting** (Setup \u2192 Security \u2192 Remote Site Settings) whose URL matches the endpoint's scheme, host, and port. Without it, Apex throws a `System.CalloutException: Unauthorized endpoint, please check Setup->Security->Remote site settings.`\n\n**Details**\n\n- **Match scope:** The setting must cover the endpoint's protocol (`https://`), domain, and port if non-default. Path is not required; the setting covers the whole origin.\n- **Active:** The Remote Site Setting must be marked Active.\n- **Alternative:** A **CSP Trusted Site** does not authorize Apex callouts. It governs browser-side requests from Lightning/Experience Cloud. A Remote Site Setting is what Apex needs. (A Named Credential implicitly authorizes its own endpoint, which is why you don't need one there.)\n- **Protocol:** Use HTTPS. Salesforce permits HTTP only if the Remote Site Setting is configured for it, and HTTP is poor practice for anything sensitive.\n- **Deployment:** Remote Site Settings are metadata (`RemoteSiteSetting`) and must be deployed to each org/sandbox. A common failure is that the callout works in dev but fails after deployment because the setting wasn't included in the package.\n\n**Other things that still apply**\n\n- **No DML before the callout** in the same transaction, or you get \"uncommitted work pending\" (unless the callout runs first or in a separate async context).\n- **Tests:** Callouts aren't allowed in tests. Use `HttpCalloutMock` with `Test.setMock`. A Remote Site Setting isn't needed for mocked calls.\n- **Authentication:** With a hard-coded URL you must manage credentials yourself (headers, tokens, secrets in code or Custom Metadata/Settings). This is the main reason to prefer a Named Credential.\n\n**Recommendation:** Prefer a Named Credential (with an External Credential in the newer model). It handles the endpoint authorization, auth, and per-environment URL changes, so you avoid hard-coding URLs and secrets and don't need a separate Remote Site Setting.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "A **Remote Site Setting** (Setup \u2192 Security \u2192 Remote Site Settings) whose URL matches the endpoint's scheme, host, and port. Without it, Apex throws a `System.CalloutException: Unauthorized endpoint, please check Setup->Security->Remote site settings.`",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09231629999999999,
+            "duration_s": 13.069,
+            "tokens": {
+              "input": 13329,
+              "output": 835
+            }
+          },
+          "B": {
+            "answer": "The endpoint must be registered as a **Remote Site Setting** (Setup > Security > Remote Site Settings) in the org running the Apex. Without it, the callout fails. The skill's grounding (apexdev 264 L34727-34731, L34761-34763) says a hard-coded endpoint has to be registered there, while a Named Credential endpoint needs no remote site setting.\n\n**What that means in practice**\n\n- Register the base URL, for example `https://api.example.com`, and keep the entry active.\n- Do this in every org the code runs in. Remote Site Settings are metadata (`RemoteSiteSetting`), so they can be deployed, but they are still a separate artifact to keep in sync.\n- The Apex looks like this:\n\n```apex\nHttpRequest req = new HttpRequest();\nreq.setEndpoint('https://api.example.com/v1/data'); // needs the Remote Site Setting\nreq.setMethod('GET');\nHttpResponse res = new Http().send(req);\n```\n\n**Authentication is not covered**\n\nA Remote Site Setting only permits the callout. It does nothing for authentication, so your code has to supply it, as in the following:\n\n```apex\nreq.setHeader('Authorization', 'Bearer ' + token);\n```\n\nThat means the token or secret must live somewhere your code can reach: Apex, Custom Settings, or Custom Metadata. This is why the skill's anti-pattern 2 flags hard-coded endpoints. Rotating a secret then requires a code or data change.\n\n**With a Named Credential**\n\n```apex\nreq.setEndpoint('callout:My_Named_Credential/v1/data');\n```\n\n- No Remote Site Setting is needed.\n- Salesforce manages authentication (apexdev 264 L34744-34747), so your code carries no secrets.\n- For the enhanced model, the calling user needs a permission set that enables the External Credential principal (`externalCredentialPrincipalAccesses`).\n\n**Caveat**\n\nThe corpus does not state the exact error text when the Remote Site Setting is missing, only that the callout fails. Don't rely on a specific message in tests or runbooks.\n\nFor anything beyond a throwaway integration, prefer the Named Credential.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "The endpoint must be registered as a **Remote Site Setting** (Setup > Security > Remote Site Settings) in the org running the Apex. Without it, the callout fails.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1434147,
+            "duration_s": 10.266,
+            "tokens": {
+              "input": 25986,
+              "output": 798
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "packaged-named-credential-secrets",
+      "skill": "integration/named-credentials-setup",
+      "source": "pkg2_dev.txt 264 L9543-9544",
+      "runs": [
+        {
+          "A": {
+            "answer": "**No. Secrets and tokens are never packaged.** Only the metadata definition travels with the package. Credential values are always supplied in the subscriber org.\n\n**What is packaged**\n- **Named Credential:** the definition, such as the endpoint URL, the link to its External Credential, and the callout options.\n- **External Credential:** the authentication protocol, the principal definitions, and the authentication parameter names.\n- **Permission sets:** these can carry External Credential Principal Access, so users can be granted access to the principals.\n\n**What is not packaged**\n- Passwords, API keys, and client secrets entered on a principal.\n- OAuth access and refresh tokens, whether from a named principal or from per-user authentication.\n- Any per-user credentials, which exist only after each user authenticates in the subscriber org.\n\nWith the legacy Named Credential model, the endpoint and auth settings are packaged, but the password or secret is not. The same holds for the Auth Provider's consumer secret, which I'd expect the subscriber to re-enter. Verify that against the current docs for your package type.\n\n**What this means for your package**\n1. After install, the subscriber admin must configure each principal in Setup under External Credentials and enter the secret or run the OAuth flow. Document this as a required post-install step.\n2. Assign the permission set that includes the principal access. Without it, callouts fail even when the credentials are populated.\n3. For automated setup, a post-install script can call the `ConnectApi.NamedCredentials` credential methods, such as `createCredential`. The secret must still come from the subscriber, never from your package. Don't hardcode it.\n4. Treat the packaged definition as a template. The same package installs into orgs with different credentials, which is the intended design.\n5. If a callout fails right after install with an authentication error, check these first: principal not configured, permission set not assigned, or the OAuth flow not completed.\n\nAlso check which parts of the Named Credential and External Credential subscribers can edit after install. This differs between managed and unmanaged components and can change across API versions, so confirm it for your target version.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**No. Secrets and tokens are never packaged.** Only the metadata definition travels with the package.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0956389,
+            "duration_s": 15.78,
+            "tokens": {
+              "input": 13268,
+              "output": 1291
+            }
+          },
+          "B": {
+            "answer": "**No. Tokens and secrets are not packaged.** The package carries the structure of the credential, not the values that authenticate it.\n\nPer the packaging guide (pkg2 264 L9543-9567), packaged named credentials \"don't include the access tokens or certificates that are needed to perform authenticated callouts.\"\n\n**What travels with the package**\n- The Named Credential definition: the `Url` parameter, its `Authentication` reference to an External Credential, and the type (`SecuredEndpoint` or `PrivateEndpoint`).\n- The External Credential definition: the protocol and the principal parameters.\n- Each named credential must be mapped to at least one external credential (pkg2 264 L9573-9574).\n\n**What does not travel**\n- OAuth access and refresh tokens\n- Client secrets and passwords\n- Signing certificates for JWT\n- Per-user authentication state\n\n**Why:** the same guide says the standard Metadata API \"can't fully expose the definition of a credential and render sensitive information like tokens in plain text.\" Credentials are stored encrypted (meta 264 L92625-92627, L66152-66154). A plain Metadata API deploy behaves the same way, so the rule applies to change sets and SFDX deploys as well as packages.\n\n**Post-install steps for the subscriber org** (pkg2 264 L9543-9567)\n1. Create the principal, or populate the tokens and certificates, in the UI or through the Connect API.\n   - For a Named Principal: Setup > Named Credential > External Credential (L9566).\n   - For a Per User principal: each user authenticates at My Personal Information > External Credential (L9567).\n2. Grant the permission sets access to the principal. This is `PermissionSet.externalCredentialPrincipalAccesses` (API 59.0+, value `ExternalCredential-Principal`), shown in the UI as \"Enable External Credential Principals\" (L9564).\n3. Reauthenticate.\n4. Run a test callout.\n\n**For the package author**\n- Document these steps in the install guide or a post-install runbook, because a subscriber's callouts won't work until they're done.\n- Don't expect to ship a working, pre-authenticated integration.\n- A permission set in the package can reference the principal, but the subscriber still has to supply the secrets.\n\n**Unverified:** The corpus doesn't say how the failure shows up if steps are skipped (error text, or whether it fails silently). Check that in a test install before writing it into customer docs.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**No. Tokens and secrets are not packaged.** The package carries the structure of the credential, not the values that authenticate it.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.144038,
+            "duration_s": 8.945,
+            "tokens": {
+              "input": 26051,
+              "output": 866
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "abf-recalculates-automatically",
+      "skill": "integration/manufacturing-cloud-setup",
+      "source": "api_meta.txt 264 L16757",
+      "runs": [
+        {
+          "A": {
+            "answer": "I can't confirm this against current Salesforce documentation, so verify it before you design around it.\n\n**Short answer:** As far as I know, an Advanced Account Forecasting (AAF) forecast set is not continuously or event-driven recalculated. It is refreshed by a batch process, and how often that runs is something you control, not a built-in fixed interval.\n\n**What I believe is going on:**\n- AAF generates forecast values (the `AdvAccountForecastFact` records and related data) through a Data Processing Engine (DPE) definition, the batch engine Manufacturing Cloud uses for these calculations.\n- The forecast set record (`AdvAccountForecastSet`) and its partner settings define what gets forecast: the accounts or partners, the period type and horizon, and the measures. They do not appear to define a refresh cadence themselves.\n- Frequency is therefore determined by how and when that DPE job is run. Typically you schedule it, for example with a scheduled flow that invokes the DPE definition, or you run it manually from Setup. If nothing schedules it, the forecast stays as of its last run.\n- Changes to underlying data, such as new sales agreement or order actuals, are generally not picked up until the next run.\n\n**What I'm not sure about:** whether a current release added a native refresh-frequency field or a built-in scheduler on the forecast set. Check the `AdvAccountForecastSet` fields in Object Reference, and look in Setup under Data Processing Engine for the AAF definition and its run history.\n\n**Practical recommendation:** schedule the DPE run (daily or weekly, depending on how fast your actuals change) with a scheduled flow, and monitor the run history for failures so a stale forecast doesn't go unnoticed.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "They do not appear to define a refresh cadence themselves.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0974718,
+            "duration_s": 15.425,
+            "tokens": {
+              "input": 13208,
+              "output": 1406
+            }
+          },
+          "B": {
+            "answer": "**Yes.** For Advanced Account Forecasting, the forecast set is recalculated automatically. The `calculationFrequency` field on the `AdvAccountForecastSet` metadata type controls how often.\n\n- **Allowed values:** Weekly, Monthly, Quarterly or Yearly.\n- **Default:** Monthly.\n- **Availability:** `AdvAccountForecastSet` is API 53.0+ and requires the Manufacturing Cloud feature setting.\n- **Source:** this comes from the metadata reference (meta 264 L16733, L16737, L16754-16763), the one place the skill package grounds this claim.\n\n**Practical consequences**\n\n- **Set the frequency deliberately.** If Monthly is too coarse for your planning cadence, change `calculationFrequency` to Weekly rather than building a job. The longest and shortest options are Yearly and Weekly, so nightly or real-time recalculation is not an option on this field.\n- **Don't expect an empty forecast on day one just because you haven't activated a DPE job.** That \"go-live failure\" in the skill's gotcha 1 and anti-pattern 3 applies to the legacy Account-Based Forecasting DPE definition, not to an advanced forecast set. Check which forecasting model the org actually uses before writing the runbook.\n- **Stale numbers between runs are expected.** The forecast only moves at the configured frequency, so a Monthly set can legitimately lag orders placed mid-period.\n\n**Caveats**\n\n- The skill's claims that legacy ABF recalc is opt-in, that the DPE definition has a particular Setup path or name, and that it is \"typically nightly\" are marked UNVERIFIED in the package. Confirm them in the org's Setup UI before relying on them.\n- The metadata reference gives the values and the default, but I can't confirm from this package exactly when within the period the run fires, or how to trigger an ad hoc recalculation. Test that in a sandbox if it matters for go-live.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "For Advanced Account Forecasting, the forecast set is recalculated automatically. The `calculationFrequency` field on the `AdvAccountForecastSet` metadata type controls how often.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1297801,
+            "duration_s": 9.868,
+            "tokens": {
+              "input": 22571,
+              "output": 888
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharing-deferral-manual-recalc",
+      "skill": "data/sharing-recalculation-performance",
+      "source": "salesforce_security_impl_guide.txt 262 L3533-3534",
+      "runs": [
+        {
+          "A": {
+            "answer": "**No. Resuming sharing rule calculations doesn't bring sharing back in line by itself.** Resuming only lifts the suspension. Changes made during the suspension (new or changed records, owners, role or group membership) aren't evaluated retroactively, so access stays stale until you trigger a recalculation.\n\n**What to do after the bulk load**\n1. **Resume group membership calculations first, if you suspended them.** Let that finish before moving on, because sharing rules depend on up-to-date group and role membership.\n2. **Resume sharing rule calculations.**\n3. **Run a full recalculation.** In Setup > Sharing Settings, use **Recalculate** on the Sharing Rules related list for each affected object. It runs asynchronously, so watch Setup > Background Jobs (or the Sharing Settings page banner) until it completes.\n\n**Caveats**\n- The recalculation can take a long time on large data volumes, so schedule it off-hours. Users may have wrong access (too little or too much) until it finishes.\n- Deferred sharing is a feature you request through Salesforce Support. Once it's enabled, the suspend and resume controls appear under Setup > Defer Sharing Calculations.\n- Only rule-based and group-derived access is deferred. Owner-based access and implicit sharing aren't affected.\n- If you load a lot of records, consider loading with the deferral on and doing one recalculation at the end, rather than recalculating repeatedly mid-load.\n\nI'm going from memory of the Defer Sharing Calculations docs. Check the current wording in your release's help (\"Defer Sharing Calculations\") to confirm the exact recalculation behaviour.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**No. Resuming sharing rule calculations doesn't bring sharing back in line by itself.** Resuming only lifts the suspension.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09461919999999999,
+            "duration_s": 12.979,
+            "tokens": {
+              "input": 13154,
+              "output": 1264
+            }
+          },
+          "B": {
+            "answer": "**No, not automatically.** After you resume sharing rule calculations, you have to manually start a full sharing rule recalculation. The Salesforce Security Guide says that after deferral \"you must resume sharing rule calculations and manually initiate a full sharing rule recalculation\" (secguide 262 L3533-3534).\n\n**What to do**\n\n1. Suspend group membership and sharing rule calculation. This permission covers those two processes, and the Large Data Volumes guide describes it as the way to avoid very long sharing rule evaluations or timeouts during large configuration changes or loads (ldv 264 L595-602).\n2. Run the load or make the structural changes.\n3. Resume calculations.\n4. Start the full recalculation yourself. The Recalculate button is disabled while calculations are deferred (secguide 262 L3545), so resume first.\n5. Watch progress on Setup > Background Jobs (secguide 262 L3541-3542). If Apex managed sharing is involved, also watch Apex Jobs.\n\n**Caveats**\n\n- Earlier versions of this skill said that clearing deferral collapses all queued changes into one automatic job. The guide contradicts that, so don't rely on it.\n- While recalculation runs you can't change org-wide defaults, and you can't modify sharing rules while an OWD recalculation is running (secguide 262 L3585-3586).\n- Access can be inconsistent while deferral is active. I couldn't confirm this from the guides I have, so treat it as unverified, but plan as though users may see too much or too little until the recalculation finishes.\n- If any affected object uses Apex managed sharing, confirm a `Database.Batchable` recalculation class is associated with the object (Apex Sharing Recalculations related list). That class is run when the OWD changes (apexdev 264 L13071-13072). Whether grants are silently dropped without one is unverified, so test it in a sandbox.\n- For loads, the guide also suggests loading with Public Read/Write where possible and adding sharing rules one at a time, letting each finish before the next (ldv 264 L852-853, L862-870).\n\n**Bottom line:** Treat resume as step one of two. Resume, then manually initiate the full recalculation, and don't call the load done until the Background Jobs entry completes.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "After you resume sharing rule calculations, you have to manually start a full sharing rule recalculation.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1401262,
+            "duration_s": 10.574,
+            "tokens": {
+              "input": 25252,
+              "output": 796
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "skills": {
+      "data/data-storage-management": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "data/person-accounts": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/permission-set-deployment-ordering": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/pre-deployment-checklist": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "flow/flow-email-and-notifications": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "devops/salesforce-dx-project-structure": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "integration/named-credentials-setup": {
+        "correct_a": 2,
+        "correct_b": 2,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "integration/manufacturing-cloud-setup": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "data/sharing-recalculation-performance": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      }
+    },
+    "overall": {
+      "correct_a": 8,
+      "correct_b": 10,
+      "wrong_a": 2,
+      "wrong_b": 0,
+      "neither_a": 0,
+      "neither_b": 0,
+      "paired": 10,
+      "errors": 0,
+      "probes": 10,
+      "quotes_not_found": 0,
+      "pct_correct_a": 80.0,
+      "pct_correct_b": 100.0,
+      "pct_wrong_a": 20.0,
+      "pct_wrong_b": 0.0,
+      "pct_neither_a": 0.0,
+      "pct_neither_b": 0.0
+    },
+    "cost_usd": 2.2864755000000003,
+    "call_seconds": 219.375,
+    "input_tokens": 374925,
+    "output_tokens": 18160,
+    "elapsed_s": 254.04830158301047
+  }
+}

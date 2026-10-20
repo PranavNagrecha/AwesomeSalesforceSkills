@@ -1,0 +1,16 @@
+**Format:** `MAJOR.MINOR.PATCH.BUILD`, for example `1.2.1.8`. That is four dot-separated segments (sfdx_dev 264 L14867).
+
+**Where NEXT goes:** in the fourth slot, the BUILD segment. `1.2.1.NEXT` tells the CLI to auto-increment the build number each time you create a package version. If you don't use `NEXT`, you must increment `versionNumber` yourself before creating each new package version.
+
+```json
+{
+  "path": "packages/core",
+  "package": "CoreDataModel",
+  "versionName": "Spring 25",
+  "versionNumber": "1.3.0.NEXT"
+}
+```
+
+**Related points:**
+- A concrete build such as `1.0.0.1` is also valid. It just needs a manual bump. Don't treat `NEXT` as the only legal value in that slot.
+- `LATEST` is a separate keyword for the build slot of a **dependency** version, for example `"versionNumber": "1.3.0.LATEST"` inside a `dependencies` entry. It picks the latest build of that package. It is not for the package's own `versionNumber`.

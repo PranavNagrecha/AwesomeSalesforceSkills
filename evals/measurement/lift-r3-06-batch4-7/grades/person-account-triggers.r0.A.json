@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**Short answer: Account triggers fire, and Contact triggers do not.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0609286,
+    "duration_s": 2.53,
+    "input_tokens": 7460,
+    "output_tokens": 44
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**Short answer: Account triggers fire, and Contact triggers do not.**\"}",
+  "prompt_sha": "94d9a45bd8c69886"
+}

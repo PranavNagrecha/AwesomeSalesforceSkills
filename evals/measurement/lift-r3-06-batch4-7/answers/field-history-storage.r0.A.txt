@@ -1,0 +1,8 @@
+**No. Standard field history tracking data does not count against your org's data storage limit.** The history records (`AccountHistory`, `OpportunityHistory`, `MyObject__History`, and so on) are stored separately and aren't included in the storage usage figure. Field Audit Trail data also doesn't count against data storage. It is archived to the `FieldHistoryArchive` big object, which has its own limits.
+
+Some caveats:
+
+- **Limits still apply, just different ones.** You can track up to 20 fields per object. With the Field Audit Trail add-on this goes up to 60 fields per object. Standard history is retained for 18 months in the UI and 24 months via the API or reports. Field Audit Trail lets you define a retention policy of up to 10 years.
+- **Don't confuse it with other storage-consuming data.** Related things that do count toward data storage are the records themselves, and in some cases `Task` and `Event` records. Field history of a tracked field doesn't add to that, but a custom object you build to hand-roll audit logging does.
+- **Deleting the parent record deletes its history.** History is not a long-term audit store without Field Audit Trail, or an external export or archive.
+- **The numbers may change.** Storage accounting rules are occasionally adjusted. To confirm for your org, compare **Setup > Storage Usage** before and after enabling tracking on a high-volume object. The "Data and File Storage Allocations" help article also lists what is counted.

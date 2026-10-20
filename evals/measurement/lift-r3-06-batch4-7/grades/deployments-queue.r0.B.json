@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "The Metadata API guide says only one deployment runs at a time in an org. Any others wait, and they \"are not necessarily executed in the order in which they were submitted\" (api_meta 264 L4246-4249).",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0594656,
+    "duration_s": 1.833,
+    "input_tokens": 7174,
+    "output_tokens": 87
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"The Metadata API guide says only one deployment runs at a time in an org. Any others wait, and they \\\"are not necessarily executed in the order in which they were submitted\\\" (api_meta 264 L4246-4249).\"}",
+  "prompt_sha": "3e8cdf8f2dfde782"
+}

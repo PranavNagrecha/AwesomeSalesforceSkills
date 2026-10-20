@@ -1,0 +1,20 @@
+**It overlays (merges).** A Profile deploy is additive and does not replace the profile wholesale.
+
+**How it behaves**
+- Only the entries in the deployed `.profile-meta.xml` are applied. Anything not in the file is left as it is in the target org.
+- If the file lists `fieldPermissions` for `Account.Foo__c`, only that field's permissions change. Every other field permission on the target profile is untouched.
+- This is why a Profile retrieve looks "partial". It only contains entries for the components in your `package.xml` or manifest (plus some always-included items like user permissions), and a deploy of that file only touches those same entries.
+- **Omitting something does not remove it.** To revoke access, include the entry explicitly with `editable=false`, `readable=false`, `enabled=false`, or `visible=false`. Deleting the line from the XML does nothing, and `destructiveChanges.xml` removes components, not permissions on a profile.
+
+**Caveats**
+- **References must resolve.** Every object, field, Apex class, page, or app referenced in the profile must exist in the target org or be in the same deployment. Otherwise the deploy fails with errors like "no CustomObject named X found".
+- **Some elements behave more like replace-the-set.** `loginIpRanges` and `loginHours` are the usual ones. Verify them in a sandbox before relying on either behavior.
+- **Defaults are single-valued.** `default` on a record type visibility, app visibility, or layout assignment is one value per scope. Deploying a new default moves it, which can unset the previous one.
+- **Admin and standard profiles are special.** Admin gets many permissions implicitly, and some standard-profile settings can't be changed.
+- **A new profile starts from defaults.** If the profile doesn't exist in the target, the deploy creates it with only what you specified plus system defaults.
+
+**Practical guidance**
+- Commit small, scoped profile files and deploy them alongside the components they reference.
+- To get an exact end state (for example, zeroing out access), express it explicitly with `false` entries. Don't rely on omission.
+- Prefer permission sets or permission set groups for access changes. They use the same overlay semantics but are easier to reason about and diff, and profiles then only carry the minimum (login hours, IP ranges, default app/record type, and similar).
+- Validate with a `--dry-run` / check-only deploy, then diff by retrieving the profile from the target afterward.

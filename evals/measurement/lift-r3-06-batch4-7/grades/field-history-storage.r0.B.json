@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "Field history tracking data does not count against your org's data storage limit.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.05628,
+    "duration_s": 1.948,
+    "input_tokens": 6941,
+    "output_tokens": 38
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"Field history tracking data does not count against your org's data storage limit.\"}",
+  "prompt_sha": "2007d9349823eb41"
+}

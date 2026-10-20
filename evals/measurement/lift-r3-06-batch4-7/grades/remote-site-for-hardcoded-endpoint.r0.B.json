@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "The endpoint must be registered as a **Remote Site Setting** (Setup > Security > Remote Site Settings) in the org running the Apex. Without it, the callout fails.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.059771300000000006,
+    "duration_s": 2.638,
+    "input_tokens": 7231,
+    "output_tokens": 75
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"The endpoint must be registered as a **Remote Site Setting** (Setup > Security > Remote Site Settings) in the org running the Apex. Without it, the callout fails.\"}",
+  "prompt_sha": "96168caf4ad7f450"
+}

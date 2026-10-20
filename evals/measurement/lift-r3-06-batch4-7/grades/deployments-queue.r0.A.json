@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "Queued deployments run in the order submitted (first in, first out).",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.06618450000000001,
+    "duration_s": 5.919,
+    "input_tokens": 7507,
+    "output_tokens": 288
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"Queued deployments run in the order submitted (first in, first out).\"}",
+  "prompt_sha": "fec036dc66ae99a1"
+}
