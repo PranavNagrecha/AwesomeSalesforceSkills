@@ -357,8 +357,15 @@ releases:
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: running
+    status: done
     parent: R2-01
+    evidence: 'GRADE PARTLY-WRONG. CORRECT: extend standard Contract (object_reference L80926), lookup not master-detail,
+      EndDate calc (L81232), activation locks (L81599-81603), Status values, VR+bypass pattern, automation boundary, 7/7 XML
+      parse, naming. WRONG: ''no sharing change'' asserted with Contract OWD unknown (sharing-selection Q1 has no unknown
+      branch); Sales Ops-owned contracts invisible to reps under Private; Contract has no sharing rules (no ContractShare
+      in corpus). PARTLY: Originating_Opportunity__c filter admits Renewal opps (drift from ''originating Enterprise''). MISSED:
+      report type for renewal rate/expirations (the actual ask), auto-renew terms never get an outcome, backfill, Activate
+      Contracts permission.'
   - id: R2-01-7
     title: 'Agent proof: /triage-deployment (deployment-failure-triager) on a real input — a real deploy failure from examples/builds/*/reports
       (org dry runs); then an adversarial grader scores right/useful/wrong against the corpus'
@@ -504,7 +511,7 @@ releases:
       gotcha'
     size: S
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R2-21
     title: 'field-impact-analyzer: scoped clean-grep, mandatory failure class per reference, consistent comment handling'
     size: S
@@ -513,6 +520,12 @@ releases:
   - id: R2-22
     title: 'permission-set-architecture: document emailRoutingAddressAccesses (api_meta L97491); agent must grep before ''not
       grounded'''
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-25
+    title: 'object-designer: conditional sharing answer when OWD unknown; report type when the ask is reporting; Contract-has-no-sharing-rules
+      gotcha'
     size: S
     owner_model: sonnet
     status: todo
@@ -702,3 +715,12 @@ inbox:
     format); then run the recipe on the owning skills and measure with/without'
   size: M
   slotted_into: 1.6.0
+- date: 2026-10-19
+  ask: 'From agent proof R2-01-6: object-designer playbook must (a) never conclude ''no sharing change'' when the object''s
+    OWD is unknown — state the answer conditionally per OWD value and name the question (sharing-selection Q1 has no ''unknown''
+    branch), (b) when the ask is reporting, propose the report type / report as part of the design, (c) keep lookups scoped
+    to the entity the ask names (originating Enterprise opp, not any Renewal). Also add to admin/sharing-and-visibility (or
+    data-model skill) the fact that Contract has no sharing-rule object (no ContractShare in the Object Reference) — OWD and
+    Account control decide'
+  size: S
+  slotted_into: 1.5.0
