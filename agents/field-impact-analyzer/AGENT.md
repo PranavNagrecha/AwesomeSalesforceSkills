@@ -1,13 +1,13 @@
 ---
 id: field-impact-analyzer
 class: runtime
-version: 1.1.0
+version: 1.1.1
 status: stable
 requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-28
+updated: 2026-10-21
 default_output_dir: "docs/reports/field-impact-analyzer/"
 output_formats:
   - markdown
@@ -140,6 +140,8 @@ Given a field on an sObject, produces a blast-radius report: every Apex class, t
 
 If `target_org_alias` is missing, STOP and ask — live-org metadata is required for an honest score.
 
+**Org-free runs.** After `REFUSAL_MISSING_ORG`, continue only when the caller explicitly asked for an org-free (repo-only) run. When continuing: say so in the first line of the report ("Org-free run: repo scan only, no live-org metadata"), skip Step 1 and Step 3 with every skipped dimension recorded in `dimensions_skipped[]` as `state: not-run`, and mark the score and confidence **"provisional (repo-only)"** — never HIGH. Without that explicit request, the refusal stands.
+
 ---
 
 ## Plan
@@ -185,6 +187,19 @@ Scan `repo_path` (default `force-app/main/default`) for the field. Distinguish:
 
 For every reference, capture file path + line number for citation. No string-fingerprinting shortcuts; match by exact API name with word boundaries.
 
+**Failure class — mandatory, exactly one per reference.** Each row in the inventory carries one of:
+
+| Class | Meaning | Example |
+|---|---|---|
+| `deploy-fail` | The platform rejects the deploy | Flow or validation-rule XML naming a field that no longer exists |
+| `runtime-fail` | Compiles and deploys, fails when executed | Dynamic field names in map keys or `Schema` describe lookups; Apex tests asserting on the old name |
+| `silent` | Keeps deploying and working, but the field quietly disappears | An untracked `field-name` string in LWC HTML; UAT scripts and help text |
+| `UNVERIFIABLE` | The corpus does not say | Email-template merge fields; `errorDisplayField` pointing at a missing field |
+
+No reference may be left unclassified. `UNVERIFIABLE` is an allowed answer; guessing a class is not. Classes feed the risk score: `silent` rows are the ones a green deploy will never surface, so list them first.
+
+**Comments.** Comment and description occurrences are listed too, as class `comment` (zero risk), in a collapsed appendix at the end of the inventory — never mixed into the main table, and never omitted for some files and kept for others.
+
 ### Step 3 — Enumerate org references
 
 Use MCP tools against the target org:
@@ -225,7 +240,11 @@ Set a single overall confidence:
 
 Based on `intent`:
 
-- **rename** → propose a phased path: create new field with canonical name per `templates/admin/naming-conventions.md`, dual-write for N days, migrate consumers, deprecate old field. Do NOT auto-generate the migration patch — the PR is a human judgment call.
+- **rename** → propose a phased path: create new field with canonical name per `templates/admin/naming-conventions.md`, dual-write for N days, migrate consumers, deprecate old field. Do NOT auto-generate the migration patch — the PR is a human judgment call. Where the plan is an in-place rename, close it with a **post-change acceptance check**: grep for the old API name under the build's `artefacts/` and the source tree **only**, and expect zero hits. Explicitly exclude historical evidence — `reports/mock-deploy/**`, `tests/**/stdout`, `workbook/`, `traceability.md`, `decisions.md` — those record what the org said at the time and must not be "fixed".
+- **Metadata API facts to reuse (rename / delete path)** — verified against the API 264 Metadata API guide, not recalled:
+  - `renameMetadata(metadataType, oldFullname, newFullname)` renames one component synchronously and needs Modify Metadata Through Metadata API Functions or Modify All Data (Metadata API Developer Guide, `renameMetadata()`, corpus `api_meta` L6392-6426).
+  - Components are identified by `fullName`, not by Id (`Metadata` base type, `api_meta` L90780-90784). So redeploying a source file whose fullName was changed creates a **second** field next to the old one — it does not rename. Say so wherever the plan renames a file.
+  - Deletion goes through `destructiveChanges.xml` (no wildcards) plus an empty `package.xml`; `purgeOnDelete` skips the Recycle Bin but works only in Developer Edition and sandbox orgs, not production; a deleted roll-up summary field is purged regardless (`api_meta` L4704-4741, L3245-3249).
 - **delete** → propose a pre-delete checklist (clone field into a soft-archive object, backfill audit, validate against a sandbox first) and reference `skills/data/record-merge-implications`.
 - **audit** → no action; report only.
 
@@ -236,9 +255,9 @@ Based on `intent`:
 One markdown document:
 
 1. **Summary** — field API name, data type, overall risk (P0/P1/P2), confidence (HIGH/MEDIUM/LOW).
-2. **Reference inventory** — table grouped by system (Apex, Flow, LWC, VR, Formula, Reports, Layouts, Perms, Integrations). Each row: artifact, access type, evidence excerpt, citation link.
+2. **Reference inventory** — table grouped by system (Apex, Flow, LWC, VR, Formula, Reports, Layouts, Perms, Integrations). Each row: artifact, access type, failure class (`deploy-fail` / `runtime-fail` / `silent` / `UNVERIFIABLE`; Step 2), evidence excerpt, citation link. Comment-only occurrences go in a collapsed appendix as class `comment`.
 3. **Risk breakdown** — the specific rules from Step 4 that triggered, each with a one-line justification.
-4. **Mitigation plan** — phased steps specific to `intent`, no auto-patch.
+4. **Mitigation plan** — phased steps specific to `intent`, no auto-patch; for `rename`, the scoped post-change acceptance check from Step 5.
 5. **Process Observations** — per `AGENT_CONTRACT.md`:
    - **What was healthy** — naming convention adherence, FLS hygiene, tracked vs untracked.
    - **What was concerning** — sibling fields with overlapping semantics, dynamic SOQL anywhere in the repo, fields with no help text.

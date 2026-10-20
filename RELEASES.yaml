@@ -522,7 +522,10 @@ releases:
     title: 'field-impact-analyzer: scoped clean-grep, mandatory failure class per reference, consistent comment handling'
     size: S
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: 'field-impact-analyzer v1.1.1: org-free run rule, mandatory failure class per reference (deploy-fail/runtime-fail/silent/UNVERIFIABLE),
+      comment appendix, scoped clean-grep excluding org evidence, Metadata API rename facts cited (api_meta L6392-6426, L90780-90784,
+      L4704-4741, L3245-3249); validate --agents 0, parity 0'
   - id: R2-22
     title: 'permission-set-architecture: document emailRoutingAddressAccesses (api_meta L97491); agent must grep before ''not
       grounded'''
@@ -534,7 +537,7 @@ releases:
       gotcha'
     size: S
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
