@@ -308,11 +308,12 @@ releases:
     owner_model: opus
     status: done
     parent: R2-01
-    evidence: 'GRADE RIGHT-BUT-NOISY. F1/H1/H3/recall/design-gap CORRECT against metadata; H2 PARTLY (AdminOnly also allows
-      Modify All Records on the object, api_meta L23184-23188); percent-as-fraction and sysadmin-doesnt-bypass UNVERIFIABLE
-      in corpus; UAT citation and muting claim were padding. Missed: owner-only submit (AP:5-7), blank Manager fails submit
-      (decisions.md:1256), record access (UserRecordAccess.HasEditAccess) as the first hypothesis, products VR also fires
-      at Closed Won (VR:14). Admin would act correctly on the core answer.'
+    evidence: 'GRADE RIGHT-BUT-NOISY (first run). RE-RUN after R2-15 playbook fix: record access tested first (H0), comparison
+      user identified as System Administrator -> success non-discriminating, submitter checks (owner-only AP:5-7, Manager
+      populated AP:59-62, pending ProcessInstance/recall) required before the submit remedy, products VR fires on any stage
+      change incl. Closed Won; all four previously-missed items now present -> RIGHT-AND-USEFUL on the first grader''s criteria
+      (orchestrator-verified against that miss list). New finding: record-access-troubleshooting SKILL.md:134-138 SOQL selects
+      PermissionSet fields from PermissionSetAssignment (likely needs PermissionSet. prefix).'
   - id: R2-01-3
     title: 'Agent proof: /build-flow (flow-builder) on a real input — a requirement line from examples/builds/case-onboarding/requirement.md;
       then an adversarial grader scores right/useful/wrong against the corpus'
@@ -587,6 +588,11 @@ releases:
     status: done
     evidence: build_plan.py:391 UNPROVEN_AGENT_STATUSES; validate WARNs 'unproven agent' on experimental owners, deprecated
       stays ERROR; 248 tests; tier2-webhook 2 steps WARN (apex-builder), northwind-sales 2 (apex-builder, lwc-builder)
+  - id: R2-29
+    title: 'record-access-troubleshooting: fix admin-bypass SOQL (PermissionSet. prefix)'
+    size: S
+    owner_model: sonnet
+    status: running
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -818,3 +824,10 @@ inbox:
     10-probe extension of winter27-probes drawn from those skills'
   size: L
   slotted_into: 1.6.0
+- date: 2026-10-19
+  ask: 'Found by the re-run of proof 2: skills/security/record-access-troubleshooting SKILL.md:134-138 (and llm-anti-patterns)
+    admin-bypass SOQL selects PermissionsViewAllData/PermissionsModifyAllData directly from PermissionSetAssignment; those
+    are PermissionSet fields and need the PermissionSet. relationship prefix — verify against object_reference (PermissionSetAssignment
+    fields vs PermissionSet) and fix'
+  size: S
+  slotted_into: 1.5.0
