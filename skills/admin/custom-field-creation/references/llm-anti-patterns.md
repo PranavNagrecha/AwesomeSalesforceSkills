@@ -94,8 +94,8 @@ When creating the field:
 - In formulas, Apex, and API references, use the full API name:
   Account.Customer_Revenue__c
 - Do not include spaces, hyphens, or special characters in the developer name.
-- Choose the developer name carefully — it cannot be changed after creation
-  without creating a new field and migrating data.
+- Choose the developer name carefully — renaming later is possible (Setup or
+  renameMetadata()) but every reference in source must then be updated.
 ```
 
 **Detection hint:** If the output references a custom field without the `__c` suffix in formulas or code, or suggests an API name with spaces, the naming is incorrect. Regex: `[A-Z][a-z]+[A-Z]` without trailing `__c` in code context.
@@ -167,3 +167,26 @@ After creating the field and setting FLS:
 ```
 
 **Detection hint:** If the output stops at page layout placement without mentioning reports, list views, or search layouts, the field's discoverability is incomplete. Search for `report` or `list view` or `compact layout` after the creation steps.
+
+---
+
+## Anti-Pattern 7: Saying an API name cannot be renamed, or renaming the file and redeploying
+
+**What the LLM generates:** Either "The API name is permanent; you would have to create a new field and migrate the data," or "Rename `Region__c.field-meta.xml` to `Sales_Region__c.field-meta.xml` and redeploy."
+
+**Why it happens:** The first is a folk rule repeated in older material. The second assumes components are identified by file name or Id. In the Metadata API a component is identified by `fullName` (api_meta.txt:90780-90784), so the renamed file deploys as a second, empty field and the old one survives.
+
+**Correct pattern:**
+
+```
+- To keep the field Id and data: rename in Setup, or call
+  renameMetadata("CustomField", "Account.Region__c", "Account.Sales_Region__c")
+  (api_meta.txt:6392-6426), then update formulas, validation rules, Apex,
+  LWC, layouts, reports and email merge fields in source.
+  (Which references the org updates itself is UNVERIFIED, 2026-10-21.)
+- If a redeploy of a new fullName is unavoidable, it is a new field:
+  migrate data, repoint references, delete the old field with
+  destructiveChanges.xml (api_meta.txt:4704-4741).
+```
+
+**Detection hint:** Search for `cannot (be )?renamed?`, `API name is permanent` or `cannot be changed after`, and for advice to rename a `*.field-meta.xml` file with no mention of `renameMetadata` or `destructiveChanges`.

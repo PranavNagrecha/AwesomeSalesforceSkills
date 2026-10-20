@@ -49,9 +49,9 @@ outputs:
   - "FLS and page layout configuration guidance"
   - "Deployment checklist for change set or SFDX"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-21
 ---
 
 # Custom Field Creation
@@ -90,6 +90,7 @@ Ask these before opening the field editor or writing the `field-meta.xml`. Each 
 | "Which permission set will grant this field, and is it in the same deploy?" | The field and its FLS are separate components; a field shipped without one is invisible. A `required` field cannot carry FLS metadata at all | The `permissionsets/*.permissionset-meta.xml` entry, or the decision to leave a required field implicit |
 | "Do we already have a field that holds this?" | Field count per object is capped and dead fields are expensive to remove later | Either a reuse decision or a named reason the existing field will not do |
 | "If this is a relationship, which side owns the record?" | On a junction, `relationshipOrder` decides ownership, sharing, and delete behaviour, and `reparentableMasterDetail` defaults to `false` | The primary/secondary assignment and whether children can be moved |
+| "Is this a new field or a rename of an existing one, and how is the change shipped?" | A rename done by redeploying a renamed `.field-meta.xml` creates a second, empty field because `fullName` is the identity | `renameMetadata()` or a Setup rename for the same field Id, with references updated in source — or a deliberate new field plus migration plus `destructiveChanges.xml` |
 
 What a proper configuration adds over just creating the field: the field arrives with the permission set that exposes it, its delete and uniqueness behaviour is a written decision rather than a platform default, and the type is one you can still live with after the data lands.
 
@@ -113,9 +114,9 @@ Salesforce has three independent layers that must all be configured for a user t
 
 All three must be configured. Missing any one of them is why users cannot see a new field.
 
-### 3. API Name Rules and Permanence
+### 3. API Name Rules and Renaming
 
-The API name is permanent after save. Rules:
+The API name is chosen once and costly to change, but it is not permanent. Rules:
 - Maximum 40 characters
 - Alphanumeric characters and underscores only
 - Must start with a letter
@@ -123,7 +124,7 @@ The API name is permanent after save. Rules:
 - Cannot contain consecutive underscores
 - Salesforce appends `__c` automatically
 
-Choose a clear, unambiguous name. "Billing_Region__c" is better than "BR__c". You cannot rename an API name after creation.
+Choose a clear, unambiguous name. "Billing_Region__c" is better than "BR__c". An API name can be renamed after creation: in Setup (UNVERIFIED (2026-10-21): the Setup edit path is not in the fetchable corpus; the Metadata API path below is), or with the Metadata API `renameMetadata()` call, which "renames a metadata component in your organization" and works on "any of the objects that extend Metadata" (api_meta.txt:6392-6426) — `CustomField` is one (api_meta.txt:45455-45458). A rename of the existing field keeps the field's Id and its data. The trap is renaming by source: components are identified by `fullName`, not by Id (api_meta.txt:90780-90784), so renaming the `.field-meta.xml` file (or its `fullName`) and redeploying creates a second, empty field and leaves the old one in place; the old one then needs a `destructiveChanges.xml` entry (api_meta.txt:4704-4741), and `purgeOnDelete` only skips the Recycle Bin in Developer Edition and sandbox orgs (api_meta.txt:3245-3249). After any rename, update every reference in source — formulas, validation rules, Apex, LWC, layouts, reports, email merge fields — because a deploy of those files still names the old API name. UNVERIFIED (2026-10-21): which of those references the org rewrites for you on an in-place rename; the Apex guide only says the platform issues "warnings and errors" when a field referenced by Apex is edited or deleted (apex developer guide, line 155), not which apply to a rename. Rename in a sandbox first and read the dependency list before touching production. See `references/gotchas.md` Gotcha 15.
 
 ### 4. Platform Limits
 

@@ -505,13 +505,16 @@ releases:
     title: 'apex-references-to-field probe: match bare field names (SOQL, map keys), not only Object.Field'
     size: S
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R2-20
     title: 'custom-field-creation: API names CAN be renamed (renameMetadata); fix the claim and add the rename-vs-redeploy
       gotcha'
     size: S
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: 'custom-field-creation 1.1.1: API name rename claim corrected (renameMetadata api_meta L6392-6426; CustomField
+      extends Metadata L45455; fullName identity L90780 -> redeploying a renamed file creates a second field); Gotcha 15 +
+      Anti-Pattern 7 + Questions row; Setup path marked UNVERIFIED by the orchestrator; verify 12/12 no FAIL; validate 0 errors'
   - id: R2-21
     title: 'field-impact-analyzer: scoped clean-grep, mandatory failure class per reference, consistent comment handling'
     size: S
