@@ -1,6 +1,7 @@
 {
   "category": "admin",
   "chunk_ids": [
+    "008d3da04148fabcacff",
     "00dfae0e2a7b1cb58e77",
     "00f8380f23c34f0c589a",
     "00fe998605636404a15b",
@@ -40,6 +41,7 @@
     "25e5e0000dfd69d57d38",
     "28396eaec72b4b3b51fe",
     "2b39dd9e19c6e1b1a464",
+    "2caa58c7552f5e9ceb4c",
     "2cd54200cc183d3d79e4",
     "2e06dde04c1a01686be1",
     "30601e80985d21bb5fdc",
@@ -84,6 +86,7 @@
     "52f9d59d99ab307f68e6",
     "53a8d82a5affd69fb24c",
     "53bbf3c77f8d6a4e4f69",
+    "53ecb529aaf407c33ca4",
     "54d65555f4d284177586",
     "54f26815689ff1b12265",
     "555f95b5351578af8feb",
@@ -199,6 +202,7 @@
     "bd51c1908064d155f27e",
     "be3202ed35de1260ee9f",
     "bea57eef7c0bc33c27f9",
+    "bf1df9309e2c83da5e06",
     "bf2f328578c53aae8d26",
     "c35c9789b7a76523aac3",
     "c3e0f8c6c0fe54847bfb",
@@ -253,7 +257,7 @@
     "fc5c886e0819adf96a18",
     "ffa48dc47ff1b490277e"
   ],
-  "content_hash": "fb3fb9341ef0cd23a53c24691cf3d13723bcab982c1a58c5f5e809d667a2788e",
+  "content_hash": "84278077c38ef0f2861d094d7211072237822b15a9d4e9bf447468726325a12c",
   "dependencies": [],
   "description": "Author the Salesforce Configuration Workbook \u2014 the structured, reviewable handoff document an admin uses to execute a feature across Objects/Fields, Page Layouts, Profiles/PSGs, Sharing, Validation, Automation, List Views, Reports, Integrations, and Data. Triggers: 'salesforce configuration workbook', 'admin handoff document', 'implementation workbook'. NOT for object design itself (use admin/custom-field-creation, admin/lookup-and-relationship-design, agents/object-designer/AGENT.md), NOT for permission set design (use admin/permission-set-architecture, agents/permission-set-architect/AGENT.md), NOT for Flow construction (use skills/flow/* and agents/flow-builder/AGENT.md), and NOT for the deployment manifest (use skills/devops/metadata-api-retrieve-deploy). More triggers: workbook row schema, recommended_agent, recommended_skills, row_id, source_req_id, RTM linkage block, not-in-scope-this-release, descope ledger, version-lock the workbook, check_workbook.py.",
   "file_location": "skills/admin/configuration-workbook-authoring",
@@ -266,6 +270,7 @@
   ],
   "name": "configuration-workbook-authoring",
   "official_sources": [
+    "Winter '27 (264) re-check, 2026-10-20 \u2014 package.xml framework and quick-start sample at `68.0` (api_meta 264 L1399-L1422); `sharingModel` settable for internal users from API 30.0 (L44556-L44558); Profile retrieve scope and overlay deploy (L100261-L100268); standard objects on standard profiles not editable from API 50.0 (L100376-L100377); `AssignmentRules` / `AssignmentRule` manifest syntaxes and the one `.assignmentRules` file per object (L25714-L25741); manual sharing rules not retrievable or deployable and one `.sharingRules` file per object (L132802-L132810); `sf project retrieve start --manifest` and `sf project deploy validate` (sfdx_dev 264 L14314, L13619-L13622).",
     "Metadata API Developer Guide \u2014 *Quick Start \u2192 Package.xml Manifest Structure* (the `<types>` / `<members>` / `<name>` / `<version>` framework, and that `<members>` holds a component `fullName` \u2014 the reason a `target_value` must name a component, not a Setup path; `references/worked-examples.md` Rule 8, `references/gotchas.md` Gotcha 9) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm",
     "Metadata API Developer Guide \u2014 *Metadata Types \u2192 Profile* (the profile field table listing `layoutAssignments`, `loginHours`, `loginIpRanges`, `categoryGroupVisibilities` and `loginFlows`; that a returned profile's content depends on what else was in the `RetrieveRequest`; that profile deployment overlays rather than replaces and does not export disabled permissions; that editing standard objects on standard profiles is disabled in API version 50.0 and later \u2014 `references/gotchas.md` Gotcha 15) \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf",
     "Metadata API Developer Guide \u2014 *Metadata Types \u2192 SharingRules and CustomObject* (`sharingModel` is a `CustomObject` field, settable through the API for internal users in version 30.0 and later; sharing rules live in one `<Object>.sharingRules` file; manual sharing rules cannot be retrieved, deleted or deployed \u2014 `references/gotchas.md` Gotcha 13, `references/worked-examples.md` row `CWB-OBJ-103`) \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf",
@@ -309,7 +314,7 @@
     "skills/admin/configuration-workbook-authoring/templates/config-workbook.md",
     "skills/admin/configuration-workbook-authoring/templates/configuration-workbook-authoring-template.md"
   ],
-  "updated": "2026-09-12",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

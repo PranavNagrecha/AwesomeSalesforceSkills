@@ -28,23 +28,23 @@ The key tradeoffs a delivery team faces:
 
 ## Official Sources Used
 
-- **Metadata API Developer Guide** (Summer '26 / v62 PDF, `api_meta.pdf`) —
-  https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
+- **Metadata API Developer Guide** (Winter '27 / API 68.0 PDF, `api_meta.pdf`; line cites re-checked against the 264 text on 2026-10-20) —
+  https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/api_meta.pdf
   - § AssignmentRules → *File Suffix and Directory Location* and the `AssignmentRule` singular-member
-    syntax (L23675–23691) — supports gotcha 9, "`artefact` is not a unique key", and the coarse
+    syntax (264 L25727-L25741) — supports gotcha 9, "`artefact` is not a unique key", and the coarse
     artefact granularity noted in `references/worked-examples.md` § 4.
   - § EntitlementProcess → *File Suffix and Directory Location*, the versioned file name and
-    `slaProcess.NameNorm` (L59074–59082) — supports gotcha 10 and the linter's unresolved-artefact
+    `slaProcess.NameNorm` (264 L61583-L61591) — supports gotcha 10 and the linter's unresolved-artefact
     warning in `references/worked-examples.md` § 8.
-  - § BusinessHoursSettings / BusinessHoursEntry (L111264–111294) — supports the single-settings-file
+  - § BusinessHoursSettings / BusinessHoursEntry (264 L114330-L114360) — supports the single-settings-file
     note in `references/worked-examples.md` § 4 and the `BusinessHoursEntry:` artefact form the
     checker resolves.
-  - § CustomField → *Specify the full name whenever you create or update a field* (L43221–43232) —
+  - § CustomField → *Specify the full name whenever you create or update a field* (264 L45466-L45476) —
     supports the `<MetadataType>:<ApiName>` rule for the `artefact` column.
-  - § Deleting Components in a Deployment (L4614–4656) and the note that deletions of components that
-    do not exist are still attempted (L4641) — supports gotcha 15, "a `Dropped` row is not a
+  - § Deleting Components in a Deployment (264 L4705-L4758) and the note that deletions of components that
+    do not exist are still attempted (264 L4742) — supports gotcha 15, "a `Dropped` row is not a
     destructive change".
-  - § Unsupported Metadata Types (L9555–9559) — supports gotcha 14, the `setup-only:` marker, and the
+  - § Unsupported Metadata Types (264 L10256-L10260) — supports gotcha 14, the `setup-only:` marker, and the
     decision to make an unresolved artefact a warning rather than an error by default.
 - **`standards/build-orchestration.md`** (contract v1, 2026-09-05) — § 2 defines
   `.sfskills/builds/<build-id>/traceability.md` as "REQ → step → artefact → test"; § 4 fixes one

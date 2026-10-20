@@ -75,7 +75,7 @@ no trigger changes beyond add-only. Bump `version` (patch) and `updated`. Report
 version decision and its citation, UNVERIFIED before → after.
 
 ## Job type `audit` (never-audited skill: no corpus cite, no UNVERIFIED marker)
-Claims audit, not a rewrite. (1) List every factual claim in the package (limits, API names, metadata element
+Claims audit, not a rewrite. The corpus is BOTH directories: the twelve Winter '27 guides in `corpus264/` AND the Summer '26 copies in `corpus/` — the Apex Reference Guide and the Security Implementation Guide exist only there (cite `apexref 262 L<n>`, `secguide 262 L<n>`). Before any UNVERIFIED marker, `grep -rn` the claim's key term across BOTH directories. (1) List every factual claim in the package (limits, API names, metadata element
 names and gates, behaviours, error texts, "removed/deprecated" statements) and check each against the corpus
 with `grep -n`; (2) correct every CONTRADICTED claim in place with the cite, keeping the old figure only as
 labelled history; (3) mark every claim the corpus does not hold `UNVERIFIED (YYYY-MM-DD)` inline — Help-only
@@ -114,3 +114,8 @@ You review one writer's uncommitted worktree. You may edit, you never commit. Fo
 - 2026-10-20 (R2-33..36): every checker obeys one contract — findings exit 0 unless `--strict`, empty dir one WARN exit 0, missing path ERROR exit 1 — and a rule that flags the documented pattern (SeeAllData for ConnectApi) is removed, not softened.
 - 2026-10-20 (R3-06 batch 1): the checker contract distinguishes severities — ERROR findings (schema breaks, a build-step gate artefact that is wrong) exit 1 always because build-loop gates depend on it; WARN/REVIEW/INFO exit 0 unless `--strict`. A brief sentence that said "findings exit 0" without the severity split made two agents disagree.
 - 2026-10-20 (R3-06 batch 1): a checker rule can contradict the corpus just like prose (picklist checker flagged GVS-backed picklists as unrestricted; api_meta 264 L45920-45922 says they are restricted) — audit every rule's premise, not only its exit codes.
+- 2026-10-20 (R3-06 batch 1, Opus writer, 42 cases): marking a claim UNVERIFIED when the corpus holds it is a defect of the same weight as asserting a false one — grep every corpus file, including the 262 copies (Security Guide, Apex Reference) and the OTHER 264 guides (the 3,900-char formula limit is in apexdev L28560, not api_meta; `--dry-run` is in api_meta L4114), before writing a marker; never write "the corpus only has X" without a corpus-wide grep.
+- 2026-10-20 (R3-06 batch 1): when a cite moves from 262 to 264 line numbers, re-read the 264 line and re-quote it — three quotes kept the 262 wording against 264 lines (deleteConstraint, precision, externalId).
+- 2026-10-20 (R3-06 batch 1): a cite must be to a line about the SAME case — apexdev L15110 (Bulk API trigger chunks) is not a cite for "triggers run on 200 records" (L40790 is).
+- 2026-10-20 (R3-06 batch 1): never demote ERROR-class checker findings (schema breaks, parse failures, missing required fields, missing path) to WARN while "fixing the contract"; the contract's exit-0 rule is for WARN/REVIEW/INFO only.
+- 2026-10-20 (R3-06 batch 1): an UNVERIFIED marker sits beside the whole claim it covers — not mid-paragraph with unmarked sentences after it, and a Questions row restating an unverified claim carries the marker too; a `---` directly after a paragraph turns it into a heading (blank line first).

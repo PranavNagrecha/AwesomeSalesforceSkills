@@ -75,7 +75,7 @@ Reading rules, so a row is unambiguous:
   either way the cell answers "who has to be asked again when this changes".
 - **`artefact`** is `<MetadataType>:<ApiName>` and the API name is the Metadata API `fullName`, not
   the Setup label. For a `CustomField` the guide fixes the shape as `Object.Field__c`
-  (`api_meta.txt` L43221–43226: "Specify the full name whenever you create or update a field. For
+  (api_meta 264 L45466-L45470: "Specify the full name whenever you create or update a field. For
   example, a custom field on a custom object: `MyCustomObject__c.MyCustomField__c`" and "a custom
   field on a standard object: `Account.MyAcctCustomField__c`").
 - **`File:<path>`** is the form for an artefact that is a project file rather than a metadata
@@ -119,17 +119,17 @@ Note `REQ-011` and `REQ-012` sharing `AssignmentRules`-style coarse granularity 
 `EscalationRules:Case`. That is not sloppiness: assignment and escalation rules for an object are
 stored as **one file per object** — "Assignment rules for an object have the suffix
 `.assignmentRules` and are stored in the `assignmentRules` folder. For example, all Case assignment
-rules are stored in the `Case.assignmentRules` file" (`api_meta.txt` L23689–23691). The manifest can
+rules are stored in the `Case.assignmentRules` file" (api_meta 264 L25740-L25741). The manifest can
 name individual rules by switching the type name to the singular `AssignmentRule` with members like
-`Case.samplerule` (`api_meta.txt` L23675–23682). So `artefact` is **not** a unique key, and any
+`Case.samplerule` (api_meta 264 L25727-L25733). So `artefact` is **not** a unique key, and any
 tooling that assumes one row per file is wrong — see gotcha 9.
 
 `REQ-009` is the same shape one level worse. Business hours are not a per-calendar file at all:
 "Business hours and holidays settings are stored in a single file named `businessHours.settings` in
 the `settings` directory. The `.settings` files are different from other named components because
-there's only one settings file for each settings component" (`api_meta.txt` L111264–111273). Every
+there's only one settings file for each settings component" (api_meta 264 L114330-L114338). Every
 calendar and every holiday in the org shares that file, so the row names the *entry*
-(`BusinessHoursEntry:EMEA_Support_Hours`, whose `name` field the guide describes at L111288–111294)
+(`BusinessHoursEntry:EMEA_Support_Hours`, whose `name` field the guide describes at api_meta 264 L114354-L114360)
 and the linter resolves it by reading the entries out of the one settings file.
 
 ## 5. The decisions the `decision_ref` column points at
@@ -248,7 +248,7 @@ finding, not a quality finding, and treating it as a defect is how teams learn t
 The last row is the one to be careful with. Deleting a component that is already live is a
 destructive change, and the delete manifest has its own rules: it is named `destructiveChanges.xml`,
 **wildcards are not supported in it**, and it needs a companion `package.xml` that lists no
-components and carries the API version (`api_meta.txt` L4614–4632). Bundling that delete into the
+components and carries the API version (api_meta 264 L4705-L4727). Bundling that delete into the
 feature deploy would make the feature's rollback also a restore.
 
 ## 8. Running the linter
@@ -291,7 +291,7 @@ The `EntitlementProcess` warning is a real trap rather than noise. The entitleme
 named for the process **with its version appended when entitlement versioning is on** — the guide's
 own example is a process named "gold_support" living in `gold_support_v2.entitlementProcess`, and
 that file name corresponds to `slaProcess.NameNorm`, the lowercase form of the UI `name`, which
-several versions can share (`api_meta.txt` L59074–59082). A row that says
+several versions can share (api_meta 264 L61583-L61591). A row that says
 `EntitlementProcess:Premier_Support` will never resolve. Write the file's name.
 
 ## 9. What this file deliberately does not carry

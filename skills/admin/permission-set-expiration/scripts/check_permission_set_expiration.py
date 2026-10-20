@@ -9,23 +9,29 @@ Two independent checks, both stdlib-only:
    * ``UserManagement.settings`` — ``psaExpirationUIEnabled`` is documented as
      defaulting to ``false``. When it is absent or false, the Setup assignment
      screens show no expiration control and admins conclude the feature does
-     not exist in their org. (Metadata API Developer Guide v67.0,
-     UserManagementSettings.)
+     not exist in their org. (Metadata API Developer Guide, Winter '27,
+     UserManagementSettings — api_meta 264 L132107-L132111.)
    * ``*.useraccesspolicy`` — ``UserAccessPolicyAction`` has exactly three
      fields: ``action``, ``target``, ``type``. Anything else inside
      ``<userAccessPolicyActions>`` is invented — most often a hallucinated
-     expiration attribute — and will fail deployment. (Metadata API Developer
-     Guide v67.0, UserAccessPolicy.)
+     expiration attribute. (Metadata API Developer Guide, Winter '27,
+     UserAccessPolicyAction — api_meta 264 L141669-L141707.)
 
 2. ``--plan`` validates a JSON time-boxed assignment plan before anyone loads
    it. ``PermissionSetAssignment`` field properties from the Object Reference
-   v67.0 drive the rules: ``ExpirationDate`` is the only field an admin
+   (Winter '27, object_reference 264 L219713-L219845) drive the rules: ``ExpirationDate`` is the only field an admin
    updates on an existing row (``IsRevoked`` also carries the Update property,
    but user access policies own it); ``AssigneeId``, ``PermissionSetId`` and
    ``PermissionSetGroupId`` are Create-only; and only
    ``PermissionSetAssignment`` carries an expiry at all.
 
-Exit code 0 when nothing is wrong, 1 when at least one issue is found.
+Exit contract: ERROR findings (unparseable XML or JSON, a missing plan file, a
+missing required field, an unsupported operation, an update that writes a
+Create-only field, a malformed dateTime) exit 1 always; WARN findings (the
+expiration UI off, no expiry, a date-only expiry, an unknown policy-action
+element, a duration key) exit 0, or 1 with --strict; a manifest dir with
+neither file type prints one WARN and exits 0; a missing directory prints
+ERROR and exits 1.
 
 Usage:
     python3 check_permission_set_expiration.py --manifest-dir force-app
@@ -96,7 +102,17 @@ def parse_args() -> argparse.Namespace:
         "--plan",
         help="Path to a JSON time-boxed assignment plan to validate.",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings too (ERROR findings always exit 1).",
+    )
     return parser.parse_args()
+
+
+# Findings that would make the load or deploy fail (unparseable input, a missing
+# required field, writing a Create-only field) carry this prefix and are ERRORs.
+ERR = "ERROR|"
 
 
 def localname(tag: str) -> str:
@@ -134,7 +150,7 @@ def check_user_management_settings(base: Path) -> tuple[list[str], list[str]]:
         try:
             root = ET.parse(path).getroot()
         except ET.ParseError as exc:
-            issues.append(f"[{path}] XML parse error: {exc}")
+            issues.append(f"{ERR}[{path}] XML parse error: {exc}")
             continue
 
         values = {localname(child.tag): (child.text or "").strip() for child in root}
@@ -176,7 +192,7 @@ def check_user_access_policies(base: Path) -> tuple[list[str], list[str]]:
         try:
             root = ET.parse(path).getroot()
         except ET.ParseError as exc:
-            issues.append(f"[{path}] XML parse error: {exc}")
+            issues.append(f"{ERR}[{path}] XML parse error: {exc}")
             continue
 
         actions = [c for c in root if localname(c.tag) == "userAccessPolicyActions"]
@@ -197,7 +213,7 @@ def check_user_access_policies(base: Path) -> tuple[list[str], list[str]]:
             missing = sorted(UAP_ACTION_FIELDS - present)
             if missing:
                 issues.append(
-                    f"[{path}] userAccessPolicyActions[{index}] is missing required "
+                    f"{ERR}[{path}] userAccessPolicyActions[{index}] is missing required "
                     f"field(s): {', '.join(missing)}."
                 )
         notes.append(f"[{path}] {len(actions)} policy action(s) checked.")
@@ -228,18 +244,18 @@ def check_plan(path: Path) -> tuple[list[str], list[str]]:
     notes: list[str] = []
 
     if not path.exists():
-        return [f"Plan file not found: {path}"], notes
+        return [f"{ERR}Plan file not found: {path}"], notes
 
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        return [f"[{path}] could not be read as JSON: {exc}"], notes
+        return [f"{ERR}[{path}] could not be read as JSON: {exc}"], notes
 
     if isinstance(data, dict):
         data = data.get("assignments", data.get("plan", []))
     if not isinstance(data, list):
         return [
-            f"[{path}] expected a JSON list of assignments, or an object with an "
+            f"{ERR}[{path}] expected a JSON list of assignments, or an object with an "
             "'assignments' list."
         ], notes
     if not data:
@@ -248,7 +264,7 @@ def check_plan(path: Path) -> tuple[list[str], list[str]]:
     for index, row in enumerate(data, start=1):
         label = f"[{path}] assignment {index}"
         if not isinstance(row, dict):
-            issues.append(f"{label}: expected an object, got {type(row).__name__}.")
+            issues.append(f"{ERR}{label}: expected an object, got {type(row).__name__}.")
             continue
 
         invented = sorted(set(row) & INVENTED_DURATION_KEYS)
@@ -260,37 +276,37 @@ def check_plan(path: Path) -> tuple[list[str], list[str]]:
             )
 
         if not row.get("assignee"):
-            issues.append(f"{label}: 'assignee' is required.")
+            issues.append(f"{ERR}{label}: 'assignee' is required.")
 
         targets = [key for key in EXPIRY_CAPABLE if row.get(key)]
         if not targets:
             issues.append(
-                f"{label}: name exactly one of permissionSet or permissionSetGroup. "
+                f"{ERR}{label}: name exactly one of permissionSet or permissionSetGroup. "
                 "Only PermissionSetAssignment carries an expiry — profiles, permission "
                 "set licences, muting permission sets and group membership cannot."
             )
         elif len(targets) > 1:
             issues.append(
-                f"{label}: names both {' and '.join(targets)}. One assignment row "
+                f"{ERR}{label}: names both {' and '.join(targets)}. One assignment row "
                 "grants one permission set OR one permission set group, never both."
             )
 
         operation = str(row.get("operation", "insert")).lower()
         if operation not in SUPPORTED_OPERATIONS:
             issues.append(
-                f"{label}: operation '{operation}' is not supported. "
+                f"{ERR}{label}: operation '{operation}' is not supported. "
                 f"PermissionSetAssignment supports {', '.join(sorted(SUPPORTED_OPERATIONS))}."
             )
         if operation == "update":
             if not row.get("assignmentId"):
                 issues.append(
-                    f"{label}: operation 'update' needs an assignmentId naming the "
+                    f"{ERR}{label}: operation 'update' needs an assignmentId naming the "
                     "existing row whose ExpirationDate is being extended."
                 )
             retargets = sorted(set(row) & RETARGET_KEYS)
             if retargets:
                 issues.append(
-                    f"{label}: operation 'update' carries {', '.join(retargets)}. "
+                    f"{ERR}{label}: operation 'update' carries {', '.join(retargets)}. "
                     "AssigneeId, PermissionSetId and PermissionSetGroupId are Create-only "
                     "— retargeting is a delete plus an insert. Only ExpirationDate can be "
                     "updated in place."
@@ -304,7 +320,7 @@ def check_plan(path: Path) -> tuple[list[str], list[str]]:
                 "standing privilege. Set a date or move the grant out of this plan."
             )
         elif not isinstance(expiry, str):
-            issues.append(f"{label}: expirationDate must be a string, got {type(expiry).__name__}.")
+            issues.append(f"{ERR}{label}: expirationDate must be a string, got {type(expiry).__name__}.")
         elif DATE_ONLY_RE.match(expiry):
             issues.append(
                 f"{label}: expirationDate '{expiry}' is date-only. ExpirationDate is a "
@@ -313,7 +329,7 @@ def check_plan(path: Path) -> tuple[list[str], list[str]]:
             )
         elif not ISO_INSTANT_RE.match(expiry):
             issues.append(
-                f"{label}: expirationDate '{expiry}' is not an ISO 8601 instant with an "
+                f"{ERR}{label}: expirationDate '{expiry}' is not an ISO 8601 instant with an "
                 "explicit offset or Z."
             )
 
@@ -348,9 +364,11 @@ def main() -> int:
     if args.manifest_dir:
         base = Path(args.manifest_dir).resolve()
         if not base.is_dir():
-            print(f"ERROR: not a directory: {base}", file=sys.stderr)
+            print(f"ERROR: not a directory: {base}")
             return 1
         print(f"Scanning metadata: {base}\n")
+        if not find_settings_files(base) and not any(base.rglob("*.useraccesspolicy*")):
+            print(f"WARN: no UserManagement.settings or .useraccesspolicy files under {base} — nothing to check.")
         for check in (check_user_management_settings, check_user_access_policies):
             found_issues, found_notes = check(base)
             issues.extend(found_issues)
@@ -369,10 +387,16 @@ def main() -> int:
         print()
 
     if issues:
-        print(f"Issues found ({len(issues)}):", file=sys.stderr)
-        for issue in issues:
-            print(f"ISSUE: {issue}", file=sys.stderr)
-        return 1
+        errors = [i[len(ERR):] for i in issues if i.startswith(ERR)]
+        warns = [i for i in issues if not i.startswith(ERR)]
+        print(f"Issues found ({len(issues)}):")
+        for issue in errors:
+            print(f"ERROR: {issue}")
+        for issue in warns:
+            print(f"WARN: {issue}")
+        if errors:
+            return 1
+        return 1 if args.strict else 0
 
     print("No issues found.")
     return 0

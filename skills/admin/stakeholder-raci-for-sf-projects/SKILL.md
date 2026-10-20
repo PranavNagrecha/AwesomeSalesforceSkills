@@ -41,9 +41,9 @@ outputs:
   - "Sponsor / steerco review log showing the matrix has been reviewed and version-locked for the current phase"
   - "Identified gaps — decision categories with no A, A roles overloaded across rows, decisions still owned by the consulting partner instead of the customer"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-20
 ---
 
 # Stakeholder RACI for Salesforce Projects
@@ -72,11 +72,11 @@ matching gotcha is named in the last column so you can see what the answer is pr
 | Ask | Why it matters | What a good answer adds |
 |---|---|---|
 | "Who loses something when the sandbox is refreshed, and who schedules it?" | A refresh replaces the org; the person who runs it is rarely the person whose UAT evidence or seeded data disappears | Separate A (data owner) and R (release manager) on the refresh row, with a blocking trigger — `gotchas.md` §9 |
-| "Who signs off a data load — the person who runs the tool, or the person who owns the records?" | Hard-deleted records cannot be recovered from the Recycle Bin, and a failed bulk job leaves a partial state someone must adjudicate | An A on the data owner and an escalation trigger on hard delete and row-count overrun — `gotchas.md` §13 |
+| "Who signs off a data load — the person who runs the tool, or the person who owns the records?" | Hard-deleted records cannot be recovered from the Recycle Bin (salesforce_data_loader 264 L651-L652), and a failed bulk job leaves a partial state someone must adjudicate (api_asynch 264 L1227-L1229) | An A on the data owner and an escalation trigger on hard delete and row-count overrun — `gotchas.md` §13 |
 | "Who decides when we activate a Release Update, and against which enforcement release?" | Release Updates carry an availability release and an enforcement release; unowned, the platform activates on its date | A release-update row with A on the release manager and a time-box measured in releases — `gotchas.md` §12 |
 | "Which delegate groups exist today, and do they match what this matrix says about permissions?" | Delegated administration is the decision-rights model made deployable — the org grants what the metadata says, not what the deck says | A retrieve-and-diff step at each phase review — `gotchas.md` §14 |
 | "Is 'the Salesforce admin' one column or several roles one person happens to fill?" | One column means one bottleneck and no successor; the platform itself splits admin authority | A register that records the double-hatting instead of merging the columns — `gotchas.md` §10 |
-| "Which running integrations does this org already have, and who owns each one?" | API allocations and concurrency limits are org-wide and shared; an unlisted integration can fail your rehearsed load | Named owners for existing integrations as C on the integration row — `gotchas.md` §11 |
+| "Which running integrations does this org already have, and who owns each one?" | API allocations and concurrency limits are org-wide and shared (25 concurrent long-running requests, salesforce_app_limits_cheatsheet 264 L50-L55); an unlisted integration can fail your rehearsed load | Named owners for existing integrations as C on the integration row — `gotchas.md` §11 |
 | "If this is a multi-org programme, does each role mean the same person in every org?" | Roles, delegate groups, and release managers are org-scoped; one column hides two different authorities | Org-scoped columns (`RM_A`, `RM_B`) and a steerco A on cross-org decisions — `gotchas.md` §15 |
 
 What a proper matrix adds over just naming an owner per workstream: every irreversible Salesforce

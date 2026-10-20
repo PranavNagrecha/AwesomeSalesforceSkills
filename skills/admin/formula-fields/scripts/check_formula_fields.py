@@ -6,7 +6,10 @@ Usage:
     python3 check_formula_fields.py path/to/Field__c.field-meta.xml [more paths...]
 
 Scans decomposed DX ``*.field-meta.xml`` files (root ``<CustomField>``). Fields with no
-``<formula>`` element are skipped. Stdlib only; exits 1 when any finding is emitted.
+``<formula>`` element are skipped. Stdlib only. Exit contract: CRITICAL findings are ERRORs
+(not well-formed XML, an invalid ``formulaTreatBlanksAs`` value — both fail the deploy) and
+exit 1 always; HIGH/MEDIUM/LOW findings exit 0 (exit 1 with --strict); REVIEW advisories never
+fail; no field files found prints one WARN and exits 0; a missing path prints ERROR and exits 1.
 """
 
 from __future__ import annotations
@@ -90,13 +93,18 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     normalized = [normalize_finding(finding) for finding in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
     if normalized:
         print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+    # CRITICAL is the ERROR tier (the deploy fails): exit 1 always.
+    if any(item["severity"] == "CRITICAL" for item in normalized):
+        return 1
+    # REVIEW findings carry zero weight by design (advisories), so --strict ignores them.
+    blocking = [item for item in normalized if item["severity"] != "REVIEW"]
+    return 1 if (blocking and strict) else 0
 
 
 def max_relationship_depth(formula: str) -> tuple[int, str]:
@@ -200,6 +208,7 @@ def main() -> int:
         help="Directory to scan recursively for *.field-meta.xml (e.g. force-app/main/default/objects)",
     )
     parser.add_argument("paths", nargs="*", help="Field metadata files or directories")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on HIGH/MEDIUM/LOW findings too (CRITICAL always exits 1).")
     args = parser.parse_args()
 
     targets = [Path(value) for value in args.paths]
@@ -208,19 +217,22 @@ def main() -> int:
     if not targets:
         parser.error("provide --manifest-dir or at least one path")
 
+    for target in targets:
+        if not target.exists():
+            print(f"ERROR: path does not exist: {target}")
+            sys.exit(1)
+
     findings: list[str] = []
     files = iter_files(targets)
     if not files:
-        return emit_result(
-            ["HIGH no custom field metadata files found"],
-            "Scanned 0 custom field metadata file(s); no files matched the provided paths.",
-        )
+        print("WARN: no custom field metadata (*.field-meta.xml) files found — nothing to check.")
+        return 0
 
     for path in files:
         findings.extend(audit_field(path))
 
     summary = f"Scanned {len(files)} custom field metadata file(s); {len(findings)} finding(s) detected."
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, args.strict)
 
 
 if __name__ == "__main__":

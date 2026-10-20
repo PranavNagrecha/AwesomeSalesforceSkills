@@ -32,7 +32,7 @@ insert new PermissionSetAssignment(
 
 **Why it happens:** The Object Reference carries a blanket sentence — "To update an assignment, delete an existing assignment and insert a new one" — that the model applies to the whole object. It has no per-field property table in context, so it cannot see that `ExpirationDate` is the one writable exception.
 
-**Why it is wrong:** `AssigneeId`, `PermissionSetId`, and `PermissionSetGroupId` all carry Create, Filter, Group, Sort — no Update. Writing to them fails. `ExpirationDate` carries Create, Filter, Nillable, Sort, **Update**. Doing a delete-and-insert to extend a date destroys the original creation audit and, in bulk, can strand users with no assignment when the insert half fails.
+**Why it is wrong:** `AssigneeId`, `PermissionSetId`, and `PermissionSetGroupId` all carry Create, Filter, Group, Sort — no Update. Writing to them fails. `ExpirationDate` carries Create, Filter, Nillable, Sort, **Update** (object_reference 264 L219716, L219742, L219810, L219836). Doing a delete-and-insert to extend a date destroys the original creation audit and, in bulk, can strand users with no assignment when the insert half fails.
 
 **Correct pattern:**
 
@@ -100,7 +100,7 @@ with no state predicate, presented as the answer to a compliance question.
 
 **Why it happens:** Before expiry existed, the presence of the row *was* the answer, and the overwhelming majority of `PermissionSetAssignment` examples in training data predate `ExpirationDate`.
 
-**Why it is wrong:** liveness is carried by `IsActive`, a platform-owned, read-only field, not by the row's existence. Separately, in an org with user access policies enabled, a policy revocation sets `IsRevoked = true` and leaves the record in place — the Object Reference's own retrieval example for that population uses `ALL ROWS`. One query covers neither terminal state.
+**Why it is wrong:** liveness is carried by `IsActive`, a platform-owned, read-only field, not by the row's existence. Separately, in an org with user access policies enabled, a policy revocation sets `IsRevoked = true` and leaves the record in place — the Object Reference's own retrieval example for that population uses `ALL ROWS` (object_reference 264 L219895-L219901). One query covers neither terminal state.
 
 **Correct pattern:**
 
@@ -182,13 +182,13 @@ Unit of expiry = the smallest grant containing ONLY the temporary capability.
 
 **Why it happens:** Automated provisioning and time-bounded access are adjacent problems, so the model assumes the automation engine owns the clock.
 
-**Why it is wrong:** `UserAccessPolicyAction` has exactly three fields — `action` (`Grant` or `Revoke`), `target`, and `type` (`Group`, `PackageLicense`, `PermissionSet`, `PermissionSetGroup`, `PermissionSetLicense`, `Queue`). There is no date anywhere in the policy metadata. Policies express "access follows the attribute"; only `ExpirationDate` expresses "access lasts until this instant." An invented element fails deployment, and the accompanying prose sends the architect down a design that cannot be built.
+**Why it is wrong:** `UserAccessPolicyAction` has exactly three fields — `action` (`Grant` or `Revoke`), `target`, and `type` (`Group`, `PackageLicense`, `PermissionSet`, `PermissionSetGroup`, `PermissionSetLicense`, `Queue`) — api_meta 264 L141673-L141707. There is no date anywhere in the policy metadata. Policies express "access follows the attribute"; only `ExpirationDate` expresses "access lasts until this instant." An invented element fails deployment, and the accompanying prose sends the architect down a design that cannot be built.
 
 **Correct pattern:**
 
 ```xml
-<!-- force-app/main/default/useraccesspolicies/Sales_Rep_Migration.useraccesspolicy-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/useraccesspolicies/Sales_Rep_Migration.useraccesspolicy-meta.xml -->
 <UserAccessPolicy xmlns="http://soap.sforce.com/2006/04/metadata">
     <booleanFilter>1</booleanFilter>
     <masterLabel>Sales Rep Migration</masterLabel>
@@ -220,7 +220,7 @@ Note also that a policy deployed with `<status>Active</status>` comes back as `D
 
 **Why it happens:** The model has no view of the target org's settings and defaults to describing the feature as universally visible.
 
-**Why it is wrong:** two separate gates. `UserManagementSettings.psaExpirationUIEnabled` is documented as defaulting to `false`, so in an org that never turned it on there is no expiration control to click. And the Security Guide's expiration step sits in the permission-set-side *Manage Assignments → Add Assignments* flow, not in the user-record-side *Edit Assignments* procedure. An admin following a confident, wrong click trail concludes the feature does not exist in their edition.
+**Why it is wrong:** two separate gates. `UserManagementSettings.psaExpirationUIEnabled` is documented as defaulting to `false` (api_meta 264 L132110), so in an org that never turned it on there is no expiration control to click. And the Security Guide's expiration step sits in the permission-set-side *Manage Assignments → Add Assignments* flow, not in the user-record-side *Edit Assignments* procedure — grounded in 262: salesforce_security_impl_guide L2055 (Security Guide not published at 264). An admin following a confident, wrong click trail concludes the feature does not exist in their edition.
 
 **Correct pattern:**
 

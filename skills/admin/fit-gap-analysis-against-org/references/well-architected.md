@@ -21,6 +21,9 @@
 
 ## Official Sources Used
 
+- Apex Developer Guide (Winter '27) — a trigger or class "may be invoked for 1 to 200 records", the bulk-path threshold the Review Checklist uses (salesforce_apex_developer_guide 264 L40790).
+- Audit 2026-10-20: edition, licence and Setup click-path facts below are Help-only; the 264 corpus holds none of them, so they carry inline UNVERIFIED markers in SKILL.md.
+
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

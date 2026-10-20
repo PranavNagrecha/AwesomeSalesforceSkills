@@ -10,7 +10,7 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Record the answers to the Questions to Ask Before Configuring table in SKILL.md: ownership, delete behaviour, junction primary, deepest read path, automation users, orphan rows, polymorphic need.
 
 - Setting / configuration:
 - Known constraints:
@@ -18,15 +18,17 @@ TODO: Record the answers to the Before Starting questions from SKILL.md here.
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Name the relationship type from the Decision Guidance table and the pattern that applies (master-detail for true parent-child, lookup + `Restrict`, or lookup + rollup alternative), with the answer that decided it.
 
 ## Checklist
 
 Copy the review checklist from SKILL.md and tick items as you complete them.
 
-- [ ] TODO
-- [ ] TODO
+- [ ] Ownership semantics documented and match the chosen type
+- [ ] `deleteConstraint` (or cascade) set explicitly
+- [ ] Relationship count under 40 on the custom object; read paths within five levels
+- [ ] Two master-details: `relationshipOrder` names the intended primary
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Record any deviation from the chosen pattern, who approved it, and why.

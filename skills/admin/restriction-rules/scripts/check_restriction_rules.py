@@ -22,8 +22,12 @@ wrong records, the wrong users, or nothing at all:
 Sources for every rule enforced here are listed in
 references/well-architected.md ("Official Sources Used").
 
-Stdlib only. Exits 0 when clean, 1 when findings exist or the input path is
-unusable.
+Stdlib only. Exit contract: ERROR findings (unparseable XML, a missing
+required Metadata API field, an undocumented enforcementType, a Restrict
+targetEntity off the supported list — api_meta 264 L108656-L108706) exit 1
+always; WARN findings exit 0, or 1 with --strict; a directory with no .rule
+files prints one WARN and exits 0; a missing or non-directory path prints
+ERROR and exits 1.
 
 Usage:
     python3 check_restriction_rules.py --manifest-dir force-app/main/default
@@ -52,7 +56,8 @@ REQUIRED_FIELDS = (
 VALID_ENFORCEMENT_TYPES = ("FieldRestrict", "Restrict", "Scoping")
 
 # The Metadata API reference documents three enum values but marks one of them
-# "FieldRestrict-Don't use." It parses; it should never ship.
+# "FieldRestrict-Don't use." (api_meta 264 L108663). Whether it deploys is not
+# documented in the corpus; it should never ship either way.
 DISCOURAGED_ENFORCEMENT_TYPES = {
     "FieldRestrict": 'the Metadata API reference documents this value as "Don\'t use."',
 }
@@ -82,7 +87,9 @@ SCOPING_STANDARD_ENTITIES = (
 # two active restriction rules and two active scoping rules on the same object
 # are both legal at once. The Scoping Rules considerations page names only
 # Developer, Performance and Unlimited editions; it states no Enterprise number,
-# so none is asserted here.
+# so none is asserted here. RESTRICT_CEILING: 262: salesforce_security_impl_guide
+# L4118-L4119. SCOPING_CEILING is UNVERIFIED (2026-10-20): Scoping Rules Developer
+# Guide only, not in the corpus.
 RESTRICT_CEILING = {
     "enterprise": 2,
     "developer": 2,
@@ -133,9 +140,10 @@ def mask_literals(value: str) -> str:
 class Finding:
     """One problem, anchored to a file."""
 
-    def __init__(self, path: Path, message: str) -> None:
+    def __init__(self, path: Path, message: str, severity: str = "WARN") -> None:
         self.path = path
         self.message = message
+        self.severity = severity
 
     def __str__(self) -> str:
         return f"{self.path}: {self.message}"
@@ -149,6 +157,11 @@ def parse_args() -> argparse.Namespace:
         "--manifest-dir",
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings too (ERROR findings always exit 1).",
     )
     parser.add_argument(
         "--edition",
@@ -180,7 +193,7 @@ def read_fields(path: Path) -> tuple[dict, list[Finding]]:
     try:
         root = ET.parse(path).getroot()
     except ET.ParseError as exc:
-        return {}, [Finding(path, f"file is not parseable XML ({exc})")]
+        return {}, [Finding(path, f"file is not parseable XML ({exc})", "ERROR")]
 
     if strip_ns(root.tag) != "RestrictionRule":
         return {}, []
@@ -198,6 +211,7 @@ def check_required(path: Path, fields: dict) -> list[Finding]:
             Finding(
                 path,
                 "missing required Metadata API field(s): " + ", ".join(missing),
+                "ERROR",
             )
         ]
     return []
@@ -214,6 +228,7 @@ def check_target_entity(path: Path, fields: dict) -> list[Finding]:
                 path,
                 f"enforcementType '{enforcement}' is not a documented value "
                 f"({', '.join(VALID_ENFORCEMENT_TYPES)})",
+                "ERROR",
             )
         )
         return findings
@@ -244,6 +259,7 @@ def check_target_entity(path: Path, fields: dict) -> list[Finding]:
                     f"Standard objects supported: {', '.join(RESTRICT_STANDARD_ENTITIES)} "
                     "(plus custom and external objects). If this object needs narrowing, "
                     "change the OWD and the sharing layer instead.",
+                    "ERROR",
                 )
             )
     elif enforcement == "Scoping":
@@ -372,17 +388,16 @@ def check_active_counts(per_entity: dict, edition: str) -> list[Finding]:
 
 
 def check_manifest(manifest_dir: Path, edition: str) -> list[Finding]:
-    if not manifest_dir.exists():
-        return [Finding(manifest_dir, "path does not exist")]
     if not manifest_dir.is_dir():
-        return [Finding(manifest_dir, "path is not a directory")]
+        print(f"ERROR: {manifest_dir} does not exist or is not a directory")
+        sys.exit(1)
 
     findings: list[Finding] = []
     active_by_entity = defaultdict(list)
 
     rule_files = find_rule_files(manifest_dir)
     if not rule_files:
-        print(f"No RestrictionRule files found under {manifest_dir} — nothing to check.")
+        print(f"WARN: no RestrictionRule (.rule) files found under {manifest_dir} — nothing to check.")
         return findings
 
     for path in rule_files:
@@ -419,9 +434,11 @@ def main() -> int:
         return 0
 
     for finding in findings:
-        print(f"ISSUE: {finding}", file=sys.stderr)
-    print(f"\n{len(findings)} issue(s) found.", file=sys.stderr)
-    return 1
+        print(f"{finding.severity}: {finding}")
+    print(f"\n{len(findings)} issue(s) found.")
+    if any(finding.severity == "ERROR" for finding in findings):
+        return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

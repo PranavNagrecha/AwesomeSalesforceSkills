@@ -103,6 +103,7 @@
     "7d96812a811661cab609",
     "7ec82b8b13bb9bcdb7d2",
     "7f05c62607e4fc2a3606",
+    "7ff298a3c918f9383966",
     "80bb24ee46daff3fd9ec",
     "813f07464ab31acc94b1",
     "8236b8e7f3a1ce31a25d",
@@ -208,7 +209,7 @@
     "fc7f4f1bf732709584dc",
     "fe3cbeb5d368157e57f3"
   ],
-  "content_hash": "e651d9064689f86dd937148b6e4e36df8e880d76d07564b96d224acbea040cb6",
+  "content_hash": "02bd24e1bf3553eb901995ed429d8e05ead2033c2254112da0b774a8446343d4",
   "dependencies": [],
   "description": "Use this skill when building, reviewing, or refreshing a RACI (Responsible / Accountable / Consulted / Informed) matrix for a Salesforce project so that every Salesforce-specific decision \u2014 data model change, automation tier choice, security model, integration boundary, deployment, license/edition \u2014 has exactly one accountable owner and a documented escalation path that downstream agents can route to. Trigger keywords: RACI matrix salesforce project, stakeholder authority salesforce, escalation path salesforce decisions, who approves data model change, salesforce decision rights, REFUSAL_NEEDS_HUMAN_REVIEW routing. NOT for the change advisory board operating model itself (use admin/change-management-and-deployment). NOT for end-user training rollout plans (use admin/change-management-and-training). NOT for the technical mechanics of permission set assignment authority (use admin/permission-set-architecture). NOT for pure stakeholder requirements elicitation (use admin/requirements-gathering-for-sf). More trigger keywords: who approves a sandbox refresh, who signs off a data load, release update activation owner, delegated admin authority vs RACI, multi-org decision rights, escalation time-box.",
   "file_location": "skills/admin/stakeholder-raci-for-sf-projects",
@@ -226,6 +227,7 @@
     "Salesforce Well-Architected \u2014 Trusted / Compliant \u2014 https://architect.salesforce.com/well-architected/trusted/compliant \u2014 Authoritative for the compliance officer's role on regulated data and the audit-trail / retention rows.",
     "Salesforce Well-Architected \u2014 Trusted / Secure \u2014 https://architect.salesforce.com/well-architected/trusted/secure \u2014 Authoritative for the security architect's A on the sharing-model row and the split between security and integration architecture.",
     "Salesforce Well-Architected \u2014 Adaptable / Resilient \u2014 https://architect.salesforce.com/well-architected/adaptable/resilient \u2014 Authoritative for release manager / CAB pattern on the deployment, hotfix, and release-update rows.",
+    "Winter '27 (264) re-check, 2026-10-20 \u2014 every Salesforce claim below was re-opened in the 264 text: `DelegateGroup` suffix, folder, API 36.0, delegated-admin permission, `customObjects` limits and `loginAccess` (api_meta 264 L53382-L53419); `CustomMetadata` suffix, API 31.0, Customize Application (L43615-L43625); `FlowSettings.doesEnforceApexCpuTimeLimit` (L119949-L119953); `useStabilizedSandboxMyDomainHostnames` enforced Summer '20, always true from API 49.0 (L125896-L125904); Apex release-update example Summer '26 \u2192 Summer '27 (salesforce_apex_developer_guide 264 L15024); `DevopsEnvironment` `OrgIdentifier` / `RefreshDate` / `RefreshSourceId` (object_reference 264 L97437-L97505); `UserLicense` `SFDC` / `AUL` keys, API 32.0 fields, `UsedLicenses` not filterable from 64.0 (L302445-L302580); hard delete not recoverable (salesforce_data_loader 264 L605-L606, L651-L652); Bulk API 2.0 10,000-record batches, 150,000,000 per day, 5-minute batch, 20 retries (api_asynch 264 L1225-L1229); Full Sandbox 5,000,000 calls and 25 concurrent long-running requests (salesforce_app_limits_cheatsheet 264 L165-L170, L49-L55). No contradiction found.",
     "Metadata API Developer Guide, `DelegateGroup` \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf \u2014 File suffix `.delegateGroup` in `delegateGroups`, API v36.0+, \"View Setup and Configuration\" required to be a delegated admin, assignable profiles / permission sets / permission set groups, `loginAccess` semantics, and the limits on what a delegated admin may do to custom objects (`worked-examples.md` \u00a76; `gotchas.md` \u00a710, \u00a714, \u00a715).",
     "Metadata API Developer Guide, `CustomMetadata` and `CustomMetadataValue` \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf \u2014 Suffix `.md` in `customMetadata`, API v31.0+, \"Customize Application\" to create records, record naming, `xsi:type` mapping, omitted-vs-null value semantics, and protected-record visibility (`worked-examples.md` \u00a77, decision-log-as-metadata).",
     "Metadata API Developer Guide, org settings that correspond to Release Updates \u2014 https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf \u2014 `FlowSettings.doesEnforceApexCpuTimeLimit` and `MyDomainSettings.useStabilizedSandboxMyDomainHostnames` (enforced Summer '20; value always `true` as of API v49.0 regardless of what you set) \u2014 evidence that release-update state is deployable metadata and not always reversible (`gotchas.md` \u00a712).",
@@ -269,7 +271,7 @@
     "skills/admin/stakeholder-raci-for-sf-projects/templates/raci-matrix.md",
     "skills/admin/stakeholder-raci-for-sf-projects/templates/stakeholder-raci-for-sf-projects-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

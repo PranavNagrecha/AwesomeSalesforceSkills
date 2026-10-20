@@ -44,7 +44,8 @@ parser; anything fancier should be written as JSON instead.
 Exit codes:
     0 - valid (or valid with warnings and no --strict)
     1 - errors found (or warnings found under --strict)
-    2 - usage error
+    1 - missing path or usage error (shared checker contract: missing path is ERROR, exit 1)
+    An empty --manifest-dir prints one WARN and exits 0.
 """
 
 from __future__ import annotations
@@ -176,9 +177,9 @@ class YamlError(ValueError):
 
 
 def _die(message: str) -> None:
-    """Usage / input error — exit code 2, distinct from a lint failure (1)."""
-    print(f"ERROR: {message}", file=sys.stderr)
-    raise SystemExit(2)
+    """Usage / input error — ERROR line and exit 1 (shared checker contract)."""
+    print(f"ERROR: {message}")
+    raise SystemExit(1)
 
 
 def _parse_block(tokens: list[tuple[int, str, int]], idx: int, indent: int) -> tuple[Any, int]:
@@ -550,7 +551,8 @@ def collect_targets(args: argparse.Namespace) -> list[Path]:
             and p.suffix.lower() in (".yaml", ".yml", ".json")
         )
         if not targets:
-            _die(f"no raci*.yaml|yml|json artefact found under {root}")
+            # Shared checker contract: an empty directory is one WARN and exit 0.
+            print(f"WARN: no raci*.yaml|yml|json artefact found under {root} — nothing to check.")
         return targets
     single = args.file or args.json
     if not single:

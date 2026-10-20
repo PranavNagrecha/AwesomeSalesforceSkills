@@ -35,9 +35,9 @@ outputs:
   - "A test plan that proves the filter in the record UI, in a report, and in SOQL as the restricted user"
   - "A deployment plan covering change set or unlocked package delivery and cross-org Id remapping"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-08-15
+updated: 2026-10-20
 ---
 
 # Restriction Rules
@@ -50,10 +50,24 @@ This skill activates when record access has to be taken *away* from users who al
 
 Gather this before designing anything:
 
-- **Is the object even eligible?** For `enforcementType` `Restrict`, `targetEntity` accepts `Contract`, `Event`, `Quote`, `Task`, `TimeSheet`, `TimeSheetEntry`, plus custom objects and external objects. Account, Opportunity, Case, Contact, and Lead are not on that list. If the request is "hide some Opportunities," the answer is not a restriction rule.
-- **Can the requirement be written as a single EQUALS test?** The criteria language supports only the `=` operator. There is no `AND`, no `OR`, no `!=`, no formula. If the requirement needs two conditions joined, it either gets pushed into a single roll-up-style field on the record or it is not a restriction rule.
+- **Is the object even eligible?** For `enforcementType` `Restrict`, `targetEntity` accepts `Contract`, `Event`, `Quote`, `Task`, `TimeSheet`, `TimeSheetEntry`, plus custom objects and external objects (api_meta 264 L108675-L108682). Account, Opportunity, Case, Contact, and Lead are not on that list. If the request is "hide some Opportunities," the answer is not a restriction rule.
+- **Can the requirement be written as a single EQUALS test?** The criteria language supports only the `=` operator. There is no `AND`, no `OR`, no `!=`, no formula. If the requirement needs two conditions joined, it either gets pushed into a single roll-up-style field on the record or it is not a restriction rule (262: salesforce_security_impl_guide L4356-L4357: only EQUALS; AND, OR and formulas unsupported).
 - **Who holds View All / Modify All on this object, and which code runs in system mode?** Both are documented bypasses. Enumerate them *before* you promise anyone the data is hidden, not after the audit finds it.
-- **What edition is the org?** Enterprise and Developer allow up to two active restriction rules per object; Performance and Unlimited allow up to five. The ceiling counts active rules. Scoping rules have their own separate ceiling (two per object in Developer, five in Performance and Unlimited — the guide states no Enterprise number), so the two kinds do not share a budget. What they do share is the per-user constraint: only one restriction or scoping rule may apply to any given user on a given object.
+- **What edition is the org?** Enterprise and Developer allow up to two active restriction rules per object; Performance and Unlimited allow up to five. The ceiling counts active rules. Scoping rules have their own separate ceiling (two per object in Developer, five in Performance and Unlimited — the guide states no Enterprise number), so the two kinds do not share a budget. What they do share is the per-user constraint: only one restriction or scoping rule may apply to any given user on a given object. Restriction-rule ceilings and the one-rule-per-user constraint: 262: salesforce_security_impl_guide L4118-L4119, L4334-L4335 (Security Guide not yet published at 264); the scoping-rule ceilings are UNVERIFIED (2026-10-20): Scoping Rules Developer Guide only, not in the corpus.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Who holds View All / Modify All (Records or Data) on this object, and which integrations or Apex run in system mode? | Those paths are documented bypasses (Gotcha 1) | A signed bypass inventory before anyone is promised the data is hidden |
+| How will access be proven after activation — is any audit report built on `UserRecordAccess`? | `UserRecordAccess` does not consider restriction rules (Gotcha 2) | A test plan run as the restricted user, and an annotation on the audit tooling |
+| Can the requirement be stated as one field equals one value for the user and one for the record? | Only EQUALS exists; two rules never compose into AND (Gotcha 3) | Either a single criteria pair, or a precomputed key field and its backfill plan |
+| Which orgs will this file deploy to, and which Ids does it reference? | Ids are org-specific and the length matters (Gotcha 4) | A 15-character Id remap table per target org |
+| Do child objects carry the same sensitive data? | A parent rule does not restrict children (Gotcha 6) | A rule per child object, each checked against the supported list |
+| Is the target Task or Event, and do layouts use Open Activities or Activity History? | Those related lists undercount under a rule (Gotcha 7) | A layout change to the Activity Timeline shipped with the rule |
+| What edition is the org, and how many rules (active and draft) already sit on this object? | The active-rule ceiling is per object and per edition (Gotcha 9) | A count that proves the new rule fits, or a consolidation plan |
+
+A configured rule built from these answers ships with its bypass inventory, Id remap table and test evidence; a rule switched on from the request alone hides rows silently and leaves the residual access paths undocumented.
 
 ---
 
@@ -61,32 +75,32 @@ Gather this before designing anything:
 
 ### Subtraction, not a grant
 
-A restriction rule never gives anyone access. Salesforce states it plainly: "When a restriction rule is applied to a user, the records that the user is granted access to via org-wide defaults, sharing rules, and other sharing mechanisms are filtered by criteria that you specify." The rule runs *after* the sharing model has produced a result set and removes rows from it. If OWD, the role hierarchy, and sharing rules never granted the record in the first place, the restriction rule is irrelevant to that record.
+A restriction rule never gives anyone access. Salesforce states it plainly: "When a restriction rule is applied to a user, the records that the user is granted access to via org-wide defaults, sharing rules, and other sharing mechanisms are filtered by criteria that you specify." (262: salesforce_security_impl_guide L4141-L4142; the Metadata API reference adds that a restriction rule "controls the access that specified users have to designated records", api_meta 264 L108626-L108627.) The rule runs *after* the sharing model has produced a result set and removes rows from it. If OWD, the role hierarchy, and sharing rules never granted the record in the first place, the restriction rule is irrelevant to that record.
 
 The practical consequence is that a restriction rule cannot fix an over-permissive OWD. It hides the symptom on a fixed list of surfaces while the underlying grant stays intact in the sharing tables, where anything that reads outside those surfaces still finds it.
 
 ### Where the filter is enforced — and where it is not
 
-Salesforce enumerates the enforcement surfaces: **Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, SOSL**. That is a wide net and it covers the API, which is why restriction rules are genuinely more than a UI decoration.
+Salesforce enumerates the enforcement surfaces: **Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, SOSL** (262: salesforce_security_impl_guide L4287-L4296). That is a wide net and it covers the API, which is why restriction rules are genuinely more than a UI decoration.
 
-It is not, however, an absolute boundary. Salesforce documents eight gaps — seven where a restricted user still reaches filtered data, and one where the platform reports as though the rule did not exist. Quote them to any stakeholder who asks for a compliance guarantee:
+It is not, however, an absolute boundary. Salesforce documents eight gaps — seven where a restricted user still reaches filtered data, and one where the platform reports as though the rule did not exist. Quote them to any stakeholder who asks for a compliance guarantee. All eight are in the Security Guide's Restriction Rule Considerations (262: salesforce_security_impl_guide L4282, L4306-L4316, L4326-L4328); the `UserRecordAccess` row is also in the 264 Object Reference (object_reference 264 L306098).
 
 | Gap | What Salesforce documents |
 |---|---|
 | **System-mode code** | "Restriction rules aren't applied for code executed in System Mode." |
 | **View All Records / View All Data** | Those users "can view all records regardless of restriction rules." |
 | **Modify All Records / Modify All Data** | Those users "can view, edit, and delete all records regardless of restriction rules." |
-| **`UserRecordAccess`** (audit gap, not an access path) | "The UserRecordAccess object doesn't consider whether a user's access is blocked due to a restriction rule." Access-audit tooling built on that object reports the pre-restriction answer. |
+| **`UserRecordAccess`** (audit gap, not an access path) | "The UserRecordAccess object doesn't consider whether a user's access is blocked due to a restriction rule." Access-audit tooling built on that object reports the pre-restriction answer (object_reference 264 L306098). |
 | **Calendar with Show Details** | "In calendars, if the Show Details access level is selected, users can see the subject of all events, regardless of the restriction rules created." |
 | **Subordinates' calendars** | "Users can see their subordinates' events in calendars even if the users have an active restriction rule applied." |
-| **Global search shortcuts** | "After restriction rules are applied, users can still see records that they previously had access to in the global search box shortcuts." |
+| **Global search shortcuts** | "After restriction rules are applied, users can still see records that they previously had access to in the search box shortcuts list or in the Recently Viewed list view." |
 | **Chatter publisher** | "If a user creates an event or a task record using the Chatter publisher, the record name is visible in the related Chatter post." |
 
 Call a restriction rule a run-time visibility filter with eight documented gaps, and design accordingly. If the requirement must survive an integration user with Modify All Data or a `without sharing` class, the answer is a tighter OWD plus removal of whichever sharing layer granted the access — see `admin/sharing-and-visibility`. `references/gotchas.md` works through what each gap looks like in production.
 
 ### The criteria language is one EQUALS test on each side
 
-`userCriteria` picks the audience; `recordFilter` picks what that audience keeps. Both are strings, both are limited to `=`, and both are evaluated at query time.
+`userCriteria` picks the audience; `recordFilter` picks what that audience keeps. Both are strings (api_meta 264 L108670, L108703), both are limited to `=`, and both are evaluated at query time. Operators, formulas, data types, 15-character Ids, multi-value and the Owner type are grounded in 262: salesforce_security_impl_guide L4340-L4365 and L4298-L4299; the Null, one-dot Traversal and Lookups rows are UNVERIFIED (2026-10-20): Restriction Rules Developer Guide only, not in the corpus.
 
 | Constraint | Detail |
 |---|---|
@@ -99,7 +113,7 @@ Call a restriction rule a run-time visibility filter with eight documented gaps,
 | Traversal | Dot notation reaches another object's field, but only one hop: "You can use only one 'dot' (one lookup level from the targetEntity)." Referencing `Owner` requires naming the object type: `Owner:User.ProfileId`, not `Owner.ProfileId`. |
 | Lookups | "If a restriction rule's record criteria uses a lookup field and the related record doesn't exist, access isn't granted." |
 
-Working `recordFilter` / `userCriteria` pairs straight from the Salesforce examples:
+Working `recordFilter` / `userCriteria` pairs straight from the Salesforce examples. Row 1 is the Metadata API sample (api_meta 264 L108719-L108721); rows 2–3 match the Security Guide example scenarios (262: salesforce_security_impl_guide L4453-L4479); rows 4–5 are UNVERIFIED (2026-10-20): Developer Guide examples, not in the corpus.
 
 | Intent | `recordFilter` | `userCriteria` | `targetEntity` |
 |---|---|---|---|
@@ -111,11 +125,11 @@ Working `recordFilter` / `userCriteria` pairs straight from the Salesforce examp
 
 ### The metadata shape
 
-`RestrictionRule` is one metadata type serving both mechanisms: suffix `.rule`, directory `restrictionRules`, available in API version 52.0 and later. `enforcementType` decides which mechanism you get.
+`RestrictionRule` is one metadata type serving both mechanisms: suffix `.rule`, directory `restrictionRules` (api_meta 264 L108643), available in API version 52.0 and later (api_meta 264 L108647). `enforcementType` decides which mechanism you get.
 
 ```xml
-<!-- restrictionRules/Tasks_You_Own.rule -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- restrictionRules/Tasks_You_Own.rule -->
 <RestrictionRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <active>true</active>
     <description>Allows users with a specific profile to see only tasks that they own.</description>
@@ -130,15 +144,15 @@ Working `recordFilter` / `userCriteria` pairs straight from the Salesforce examp
 
 | Field | Value | Notes |
 |---|---|---|
-| `enforcementType` | `Restrict` | Documented enum values are `Restrict`, `Scoping`, and `FieldRestrict`. `Scoping` produces a scoping rule from the same file — see `admin/scoping-rules`. The reference marks the third one "FieldRestrict—Don't use."; it parses and deploys anyway, so the checker flags it. |
-| `targetEntity` | `Task` | Restricted to the supported object list. "We recommend that you don't edit the `targetEntity` field after the restriction rule is created." |
-| `userCriteria` | `$User.ProfileId = '00e…'` | Required. One EQUALS test. Org-specific Ids here must be remapped on deployment. |
-| `recordFilter` | `OwnerId = $User.Id` | Required. One EQUALS test. 15-character Ids. |
-| `active` | `true` | Optional, defaults to `false`. Only `true` rules count against the per-object ceiling. |
-| `version` | `1` | Required int. |
-| `description`, `masterLabel` | strings | Both required by the metadata type. |
+| `enforcementType` | `Restrict` | Documented enum values are `Restrict`, `Scoping`, and `FieldRestrict`. `Scoping` produces a scoping rule from the same file — see `admin/scoping-rules`. The reference marks the third one "FieldRestrict—Don't use." (api_meta 264 L108663-L108666); that it parses and deploys anyway is UNVERIFIED (2026-10-20), not in the corpus — the checker flags it either way. |
+| `targetEntity` | `Task` | Restricted to the supported object list. "We recommend that you don't edit the `targetEntity` field after the restriction rule is created." (api_meta 264 L108673-L108674) |
+| `userCriteria` | `$User.ProfileId = '00e…'` | Required (api_meta 264 L108703). One EQUALS test. Org-specific Ids here must be remapped on deployment. |
+| `recordFilter` | `OwnerId = $User.Id` | Required (api_meta 264 L108670). One EQUALS test. 15-character Ids (262: salesforce_security_impl_guide L4340). |
+| `active` | `true` | Optional, defaults to `false` (api_meta 264 L108657-L108658). Only `true` rules count against the per-object ceiling — "up to two active restriction rules per object" (262: salesforce_security_impl_guide L4118). |
+| `version` | `1` | Required int (api_meta 264 L108706). |
+| `description`, `masterLabel` | strings | Both required by the metadata type (api_meta 264 L108660, L108668). |
 
-Managing these rules requires the **Manage Sharing** permission (view, create, update, delete). The **View Restriction and Scoping Rules** permission grants read-only visibility through the API. The Tooling API exposes the same object with `IsActive`, `DeveloperName`, `RecordFilter`, `TargetEntity`, `UserCriteria` and `EnforcementType` fields at `POST /services/data/vXX.0/tooling/sobjects/RestrictionRule`.
+Managing these rules requires the **Manage Sharing** permission (view, create, update, delete; api_meta 264 L108651-L108652). The **View Restriction and Scoping Rules** permission grants read-only visibility through the API (api_meta 264 L108651-L108652). UNVERIFIED (2026-10-20), Tooling API reference not in the 264 corpus: the Tooling API exposes the same object with `IsActive`, `DeveloperName`, `RecordFilter`, `TargetEntity`, `UserCriteria` and `EnforcementType` fields at `POST /services/data/vXX.0/tooling/sobjects/RestrictionRule`.
 
 ---
 
@@ -152,7 +166,7 @@ Managing these rules requires the **Manage Sharing** permission (view, create, u
 
 **Why not tighten activity sharing instead:** activity access settings are org-wide and blunt; the restriction rule constrains exactly one profile and leaves everyone else on the existing model.
 
-**What breaks:** the Open Activities and Activity History related lists behave badly under restriction rules — Salesforce recommends the Activity Timeline instead, because those related lists can show "fewer than 50 records ... when more activities exist that the user has access to." Plan the page layout change with the rule, not after it.
+**What breaks:** the Open Activities and Activity History related lists behave badly under restriction rules — Salesforce recommends the Activity Timeline instead, because those related lists can show "fewer than 50 records are displayed when more activities exist that the user has access to" (262: salesforce_security_impl_guide L4300-L4303). Plan the page layout change with the rule, not after it.
 
 ### Pattern: department-scoped Contract visibility for external users
 
@@ -166,7 +180,7 @@ Managing these rules requires the **Manage Sharing** permission (view, create, u
 
 **When to use:** any first restriction rule on a populated object.
 
-**How it works:** deploy with `<active>false</active>`, then measure the `recordFilter` as a query against the target object using an API client — Salesforce's own guidance is to "take the record criteria to your API client of choice and run the query," and to "add three to five percent overhead to the record filter's performance" for objects with large data volumes. Activate only when the returned row set matches the intended survivor list and the query time is acceptable.
+**How it works:** deploy with `<active>false</active>`, then measure the `recordFilter` as a query against the target object using an API client — Salesforce's own guidance is to "take the record criteria to your API client of choice and run the query," and to "add three to five percent overhead to the record filter's performance" for objects with large data volumes (262: salesforce_security_impl_guide L4406-L4408). Activate only when the returned row set matches the intended survivor list and the query time is acceptable.
 
 **Why not activate directly:** an over-tight `recordFilter` removes rows silently. Nothing errors, no one is notified, and the first signal is a user reporting that a record they worked yesterday has disappeared.
 
@@ -181,10 +195,10 @@ Managing these rules requires the **Manage Sharing** permission (view, create, u
 | Criteria need two conditions, a negation, or a formula | Compute the answer into one field on the record, then filter on that field | Only the EQUALS operator is supported; `AND`, `OR` and formulas are not |
 | The party to be blocked holds Modify All Data | Remove the permission, or accept that the rule does not apply to them | Documented: those users view, edit, and delete all records regardless |
 | The exposure path is Apex or an integration running in system mode | Fix the sharing model, or set the Apex to user mode | Documented: restriction rules are not applied for code executed in System Mode |
-| A third active restriction rule is needed on the object in Enterprise Edition | Consolidate two rules into one, or move the requirement into the sharing model | Two active per object in Enterprise and Developer; five in Performance and Unlimited. Scoping rules count against their own separate ceiling, not this one |
-| Child records also need hiding | Author a separate rule on the child object | "Creating a restriction rule for an object doesn't automatically restrict access to its child objects" |
-| Two rules could both match one user | Rewrite the `userCriteria` so exactly one matches | "Create only one restriction or scoping rule per object per user" — and where both do match, "only one of the active rules is observed," with no documented rule for which |
-| Target is an external object | Confirm the adapter first | Only Salesforce Connect OData 2.0, OData 4.0, and Cross-Org adapters support restriction rules; the custom adapter does not |
+| A third active restriction rule is needed on the object in Enterprise Edition | Consolidate two rules into one, or move the requirement into the sharing model | Two active per object in Enterprise and Developer; five in Performance and Unlimited. Scoping rules count against their own separate ceiling, not this one. Restriction ceilings: 262: salesforce_security_impl_guide L4118-L4119; the separate scoping ceiling is UNVERIFIED (2026-10-20). |
+| Child records also need hiding | Author a separate rule on the child object | "Creating a restriction rule for an object doesn't automatically restrict access to its child objects" (262: salesforce_security_impl_guide L4336). |
+| Two rules could both match one user | Rewrite the `userCriteria` so exactly one matches | "Create only one restriction or scoping rule per object per user" — and where both do match, "only one of the active rules is observed," with no documented rule for which (262: salesforce_security_impl_guide L4155-L4157, L4334). |
+| Target is an external object | Confirm the adapter first | Only Salesforce Connect OData 2.0, OData 4.0, and Cross-Org adapters support restriction rules; the custom adapter does not (262: salesforce_security_impl_guide L4380, L4383). |
 
 ---
 
@@ -202,7 +216,7 @@ Managing these rules requires the **Manage Sharing** permission (view, create, u
 ## Review Checklist
 
 - [ ] `targetEntity` is on the supported list for `enforcementType` `Restrict`
-- [ ] Active `Restrict` rule count on this object is within the edition ceiling (2 for Enterprise/Developer, 5 for Performance/Unlimited); active `Scoping` rules are counted separately against their own ceiling
+- [ ] Active `Restrict` rule count on this object is within the edition ceiling (2 for Enterprise/Developer, 5 for Performance/Unlimited — 262: salesforce_security_impl_guide L4118-L4119); active `Scoping` rules are counted separately against their own ceiling
 - [ ] No user matches the `userCriteria` of more than one active restriction or scoping rule on this object
 - [ ] `recordFilter` and `userCriteria` each contain exactly one `=` and no `AND`, `OR`, or formula
 - [ ] Any Id literal is 15 characters, and every org-specific Id is on the deployment remap list
@@ -220,7 +234,7 @@ Managing these rules requires the **Manage Sharing** permission (view, create, u
 
 ## Salesforce-Specific Gotchas
 
-Short form; the mechanics and recovery steps for each are in `references/gotchas.md`.
+Short form; the mechanics and recovery steps for each are in `references/gotchas.md`. Item 2 is grounded in object_reference 264 L306098; items 1 and 3–7 in the Security Guide's Restriction Rule Considerations (262: salesforce_security_impl_guide L4282-L4365); only the claim in item 5 that `Owner.` fails outright is UNVERIFIED (2026-10-20) — the guide says the object type must be specified.
 
 1. **A rule is not a security boundary** — eight documented paths still reach filtered records, and two of them (system mode, Modify All Data) are exactly the paths an integration takes.
 2. **`UserRecordAccess` lies about it** — the object that access-audit tooling is usually built on returns the pre-restriction answer.

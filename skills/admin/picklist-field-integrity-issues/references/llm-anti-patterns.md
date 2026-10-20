@@ -12,7 +12,9 @@ These patterns help the consuming agent self-check its own output.
 **Correct pattern:**
 
 ```text
-Dependent picklist filtering is enforced ONLY in the Lightning and Classic UI.
+Dependent picklist filtering is enforced ONLY in the Lightning and Classic UI
+(browser-side JavaScript before the save: salesforce_apex_developer_guide 264
+L15608-L15609; server checks restricted picklists, not dependencies, L15639-L15640).
 API, Data Loader, Bulk API, Apex DML, and Flows in system context do NOT enforce
 the controlling-dependent mapping. To enforce at the data layer, add a validation
 rule or Apex before-trigger that explicitly checks the combination.
@@ -53,7 +55,8 @@ invalid values are NOT cleaned. You must:
 
 ```text
 Adding a value to a Global Value Set makes it available on the FIELD definition.
-It does NOT automatically appear in any record type's picklist mapping. After
+It does NOT automatically appear in any record type's picklist mapping.
+(UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.) After
 adding a GVS value, you must also:
 1. Go to Setup > Object Manager > [Object] > Record Types > [Each Record Type]
 2. Edit the picklist and add the new value
@@ -111,8 +114,11 @@ List<Schema.PicklistEntry> entries = dfr.getPicklistValues();
 **Correct pattern:**
 
 ```text
-Schema.DescribeFieldResult.getPicklistValues() returns the MASTER picklist
-definition — all values regardless of record type. For record-type-aware
+Schema.DescribeFieldResult.getPicklistValues() "Returns a list of active
+PicklistEntry objects ... Only active picklist values are returned"
+(262: salesforce_apex_reference_guide L190851) — the field-level list, with no
+record type parameter; that it ignores record-type mappings is UNVERIFIED
+(2026-10-20), and the UI API guide is not in the corpus. For record-type-aware
 values, use the UI API:
   GET /ui-api/object-info/{objectApiName}/picklist-values/{recordTypeId}
 

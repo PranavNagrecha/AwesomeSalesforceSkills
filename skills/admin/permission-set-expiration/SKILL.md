@@ -37,9 +37,9 @@ outputs:
   - "A renewal procedure that updates ExpirationDate in place instead of deleting and re-inserting the assignment"
   - "A Setup Audit Trail evidence plan for the grant, the extension, and the expiry"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-08-15
+updated: 2026-10-20
 ---
 
 # Permission Set Expiration
@@ -52,10 +52,24 @@ This skill activates when access has an end date: contractor and vendor grants, 
 
 Gather this context before working on anything in this domain:
 
-- **Is the expiration UI turned on in this org?** `UserManagementSettings.psaExpirationUIEnabled` is documented as "Indicates if admins can use an updated user interface that includes an assignment expiration for permission sets and permission set groups (true) or not (false). The default value is `false`." It is available in API version 52.0 and later. If nobody has turned it on, an admin clicking through Setup will not see an expiration control and will conclude the feature does not exist.
-- **Is the permission granted anywhere else?** The Salesforce Security Guide is blunt about this: "To revoke a permission, you must remove all instances of the permission from the user." An expiring assignment closes one grant path. If the profile or a second permission set also enables the permission, the user keeps it after the date passes and the elevation was never time-boxed at all.
-- **Which object holds the grant?** `PermissionSetAssignment` carries `ExpirationDate`; `PermissionSetLicenseAssign` does not, and does not even support `update()`. If the elevation depends on a permission set *license*, no expiry exists for it.
-- **Are user access policies enabled?** With them on, `IsRevoked`, `LastCreatedByChangeId`, and `LastDeletedByChangeId` appear on the assignment (API version 57.0 and later) and a policy-driven revocation leaves the assignment row in place rather than deleting it. Audit queries written for a plain org return the wrong population in a policy org.
+- **Is the expiration UI turned on in this org?** `UserManagementSettings.psaExpirationUIEnabled` is documented as "Indicates if admins can use an updated user interface that includes an assignment expiration for permission sets and permission set groups (true) or not (false). The default value is `false`." It is available in API version 52.0 and later (api_meta 264 L132107-L132111). If nobody has turned it on, an admin clicking through Setup will not see an expiration control and will conclude the feature does not exist.
+- **Is the permission granted anywhere else?** The Salesforce Security Guide is blunt about this: "To revoke a permission, you must remove all instances of the permission from the user." (Grounded in 262: salesforce_security_impl_guide L809 (Security Guide not yet published at 264).) An expiring assignment closes one grant path. If the profile or a second permission set also enables the permission, the user keeps it after the date passes and the elevation was never time-boxed at all.
+- **Which object holds the grant?** `PermissionSetAssignment` carries `ExpirationDate`; `PermissionSetLicenseAssign` does not, and does not even support `update()` (object_reference 264 L220298; its fields L220309-L220372 carry no expiry). If the elevation depends on a permission set *license*, no expiry exists for it.
+- **Are user access policies enabled?** With them on, `IsRevoked`, `LastCreatedByChangeId`, and `LastDeletedByChangeId` appear on the assignment (API version 57.0 and later; object_reference 264 L219761-L219762, L219780-L219782) and a policy-driven revocation leaves the assignment row in place rather than deleting it (L219895-L219896). Audit queries written for a plain org return the wrong population in a policy org.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is `psaExpirationUIEnabled` on in the target org, and will the admin work in Setup or through the API? | The Setup control is off by default (Gotcha 1) | A settings change in the release, or an API-only runbook |
+| Which Setup path will the admin use to assign — the permission set's Manage Assignments or the user record? | Only one path offers the expiration step (Gotcha 2) | A click path that actually shows the date field |
+| Is the elevated permission also on the profile or on another assigned permission set or group? | Expiry closes one grant; a second grant survives it (Gotcha 6) | A single-source grant, or an honest note that the expiry is decorative |
+| Does the elevation depend on a permission set license, package license, or group membership? | Those grants have no expiry field at all (Gotcha 7) | A manual removal step owned by a named person |
+| Are user access policies enabled, and how will lapsed and revoked rows be reported? | Expired and revoked rows both survive; revoked ones need `ALL ROWS` (Gotchas 3, 4) | Audit queries that cover `IsActive = false` and `IsRevoked = true` separately |
+| Is the assignee an integration, guest or system user? | Those users are not in the Manage Assignments page (Gotcha 10) | A scripted, ticketed `PermissionSetAssignment` insert |
+| Would a session-based permission set be the tighter control, and will it be placed in a group? | Inside a group it no longer requires activation (Gotcha 9) | A grant that keeps its session boundary |
+
+A configured time-box built from these answers has one grant path, a date in a stated time zone, and an audit query that finds it after it lapses; an assignment dated from the request alone often leaves the same permission standing elsewhere.
 
 ---
 
@@ -63,19 +77,19 @@ Gather this context before working on anything in this domain:
 
 ### The expiry is a field on the assignment row
 
-`PermissionSetAssignment` "represents a user's assignment to a permission set or permission set group" and is available in API version 22.0 and later. Its supported calls are `create()`, `delete()`, `describeSObjects()`, `query()`, `retrieve()`, and `update()`. Access to the object requires View Setup and Configuration, Assign Permission Sets, or Manage User.
+`PermissionSetAssignment` "represents a user's assignment to a permission set or permission set group" and is available in API version 22.0 and later. Its supported calls are `create()`, `delete()`, `describeSObjects()`, `query()`, `retrieve()`, and `update()`. Access to the object requires View Setup and Configuration, Assign Permission Sets, or Manage User (object_reference 264 L219697, L219701, L219706-L219708).
 
 | Field | Type — Properties | What it means for time-boxing |
 |---|---|---|
-| `ExpirationDate` | `dateTime` — Create, Filter, Nillable, Sort, **Update** | "The date that the assignment of the permission set or permission set group expires for the specified user." API version 52.0 and later. Nillable, so an assignment with no end date is the same row with this field null. |
-| `IsActive` | `boolean` — Defaulted on create, Filter, Group, Sort | "Indicates whether the assignment is active (`true`) or not (`false`). Defaults to `false`." API version 52.0 and later. Not createable and not updateable — the platform sets it. Filter on it; never try to write it. |
-| `IsRevoked` | `boolean` — Defaulted on create, Filter, Group, Sort, Update | "Indicates whether the assignment was revoked (`true`) or not (`false`)." Present only when user access policies are enabled. API version 57.0 and later. |
+| `ExpirationDate` | `dateTime` — Create, Filter, Nillable, Sort, **Update** | "The date that the assignment of the permission set or permission set group expires for the specified user." API version 52.0 and later. Nillable, so an assignment with no end date is the same row with this field null (object_reference 264 L219742-L219745). |
+| `IsActive` | `boolean` — Defaulted on create, Filter, Group, Sort | "Indicates whether the assignment is active (`true`) or not (`false`). Defaults to `false`." API version 52.0 and later. Not createable and not updateable — the platform sets it (L219750-L219753). Filter on it; never try to write it. |
+| `IsRevoked` | `boolean` — Defaulted on create, Filter, Group, Sort, Update | "Indicates whether the assignment was revoked (`true`) or not (`false`)." Present only when user access policies are enabled. API version 57.0 and later (L219758-L219762). |
 | `AssigneeId` | `reference` (User) — Create, Filter, Group, Sort | No Update. Retargeting an assignment to a different user is a delete plus an insert. |
 | `PermissionSetId` | `reference` — Create, Filter, Group, Nillable, Sort | No Update. Swapping which permission set is granted is a delete plus an insert. |
 | `PermissionSetGroupId` | `reference` — Create, Filter, Group, Nillable, Sort | No Update. API version 45.0 and later. One row grants the whole group. |
-| `LastCreatedByChangeId` / `LastDeletedByChangeId` | `reference` (UserAccessChange) | Populated only when user access policies are enabled. API version 57.0 and later. `UserAccessChange.Source` carries, "for example, `UserAccessPolicyId`." |
+| `LastCreatedByChangeId` / `LastDeletedByChangeId` | `reference` (UserAccessChange) | Populated only when user access policies are enabled. API version 57.0 and later. `UserAccessChange.Source` carries, "for example, `UserAccessPolicyId`." (object_reference 264 L300147) |
 
-The Object Reference's blanket instruction — "To update an assignment, delete an existing assignment and insert a new one" — is about the Create-only fields above. `ExpirationDate` is the exception: it is explicitly updateable, which is why extending an expiry is a one-field update, not a re-assignment. See `references/gotchas.md` Gotcha 2 for what the delete-and-insert route costs you.
+The Object Reference's blanket instruction — "To update an assignment, delete an existing assignment and insert a new one" (object_reference 264 L219864-L219865) — is about the Create-only fields above. `ExpirationDate` is the exception: it is explicitly updateable, which is why extending an expiry is a one-field update, not a re-assignment. See `references/gotchas.md` Gotcha 2 for what the delete-and-insert route costs you.
 
 ### Expiry closes one door, not the room
 
@@ -89,17 +103,17 @@ Expiry ends *this assignment*. It does not audit the rest of the user's access. 
 | Permission set group assignment | **Yes** | Same field, same row — the description names "the permission set or permission set group" |
 | Permission set **license** assignment | **No** | `PermissionSetLicenseAssign` has no `ExpirationDate`, and its supported calls are `create()`, `delete()`, `describeSObjects()`, `query()`, `retrieve()` — no `update()` |
 | Profile | **No** | A profile is a lookup on the User record; there is no assignment object to hang a date on |
-| Muting permission set | **No** | `MutingPermissionSet` "is used in conjunction with `PermissionSetGroup`" — it is a component of a group, never assigned to a user, so there is no assignment row |
-| Public group or queue membership | **No** | `GroupMember` has exactly two fields, `GroupId` and `UserOrGroupId`, and does not support `update()` |
-| Package license | **No** | No expiration field on the assignment; user access policies can Grant or Revoke a `PackageLicense`, but with no date attached |
+| Muting permission set | **No** | `MutingPermissionSet` "is used in conjunction with `PermissionSetGroup`" (object_reference 264 L187698) — it is a component of a group, never assigned to a user, so there is no assignment row |
+| Public group or queue membership | **No** | `GroupMember` has exactly two fields, `GroupId` and `UserOrGroupId`, and does not support `update()` (object_reference 264 L155436, L155448, L155462) |
+| Package license | **No** | No expiration field on the assignment; user access policies can Grant or Revoke a `PackageLicense`, but with no date attached (`UserPackageLicense` fields, object_reference 264 L303662-L303757; policy types, api_meta 264 L141703) |
 
 ### Turning on the Setup control
 
-The toggle lives on the **User Management Settings** Setup page, and it is deployable. `UserManagementSettings` values are stored in `UserManagement.settings`; in the package manifest all org settings types are referenced by the name `Settings`.
+The toggle lives on the **User Management Settings** Setup page, and it is deployable. `UserManagementSettings` values are stored in `UserManagement.settings`; in the package manifest all org settings types are referenced by the name `Settings` (api_meta 264 L131941-L131947).
 
 ```xml
-<!-- force-app/main/default/settings/UserManagement.settings-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/settings/UserManagement.settings-meta.xml -->
 <UserManagementSettings xmlns="http://soap.sforce.com/2006/04/metadata">
     <psaExpirationUIEnabled>true</psaExpirationUIEnabled>
     <userAccessPoliciesEnabled>true</userAccessPoliciesEnabled>
@@ -107,8 +121,8 @@ The toggle lives on the **User Management Settings** Setup page, and it is deplo
 ```
 
 ```xml
-<!-- manifest/package.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- manifest/package.xml -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>UserManagement</members>
@@ -118,11 +132,11 @@ The toggle lives on the **User Management Settings** Setup page, and it is deplo
 </Package>
 ```
 
-There is only one settings file per settings component, so retrieve the org's existing `UserManagement.settings` and add the element rather than deploying the two-line file above over the top of whatever else is configured there. `userAccessPoliciesEnabled` is available in API version 58.0 and later and also defaults to `false`; include it only if the org has actually adopted policies.
+There is only one settings file per settings component, so retrieve the org's existing `UserManagement.settings` and add the element rather than deploying the two-line file above over the top of whatever else is configured there. `userAccessPoliciesEnabled` is available in API version 58.0 and later and also defaults to `false` (api_meta 264 L132120-L132126; one settings file per component, L131947-L131948); include it only if the org has actually adopted policies.
 
 ### User Access Policies assign; they do not hold the clock
 
-A user access policy is the supported no-code way to *make* assignments from user criteria — `UserAccessPolicy` is available in API version 57.0 and later and requires the **Manage User Access Policies** permission. But the action shape is deliberately small. `UserAccessPolicyAction` has exactly three fields: `action` (`Grant` or `Revoke`), `target`, and `type` (`Group`, `PackageLicense`, `PermissionSet`, `PermissionSetGroup`, `PermissionSetLicense`, `Queue`). **There is no expiration attribute anywhere in the policy metadata.**
+A user access policy is the supported no-code way to *make* assignments from user criteria — `UserAccessPolicy` is available in API version 57.0 and later and requires the **Manage User Access Policies** permission (api_meta 264 L141568, L141572). But the action shape is deliberately small. `UserAccessPolicyAction` has exactly three fields: `action` (`Grant` or `Revoke`), `target`, and `type` (`Group`, `PackageLicense`, `PermissionSet`, `PermissionSetGroup`, `PermissionSetLicense`, `Queue`) — api_meta 264 L141673-L141707. **There is no expiration attribute anywhere in the policy metadata.**
 
 The consequence is architectural: a policy can express "everyone in this role gets this group" and "everyone who leaves this role loses it," but it cannot express "for ninety days." Criteria-driven revocation and date-driven expiry are two different controls. Use `admin/user-access-policies` for the first; use `ExpirationDate` for the second. A policy-driven revoke sets `IsRevoked = true` and leaves the row behind rather than deleting it, so `ALL ROWS` is required to see the revoked population — a date expiry and a policy revocation are two different terminal states and one audit query will not find both.
 
@@ -205,7 +219,7 @@ Query 2 is the one that finds the failure. Every org that adopts time-boxing acc
 | One person needs one capability for a fixed window | Single-purpose permission set + `ExpirationDate` | Narrow grant means expiry actually revokes something |
 | A whole project role is temporary | Permission set group assignment + `ExpirationDate` | One row expires the entire aggregate grant |
 | Access should end when a user attribute changes, not on a date | User access policy with a `Revoke` action | Policy actions have no date; criteria are the trigger. See `admin/user-access-policies` |
-| Access must end the moment the session does | Session-based permission set | Tighter than any wall-clock date. Note: session-based permission sets included in a permission set group do not require activation for users assigned to the group |
+| Access must end the moment the session does | Session-based permission set | Tighter than any wall-clock date. Note: session-based permission sets included in a permission set group do not require activation for users assigned to the group (object_reference 264 L264383) |
 | The elevation depends on a permission set *license* | No expiry exists — build a manual removal step | `PermissionSetLicenseAssign` has no `ExpirationDate` and no `update()` |
 | The permission is also on the profile | Fix the profile first, then time-box | Expiry cannot remove a grant it does not own |
 | An engagement is extended | `update` the `ExpirationDate` field | The field is updateable; delete-and-insert is only needed for Create-only fields |
@@ -241,7 +255,7 @@ Run through these before marking a time-boxed elevation complete:
 - [ ] The access-review queries return the new assignment in the "expiring soon" set and nothing unexpected in the "no end date" set
 - [ ] Reporting that counts assignments filters on `IsActive`, uses `ALL ROWS` when hunting lapsed rows, and covers `IsRevoked` separately if user access policies are enabled
 - [ ] No scheduled Flow or Apex job was created to duplicate what `ExpirationDate` already does
-- [ ] Setup Audit Trail is being exported on a cadence shorter than 180 days, since setup entity records are deleted after that
+- [ ] Setup Audit Trail is being exported on a cadence shorter than 180 days, since setup entity records are deleted after that — Grounded in 262: salesforce_security_impl_guide L4975 (Security Guide not yet published at 264).
 
 ---
 
@@ -249,12 +263,12 @@ Run through these before marking a time-boxed elevation complete:
 
 Non-obvious platform behaviours that cause real production problems. `references/gotchas.md` carries ten of these in full, with the mechanism and the recovery; items 1-4 and 6 below summarise five of them, and item 5 is stated in full here.
 
-1. **The Setup control is off by default** — `psaExpirationUIEnabled` defaults to `false`, so an admin can work through the assignment screens and never see an expiration option while the API field has existed since API version 52.0.
-2. **The two Setup paths are not equivalent** — the Security Guide's expiration step appears in the permission-set-side *Manage Assignments → Add Assignments* flow, not in the user-record-side *Edit Assignments* procedure. Admins who always start from the user record will not find it.
+1. **The Setup control is off by default** — `psaExpirationUIEnabled` defaults to `false`, so an admin can work through the assignment screens and never see an expiration option while the API field has existed since API version 52.0 (api_meta 264 L132110-L132111).
+2. **The two Setup paths are not equivalent** — the Security Guide's expiration step appears in the permission-set-side *Manage Assignments → Add Assignments* flow, not in the user-record-side *Edit Assignments* procedure. Admins who always start from the user record will not find it. Grounded in 262: salesforce_security_impl_guide L2055, and the user-record procedure L2028-L2036 has no expiration step (Security Guide not yet published at 264).
 3. **Liveness is a state, not the row's existence** — `IsActive` is the platform-owned, read-only flag that carries it. Any report or integration that treats "an assignment row exists" as "the user has access" reads a lapsed elevation as live.
-4. **Setup Audit Trail still labels the expiration-date entry beta** — in the Summer '26 Security Guide the tracked change reads "Permission set (or group) changes to the assignment expiration date (beta)". Confirm the entry appears in your org before relying on it as audit evidence.
-5. **The bulk Setup flow caps removal at 1,000 users at a time** — relevant when an expiry experiment has to be unwound by hand across a large population.
-6. **Guest, integration, and system users are not in the Manage Assignments UI** — "Certain types of users, such as guest, Self-Service, integration, and system users, aren't available in the Manage Assignments page. To view or manage these users, use the `PermissionSetAssignment` API object." Time-boxing an integration user's elevation is an API-only operation.
+4. **Setup Audit Trail still labels the expiration-date entry beta** — in the Summer '26 Security Guide the tracked change reads "Permission set (or group) changes to the assignment expiration date (beta)". Confirm the entry appears in your org before relying on it as audit evidence. Grounded in 262: salesforce_security_impl_guide L5034 (Security Guide not yet published at 264). Whether Winter '27 drops the beta label is not known from the corpus.
+5. **The bulk Setup flow caps removal at 1,000 users at a time** — relevant when an expiry experiment has to be unwound by hand across a large population. Grounded in 262: salesforce_security_impl_guide L2069 (Security Guide not yet published at 264).
+6. **Guest, integration, and system users are not in the Manage Assignments UI** — "Certain types of users, such as guest, Self-Service, integration, and system users, aren't available in the Manage Assignments page. To view or manage these users, use the `PermissionSetAssignment` API object." Time-boxing an integration user's elevation is an API-only operation. Grounded in 262: salesforce_security_impl_guide L2042 (Security Guide not yet published at 264).
 
 ---
 

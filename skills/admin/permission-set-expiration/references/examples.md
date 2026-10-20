@@ -15,8 +15,8 @@ sf project retrieve start --metadata "Settings:UserManagement"
 ```
 
 ```xml
-<!-- force-app/main/default/settings/UserManagement.settings-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/settings/UserManagement.settings-meta.xml -->
 <UserManagementSettings xmlns="http://soap.sforce.com/2006/04/metadata">
     <psaExpirationUIEnabled>true</psaExpirationUIEnabled>
 </UserManagementSettings>

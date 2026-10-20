@@ -16,9 +16,15 @@ Checks performed:
   6. Every row has a `requirement_id`.
   7. requirement_ids are unique across the matrix.
 
+Exit contract: every check above is a row-contract (schema) violation of the
+routing manifest the build pipeline consumes, so each prints ERROR and exits 1
+(--strict is accepted for the shared contract and changes nothing); a
+directory with no .json/.md matrix prints one WARN and exits 0; a missing
+path, or an explicit --file that cannot be loaded, prints ERROR and exits 1.
+
 Usage:
     python3 check_fit_gap_analysis_against_org.py --file matrix.json
-    python3 check_fit_gap_analysis_against_org.py --file matrix.md
+    python3 check_fit_gap_analysis_against_org.py --manifest-dir build/fitgap [--strict]
 """
 
 from __future__ import annotations
@@ -52,8 +58,16 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--file",
-        required=True,
         help="Path to the matrix file (JSON or markdown).",
+    )
+    parser.add_argument(
+        "--manifest-dir",
+        help="Directory to scan for .json / .md matrix files.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Accepted for the shared checker contract; every finding here is already an ERROR.",
     )
     return parser.parse_args()
 
@@ -218,6 +232,10 @@ def check_rows(rows: list[dict]) -> list[str]:
                     f"['architecture-escalation'], got {agents}"
                 )
             branch = row.get("decision_tree_branch")
+            if branch is None and "decision_tree_branch" not in row:
+                # Markdown tables for humans often have no branch column; accept a
+                # full standards/decision-trees/ path cited in the notes instead.
+                branch = row.get("notes")
             if not branch or "standards/decision-trees/" not in str(branch):
                 issues.append(
                     f"{prefix}: Unfit row missing decision_tree_branch under "
@@ -238,16 +256,33 @@ def check_rows(rows: list[dict]) -> list[str]:
 
 def main() -> int:
     args = parse_args()
-    path = Path(args.file)
-    if not path.exists():
-        print(f"ERROR: file not found: {path}", file=sys.stderr)
-        return 2
-
-    try:
-        rows = load_rows(path)
-    except (ValueError, json.JSONDecodeError) as exc:
-        print(f"ERROR: failed to load matrix: {exc}", file=sys.stderr)
-        return 2
+    if not args.file and not args.manifest_dir:
+        print("ERROR: pass --file or --manifest-dir")
+        return 1
+    rows: list[dict] = []
+    if args.file:
+        path = Path(args.file)
+        if not path.exists():
+            print(f"ERROR: file not found: {path}")
+            return 1
+        try:
+            rows = load_rows(path)
+        except (ValueError, json.JSONDecodeError) as exc:
+            print(f"ERROR: failed to load matrix: {exc}")
+            return 1
+    else:
+        base = Path(args.manifest_dir)
+        if not base.is_dir():
+            print(f"ERROR: directory not found: {base}")
+            return 1
+        for cand in sorted(list(base.rglob("*.json")) + list(base.rglob("*.md"))):
+            try:
+                rows.extend(load_rows(cand))
+            except (ValueError, json.JSONDecodeError, UnicodeDecodeError):
+                continue
+        if not rows:
+            print(f"WARN: no fit-gap matrix rows found under {base} — nothing to check.")
+            return 0
 
     issues = check_rows(rows)
 
@@ -255,9 +290,9 @@ def main() -> int:
         print(f"OK: {len(rows)} rows passed all fit-gap checks.")
         return 0
 
-    print(f"FAIL: {len(issues)} issue(s) found across {len(rows)} row(s).", file=sys.stderr)
     for issue in issues:
-        print(f"  - {issue}", file=sys.stderr)
+        print(f"ERROR: {issue}")
+    print(f"FAIL: {len(issues)} issue(s) found across {len(rows)} row(s).")
     return 1
 
 

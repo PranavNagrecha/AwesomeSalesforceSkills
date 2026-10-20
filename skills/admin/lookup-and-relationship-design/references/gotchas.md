@@ -4,7 +4,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: A Detail-Side Object Cannot Be Put in a Queue, Shared Manually, or Given a Sharing Rule
 
-**What happens:** The moment an object sits on the detail side of a master-detail relationship, three capabilities disappear from Setup with no migration path: sharing rules, manual sharing, and queues. The Object Reference states it plainly — "Custom objects on the detail side of a master-detail relationship can't have sharing rules, manual sharing, or queues, because these elements require the Owner field." The root cause is that "The Owner field on the detail object isn't available and is automatically set to the owner of its associated master record."
+**What happens:** The moment an object sits on the detail side of a master-detail relationship, three capabilities disappear from Setup with no migration path: sharing rules, manual sharing, and queues. The Object Reference states it plainly (object_reference 264 L3306-L3308) — "Custom objects on the detail side of a master-detail relationship can't have sharing rules, manual sharing, or queues, because these elements require the Owner field." The root cause is that "The Owner field on the detail object isn't available and is automatically set to the owner of its associated master record."
 
 **When it occurs:** Discovered late, usually when someone tries to route detail records through Omni-Channel, assignment rules, or a "Work Queue" list view — all of which require a Queue, which requires OwnerId. Also hits Apex written against the object: `detailRecord.OwnerId` fails to compile because the field is not on the sObject at all.
 
@@ -18,13 +18,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Any parent delete — including bulk deletes, merge operations that delete the losing record, and cascade deletes propagating from a grandparent. Most common after a data-cleanup job removes "duplicate" Accounts.
 
-**How to avoid:** Set the constraint deliberately in the `CustomField` metadata. Metadata API defines exactly three values: "Cascade—Deletes the lookup record as well as associated lookup fields. Restrict—Prevents the record from being deleted if it's in a lookup relationship. SetNull—This value is the default." Use `Restrict` when the child is meaningless without its parent and you would rather block the delete than lose the link. Note that `Restrict` surfaces to the user as a delete failure, so pair it with a clear field-level Help Text explaining why the parent cannot be removed.
+**How to avoid:** Set the constraint deliberately in the `CustomField` metadata. Metadata API defines exactly three values (api_meta 264 L45591-L45597): "Cascade—Deletes the lookup record and associated lookup fields. Restrict—Prevents the record from being deleted if it's in a lookup relationship. SetNull—Default value. If the lookup record is deleted, the lookup field is cleared." Use `Restrict` when the child is meaningless without its parent and you would rather block the delete than lose the link. Note that `Restrict` surfaces to the user as a delete failure, so pair it with a clear field-level Help Text explaining why the parent cannot be removed.
 
 ---
 
 ## Gotcha 3: The Two Master-Details on a Junction Object Are Not Interchangeable
 
-**What happens:** On a junction object, `relationshipOrder` decides which parent is primary. The Metadata API `CustomField` reference notes it "is valid for all master-detail relationships, but the value is only non-zero for junction objects" — `0` is primary, `1` is secondary. The primary parent determines the junction record's owner and the look-and-feel it inherits. Deploy the two fields in the wrong order and every junction record is owned by the wrong side of the model, which changes who can see it.
+**What happens:** On a junction object, `relationshipOrder` decides which parent is primary. The Metadata API `CustomField` reference (api_meta 264 L45809-L45818) notes it "is valid for all master-detail relationships, but the value is only non-zero for junction objects" — `0` is primary, `1` is secondary. The primary parent determines the junction record's owner and the look-and-feel it inherits. Deploy the two fields in the wrong order and every junction record is owned by the wrong side of the model, which changes who can see it.
 
 **When it occurs:** Silently, at deploy time. Retrieving the object from another org and re-deploying can also reorder the fields if the source org had a different designation.
 
@@ -34,7 +34,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 4: SOQL Caps Relationship Traversal Long Before Your Data Model Does
 
-**What happens:** A data model can nest ten levels deep; a query cannot follow it. The SOQL reference sets four separate ceilings: "In each specified relationship, no more than five levels can be specified in a child-to-parent relationship," "No more than 55 child-to-parent relationships can be specified in a query," and "No more than 20 parent-to-child relationships can be specified in a query." For parent-to-child depth, "In API version 58.0 and later, up to five levels of parent-to-child relationship can be queried via REST, SOAP, and Apex query calls for standard and custom objects."
+**What happens:** A data model can nest ten levels deep; a query cannot follow it. The SOQL limits, as the Developer Limits Quick Reference states them (salesforce_app_limits_cheatsheet 264 L687-L697, L708-L719), set four separate ceilings: "In each specified relationship, no more than five levels can be specified in a child-to-parent relationship," "No more than 55 child-to-parent relationships can be specified in a query," and "No more than 20 parent-to-child relationships can be specified in a query." For parent-to-child depth, "In API version 58.0 and later, up to five levels of parent-to-child relationship can be queried via REST, SOAP, and Apex query calls for standard and custom objects."
 
 **When it occurs:** Usually in a report or an LWC that needs a grandparent's grandparent's field. The design passes review because nothing in Setup blocks a six-deep chain; only the query fails.
 
@@ -44,7 +44,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 5: `CHILD_SHARE_FAILS_PARENT` on Ownership Changes You Did Not Expect to Touch the Parent
 
-**What happens:** A reparent or owner-change DML fails with the API status code `CHILD_SHARE_FAILS_PARENT`. The SOAP API status-code reference explains the rule: "if you don't have appropriate permissions on a parent record, you can't change the owner of or define sharing rules for a child record." The running user has full access to the record being edited and still cannot save it, which reads as a permissions bug rather than a data-model consequence.
+**What happens:** A reparent or owner-change DML fails with the API status code `CHILD_SHARE_FAILS_PARENT`. The SOAP API status-code reference explains the rule (UNVERIFIED (2026-10-20): the SOAP API guide is not in the 264 corpus): "if you don't have appropriate permissions on a parent record, you can't change the owner of or define sharing rules for a child record." The running user has full access to the record being edited and still cannot save it, which reads as a permissions bug rather than a data-model consequence.
 
 **When it occurs:** Most often in an integration user or a Flow running in user context that reassigns child records in bulk, where the parent sits outside that user's role-hierarchy branch or is owned by a private-OWD peer.
 

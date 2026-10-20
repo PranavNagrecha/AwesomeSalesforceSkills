@@ -26,6 +26,7 @@
 
 ## Official Sources Used
 
+- Winter '27 (264) corpus, 2026-10-20 — unrestricted picklists not enforced by the API and unknown values created inactive (object_reference 264 L2393-L2394); restricted picklist definition (L2492-L2493); GVS-backed custom picklist is restricted (api_meta 264 L45920-L45922); `RecordType.picklistValues` (L47401-L47406); dependent-picklist validation is browser-side, server validates restricted picklists (salesforce_apex_developer_guide 264 L15608-L15609, L15639-L15640). The `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST` code, record-type propagation and the Known Issue in Gotcha 3 are not in the corpus and carry inline UNVERIFIED markers.
 - Picklist Limitations — https://help.salesforce.com/s/articleView?id=platform.picklist_limitations.htm
 - Data Loader allows invalid picklist values — https://help.salesforce.com/s/articleView?id=000381951
 - Dependent Picklist Considerations — https://help.salesforce.com/s/articleView?id=platform.fields_dependent_field_considerations.htm

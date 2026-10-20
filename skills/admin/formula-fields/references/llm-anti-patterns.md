@@ -40,7 +40,13 @@ with a limit statement like "the 5,000 compiled character limit (standard) or
 and every one of the numbers above is real — but they have been collapsed into
 a single dimension and given a fictitious object-dependency. 3,900 is the limit
 on the *source text you type*; 5,000 bytes is the *compile* limit; and there is
-a third, 4,000 bytes, on the *saved* formula. A model that has absorbed two of
+a third, 4,000 bytes, on the *saved* formula. The 3,900-character text limit and the existence of a
+separate compile size limit are grounded: "Formula evaluation in Apex is bound by the formula field
+character limit, but not the compile size limit. A formula can contain up to 3,900 characters"
+(salesforce_apex_developer_guide 264 L28560-L28561). The 5,000-byte compile and 4,000-byte saved
+figures and both error texts below are UNVERIFIED (2026-10-20): they come from the Formula Size tip
+sheet, which is not in the 264 corpus. The *result-length* truncation of text calculated fields
+(object_reference 264 L2239) is a fourth limit that happens to share the 3,900 number. A model that has absorbed two of
 the three numbers has to reconcile them, and "it depends on the object" is the
 cheapest available story — it explains the discrepancy without requiring the
 model to know that the limits measure different things. There is no class of
@@ -96,7 +102,7 @@ formula limit conditional on the object ("some objects", "older objects",
 
 **What the LLM generates:** `Account.Parent.Parent.Parent.Owner.Manager.Name`
 
-**Why it happens:** LLMs chain relationships without checking the Salesforce limit. Cross-object formulas can span up to 10 unique relationships but each hop adds compile size. Deep chains across 4+ parent levels are fragile, hard to maintain, and often exceed compile limits.
+**Why it happens:** LLMs chain relationships without checking the Salesforce limit. Cross-object formulas can span up to 10 unique relationships but each hop adds compile size (UNVERIFIED (2026-10-20): the 10-relationship ceiling and the ~800-character per-hop figure below are Help-only, not in the 264 corpus). Deep chains across 4+ parent levels are fragile, hard to maintain, and often exceed compile limits.
 
 **Correct pattern:**
 

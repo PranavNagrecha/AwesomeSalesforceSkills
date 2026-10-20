@@ -293,19 +293,20 @@ How to read it:
   block.
 - **`AssignmentRules` takes the object name, not the rule name.** The guide
   gives both syntaxes: `<name>AssignmentRules</name>` with `<members>Case</members>`
-  for every rule on an object, and the singular `<name>AssignmentRule</name>`
+  for every rule on an object, and the singular `<name>AssignmentRule</name>` (api_meta 264 L25720-L25733)
   with `<members>Case.samplerule</members>` for one named rule. Either way all
   of an object's assignment rules live in one `Lead.assignmentRules` file and a
   rule carries all of its entries, so `CWB-AUT-102`'s single new entry
   redeploys the ordered entry list — which is why its `notes` say so.
 - **`<version>` is the API version you are deploying against.** The guide's
-  own quick-start sample uses `66.0`; set it to the version your project
-  targets rather than copying either number blindly.
-- **Ordering inside `package.xml` does not control deploy order.** The
+  own quick-start sample uses `68.0` in the Winter '27 edition (api_meta 264
+  L1408-L1422; earlier text said `66.0`, from an older edition); set it to the
+  version your project targets rather than copying either number blindly.
+- **Ordering inside `package.xml` does not control deploy order** (UNVERIFIED (2026-10-20): not stated in the 264 corpus). The
   cutover order lives in `CWB-DAT-101`'s `notes` and in the hand-off block,
   not here.
 
-Retrieve, validate and deploy with the CLI commands the guide documents:
+Retrieve, validate and deploy with the CLI commands the guide documents (`sf project retrieve start --manifest`, sfdx_dev 264 L14314; a check-only run is `sf project deploy validate`, L13619-L13622, or `sf project deploy start --dry-run -d "force-app/main/default"` as the Metadata API guide shows it, api_meta 264 L4114):
 
 ```bash
 # Confirm the components named by the rows actually exist in the source org

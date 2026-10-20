@@ -225,7 +225,7 @@ OBJECT_CHILD_DIR = {
 FOLDERED_CONTAINERS = {"email"}
 
 # Rule containers hold named rules whose members use the SINGULAR type name
-# (api_meta.txt L23675-23682): Case.assignmentRules holds AssignmentRule members.
+# (api_meta 264 L25727-L25733): Case.assignmentRules holds AssignmentRule members.
 RULE_CONTAINERS = {
     "AssignmentRules": ("AssignmentRule", "assignmentRule"),
     "AutoResponseRules": ("AutoResponseRule", "autoResponseRule"),
@@ -233,7 +233,7 @@ RULE_CONTAINERS = {
 }
 
 # Settings components hold named entries in ONE file per settings component
-# (api_meta.txt L111264-111273): every calendar in the org lives in
+# (api_meta 264 L114330-L114338): every calendar in the org lives in
 # settings/businessHours.settings. Index the entries so a row can name one.
 # Same container/child shape as RULE_CONTAINERS above (one shared file mints
 # several derived keys) — both feed the same `container_children` map in
@@ -1139,7 +1139,7 @@ def main() -> int:
         matrix_path = discover_matrix(manifest_dir)
         if matrix_path is None:
             print(
-                f"INFO: no RTM found under {manifest_dir} "
+                f"WARN: no RTM found under {manifest_dir} "
                 f"(looked for {', '.join(RTM_FILENAMES)}); nothing to validate.",
                 file=sys.stderr,
             )

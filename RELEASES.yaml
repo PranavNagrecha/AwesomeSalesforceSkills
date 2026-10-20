@@ -810,6 +810,22 @@ releases:
       no '' 264 L'' anywhere in the package AND updated < 2026-10-19; order (1) cited in Mandatory Reads of status stable|beta
       agents, (2) cited by any other agent, (3) uncited; minus done_skills. Each reviewer report feeds standards/skill-writer-brief.md
       ''Learned rules'' (orchestrator Step 3b) so new skills follow them. Sample defect rate from R3-05: ~1 in 3 skills.'
+    done_skills:
+    - admin/configuration-workbook-authoring
+    - admin/fit-gap-analysis-against-org
+    - admin/formula-fields
+    - admin/lookup-and-relationship-design
+    - admin/permission-set-expiration
+    - admin/picklist-field-integrity-issues
+    - admin/requirements-traceability-matrix
+    - admin/restriction-rules
+    - admin/stakeholder-raci-for-sf-projects
+  - id: R2-39
+    title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
+      skills that cite it'
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -1192,3 +1208,12 @@ inbox:
     updated >= 2026-10-19, minus done_skills of this item.'
   size: L
   slotted_into: 1.6.0
+- date: 2026-10-20
+  ask: 'Found by R3-06 batch 2 (Sonnet writer): TestUserFactory inserts a User then a PermissionSetAssignment (setup object)
+    with no System.runAs wrapper; a caller that then inserts non-setup records in the same test hits the mixed-DML rule (apexdev
+    264 L8943-8946, L9059-9062). Fix the template (wrap setup-object DML in System.runAs(new User(Id=UserInfo.getUserId()))),
+    add a note, and grep skills/ for TestUserFactory callers whose examples would now be wrong; also check the writer''s other
+    out-of-batch leads: sandbox-strategy / sandbox-data-isolation-gotchas Help-only figures (29-day floor, 5 GB/10k Partial
+    Copy), custom-permissions ''$Permission in validation rules'', SOQL ''--'' comment-injection claims in apex/soql-security.'
+  size: S
+  slotted_into: 1.5.0

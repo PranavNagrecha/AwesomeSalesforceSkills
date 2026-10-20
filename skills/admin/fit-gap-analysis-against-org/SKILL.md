@@ -39,9 +39,9 @@ outputs:
   - "AppExchange alternatives list for any row where a managed package can replace custom build"
   - "Architecture-escalation note for every Unfit row, naming the decision tree the issue belongs in"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-20
 ---
 
 # Fit-Gap Analysis Against Org
@@ -56,11 +56,25 @@ The output of this skill is the *routing manifest* for the rest of the build pip
 
 Gather this context before scoring a single row:
 
-- **Org edition and enabled features.** A "Standard" row in Enterprise Edition becomes a "Configuration" or even an "Unfit" row in Professional Edition. Probe the org with `Setup → Company Information → Organization Edition` and `Setup → Object Manager` to confirm features (e.g. Forecasting, Knowledge, Service Cloud Voice) are actually licensed and enabled.
+- **Org edition and enabled features.** A "Standard" row in Enterprise Edition becomes a "Configuration" or even an "Unfit" row in Professional Edition. Probe the org with `Setup → Company Information → Organization Edition` and `Setup → Object Manager` to confirm features (e.g. Forecasting, Knowledge, Service Cloud Voice) are actually licensed and enabled. The Setup click paths in this list and edition/feature availability are UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.
 - **Installed AppExchange packages.** A managed package may already deliver 70% of a "Custom" row's behavior. Run `Setup → Installed Packages` and reconcile against the requirement before classifying as Custom.
 - **License SKU counts.** A Standard feature with a per-user license cap (e.g. CPQ user, Service Cloud user, Industry Cloud user) becomes a GAP for any user persona that does not have that license. Check `Setup → Company Information → User Licenses + Permission Set Licenses` and cross-reference with the requirement's persona.
 - **Existing automation on the in-scope objects.** A new requirement that conflicts with an existing trigger or record-triggered Flow is not free to build, regardless of classification. Inventory `Setup → Process Automation → Flows` and `Object Manager → Triggers` per in-scope sObject.
 - **AppExchange policy.** Some customers refuse paid managed packages on principle. That single constraint can force a row from "Standard via package" to "Custom build" — and changes the effort tier dramatically.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| What edition is the target org, confirmed in the org rather than from the contract? | A Standard row in one edition is unavailable in another (Gotcha 5) | Every Standard row scored against the real edition |
+| Which user and permission set licenses does each persona hold? | A feature the persona is not licensed for is a license-blocker, not Standard (Gotcha 3) | A persona-to-license map that every row cites |
+| Is any automation still built in Process Builder or workflow rules? | Legacy automation is not a Standard answer for new rows (Gotcha 1) | Rows routed to Flow, with migration noted as debt |
+| When a row says "automation", does it need a callout, a multi-object cascade, or a bulk path? | Treating all automation as Apex inflates effort; treating callouts as Flow understates it (Gotcha 2) | A Low-Code default with the specific reason for any Custom promotion |
+| What is the AppExchange policy, and which packages are installed and maintained? | Missed or stale packages misclassify Custom and Unfit rows (Gotcha 4) | An alternatives column with last-update dates |
+| Is the org being probed the production target or a demo sandbox? | Sandbox feature state differs from production (Gotcha 7) | A probe log naming the org Id the matrix was scored against |
+| Which features need end users to hold admin-level permissions? | A permission cliff turns Standard into Configuration plus permission work (Gotcha 8) | The permission-set task attached to the row |
+
+A matrix built from these answers routes each row on the org's real edition, licences and automation; a matrix scored from the requirements list alone is a guess that the build team discovers row by row.
 
 ---
 
@@ -107,7 +121,7 @@ Every row that has *any* of the following is tagged. A row may carry multiple ta
 | **license-blocker** | The requirement's persona does not have a license SKU that includes the feature, or it requires a license tier the customer hasn't bought. | "Field Service technicians need Knowledge access" but the org has no Knowledge user licenses. |
 | **data-skew** | The implementation will create account-data-skew, ownership-skew, or lookup-skew at expected volumes. | A single "House Account" pattern routing all unassigned leads to one owner. |
 | **governance** | The requirement violates the org's existing governance standards (naming conventions, deployment policy, security posture). | A Custom row that requires turning off a Restriction Rule. |
-| **customization-debt** | The requirement adds Apex/LWC where a managed package or future Salesforce roadmap feature will replace it within 18 months. | Building a custom forecasting overlay six months before Forecasting 2.0 GA. |
+| **customization-debt** | The requirement adds Apex/LWC where a managed package or future Salesforce roadmap feature will replace it within 18 months. | Building a custom forecasting overlay six months before Forecasting 2.0 GA (illustrative; that product name is UNVERIFIED (2026-10-20), not in the 264 corpus). |
 | **no-AppExchange-equivalent** | The customer policy is "AppExchange first" but no listed package solves the requirement, *or* the package is unmaintained / deprecated. | Vertical-specific Knowledge workflow with no current AppExchange package. |
 
 ### The Canonical Handoff Row Shape
@@ -172,7 +186,7 @@ For Unfit rows, `recommended_agents` is `["architecture-escalation"]` and `decis
 |---|---|---|
 | Requirement asks for "automation" without specifying complexity | Default to Low-Code; promote to Custom only if Flow cannot satisfy it (per `automation-selection.md`) | Avoid the trap of "automation = Apex". |
 | Requirement is delivered by an installed managed package | Standard (with note: "via {package-name}") | Managed packages count as Standard once installed and licensed. |
-| Requirement needs a same-transaction HTTP callout | Custom | Flow cannot make synchronous after-save callouts. |
+| Requirement needs a same-transaction HTTP callout | Custom | Flow cannot make synchronous after-save callouts. UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus. |
 | Requirement persona lacks the required license SKU | Unfit + `license-blocker` tag | Cannot be classified Standard if the persona literally cannot access it. |
 | Requirement is "real-time analytics across millions of records" | Unfit + escalation note pointing to CRM Analytics / data warehouse | Wrong-platform escape hatch. |
 
@@ -201,7 +215,7 @@ Run through these before publishing a fit-gap matrix:
 - [ ] Every row has at least an empty `risk_tag` array; tags are drawn from the canonical taxonomy.
 - [ ] Every Standard row is reconciled against the org's *actual* edition + license counts, not a generic Salesforce-Help description.
 - [ ] Every Configuration row names the specific Setup areas that will be touched.
-- [ ] Every Low-Code row has not silently absorbed something that needs Apex (callout, multi-object cascade, > 200-record bulk path).
+- [ ] Every Low-Code row has not silently absorbed something that needs Apex (callout, multi-object cascade, > 200-record bulk path — any Apex code, trigger included, "may be invoked for 1 to 200 records", salesforce_apex_developer_guide 264 L40790).
 - [ ] Every Custom row has `recommended_agents` populated.
 - [ ] Every Unfit row has an architecture-escalation note and a `decision_tree_branch` reference.
 - [ ] AppExchange alternatives have been searched for any row with `tier ∈ {Custom, Unfit}` *unless* the customer policy explicitly excludes managed packages.
@@ -212,8 +226,8 @@ Run through these before publishing a fit-gap matrix:
 
 Non-obvious platform behaviors that cause real fit-gap mistakes:
 
-1. **Process Builder is *not* still "Standard".** Process Builder is end-of-life. Any row classified as "still standard automation via PB" is wrong; route to Low-Code (Flow) or escalate.
-2. **License caps invalidate Standard rows.** Out-of-the-box Knowledge access for a Service Cloud agent is Standard *only* if the agent has a Knowledge-enabled license. Otherwise it is `license-blocker` Unfit.
+1. **Process Builder is *not* still "Standard".** Process Builder is end-of-life (UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.). Any row classified as "still standard automation via PB" is wrong; route to Low-Code (Flow) or escalate.
+2. **License caps invalidate Standard rows.** Out-of-the-box Knowledge access for a Service Cloud agent is Standard *only* if the agent has a Knowledge-enabled license. Otherwise it is `license-blocker` Unfit. License-to-feature mappings are UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.
 3. **Sandbox vs production feature deltas.** A feature enabled in a partial-copy sandbox is not necessarily live in production. Always probe the *target* org, not the sandbox the team has been demoing in.
 4. **Permission cliffs turn Standard into Configuration.** A "Standard" feature that requires Setup Customize Application access for end users effectively becomes Configuration + a permission-set authoring task.
 5. **AppExchange alternatives go stale.** A package listed on AppExchange may be unmaintained. Confirm last-update date and supported edition before counting it as Standard.

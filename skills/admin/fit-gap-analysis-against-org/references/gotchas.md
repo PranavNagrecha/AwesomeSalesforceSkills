@@ -8,7 +8,7 @@ Non-obvious behaviors that cause real fit-gap mistakes in production engagements
 
 **What happens:** A reviewer sees existing Process Builders in the org and classifies a new requirement as "Standard automation via Process Builder, no new build needed."
 
-**When it occurs:** Brownfield orgs with legacy automation. Process Builder is end-of-life in Salesforce — Salesforce Help officially recommends migration to Flow.
+**When it occurs:** Brownfield orgs with legacy automation. Process Builder is end-of-life in Salesforce — Salesforce Help officially recommends migration to Flow. UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.
 
 **How to avoid:** Treat Process Builder as a *migration backlog item*, never as a target for new requirements. Any row that would land in PB is Low-Code (Flow) at best, plus a `customization-debt` tag if PB is used as the temporary holding pattern.
 

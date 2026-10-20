@@ -4,9 +4,9 @@ Non-obvious platform behaviour that turns a correct-looking restriction rule int
 
 ## Gotcha 1: The rule is a run-time filter, and Salesforce documents eight gaps in it
 
-**What happens:** Someone asks for sensitive records to be hidden from a group of users. A restriction rule is built, tested by logging in as one of those users, and signed off as "the data is now inaccessible to them." Months later the data turns up in an extract, a Chatter feed, a manager's calendar, or an access-audit dashboard, and nobody can explain how, because the rule is still active and still correct.
+**What happens:** Someone asks for sensitive records to be hidden from a group of users. A restriction rule is built, tested by logging in as one of those users, and signed off as "the data is now inaccessible to them." Months later the data turns up in an extract, a Chatter feed, a manager's calendar, or an access-audit dashboard, and nobody can explain how, because the rule is still active and still correct. Grounding: enforcement surfaces and the eight gaps are in the Security Guide's Restriction Rule Considerations (262: salesforce_security_impl_guide L4282-L4328; Security Guide not yet published at 264).
 
-**Why:** The rule filters, at query time, the rows the sharing model already granted. It is enforced on Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, and SOSL — a wide net, but a finite one. Outside it, the Considerations page in the Restriction Rules Developer Guide documents the eight gaps below. Seven are paths by which a restricted user still reaches the data; the eighth, `UserRecordAccess`, is a reporting gap that hides the other seven from audit tooling.
+**Why:** The rule filters, at query time, the rows the sharing model already granted. It is enforced on Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, and SOSL — a wide net, but a finite one. Outside it, the Restriction Rule Considerations (Security Guide, and the Restriction Rules Developer Guide) document the eight gaps below. Seven are paths by which a restricted user still reaches the data; the eighth, `UserRecordAccess`, is a reporting gap that hides the other seven from audit tooling.
 
 | Gap | Documented behaviour |
 |---|---|
@@ -16,7 +16,7 @@ Non-obvious platform behaviour that turns a correct-looking restriction rule int
 | `UserRecordAccess` | "The UserRecordAccess object doesn't consider whether a user's access is blocked due to a restriction rule." |
 | Calendars with Show Details | "In calendars, if the Show Details access level is selected, users can see the subject of all events, regardless of the restriction rules created." |
 | Subordinates' calendars | "Users can see their subordinates' events in calendars even if the users have an active restriction rule applied." |
-| Global search shortcuts | "After restriction rules are applied, users can still see records that they previously had access to in the global search box shortcuts." |
+| Global search shortcuts | "After restriction rules are applied, users can still see records that they previously had access to in the search box shortcuts list or in the Recently Viewed list view." |
 | Chatter publisher | "If a user creates an event or a task record using the Chatter publisher, the record name is visible in the related Chatter post." |
 
 Note also the negative-space case that trips search testing: "a user with a restriction rule applied might not find all possible matching results when searching for a record." Search behaviour under a rule is imprecise in both directions.
@@ -29,7 +29,7 @@ Note also the negative-space case that trips search testing: "a user with a rest
 
 ## Gotcha 2: `UserRecordAccess` reports the pre-restriction answer, so access audits pass while the rule is working
 
-**What happens:** An admin builds an access-audit report or an Apex check on `UserRecordAccess` to prove which users can reach which records. On an object carrying an active restriction rule, that check returns access for users the rule is currently blocking. The admin concludes the rule is broken and starts debugging a rule that is behaving exactly as designed.
+**What happens:** An admin builds an access-audit report or an Apex check on `UserRecordAccess` to prove which users can reach which records. On an object carrying an active restriction rule, that check returns access for users the rule is currently blocking. The admin concludes the rule is broken and starts debugging a rule that is behaving exactly as designed. (Grounded: object_reference 264 L306098.)
 
 **Why:** `UserRecordAccess` answers a sharing-model question — has any sharing mechanism granted this user this record. Restriction rules are evaluated separately at query time and never write into the sharing tables, so the object has nothing to report. Salesforce states it flatly: "The UserRecordAccess object doesn't consider whether a user's access is blocked due to a restriction rule."
 
@@ -41,7 +41,7 @@ Note also the negative-space case that trips search testing: "a user with a rest
 
 ## Gotcha 3: Only EQUALS exists, and two rules do not compose into an AND
 
-**What happens:** A requirement arrives with two conditions. The obvious workaround — one rule for each condition, both active on the object, both targeting the same profile — appears to save. The result is not an AND. Salesforce states the actual behaviour: "If you create two active rules, and both rules apply to a given user, only one of the active rules is observed." Which one is observed is not documented, so the second rule buys nothing and makes the outcome unpredictable.
+**What happens:** A requirement arrives with two conditions. The obvious workaround — one rule for each condition, both active on the object, both targeting the same profile — appears to save. The result is not an AND. Salesforce states the actual behaviour: "If you create two active rules, and both rules apply to a given user, only one of the active rules is observed." Which one is observed is not documented, so the second rule buys nothing and makes the outcome unpredictable. Grounding: 262: salesforce_security_impl_guide L4155-L4157, L4334-L4335, L4356-L4357.
 
 **Why:** The criteria language accepts a single equality test on each side. "Restriction rules support only the EQUALS operator." "The AND, OR, or any other operators aren't supported." "The use of formulas isn't supported." Separately, the guide constrains composition itself: "Create only one restriction or scoping rule per object per user. In other words, for a given object, only one restriction or scoping rule at most should have the userCriteria field evaluate to true for a given user." Two rules on one object are legitimate only when their `userCriteria` select disjoint audiences.
 
@@ -55,7 +55,7 @@ The multi-value form is the one exception that looks like an OR and is not one: 
 
 ## Gotcha 4: 18-character Ids and org-specific Ids both fail, and neither fails loudly
 
-**What happens:** An Id is copied out of a browser URL or a Data Loader export into `recordFilter`, and the rule matches nothing — or, worse, is deployed to a second org where the profile Id in `userCriteria` belongs to a different profile entirely, and the rule silently applies to the wrong audience.
+**What happens:** An Id is copied out of a browser URL or a Data Loader export into `recordFilter`, and the rule matches nothing — or, worse, is deployed to a second org where the profile Id in `userCriteria` belongs to a different profile entirely, and the rule silently applies to the wrong audience. Grounding: 262: salesforce_security_impl_guide L4340, L4360-L4362.
 
 **Why:** Two separate constraints collide. First, "if you reference IDs in the `recordFilter` field, use 15-character IDs instead of 18-character IDs" — and 18 characters is what almost every convenient source hands you. Second, `recordFilter` and `userCriteria` are opaque strings to the deployment machinery, so record type Ids, profile Ids, role Ids, and user Ids inside them are never translated between orgs. Salesforce is explicit: "if you include IDs in your `recordFilter` or `userCriteria` fields that are specific to your Salesforce org, you must modify these IDs in the target org if different from the org where the restriction rules were originally created."
 
@@ -67,7 +67,7 @@ The multi-value form is the one exception that looks like an OR and is not one: 
 
 ## Gotcha 5: `Owner.` does not work; the Owner reference needs an explicit object type
 
-**What happens:** An admin writes `recordFilter` as `Owner.UserRoleId = $User.UserRoleId`, mirroring the dot-notation traversal that works everywhere else on the platform, and the rule does not behave.
+**What happens:** An admin writes `recordFilter` as `Owner.UserRoleId = $User.UserRoleId`, mirroring the dot-notation traversal that works everywhere else on the platform, and the rule does not behave. Grounding: 262: salesforce_security_impl_guide L4363-L4365 and the example scenarios L4453-L4479; that `Owner.` without a type fails outright is UNVERIFIED (2026-10-20) — the guide says only that the type must be specified.
 
 **Why:** Owner is polymorphic — it can point at a User or a Group — so the criteria parser needs to be told which. "When you reference the Owner field, you must specify the object type in your syntax." The working form uses a colon between the field and the object type: `Owner:User.UserRoleId`. Salesforce's own examples use `Owner:User.UserRoleId = $User.UserRoleId` for same-role visibility and `Owner:User.ProfileId = $User.ProfileId` for same-profile visibility. The same shape appears in cross-object form: `Agent__c.Owner:User.ManagerId=001xx000003HNy7, 001xx000003HNut`.
 
@@ -79,7 +79,7 @@ The multi-value form is the one exception that looks like an OR and is not one: 
 
 ## Gotcha 6: Restricting a parent does not restrict its children
 
-**What happens:** A rule is placed on a custom parent object and the team assumes the child records inherit the restriction the way they inherit a master-detail sharing decision. Child records stay visible, and because the parent is hidden, they surface without the context that would have made the exposure obvious in review.
+**What happens:** A rule is placed on a custom parent object and the team assumes the child records inherit the restriction the way they inherit a master-detail sharing decision. Child records stay visible, and because the parent is hidden, they surface without the context that would have made the exposure obvious in review. Grounding: 262: salesforce_security_impl_guide L4336-L4338.
 
 **Why:** "Creating a restriction rule for an object doesn't automatically restrict access to its child objects." The rule is scoped to one `targetEntity` and knows nothing about the object graph. This is unlike master-detail sharing inheritance, which is where the wrong intuition comes from.
 
@@ -91,9 +91,9 @@ The multi-value form is the one exception that looks like an OR and is not one: 
 
 ## Gotcha 7: Activity related lists undercount under a restriction rule
 
-**What happens:** After a rule is activated on Task or Event, agents report that activities they own are missing from the Open Activities and Activity History related lists — not filtered by the rule, just absent. The record page understates how much work exists.
+**What happens:** After a rule is activated on Task or Event, agents report that activities they own are missing from the Open Activities and Activity History related lists — not filtered by the rule, just absent. The record page understates how much work exists. Grounding: 262: salesforce_security_impl_guide L4300-L4305.
 
-**Why:** Salesforce does not publish the mechanism, but it documents the outcome directly and unconditionally: "if you use Open Activities and Activity History related lists, when restriction rules are applied, it's possible that fewer than 50 records are displayed when more activities exist that the user has access to." The guide's recommendation is to "use the Activity Timeline instead of activity related lists."
+**Why:** The guide gives the mechanism — "these lists display at most 50 records, and restriction rules are applied after" (262: salesforce_security_impl_guide L4303-L4304) — and documents the outcome unconditionally: "if you use Open Activities and Activity History related lists, when restriction rules are applied, it's possible that fewer than 50 records are displayed when more activities exist that the user has access to." The guide's recommendation is to "use the Activity Timeline instead of activity related lists."
 
 **How to avoid:** Ship the layout change with the rule, not after it. Every page layout used by a profile matched by the `userCriteria` should present the Activity Timeline rather than the legacy related lists. If a report is the workaround, verify it as the restricted user — reports are an enforced surface, so the counts there are filtered but complete, which makes them a better audit surface than the related list.
 
@@ -103,7 +103,7 @@ The multi-value form is the one exception that looks like an OR and is not one: 
 
 ## Gotcha 8: External objects behave differently enough to invalidate the design
 
-**What happens:** A restriction rule is designed against an external object, tested in a sandbox pointing at a small test endpoint, and then performs badly or silently loses search in production.
+**What happens:** A restriction rule is designed against an external object, tested in a sandbox pointing at a small test endpoint, and then performs badly or silently loses search in production. Grounding: 262: salesforce_security_impl_guide L4380-L4395.
 
 **Why:** Four separate constraints apply only to external objects. "Only external objects created using the Salesforce Connect: OData 2.0, OData 4.0, and Cross-Org adapters support restriction rules" — the custom adapter is not supported at all. "External objects created using the Cross-Org adapter don't support search or SOSL when a rule is applied to a user," so two of the nine enforcement surfaces disappear for that adapter. "Restriction rules for external objects don't include organization-wide defaults or sharing mechanisms," which means the rule is not narrowing a sharing grant — there is no sharing grant. And because the data lives outside Salesforce, "editing or deleting a restriction rule on an external object causes an additional database call," with further calls each time search runs against external object records. External objects also "don't appear in Object Manager," so the Setup path used for every other object does not exist here.
 
@@ -115,7 +115,7 @@ The multi-value form is the one exception that looks like an OR and is not one: 
 
 ## Gotcha 9: The active-rule ceiling is per object and per edition, and drafts hide it
 
-**What happens:** A third requirement lands on an object that already carries two active rules in an Enterprise Edition org, and the design assumes it can simply be added. It cannot, and the discovery happens at deployment rather than at design.
+**What happens:** A third requirement lands on an object that already carries two active rules in an Enterprise Edition org, and the design assumes it can simply be added. It cannot, and the discovery happens at deployment rather than at design. Grounding: 262: salesforce_security_impl_guide L4118-L4119, L4332-L4333.
 
 **Why:** "You can create up to two active restriction rules per object in Enterprise and Developer Editions and up to five active restriction rules per object in Performance and Unlimited Editions." The ceiling counts `active` rules, so a repository can accumulate inactive `.rule` files that give no signal of how close the object is to its limit.
 
@@ -131,7 +131,7 @@ Scoping rules are counted against a *separate* ceiling, not the same one: the Sc
 
 ## Gotcha 10: Salesforce Classic is a documented prerequisite problem
 
-**What happens:** Rules are built and activated in an org where some users still work in Salesforce Classic, and the behaviour observed by those users does not match the design.
+**What happens:** Rules are built and activated in an org where some users still work in Salesforce Classic, and the behaviour observed by those users does not match the design. Grounding: 262: salesforce_security_impl_guide L4158-L4159, L4276-L4278.
 
 **Why:** Restriction rules are available in Lightning Experience, and the guide opens its Considerations with a prerequisite rather than a caveat: "Before creating restriction rules, we recommend that you Turn Off Salesforce Classic for Your Org." The recommendation is placed first in the list, ahead of the supported-object list.
 

@@ -41,9 +41,9 @@ outputs:
   - "RTM linkage block mapping each row_id back to a source_req_id and forward to a downstream runtime agent"
   - "Stdlib checker (check_workbook.py) that validates row schema, agent membership against the runtime roster, and absence of placeholder rows"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-12
+updated: 2026-10-20
 ---
 
 # Configuration Workbook Authoring
@@ -87,7 +87,7 @@ and routes to nobody.
 | "Who, by name, is accountable for each section landing in the org?" | `owner` is a person, not a team alias. A section owned by "the admin team" is a section nobody signs off, including the empty ones | A named owner per section, including for `not-in-scope-this-release` rows |
 | "Which agent executes this row, and is it still on the runtime roster?" | The fourteen Wave-3b auditors still have `AGENT.md` files on disk, so an existence check passes them and routes the row to a stub | One live agent id per row, with `--domain=` arguments where `audit-router` replaced a retired auditor (Gotcha 8) |
 | "For every automation and sharing row that picks a mechanism, which decision-tree branch resolved it?" | An unrecorded choice cannot be disagreed with at review, and "it was obvious" is the decision that goes unrecorded | A `<tree>.md Q<n>` citation plus one clause of reason on every Section 4 row and every Section 6 row whose artefact is an automation-engine choice; a Queue/Group/BusinessHours configuration row cites nothing because it picks no engine (Gotchas 12 and 13) |
-| "Is access granted through permission sets, or is this org still profile-driven?" | A profile row is unverifiable after deploy: a retrieved profile only carries FLS for what else was in the same manifest, and a profile deploy overlays rather than replaces | Section 3 rows that name permission sets, with profiles reserved for the residue that has no `PermissionSet` equivalent (Gotcha 15) |
+| "Is access granted through permission sets, or is this org still profile-driven?" | A profile row is unverifiable after deploy: a retrieved profile only carries FLS for what else was in the same manifest, and a profile deploy overlays rather than replaces (api_meta 264 L100261-L100268) | Section 3 rows that name permission sets, with profiles reserved for the residue that has no `PermissionSet` equivalent (Gotcha 15) |
 | "What is the org's current state for every `target_value` you are about to write?" | API names, existing rules and existing PSGs collide silently; "we'll figure out the API name later" rows become rework | A probe date in `notes` beside each new component, so the reviewer knows the row was checked against reality and when |
 | "What does version-lock mean here — who tags the file, and where does it live?" | `status: committed` is a per-row label an in-place edit can rewrite; only the snapshot is the lock | A path (`docs/workbooks/<release>/cwb.md`) and a tag, agreed before the sprint, not improvised at commit (Gotcha 14) |
 

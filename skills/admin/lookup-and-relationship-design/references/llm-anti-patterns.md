@@ -49,8 +49,11 @@ data model before forcing conversion.
 **Correct pattern:**
 
 ```
-Polymorphic lookups are only supported on specific standard objects
-(Task, Event, ContentDocumentLink, FeedItem, etc.). Custom objects
+Polymorphic lookups are platform-defined fields on specific standard objects
+(Task, Event, ContentDocumentLink, FeedItem, etc.); the one polymorphic field
+a custom object has is its Owner (User or Group, salesforce_apex_developer_guide
+264 L9962-L9987). That a custom polymorphic lookup cannot be created is
+UNVERIFIED (2026-10-20), Help-only. Custom objects
 need two lookups + a type-discriminator picklist, or a single lookup
 to a super-object that has sub-type records.
 ```
@@ -68,7 +71,8 @@ to a super-object that has sub-type records.
 **Correct pattern:**
 
 ```
-Hard limit: 40 relationship fields per object. Before adding a
+Hard limit: "A custom object allows up to 40 relationships"
+(salesforce_app_limits_cheatsheet 264 L688-L689). Before adding a
 lookup, count existing relationships. If near limit, consolidate
 via a related junction object or an intermediate record pattern.
 Reaching 40 is a design smell — the object is doing too much.
@@ -87,8 +91,10 @@ Reaching 40 is a design smell — the object is doing too much.
 **Correct pattern:**
 
 ```
-SOQL relationship queries cap at 5 levels of parent relationships and
-1 level of child (subquery). Deeper traversal must flatten via formula
+SOQL relationship queries cap at 5 levels of child-to-parent relationships
+and, from API 58.0, 5 levels of parent-to-child (2 at API 57.0 and earlier)
+— salesforce_app_limits_cheatsheet 264 L708-L719. (Corrected 2026-10-20:
+this said "1 level of child (subquery)".) Deeper traversal must flatten via formula
 fields, denormalization, or multiple queries. Build relationships with
 flat access in mind.
 ```

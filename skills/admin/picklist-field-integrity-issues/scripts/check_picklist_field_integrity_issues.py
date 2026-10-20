@@ -8,6 +8,10 @@ Scans Salesforce metadata XML files for common picklist integrity risks:
 
 Uses stdlib only — no pip dependencies.
 
+Exit contract: WARN findings exit 0 (exit 1 with --strict); an unparseable XML
+file is an ERROR and exits 1; a directory with no field files prints one WARN
+and exits 0; a missing directory prints ERROR and exits 1.
+
 Usage:
     python3 check_picklist_field_integrity_issues.py --manifest-dir path/to/metadata
     python3 check_picklist_field_integrity_issues.py --manifest-dir force-app/main/default
@@ -66,6 +70,11 @@ def check_unrestricted_picklists(field_files: list[Path]) -> list[str]:
             if field_type.text not in ("Picklist", "MultiselectPicklist"):
                 continue
 
+            # "A custom picklist that uses a global value set is restricted"
+            # (api_meta 264 L45920-L45922), whatever <restricted> says; the GVS
+            # is named in <valueSet><valueSetName> (L48233).
+            if root_el.find(f"{ns_str}valueSet/{ns_str}valueSetName") is not None:
+                continue
             restricted = root_el.find(f"{ns_str}valueSet/{ns_str}restricted")
             if restricted is None or restricted.text != "true":
                 issues.append(
@@ -156,14 +165,13 @@ def main() -> int:
 
     if not manifest_dir.exists():
         print(f"ERROR: Directory not found: {manifest_dir}")
-        return 2
+        return 1
 
     field_files = find_field_files(manifest_dir)
     rt_files = find_record_type_files(manifest_dir)
 
     if not field_files:
-        print(f"No .field-meta.xml files found in {manifest_dir}")
-        print("Provide a Salesforce metadata directory with --manifest-dir")
+        print(f"WARN: no .field-meta.xml files found in {manifest_dir} — nothing to check.")
         return 0
 
     print(f"Scanning {len(field_files)} field files, {len(rt_files)} record type files\n")

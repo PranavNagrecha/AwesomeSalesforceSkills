@@ -21,7 +21,7 @@ Deploy it as part of the org's baseline settings. Retrieve the existing file fir
 
 **Read the evidence precisely.** The gate claim rests on one sentence in the Metadata API guide — the setting "indicates if admins can use an updated user interface that includes an assignment expiration." The Security Guide's own assignment procedure prints the expiration step unconditionally and never mentions the setting, so the two documents do not corroborate each other on what a false value hides. Check the setting before promising an admin a click trail, and if the control turns out to be present with the setting false, trust the org over both documents. `[STALE-RISK: neither guide states outright which Setup controls disappear when psaExpirationUIEnabled is false — re-verify in-org.]`
 
-**Source:** Metadata API Developer Guide v67.0 — `UserManagementSettings`. Object Reference v67.0 — `PermissionSetAssignment.ExpirationDate`. Salesforce Security Guide v67.0, p.39 — "Assign a Permission Set to Multiple Users", step 5.
+**Source:** Metadata API Developer Guide v67.0 — `UserManagementSettings`. Object Reference v67.0 — `PermissionSetAssignment.ExpirationDate`. Salesforce Security Guide v67.0, p.39 — "Assign a Permission Set to Multiple Users", step 5. 264 re-check: api_meta 264 L132107-L132111; object_reference 264 L219739-L219745. Security Guide part: 262: salesforce_security_impl_guide L2055 (not published at 264).
 
 ---
 
@@ -35,7 +35,7 @@ Deploy it as part of the org's baseline settings. Retrieve the existing file fir
 
 **How to avoid:** Standardise the runbook on the permission-set-side path for anything time-boxed, and state the click trail explicitly in the request ticket rather than leaving it to habit. For bulk or scripted grants, use the API and skip the question entirely. `[STALE-RISK: the Setup UI for assignments is under active change — re-read the "Assign a Permission Set to Multiple Users" and "Assign Permission Sets to a Single User" procedures in the current Security Guide before publishing a click trail.]`
 
-**Source:** Salesforce Security Guide v67.0, Summer '26, pages 38–39 — "Assign Permission Sets to a Single User" and "Assign a Permission Set to Multiple Users".
+**Source:** Salesforce Security Guide v67.0, Summer '26, pages 38–39 — "Assign Permission Sets to a Single User" and "Assign a Permission Set to Multiple Users". Security Guide part: 262: salesforce_security_impl_guide L2055 (not published at 264).
 
 ---
 
@@ -65,7 +65,7 @@ WHERE PermissionSet.Name = 'PS_Temp_ManageUsers'
 
 **Retrieval caveat — verify this one in your org.** The Object Reference documents `ALL ROWS` for exactly one case: assignments revoked by a user access policy, where "the `PermissionSetAssignment` record isn't deleted." It says nothing either way about whether a *date-expired* assignment is returned by an ordinary query. `skills/security/privileged-access-management` states that expired assignments are treated as soft deletes and need `ALL ROWS` to retrieve; that claim rests on Salesforce Help, which cannot be fetched and has not been re-verified here. Both readings are consistent with the field metadata, so write the query with `ALL ROWS` — it is correct under either behaviour — and confirm the row count against a known expired assignment in the target org before signing off an audit. `[STALE-RISK: re-verify whether an ordinary SOQL query returns date-expired PermissionSetAssignment rows; the answer decides whether ALL ROWS is required or merely harmless.]`
 
-**Source:** Object Reference for the Salesforce Platform v67.0 — `PermissionSetAssignment.IsActive`, `ExpirationDate`, and the "Revoked Assignments from User Access Policies" usage note. Conflict logged in `well-architected.md`.
+**Source:** Object Reference for the Salesforce Platform v67.0 — `PermissionSetAssignment.IsActive`, `ExpirationDate`, and the "Revoked Assignments from User Access Policies" usage note (264: object_reference L219747-L219753, L219894-L219901). Conflict logged in `well-architected.md`.
 
 ---
 
@@ -96,7 +96,7 @@ SELECT Id, Source FROM UserAccessChange WHERE Id IN :changeIds
 
 **Do not guess the relationship name.** The Object Reference lists the Relationship Name for *both* `LastCreatedByChangeId` and `LastDeletedByChangeId` as `LastCreatedByChange` — on `PermissionSetAssignment` and on `PermissionSetLicenseAssign` alike. A traversal spelled `LastDeletedByChange.Source` appears nowhere in the guide. Select the ID and join in a second query, or confirm the traversal name from `describeSObjects()` in the target org before writing it into a report.
 
-**Source:** Object Reference for the Salesforce Platform v67.0 — `PermissionSetAssignment` Usage, "Revoked Assignments from User Access Policies"; `UserAccessChange`.
+**Source:** Object Reference for the Salesforce Platform v67.0 — `PermissionSetAssignment` Usage, "Revoked Assignments from User Access Policies"; `UserAccessChange` (264: object_reference L219894-L219901, L300147).
 
 ---
 
@@ -110,7 +110,7 @@ SELECT Id, Source FROM UserAccessChange WHERE Id IN :changeIds
 
 **How to avoid:** Update the field. Reserve delete-and-insert for the cases where a Create-only field must change, and when you do need it, insert first where the platform allows it or wrap the operation so a failed insert restores the prior state. Also check licences before a bulk re-insert: the Object Reference's rule is that "when assigning a permission set, if the `PermissionSet` has a `UserLicenseId`, its `UserLicenseId` and the `Profile` `UserLicenseId` must match" — note that this usage text still names `UserLicenseId`, which the same document describes as deprecated and only available up to API version 37.0 in favour of `LicenseId` (API version 38.0 and later). Query `PermissionSet.LicenseId` when you write the pre-flight check.
 
-**Source:** Object Reference for the Salesforce Platform v67.0 — `PermissionSetAssignment` field properties and Usage; `PermissionSet.LicenseId`.
+**Source:** Object Reference for the Salesforce Platform v67.0 — `PermissionSetAssignment` field properties and Usage; `PermissionSet.LicenseId` (264: object_reference L219713-L219845, L219864-L219865).
 
 ---
 
@@ -135,7 +135,7 @@ The Object Reference describes these as "one field for each permission … the n
 
 Key the report on `PermissionSet.ProfileId` or `PermissionSet.Profile.Name`, not on the label. The Object Reference is explicit: "For permission sets that are owned by profiles, don't use Name and Label values that are returned in a query. Name and Label values from queries can change." The `Label` column above is for a human reading the result, not for a join or a stored identifier.
 
-**Source:** Salesforce Security Guide v67.0 — "User Permissions". Object Reference v67.0 — `PermissionSet` `Permissions<PermissionName>` and `IsOwnedByProfile`.
+**Source:** Salesforce Security Guide v67.0 — "User Permissions" (Security Guide part: 262: salesforce_security_impl_guide L809 (not published at 264).). Object Reference v67.0 — `PermissionSet` `Permissions<PermissionName>` and `IsOwnedByProfile`.
 
 ---
 
@@ -157,7 +157,7 @@ Key the report on `PermissionSet.ProfileId` or `PermissionSet.Profile.Name`, not
 
 **How to avoid:** For each temporary grant, write down every mechanism the capability depends on and mark which ones can expire. Anything in the "no" column needs a named human owner and a dated task, because the platform will not do it. Do not paper over the gap with a scheduled job that pretends to be an expiry — see `llm-anti-patterns.md` Anti-Pattern 1.
 
-**Source:** Object Reference for the Salesforce Platform v67.0 — `PermissionSetLicenseAssign`, `GroupMember`, `MutingPermissionSet`. Metadata API Developer Guide v67.0 — `UserAccessPolicyAction`.
+**Source:** Object Reference for the Salesforce Platform v67.0 — `PermissionSetLicenseAssign`, `GroupMember`, `MutingPermissionSet`. Metadata API Developer Guide v67.0 — `UserAccessPolicyAction` (264: object_reference L220298, L155436, L187698; api_meta L141669-L141707).
 
 ---
 
@@ -171,7 +171,7 @@ Key the report on `PermissionSet.ProfileId` or `PermissionSet.Profile.Name`, not
 
 **How to avoid:** Verify in the target org that the entry actually appears before you commit to it as the control's evidence, and keep a second source — the assignment rows themselves, exported on a schedule. Whatever the source, export on a cadence: "to download your org's complete setup history for the past 180 days, click Download. After 180 days, setup entity records are deleted." An annual access review that reaches back further than 180 days will find nothing. `[STALE-RISK: check whether the "(beta)" marker has been removed from the Setup Audit Trail tracked-changes table in the current Security Guide.]`
 
-**Source:** Salesforce Security Guide v67.0, Summer '26 — "Monitor Setup Changes with Setup Audit Trail", tracked changes table and the download/retention note.
+**Source:** Salesforce Security Guide v67.0, Summer '26 — "Monitor Setup Changes with Setup Audit Trail", tracked changes table and the download/retention note. Security Guide part: 262: salesforce_security_impl_guide L4974-L4975, L5034 (not published at 264).
 
 ---
 
@@ -185,7 +185,7 @@ Key the report on `PermissionSet.ProfileId` or `PermissionSet.Profile.Name`, not
 
 **How to avoid:** Keep session-based permission sets out of groups, or set `HasActivationRequired` on the group itself and understand that you have moved the control to the group boundary. When comparing a session-based grant against an `ExpirationDate`, be clear about what each buys: the date bounds a window the user may have walked away from; the session bounds actual presence. Also confirm `PermissionSetGroup.Status` is `Updated` before relying on a group grant at all — `Outdated`, `Updating`, and `Failed` all deliver less than the assignment implies, with no error on the assignment row.
 
-**Source:** Object Reference for the Salesforce Platform v67.0 — `SessionPermSetActivation` Note; `PermissionSet.HasActivationRequired`; `PermissionSetGroup.HasActivationRequired` and `Status`.
+**Source:** Object Reference for the Salesforce Platform v67.0 — `SessionPermSetActivation` Note; `PermissionSet.HasActivationRequired`; `PermissionSetGroup.HasActivationRequired` and `Status` (264: object_reference L264383, L219948-L219954).
 
 ---
 
@@ -209,4 +209,4 @@ insert new PermissionSetAssignment(
 
 Record the grant in the change ticket, because there is no Setup screen a reviewer can be pointed at to see it.
 
-**Source:** Salesforce Security Guide v67.0 — Note on "Assign a Permission Set to Multiple Users" and "Remove User Assignments from a Permission Set". Object Reference v67.0 — `PermissionSetAssignment` Special Access Rules.
+**Source:** Salesforce Security Guide v67.0 — Note on "Assign a Permission Set to Multiple Users" and "Remove User Assignments from a Permission Set". Object Reference v67.0 — `PermissionSetAssignment` Special Access Rules (264: object_reference L219704-L219708). Security Guide part: 262: salesforce_security_impl_guide L2042, L2064 (not published at 264).

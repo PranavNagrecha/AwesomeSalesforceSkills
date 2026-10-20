@@ -95,14 +95,14 @@ by two without anything being wrong.
 **When it occurs:** With the rule types, which are stored per object rather than per rule. The
 Metadata API guide is explicit: "Assignment rules for an object have the suffix `.assignmentRules`
 and are stored in the `assignmentRules` folder. For example, all Case assignment rules are stored in
-the `Case.assignmentRules` file" (`api_meta.txt` L23689–23691). Auto-response and escalation rules
+the `Case.assignmentRules` file" (api_meta 264 L25740-L25741). Auto-response and escalation rules
 follow the same shape.
 
 **How to avoid:** Treat `req_id` as the only key and `artefact` as a many-to-one reference. Where the
 requirement needs to name one rule rather than the file, use the *singular* type in the manifest:
 `AssignmentRule` with members `Case.samplerule`, `Case.newrule` — the guide flags the difference
 itself ("Notice that for this example the type name syntax is `AssignmentRule` and not
-`AssignmentRules`", `api_meta.txt` L23675–23682). Then the row's artefact is
+`AssignmentRules`", api_meta 264 L25727-L25733). Then the row's artefact is
 `AssignmentRule:Case.Support_Case_Routing` and it resolves to a rule, not a file.
 
 ---
@@ -121,15 +121,15 @@ applicable (for example, an entitlement process named 'gold_support' can have th
 'gold_support_v2.entitlementProcess')", it "corresponds to the `slaProcess.NameNorm` field", it is
 lowercase, and it "is distinct from the `name` field, which represents what displays in the user
 interface and, if versioning is enabled, can be shared among multiple versions"
-(`api_meta.txt` L59074–59082). So one label can map to several files, and none of them is spelled
+(api_meta 264 L61583-L61591). So one label can map to several files, and none of them is spelled
 like the label.
 
 **How to avoid:** Write `<MetadataType>:<fullName>` and take the `fullName` from the retrieved source,
 not from Setup. For a custom field that is `Object.Field__c` — the guide's own examples are
-`MyCustomObject__c.MyCustomField__c` and `Account.MyAcctCustomField__c` (`api_meta.txt`
-L43221–43226). For a versioned entitlement process it is the versioned lowercase file name. When the
+`MyCustomObject__c.MyCustomField__c` and `Account.MyAcctCustomField__c` (api_meta
+264 L45466-L45470). For a versioned entitlement process it is the versioned lowercase file name. When the
 retrieve has not happened yet, `listMetadata()` returns the `fullName` for components of a type
-(`api_meta.txt` L2095–2097) — that is the lookup, not the Setup list view.
+(api_meta 264 L2217-L2219) — that is the lookup, not the Setup list view.
 
 ---
 
@@ -202,7 +202,7 @@ misspelled API name joins it, nobody notices.
 guide states it plainly: "Some Salesforce features have metadata types that aren't available in
 Metadata API. These metadata types can't be retrieved or deployed with Metadata API. To make changes
 to these types, you must do it manually in each of your organizations" — and adds that some types are
-also unsupported in source tracking, packaging and change sets (`api_meta.txt` L9555–9559). It is
+also unsupported in source tracking, packaging and change sets (api_meta 264 L10256-L10260). It is
 also true of a component that simply has not been built yet at the time the check runs.
 
 **How to avoid:** Make it a declared state rather than a permanent warning. Mark the row
@@ -223,15 +223,15 @@ particular component had never been deployed to *this* org under that name.
 **When it occurs:** Whenever the drop is recorded against an artefact whose name is wrong (see gotcha
 10) or whose earlier build never reached the target org. The delete does not fail loudly: "If you try
 to delete some components that don't exist in the organization, the rest of the deletions are still
-attempted" (`api_meta.txt` L4641). A partially-wrong delete manifest therefore reports success.
+attempted" (api_meta 264 L4742). A partially-wrong delete manifest therefore reports success.
 
 **How to avoid:** Split the status from the change. `Dropped` records the scope decision; the removal
 is its own row with its own artefact and its own test, and the test is a *post-deploy* check that the
 component is absent, not the deploy's exit code. Get the delete manifest right while you are there:
 it is named `destructiveChanges.xml`, wildcards are not supported in it, and it needs a companion
-`package.xml` that lists no components and carries the API version (`api_meta.txt` L4614–4632); use
+`package.xml` that lists no components and carries the API version (api_meta 264 L4705-L4727); use
 `destructiveChangesPre.xml` / `destructiveChangesPost.xml` when order against the additions matters
-(`api_meta.txt` L4645–4656). And never bundle the removal into the feature deploy — that makes the
+(api_meta 264 L4746-L4758). And never bundle the removal into the feature deploy — that makes the
 feature's rollback also a restore.
 
 ---

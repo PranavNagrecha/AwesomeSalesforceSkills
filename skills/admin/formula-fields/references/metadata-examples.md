@@ -4,16 +4,16 @@ A formula field is a `CustomField` whose `<type>` is the **return type** (`Text`
 `Currency`, `Percent`, `Checkbox`, `Date`, …) plus a `<formula>` element. There is no
 `<type>Formula</type>` on a regular object — that value exists only on the deprecated
 `ArticleType CustomField` type (Metadata API Developer Guide, *ArticleType CustomField* → `type`,
-api_meta.txt:22161–22178). Choosing the return type is the first design decision because it is
+api_meta 264 L24202-L24210). Choosing the return type is the first design decision because it is
 also the deploy-time contract: the return type is what the `<type>` element says.
 
 The two elements that make the field a formula (Metadata API Developer Guide, *CustomField* →
-Fields, api_meta.txt:43422–43426):
+Fields, api_meta 264 L45666-L45669):
 
 | Element | Type | What the guide says |
 |---|---|---|
 | `formula` | string | "If specified, represents a formula on the field." |
-| `formulaTreatBlanksAs` | `TreatBlanksAs` enum | "Indicates how to treat blanks in a formula. Valid values are: `BlankAsBlank` and `BlankAsZero`." |
+| `formulaTreatBlanksAs` | `TreatBlanksAs` enum | "Indicates how to treat blanks in a formula. Valid values are `BlankAsBlank` and `BlankAsZero`." |
 
 ## Where the file lives
 
@@ -23,13 +23,13 @@ Fields, api_meta.txt:43422–43426):
 | DX source format | `objects/Account/fields/Health_Score__c.field-meta.xml` | `CustomField` |
 
 The guide documents the embedded form: "Custom fields are user-defined fields and are part of the
-custom object or standard object definition" (api_meta.txt:43248–43249), and its sample definition
-shows `<fields>` inside `<CustomObject>` (api_meta.txt:43934–43946). `sf project retrieve` decomposes
+custom object or standard object definition" (api_meta 264 L45492-L45493), and its sample definition
+shows `<fields>` inside `<CustomObject>` (api_meta 264 L46165-L46180). `sf project retrieve` decomposes
 each field into its own `.field-meta.xml` with `<CustomField>` as the root; the element names and
 order are identical either way. The examples below use the DX form.
 
 `fullName` is always object-qualified in `package.xml` — "`Account.MyAcctCustomField__c`"
-(api_meta.txt:43226) — but inside a decomposed `.field-meta.xml` it is the bare field name, matching
+(api_meta 264 L45470) — but inside a decomposed `.field-meta.xml` it is the bare field name, matching
 the file name.
 
 ## Currency formula with `BlankAsZero`
@@ -58,8 +58,8 @@ How to read it:
   arithmetic has a blank operand and the **field returns blank**, not `Amount`. Omit the element and
   you are deploying whichever default the platform applies rather than a decision you made — always
   write it explicitly on a `Number`, `Currency`, or `Percent` formula.
-- `precision` is "the number of digits in a number" and `scale` is "the number of digits to the
-  right of the decimal point" (api_meta.txt:43563–43565, 43610–43612). For a currency return type
+- `precision` is "number of digits in a number value" and `scale` is "the number of digits to the
+  right of the decimal point" (api_meta 264 L45791-L45792, L45828-L45829). For a currency return type
   `scale` of `2` is the money shape; the pair must be present for numeric return types.
 - `description` carries the business rule and the owner. Nothing else in the metadata records why
   the field exists, and a formula field has no code comments.
@@ -85,18 +85,18 @@ How to read it:
 
 - **XML escaping is not optional.** `&` becomes `&amp;` and `"` becomes `&quot;` inside a
   `<formula>` element. The guide's own samples do exactly this:
-  `<formula>Name &amp; &quot;Updated&quot;</formula>` (api_meta.txt:140599) and
+  `<formula>Name &amp; &quot;Updated&quot;</formula>` (api_meta 264 L144461) and
   `<errorConditionFormula>OR(Name = &apos;Milo&apos;,...)</errorConditionFormula>`
-  (api_meta.txt:45439–45440). A `<` comparison must be written `&lt;` or the file is not
+  (api_meta 264 L47825-L47826). A `<` comparison must be written `&lt;` or the file is not
   well-formed XML and the deploy fails before any formula is compiled.
 - `Account.Owner.Id` is two relationship hops from Contact. The skill's own ceiling —
-  10 unique relationships per formula, ~800 compiled characters of overhead per hop — is in
+  10 unique relationships per formula, ~800 compiled characters of overhead per hop, both UNVERIFIED (2026-10-20), Help-only — is in
   `references/llm-anti-patterns.md` (anti-pattern 3). Traversal is where compile size disappears.
 - `Owner.Name` is one field; splitting it into `FirstName`/`LastName` is a deliberate choice here so
   the blank branch is explicit. Either works.
 - `unique` and `externalId` are inert on a formula field: the guide restricts `externalId` to
-  "AutoNumber, Email, Number, or Text" data types (api_meta.txt:43401–43404), and a calculated field
-  is read-only in the API (Object Reference, *Calculated Field Type*, object_reference.txt:2207–2211),
+  "auto number, email, number, or text" data types (api_meta 264 L45637-L45639), and a calculated field
+  is read-only in the API (Object Reference, *Calculated Field Type*, object_reference 264 L2236-L2240),
   so nothing can ever be written into it to be unique.
 
 ## Checkbox formula
@@ -117,8 +117,8 @@ How to read it:
 How to read it:
 
 - A checkbox formula carries no `defaultValue`. The guide defines that element as "If specified,
-  represents the default value of the field" (api_meta.txt:43346); a calculated field is read-only
-  and derives its value on every read (object_reference.txt:2207-2211), so there is no moment at
+  represents the default value of the field" (api_meta 264 L45589); a calculated field is read-only
+  and derives its value on every read (object_reference 264 L2236-L2240), so there is no moment at
   which a default would be applied. Copying a regular checkbox's XML and adding `<formula>` leaves a
   `defaultValue` that means nothing.
 - `>` is escaped as `&gt;` and `&&` as `&amp;&amp;`. `>` is legal bare XML character data, but
@@ -154,7 +154,7 @@ How to read it:
   anti-pattern 2), but it also means deleting `Is_At_Risk__c` breaks this field — plan the delete
   order with `admin/analyze-field-impact` inputs, not by trial deploy.
 - The platform's own HTML-generating formula functions are named together in the Metadata API — "flow formula functions that generate HTML, such as `BR()`, `IMAGE()`, and
-  `HYPERLINK()`" (`FlowSettings.doesFormulaGenerateHtmlOutput`, api_meta.txt:116861–116863) — which
+  `HYPERLINK()`" (`FlowSettings.doesFormulaGenerateHtmlOutput`, api_meta 264 L119960-L119963) — which
   is the same family of functions, evaluated by a different engine. Do not assume a formula-field
   `IMAGE()` and a Flow formula `IMAGE()` render identically; see `flow/flow-formula-and-expression-patterns`.
 
@@ -162,7 +162,7 @@ How to read it:
 
 `CustomField` members are `Object.Field__c` and the type **does not accept the `*` wildcard**:
 "This metadata type doesn't support the wildcard character `*` (asterisk) in the `package.xml`
-manifest file" (api_meta.txt:43983–43984). Every formula field has to be listed by name.
+manifest file" (api_meta 264 L46214-L46215). Every formula field has to be listed by name.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -205,13 +205,13 @@ sf project deploy start --source-dir force-app/main/default/objects --target-org
 
 Retrieving a field also pulls its field-level security: "Retrieving a component of this metadata type
 in a project makes the component appear in any `Profile` and `PermissionSet` components that are
-retrieved in the same package" (api_meta.txt:43251–43252). A formula field retrieved next to profiles
+retrieved in the same package" (api_meta 264 L45502-L45503). A formula field retrieved next to profiles
 therefore turns into a profile diff as well as a field diff.
 
 ## Verify after deploy
 
 Calculated fields are filterable in SOQL — "You can filter on these fields in SOQL, but you don't
-replicate these fields" (object_reference.txt:2208–2209) — so a query is a real post-deploy check,
+replicate these fields" (object_reference 264 L2237-L2238) — so a query is a real post-deploy check,
 not just a read:
 
 ```sql

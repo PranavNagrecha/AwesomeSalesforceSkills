@@ -24,9 +24,9 @@ triggers:
 inputs: ["formula requirement", "source fields", "reporting use case"]
 outputs: ["formula design guidance", "formula risk findings", "alternative pattern recommendations"]
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-20
 ---
 
 You are a Salesforce Admin expert in formula field design. Your goal is to create formulas that stay readable, perform acceptably at scale, and return correct values across blank data, cross-object references, and reporting use cases.
@@ -55,7 +55,7 @@ skipping them produces a formula that compiles and is still wrong.
 | "Is anything writing to this field today — a data load, a Flow, an integration?" | Calculated fields are read-only in the API; converting a stored field to a formula breaks every writer | The list of writers to retire first, or the decision not to convert |
 | "How many relationship hops does the expression need, and does an intermediate field already exist?" | Each hop adds compile-size overhead and another parent whose data must be visible | A shallower expression, or a named intermediate formula on the parent object |
 | "Where is the value consumed: page layout, list view, report filter, export, integration?" | Report filters and exports on a large object are a performance question, not a field-design one; downstream systems never see a formula change because calculated fields do not replicate | The consumer list, and a real field where an integration is one of the consumers |
-| "Can the text result ever exceed 3,900 characters?" | Text calculated field results are truncated at that length with no error | A different design when the answer is yes, before anyone reports missing text |
+| "Can the text result ever exceed 3,900 characters?" | Text calculated field results are truncated at that length with no error (object_reference 264 L2239) | A different design when the answer is yes, before anyone reports missing text |
 | "Who owns this formula and what business rule does it encode?" | Nothing else in the metadata records intent; a formula has no comments | A `description` value written before the field is created, not after an audit |
 
 What a proper configuration adds over just doing it: the blank-handling choice is deliberate and
@@ -148,9 +148,9 @@ Use this when a formula returns the wrong value, behaves inconsistently, or caus
 | Blank handling changes by field type | `0`, empty string, null date, and unchecked checkbox are not interchangeable. |
 | Formula fields do not create history | They recalculate from current data every time. |
 | `HYPERLINK()` and `IMAGE()` are UX helpers, not business-logic foundations | Keep critical decisions out of decorative formulas. |
-| `formulaTreatBlanksAs` is one switch for the whole formula | `BlankAsZero` and `BlankAsBlank` are the only two values, and there is no per-reference override (api_meta.txt:43424-43426). |
-| Calculated fields are read-only in the API and do not replicate | Nothing can write to them, and a downstream extract never sees the value change (object_reference.txt:2207-2211). |
-| `CustomField` takes no `*` wildcard in `package.xml` | Every formula field is listed as `Object.Field__c`, and retrieving one pulls FLS into any profile in the same package (api_meta.txt:43983-43984, 43251-43252). |
+| `formulaTreatBlanksAs` is one switch for the whole formula | `BlankAsZero` and `BlankAsBlank` are the only two values, and there is no per-reference override (api_meta 264 L45668-L45669). |
+| Calculated fields are read-only in the API and do not replicate | Nothing can write to them, and a downstream extract never sees the value change (object_reference 264 L2236-L2240). |
+| `CustomField` takes no `*` wildcard in `package.xml` | Every formula field is listed as `Object.Field__c`, and retrieving one pulls FLS into any profile in the same package (api_meta 264 L46214-L46215, L45502-L45503). |
 
 The deployable XML for all of this is in `references/metadata-examples.md`; the full treatment of
 each behaviour is in `references/gotchas.md`.

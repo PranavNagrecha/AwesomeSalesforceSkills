@@ -502,7 +502,7 @@ evidence rather than as an opinion.
 `AD_EMEA` holding **R** on ACT-03 is not a statement of intent — it is a `DelegateGroup` in the org, and
 it either matches the matrix or it does not. `DelegateGroup` components use the suffix
 `.delegateGroup`, live in the `delegateGroups` folder, and the file prefix must match the group's
-developer name; the type is available in API version 36.0 and later, and only users with the "View
+developer name (api_meta 264 L53382-L53392); the type is available in API version 36.0 and later, and only users with the "View
 Setup and Configuration" permission can be delegated administrators
 ([Metadata API Developer Guide, `DelegateGroup`](https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf)).
 
@@ -567,7 +567,7 @@ Setup and Configuration" permission can be delegated administrators
 Teams that keep the decision log in a wiki lose it at the first re-org. Keeping it as custom metadata
 puts it in source control, moves it between sandboxes with the rest of the release, and makes it
 queryable from the org that the decisions describe. `CustomMetadata` components use the suffix `.md`,
-live in the `customMetadata` folder, are available in API version 31.0 and later, and creating records
+live in the `customMetadata` folder, are available in API version 31.0 and later (api_meta 264 L43615-L43625), and creating records
 requires the "Customize Application" permission
 ([Metadata API Developer Guide, `CustomMetadata`](https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf)).
 
@@ -686,7 +686,8 @@ Verification after deploy — three checks, one per artefact:
 
 ```sql
 -- 1. the register's licence column matches the org (UserLicense fields are API v32.0+;
---    UsedLicenses is not filterable in a WHERE clause from API v64.0, so filter client-side)
+--    UsedLicenses is not filterable in a WHERE clause from API v64.0, so filter client-side;
+--    object_reference 264 L302578-L302580)
 SELECT MasterLabel, LicenseDefinitionKey, TotalLicenses, UsedLicenses
 FROM UserLicense
 ORDER BY MasterLabel

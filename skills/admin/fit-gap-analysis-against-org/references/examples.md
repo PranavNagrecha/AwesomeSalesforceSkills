@@ -19,7 +19,7 @@ Three worked fit-gap matrices showing the full scoring discipline: classificatio
 | REQ-005 | Route inbound leads by region within 5 minutes | Low-Code | M | governance | flow-builder | Existing Lead Assignment Rules can be re-used; flag governance for naming-convention review. |
 | REQ-006 | Forecast by territory hierarchy | Standard | M | — | object-designer | Standard Forecasting + Territory Mgmt. |
 | REQ-007 | Real-time leaderboard widget on home page | Custom | L | customization-debt | apex-builder | Forecasting 2.0 may replace within 12 mo; flag for re-evaluation in 6 mo. |
-| REQ-008 | Email cadences with multi-step nurture sequence | Unfit | XL | license-blocker | architecture-escalation | Requires Sales Engagement or Pardot — not licensed. Decision tree: integration-pattern-selection.md (point to MAP/MCAE add-on). |
+| REQ-008 | Email cadences with multi-step nurture sequence | Unfit | XL | license-blocker | architecture-escalation | Requires Sales Engagement or Pardot — not licensed. Decision tree: `standards/decision-trees/integration-pattern-selection.md` (point to MAP/MCAE add-on). |
 | REQ-009 | Sync Opp updates to NetSuite ERP | Custom | L | — | apex-builder | REST callout via Named Credential; route through `architect/solution-design-patterns`. |
 | REQ-010 | List view: "My Open Opps > $50k" | Standard | S | — | object-designer | OOTB list view. |
 | REQ-011 | Custom report type: Opp + Products + Account Tier | Configuration | S | — | object-designer | Setup → Report Types. |
@@ -40,7 +40,7 @@ Three worked fit-gap matrices showing the full scoring discipline: classificatio
 
 | ID | Requirement | Tier | Effort | Risk Tags | Recommended Agent | Notes |
 |---|---|---|---|---|---|---|
-| REQ-101 | Cases auto-routed by topic to agent skill group | Unfit | XL | license-blocker | architecture-escalation | Omni-Channel routing requires Service Cloud + Omni Routing licenses. Decision tree: `automation-selection.md#routing`. |
+| REQ-101 | Cases auto-routed by topic to agent skill group | Unfit | XL | license-blocker | architecture-escalation | Omni-Channel routing requires Service Cloud + Omni Routing licenses (licence requirement UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.). Decision tree: `automation-selection.md#routing`. |
 | REQ-102 | Knowledge articles surfaced in case feed | Unfit | XL | license-blocker | architecture-escalation | Requires Knowledge user license per agent. |
 | REQ-103 | Email-to-Case with auto-response template | Configuration | M | — | object-designer | Already enabled; needs setup completion + email templates. |
 | REQ-104 | Live chat from public website | Unfit | XL | license-blocker | architecture-escalation | Web Chat / Messaging for Web requires Digital Engagement SKU. |

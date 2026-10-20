@@ -33,9 +33,9 @@ outputs:
   - "Validation rule or Apex trigger template to enforce integrity at the data layer"
 dependencies:
   - picklist-and-value-sets
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-20
 ---
 
 # Picklist Field Integrity Issues
@@ -48,9 +48,23 @@ Use this skill when picklist data quality has degraded in a Salesforce org. This
 
 Gather this context before working on anything in this domain:
 
-- **Is the picklist restricted or unrestricted?** Unrestricted picklists accept any string value via the API, even values not in the defined value set. Restricted picklists reject undefined values with `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST`. This distinction is the single biggest driver of picklist data integrity problems.
-- **What channels write to this field?** If only Lightning UI users create records, dependent picklist filtering works. If Data Loader, REST API, Bulk API, middleware, or Flows (in system context) also write records, dependent picklist rules are not enforced and any value can land in the field.
+- **Is the picklist restricted or unrestricted?** Unrestricted picklists accept any string value via the API, even values not in the defined value set (object_reference 264 L2393). Restricted picklists reject undefined values (L2492-L2493) with `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST` — the `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST` code itself is UNVERIFIED (2026-10-20), not in the 264 corpus. This distinction is the single biggest driver of picklist data integrity problems.
+- **What channels write to this field?** If only Lightning UI users create records, dependent picklist filtering works. If Data Loader, REST API, Bulk API, middleware, or Flows (in system context) also write records, dependent picklist rules are not enforced and any value can land in the field: dependent-picklist checking is browser-side JavaScript (salesforce_apex_developer_guide 264 L15608-L15609), and server-side validation for Apex and SOAP requests covers restricted picklists but not dependencies (L15639-L15640).
 - **Are record types involved?** Each record type maintains its own subset of available picklist values. After deployments, sandbox refreshes, or manual edits, these mappings can silently drift so that values appear in one record type that were only intended for another.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the field restricted, and which integrations write to it today? | An unrestricted picklist accepts any API value and may add it as an inactive entry (Gotcha 1) | A writer list to test before restricting, and the cleanup scope |
+| Which channels create or update records with the controlling and dependent fields? | Dependency filtering happens only in the browser (Gotcha 2) | A validation rule or trigger scoped to the non-UI writers |
+| Do any deployments carry picklist values marked `isActive` false? | Inactive values have reached records through deploys (Gotcha 3) | A post-deploy audit query in the release checklist |
+| How many record types use this field, and who maps new values to them? | New values are not added to existing record types (Gotcha 4) | A per-record-type mapping step for every value change |
+| Has any value's label been renamed, and what do reports and formulas match on? | A label rename leaves the stored API value unchanged (Gotcha 5) | Automation and reports keyed on API names, not labels |
+| What should happen to records already holding invalid values? | Restricting the field does not clean existing data (Salesforce-Specific Gotchas item 1) | A replace-or-null decision per value, with record counts |
+| Is the field backed by a Global Value Set? | A GVS-backed custom picklist is always restricted and edited only through the set (Core Concepts) | The right place to add values, and the record-type mapping that must follow |
+
+A remediation built from these answers cleans the history, closes the non-UI write paths and keeps record-type mappings in step; restricting the field alone stops new garbage and leaves every old value in the reports.
 
 ---
 
@@ -60,9 +74,9 @@ Gather this context before working on anything in this domain:
 
 Every custom picklist field in Salesforce is either **restricted** or **unrestricted**. This setting is controlled by the "Restrict picklist to the values defined in the value set" checkbox on the field definition.
 
-**Unrestricted (default for many legacy fields):** The API treats the field as a text field that happens to have suggested values. Any string written via SOAP API, REST API, Bulk API, or Data Loader is accepted — even if it does not match any defined value. Over time this produces orphaned values that pollute reports, break automations that check `ISPICKVAL()`, and confuse users who see unexpected entries.
+**Unrestricted (default for many legacy fields — UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.):** "The API doesn't enforce the list of values for advisory (unrestricted) picklist fields on create() or update()", and an unknown value is created as an "inactive" picklist value (object_reference 264 L2393-L2394). Any string written via SOAP API, REST API, Bulk API, or Data Loader is accepted — even if it does not match any defined value. Over time this produces orphaned values that pollute reports, break automations that check `ISPICKVAL()`, and confuse users who see unexpected entries.
 
-**Restricted:** The API rejects any value not in the active value set. Writes fail with error code `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST`. Global Value Set-backed picklists are always restricted. Custom picklists can be toggled to restricted at any time, but toggling does NOT retroactively clean existing invalid data — it only prevents new violations.
+**Restricted:** The API rejects any value not in the active value set. Writes fail ("Users can't load unapproved values through the API", object_reference 264 L2492-L2493); the `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST` code itself is UNVERIFIED (2026-10-20), not in the 264 corpus. "A custom picklist that uses a global value set is restricted" (api_meta 264 L45920-L45922). Custom picklists can be toggled to restricted at any time (UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.), but toggling does NOT retroactively clean existing invalid data — it only prevents new violations.
 
 **Key implication:** Converting an unrestricted picklist to restricted is safe for future writes but leaves historical garbage in place. You must audit and clean existing data separately.
 
@@ -76,20 +90,20 @@ Dependent picklist relationships (where a controlling field filters the availabl
 - Flow record-creates running in system context
 - Platform events that trigger record creation
 
-This means any integration or automation that creates or updates records programmatically can write a dependent picklist value that violates the controlling-dependent mapping. The record saves successfully with no error. This is documented Salesforce platform behavior, not a bug.
+This means any integration or automation that creates or updates records programmatically can write a dependent picklist value that violates the controlling-dependent mapping. The record saves successfully with no error. This is documented Salesforce platform behavior, not a bug (salesforce_apex_developer_guide 264 L15608-L15609, L15639-L15640); the per-channel list above is inferred from that server-side rule, not listed channel by channel in the corpus.
 
 **Practical impact:** Organizations that rely on dependent picklists for data segmentation (e.g., Country controls State) often discover after months of API imports that thousands of records have State values that don't belong to their Country.
 
 ### Record Type Picklist Value Mapping Drift
 
-Each record type on an object defines which picklist values are available for each picklist field. These mappings are stored in `RecordType` metadata and deployed via Metadata API, change sets, or SFDX.
+Each record type on an object defines which picklist values are available for each picklist field. These mappings are stored in `RecordType` metadata as `picklistValues` (`RecordTypePicklistValue[]`, api_meta 264 L47401-L47406) and deployed via Metadata API, change sets, or SFDX.
 
 **How drift happens:**
 
 1. **Deployment gaps:** A developer adds a new picklist value to the field but forgets to add it to the appropriate record type mappings. The value exists but is invisible to users of that record type.
 2. **Sandbox refresh timing:** A record type mapping is updated in production but the sandbox was refreshed before the change. Development continues against stale mappings.
-3. **Manual Setup edits:** An admin adds a value to one record type but forgets others. There is no built-in alert or audit trail for record type picklist mapping changes.
-4. **Global Value Set updates:** Adding a value to a GVS makes it available on the field, but it is NOT automatically added to any record type mapping. Admins must manually add it to each record type that should see it.
+3. **Manual Setup edits:** An admin adds a value to one record type but forgets others. There is no built-in alert or audit trail for record type picklist mapping changes (UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.).
+4. **Global Value Set updates:** Adding a value to a GVS makes it available on the field, but it is NOT automatically added to any record type mapping. Admins must manually add it to each record type that should see it (UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.).
 
 **Detection is hard:** The platform does not surface "this value exists on the field but is not mapped to any record type" as a warning. The only way to find drift is to compare the field's value set against each record type's mapping — either manually in Setup or programmatically via the Metadata API or UI API.
 
@@ -110,7 +124,7 @@ Each record type on an object defines which picklist values are available for ea
 2. Compare the query results against the defined picklist values (via Setup or Metadata API retrieve of the `CustomField`)
 3. For each invalid value, decide: replace with a valid value, or set to null
 4. Use Data Loader or an Apex batch to update records carrying invalid values
-5. Toggle the field to **Restricted** in Setup (Object Manager > Field > Edit > check "Restrict picklist to the values defined in the value set")
+5. Toggle the field to **Restricted** in Setup (Object Manager > Field > Edit > check "Restrict picklist to the values defined in the value set"; the click path is UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.)
 6. Test that API writes of invalid values now fail with `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST`
 
 **Why not skip the audit:** Toggling to restricted without cleaning data first leaves orphaned values on existing records. Reports still show the garbage. `ISPICKVAL()` checks in formulas and validation rules may not handle the unexpected values correctly.
@@ -214,15 +228,15 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Toggling to restricted does not clean existing data** — When you check "Restrict picklist to the values defined in the value set," Salesforce only enforces the restriction on future writes. All existing records keep their current values, even if those values are not in the defined value set. You must clean historical data separately.
+1. **Toggling to restricted does not clean existing data** — When you check "Restrict picklist to the values defined in the value set," Salesforce only enforces the restriction on future writes. All existing records keep their current values, even if those values are not in the defined value set. You must clean historical data separately. UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.
 
-2. **Global Value Set values are not auto-added to record type mappings** — Adding a new value to a Global Value Set makes it available on the field definition, but it does NOT automatically appear in any record type's picklist mapping. Admins must manually add the value to each record type. This is the most common source of "I added the value but users can't see it" tickets.
+2. **Global Value Set values are not auto-added to record type mappings** — Adding a new value to a Global Value Set makes it available on the field definition, but it does NOT automatically appear in any record type's picklist mapping. Admins must manually add the value to each record type. This is the most common source of "I added the value but users can't see it" tickets. UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.
 
-3. **Dependent picklist with no mapped values shows ALL values** — If a controlling value has zero dependent values mapped in the dependency matrix, the dependent picklist shows the entire value set — not an empty list. This is the opposite of what admins expect and silently undermines the filtering intent.
+3. **Dependent picklist with no mapped values shows ALL values** — If a controlling value has zero dependent values mapped in the dependency matrix, the dependent picklist shows the entire value set — not an empty list. This is the opposite of what admins expect and silently undermines the filtering intent. UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.
 
-4. **API-created records bypass dependent picklist validation silently** — Records created via API, Data Loader, or Bulk API with invalid controlling-dependent combinations save without any error or warning. There is no after-the-fact flag on the record indicating it violated the dependency. The only way to detect this is to query and cross-check.
+4. **API-created records bypass dependent picklist validation silently** — Records created via API, Data Loader, or Bulk API with invalid controlling-dependent combinations save without any error or warning. There is no after-the-fact flag on the record indicating it violated the dependency. The only way to detect this is to query and cross-check. (Grounded: salesforce_apex_developer_guide 264 L15608-L15609.)
 
-5. **Inactive values on restricted picklists still exist on records** — Deactivating a value on a restricted picklist prevents future selection but does not remove it from existing records. If you then query for that value, records still appear. If you try to update such a record without changing the picklist value, the save succeeds (the platform does not re-validate unchanged fields). But if you try to set the field to the same inactive value on a new record, it fails.
+5. **Inactive values on restricted picklists still exist on records** — Deactivating a value on a restricted picklist prevents future selection but does not remove it from existing records. If you then query for that value, records still appear. If you try to update such a record without changing the picklist value, the save succeeds (the platform does not re-validate unchanged fields). But if you try to set the field to the same inactive value on a new record, it fails. UNVERIFIED (2026-10-20): all of item 5 is Help-only, not in the 264 corpus.
 
 ---
 

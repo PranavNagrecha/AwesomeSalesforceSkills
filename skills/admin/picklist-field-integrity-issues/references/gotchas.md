@@ -4,7 +4,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Unrestricted Picklists Silently Accept Any Value via API
 
-**What happens:** When a record is created or updated via REST API, Bulk API, or Data Loader with a value not in the picklist definition, Salesforce saves the record without error. The unknown value appears in the field and may even be added as an inactive entry in the picklist metadata.
+**What happens:** When a record is created or updated via REST API, Bulk API, or Data Loader with a value not in the picklist definition, Salesforce saves the record without error. The unknown value appears in the field and may even be added as an inactive entry in the picklist metadata (object_reference 264 L2393-L2394).
 
 **When it occurs:** Any time data enters through a non-UI channel (API, Data Loader, Bulk API, middleware, Apex DML) on an unrestricted picklist field.
 
@@ -14,7 +14,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 2: Dependent Picklist Enforcement Is UI-Only
 
-**What happens:** The controlling-dependent picklist matrix is enforced only in the Lightning and Classic UI. API, Data Loader, Bulk API, Apex DML, and Flows running in system context completely bypass the dependent filtering. Records can be saved with any combination of controlling and dependent values.
+**What happens:** The controlling-dependent picklist matrix is enforced only in the Lightning and Classic UI. API, Data Loader, Bulk API, Apex DML, and Flows running in system context completely bypass the dependent filtering. Records can be saved with any combination of controlling and dependent values. Grounding: dependent-picklist validation runs as browser JavaScript before the save (salesforce_apex_developer_guide 264 L15608-L15609); server validation for Apex and SOAP covers restricted picklists, not dependencies (L15639-L15640).
 
 **When it occurs:** Any non-UI data entry channel. This is especially dangerous during data migrations and integration loads where thousands of records may have invalid dependent values.
 
@@ -24,7 +24,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 3: Restricted Picklist Known Issue — Inactive Values via Metadata Deploy
 
-**What happens:** There is a known Salesforce issue where inactive picklist values for restricted picklists can be inserted through certain Metadata API deploy paths. The restriction is bypassed when the value exists in the metadata XML but is marked inactive.
+**What happens:** There is a known Salesforce issue where inactive picklist values for restricted picklists can be inserted through certain Metadata API deploy paths. The restriction is bypassed when the value exists in the metadata XML but is marked inactive. UNVERIFIED (2026-10-20): a Known Issues claim, not in the 264 corpus.
 
 **When it occurs:** During metadata deployments that include picklist value definitions with `<isActive>false</isActive>` entries. The platform may accept records with these inactive values via API despite the field being restricted.
 
@@ -34,7 +34,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 4: Record Type Picklist Mapping Is Not Automatic for New Values
 
-**What happens:** Adding a new value to a picklist (or Global Value Set) does NOT automatically add it to existing record types. Only brand-new record types receive all master picklist values. Users on existing record types cannot see the new value until an admin explicitly maps it.
+**What happens:** Adding a new value to a picklist (or Global Value Set) does NOT automatically add it to existing record types. Only brand-new record types receive all master picklist values. Users on existing record types cannot see the new value until an admin explicitly maps it. UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.
 
 **When it occurs:** Every time a picklist value is added to a field that has record types. This is the most common source of "why can't users see the new value?" support tickets.
 
@@ -44,7 +44,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 5: Picklist Label Rename Does Not Update Stored Data
 
-**What happens:** Renaming a picklist value's label (display name) does not change the API name stored on existing records. If reports, formulas, or automation reference the new label text, they find zero matches because the underlying stored value is the original API name.
+**What happens:** Renaming a picklist value's label (display name) does not change the API name stored on existing records. If reports, formulas, or automation reference the new label text, they find zero matches because the underlying stored value is the original API name. UNVERIFIED (2026-10-20): Help-only, not in the 264 corpus.
 
 **When it occurs:** When an admin renames a picklist value label in Setup. The stored API value on records remains the original text (for fields created before API names were separate from labels) or the original API name.
 

@@ -11,8 +11,8 @@
 Author one restriction rule that keeps only the non-settlement record type for the sales profile. Because record criteria accepts a comma-separated Id list, the surviving record types are enumerated rather than the excluded one negated — there is no `!=`.
 
 ```xml
-<!-- restrictionRules/Sales_Contracts_Only.rule -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- restrictionRules/Sales_Contracts_Only.rule -->
 <RestrictionRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <active>false</active>
     <description>Sales profile sees only standard and renewal contracts, not settlements.</description>
@@ -58,8 +58,8 @@ Then flip `active` to `true` and log in as a sales user to confirm the settlemen
 **Solution:**
 
 ```xml
-<!-- restrictionRules/Services_Own_Tasks.rule -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- restrictionRules/Services_Own_Tasks.rule -->
 <RestrictionRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <active>true</active>
     <description>Shared services agents see only the tasks that they own.</description>
@@ -133,8 +133,11 @@ A second, quieter failure was found in the same review. The team's access-audit 
 3. Set `recordFilter` to `Restriction_Key__c = $User.Department` only if the user-side value can be made to match; where it cannot, drive `userCriteria` off a User field that maps one-to-one onto the key instead.
 
 ```xml
-<recordFilter>Restriction_Key__c = 'Finance|Draft'</recordFilter>
-<userCriteria>$User.ProfileId = '00exx0000000CCC'</userCriteria>
+<RestrictionRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: only the two criteria fields; the rest of the .rule file is as in Example 1 -->
+    <recordFilter>Restriction_Key__c = 'Finance|Draft'</recordFilter>
+    <userCriteria>$User.ProfileId = '00exx0000000CCC'</userCriteria>
+</RestrictionRule>
 ```
 
 4. Backfill the field across existing records before activating the rule. Any record where `Restriction_Key__c` is blank is a null on the record side, and "including a null or blank value in record criteria isn't supported and can result in unexpected behavior."

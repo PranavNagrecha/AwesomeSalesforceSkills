@@ -38,8 +38,14 @@ Validates a Configuration Workbook markdown file (authored from
 
 Uses stdlib only — no pip dependencies.
 
+Exit contract: every finding above is a schema ERROR and exits 1 (the
+workbook is a gate artefact; INFO lines never fail); --manifest-dir on a
+directory with no workbook prints one WARN and exits 0; a missing path
+prints ERROR and exits 1.
+
 Usage:
     python3 check_workbook.py --workbook docs/workbooks/<release>/cwb.md
+    python3 check_workbook.py --manifest-dir docs/workbooks/<release>
     python3 check_workbook.py --file <path> --repo-root /path/to/SfSkills
 """
 
@@ -227,12 +233,23 @@ def parse_args() -> argparse.Namespace:
         dest="workbook",
         help="Alias for --workbook, for callers that lint artefacts generically.",
     )
+    target.add_argument(
+        "--manifest-dir",
+        help="Directory to scan for workbook markdown files (any .md with a "
+             "'## Section N — <name>' heading). Empty dir: one WARN, exit 0.",
+    )
     parser.add_argument(
         "--repo-root",
         default=None,
         help="Path to the SfSkills repo root (used to resolve the runtime "
              "agent roster from agents/_shared/SKILL_MAP.md and agents/). "
              "Defaults to walking upward from this script.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Accepted for the shared checker contract; every finding here is "
+             "already an ERROR, so it changes nothing.",
     )
     parser.add_argument(
         "--allow-empty-section",
@@ -359,7 +376,8 @@ def parse_workbook(path: Path) -> dict:
     to map columns to row dict keys.
     """
     if not path.exists():
-        raise SystemExit(f"Workbook not found: {path}")
+        print(f"ERROR: Workbook not found: {path}")
+        raise SystemExit(1)
 
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
@@ -832,14 +850,34 @@ def check_workbook(
 
 def main() -> int:
     args = parse_args()
-    workbook = Path(args.workbook).resolve()
     repo_root = discover_repo_root(args.repo_root)
+    if args.manifest_dir:
+        base = Path(args.manifest_dir).resolve()
+        if not base.is_dir():
+            print(f"ERROR: directory not found: {base}")
+            return 1
+        books = [
+            p for p in sorted(base.rglob("*.md"))
+            if any(SECTION_HEADING_RE.match(ln) for ln in p.read_text(encoding="utf-8", errors="ignore").splitlines())
+        ]
+        if not books:
+            print(f"WARN: no workbook markdown (## Section N headings) under {base} — nothing to check.")
+            return 0
+    else:
+        books = [Path(args.workbook).resolve()]
 
-    issues, infos = check_workbook(
-        workbook_path=workbook,
-        repo_root=repo_root,
-        allow_empty_section=args.allow_empty_section,
-    )
+    issues: list[str] = []
+    infos: list[str] = []
+    for workbook in books:
+        book_issues, book_infos = check_workbook(
+            workbook_path=workbook,
+            repo_root=repo_root,
+            allow_empty_section=args.allow_empty_section,
+        )
+        prefix = f"{workbook.name}: " if len(books) > 1 else ""
+        issues.extend(prefix + i for i in book_issues)
+        infos.extend(prefix + i for i in book_infos)
+    workbook = books[0] if len(books) == 1 else Path(args.manifest_dir)
 
     for info in infos:
         print(f"INFO: {info}")

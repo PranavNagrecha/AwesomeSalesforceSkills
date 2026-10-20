@@ -15,6 +15,7 @@
     "1ef971f88b77551eb233",
     "228bac3761c3fff8b3b0",
     "24f82ebb9da3cb22f3a9",
+    "25911265f7074e6aa866",
     "26dd519d5c2afe53ee10",
     "27c017673fceb5541ae5",
     "2bfaf36917486531055c",
@@ -101,14 +102,16 @@
     "e48d5938426c00ba846e",
     "e82eebf6d90a13d59f55",
     "e8f200a38ea48e11ba82",
+    "ec7fd5d7c3f5151678ae",
     "ef40977e0043a2197194",
     "f4c1621fd996bc0c3282",
     "f9687b99963e4bf25916",
     "fa3d02d377f6afefae1b",
     "fa5d714e6574c6b0a433",
-    "fcd044ca0fe30b842103"
+    "fcd044ca0fe30b842103",
+    "fcdc098256a691e4ec1f"
   ],
-  "content_hash": "ec0f7ba6a70e215dc07eb0c8747923fc1831bdeb283be15db4a6411f2bb0ff92",
+  "content_hash": "e648d0b263f589c229bfebf5f0e1f09df794ce7d51f8cccfeeb70d735c46449a",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce formula fields. Triggers: 'formula field', 'cross-object formula', 'null handling', 'compile size', 'HYPERLINK', 'IMAGE', 'why is formula slow', 'formulaTreatBlanksAs', 'BlankAsZero', 'blank field handling', 'field-meta.xml formula', 'CustomField formula deploy', 'formula returns blank', 'formula field read-only on data load'. NOT for a formula field slowing a SOQL query or blocking an index \u2014 use apex/formula-field-performance-and-limits. NOT for Formula resources inside a Flow \u2014 use flow/flow-formula-and-expression-patterns.",
   "file_location": "skills/admin/formula-fields",
@@ -121,13 +124,13 @@
   "name": "formula-fields",
   "official_sources": [
     "Salesforce Well-Architected Overview \u2014 performance and maintainability framing for formula usage",
-    "Metadata API Developer Guide, *CustomField* \u2192 Fields (v62 PDF, https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf; api_meta.txt:43422-43426) \u2014 the `formula` and `formulaTreatBlanksAs` elements and the `BlankAsBlank` / `BlankAsZero` enum (`references/metadata-examples.md`, gotchas \"One Switch For The Whole Formula\")",
-    "Metadata API Developer Guide, *CustomField* \u2192 Declarative Metadata File Suffix, Wildcard Support, and Sample Definition (api_meta.txt:43226, 43248-43252, 43934-43946, 43983-43984) \u2014 `Object.Field__c` member syntax, no `*` wildcard, FLS pulled into profiles on retrieve, and the `<fields>`-inside-`<CustomObject>` shape (`references/metadata-examples.md` \"Where the file lives\", \"package.xml\")",
-    "Metadata API Developer Guide, *CustomField* \u2192 `precision`, `scale`, `externalId` (api_meta.txt:43401-43404, 43563-43565, 43610-43612) \u2014 numeric return-type elements and why `externalId` / `unique` are inert on a formula (`references/metadata-examples.md` \"How to read it\")",
-    "Metadata API Developer Guide \u2014 `<formula>` XML escaping in the guide's own samples: `Name &amp; &quot;Updated&quot;` (api_meta.txt:140599) and `&apos;` in `errorConditionFormula` (api_meta.txt:45439-45440) (gotchas \"A `<` Or `&` In The Formula Breaks The Deploy\")",
-    "Metadata API Developer Guide, *ArticleType CustomField* \u2192 `type` (api_meta.txt:22161-22178) \u2014 the one place `Formula` is a `FieldType` value, which is why a regular formula field's `<type>` is its return type instead",
-    "Metadata API Developer Guide, *FlowSettings* \u2192 `doesFormulaGenerateHtmlOutput` (api_meta.txt:116861-116863) \u2014 `BR()`, `IMAGE()`, `HYPERLINK()` named as the HTML-generating family, evaluated by the Flow engine rather than the formula-field engine (`references/metadata-examples.md`, IMAGE example)",
-    "Object Reference, *Calculated Field Type* (v62 PDF, https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf; object_reference.txt:2207-2211) \u2014 \"Calculated fields are read-only fields in the API\"; \"You can filter on these fields in SOQL, but you don't replicate these fields\"; \"The length of text calculated fields is 3,900 characters or less \u2014 anything longer is truncated\" (gotchas \"Read-Only In The API\", \"Do Not Replicate\", \"Truncated At 3,900 Characters\")",
+    "Metadata API Developer Guide, *CustomField* \u2192 Fields (Winter '27 PDF, https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/api_meta.pdf; api_meta 264 L45666-L45669) \u2014 the `formula` and `formulaTreatBlanksAs` elements and the `BlankAsBlank` / `BlankAsZero` enum (`references/metadata-examples.md`, gotchas \"One Switch For The Whole Formula\")",
+    "Metadata API Developer Guide, *CustomField* \u2192 Declarative Metadata File Suffix, Wildcard Support, and Sample Definition (api_meta 264 L45470, L45492-L45503, L46165-L46180, L46214-L46215) \u2014 `Object.Field__c` member syntax, no `*` wildcard, FLS pulled into profiles on retrieve, and the `<fields>`-inside-`<CustomObject>` shape (`references/metadata-examples.md` \"Where the file lives\", \"package.xml\")",
+    "Metadata API Developer Guide, *CustomField* \u2192 `precision`, `scale`, `externalId` (api_meta 264 L45637-L45639, L45791-L45792, L45828-L45829) \u2014 numeric return-type elements and why `externalId` / `unique` are inert on a formula (`references/metadata-examples.md` \"How to read it\")",
+    "Metadata API Developer Guide \u2014 `<formula>` XML escaping in the guide's own samples: `Name &amp; &quot;Updated&quot;` (api_meta 264 L144461) and `&apos;` in `errorConditionFormula` (api_meta 264 L47825-L47826) (gotchas \"A `<` Or `&` In The Formula Breaks The Deploy\")",
+    "Metadata API Developer Guide, *ArticleType CustomField* \u2192 `type` (api_meta 264 L24202-L24210) \u2014 the one place `Formula` is a `FieldType` value, which is why a regular formula field's `<type>` is its return type instead",
+    "Metadata API Developer Guide, *FlowSettings* \u2192 `doesFormulaGenerateHtmlOutput` (api_meta 264 L119960-L119963) \u2014 `BR()`, `IMAGE()`, `HYPERLINK()` named as the HTML-generating family, evaluated by the Flow engine rather than the formula-field engine (`references/metadata-examples.md`, IMAGE example)",
+    "Object Reference, *Calculated Field Type* (Winter '27 PDF, https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/object_reference.pdf; object_reference 264 L2236-L2240) \u2014 \"Calculated fields are read-only fields in the API\"; \"You can filter on these fields in SOQL, but you don't replicate these fields\"; \"The length of text calculated fields is 3,900 characters or less \u2014 anything longer is truncated\" (gotchas \"Read-Only In The API\", \"Do Not Replicate\", \"Truncated At 3,900 Characters\")",
     "Tips for Reducing Formula Size \u2014 Reducing the Length of Your Formula: https://developer.salesforce.com/docs/atlas.en-us.salesforce_formula_size_tipsheet.meta/salesforce_formula_size_tipsheet/reducing_formula_length.htm \u2014 \"Maximum number of characters: 3,900 characters\"; \"Maximum formula size when saved: 4,000 bytes\"",
     "Tips for Reducing Formula Size \u2014 Reducing Your Formula's Compile Size: https://developer.salesforce.com/docs/atlas.en-us.salesforce_formula_size_tipsheet.meta/salesforce_formula_size_tipsheet/reducing_formula_compile_size.htm \u2014 \"Maximum formula size (in bytes) when compiled: 5,000 bytes\"; compile size reflects the generated query, so shortening the formula text does not reduce it",
     "Salesforce Help \u2014 Formula Field Limits and Restrictions: https://help.salesforce.com/s/articleView?id=platform.formula_field_limits.htm&type=5 \u2014 all formula limits apply uniformly to every object; there is no object-dependent variant"
@@ -158,7 +161,7 @@
   "templates": [
     "skills/admin/formula-fields/templates/formula-field-design-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
