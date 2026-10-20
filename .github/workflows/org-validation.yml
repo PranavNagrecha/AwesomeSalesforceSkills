@@ -1,11 +1,17 @@
 name: org-validation
 
-# Wave 9 — live-org validation. NOT run on every PR (would need a shared
-# sandbox token). Trigger manually via Actions → Run Workflow, or on a
-# weekly cron to catch drift between Salesforce releases.
+# MANUAL-ONLY since 2026-10-20 (release 1.5.0, item R2-09).
+# The weekly cron was removed because every scheduled run failed (10 of 10
+# from 2026-08-17 to 2026-10-19) at the "Authenticate to validation org" step:
+# this repository has no SFDX_AUTH_URL secret, so `sf org login sfdx-url`
+# aborts with INVALID_SFDX_AUTH_URL. A schedule cannot succeed without a
+# live org, and the repo deliberately holds no secrets.
 #
-# Requires repo secret SFDX_AUTH_URL — an auth-URL token for an org dedicated
-# to this validation. Prefer a scratch/dev org; NOT production.
+# To use it: create a scratch/dev org (NOT production), add its auth-URL
+# token as the repo secret SFDX_AUTH_URL (force://<clientId>:<clientSecret>:<refreshToken>@<instanceUrl>),
+# then run Actions -> org-validation -> Run workflow. To restore the weekly
+# drift check, re-add a `schedule:` trigger (cron "17 7 * * 1") once that
+# secret exists.
 #
 # See docs/validation/README.md for the full three-layer validation plan.
 
@@ -22,9 +28,6 @@ on:
           - agents
           - skills
           - all
-  schedule:
-    # Every Monday at 7:17 UTC — 7 minutes past the hour to avoid thundering herd
-    - cron: "17 7 * * 1"
 
 jobs:
   validate-probes:

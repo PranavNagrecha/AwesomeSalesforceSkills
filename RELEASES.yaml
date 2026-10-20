@@ -484,7 +484,10 @@ releases:
     title: 'org-validation.yml: fix or disable the failing scheduled workflow'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'org-validation.yml: 10/10 scheduled runs failed at ''Authenticate to validation org'' (SFDX_AUTH_URL empty;
+      repo has zero secrets); schedule removed, workflow_dispatch kept, dated header explains the secret + nonproduction org
+      needed; docs/architecture.md:762 ''manual + cron'' -> ''manual only''; YAML parses, actionlint 0'
   - id: R2-10
     title: Comment-aware fix for stripinaccessible + soql-security checkers (false P0/CRITICAL on a comment)
     size: S

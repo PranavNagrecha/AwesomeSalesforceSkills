@@ -759,7 +759,7 @@ gone stale before:
 | AGENT.md frontmatter round-trip | yes | `pr-lint.yml` → `frontmatter-schema` |
 | `run_heldout.py` Hit@1/Hit@3 thresholds | **no** | not referenced by any workflow |
 | Model-routing benchmark (mechanism 1) | **no** | needs live agents |
-| Live-org probes and factuality | separate workflow | `org-validation.yml` (manual + cron) |
+| Live-org probes and factuality | separate workflow | `org-validation.yml` (manual only; needs SFDX_AUTH_URL secret) |
 
 The honest caveat, stated at its real size: golden eval **structure** is
 enforced, but nothing in CI scores eval **output quality** against its rubric.
