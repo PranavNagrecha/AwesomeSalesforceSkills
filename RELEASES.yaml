@@ -344,14 +344,20 @@ releases:
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: running
+    status: done
     parent: R2-01
+    evidence: 'GRADE RIGHT-BUT-NOISY. PS inventory exact; F2 (escalation entry 2 sends open Billing cases to Tier_2_Engineering
+      under Private OWD), F3 (Q11 clone-Standard-User keeps grants), F4 (UserAccessPolicy for monthly churn, schema valid
+      api_meta L141548-141842) CORRECT; F6 overstated; WRONG: claimed emailRoutingAddressAccesses child shape not in corpus
+      (api_meta L97491/L97668, API 62.0). Missed: Tier 1 peers cannot see each other''s cases (Private OWD, no roles, no Tier1
+      sharing); billing@ send-as unrestricted (M3-S03 deploy-order L144); SuppliedEmail editable by all; no login IP/hours
+      on profiles; no leaver path in UAP. 7-set restructure overbuilt for 18 users. 8/8 XML parse.'
   - id: R2-01-6
     title: 'Agent proof: /design-object (object-designer) on a real input — an object concept from examples/builds/northwind-sales/requirement.md;
       then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: todo
+    status: running
     parent: R2-01
   - id: R2-01-7
     title: 'Agent proof: /triage-deployment (deployment-failure-triager) on a real input — a real deploy failure from examples/builds/*/reports
@@ -485,6 +491,12 @@ releases:
     size: S
     owner_model: sonnet
     status: todo
+  - id: R2-22
+    title: 'permission-set-architecture: document emailRoutingAddressAccesses (api_meta L97491); agent must grep before ''not
+      grounded'''
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -508,6 +520,12 @@ releases:
   - id: R3-03
     title: 'case-onboarding: dead Priority IsNull guard (Defaulted on create) + form has no severity input; add the gotcha
       to record-triggered-flow-patterns'
+    size: M
+    owner_model: opus
+    status: todo
+  - id: R3-04
+    title: 'case-onboarding: escalation scope, Tier 1 peer visibility, billing@ send-as, SuppliedEmail FLS + gotchas in two
+      admin skills'
     size: M
     owner_model: opus
     status: todo
@@ -640,5 +658,21 @@ inbox:
     reports/mock-deploy evidence); require every reference to carry an explicit failure class (deploy-fail / runtime-fail
     / silent / UNVERIFIABLE) instead of leaving some unclassified; count comments consistently (all or none); after REFUSAL_MISSING_ORG
     continue only when the caller explicitly asked for org-free, and say so'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Scenario defects in examples/builds/case-onboarding found by agent proof R2-01-5 and its grader: (1) escalation rule
+    entry 2 (Case.escalationRules L77-89, Status-only criterion) sends open Billing cases to Tier_2_Engineering — Billing
+    loses access under Private OWD; (2) Tier 1 EMEA/US agents cannot see each other''s cases (Private OWD, no roles, no Tier1
+    sharing) despite follow-the-sun; (3) billing@ send-as is unrestricted — enforce with PermissionSet emailRoutingAddressAccesses
+    (api_meta L97491/L97668, API 62.0); (4) SuppliedEmail editable by every persona. Fix the build (plan amendment path) and
+    add the escalation-scope + peer-visibility gotchas to admin/escalation-rules and admin/sharing-and-visibility'
+  size: M
+  slotted_into: 1.6.0
+- date: 2026-10-19
+  ask: 'From agent proof R2-01-5: permission-set-architect asserted PermissionSet.emailRoutingAddressAccesses was ''not grounded
+    in corpus'' — it is (api_meta 264 L97491, L97668: name + enabled, API 62.0). Add the element to admin/permission-set-architecture
+    (and the email-to-case skill) with the cite so agents stop refusing the one lever for send-as control; teach the agent
+    playbook to grep api_meta before declaring an element ungrounded'
   size: S
   slotted_into: 1.5.0
