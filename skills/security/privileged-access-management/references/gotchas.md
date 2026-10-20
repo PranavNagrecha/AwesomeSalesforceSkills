@@ -4,7 +4,7 @@
 
 **What happens:** The tightest elevation primitive degrades into a standing grant. The permission set still shows **Session Activation Required**, yet the permissions apply for the whole session with no activation step and no error.
 
-**When it occurs:** Someone folds a session-based permission set into a group to cut the number of assignments an approver makes. The `SessionPermSetActivation` reference states the exception plainly: "If you include session-based permission sets in a permission set group, the permissions in them do not require session-based activation for users assigned to the group."
+**When it occurs:** Someone folds a session-based permission set into a group to cut the number of assignments an approver makes. The `SessionPermSetActivation` reference states the exception plainly: "If you include session-based permission sets in a permission set group, the permissions in them don't require session-based activation for users assigned to the group" (obj 264 L264383-264384).
 
 **How to avoid:** Put the activation requirement on the unit you actually assign. `PermissionSetGroup.HasActivationRequired` is available in API version 53.0 and later and defaults to `false`, so it must be set explicitly. `PermissionUpdateEventLog` (API version 65.0 and later) tracks changes to that flag — that is the detection.
 
@@ -44,7 +44,7 @@
 
 **What happens:** An audit filtered on `IsActive = true` returns a different population than intended, and a script selecting `IsRevoked` fails with an invalid-field error in the next org.
 
-**When it occurs:** `IsActive` reads like the User record's status flag, so it gets substituted for `Assignee.IsActive` — the filter Salesforce's own privileged-user audit queries use. It indicates whether the *assignment* is active, defaults to `false`, and has properties Defaulted on create, Filter, Group, Sort: neither Create nor Update. `IsRevoked` (API version 57.0 and later) is "available only if user access policies are enabled".
+**When it occurs:** `IsActive` reads like the User record's status flag, so it gets substituted for `Assignee.IsActive` (UNVERIFIED (2026-10-20): that Salesforce's published audit queries use `Assignee.IsActive` comes from a developer blog, not the corpus). It indicates whether the *assignment* is active, defaults to `false`, and has properties Defaulted on create, Filter, Group, Sort: neither Create nor Update (obj 264 L219747-219753). `IsRevoked` (API version 57.0 and later) is "available only if user access policies are enabled" (L219755-219762).
 
 **How to avoid:** Filter the human with `Assignee.IsActive = true`, and probe for `IsRevoked` before selecting it. Keep revocation and expiry separate — the reference's `ALL ROWS` example is scoped to revocation (`WHERE IsRevoked=true ALL ROWS`) and notes "The PermissionSetAssignment record isn't deleted" on revoke. To end a grant, set `ExpirationDate`, the only field here carrying both Create and Update.
 

@@ -1,102 +1,99 @@
 #!/usr/bin/env python3
-"""Scan Salesforce user metadata for rotation anti-patterns.
+"""Checker for service-account-credential-rotation (stdlib only).
 
-Flags:
-- User XML with `PasswordNeverExpires = true`.
-- ConnectedApp metadata with no `consumerSecret` rotation metadata.
-- Named credential metadata older than a configurable threshold (by mtime).
+Reads profiles, permission sets and connected apps under --manifest-dir:
+
+  ERROR  a profile, permission set or connected app file that does not parse
+  WARN   the Password Never Expires user permission enabled on a profile or
+         permission set (<userPermissions><name>PasswordNeverExpires</name>;
+         a permission, not a User field — secguide 262 L6398)
+  WARN   a connected app whose source carries a <consumerSecret> — the value
+         "isn't returned in Metadata API requests" (api_meta 264 L37443-37444),
+         so a committed one was put there by hand and is a secret in source control
+  INFO   a connected app with a <certificate> — one certificate per app
+         (api_meta 264 L37419), so plan JWT rotation as a cutover
+
+Earlier versions read per-user XML files and
+flagged files by modification time (a checkout resets it); both rules are gone.
+
+Exit 1 on any ERROR, or on WARN with --strict; otherwise 0. A missing
+--manifest-dir is an ERROR; a tree with nothing to check is one WARN, exit 0.
 """
 
 from __future__ import annotations
 
 import argparse
-import re
 import sys
-import time
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Inspect metadata for credential-rotation anti-patterns.",
-    )
-    parser.add_argument(
-        "--project-dir",
-        default=".",
-        help="Directory containing Salesforce metadata.",
-    )
-    parser.add_argument(
-        "--max-age-days",
-        type=int,
-        default=365,
-        help="Max credential age (via file mtime proxy) before flagging (default: 365).",
-    )
-    return parser.parse_args()
+NS = "{http://soap.sforce.com/2006/04/metadata}"
 
 
-def check_users(root: Path) -> list[str]:
-    issues: list[str] = []
-    for path in root.rglob("*.user-meta.xml"):
-        text = path.read_text(encoding="utf-8", errors="ignore")
-        if re.search(r"<passwordNeverExpires>true</passwordNeverExpires>", text, re.IGNORECASE):
-            issues.append(f"{path}: user has `passwordNeverExpires=true` — remove for service accounts")
-        if "<isActive>true</isActive>" in text and "Integration" in path.name:
-            if re.search(r"<userType>\s*Standard\s*</userType>", text, re.IGNORECASE):
-                pass  # Integration user of standard type — policy varies
-    return issues
+def text(el: ET.Element, tag: str) -> str:
+    found = el.find(NS + tag)
+    if found is None:
+        found = el.find(tag)
+    return (found.text or "").strip() if found is not None else ""
 
 
-def check_connected_apps(root: Path, max_age_days: int) -> list[str]:
-    issues: list[str] = []
-    threshold = time.time() - max_age_days * 86400
-    for path in root.rglob("*.connectedApp-meta.xml"):
+def find(el: ET.Element, tag: str) -> list:
+    return list(el.iter(NS + tag)) + list(el.iter(tag))
+
+
+def collect(root: Path) -> tuple[list[Path], list[Path]]:
+    perms = sorted(set(root.rglob("*.profile-meta.xml")) | set(root.rglob("*.permissionset-meta.xml")))
+    apps = sorted(root.rglob("*.connectedApp-meta.xml"))
+    return perms, apps
+
+
+def run(perms: list[Path], apps: list[Path]) -> list:
+    out: list = []
+    for path in perms:
         try:
-            mtime = path.stat().st_mtime
-        except OSError:
+            el = ET.parse(path).getroot()
+        except ET.ParseError as exc:
+            out.append(("ERROR", f"{path}: XML does not parse ({exc})"))
             continue
-        if mtime < threshold:
-            age_days = int((time.time() - mtime) / 86400)
-            issues.append(
-                f"{path}: connected app metadata not modified in {age_days} days — secret may be stale"
-            )
-    return issues
-
-
-def check_named_credentials(root: Path, max_age_days: int) -> list[str]:
-    issues: list[str] = []
-    threshold = time.time() - max_age_days * 86400
-    for path in root.rglob("*.namedCredential-meta.xml"):
+        for up in find(el, "userPermissions"):
+            if text(up, "name") == "PasswordNeverExpires" and text(up, "enabled").lower() == "true":
+                out.append(("WARN", f"{path}: grants Password Never Expires — service-account passwords never rotate (secguide 262 L6398)"))
+    for path in apps:
         try:
-            mtime = path.stat().st_mtime
-        except OSError:
+            el = ET.parse(path).getroot()
+        except ET.ParseError as exc:
+            out.append(("ERROR", f"{path}: XML does not parse ({exc})"))
             continue
-        if mtime < threshold:
-            age_days = int((time.time() - mtime) / 86400)
-            issues.append(
-                f"{path}: named credential metadata unchanged in {age_days} days — confirm rotation happened outside source"
-            )
-    return issues
+        for cfg in find(el, "oauthConfig"):
+            if text(cfg, "consumerSecret"):
+                out.append(("WARN", f"{path}: consumerSecret committed to source — Metadata API does not return it (api_meta 264 L37443-37444); move it to a vault"))
+            if text(cfg, "certificate"):
+                out.append(("INFO", f"{path}: JWT certificate present — one certificate per app (api_meta 264 L37419); rotate as a cutover"))
+    return out
 
 
 def main() -> int:
-    args = parse_args()
-    root = Path(args.project_dir)
-    if not root.exists():
-        print(f"ERROR: directory not found: {root}")
-        return 1
-
-    all_issues: list[str] = []
-    all_issues.extend(check_users(root))
-    all_issues.extend(check_connected_apps(root, args.max_age_days))
-    all_issues.extend(check_named_credentials(root, args.max_age_days))
-
-    if not all_issues:
-        print("No credential-rotation anti-patterns detected.")
+    ap = argparse.ArgumentParser(description="Flag credential-rotation anti-patterns in profile, permission set and connected app metadata.")
+    ap.add_argument("--manifest-dir", "--project-dir", dest="manifest_dir", default=".", help="Root of the source-format metadata tree.")
+    ap.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings as well as ERROR.")
+    args = ap.parse_args()
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    perms, apps = collect(root)
+    if not perms and not apps:
+        print(f"WARN: no profile, permission set or connected app files under {root}; nothing to check")
         return 0
-
-    for issue in all_issues:
-        print(f"ISSUE: {issue}")
-    return 1
+    findings = run(perms, apps)
+    for sev, msg in findings:
+        print(f"{sev}: {msg}")
+    errors = sum(1 for s, _ in findings if s == "ERROR")
+    warns = sum(1 for s, _ in findings if s == "WARN")
+    print(f"Summary: {errors} error(s), {warns} warning(s)")
+    if errors or (args.strict and warns):
+        sys.exit(1)
+    return 0
 
 
 if __name__ == "__main__":

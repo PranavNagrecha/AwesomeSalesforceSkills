@@ -48,7 +48,7 @@ public with sharing class ElevationService {
             SELECT Id, Status FROM PermissionSetGroup
             WHERE DeveloperName = :groupDeveloperName LIMIT 1
         ];
-        // Outdated / Updating / Failed groups do not deliver their permissions.
+        // Only grant against a current group (Status values: obj 264 L220011-220015).
         if (psg.Status != 'Updated') {
             throw new ElevationException('Group ' + groupDeveloperName + ' status is ' + psg.Status);
         }
@@ -63,12 +63,13 @@ public with sharing class ElevationService {
 }
 ```
 
-The status guard is the part teams skip. `PermissionSetGroup.Status` is documented with the values **Updated**, **Outdated**, **Updating**, and **Failed**; assigning against anything but `Updated` succeeds at the DML level and still leaves the requester without the permissions.
+The status guard is the part teams skip. `PermissionSetGroup.Status` is documented with the values **Updated**, **Outdated**, **Updating**, and **Failed** (obj 264 L220011-220015). UNVERIFIED (2026-10-20): that assigning against anything but `Updated` succeeds at the DML level yet withholds the permissions is not stated in the corpus.
 
 **The review query — note `ALL ROWS`:**
 
 ```sql
-SELECT Id, ExpirationDate, IsRevoked, Assignee.Name, Assignee.Username,
+-- Add IsRevoked only if user access policies are enabled (obj 264 L219761).
+SELECT Id, ExpirationDate, Assignee.Name, Assignee.Username,
        PermissionSet.Name, PermissionSetGroupId
 FROM PermissionSetAssignment
 WHERE ExpirationDate != null
@@ -76,9 +77,9 @@ ORDER BY ExpirationDate DESC
 ALL ROWS
 ```
 
-**Failure path if you omit `ALL ROWS`:** expired assignments are treated as soft-deletes and ordinary SOQL does not return them. The report comes back empty, which reads as "no elevations outstanding" rather than "the query cannot see them". This is the single most misleading result in Salesforce PAM reporting.
+**Failure path if you omit `ALL ROWS`:** Help states that expired assignments are treated as soft-deletes that ordinary SOQL does not return, so the report would come back empty and read as "no elevations outstanding". UNVERIFIED (2026-10-20): the corpus documents `ALL ROWS` only for revoked assignments (obj 264 L219899-219901) — prove the expired case on a known expired grant.
 
-**What expiry does and does not do:** at expiry the user remains assigned to the permission set or group but cannot access its permissions. Permissions they hold through non-expiring permission sets, groups, or their profile continue to apply — so expiry narrows the elevation, it does not reset the user to zero.
+**What expiry does and does not do:** at `ExpirationDate` the added permissions are revoked (platform_events 264 L25278-25279, `PermissionSetEvent.PermissionExpirationList`). UNVERIFIED (2026-10-20), Help-only: that the user stays assigned while losing them, and that grants through non-expiring permission sets, groups, or the profile continue to apply — so expiry narrows the elevation, it does not reset the user to zero.
 
 ---
 
@@ -97,12 +98,12 @@ FROM PermissionSetGroup
 WHERE DeveloperName = 'Support_Escalation'
 ```
 
-Then build **two** flows — the platform does not allow activation and deactivation in the same flow:
+Then build two flows, one per action — `activateSessionPermSet` and `deactivateSessionPermSet` act for the running user (api_meta 264 L71098, L71249). UNVERIFIED (2026-10-20): that one flow cannot hold both is Help-only; Apex can also insert or delete `SessionPermSetActivation` directly (obj 264 L264509-264514, L264542-264543).
 
 | Flow | Core action | When it runs |
 |---|---|---|
 | `Activate_Support_Escalation` | Activate Session-Based Permission Set | Engineer clicks "Take escalation" |
-| `Deactivate_Support_Escalation` | Deactivate the session-based permission set | Escalation closed, or engineer clicks "Release" |
+| `Deactivate_Support_Escalation` | Deactivate Session-Based Permission Set | Escalation closed, or engineer clicks "Release" |
 
 Audit what was actually active:
 
@@ -111,7 +112,7 @@ SELECT Id, UserId, PermissionSetId, PermissionSetGroupId, AuthSessionId, Descrip
 FROM SessionPermSetActivation
 ```
 
-`SessionPermSetActivation` is documented as "a permission set assignment activated during an individual user session", and its `AuthSessionId` ties the grant to one session, so the evidence trail is per-session rather than per-day.
+`SessionPermSetActivation` is documented as "a permission set assignment activated during an individual user session" (obj 264 L264375), and its `AuthSessionId` ties the grant to one session, so the evidence trail is per-session rather than per-day.
 
 **Why it works:** the grant is bounded by the session rather than by a clock the requester is not watching. `HasActivationRequired` is available in API version 53.0 and later, so confirm the org's API version before designing around it.
 
@@ -140,6 +141,6 @@ ORDER BY CreatedDate DESC
 3. Correlate with `LoginHistory` for the same window to capture `SourceIp`, `LoginType`, and `Browser`.
 4. Rotate the credential immediately after use, not on the next scheduled rotation.
 
-**Retention constraint:** `SetupAuditTrail` represents Setup changes for at least the last 180 days. Any obligation longer than that needs the extract routed off-platform on a cadence shorter than the floor — see `security/event-monitoring`.
+**Retention constraint:** `SetupAuditTrail` represents Setup changes for at least the last 180 days (obj 264 L264576). Any obligation longer than that needs the extract routed off-platform on a cadence shorter than the floor — see `security/event-monitoring`.
 
 **Why one account per human:** a shared break-glass account still produces the alert, but the `SetupAuditTrail` rows all name the same username. Attribution is the entire value of the control, and sharing removes it.

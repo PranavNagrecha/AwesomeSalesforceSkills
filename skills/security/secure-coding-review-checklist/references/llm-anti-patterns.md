@@ -22,7 +22,7 @@ SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE,
 List<Account> sanitized = decision.getRecords();
 ```
 
-**Detection hint:** SOQL query without `WITH USER_MODE` — regex: `\[SELECT.*FROM.*(?!WITH\s+USER_MODE)` — then read the sibling `*-meta.xml` before scoring it. Below API 67.0 a bare query is unenforced and the finding stands; at 67.0+ the query already runs in user mode by default, so the finding drops to an advisory about stating intent. That applies to `.trigger` files as well as `.cls` — a trigger body's database operations run in user mode unless system mode is explicitly specified, so read `.trigger-meta.xml` and score a bare trigger query on the same version gate. Do not flag `WITH USER_MODE` inside a trigger as a defect; it is the documented pattern, and in a trigger it also overrides the implicit `without sharing` baseline, so record sharing is enforced on that operation too. The trigger-specific finding to look for is the reverse: a `WITH SYSTEM_MODE` / `as system` in a trigger body reverts to that baseline and returns all records regardless of the running user. Never score `WITH SECURITY_ENFORCED` as clean: it is the weaker construct below 67.0 and does not compile at 67.0+.
+**Detection hint:** SOQL query without `WITH USER_MODE` — regex: `\[SELECT.*FROM.*(?!WITH\s+USER_MODE)` — then read the sibling `*-meta.xml` before scoring it. Below API 67.0 a bare query is unenforced and the finding stands; at 67.0+ the query already runs in user mode by default, so the finding drops to an advisory about stating intent. That applies to `.trigger` files as well as `.cls` — a trigger body's database operations run in user mode unless system mode is explicitly specified, so read `.trigger-meta.xml` and score a bare trigger query on the same version gate. Do not flag `WITH USER_MODE` inside a trigger as a defect; it is the documented pattern, and in a trigger it also overrides the implicit `without sharing` baseline, so record sharing is enforced on that operation too. The trigger-specific finding to look for is the reverse: a `WITH SYSTEM_MODE` / `as system` in a trigger body reverts to that baseline and returns all records regardless of the running user. Never score `WITH SECURITY_ENFORCED` as clean: below 67.0 prefer `WITH USER_MODE`, and at 67.0+ "you can't use the WITH SECURITY_ENFORCED clause" (apexdev 264 L11926).
 
 ---
 
@@ -95,7 +95,7 @@ public with sharing class AccountService {
 ```
 Use `with sharing` as the default. Only use `without sharing` with explicit justification (e.g., utility class that must see all records, wrapped in a `with sharing` caller).
 
-The severity of the omission is version-gated: a bare class runs `without sharing` at API 66.0 and below (a real exposure) but `with sharing` at 67.0+ (implicit, not absent). Two mistakes follow. Stating "a class with no keyword runs without sharing" unqualified is wrong for 67.0+ code; carrying the *sharing* half of the rule over to **triggers** is wrong at every version — a trigger cannot declare a sharing keyword and always runs implicitly `without sharing`, so there is no keyword to add and no version that changes it. Do not carry that conclusion across to the access mode, and do not conclude that a trigger body therefore enforces nothing: database operations in a trigger body run in **user mode** unless system mode is explicitly specified, gated on the trigger's own `.trigger-meta.xml` `<apiVersion>`, and user mode overrides the implicit `without sharing` baseline — enforcing object permissions, FLS, *and* the running user's sharing rules. It is the explicit `WITH SYSTEM_MODE` in a trigger that ignores object- and field-level permissions and reverts record access to that `without sharing` baseline, making all records visible. See [`AGENT_CONTRACT.md` § Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
+The severity of the omission is version-gated: a bare class runs `with sharing` at 67.0+ (implicit, not absent), and at 66.0 and below its mode depends on inheritance, entry-point type and caller, falling back to `without sharing` only as the last case (apexdev 264 L11930-11937). Two mistakes follow. Stating "a class with no keyword runs without sharing" unqualified is wrong for 67.0+ code and for many 66.0 classes; carrying the *sharing* half of the rule over to **triggers** is wrong at every version — a trigger cannot declare a sharing keyword and always runs implicitly `without sharing`, so there is no keyword to add and no version that changes it. Do not carry that conclusion across to the access mode, and do not conclude that a trigger body therefore enforces nothing: database operations in a trigger body run in **user mode** unless system mode is explicitly specified, gated on the trigger's own `.trigger-meta.xml` `<apiVersion>`, and user mode overrides the implicit `without sharing` baseline — enforcing object permissions, FLS, *and* the running user's sharing rules. It is the explicit `WITH SYSTEM_MODE` in a trigger that ignores object- and field-level permissions and reverts record access to that `without sharing` baseline, making all records visible. See [`AGENT_CONTRACT.md` § Apex security idiom by API version](../../../../agents/_shared/AGENT_CONTRACT.md#apex-security-idiom-by-api-version).
 
 **Detection hint:** Class declaration without sharing keyword — regex: `public\s+class\s+\w+` without preceding `with sharing` or `without sharing` or `inherited sharing`. Resolve `<apiVersion>` from the sibling `.cls-meta.xml` before assigning severity, and skip `.trigger` files *for this check only* — they have no sharing keyword to check. Do not skip them for the access-mode check: resolve the sibling `.trigger-meta.xml` `<apiVersion>` and audit the trigger body's queries and DML like any other code.
 
@@ -154,17 +154,17 @@ Use Named Credentials for all external callout authentication. Never store secre
 
 **What the LLM generates:** A review rule or decision table row reading "Dynamic SOQL via `Database.query()` → use `String.escapeSingleQuotes()`; bind variables are unavailable in dynamic strings." Variants: "you can only bind in inline `[SELECT ...]` queries," "escapeSingleQuotes is the standard defence for `Database.query`," "parameterisation isn't possible once the query is a String."
 
-**Why it happens:** Two reinforcing sources. (1) In most languages a query assembled as a string genuinely *is* unparameterised, so the model transfers the JDBC intuition. (2) Salesforce's own pre-2015 secure-coding material leaned heavily on `escapeSingleQuotes()`, and that vintage advice is over-represented in training data relative to the `queryWithBinds` documentation from Spring '23.
+**Why it happens:** Two reinforcing sources. (1) In most languages a query assembled as a string genuinely *is* unparameterised, so the model transfers the JDBC intuition. (2) Salesforce's own pre-2015 secure-coding material leaned heavily on `escapeSingleQuotes()`, and that vintage advice is over-represented in training data relative to the newer `queryWithBinds` documentation (API 57.0+, apexdev 264 L11647).
 
 **Why this one is dangerous:** it fails in the *exposure* direction and it is stated by a security artefact. A reviewer who accepts it will pass code that escapes quotes and still splices attacker-controlled text into `LIMIT`, `ORDER BY`, a field name, or an unquoted numeric comparison — none of which `escapeSingleQuotes()` touches. The reviewer will also *reject* correctly-bound code as non-conforming.
 
 **Correct pattern:**
 ```apex
-// In-scope binding — works in Database.query(), available long before v57
+// In-scope binding — works in Database.query() (apexdev 264 L11623-11627)
 String userInput = req.name;
 List<Account> a = Database.query('SELECT Id FROM Account WHERE Name = :userInput');
 
-// Map-based binding — Spring '23 / API v57 onward, no scoping constraint
+// Map-based binding — API 57.0 and later, no scoping constraint (apexdev 264 L11647-11656)
 Map<String, Object> binds = new Map<String, Object>{ 'nm' => req.name };
 List<Account> b = Database.queryWithBinds(
     'SELECT Id FROM Account WHERE Name = :nm',
@@ -178,24 +178,23 @@ A bind variable substitutes a **literal value** only. If the user supplies a fie
 
 ---
 
-## Anti-Pattern 8: Misdating `WITH USER_MODE` to Spring '20
+## Anti-Pattern 8: Misdating the Access-Mode Features
 
-**What the LLM generates:** "In Spring '20+, the platform introduced `WITH USER_MODE` for SOQL and `Security.stripInaccessible()` for DML results." Also seen as "`queryWithBinds` is unavailable pre-Spring '21."
+**What the LLM generates:** "In Spring '20+, the platform introduced `WITH USER_MODE` for SOQL and `Security.stripInaccessible()` for DML results." Also seen as "`queryWithBinds` is available from Spring '21", or "`AccessLevel` needs API 57.0".
 
-**Why it happens:** `Security.stripInaccessible()` really did go GA in Spring '20, and the model attaches the nearest remembered release date to the whole cluster of CRUD/FLS features it recalls together. Release-version claims are unusually prone to this because the model has a plausible date in context and no signal that it belongs to a sibling feature.
+**Why it happens:** the model attaches the nearest remembered release date to the whole cluster of CRUD/FLS features it recalls together. Release-version claims are unusually prone to this because the model has a plausible date in context and no signal that it belongs to a sibling feature.
 
 **Correct pattern:**
 ```
-Security.stripInaccessible()                  GA Spring '20  (API v48)
-WITH SECURITY_ENFORCED                        earlier still
-WITH USER_MODE / WITH SYSTEM_MODE             Spring '23     (API v57)
-AccessLevel on Database.* methods             Spring '23     (API v57)
-Database.queryWithBinds / getQueryLocatorWithBinds
-  / countQueryWithBinds                       Spring '23     (API v57)
+AccessLevel parameter on Database.query          API 55.0+  (apexdev 264 L11609)
+Database.queryWithBinds                          API 57.0+  (apexdev 264 L11647)
+WITH SECURITY_ENFORCED                           not recommended below API 45.0 (L45412-45413);
+                                                 can't be used at API 67.0+ (L11926)
 User mode as the DEFAULT access mode, and
-  `with sharing` as the default for a bare
-  class; WITH SECURITY_ENFORCED removed       Summer '26     (API v67)
+  `with sharing` for a bare class                API 67.0+  (L45133-45144)
+Security.stripInaccessible() GA Spring '20,
+  WITH USER_MODE clause Spring '23               UNVERIFIED (2026-10-20): blog/Help only
 ```
-Below v57, use in-scope `:var` binding plus `WITH SECURITY_ENFORCED` and `stripInaccessible()`.
+Below v57, use in-scope `:var` binding (L11623-11627), with `AccessLevel.USER_MODE` from 55.0, or `WITH SECURITY_ENFORCED` plus `stripInaccessible()` below that.
 
-**Detection hint:** any sentence pairing `USER_MODE` with a release earlier than Spring '23 or an API version below 57 is wrong. Mechanically: in a class's `*.cls-meta.xml`, `<apiVersion>` below `57.0` in a class body containing `USER_MODE`, `SYSTEM_MODE`, `queryWithBinds` or `AccessLevel.` will not compile — that pairing is a hard, checkable contradiction.
+**Detection hint:** `queryWithBinds` in a class whose `*.cls-meta.xml` `<apiVersion>` is below `57.0`, or `AccessLevel.` below `55.0`, contradicts the guide's version gates (apexdev 264 L11609, L11647); `WITH SECURITY_ENFORCED` at `67.0+` can't be used (L11926).

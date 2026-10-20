@@ -4,7 +4,7 @@
 
 **Context:** An ISV is preparing a managed package for AppExchange submission. The package includes an LWC that displays Account and Contact data through an `@AuraEnabled` Apex controller. The controller uses inline SOQL with no CRUD/FLS enforcement.
 
-**Problem:** The Checkmarx source scanner flags every SOQL query in the controller as a CRUD/FLS violation. The security review team rejects the submission with the comment: "All data access must respect the running user's object and field permissions."
+**Problem:** The security review's source scan flags every SOQL query in the controller as a CRUD/FLS violation. The security review team rejects the submission with the comment: "All data access must respect the running user's object and field permissions."
 
 **Solution:**
 
@@ -31,7 +31,7 @@ public with sharing class AccountController {
 }
 ```
 
-**Why it works:** Adding `WITH USER_MODE` to the SOQL query forces the platform to evaluate the running user's profile permissions for both object-level CRUD and field-level read access. If the user cannot see `AnnualRevenue`, the query throws a `System.FlsException` rather than silently returning the value. This is a single-line change that addresses the most common security review failure category. The Salesforce Code Analyzer and Checkmarx both recognize `WITH USER_MODE` as valid CRUD/FLS enforcement.
+**Why it works:** Adding `WITH USER_MODE` to the SOQL query forces the platform to evaluate the running user's profile permissions for both object-level CRUD and field-level read access. If the user cannot see `AnnualRevenue`, the query throws a `QueryException` (apexref 262 L215180-215192) rather than silently returning the value. UNVERIFIED (2026-10-20): that Code Analyzer and Checkmarx both accept `WITH USER_MODE`, and that CRUD/FLS is the most common failure category, are not in the corpus.
 
 ---
 
@@ -54,14 +54,12 @@ public with sharing class SearchController {
     }
 }
 
-// AFTER — injection-safe with escapeSingleQuotes + stripInaccessible
+// AFTER — the value is bound, never spliced, and the query runs in user mode
 public with sharing class SearchController {
     @AuraEnabled
     public static List<Account> search(String keyword) {
-        String safeKeyword = '%' + String.escapeSingleQuotes(keyword) + '%';
-        String query = 'SELECT Id, Name FROM Account '
-                     + 'WHERE Name LIKE :safeKeyword';
-        // Use bind variable in dynamic query where possible (Spring '21+)
+        String safeKeyword = '%' + keyword + '%';   // bound as a literal value
+        // Database.queryWithBinds: API 57.0 and later (apexdev 264 L11647)
         List<Account> results = Database.queryWithBinds(
             'SELECT Id, Name FROM Account WHERE Name LIKE :keyword',
             new Map<String, Object>{ 'keyword' => safeKeyword },
@@ -72,7 +70,7 @@ public with sharing class SearchController {
 }
 ```
 
-**Why it works:** `Database.queryWithBinds()` with `AccessLevel.USER_MODE` combines injection prevention (bind variables) with CRUD/FLS enforcement in a single call. The bind variable prevents the user input from being interpreted as SOQL syntax. `Database.queryWithBinds()` shipped in **Spring '23 (API v57)**. Below v57 the substitute is *still a bind variable* — put `:userInput` directly in the string passed to `Database.query()` and keep the variable in scope at the call site. `String.escapeSingleQuotes()` is the last-resort fallback, not the pre-v57 equivalent: it only neutralises quote breakout and leaves injected `LIMIT`, `ORDER BY` and identifier fragments intact. The `AccessLevel.USER_MODE` parameter replaces the need for separate `stripInaccessible()` calls.
+**Why it works:** `Database.queryWithBinds()` with `AccessLevel.USER_MODE` combines injection prevention (bind variables) with CRUD/FLS enforcement in a single call. The bind variable prevents the user input from being interpreted as SOQL syntax. `Database.queryWithBinds()` is available in **API 57.0 and later** (apexdev 264 L11647). Below v57 the substitute is *still a bind variable* — put `:userInput` directly in the string passed to `Database.query()` and keep the variable in scope at the call site. `String.escapeSingleQuotes()` is the last-resort fallback, not the pre-v57 equivalent: it only neutralises quote breakout and leaves injected `LIMIT`, `ORDER BY` and identifier fragments intact. The `AccessLevel.USER_MODE` parameter (API 55.0+ on `Database.query`, apexdev 264 L11609) replaces the need for separate `stripInaccessible()` calls.
 
 ---
 
@@ -80,6 +78,6 @@ public with sharing class SearchController {
 
 **What practitioners do:** They add `Schema.SObjectType.Account.getDescribe().isAccessible()` at the top of the method, checking object-level access, but skip field-level checks for individual fields in the SELECT clause. They assume object-level access implies field-level access.
 
-**What goes wrong:** The security review rejects the submission because field-level security is not enforced. A user with read access to the Account object but without access to the `AnnualRevenue` field would still receive that field's value in the query results. The Checkmarx scanner specifically checks for per-field `isAccessible()` calls when the describe pattern is used.
+**What goes wrong:** The security review rejects the submission because field-level security is not enforced. A user with read access to the Account object but without access to the `AnnualRevenue` field would still receive that field's value in the query results. UNVERIFIED (2026-10-20): that Checkmarx checks for per-field `isAccessible()` calls is not in the corpus.
 
 **Correct approach:** Use `WITH USER_MODE` to enforce both object-level and field-level security in a single mechanism, or call `Security.stripInaccessible(AccessType.READABLE, records)` on query results to physically remove inaccessible fields. Both approaches satisfy the security review without requiring manual per-field describe checks.

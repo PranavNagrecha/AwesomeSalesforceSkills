@@ -1,16 +1,34 @@
 #!/usr/bin/env python3
-"""Checker script for Secure Coding Review Checklist skill.
+"""Checker for the Secure Coding Review Checklist skill (stdlib only).
 
-Scans Apex classes, triggers, and Visualforce pages for common security
-vulnerabilities: missing CRUD/FLS enforcement, SOQL injection vectors,
-XSS in Visualforce, missing sharing declarations, and unprotected
-@AuraEnabled methods.
+Scans Apex classes, triggers and Visualforce pages/components under
+--manifest-dir. Every Apex finding is scored against the file's own
+<apiVersion> (sibling *-meta.xml), never the org's release.
 
-Uses stdlib only — no pip dependencies.
+  ERROR  WITH SECURITY_ENFORCED in a file at API 67.0+ — "you can't use the
+         WITH SECURITY_ENFORCED clause" there (apexdev 264 L11926), so the file
+         does not save
+  WARN   a SOQL query with no WITH USER_MODE / WITH SYSTEM_MODE in a file below
+         67.0, where system mode is the default (apexdev 264 L45133-45135)
+  WARN   WITH SECURITY_ENFORCED below 67.0 — prefer WITH USER_MODE
+  WARN   Database.query / countQuery built with string concatenation
+         (bind values instead — apexdev 264 L11623-11656)
+  WARN   a class with no sharing keyword below 67.0 — its mode depends on
+         inheritance, entry-point type and caller (apexdev 264 L11931-11937)
+  WARN   HTMLENCODE inside a <script> block — JSENCODE is the JavaScript
+         encoder (apexdev 264 L13504-13507)
+  INFO   a bare SOQL query or bare class at 67.0+ — user mode and with sharing
+         are the defaults (L11928-11930); state the intent explicitly
 
-Usage:
-    python3 check_secure_coding_review_checklist.py [--help]
-    python3 check_secure_coding_review_checklist.py --manifest-dir path/to/metadata
+A trigger has a fixed implicit `without sharing` context, but database
+operations in its body "run in user mode unless system mode is explicitly
+specified", and user mode "overrides the trigger's without sharing context"
+(apexdev 264 L4905-4909) — so .trigger files are scored like classes for
+access mode and skipped for the sharing-keyword rule.
+
+Exit 1 on any ERROR, or on WARN with --strict; otherwise 0. A missing
+--manifest-dir is an ERROR; a tree with no Apex or Visualforce files is one
+WARN, exit 0.
 """
 
 from __future__ import annotations
@@ -20,349 +38,95 @@ import re
 import sys
 from pathlib import Path
 
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Check Apex and Visualforce code for common security review vulnerabilities.",
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce metadata (default: current directory).",
-    )
-    return parser.parse_args()
+SOQL = re.compile(r"\[\s*SELECT\s+.+?\s+FROM\s+\w+.*?\]", re.IGNORECASE | re.DOTALL)
+MODE = re.compile(r"WITH\s+(USER_MODE|SYSTEM_MODE)", re.IGNORECASE)
+ENFORCED = re.compile(r"WITH\s+SECURITY_ENFORCED", re.IGNORECASE)
+DYNAMIC = re.compile(r"Database\.(query|countQuery)\s*\(", re.IGNORECASE)
+CLASS = re.compile(r"^\s*(?:public|global|private)\s+(?:(?:virtual|abstract)\s+)?class\s+(\w+)", re.MULTILINE)
+SHARING = re.compile(r"(with\s+sharing|without\s+sharing|inherited\s+sharing)", re.IGNORECASE)
+# Tempered: never crosses a </script>, so HTMLENCODE in the HTML body between two script
+# blocks (the documented use, apexdev 264 L13504-13505) is not flagged; \b skips JSINHTMLENCODE.
+HTML_IN_SCRIPT = re.compile(r"<script[^>]*>(?:(?!</script>)[\s\S])*?\bHTMLENCODE\s*\(", re.IGNORECASE)
 
 
-def find_files(manifest_dir: Path, extensions: list[str]) -> list[Path]:
-    """Recursively find files with given extensions."""
-    files = []
-    for ext in extensions:
-        files.extend(manifest_dir.rglob(f"*{ext}"))
-    return sorted(files)
-
-
-def class_api_version(filepath: Path) -> float | None:
-    """Return <apiVersion> from the sibling ``*-meta.xml``, or None if unreadable.
-
-    This value — not the org's release — decides the Apex default access mode
-    and the default sharing behaviour of a class with no keyword. See
-    agents/_shared/AGENT_CONTRACT.md, "Apex security idiom by API version".
-
-    Applies to triggers too, via ``*.trigger-meta.xml``: a trigger's sharing
-    *declaration* is fixed (it cannot carry one, so the body's baseline context
-    is an implicit ``without sharing``), but the access mode of the database
-    operations in its body is version-gated exactly as a class's is — and user
-    mode overrides that baseline, enforcing the running user's sharing rules on
-    the operation.
-    """
+def api_version(path: Path) -> float | None:
     try:
-        text = Path(str(filepath) + "-meta.xml").read_text(
-            encoding="utf-8", errors="replace"
-        )
+        meta = Path(str(path) + "-meta.xml").read_text(encoding="utf-8", errors="replace")
     except OSError:
         return None
-    match = re.search(r"<apiVersion>\s*(\d+(?:\.\d+)?)\s*</apiVersion>", text)
-    if not match:
-        return None
-    try:
-        return float(match.group(1))
-    except ValueError:  # malformed value — treat as unknown, never crash the scan
-        return None
+    m = re.search(r"<apiVersion>\s*(\d+(?:\.\d+)?)\s*</apiVersion>", meta)
+    return float(m.group(1)) if m else None
 
 
-def check_crud_fls(apex_files: list[Path]) -> list[str]:
-    """Check for SOQL queries missing CRUD/FLS enforcement."""
-    issues = []
-    soql_pattern = re.compile(
-        r"\[\s*SELECT\s+.+?\s+FROM\s+\w+.*?\]",
-        re.IGNORECASE | re.DOTALL,
-    )
-    user_mode_pattern = re.compile(r"WITH\s+(USER_MODE|SYSTEM_MODE)", re.IGNORECASE)
-    security_enforced_pattern = re.compile(r"WITH\s+SECURITY_ENFORCED", re.IGNORECASE)
-
-    for filepath in apex_files:
-        try:
-            content = filepath.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-
-        lines = content.split("\n")
-        # Track multi-line SOQL by joining content for regex, then map back to line numbers
-        for match in soql_pattern.finditer(content):
-            query_text = match.group(0)
-            if not user_mode_pattern.search(query_text):
-                # Find the line number of the match start
-                line_num = content[:match.start()].count("\n") + 1
-                api = class_api_version(filepath)
-                seen = f"apiVersion {api:.1f}" if api is not None else "apiVersion unknown"
-                # WITH SECURITY_ENFORCED is never scored clean and never
-                # downgraded by the 67.0 default: it was REMOVED in 67.0, so
-                # the class does not compile there.
-                if security_enforced_pattern.search(query_text):
-                    if api is not None and api >= 67.0:
-                        issues.append(
-                            f"CRUD/FLS: WITH SECURITY_ENFORCED at {filepath.name}:{line_num} "
-                            f"— removed in API 67.0 and this file is {seen}, so it does not "
-                            f"compile; replace with WITH USER_MODE"
-                        )
-                    elif api is not None and api < 57.0:
-                        issues.append(
-                            f"CRUD/FLS (advisory): WITH SECURITY_ENFORCED at "
-                            f"{filepath.name}:{line_num} — the available idiom at {seen}, but "
-                            f"it checks only the SELECT list; raise apiVersion to 57.0+ and "
-                            f"migrate to WITH USER_MODE"
-                        )
-                    else:
-                        issues.append(
-                            f"CRUD/FLS: WITH SECURITY_ENFORCED at {filepath.name}:{line_num} "
-                            f"— {seen}; the weaker construct (SELECT list only, one violation "
-                            f"reported) and removed at 67.0. Migrate to WITH USER_MODE"
-                        )
-                # A trigger has TWO independent axes and only one of them is
-                # fixed. Its sharing context is always an implicit
-                # `without sharing` and cannot be declared — but its ACCESS
-                # MODE is not fixed: per the Apex Developer Guide, database
-                # operations in a trigger body "run in user mode unless system
-                # mode is explicitly specified". So a bare query in a .trigger
-                # IS covered by the same version-gated default as one in a
-                # .cls, gated on the sibling .trigger-meta.xml <apiVersion>.
-                # Do not restrict this branch to .cls again.
-                #
-                # Nor invert the sharing note: user mode is not merely a
-                # CRUD/FLS setting. Per the guide, "User mode overrides the
-                # trigger's without sharing context and effectively enforces a
-                # with sharing context in the trigger body", and
-                # AccessLevel.USER_MODE enforces "the object permissions,
-                # field-level security, AND sharing rules of the current user".
-                # So a bare query here enforces record sharing too. It is the
-                # SYSTEM_MODE opt-out that falls back to the trigger's implicit
-                # `without sharing` and returns all records.
-                elif api is not None and api >= 67.0:
-                    sharing_note = (
-                        ". In a trigger, user mode also overrides the implicit "
-                        "'without sharing' context, so the running user's record "
-                        "sharing is enforced on this query; an explicit "
-                        "WITH SYSTEM_MODE would fall back to that context and "
-                        "return all records"
-                        if filepath.suffix == ".trigger"
-                        else ""
-                    )
-                    issues.append(
-                        f"CRUD/FLS (advisory): SOQL query without WITH USER_MODE "
-                        f"at {filepath.name}:{line_num} — apiVersion {api:.1f} runs it "
-                        f"in user mode by default; add the keyword to state intent"
-                        f"{sharing_note}"
-                    )
-                else:
-                    assumed = "" if api is not None else " (assuming 66.0 or below)"
-                    issues.append(
-                        f"CRUD/FLS: SOQL query without WITH USER_MODE/SYSTEM_MODE "
-                        f"at {filepath.name}:{line_num} — {seen}, so this runs in "
-                        f"system mode with no CRUD/FLS enforcement{assumed}"
-                    )
-
-    return issues
+def line_of(text: str, pos: int) -> int:
+    return text[:pos].count("\n") + 1
 
 
-def check_soql_injection(apex_files: list[Path]) -> list[str]:
-    """Check for dynamic SOQL with string concatenation."""
-    issues = []
-    # Pattern: Database.query( followed by string concatenation
-    dynamic_query_pattern = re.compile(
-        r"Database\.(query|countQuery)\s*\(",
-        re.IGNORECASE,
-    )
-
-    for filepath in apex_files:
-        try:
-            content = filepath.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-
-        for i, line in enumerate(content.split("\n"), start=1):
-            if dynamic_query_pattern.search(line):
-                # Check if the line or nearby lines contain string concatenation with variables
-                if "+" in line and ("'" in line or '"' in line):
-                    issues.append(
-                        f"SOQL Injection: Dynamic query with string concatenation "
-                        f"at {filepath.name}:{i} — use bind variables or "
-                        f"Database.queryWithBinds() instead"
-                    )
-
-    return issues
-
-
-def check_sharing_declarations(apex_files: list[Path]) -> list[str]:
-    """Check for Apex classes missing explicit sharing declarations."""
-    issues = []
-    class_pattern = re.compile(
-        r"^\s*(?:public|global|private)\s+"
-        r"(?:(?:virtual|abstract)\s+)?"
-        r"class\s+(\w+)",
-        re.MULTILINE,
-    )
-    sharing_pattern = re.compile(
-        r"(with\s+sharing|without\s+sharing|inherited\s+sharing)",
-        re.IGNORECASE,
-    )
-
-    for filepath in apex_files:
-        if not filepath.suffix == ".cls":
-            continue
-        try:
-            content = filepath.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-
-        for match in class_pattern.finditer(content):
-            class_name = match.group(1)
-            # Check the text before the class keyword on the same declaration
-            declaration_start = content.rfind("\n", 0, match.start()) + 1
-            declaration_text = content[declaration_start : match.end()]
-            if not sharing_pattern.search(declaration_text):
-                line_num = content[:match.start()].count("\n") + 1
-                api = class_api_version(filepath)
-                if api is not None and api >= 67.0:
-                    effect = (
-                        f"apiVersion {api:.1f} runs it 'with sharing' by default, but "
-                        f"the intent is implicit"
-                    )
-                elif api is not None:
-                    effect = f"apiVersion {api:.1f}, so it runs 'without sharing'"
-                else:
-                    effect = (
-                        "apiVersion unknown — assuming 66.0 or below, where it runs "
-                        "'without sharing'"
-                    )
-                issues.append(
-                    f"Sharing: Class '{class_name}' has no explicit sharing "
-                    f"declaration at {filepath.name}:{line_num} — {effect}; declare "
-                    f"'with sharing', 'without sharing', or 'inherited sharing'"
-                )
-
-    return issues
-
-
-def check_visualforce_xss(vf_files: list[Path]) -> list[str]:
-    """Check for unencoded merge fields in Visualforce pages."""
-    issues = []
-    # Merge field in script context without JSENCODE
-    script_merge_pattern = re.compile(
-        r"<script[^>]*>[\s\S]*?\{!\s*(?!JSENCODE)(\w+)[\s\S]*?</script>",
-        re.IGNORECASE,
-    )
-    # HTMLENCODE inside script block (wrong encoder)
-    htmlencode_in_script = re.compile(
-        r"<script[^>]*>[\s\S]*?HTMLENCODE\s*\([\s\S]*?</script>",
-        re.IGNORECASE,
-    )
-
-    for filepath in vf_files:
-        try:
-            content = filepath.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-
-        for match in htmlencode_in_script.finditer(content):
-            line_num = content[:match.start()].count("\n") + 1
-            issues.append(
-                f"XSS: HTMLENCODE used inside <script> block at "
-                f"{filepath.name}:{line_num} — use JSENCODE for "
-                f"JavaScript contexts"
-            )
-
-    return issues
-
-
-def check_auraenabled_access(apex_files: list[Path]) -> list[str]:
-    """Check for @AuraEnabled methods performing DML without permission checks."""
-    issues = []
-    aura_enabled_pattern = re.compile(r"@AuraEnabled", re.IGNORECASE)
-    dml_pattern = re.compile(
-        r"\b(insert|update|delete|upsert|Database\.(insert|update|delete|upsert))\b",
-        re.IGNORECASE,
-    )
-    permission_pattern = re.compile(
-        r"(FeatureManagement\.checkPermission|checkPermission|"
-        r"UserInfo\.getProfileId|Custom_Permission|hasCustomPermission)",
-        re.IGNORECASE,
-    )
-
-    for filepath in apex_files:
-        try:
-            content = filepath.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-
-        lines = content.split("\n")
-        in_aura_method = False
-        method_start_line = 0
-        method_name = ""
-        brace_depth = 0
-
-        for i, line in enumerate(lines, start=1):
-            if aura_enabled_pattern.search(line):
-                in_aura_method = True
-                method_start_line = i
-                brace_depth = 0
+def check_apex(path: Path, out: list) -> None:
+    body = path.read_text(encoding="utf-8", errors="replace")
+    api = api_version(path)
+    seen = f"apiVersion {api:.1f}" if api is not None else "apiVersion unknown (scored as below 67.0)"
+    modern = api is not None and api >= 67.0
+    for m in SOQL.finditer(body):
+        q, n = m.group(0), line_of(body, m.start())
+        if ENFORCED.search(q):
+            if modern:
+                out.append(("ERROR", f"{path}:{n}: WITH SECURITY_ENFORCED can't be used at {seen} (apexdev 264 L11926); use WITH USER_MODE"))
+            else:
+                out.append(("WARN", f"{path}:{n}: WITH SECURITY_ENFORCED at {seen}; prefer WITH USER_MODE, which enforces object permissions, FLS and sharing (apexdev 264 L11612-11613)"))
+        elif not MODE.search(q):
+            if modern:
+                out.append(("INFO", f"{path}:{n}: bare SOQL at {seen} runs in user mode by default; add WITH USER_MODE to state intent"))
+            else:
+                out.append(("WARN", f"{path}:{n}: SOQL without WITH USER_MODE/SYSTEM_MODE at {seen} runs in system mode, no CRUD/FLS enforcement"))
+    for n, line in enumerate(body.splitlines(), 1):
+        if DYNAMIC.search(line) and "+" in line:
+            out.append(("WARN", f"{path}:{n}: dynamic query built with concatenation; bind values with :var or Database.queryWithBinds"))
+    if path.suffix == ".cls":
+        for m in CLASS.finditer(body):
+            start = body.rfind("\n", 0, m.start()) + 1
+            if SHARING.search(body[start:m.end()]):
                 continue
-
-            if in_aura_method:
-                brace_depth += line.count("{") - line.count("}")
-
-                # Extract method name from the line after @AuraEnabled
-                if method_start_line == i - 1 or method_start_line == i:
-                    name_match = re.search(r"\b(\w+)\s*\(", line)
-                    if name_match:
-                        method_name = name_match.group(1)
-
-                if brace_depth <= 0 and "{" in content[
-                    sum(len(l) + 1 for l in lines[:method_start_line - 1]):
-                ]:
-                    in_aura_method = False
-
-    return issues
+            n = line_of(body, m.start())
+            if modern:
+                out.append(("INFO", f"{path}:{n}: class '{m.group(1)}' has no sharing keyword; runs with sharing at {seen} (apexdev 264 L11930)"))
+            else:
+                out.append(("WARN", f"{path}:{n}: class '{m.group(1)}' has no sharing keyword at {seen}; mode depends on inheritance, entry point and caller (apexdev 264 L11931-11937) — declare it"))
 
 
-def check_secure_coding_review_checklist(manifest_dir: Path) -> list[str]:
-    """Return a list of issue strings found in the manifest directory."""
-    issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    apex_files = find_files(manifest_dir, [".cls", ".trigger"])
-    vf_files = find_files(manifest_dir, [".page", ".component"])
-
-    if not apex_files and not vf_files:
-        print(f"INFO: No Apex or Visualforce files found in {manifest_dir}")
-        return issues
-
-    print(f"Scanning {len(apex_files)} Apex files and {len(vf_files)} Visualforce files...")
-
-    issues.extend(check_crud_fls(apex_files))
-    issues.extend(check_soql_injection(apex_files))
-    issues.extend(check_sharing_declarations(apex_files))
-    issues.extend(check_visualforce_xss(vf_files))
-
-    return issues
+def check_vf(path: Path, out: list) -> None:
+    body = path.read_text(encoding="utf-8", errors="replace")
+    for m in HTML_IN_SCRIPT.finditer(body):
+        out.append(("WARN", f"{path}:{line_of(body, m.start())}: HTMLENCODE inside <script>; use JSENCODE (apexdev 264 L13504-13507)"))
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = check_secure_coding_review_checklist(manifest_dir)
-
-    if not issues:
-        print("No security issues found.")
+    ap = argparse.ArgumentParser(description="Check Apex and Visualforce code for security review findings, scored by apiVersion.")
+    ap.add_argument("--manifest-dir", default=".", help="Root of the Salesforce metadata (default: current directory).")
+    ap.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings as well as ERROR.")
+    args = ap.parse_args()
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    apex = sorted(set(root.rglob("*.cls")) | set(root.rglob("*.trigger")))
+    vf = sorted(set(root.rglob("*.page")) | set(root.rglob("*.component")))
+    if not apex and not vf:
+        print(f"WARN: no Apex or Visualforce files under {root}; nothing to check")
         return 0
-
-    print(f"\nFound {len(issues)} potential security issue(s):\n")
-    for issue in issues:
-        print(f"  ISSUE: {issue}")
-
-    return 1
+    out: list = []
+    for path in apex:
+        check_apex(path, out)
+    for path in vf:
+        check_vf(path, out)
+    for sev, msg in out:
+        print(f"{sev}: {msg}")
+    errors = sum(1 for s, _ in out if s == "ERROR")
+    warns = sum(1 for s, _ in out if s == "WARN")
+    print(f"Summary: {errors} error(s), {warns} warning(s)")
+    if errors or (args.strict and warns):
+        sys.exit(1)
+    return 0
 
 
 if __name__ == "__main__":

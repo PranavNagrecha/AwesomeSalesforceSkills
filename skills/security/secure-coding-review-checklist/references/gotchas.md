@@ -4,11 +4,11 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: WITH USER_MODE Throws Exceptions Instead of Returning Empty Results
 
-**What happens:** When a SOQL query with `WITH USER_MODE` encounters a field the running user cannot access, the platform throws a `System.FlsException` at runtime rather than silently omitting the field or returning an empty result set. This is different from the older `isAccessible()` describe pattern, which let developers gracefully skip inaccessible fields.
+**What happens:** When a SOQL query with `WITH USER_MODE` encounters a field the running user cannot access, the platform throws a `QueryException` at runtime — `getInaccessibleFields()` returns the offending fields (apexref 262 L215176-215192) — rather than silently omitting the field or returning an empty result set. This is different from the older `isAccessible()` describe pattern, which let developers gracefully skip inaccessible fields.
 
 **When it occurs:** Any time a query with `WITH USER_MODE` includes a field that the running user's profile or permission set does not grant read access to. This is common in managed packages deployed across orgs with varying permission configurations. The error surfaces at runtime, not at compile time or during deployment.
 
-**How to avoid:** Wrap queries in try-catch blocks that handle `System.FlsException` and `System.CrudException`. Alternatively, use `Security.stripInaccessible()` on query results instead of `WITH USER_MODE` when graceful degradation is required — it silently removes inaccessible fields from the SObject map without throwing.
+**How to avoid:** Wrap user-mode queries in try-catch blocks that handle `QueryException`, and user-mode DML in blocks that handle the `SecurityException` the guide's example catches (apexdev 264 L12233-12236); `DmlException.getDmlFieldNames()` lists FLS failures on DML (L12167-12168). Alternatively, use `Security.stripInaccessible()` on query results instead of `WITH USER_MODE` when graceful degradation is required — it silently removes inaccessible fields from the SObject map without throwing.
 
 ---
 
@@ -24,28 +24,28 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 3: String.escapeSingleQuotes Does Not Prevent All SOQL Injection Vectors
 
-**What happens:** `String.escapeSingleQuotes()` only escapes the single-quote character (`'`). It does not protect against injection via LIKE wildcards (`%`, `_`), backslash sequences, or SOQL operators inserted into numeric or boolean filter contexts where single quotes are not used.
+**What happens:** `String.escapeSingleQuotes()` escapes only single quotes and backslashes — it adds the escape character "before any single quotation mark (') or backslash (\)" (apexref 262 L235380; apexdev 264 L11679-11680 names only the quotes). It does not protect against injection via LIKE wildcards (`%`, `_`) or SOQL operators inserted into numeric or boolean filter contexts where single quotes are not used.
 
 **When it occurs:** When dynamic SOQL builds a WHERE clause with a numeric comparison (e.g., `Amount > ' + userInput`) or a LIKE clause where the user can inject `%` to match all records. The developer applies `escapeSingleQuotes()` and assumes the input is safe, but the injection bypasses the single-quote defense entirely.
 
-**How to avoid:** Use bind variables (`:variableName`) or `Database.queryWithBinds()` instead of string concatenation wherever possible. When dynamic SOQL is unavoidable, sanitize the input type explicitly: cast numeric inputs to `Integer` or `Decimal`, validate enum values against an allowlist, and escape LIKE wildcards by replacing `%` and `_` with `\%` and `\_` before interpolation.
+**How to avoid:** Use bind variables (`:variableName`) or `Database.queryWithBinds()` instead of string concatenation wherever possible. When dynamic SOQL is unavoidable, sanitize the input type explicitly: cast numeric inputs to `Integer` or `Decimal`, validate enum values against an allowlist, and escape LIKE wildcards by replacing `%` and `_` with `\%` and `\_` before interpolation (UNVERIFIED (2026-10-20): the SOQL LIKE escape sequences are not in the corpus).
 
 ---
 
 ## Gotcha 4: HTMLENCODE in Visualforce Does Not Protect JavaScript Contexts
 
-**What happens:** `HTMLENCODE()` converts characters like `<`, `>`, `&`, and `"` to their HTML entity equivalents. This prevents XSS in HTML body contexts, but inside a `<script>` block, the browser interprets the content as JavaScript before HTML entity decoding occurs. An attacker payload like `';alert(1);//` passes through `HTMLENCODE()` intact because it contains no HTML special characters.
+**What happens:** `HTMLENCODE()` converts characters like `<`, `>`, `&`, and `"` to their HTML entity equivalents. This prevents XSS in HTML body contexts, but inside a `<script>` block, the browser interprets the content as JavaScript before HTML entity decoding occurs. `HTMLENCODE` replaces characters reserved in HTML with entities (apexdev 264 L13504-13505); `JSENCODE` is the one that escapes JavaScript characters such as the apostrophe (L13506-13507). UNVERIFIED (2026-10-20): that a payload like `';alert(1);//` passes through `HTMLENCODE()` unchanged is not stated in the corpus.
 
 **When it occurs:** Visualforce pages that embed merge field values inside `<script>` tags using `HTMLENCODE({!userInput})` instead of `JSENCODE({!userInput})`. This is a common copy-paste error because `HTMLENCODE` is the most frequently referenced encoding function in documentation examples.
 
-**How to avoid:** Use `JSENCODE()` for values placed inside JavaScript string literals, `HTMLENCODE()` for values placed in HTML body context, and `URLENCODE()` for values placed in URL parameters. When a value appears in a nested context (e.g., a JavaScript string inside an HTML attribute), apply both encoders from inner to outer: `HTMLENCODE(JSENCODE({!value}))`.
+**How to avoid:** Use `JSENCODE()` for values placed inside JavaScript string literals, `HTMLENCODE()` for values placed in HTML body context, and `URLENCODE()` for values placed in URL parameters. For JavaScript inside HTML tags, use `JSINHTMLENCODE({!value})`, which the guide defines as `JSENCODE(HTMLENCODE(value))` — HTML-encode first, then JavaScript-encode (apexdev 264 L13509-13512). An earlier version of this gotcha gave the reverse order.
 
 ---
 
-## Gotcha 5: @AuraEnabled Methods Are Accessible to Any Authenticated User by Default
+## Gotcha 5: Component Visibility Does Not Gate an @AuraEnabled Method — Apex Class Access Does
 
-**What happens:** Any method annotated with `@AuraEnabled` can be called by any authenticated user in the org, regardless of whether the corresponding LWC or Aura component is exposed on a page they can access. The caller simply needs to invoke the Apex method via the Aura/LWC runtime endpoint. Profile-based component visibility does not restrict access to the underlying Apex method.
+**What happens:** Hiding an LWC or Aura component from a page does not stop a user calling its `@AuraEnabled` method directly. What does gate it is Apex class security: it "applies to methods that are in Apex transaction entry points", including Aura component controllers and `@AuraEnabled` methods called from Lightning web components, set per profile or permission set (apexdev 264 L12507-12516). An earlier version of this gotcha said any authenticated user can call any `@AuraEnabled` method by default; the guide's class-security rule contradicts that.
 
-**When it occurs:** Developers build an admin-only LWC that calls an `@AuraEnabled` method performing sensitive operations (e.g., modifying sharing rules, querying all records without sharing). They restrict the LWC's visibility to admin profiles via page layout or Lightning app assignment but assume the Apex method is equally restricted. A standard user can still invoke the method directly.
+**When it occurs:** Developers build an admin-only LWC that calls an `@AuraEnabled` method performing sensitive operations (e.g., modifying sharing rules, querying all records without sharing). They restrict the LWC's visibility to admin profiles via page layout or Lightning app assignment but leave the controller class in a widely assigned permission set. Any user with that class access can still invoke the method directly, and code the controller calls runs for them too (L12520-12522).
 
-**How to avoid:** Enforce access control inside the Apex method itself. Check `FeatureManagement.checkPermission('Custom_Permission_Name')` or validate `UserInfo.getProfileId()` before executing sensitive logic. Declare the class `with sharing` to ensure sharing rules apply. For managed packages, consider using the `@AuraEnabled` method's `cacheable` parameter carefully — cacheable methods cannot perform DML, which limits the damage surface but does not prevent data exfiltration.
+**How to avoid:** Grant Apex class access to the controller only through the permission set meant for the feature, and enforce access control inside the Apex method itself. Check `FeatureManagement.checkPermission('Custom_Permission_Name')` or validate `UserInfo.getProfileId()` before executing sensitive logic. Declare the class `with sharing` to ensure sharing rules apply. For managed packages, consider using the `@AuraEnabled` method's `cacheable` parameter carefully — results can be cached "only for methods that retrieve data but don't modify it" (apexdev 264 L5096), which limits the damage surface but does not prevent data exfiltration.

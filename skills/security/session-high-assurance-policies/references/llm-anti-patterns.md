@@ -18,7 +18,7 @@ if (UserInfo.getSessionSecurityLevel() != 'HIGH_ASSURANCE') {
 ```apex
 Map<String, String> session = Auth.SessionManagement.getCurrentSession();
 String level = session == null ? null : session.get('SessionSecurityLevel');
-if (String.isBlank(level) || 'STANDARD'.equalsIgnoreCase(level)) {
+if (!'HIGH_ASSURANCE'.equalsIgnoreCase(level)) {   // LOW, STANDARD, blank: all fail closed
     throw new SecurityException('Step up required');
 }
 ```
@@ -27,26 +27,28 @@ if (String.isBlank(level) || 'STANDARD'.equalsIgnoreCase(level)) {
 
 ---
 
-## Anti-Pattern 2: Comparing against the "high" literal instead of the "standard" literal
+## Anti-Pattern 2: Gating on "not STANDARD" instead of an exact HIGH_ASSURANCE match
 
 **What the LLM generates:**
 
 ```apex
-// WRONG - fails open on any value the model did not anticipate
-Boolean elevated = 'HIGH_ASSURANCE'.equals(
-    Auth.SessionManagement.getCurrentSession().get('SessionSecurityLevel'));
+// WRONG - a LOW session is "not STANDARD", so it passes the gate
+String level = Auth.SessionManagement.getCurrentSession().get('SessionSecurityLevel');
+Boolean elevated = String.isNotBlank(level) && !'STANDARD'.equalsIgnoreCase(level.trim());
 ```
 
-**Why it happens:** the `Auth.SessionLevel` enum has a `HIGH_ASSURANCE` member, so the model assumes the map returns the same token. The documented map example shows `SessionSecurityLevel=STANDARD`; the `AuthSession` object documents the picklist as "Standard or High". The elevated literal for the Apex map is not spelled out.
+**Why it happens:** the documented map example shows only `SessionSecurityLevel=STANDARD` (apexref 262 L11487), so "anything else is elevated" looks safe. It is not: `Auth.SessionLevel` also has `LOW`, settable through the API (apexref 262 L11901-11906; api_meta 264 L101518-101520). An earlier version of this skill recommended exactly this wrong pattern.
 
 **Correct pattern:**
 
 ```apex
 String level = Auth.SessionManagement.getCurrentSession().get('SessionSecurityLevel');
-Boolean elevated = String.isNotBlank(level) && !'STANDARD'.equalsIgnoreCase(level.trim());
+Boolean elevated = level != null && 'HIGH_ASSURANCE'.equalsIgnoreCase(level.trim());
 ```
 
-**Detection hint:** any case-sensitive `.equals(` against a session-level string, or any comparison whose *positive* branch is the elevated one, is a fail-open gate. Security checks must fail closed on unknown values.
+`HIGH_ASSURANCE` is the enum value (apexref 262 L11911); if the map ever spells it differently, this gate fails closed and the Standard-session test shows a redirect loop rather than exposure.
+
+**Detection hint:** a gate written as "not STANDARD" (`!'STANDARD'.equalsIgnoreCase(`) is fail-open on `LOW`. Security checks must be elevated only on the exact elevated value.
 
 ---
 
@@ -56,7 +58,7 @@ Boolean elevated = String.isNotBlank(level) && !'STANDARD'.equalsIgnoreCase(leve
 
 **Why it happens:** the requirement is phrased as a population ("all admins"), and profile-level settings are the coarsest, most reachable control.
 
-**Correct pattern:** scope it to a permission set, assign only to users who own no asynchronous Apex, and enforce MFA for the rest with the **Multi-Factor Authentication for User Interface Logins** permission:
+**Correct pattern:** keep the login-level requirement off any profile whose users own asynchronous Apex, and enforce MFA for them with the **Multi-Factor Authentication for User Interface Logins** permission (platform_events 264 L20413-20415). UNVERIFIED (2026-10-20): the permission-set form below and the async conflict are Help-only; the corpus grounds only the profile form (`ProfileSessionSetting.requiredSessionLevel`, api_meta 264 L101471):
 
 ```text
 Profile  Finance User            Session Security Level Required at Login = None
@@ -66,7 +68,7 @@ PermSet  Finance_MFA_UI          MFA for User Interface Logins = true
                                  assigned to: the 3 scheduled-job owners
 ```
 
-**Detection hint:** if the proposal touches a profile rather than a permission set, or does not mention batch/scheduled/`@future` owners at all, it has not considered the async-Apex conflict.
+**Detection hint:** if the proposal sets the login-level requirement on a broad profile, or does not mention batch/scheduled/`@future` owners at all, it has not considered the async-Apex conflict.
 
 ---
 
@@ -95,7 +97,7 @@ return [SELECT Id, SSN__c FROM Contact WHERE Id = :recordId WITH USER_MODE LIMIT
 
 **Why it happens:** the policy list *looks* extensible, and the model has seen the phrase "session security level policies" attached to sensitive-data requirements.
 
-**Correct pattern:** the list is fixed at 17 Setup operations. Nothing on it is an sObject. For record data, write the Apex gate:
+**Correct pattern:** the list is a fixed set of Setup operations (UNVERIFIED (2026-10-20): the list itself is Help-only). Nothing on it is an sObject. For record data, write the Apex gate:
 
 ```text
 Requirement                       Implementation
@@ -112,7 +114,7 @@ Requirement                       Implementation
 
 **What the LLM generates:** "MFA is enabled for these users, so their sessions are already High Assurance — no further configuration is needed."
 
-**Why it happens:** "MFA" and "High Assurance" are used interchangeably in most security writing. In Salesforce they are separate: High Assurance is a property of the *login method* mapping in Session Settings, and only **Two-Factor Authentication** defaults into the High Assurance column. Username and Password, Delegated Authentication, Activation, Lightning Login, Passwordless Login, Authentication Provider, and SAML all default to Standard.
+**Why it happens:** "MFA" and "High Assurance" are used interchangeably in most security writing. In Salesforce they are separate: High Assurance is a property of the session, set by the login-method mapping in Session Settings — MFA logins require HIGH_ASSURANCE and username/password logins the standard level (api_meta 264 L101497-101505). UNVERIFIED (2026-10-20): the per-method defaults (only Two-Factor Authentication in the High Assurance column) are Help-only.
 
 **Correct pattern:** verify the mapping first, then verify the outcome:
 

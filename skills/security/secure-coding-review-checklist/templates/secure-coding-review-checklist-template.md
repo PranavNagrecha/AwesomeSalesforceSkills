@@ -6,7 +6,7 @@
 
 **Date:** YYYY-MM-DD
 
-**Salesforce Code Analyzer Version:** (output of `sf scanner --version`)
+**Salesforce Code Analyzer Version:** (version reported by the installed Code Analyzer CLI plugin)
 
 ---
 
@@ -25,7 +25,7 @@
 
 **Sharing model summary:**
 
-Record `<apiVersion>` from each `.cls-meta.xml` — it, not the org's release, decides what a *blank* sharing declaration means (`without sharing` at 66.0 and below, `with sharing` at 67.0+). Triggers have no declaration to record: mark them `n/a — implicit without sharing (baseline)` and audit the handler class. Record the trigger's `<apiVersion>` from its `.trigger-meta.xml` all the same — the *declaration* is fixed, but the access mode of the trigger body's queries and DML is not, and that value gates it. At 67.0+ a bare trigger-body operation runs in user mode, which overrides that baseline and enforces the running user's sharing, FLS, and object permissions; only an explicit `WITH SYSTEM_MODE` / `as system` falls back to it. Record the effective mode per operation, not per trigger.
+Record `<apiVersion>` from each `.cls-meta.xml` — it, not the org's release, decides what a *blank* sharing declaration means (`with sharing` at 67.0+; at 66.0 and below, decided by inheritance, entry-point type and caller, else `without sharing` — apexdev 264 L11930-11937). Triggers have no declaration to record: mark them `n/a — implicit without sharing (baseline)` and audit the handler class. Record the trigger's `<apiVersion>` from its `.trigger-meta.xml` all the same — the *declaration* is fixed, but the access mode of the trigger body's queries and DML is not, and that value gates it. At 67.0+ a bare trigger-body operation runs in user mode, which overrides that baseline and enforces the running user's sharing, FLS, and object permissions; only an explicit `WITH SYSTEM_MODE` / `as system` falls back to it. Record the effective mode per operation, not per trigger.
 
 | Class / Trigger | `apiVersion` | Sharing Declaration | Effective Sharing | Justification (if `without sharing`) |
 |---|---|---|---|---|
@@ -72,7 +72,7 @@ Record `<apiVersion>` from each `.cls-meta.xml` — it, not the org's release, d
 - [ ] No dynamic SOQL uses string concatenation with user-controlled input
 - [ ] All dynamic queries use bind variables or `Database.queryWithBinds()`
 - [ ] Where `String.escapeSingleQuotes()` is used, it is not the only defense for non-string contexts
-- [ ] LIKE clause wildcards (`%`, `_`) from user input are escaped
+- [ ] LIKE clause wildcards (`%`, `_`) from user input are escaped or bound
 
 **Findings:**
 
@@ -85,7 +85,7 @@ Record `<apiVersion>` from each `.cls-meta.xml` — it, not the org's release, d
 ## Cross-Site Scripting (XSS)
 
 - [ ] Visualforce merge fields in HTML body use `HTMLENCODE()`
-- [ ] Visualforce merge fields in `<script>` blocks use `JSENCODE()`
+- [ ] Visualforce merge fields in `<script>` blocks use `JSENCODE()`; JavaScript inside HTML tags uses `JSINHTMLENCODE()`
 - [ ] Visualforce merge fields in URL parameters use `URLENCODE()`
 - [ ] No LWC uses `innerHTML` or `lwc:dom="manual"` with user-controlled data
 - [ ] No Aura component uses `$A.util.createComponent` with unvalidated markup
@@ -115,7 +115,7 @@ Record `<apiVersion>` from each `.cls-meta.xml` — it, not the org's release, d
 
 ## Access Control
 
-- [ ] Every `@AuraEnabled` method performing sensitive operations checks custom permissions or profile
+- [ ] Every `@AuraEnabled` controller's Apex class access is limited to the intended permission sets, and sensitive methods check custom permissions inside the method
 - [ ] Sharing declarations are explicit and intentional on all classes and trigger handlers
 - [ ] Guest user access paths have been tested with an unauthenticated session
 - [ ] Test classes include negative security scenarios (user without permissions)

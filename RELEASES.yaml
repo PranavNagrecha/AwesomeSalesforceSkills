@@ -892,6 +892,11 @@ releases:
     - admin/ai-use-case-assessment
     - admin/analytics-permission-and-sharing
     - admin/case-feed-send-email-action
+    - security/platform-encryption
+    - security/privileged-access-management
+    - security/secure-coding-review-checklist
+    - security/service-account-credential-rotation
+    - security/session-high-assurance-policies
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'
@@ -906,6 +911,12 @@ releases:
   - id: R2-41
     title: 'Batch 4 out-of-batch contradictions: field-audit-trail ''10 years'', transaction-security-policies eventType vs
       eventName, apex-managed-sharing-patterns custom-only without the 68.0 gate, bulk-api Defer Sharing path'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-42
+    title: 'AGENT_CONTRACT.md Apex security idiom table (L170-172): SECURITY_ENFORCED wording, USER_MODE version, 55.0-56.0
+      AccessLevel row, stripInaccessible gate'
     size: S
     owner_model: sonnet
     status: todo
@@ -1316,5 +1327,15 @@ inbox:
     gate (api_meta 264 L47650-47651; apexdev 264 L12881-12882); skills/data/bulk-api-and-large-data-loads/references/examples.md
     L18 ''Setup > Defer Sharing Calculation'' — it is a permission (ldv 264 L598). All four skills are on the never-audited
     list: fold into their audit batch or fix standalone.'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by R3-06 batch 9 (writer + reviewer confirmed against corpus): agents/_shared/AGENT_CONTRACT.md L170-172 says
+    WITH SECURITY_ENFORCED is ''Removed in 67.0'' with a compiler message (guide: ''can''t use'', apexdev 264 L11926, L45145-45147;
+    message text not in corpus); ''WITH USER_MODE GA since Spring 23 (API 57.0)'' has no corpus line (accessLevel gate is
+    55.0, L11609); the ''SELECT list only / polymorphic / one violation'' contrast is inference (user-mode strengths L12154-12158
+    only); the <=56.0 row omits AccessLevel.USER_MODE on Database methods (55.0+, L11609), gives stripInaccessible ''48.0+''
+    without a line, and omits the ''not recommended below 45.0'' caveat (L45412-45413). skills/security/secure-coding-review-checklist
+    links to this table twice. Fix with cites; validate --agents.'
   size: S
   slotted_into: 1.5.0

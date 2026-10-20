@@ -15,10 +15,11 @@ Use this template when scoping or executing a Shield Platform Encryption rollout
 Answer these before proceeding:
 
 - **Shield license confirmed?** Yes / No / Check with Salesforce AE
-- **Target org edition:** Enterprise / Performance / Unlimited / Developer
+- **Target org edition:** (record it; UNVERIFIED (2026-10-20): which editions can buy the Shield / Platform Encryption add-on is Help-only — the corpus names only the add-on subscription, obj 264 L134305)
 - **Compliance mandate driving this request:** (HIPAA / PCI-DSS / GDPR / Internal policy / Other)
 - **Key management model chosen:** Salesforce-managed / BYOK / Cache-Only Keys
-- **Existing data volume on target objects (approximate):** (needed for re-encryption job planning)
+- **Existing data volume on target objects (approximate):** (needed for background-encryption planning)
+- **Field history / Field Audit Trail on these fields?** (decides `enableEncryptFieldHistory` and the `FieldHistoryArchive` re-archive question — secguide 262 L4899-4904)
 
 ---
 
@@ -54,16 +55,18 @@ List every SOQL query, Flow element, report filter, or list view that uses the f
 - **Justification:** (reference the compliance mandate or security requirement)
 - **Key rotation frequency:** (e.g., quarterly, annually)
 - **Owner of key rotation:** (team name or role)
-- **Re-encryption cadence after rotation:** (immediately, scheduled, never)
+- **Background encryption after rotation:** (how completion is confirmed; rotation limit is once per 24 hours in production — obj 264 L283644)
+- **Export before destroy?** (an exported key can be re-imported to restore access — obj 264 L283928-283929)
 - **External key service details (Cache-Only only):** URL, SLA, monitoring owner
 
 ---
 
 ## 5. Permission Assignments
 
-Shield has no decrypt permission — field-level security is the only control over plaintext
-visibility. List every profile and permission set that will keep **FLS Read** on each encrypted
-field, and confirm that everyone absent from this table has had Read removed:
+Field-level security is the access control you design. List every profile and permission set that
+will keep **FLS Read** on each encrypted field, confirm that everyone absent from this table has had
+Read removed, and record the sandbox test of who actually sees plaintext (UNVERIFIED (2026-10-20):
+whether Shield uses an "encrypted data permission" — secguide 262 L305-306 — is not settled by the corpus):
 
 | Profile / Permission Set | Reason Needs Plaintext Access (FLS Read retained) |
 |---|---|
@@ -85,10 +88,10 @@ Copy this checklist and tick items as you complete them:
 - [ ] Flows and automations referencing affected fields audited
 - [ ] Sharing rules referencing affected fields reviewed (encryption breaks criteria-based sharing)
 - [ ] Key management model selected; tenant secret generated or customer key material uploaded
-- [ ] FLS reviewed on every encrypted field; Read removed from profiles/permission sets that must not see plaintext (Shield decrypts transparently for anyone with Read)
+- [ ] FLS reviewed on every encrypted field; Read removed from profiles/permission sets that must not see plaintext; plaintext visibility tested per profile in the sandbox
 - [ ] Encryption policy enabled in **sandbox** first; validated by logging in as each affected profile
-- [ ] Re-encryption job initiated and completed for all objects with existing data
-- [ ] Encryption Statistics page reviewed to confirm encrypted record counts are correct
+- [ ] Background encryption confirmed complete for all objects with existing data (api_meta 264 L127877-127882)
+- [ ] History duplicates (`enableEncryptFieldHistory`) and archived `FieldHistoryArchive` copies decided (secguide 262 L4899-4904)
 - [ ] Key rotation schedule documented and calendar reminders set
 - [ ] Rollout summary and key management runbook saved to team knowledge base
 - [ ] Encryption policy enabled in **production**
@@ -99,5 +102,5 @@ Copy this checklist and tick items as you complete them:
 
 Document any deviations from the standard pattern and why:
 
-- (e.g., "Skipped re-encryption for Account.Notes__c because field was always blank before encryption was enabled")
+- (e.g., "No history decision needed for Account.Notes__c because the field is not history-tracked")
 - (e.g., "Using BYOK instead of Salesforce-managed keys per security team mandate from audit finding #23")
