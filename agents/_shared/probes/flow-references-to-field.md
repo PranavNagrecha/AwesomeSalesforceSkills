@@ -46,14 +46,15 @@ WHERE DefinitionId = '<id>'
 
 ## Post-processing
 
-Within each `Metadata` XML blob, text-search for these anchors:
+Within each `Metadata` XML blob, text-search for these anchors. Flow XML names fields **bare** inside a typed element far more often than `Object.Field`, so the object scope comes from the flow itself (`<start><object>`, `<recordLookups><object>`, `<recordUpdates><object>`, `<recordCreates><object>`), not from the match text:
 
-- `<objectType>...<field>` or `<stringValue>` that exactly matches `<Object>.<Field>`
-- `<leftValueReference>...<field>`
-- `<rightValueReference>...<field>`
-- `<assignToReference>...<field>` (write)
-- `<field>...<value>` inside `<recordCreates>` or `<recordUpdates>` (write)
-- `<fields>...<field>` inside `<recordLookups>` (read)
+- `<objectType>` or `<stringValue>` that exactly matches `<Object>.<Field>` (qualified)
+- `<field><Field></field>` inside `<filters>`, `<inputAssignments>`, or `<outputAssignments>` — bare; count it only when the enclosing element's `<object>` is `<Object>`
+- `<queriedFields><Field></queriedFields>` inside a `<recordLookups>` whose `<object>` is `<Object>` (read)
+- `<leftValueReference>`, `<rightValueReference>`, `<elementReference>`, `<assignToReference>` whose text ends in `.<Field>` (e.g. `$Record.Discount__c`, `Get_Opp.Discount__c`) — bare after a variable; resolve the variable's `<objectType>` (or `$Record` = the start `<object>`)
+- `{!...<Field>}` inside `<formulas>`/`<expression>`/`<stringValue>` templates — same variable-resolution rule
+
+All patterns use a word boundary (`\b<Field>\b` / `>\s*<Field>\s*<`) so `Discount_Code__c` is not a hit for `Discount__c`. The same field name on another object will match the bare forms if the enclosing `<object>` is not checked; report which anchor matched so the agent can rank (qualified/`<field>` under a matching `<object>` high; variable-resolved medium; formula text lowest).
 
 Classification:
 

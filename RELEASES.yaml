@@ -505,7 +505,10 @@ releases:
     title: 'apex-references-to-field probe: match bare field names (SOQL, map keys), not only Object.Field'
     size: S
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: 'apex-references-to-field + flow-references-to-field probes: match classes qualified/describe/soql/dynamic/typed-dot
+      (bare field names in SOQL literals and string keys now count; northwind''s 3 refs all match); false-positive ranking
+      note; validate --agents 0 errors'
   - id: R2-20
     title: 'custom-field-creation: API names CAN be renamed (renameMetadata); fix the claim and add the rename-vs-redeploy
       gotcha'
@@ -519,7 +522,7 @@ releases:
     title: 'field-impact-analyzer: scoped clean-grep, mandatory failure class per reference, consistent comment handling'
     size: S
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R2-22
     title: 'permission-set-architecture: document emailRoutingAddressAccesses (api_meta L97491); agent must grep before ''not
       grounded'''

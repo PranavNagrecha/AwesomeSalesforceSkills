@@ -41,19 +41,28 @@ When `include_managed = true`, omit the `NamespacePrefix = null` filter. When `o
 
 ## Post-processing (word-boundary filter)
 
-`LIKE '%<field>%'` produces false positives on substring matches (e.g. `Industry_Code__c` would match a search for `Industry`). After fetching, apply a regex filter:
+`LIKE '%<field>%'` produces false positives on substring matches (e.g. `Industry_Code__c` would match a search for `Industry`). After fetching, apply word-boundary regexes. Apex rarely writes `Object.Field` — it normally names a field bare — so the qualified patterns alone miss most real references. A row is a real reference iff **at least one** of these patterns matches its `Body`; record which one as `match_class`:
 
-```
-\b<Object>\.<Field>\b
-```
+| `match_class` | Pattern (case-insensitive) | Notes |
+|---|---|---|
+| `qualified` | `\b<Object>\.<Field>\b` | Exact `Opportunity.Discount__c` (e.g. `Opportunity.Discount__c.getDescribe()`). |
+| `describe` | `\bSObjectType\.<Object>\.fields\.<Field>\b` | Schema token access. |
+| `soql` | `\b<Field>\b` inside a SOQL/SOSL literal whose `FROM` clause names `<Object>` | Find each inline `\[\s*(SELECT\|FIND)[\s\S]*?\]` and each string literal matching `(?i)'[^']*\bFROM\s+<Object>\b[^']*'` (dynamic SOQL); search `\b<Field>\b` inside that span only. Covers SELECT lists, WHERE, ORDER BY, and `Database.query` strings. |
+| `dynamic` | `'<Field>'` or `"<Field>"` | String-literal access: `record.put('Discount__c', x)`, `sobj.get('Discount__c')`, map keys `'Discount__c' => 0.3`. The object is implied, not stated: report as **dynamic, confirm manually** (check the surrounding variable or `Schema.SObjectType` is `<Object>`). |
+| `typed-dot` | `\b(\w+)\.<Field>\b` where `\1` is a variable declared as `<Object>` | e.g. `opp.Discount__c` with `Opportunity opp` or `List<Opportunity> ... for (Opportunity opp : ...)`. Needs a declaration scan: collect `\b<Object>\s+(\w+)\b` and `<Object>\s*\[\]`/`List<<Object>>`/`for (<Object> (\w+) :` names, then match `\.<Field>`. Best-effort; a var of another type or a `var`/`Object` declaration is missed. |
 
-And also:
+Examples (`object = Opportunity`, `field = Discount__c`):
 
-```
-\bSObjectType\.<Object>\.fields\.<Field>\b
-```
+| Body snippet | Match? | Class |
+|---|---|---|
+| `Opportunity.Discount__c.getDescribe()` | match | `qualified` |
+| `Schema.SObjectType.Opportunity.fields.Discount__c` | match | `describe` |
+| `[SELECT Id, Discount__c FROM Opportunity WHERE Discount__c > 0.2]` | match | `soql` |
+| `new Map<String,Object>{ 'Discount__c' => 0.3 }` | match | `dynamic` (confirm manually) |
+| `Opportunity opp = ...; if (opp.Discount__c > 0.2) {...}` | match | `typed-dot` (best-effort) |
+| `Discount_Code__c = 'x';` or `[SELECT Id FROM Account WHERE Discount__c > 1]` | no match | substring blocked by `\b`; the `soql` span names `Account`, not `Opportunity` |
 
-A row is a real reference iff at least one of those patterns matches its `Body`.
+**False-positive note.** The bare-name classes (`soql` scoped by `FROM`, `dynamic`, `typed-dot`) will match the same field API name on a *different* object (`Quote.Discount__c`) when the object cannot be pinned from the span. Always return `match_class` with each row so the consuming agent can rank: `qualified`/`describe`/`soql` are high confidence, `typed-dot` medium, `dynamic` lowest until confirmed.
 
 ## Pagination
 
@@ -75,6 +84,7 @@ Array of records:
   "id": "01p...",
   "name": "AccountService",
   "namespace": null,
+  "match_class": "qualified | describe | soql | dynamic | typed-dot",
   "access_type": "read | write | unknown",
   "evidence_line": "acc.Industry = 'Tech';"
 }
