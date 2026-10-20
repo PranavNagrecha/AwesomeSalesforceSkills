@@ -615,7 +615,12 @@ releases:
     title: 'check_apex_security_patterns: stale-claim rule per sentence and across comment continuation lines'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'check_apex_security_patterns.py: new rule stale-system-mode-sharing-claim matches per sentence over joined
+      // runs, /* */ and ApexDoc blocks, negation-aware; 4 stale fixtures -> 1 finding each (continuation, block, shared-line,
+      single), 2 correct fixtures -> 0; 151 repo .cls/.trigger scanned, 0 false hits; docstring cites apexdev 264 L11611-11612;
+      exit contract aligned (findings 0 / --strict 1 / empty WARN 0 / missing ERROR 1); fixtures committed under scripts/fixtures/sharing-claim-*;
+      Fable re-ran 5 cases: match; verify 10/12 no FAIL'
   - id: R2-31
     title: 'limits-and-scalability-planning: two ungrounded limit claims (managed-package SOQL sharing; 50M/24h batch)'
     size: S

@@ -16,6 +16,12 @@ REVIEW    elevation-without-reason         SYSTEM_MODE at 67.0+ with no nearby `
 REVIEW    stale-system-mode-claim          comment at 67.0+ asserts system-mode default
                                            (suppressed when comment or next 3 lines name
                                            SYSTEM_MODE / insertAsSystem / as system)
+REVIEW    stale-system-mode-sharing-claim  comment or string literal says system mode bypasses
+                                           record sharing (any apiVersion; matched per sentence
+                                           across // runs and block comments)
+
+Exit codes: findings alone exit 0; with --strict any finding exits 1. An empty directory
+is one WARN (exit 0, or 1 with --strict); a missing path prints ERROR and exits 1.
 
 Every code-facing rule runs on text with `//` line comments, `/* … */` block comments,
 and single-quoted string literals blanked to spaces (same length, newlines kept) so a
@@ -89,6 +95,12 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory to scan for Apex classes and triggers.",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any finding (including WARN and REVIEW) is reported; "
+        "by default findings are reported but the exit code stays 0.",
+    )
     return parser.parse_args()
 
 
@@ -101,13 +113,13 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     normalized = [normalize_finding(item) for item in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
     if normalized:
         print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+    return 1 if (normalized and strict) else 0
 
 
 def iter_apex_files(root: Path) -> list[Path]:
@@ -387,6 +399,202 @@ def find_stale_system_mode_claims(
     return findings
 
 
+# ---------------------------------------------------------------------------
+# stale-system-mode-sharing-claim: sentence-level, comment-continuation aware
+# ---------------------------------------------------------------------------
+SYSTEM_TERM_RE = re.compile(
+    r"\bWITH\s+SYSTEM_MODE\b|\bAccessLevel\s*\.\s*SYSTEM_MODE\b|\bSYSTEM_MODE\b|\bsystem[\s-]+mode\b",
+    re.IGNORECASE,
+)
+_BYPASS_VERB = r"(?:bypass|ignor|skip|overrid|disregard|circumvent)\w*"
+_GAP_WORD = r"(?!(?:but|not|only|while|whereas|though|however|except|yet)\b)[\w/'`-]+,?"
+# Sharing-bypass claim tokens. The match start of each is where the negation window ends.
+SHARING_BYPASS_CLAIM_RES = [
+    # "bypasses (record) sharing", "ignores FLS, CRUD and record sharing"
+    re.compile(rf"\b{_BYPASS_VERB}\s+(?:{_GAP_WORD}\s+){{0,5}}?sharing\b", re.IGNORECASE),
+    # "sharing is bypassed / ignored / skipped"
+    re.compile(
+        rf"\bsharing(?:\s+rules?)?\s+(?:is\s+|are\s+|gets?\s+)?(?:also\s+|entirely\s+|fully\s+)?{_BYPASS_VERB}",
+        re.IGNORECASE,
+    ),
+    # "all records" / "every record" as the consequence of system mode
+    re.compile(r"\b(?:all|every)\s+(?:the\s+)?records?\b", re.IGNORECASE),
+    # "acts like without sharing", "is effectively without sharing", "= without sharing"
+    re.compile(
+        r"(?:\b(?:acts?|behaves?|runs?|executes?|works?|operates?|is|are|means?|implies|equals?|"
+        r"equivalent\s+to|same\s+as|treated\s+as)\b|=|->|→)\s*(?:as\s+(?:if\s+)?|like\s+)?"
+        r"(?:effectively\s+|implicitly\s+|essentially\s+|basically\s+)?`?without\s+sharing\b",
+        re.IGNORECASE,
+    ),
+    re.compile(r"\b(?:effectively|implicitly|essentially)\s+`?without\s+sharing\b", re.IGNORECASE),
+    # "makes this without sharing", "turns the class into without sharing"
+    re.compile(r"\b(?:makes?|turns?|renders?)\s+(?:\w+\s+){0,3}?(?:into\s+)?`?without\s+sharing\b", re.IGNORECASE),
+]
+# A negator shortly before the claim token turns it into a correction ("does not bypass").
+_NEGATOR_RE = re.compile(r"\b(?:not|never|no\s+longer|cannot|nor|neither)\b|n't\b", re.IGNORECASE)
+NEGATION_WINDOW_WORDS = 5
+# Sentence-level corrections: the sentence states the true rule, so it is not the stale claim.
+SHARING_CORRECTION_RE = re.compile(
+    r"""
+    \bstill\s+(?:respects?|follows?|enforces?|honou?rs?|applies|obeys?|uses?)\b
+    | \bsharing\b[^.;]{0,40}?\b(?:follows?|governed|determined|controlled|decided|enforced|respected|honou?red|applies|apply)\b
+    | \b(?:follows?|governed\s+by|determined\s+by|controlled\s+by|decided\s+by|depends\s+on)\s+the\s+(?:class'?s?\s+|declared\s+|enclosing\s+|calling\s+)?(?:sharing|class)\b
+    | \b(?:myth|misconception|wrongly|incorrectly|incorrect|no\s+longer\s+true)\b
+    # accurate conditional: lifting the row filter ALSO needs a without-sharing class
+    | \b(?:needs?|requires?|requiring|unless|combined\s+with|together\s+with|paired\s+with|plus)\b[^.;]*\bwithout\s+sharing\b
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+_ABBREV_RE = re.compile(r"\b(?:e\.g|i\.e|etc|vs|cf)\.", re.IGNORECASE)
+_SENTENCE_BREAK_RE = re.compile(r"(?<=[.!?;])\s+")
+
+
+def _comment_line_is_whole_line(src: str, start: int) -> bool:
+    line_start = src.rfind("\n", 0, start) + 1
+    return src[line_start:start].strip() == ""
+
+
+def iter_text_groups(src: str) -> list[list[tuple[int, str]]]:
+    """Comment and string-literal text, grouped so one claim can span lines.
+
+    Each group is a list of ``(1-based line, text)`` pieces that read as one passage:
+    a ``/* … */`` or ApexDoc block (one piece per line, ``*`` gutters removed), a run of
+    ``//`` comments on consecutive lines (a ``//`` that follows code starts a run; the
+    whole-line ``//`` lines directly below it continue it), or one single-quoted literal.
+    """
+    groups: list[list[tuple[int, str]]] = []
+    last_line_run: list[tuple[int, str]] | None = None
+    i, n = 0, len(src)
+    while i < n:
+        ch = src[i]
+        if ch == "'":
+            start = i
+            i += 1
+            while i < n:
+                if src[i] == "\n":
+                    break
+                if src[i] == "\\" and i + 1 < n:
+                    i += 2
+                    continue
+                if src[i] == "'":
+                    if i + 1 < n and src[i + 1] == "'":
+                        i += 2
+                        continue
+                    i += 1
+                    break
+                i += 1
+            groups.append([(_line_number_at(src, start), src[start + 1 : max(start + 1, i - 1)])])
+            last_line_run = None
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "/":
+            start = i
+            j = i + 2
+            while j < n and src[j] != "\n":
+                j += 1
+            line_no = _line_number_at(src, start)
+            piece = (line_no, src[start + 2 : j].lstrip("/"))
+            if (
+                last_line_run is not None
+                and last_line_run[-1][0] == line_no - 1
+                and _comment_line_is_whole_line(src, start)
+            ):
+                last_line_run.append(piece)
+            else:
+                last_line_run = [piece]
+                groups.append(last_line_run)
+            i = j
+            continue
+        if ch == "/" and i + 1 < n and src[i + 1] == "*":
+            start = i
+            j = i + 2
+            while j + 1 < n and not (src[j] == "*" and src[j + 1] == "/"):
+                j += 1
+            body = src[start + 2 : j]
+            first_line = _line_number_at(src, start)
+            pieces = []
+            for k, raw in enumerate(body.split("\n")):
+                text = raw.strip()
+                text = re.sub(r"^\*+\s?", "", text) if k else text.lstrip("*")
+                pieces.append((first_line + k, text.strip()))
+            groups.append(pieces)
+            last_line_run = None
+            i = j + 2 if j + 1 < n else n
+            continue
+        i += 1
+    return groups
+
+
+def _split_sentences(text: str) -> list[tuple[int, str]]:
+    """``(start offset, sentence)`` pairs; offsets index into ``text``."""
+    masked = _ABBREV_RE.sub(lambda m: m.group(0).replace(".", "_"), text)
+    starts = [0] + [m.end() for m in _SENTENCE_BREAK_RE.finditer(masked)]
+    out = []
+    for k, s in enumerate(starts):
+        e = starts[k + 1] if k + 1 < len(starts) else len(text)
+        raw = text[s:e]
+        lead = len(raw) - len(raw.lstrip())
+        if raw.strip():
+            out.append((s + lead, raw.strip()))
+    return out
+
+
+def _claim_is_negated(sentence: str, claim_start: int) -> bool:
+    before = sentence[:claim_start].split()
+    window = " ".join(before[-NEGATION_WINDOW_WORDS:])
+    return bool(_NEGATOR_RE.search(window))
+
+
+def sentence_asserts_sharing_bypass(sentence: str) -> bool:
+    """True when ``sentence`` ties a system-mode term to an un-negated sharing-bypass claim."""
+    if not SYSTEM_TERM_RE.search(sentence):
+        return False
+    if SHARING_CORRECTION_RE.search(sentence):
+        return False
+    for claim_re in SHARING_BYPASS_CLAIM_RES:
+        for m in claim_re.finditer(sentence):
+            if not _claim_is_negated(sentence, m.start()):
+                return True
+    return False
+
+
+def find_stale_sharing_bypass_claims(original: str, path: Path) -> list[str]:
+    """Flag text that says system mode bypasses record sharing.
+
+    Apex Developer Guide (264), accessLevel parameter: "In system mode, the object and
+    field-level permissions of the current user are ignored, and the record sharing rules
+    are controlled by the class sharing keywords." Also "Set an Access Mode for Database
+    Operations": "if you set the operation to system mode, the sharing keyword on the
+    calling class determines whether the operation respects the user's record-level
+    permissions."
+
+    Reads comments and string literals only (code is covered by the other rules). A claim
+    is matched per sentence, after joining ``//`` runs, ``/* */`` and ApexDoc blocks, so it
+    is found across continuation lines and next to a correct sentence on the same line.
+    Not gated on apiVersion: system mode never governed record sharing.
+    """
+    findings: list[str] = []
+    for group in iter_text_groups(original):
+        offsets: list[int] = []
+        lines: list[int] = []
+        pos = 0
+        for line_no, text in group:
+            offsets.append(pos)
+            lines.append(line_no)
+            pos += len(text) + 1
+        joined = " ".join(text for _, text in group)
+        for start, sentence in _split_sentences(joined):
+            if not sentence_asserts_sharing_bypass(sentence):
+                continue
+            idx = max(k for k, off in enumerate(offsets) if off <= start)
+            findings.append(
+                f"REVIEW {path}:{lines[idx]}: stale-system-mode-sharing-claim - text says "
+                "system mode bypasses record sharing; SYSTEM_MODE lifts object and field "
+                "permission checks only, record sharing follows the class sharing keyword "
+                "(Apex Developer Guide, Set an Access Mode for Database Operations)"
+            )
+    return findings
+
+
 def audit_file(path: Path) -> list[str]:
     findings: list[str] = []
     text = path.read_text(encoding="utf-8", errors="ignore")
@@ -446,6 +654,7 @@ def audit_file(path: Path) -> list[str]:
 
     findings.extend(find_elevation_without_reason(text, code, api_version, path))
     findings.extend(find_stale_system_mode_claims(text, api_version, path))
+    findings.extend(find_stale_sharing_bypass_claims(text, path))
 
     return findings
 
@@ -454,18 +663,20 @@ def main() -> int:
     args = parse_args()
     root = Path(args.manifest_dir)
     if not root.exists():
-        return emit_result([f"HIGH {root}: manifest directory not found"], "Scanned 0 Apex files; manifest directory was missing.")
+        print(f"ERROR: manifest directory not found: {root}", file=sys.stderr)
+        emit_result([f"ERROR {root}: manifest directory not found"], "Scanned 0 Apex files; manifest directory was missing.")
+        return 1
 
     files = iter_apex_files(root)
     if not files:
-        return emit_result([f"HIGH {root}: no Apex files found"], "Scanned 0 Apex files; no .cls or .trigger files were found.")
+        return emit_result([f"WARN {root}: no Apex files found"], "Scanned 0 Apex files; no .cls or .trigger files were found.", args.strict)
 
     findings: list[str] = []
     for path in files:
         findings.extend(audit_file(path))
 
     summary = f"Scanned {len(files)} Apex file(s); {len(findings)} security-pattern finding(s) detected."
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, args.strict)
 
 
 if __name__ == "__main__":

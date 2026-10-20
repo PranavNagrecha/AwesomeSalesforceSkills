@@ -30,7 +30,7 @@ outputs:
   - "review findings for sharing, CRUD/FLS, and system-context risks"
   - "secure service-layer pattern for reads and writes"
 dependencies: []
-version: 1.2.2
+version: 1.2.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---
@@ -155,6 +155,7 @@ Teams often secure queries and then perform unsafe DML on fields the user should
 - [ ] Secure write paths inspect or log stripped fields when that matters operationally.
 - [ ] Every `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` at apiVersion ≥ 67.0 carries a nearby `// reason:` comment (checker rule `elevation-without-reason`).
 - [ ] Comments at apiVersion ≥ 67.0 do not still claim `run(s) in system mode` / `system mode by default` unless they negate the claim (checker rule `stale-system-mode-claim`).
+- [ ] No comment says `SYSTEM_MODE` / system mode bypasses record sharing or returns all records; system mode lifts object and field checks only and sharing follows the class keyword (checker rule `stale-system-mode-sharing-claim`).
 
 ## Checker Rules
 
@@ -173,6 +174,7 @@ Teams often secure queries and then perform unsafe DML on fields the user should
 | REVIEW | `trigger-system-mode` | trigger-body operation opts out to system mode |
 | REVIEW | `elevation-without-reason` | `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` at ≥ 67.0 with no nearby `// reason:` |
 | REVIEW | `stale-system-mode-claim` | comment at ≥ 67.0 asserts system-mode default without negating the claim, and with no nearby explicit elevation (`SYSTEM_MODE` / `insertAsSystem` / `as system`) |
+| REVIEW | `stale-system-mode-sharing-claim` | comment or string literal (any apiVersion) whose sentence names system mode (`SYSTEM_MODE`, `WITH SYSTEM_MODE`, `AccessLevel.SYSTEM_MODE`, "system mode") and claims it bypasses record sharing, returns all records, or acts as `without sharing`; matched per sentence, across `//` continuation lines and `/* */` / ApexDoc blocks; a negated or correcting sentence ("does not bypass", "sharing follows the class") is not flagged |
 
 ## Salesforce-Specific Gotchas
 
