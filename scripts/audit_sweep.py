@@ -154,7 +154,7 @@ def marker_hits(path: Path, base: str, cwd: Path, corpora: list[Path]) -> list[t
                 continue
             seen_names.add(cf.name)
             try:
-                corpus_files.append((cf.name, cf.read_text(encoding="utf-8", errors="ignore").splitlines()))
+                corpus_files.append((cf.name, cf.read_text(encoding="utf-8", errors="ignore").split("\n")))
             except OSError:
                 continue
     results = []
@@ -214,7 +214,7 @@ def cite_check(path: Path, base: str, cwd: Path, corpora: list[Path]) -> list[tu
                 out.append((f"{guide} {rel} L{n}", "UNRESOLVED: corpus file not available"))
                 continue
             try:
-                text = (cdir / fname).read_text(encoding="utf-8", errors="ignore").splitlines()
+                text = (cdir / fname).read_text(encoding="utf-8", errors="ignore").split("\n")  # NOT splitlines(): PDF text has form feeds, which would drift the numbering from grep/sed
             except OSError:
                 continue
             if n < 1 or n > len(text):
