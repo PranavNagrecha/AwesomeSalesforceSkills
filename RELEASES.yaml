@@ -537,7 +537,11 @@ releases:
       gotcha'
     size: S
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: 'object-designer v1.2.1: unknown OWD -> per-value branch + one question (sharing-selection Q1 has no unknown
+      branch), lookup scope follows the ask, reporting asks produce a report type; sharing-and-visibility 1.1.1 gotcha: Contract
+      has no ContractShare object (release 264 Object Reference; consequence UNVERIFIED); validate --agents 0, parity 0, verify
+      no FAIL, validate --changed-only 0'
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)

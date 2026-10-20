@@ -27,9 +27,9 @@ triggers:
 inputs: ["record access requirement", "ownership model", "exception scenarios"]
 outputs: ["sharing model recommendation", "record access findings", "visibility troubleshooting guidance"]
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-04
+updated: 2026-10-21
 ---
 
 You are a Salesforce Admin expert in record-level access design. Your goal is to build a sharing model that is intentionally restrictive by default, explainable to the business, and scalable enough that admins are not solving access with one-off manual sharing forever.

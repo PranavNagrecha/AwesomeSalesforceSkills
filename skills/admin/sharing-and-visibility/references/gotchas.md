@@ -145,3 +145,13 @@ Result: recalculation becomes part of the operational risk
 **When it occurs:** Territory realignments and mass reassignments run through Data Loader, in orgs with team selling enabled. Access that an admin believed was revoked in bulk is still granted, sourced from a `Team` row rather than `Owner`.
 
 **How to avoid:** After any scripted transfer on an object with teams, query the share table filtered on `RowCause = 'Team'` for the departing owners and clear team membership explicitly. Do not infer the API's behaviour from what the transfer screen offered.
+
+---
+
+## The Standard Contract Object Has No Share Object to Write Rules Against
+
+**What happens:** A design proposes a sharing rule, Apex managed sharing, or a `ContractShare` row for the standard Contract object, and nothing in the platform lets it. The Object Reference (release 264 corpus) has no `ContractShare` and no `ContractOwnerSharingRule`; the only matches for the string are `ServiceContractShare` and `ServiceContractOwnerSharingRule`, which are a different object. The Contract entry's Associated Objects list only `ContractFeed`, `ContractHistory` and change events, and the entry does not say how Contract sharing is controlled. How access is then derived (for example from the parent Account) is UNVERIFIED: confirm the org's Contract OWD and `describeSObject` sharing properties before relying on it.
+
+**When it occurs:** Designs that treat Contract like Account, Opportunity or Case (each has a Share and an OwnerSharingRule object), or that reuse a ServiceContract recipe for Contract.
+
+**How to avoid:** Check the object's Associated Objects in the Object Reference before proposing any sharing mechanism. If no Share object is listed, do not design sharing rules or Apex sharing on it; ask for the org's OWD and design access through the parent record, a custom object, or permission-based access instead. Source: Object Reference, Contract (Associated Objects) and the absence of a `ContractShare` entry.

@@ -1,13 +1,13 @@
 ---
 id: object-designer
 class: runtime
-version: 1.2.0
+version: 1.2.1
 status: stable
 requires_org: true
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-04-28
+updated: 2026-10-21
 harness: designer_base
 default_output_dir: "docs/reports/object-designer/"
 output_formats:
@@ -203,6 +203,8 @@ Start from the business concept and enumerate required attributes. For each, ass
 
 Score each field against `templates/admin/naming-conventions.md` before finalizing.
 
+**Lookup scope follows the ask.** A lookup named after an entity in the request ("originating Enterprise opportunity") is filtered to exactly that entity (record type, stage, or flag the ask names). Widening it (e.g. to Renewal opportunities as well) is a design change: surface it as a question in the Summary, never apply it silently.
+
 ### Step 5 — Decide record types
 
 If the concept mentions persona or process variance ("residential vs commercial contracts", "enterprise vs mid-market opportunities"):
@@ -222,6 +224,8 @@ Walk `standards/decision-trees/sharing-selection.md`:
 3. Sharing rules only when default + hierarchy under-grant.
 4. Apex Managed Sharing only when a declarative rule can't express the need.
 5. Flag expected sharing-recalc cost for LDV objects (cite `skills/data/sharing-recalculation-performance` if `expected_row_volume == large`).
+
+**Unknown OWD is a branch, never a verdict.** `sharing-selection.md` Q1 assumes the OWD is known and has no "unknown" branch, so branch here yourself. If the object's OWD is not known (and, for a standard object, whether its sharing is controlled by a parent), do not conclude "no sharing change". The record-access section gives the answer per OWD value (Private / Public Read Only / Public Read-Write / Controlled by Parent) and names the single question to ask the requester (e.g. "What is the org-wide default for <Object>, and is it controlled by its parent?"). Record `sharing-posture` in `dimensions_skipped[]` as `state: partial` until it is answered. Verify that a share object or sharing-rule type exists for a standard object before proposing sharing rules on it (see `skills/admin/sharing-and-visibility` gotchas on Contract).
 
 ### Step 7 — Plan validation rules at object creation
 
@@ -259,7 +263,9 @@ Two deliverables:
 
 **A. Design spec** (human-readable markdown) — object header, field table, record types, VR list, sharing posture, indexing plan, deployment order.
 
-**B. sfdx scaffold** (file-tree of metadata XML snippets for the user to copy into `force-app/main/default/objects/<Object>__c/`) — the object file, each field, each record type, each validation rule. Do not include layouts (they require per-org customization). Do not include permission sets (out of scope).
+**Reporting asks produce report artefacts.** When the goal is a report or metric (renewal rate, expirations, ...), the object is not the deliverable: the design includes the custom report type (primary object plus the related objects the metric needs, join type stated) that makes the metric computable. Emit the `ReportType` XML in the scaffold, and a starter `Report` XML when the metric and its grouping are specified. If the metric cannot be computed from the objects as designed, say so and change the design.
+
+**B. sfdx scaffold** (file-tree of metadata XML snippets for the user to copy into `force-app/main/default/objects/<Object>__c/`) — the object file, each field, each record type, each validation rule, and any report type or report required by a reporting ask. Do not include layouts (they require per-org customization). Do not include permission sets (out of scope).
 
 ---
 
@@ -322,6 +328,6 @@ Canonical refusal codes per `agents/_shared/REFUSAL_CODES.md`:
 - Does not deploy metadata.
 - Does not design permission sets (use `permission-set-architect`).
 - Does not build automation on the new object (use `flow-builder` or the trigger-framework skill directly).
-- Does not generate reports or dashboards (out of scope).
+- Does not generate dashboards, or reports beyond those a reporting ask requires to make its metric computable (Step 10).
 - Does not design page layouts — only recommends the record-page skeleton for `audit-router --domain lightning_record_page` to flesh out.
 - Does not auto-chain to any other agent.
