@@ -36,8 +36,8 @@
   dismissed is gentler and easier to miss entirely without sight. Block on
   correctness, warn on advisability.
 - **`allowPause` on vs off:** pausing is a genuine accessibility affordance for
-  users who need to complete a task across sessions. It also adds a tab stop and
-  an announcement on every screen, and creates paused interviews that become a
+  users who need to complete a task across sessions. When "Let users pause flows" is enabled and the footer shows, it also adds a tab stop and
+  an announcement on every screen (api_meta 264 L74203-74213), and creates paused interviews that become a
   version-cleanup burden. Decide per flow, not by default.
 
 ## Hygiene
@@ -70,8 +70,9 @@
 - Accessibility Standards (Salesforce Help) — "Lightning Experience follows the internationally recognized best practices in Section 508 of the Rehabilitation Act and the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA to the extent possible" — https://help.salesforce.com/s/articleView?id=sf.accessibility_overview.htm&type=5
 - Product Accessibility Status (Salesforce) — Accessibility Conformance Reports and VPATs per product — https://www.salesforce.com/company/legal/508_accessibility/
 - Salesforce Compliance — WCAG 2.2 AA — https://compliance.salesforce.com/en/categories/wcag
-- What's New in WCAG 2.2 (W3C) — the nine added success criteria including 2.4.11 Focus Not Obscured (Minimum) AA, 2.5.7 Dragging Movements AA, 2.5.8 Target Size (Minimum) AA, 3.2.6 Consistent Help A, 3.3.7 Redundant Entry A, 3.3.8 Accessible Authentication (Minimum) AA; and the removal of 4.1.1 Parsing — https://www.w3.org/WAI/standards-guidelines/wcag/new-in-22/
+- What's New in WCAG 2.2 (W3C; UNVERIFIED 2026-10-20: not in the corpus) — the nine added success criteria including 2.4.11 Focus Not Obscured (Minimum) AA, 2.5.7 Dragging Movements AA, 2.5.8 Target Size (Minimum) AA, 3.2.6 Consistent Help A, 3.3.7 Redundant Entry A, 3.3.8 Accessible Authentication (Minimum) AA; and the removal of 4.1.1 Parsing — https://www.w3.org/WAI/standards-guidelines/wcag/new-in-22/
 - Web Content Accessibility Guidelines (WCAG) 2.2 (W3C Recommendation) — https://www.w3.org/TR/WCAG22/
+- Metadata API Developer Guide 264 — `FlowScreenField.isRequired` L74482-74484, `validationRule` L74550-74552 and `FlowInputValidationRule` L73384-73392, `helpText` L74449-74450, `fieldText` L74401-74402, `visibilityRule` L74554-74557, `FlowScreen.allowPause` L74203-74214, `showFooter` L74235-74241
 - Flow metadata type — `FlowScreen` (`allowBack`, `allowFinish`, `allowPause`, `showFooter`, `showHeader`, `helpText`, `pausedText`, `nextOrFinishButtonLabel`) and `FlowScreenField` (`fieldText`, `fieldType`, `helpText`, `isRequired`, `dataType`, `choiceReferences`, `validationRule`, `visibilityRule`, `extensionName`, `inputParameters`) — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm
 - Screen Element (Salesforce Help) — https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screen.htm&type=5
 - Salesforce Lightning Design System — Accessibility — https://www.lightningdesignsystem.com/accessibility/overview/

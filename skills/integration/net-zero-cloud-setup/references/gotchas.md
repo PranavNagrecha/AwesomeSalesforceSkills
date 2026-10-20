@@ -2,6 +2,8 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
+UNVERIFIED (2026-10-20): the corpus holds no Net Zero Cloud Developer Guide; object, DPE and standards claims below are not in it (the grounded facts are listed in the note in SKILL.md).
+
 ## Gotcha 1: Carbon Calculation DPE Is Not Automatic
 
 **What happens:** Activity data is loaded but `…CrbnFtprnt` rows stay empty. The disclosure pack shows zero totals.
@@ -38,7 +40,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** First-year Scope 2 reporting where the dual-method requirement was not understood.
 
-**How to handle:** Each `StnryAssetEnrgyUse` row for purchased electricity needs to roll up into both methods. The factor selection on each row determines which method it counts toward; configure the disclosure pack to surface both totals. GHG Protocol Scope 2 Guidance (2015) defines the dual-reporting requirement.
+**How to handle:** Each `StnryAssetEnrgyUse` row for purchased electricity needs to roll up into both methods. The factor selection on each row determines which method it counts toward; configure the disclosure pack to surface both totals. GHG Protocol Scope 2 Guidance (2015) defines the dual-reporting requirement (UNVERIFIED 2026-10-20: external standard).
 
 ---
 

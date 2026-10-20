@@ -13,7 +13,7 @@ Use this template when working on tasks in this area.
 - Manufacturing Cloud license confirmed active (standard objects visible): YES / NO
 - Sales Agreement schedule frequency (Monthly / Quarterly / Yearly):
 - Term length per typical agreement:
-- Order data source for actuals (Order/OrderItem standard / external ERP):
+- Order data source for actuals (Order/OrderItem standard / external ERP) and `SalesAgreementSettings.actualsCalculationMode`:
 - Rebate program in scope: YES / NO; tier model:
 - Channel Revenue Management required (true two-step distribution): YES / NO
 

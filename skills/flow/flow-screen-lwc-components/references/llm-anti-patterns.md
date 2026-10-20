@@ -46,7 +46,7 @@ validate() {
 
 **Detection hint:** any `validate()` method that contains `async`,
 `await`, `.then(`, or whose body returns the result of an Apex
-imperative call without awaiting first is the broken pattern. Regex:
+imperative call without awaiting first is the suspect pattern (UNVERIFIED 2026-10-20: the guide says only that arrow-function `validate` does not work). Regex:
 `(?s)@api\s+(async\s+)?validate\s*\([^)]*\)\s*\{[^}]*\b(await|then|async)\b`.
 
 ---
@@ -71,14 +71,17 @@ Lightning App Builder, not Flow Builder. The model auto-completes the
 **Correct pattern:**
 
 ```xml
-<targets>
-    <target>lightning__FlowScreen</target>
-</targets>
-<targetConfigs>
-    <targetConfig targets="lightning__FlowScreen">
-        <!-- properties -->
-    </targetConfig>
-</targetConfigs>
+<!-- excerpt: the root wrapper makes the fence parse -->
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <!-- properties -->
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
 ```
 
 **Detection hint:** if the user prompt mentions "screen flow", "flow
@@ -144,8 +147,8 @@ provisions data into a property) with an imperative function. `@wire`
 cannot be invoked at a point in time; it is a reactive declaration. The
 generated code does not compile, but a more subtle variant — calling
 `getRecord` from `lightning/uiRecordApi` imperatively inside
-`validate()` — does compile and silently breaks because the call
-returns a Promise that `validate()` ignores.
+`validate()` — does compile and breaks (UNVERIFIED 2026-10-20: observed, not documented) because the call
+returns a Promise rather than the `{ isValid, errorMessage }` pair.
 
 **Correct pattern:**
 
@@ -167,7 +170,7 @@ validate() {
 
 **Detection hint:** any imperative Apex / UI API call appearing inside
 the `validate()` body — `getRecord(`, `apexMethod(`, `fetch(`,
-`createRecord(` — is broken regardless of `await` usage. Regex on
+`createRecord(` — is suspect regardless of `await` usage (UNVERIFIED 2026-10-20: the "Promise ignored" mechanism is undocumented). Regex on
 `validate()` body: `\b(getRecord|getFieldValue|fetch|createRecord|updateRecord)\s*\(`.
 
 ---
@@ -318,7 +321,7 @@ Pair it with an explanatory comment or rewrite as conditional.
 ```
 
 **Why it happens:** internal-only utility LWCs in the training corpus
-omit `<isExposed>` (defaulting to false). LLMs reproduce that minimal
+omit `<isExposed>` (UNVERIFIED 2026-10-20: the omitted default is not stated; `false` hides the component from builders, api_meta 264 L86762-86765). LLMs reproduce that minimal
 shape even when a builder-exposed component is required.
 
 **Correct pattern:**
@@ -354,7 +357,7 @@ just another rendering context.
    property.
 2. Admin in Flow Builder maps the output to a Flow variable.
 3. Admin maps the Flow variable to the consuming LWC's input property.
-4. With Flow API 59+, the consuming LWC sees the input update reactively.
+4. With a flow on API 59.0+ (57.0 and 58.0 only with `enableFlowReactiveScreens`, api_meta 264 L120052-120055), the consuming LWC sees the input update reactively.
 
 **Why LMS is wrong here:**
 

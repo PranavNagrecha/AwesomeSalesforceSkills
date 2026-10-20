@@ -8,9 +8,9 @@ Common mistakes AI coding assistants make when generating record-triggered Flow 
 
 > "Add a static Boolean flag at the top of the Flow to mark whether it has already run, similar to the trigger handler pattern in Apex."
 
-**Why it happens:** Pattern transfer from Apex. The LLM knows the canonical recursion break and doesn't notice that Flow has no static-variable mechanism.
+**Why it happens:** Pattern transfer from Apex. The LLM knows the canonical recursion break and doesn't notice that Flow has no static-variable mechanism (UNVERIFIED 2026-10-20: the corpus has no Flow guide; the Apex idiom is apexdev 264 L3751).
 
-**Correct pattern:** Model the recursion guard as a record field (state, hash, or lock), or use a tightened entry condition that excludes the post-update state. Flow has no per-transaction static state; the recursion guard must live in record data.
+**Correct pattern:** Model the recursion guard as a record field (state, hash, or lock), or use a tightened entry condition that excludes the post-update state. Flow has no per-transaction static state (UNVERIFIED 2026-10-20, see above); the recursion guard must live in record data.
 
 **Detection hint:** Any Flow advice that mentions "static," "transient," or "in-memory flag." None of those concepts exist for Flow recursion control.
 
@@ -56,9 +56,9 @@ Decision: Was the record updated less than 30 seconds ago?
 
 **Why it happens:** Before-save Flows do skip the second save on the same record. The LLM extends that property too far.
 
-**Correct pattern:** Before-save Flows still participate in cross-object cascades. If your before-save Flow updates a related record, the related record's after-save Flow can still loop back. Only same-record self-recursion is exempted.
+**Correct pattern:** Before-save Flows still re-run inside cross-object cascades: a cascade started by an after-save Flow or Apex saves their record again. A before-save Flow only makes "more updates to that record" (api_meta 264 L75266-75268). Only same-record self-recursion is exempted.
 
-**Detection hint:** Any "use before-save to avoid recursion" advice paired with a Flow that updates related records.
+**Detection hint:** Any "use before-save to avoid recursion" advice paired with a Flow that also writes to related records, or advice that a before-save Flow updates related records.
 
 ---
 

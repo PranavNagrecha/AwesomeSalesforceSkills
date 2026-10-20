@@ -34,14 +34,16 @@ triggers:
   - "rebate management program setup with volume tiers"
   - "channel revenue management sell-in vs sell-through"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-03
+updated: 2026-10-20
 ---
 
 # Manufacturing Cloud Setup
 
 This skill activates when a practitioner is configuring Manufacturing Cloud — the industry cloud that adds long-horizon Sales Agreements, account-based forecasting, run-rate planning, and rebate / channel-revenue management to Sales Cloud. It covers Sales Agreement structure, Account-Based Forecasting (ABF) recalc activation, run-rate vs. planned-quantity reconciliation, and Rebate / CRM module setup. It does NOT cover generic Sales Cloud opportunity-to-order flow, Field Service install-base, or Automotive Cloud dealer modeling.
+
+UNVERIFIED (2026-10-20): the corpus holds no Manufacturing Cloud Developer Guide, and `SalesAgreement`, `SalesAgreementProduct`, `SalesAgreementProductSchedule`, `AccountProductForecast`, `RebateProgram`, `RebateProgramMember`, `RebateProgramPayoutPeriod`, `ProgramRebatePayout`, `ChannelInventory` and the field `OrderItem.SalesAgreementId` have no page or field row in `object_reference` or `api_meta` (grep of all 14 files). Two structural facts are held elsewhere: `SalesAgreementProductSchedule` fields map to `SalesAgreementProduct` fields in the agreement terms ("The input object is SalesAgreementProductSchedule. The output object is SalesAgreementProduct", meta 264 L128830-128831, L128859-128863), and `RebateProgram` is the master of `ProgramRebateType` (obj 264 L235581-235588). Every other claim about these objects below is UNVERIFIED unless it carries a cite. Grounded: `SalesAgreementSettings` (API 47.0+) holds `actualsCalculationMode` with values Manual (default), Orders, OrdersThroughContracts and DataProcessingEngine (API 63.0+), `renewalPeriodDayCount`, `displayedAgreementTermsMetrics` (max 10 metrics) (meta 264 L128607-128639, L128660-128663, L128697-128700); `AdvAccountForecastSet` (API 53.0+) is the metadata behind advanced account forecasting, with `calculationFrequency` Weekly, Monthly (default), Quarterly or Yearly (meta 264 L16733, L16754-16763); a measure's `computationMethod` is CUSTOM, FORMULA or DATA_PROCESSING_ENGINE_DEFINITION (meta 264 L128795-128801); data processing engine `processType` values include `SalesAgreement` and `Rebates` (meta 264 L27579-27584); `ProgramRebateType` (API 63.0+) is master-detail to `RebateProgram` (obj 264 L235326, L235576-235588); `ChannelProgram` is a program "vendors use to market and sell their products through channel partners" (API 41.0+, obj 264 L65922-65924).
 
 ---
 
@@ -49,12 +51,26 @@ This skill activates when a practitioner is configuring Manufacturing Cloud — 
 
 Gather this context before working in this domain:
 
-- Confirm the org has the Manufacturing Cloud license — `SalesAgreement`, `SalesAgreementProduct`, `AccountProductForecast`, `RebateProgram`, and the Channel Revenue Management object family are gated behind that license.
-- Identify whether actuals come from `Order` / `OrderItem` (the standard pattern) or from an external ERP feed (custom integration). The Sales Agreement actuals reconciliation strategy depends on this.
-- Decide the Sales Agreement schedule frequency (Monthly / Quarterly / Yearly) and term length up front. Changing these after the agreement is activated is destructive.
-- Map which DPE definitions need activation: ABF recalc, Sales Agreement actuals refresh, Rebate payout calculation. None of these run automatically.
+- Confirm the org has the Manufacturing Cloud license — `SalesAgreement`, `SalesAgreementProduct`, `AccountProductForecast`, `RebateProgram`, and the Channel Revenue Management object family are gated behind that license (UNVERIFIED 2026-10-20: only `MfgServiceConsoleSettings` states a Manufacturing Cloud license requirement, meta 264 L125985, and advanced account forecasting needs the Manufacturing Cloud feature setting, meta 264 L16737).
+- Identify whether actuals come from `Order` / `OrderItem` (the standard pattern) or from an external ERP feed (custom integration). The Sales Agreement actuals reconciliation strategy depends on this: it is the `SalesAgreementSettings.actualsCalculationMode` choice (Manual by default, or Orders, OrdersThroughContracts, DataProcessingEngine at API 63.0+; meta 264 L128625-128639).
+- Decide the Sales Agreement schedule frequency (Monthly / Quarterly / Yearly) and term length up front. Changing these after the agreement is activated is destructive (UNVERIFIED 2026-10-20: the schedule frequency values and the "destructive" claim are not in the corpus).
+- Map which DPE definitions need activation: ABF recalc, Sales Agreement actuals refresh, Rebate payout calculation. None of these run automatically (UNVERIFIED 2026-10-20). For advanced account forecasting this is CONTRADICTED: the forecast set "is recalculated automatically" at its `calculationFrequency`, Weekly, Monthly (default), Quarterly or Yearly (meta 264 L16754-16763); the opt-in claim can hold only for a legacy ABF DPE definition.
 
 ---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which source computes Sales Agreement actuals: manual, orders, orders through contracts or a DPE definition? | `actualsCalculationMode` defaults to Manual (Before Starting). | The chosen mode, and the DPE definition when it is DataProcessingEngine. |
+| Who populates the agreement link on each order line? | The SalesAgreementId lookup is not auto-populated (SKILL gotcha 3, UNVERIFIED). | An ingest-path rule that sets it or rejects the order. |
+| How often must the account forecast refresh? | A forecast set recalculates at Weekly, Monthly, Quarterly or Yearly (SKILL gotcha 1). | The `calculationFrequency` and any DPE schedule. |
+| What schedule frequency and term does a typical agreement need? | Changing them after activation is painful (SKILL gotcha 2, UNVERIFIED). | A decided frequency and term before activation. |
+| Do rebates pay on the whole volume at the top tier or per tier slice? | The native engine's semantics are UNVERIFIED (SKILL gotcha 4). | A worked example run through the engine before launch. |
+| Is there a real distributor-to-consumer sell-through model? | Channel Revenue Management adds schema and Setup work (SKILL gotcha 5). | A yes/no that gates enabling the module. |
+| Which roles need the agreement, product and schedule objects? | Child-object permissions do not cascade (SKILL gotcha 6, UNVERIFIED). | Per-object permission sets. |
+
+A proper configuration adds a chosen actuals source, an explicit forecast cadence and a tested rebate example, which "just creating agreements" leaves empty.
 
 ## Core Concepts
 
@@ -70,7 +86,7 @@ The actual half comes from `Order` / `OrderItem` data: when an actual order is p
 
 ABF aggregates Sales Agreement schedules + open Opportunities + open Orders + actuals into a single per-account, per-product forecast: `AccountProductForecast`. Each forecast row holds planned quantity, planned revenue, actual quantity, and actual revenue per period.
 
-The forecast is **recomputed by a DPE batch job**, not in real time. Without activating the recalc job, `AccountProductForecast` records grow stale and reports show last-recalc data — which leads to a common production bug: "the forecast doesn't match what I know is in the agreement."
+The forecast is **recomputed by a DPE batch job**, not in real time (a forecast set is recalculated at its `calculationFrequency` — Weekly, Monthly, Quarterly or Yearly, default Monthly, meta 264 L16754-16763; the claim that a measure can use a DPE definition is `computationMethod` DATA_PROCESSING_ENGINE_DEFINITION, meta 264 L128795-128801; the object name `AccountProductForecast` is UNVERIFIED). Without activating the recalc job, `AccountProductForecast` records grow stale and reports show last-recalc data — which leads to a common production bug: "the forecast doesn't match what I know is in the agreement."
 
 ### Run-Rate Management
 
@@ -105,11 +121,11 @@ This is distinct from the base Sales Agreement / ABF flow — only configure if 
 1. Define the Sales Agreement term and schedule frequency on the agreement record (e.g., 24 months, monthly schedule).
 2. Add `SalesAgreementProduct` rows for each product in scope. Set planned quantity and planned revenue per period.
 3. Activate the agreement (this creates the `SalesAgreementProductSchedule` rows).
-4. In Setup → Data Processing Engine, locate the **Account-Based Forecasting recalculation** definition. Activate it and schedule it (typically nightly).
+4. In Setup → Data Processing Engine, locate the **Account-Based Forecasting recalculation** definition. Activate it and schedule it (UNVERIFIED 2026-10-20: the Setup path, the definition name and "typically nightly"; the forecast set's documented `calculationFrequency` options are Weekly to Yearly, meta 264 L16754-16763).
 5. Run the recalc once manually after activation to backfill `AccountProductForecast`.
 6. Wire `OrderItem.SalesAgreementId` population in your Order ingest path so actuals associate correctly.
 
-**Why activate ABF explicitly:** ABF recalc is opt-in. Without activation, `AccountProductForecast` is empty and the executive dashboards show "no forecast data."
+**Why activate ABF explicitly:** ABF recalc is opt-in (UNVERIFIED 2026-10-20; for an advanced account forecast set the guide says it "is recalculated automatically" at `calculationFrequency`, meta 264 L16757). Without activation, `AccountProductForecast` is empty and the executive dashboards show "no forecast data."
 
 ### Pattern 2: Actual-vs-Planned Reconciliation
 
@@ -145,7 +161,7 @@ This is distinct from the base Sales Agreement / ABF flow — only configure if 
 | Volume / revenue rebates to channel partners | `RebateProgram` + Rebate Payout DPE | Built-in tier engine; do not build custom rebate logic |
 | OEM sells into distributors, distributors sell to consumers | Channel Revenue Management module | `ChannelInventory` + sell-through rebates require CRM module |
 | One-shot point-in-time sale | Standard Opportunity / Order | Sales Agreement overhead not justified for single transactions |
-| Forecast recalc cadence | Nightly DPE schedule for most orgs | Real-time recalc is not supported; near-real-time requires custom triggers (rare) |
+| Forecast recalc cadence | Pick the forecast set's `calculationFrequency` (Weekly, Monthly, Quarterly, Yearly; meta 264 L16754-16763); a nightly DPE schedule is UNVERIFIED (2026-10-20) | Real-time recalc is not supported (UNVERIFIED); near-real-time requires custom triggers (rare) |
 
 ---
 
@@ -176,13 +192,13 @@ This is distinct from the base Sales Agreement / ABF flow — only configure if 
 
 ## Salesforce-Specific Gotchas
 
-1. **ABF Recalc Is Not Automatic** — A net-new Manufacturing Cloud org has no DPE jobs running. `AccountProductForecast` will be empty until the Account-Based Forecasting recalc DPE definition is activated and scheduled. This is the single most common go-live failure mode.
+1. **Legacy ABF Recalc Is Not Automatic (UNVERIFIED 2026-10-20); an advanced account forecast set is — it "is recalculated automatically" at its `calculationFrequency`, default Monthly (meta 264 L16754-16763), so check which forecasting the org uses** — A net-new Manufacturing Cloud org has no DPE jobs running. `AccountProductForecast` will be empty until the Account-Based Forecasting recalc DPE definition is activated and scheduled. This is the single most common go-live failure mode.
 
 2. **Schedule Frequency Cannot Be Changed Post-Activation Without Pain** — Changing a Sales Agreement from Monthly to Quarterly schedule after activation requires deactivating, deleting `SalesAgreementProductSchedule` rows, and reactivating. Plan the cadence carefully up front.
 
-3. **`OrderItem.SalesAgreementId` Is Not Auto-Populated** — Even when an order is placed against an account that has an active Sales Agreement, the `SalesAgreementId` lookup is not automatically set. The Order ingest path (Apex, Flow, or external integration) must explicitly populate it, or actuals never reconcile to plan.
+3. **`OrderItem.SalesAgreementId` Is Not Auto-Populated (UNVERIFIED 2026-10-20: the field is not in the corpus; actuals source is `actualsCalculationMode`, default Manual, meta 264 L128625-128639)** — Even when an order is placed against an account that has an active Sales Agreement, the `SalesAgreementId` lookup is not automatically set. The Order ingest path (Apex, Flow, or external integration) must explicitly populate it, or actuals never reconcile to plan.
 
-4. **Rebate Tier Boundaries Are Cumulative, Not Marginal** — Manufacturing Cloud's standard rebate calculation applies the highest qualifying tier to the entire volume, not marginal tiers. If a member buys 60K units in a 0–10K=0%, 10–50K=2%, 50K+=4% structure, they receive 4% on all 60K. Modeling marginal tiers requires custom logic.
+4. **Rebate Tier Boundaries Are Cumulative, Not Marginal (UNVERIFIED 2026-10-20: the tier semantics are not in the corpus; `ProgramRebateType.RebateMeasureType` offers AmountperUnit, FixedAmount, PercentageOfRevenue and Custom, obj 264 L235555-235565)** — Manufacturing Cloud's standard rebate calculation applies the highest qualifying tier to the entire volume, not marginal tiers. If a member buys 60K units in a 0–10K=0%, 10–50K=2%, 50K+=4% structure, they receive 4% on all 60K. Modeling marginal tiers requires custom logic.
 
 5. **Channel Revenue Management Is Not Required for Simple Rebates** — Many practitioners enable CRM unnecessarily. Base Manufacturing Cloud Rebate Management handles direct-customer rebates fine. Only enable CRM when there's a true sell-in / sell-through distribution model with partner inventory tracking.
 
@@ -204,6 +220,6 @@ This is distinct from the base Sales Agreement / ABF flow — only configure if 
 
 ## Related Skills
 
-- automotive-cloud-setup — for sibling industry-cloud setup patterns and shared Industries object behaviors (FinancialAccount, AccountAccountRelation)
-- industries-cloud-selection — for the architect-level decision of whether Manufacturing Cloud is the right vertical fit
-- loyalty-management-setup — for the related DPE-driven Industries pattern (DPE jobs are also opt-in there)
+- `integration/automotive-cloud-setup` — for sibling industry-cloud setup patterns and shared Industries object behaviors (FinancialAccount, AccountAccountRelation)
+- `architect/industries-cloud-selection` — for the architect-level decision of whether Manufacturing Cloud is the right vertical fit
+- `integration/loyalty-management-setup` — for the related DPE-driven Industries pattern (DPE jobs are also opt-in there)

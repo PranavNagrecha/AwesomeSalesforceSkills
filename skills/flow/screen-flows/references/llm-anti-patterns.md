@@ -184,7 +184,7 @@ Loop over {!selectedProducts}   // iterate each checked product
   [Get Records] where Id = {!Loop.currentItem}
 ```
 
-**Why it happens:** The component lets a user check multiple boxes, so the LLM assumes its output is a Flow collection it can loop over. It is not — Checkbox Group (and Multi-Select Picklist) stores every selection in a single semicolon-delimited text string. Looping over a text string, filtering a Get Records with it, or passing it to a Transform element does not work; Checkbox Group, Choice Lookup, and Multi-Select Picklist are all incompatible with the Transform element.
+**Why it happens:** The component lets a user check multiple boxes, so the LLM assumes its output is a Flow collection it can loop over. It is not — Checkbox Group (and Multi-Select Picklist) stores every selection in a single semicolon-delimited text string. Looping over a text string, filtering a Get Records with it, or passing it to a Transform element does not work (api_meta 264 L74442-74447 for the storage format); UNVERIFIED (2026-10-20): the claim that Checkbox Group, Choice Lookup, and Multi-Select Picklist are all incompatible with the Transform element is Help-only.
 
 **Correct pattern:**
 

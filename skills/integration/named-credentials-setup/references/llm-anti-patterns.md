@@ -16,28 +16,28 @@ Legacy Named Credentials (pre-Winter '23):
 - Single configuration object with endpoint URL + auth in one record
 - Identity Type: Named Principal or Per User
 - Authentication Protocol: Password, OAuth 2.0, JWT, etc.
-- Configured in Setup > Named Credentials (legacy page)
+- Configured in Setup > Named Credentials (legacy page; UNVERIFIED 2026-10-20: Setup page names are not in the corpus)
 
 Enhanced Named Credentials (Winter '23+):
 - Three-part architecture:
   1. Named Credential: endpoint URL + reference to External Credential
   2. External Credential: authentication protocol + principal(s)
-  3. Principal: Named Principal, Per User Principal, or Anonymous
+  3. Principal: Named Principal or Per User Principal (meta 264 L66348-66350; Anonymous is a legacy principalType)
 - Configured in Setup > Named Credentials (new page) + External Credentials
-- Supports multiple principals per External Credential
+- Supports multiple principals per External Credential (ordered by `sequenceNumber`, meta 264 L66385-66391)
 - Required for new development
 
 Do NOT mix legacy and enhanced configurations. Choose one model.
 New development should always use enhanced Named Credentials.
 ```
 
-**Detection hint:** Flag Named Credential instructions that reference both "Identity Type" (legacy) and "External Credential" (enhanced) in the same setup. Check for legacy-style metadata (`NamedCredential` with `oauthScope` attribute) when enhanced is intended.
+**Detection hint:** Flag Named Credential instructions that reference both "Identity Type" (legacy) and "External Credential" (enhanced) in the same setup. Check for legacy-style metadata (`namedCredentialType` Legacy, or the deprecated `oauthScope`, `principalType`, `protocol` fields, meta 264 L92874-92945) when enhanced is intended.
 
 ---
 
 ## Anti-Pattern 2: Hardcoding Endpoints in Apex Instead of Using Named Credentials
 
-**What the LLM generates:** `HttpRequest req = new HttpRequest(); req.setEndpoint('https://api.example.com/v1/data');` with credentials managed in Custom Settings or hardcoded, bypassing Named Credentials entirely.
+**What the LLM generates:** `HttpRequest req = new HttpRequest(); req.setEndpoint('https://api.example.com/v1/data');` with credentials managed in Custom Settings or hardcoded, bypassing Named Credentials entirely (a hard-coded endpoint also needs a Remote Site Setting, apexdev 264 L34727-34728).
 
 **Why it happens:** Direct HTTP endpoint configuration is simpler and more familiar from general programming. Named Credentials add indirection that LLMs skip for brevity.
 
@@ -92,7 +92,7 @@ Per User Principal:
 - Requires each user to authorize via OAuth flow
 - User must complete the authorization before callouts work
 
-Anonymous:
+Anonymous (legacy principalType only, meta 264 L92936-92945):
 - No authentication — for public APIs
 - Best for: open endpoints, health checks
 
@@ -117,7 +117,7 @@ Named Credential deployment:
 What IS deployed via metadata:
 - Named Credential definition (endpoint URL, label)
 - External Credential definition (authentication protocol, principal type)
-- Reference bindings (which permission sets can use the credential)
+- Reference bindings (which permission sets can use the credential: `PermissionSet.externalCredentialPrincipalAccesses`, API 59.0+, meta 264 L97687-97704)
 
 What is NOT deployed (must be configured post-deploy):
 - OAuth client ID and client secret
@@ -126,7 +126,7 @@ What is NOT deployed (must be configured post-deploy):
 - OAuth access/refresh tokens
 
 Post-deployment steps:
-1. Deploy metadata via change set, SFDX, or package
+1. Deploy metadata via change set, SFDX, or package (the corpus states the exclusion for packages: pkg2 264 L9543-9546; UNVERIFIED 2026-10-20 for other routes)
 2. In target org: Setup > Named Credentials > Edit
 3. Enter environment-specific credentials
 4. For OAuth: re-authorize the connection in the target org
@@ -151,12 +151,12 @@ Enhanced Named Credential access chain:
 1. Create External Credential with principal(s)
 2. Create Named Credential referencing the External Credential
 3. CRITICAL: Assign the principal to a Permission Set:
-   - Setup > Permission Sets > [Your PS] > External Credential Principal Access
+   - Setup > Permission Sets > [Your PS] > External Credential Principal Access ("Enable External Credential Principals", pkg2 264 L9564)
    - Enable the principal for the permission set
 4. Assign the Permission Set to the running user (or integration user)
 
 Without step 3, Apex callouts using callout:My_Named_Credential will fail
-with "Named credential not found or not allowed for this user."
+(UNVERIFIED 2026-10-20: the error text "Named credential not found or not allowed for this user" is not in the corpus, and SKILL.md notes a different observed message; treat both as unconfirmed).
 
 For Named Principal: assign to the integration user's permission set
 For Per User Principal: assign to each user's permission set

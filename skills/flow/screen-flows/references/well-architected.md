@@ -24,7 +24,8 @@ Reliability in screen flows comes from predictable state transitions. Users shou
 
 ## Official Sources Used
 
-- Screen Element - https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen.htm&type=5
+- Metadata API Developer Guide 264 — `FlowScreen.allowBack` L74170-74177, `allowFinish` L74181-74185, `FlowScreenField` multi-select storage L74442-74447, `inputsOnNextNavToAssocScrn` L74469-74480; LWC guide `use-flow-validate-external-internal-methods` (`lwcguide`)
+- Screen Element - https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen.htm&type=5 (Help is not fetchable; UNVERIFIED 2026-10-20)
 - Screen Components - https://help.salesforce.com/s/articleView?id=sf.flow_ref_elements_screen_fields.htm&type=5
 - Validate User Input for Custom Flow Screen Components - https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-validate-external-internal-methods.html
 - Checkbox Group Screen Input Component - https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_screencmp_checkboxgroup.htm&language=en_US&type=5

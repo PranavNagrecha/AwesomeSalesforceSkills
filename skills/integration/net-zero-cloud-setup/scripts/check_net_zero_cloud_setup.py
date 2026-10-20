@@ -1,22 +1,35 @@
 #!/usr/bin/env python3
 """Checker script for Net Zero Cloud Setup skill.
 
-Scans force-app/ metadata for common Net Zero Cloud anti-patterns:
+Scans force-app/ style metadata and scratch org definition files. Every heuristic
+finding is a WARN to review (the corpus has no Net Zero Cloud Developer Guide, so
+the object-level premises are UNVERIFIED, 2026-10-20); a scratch-def.json that
+does not parse is an ERROR (exit 1):
 
-- Custom Carbon_Footprint__c / Emission_Factor__c objects (suggest standard NZC objects)
-- Apex triggers on …EnrgyUse / Scope3PcmtItem that perform calculation (move to DPE)
-- Direct DML against …CrbnFtprnt calculated rows
-- Disclosure-pack metadata referencing multiple frameworks
+- custom Carbon_Footprint__c / Emission_Factor__c style objects
+- Apex triggers on activity-data objects that do carbon calculation
+- Apex that assigns a calculated CO2 field on a ...CrbnFtprnt object and updates
+- a scratch org definition with industriesSettings.enableSCCarbonAccounting true
+  but without enableSustainabilityCloud, or without a SustainabilityApp /
+  SustainabilityCloud feature (the documented example sets both: sfdx 264
+  L9206-9218; IndustriesSettings flags: meta 264 L123200-123272)
 
+A disclosure-pack rule was removed: no "disclosure pack" metadata type exists
+in the corpus (the grounded feature is the Disclosure and Compliance Hub flag
+enableGnrcDisclsFrmwrk, meta 264 L123160-123163).
+
+Exit codes: a missing directory is an ERROR (exit 1); WARN findings exit 0 unless
+--strict; a directory with nothing to scan prints one WARN and exits 0.
 Stdlib only.
 
 Usage:
-    python3 check_net_zero_cloud_setup.py [--manifest-dir force-app]
+    python3 check_net_zero_cloud_setup.py [--manifest-dir force-app] [--strict]
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -28,125 +41,85 @@ SHADOW_OBJECTS = {
     "scope_3__c": "Scope3CrbnFtprnt",
     "ghg_inventory__c": "StnryAssetCrbnFtprnt + Scope3CrbnFtprnt",
 }
-
-CRBN_FTPRNT_OBJECTS = (
-    "StnryAssetCrbnFtprnt",
-    "VehicleAssetCrbnFtprnt",
-    "Scope3CrbnFtprnt",
-    "StnryAssetCrbnFtprntItm",
-)
-
-CALCULATION_TRIGGER_TARGETS = (
-    "StnryAssetEnrgyUse",
-    "Scope3PcmtItem",
-    "VehicleAssetCrbnFtprnt",
-)
+CRBN_FTPRNT_OBJECTS = ("StnryAssetCrbnFtprnt", "VehicleAssetCrbnFtprnt", "Scope3CrbnFtprnt", "StnryAssetCrbnFtprntItm")
+CALCULATION_TRIGGER_TARGETS = ("StnryAssetEnrgyUse", "Scope3PcmtItem", "VehicleAssetCrbnFtprnt")
+NZC_FEATURES = {"SustainabilityApp", "SustainabilityCloud"}
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Check Net Zero Cloud Setup metadata for common issues.",
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce metadata (default: current directory).",
-    )
+    parser = argparse.ArgumentParser(description="Check Net Zero Cloud Setup metadata for common issues.")
+    parser.add_argument("--manifest-dir", default=".", help="Root directory of the Salesforce metadata (default: .).")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings too.")
     return parser.parse_args()
 
 
-def _custom_objects(manifest_dir: Path) -> list[Path]:
-    return list(manifest_dir.rglob("*.object-meta.xml")) + list(manifest_dir.rglob("*.object"))
+def check_scratch_def(path: Path, errors: list[str]) -> list[str]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8", errors="ignore"))
+    except json.JSONDecodeError as exc:
+        errors.append(f"{path}: scratch org definition does not parse ({exc})")
+        return []
+    if not isinstance(data, dict):
+        return []
+    ind = (data.get("settings") or {}).get("industriesSettings") or {}
+    if not isinstance(ind, dict) or not ind.get("enableSCCarbonAccounting"):
+        return []
+    out = []
+    if not ind.get("enableSustainabilityCloud"):
+        out.append(f"{path}: enableSCCarbonAccounting is on but enableSustainabilityCloud is not; the documented example sets both")
+    if not NZC_FEATURES & set(data.get("features") or []):
+        out.append(f"{path}: no SustainabilityApp or SustainabilityCloud scratch org feature; the permission set licenses come from it")
+    return out
 
 
-def _apex_files(manifest_dir: Path) -> list[Path]:
-    return list(manifest_dir.rglob("*.cls")) + list(manifest_dir.rglob("*.trigger"))
-
-
-def check_net_zero_cloud_setup(manifest_dir: Path) -> list[str]:
+def scan(manifest_dir: Path, errors: list[str]) -> tuple[int, list[str]]:
     issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    # Check 1: shadow objects for standard NZC entities
-    for obj_path in _custom_objects(manifest_dir):
-        name = obj_path.stem.split(".")[0].lower()
+    seen = 0
+    for obj in sorted(manifest_dir.rglob("*.object-meta.xml")) + sorted(manifest_dir.rglob("*.object")):
+        seen += 1
+        name = obj.name.split(".")[0].lower()
         if name in SHADOW_OBJECTS:
-            issues.append(
-                f"{obj_path}: Custom object '{name}' shadows the Net Zero Cloud standard "
-                f"object(s) '{SHADOW_OBJECTS[name]}'. Use standard NZC objects when license is active."
-            )
-
-    # Check 2: Apex triggers on activity-data objects performing calculation
-    calc_keyword_re = re.compile(r"\b(calculate|compute|multiply)\b.*\bCO2", re.IGNORECASE | re.DOTALL)
-    for code_path in _apex_files(manifest_dir):
-        if code_path.suffix != ".trigger":
-            continue
-        try:
-            text = code_path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            continue
+            issues.append(f"{obj}: custom object '{name}' may shadow Net Zero Cloud '{SHADOW_OBJECTS[name]}'; use the standard objects when licensed (premise UNVERIFIED)")
+    calc_re = re.compile(r"\b(calculate|compute|multiply)\b.*\bCO2", re.IGNORECASE | re.DOTALL)
+    for code in sorted(manifest_dir.rglob("*.trigger")):
+        seen += 1
+        text = code.read_text(encoding="utf-8", errors="ignore")
         for target in CALCULATION_TRIGGER_TARGETS:
-            if re.search(rf"\btrigger\s+\w+\s+on\s+{target}\b", text):
-                if calc_keyword_re.search(text) or "TotalCO2" in text:
-                    issues.append(
-                        f"{code_path}: Apex trigger on {target} performs carbon calculation. "
-                        "Move calculation logic to a DPE definition; triggers undermine the "
-                        "auditable batch model."
-                    )
-
-    # Check 3: direct DML against …CrbnFtprnt rows
+            if re.search(rf"\btrigger\s+\w+\s+on\s+{target}\b", text) and (calc_re.search(text) or "TotalCO2" in text):
+                issues.append(f"{code}: Apex trigger on {target} performs carbon calculation; the skill says to use a DPE definition (premise UNVERIFIED)")
     update_re = re.compile(r"\bupdate\s+\w+\s*;", re.IGNORECASE)
-    for code_path in _apex_files(manifest_dir):
-        try:
-            text = code_path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            continue
+    for code in sorted(manifest_dir.rglob("*.cls")) + sorted(manifest_dir.rglob("*.trigger")):
+        seen += 1
+        text = code.read_text(encoding="utf-8", errors="ignore")
         for obj in CRBN_FTPRNT_OBJECTS:
-            field_assign_re = re.compile(rf"{obj}[^;]*\.\w*CO2\w*\s*=", re.IGNORECASE)
-            if field_assign_re.search(text) and update_re.search(text):
-                issues.append(
-                    f"{code_path}: Assigns to a calculated CO2 field on {obj} and performs "
-                    "DML. The next DPE run will overwrite the manual edit; correct at "
-                    "activity-data or factor layer instead."
-                )
+            if re.search(rf"{obj}[^;]*\.\w*CO2\w*\s*=", text, re.IGNORECASE) and update_re.search(text):
+                issues.append(f"{code}: assigns a calculated CO2 field on {obj} and runs DML; correct at the activity-data or factor layer instead (premise UNVERIFIED)")
                 break
-
-    # Check 4: disclosure-pack metadata referencing multiple frameworks (heuristic)
-    pack_files = list(manifest_dir.rglob("*disclosurePack*-meta.xml")) + list(
-        manifest_dir.rglob("*DisclosurePack*-meta.xml")
-    )
-    framework_tokens = ("CSRD", "ESRS", "TCFD", "CDP", "SBTi")
-    for pack_path in pack_files:
-        try:
-            text = pack_path.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            continue
-        hits = [t for t in framework_tokens if t in text]
-        if len(hits) > 1:
-            issues.append(
-                f"{pack_path}: Disclosure pack references multiple frameworks ({', '.join(hits)}). "
-                "Split into one pack per framework — aggregation rules differ."
-            )
-
-    return issues
+    for sd in sorted(manifest_dir.rglob("*scratch-def.json")):
+        seen += 1
+        issues.extend(check_scratch_def(sd, errors))
+    return seen, issues
 
 
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
-    issues = check_net_zero_cloud_setup(manifest_dir)
-
-    if not issues:
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        sys.exit(1)
+    errors: list[str] = []
+    seen, issues = scan(manifest_dir, errors)
+    for err in errors:
+        print(f"ERROR: {err}")
+    if not seen:
+        print(f"WARN: no object, Apex or scratch-org definition files under {manifest_dir}; nothing to check")
+        return 0
+    if not issues and not errors:
         print("No Net Zero Cloud anti-patterns detected.")
         return 0
-
     for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
-
-    return 1
+        print(f"WARN: {issue}")
+    return 1 if errors or (args.strict and issues) else 0
 
 
 if __name__ == "__main__":

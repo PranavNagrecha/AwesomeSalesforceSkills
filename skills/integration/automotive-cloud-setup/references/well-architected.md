@@ -2,6 +2,8 @@
 
 ## Relevant Pillars
 
+UNVERIFIED (2026-10-20): the corpus holds no Automotive Cloud Developer Guide; object-level claims, the "4–8 weeks" and "30–50x" figures below are not corpus-grounded.
+
 - **Reliability** — VIN ingestion is the trust spine of the dealer org. A broken upsert (VIN duplication, definition explosion) corrupts every downstream process: recall routing, warranty lookup, financial linkage. Build idempotent loads with external IDs from day one and monitor delta-feed lag.
 - **Scalability** — At fleet scale (millions of VINs across an OEM dealer network), `VehicleDefinition` deduplication is the difference between a 50,000-row reference table and a 5-million-row table that breaks model-level reporting. The dedup pass is non-negotiable, not an optimization.
 - **Operational Excellence** — Recall and service-campaign orchestration runs continuously across an OEM's lifetime. Versioned `ActionableEventTypeDef` records preserve audit trails when remedies update; without TypeDef versioning, completion-rate reporting becomes a manual reconciliation exercise.
@@ -26,7 +28,8 @@
 
 ## Official Sources Used
 
-- Automotive Cloud Developer Guide (Spring '26) — https://developer.salesforce.com/docs/atlas.en-us.automotive_cloud_dev.meta/automotive_cloud_dev/automotive_cloud_dev_intro.htm
+- Automotive Cloud Developer Guide (Spring '26) — https://developer.salesforce.com/docs/atlas.en-us.automotive_cloud_dev.meta/automotive_cloud_dev/automotive_cloud_dev_intro.htm (UNVERIFIED 2026-10-20: not in the corpus)
+- Metadata API Developer Guide 264 L70724-70728 (`ActionableEventManagementFlow`), L123156-123158 (`enableCriteriaBasedSearchAndFilter`), L16456-16457 (Vehicle); Object Reference 264 L21902-21921 (Fleet, Vehicle), L313260-313262 (WarrantyTerm)
 - Set Up Automotive Cloud (Salesforce Help) — https://help.salesforce.com/s/articleView?id=sf.auto_set_up_automotive_cloud.htm&type=5
 - ActionableEventOrchestration Standard Object — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_actionableeventorchestration.htm
 - AccountAccountRelation Standard Object — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accountaccountrelation.htm

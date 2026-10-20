@@ -1,5 +1,7 @@
 # Examples — Automotive Cloud Setup
 
+UNVERIFIED (2026-10-20): the corpus holds no Automotive Cloud Developer Guide; object and field names below are as the package authors described them, and the row counts, durations and organisations are illustrative, not measured.
+
 ## Example 1: VIN Ingestion with Definition Deduplication
 
 **Context:** A regional dealer group is migrating from a 15-year-old DMS into Salesforce Automotive Cloud. The legacy export contains 84,000 vehicle rows but only 2,300 distinct model/trim/year combinations.
@@ -55,4 +57,4 @@ A dealer org built a custom `Vehicle__c` object before discovering that Automoti
 
 **Why it happens:** The Automotive Cloud license was provisioned mid-project; the team had already built `Vehicle__c` against vanilla Sales Cloud and never re-evaluated.
 
-**Correct approach:** When Automotive Cloud is provisioned, audit Object Manager for the standard objects (`Vehicle`, `VehicleDefinition`, `Appraisal`, `WarrantyTerm`, `FinancialAccount`) before building any custom equivalents. The standard objects ship with prebuilt page layouts, list views, and ActionableEvent integration that custom objects do not get.
+**Correct approach:** When Automotive Cloud is provisioned, audit Object Manager for the standard objects (`Vehicle`, `VehicleDefinition`, `Appraisal`, `FinancialAccount`) before building any custom equivalents. The standard objects ship with prebuilt page layouts, list views, and ActionableEvent integration that custom objects do not get (UNVERIFIED 2026-10-20).

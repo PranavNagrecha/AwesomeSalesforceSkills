@@ -4,7 +4,7 @@
 
 **Context:** A record-triggered Flow on `Account` fires on update with entry condition `ISCHANGED({!$Record.AccountStatus__c})`. The Flow's purpose is to set `Last_Status_Change__c = NOW()`. The Flow's own update of `Last_Status_Change__c` doesn't satisfy the entry condition (the trigger field is `AccountStatus__c`, not the timestamp), so this case alone is fine — but a separate Flow on the same object fires when `Last_Status_Change__c` changes and updates `AccountStatus__c` for tracking. Now both Flows ping-pong.
 
-**Problem:** After 16 cascading updates, the platform throws `System.LimitException: Maximum trigger depth exceeded`.
+**Problem:** After 16 cascading levels the stack-depth limit (apexdev 264 L19762) stops the transaction. UNVERIFIED (2026-10-20): the exact message `System.LimitException: Maximum trigger depth exceeded` is not in the corpus.
 
 **Solution:** Tighten Flow A's entry criteria to exclude updates triggered by Flow B's audit logic.
 
@@ -68,7 +68,7 @@ Flow — Order Final Price Calc (after-save, Order__c)
 
 **Context:** A record-triggered Flow on `Account` updates the related `Primary_Contact__r` whenever the account's `Mailing_Address__c` changes (synchronizing addresses). A separate Flow on `Contact` runs whenever a Contact's `MailingStreet` changes, updating the parent Account's `Last_Contact_Sync__c` timestamp. The two flows trigger each other.
 
-**Problem:** Account → Contact update → Contact's flow → Account update → Account's flow → ... cascades to depth 16.
+**Problem:** Account → Contact update → Contact's flow → Account update → Account's flow → ... cascades toward the depth-16 limit (apexdev 264 L19762).
 
 **Solution:** Add `Sync_In_Progress__c` to Account; have Account's Flow set it during its run; have Contact's Flow read it from the parent and exit early.
 

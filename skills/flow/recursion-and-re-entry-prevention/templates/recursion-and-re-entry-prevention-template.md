@@ -36,7 +36,9 @@ Which pattern from SKILL.md applies?
 - [ ] Apex triggers and Flows on the same object audited together
 - [ ] Regression test reproduces the original loop and confirms the fix
 - [ ] Guard's purpose documented inline (entry condition comment, field description, or Flow description)
-- [ ] Any deprecated Process Builder or Workflow Rules involved are migrated or excluded
+- [ ] Any Process Builder or Workflow Rules involved are migrated or excluded
+- [ ] `doesRequireRecordChangedToMeetCriteria` considered before adding a marker field
+- [ ] `python3 scripts/check_recursion_and_re_entry_prevention.py --manifest-dir <flows dir>` reviewed
 
 ## Notes
 

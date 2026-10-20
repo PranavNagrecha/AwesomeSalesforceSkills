@@ -1,6 +1,7 @@
 # LLM Anti-Patterns — Manufacturing Cloud Setup
 
 Common mistakes AI coding assistants make when generating or advising on Manufacturing Cloud Setup.
+UNVERIFIED (2026-10-20): the corpus holds no Manufacturing Cloud Developer Guide, so the object and DPE claims in these patterns are not corpus-grounded; see the note in SKILL.md.
 These patterns help the consuming agent self-check its own output.
 
 ## Pattern 1: Modeling Multi-Period Demand as Opportunity + Custom Term Field
@@ -33,7 +34,7 @@ These patterns help the consuming agent self-check its own output.
 
 **Why it happens:** DPE activation is a Setup-UI step, not a metadata file, so it doesn't appear in code-centric LLM training material.
 
-**Correct pattern:** Every Manufacturing Cloud go-live checklist must explicitly include "Activate Account-Based Forecasting recalc DPE definition" and "Schedule the recalc job (typical: nightly)" and "Run once manually to backfill."
+**Correct pattern:** Every Manufacturing Cloud go-live checklist must explicitly include "Activate Account-Based Forecasting recalc DPE definition" and "Schedule the recalc job (typical: nightly; UNVERIFIED 2026-10-20)" and "Run once manually to backfill." If the org uses advanced account forecasting instead, the forecast set "is recalculated automatically" at `AdvAccountForecastSet.calculationFrequency` (Weekly, Monthly default, Quarterly, Yearly; meta 264 L16754-16763) — set that field rather than adding a job.
 
 **Detection hint:** Any Manufacturing Cloud rollout plan or runbook that lacks an explicit DPE activation step will produce empty `AccountProductForecast` data on day one.
 

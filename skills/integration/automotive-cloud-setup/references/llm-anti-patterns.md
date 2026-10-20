@@ -1,6 +1,7 @@
 # LLM Anti-Patterns — Automotive Cloud Setup
 
 Common mistakes AI coding assistants make when generating or advising on Automotive Cloud Setup.
+UNVERIFIED (2026-10-20): the corpus holds no Automotive Cloud Developer Guide, so the object-level claims in these patterns (including the invocable action names in Pattern 4) are not corpus-grounded; see the note in SKILL.md.
 These patterns help the consuming agent self-check its own output.
 
 ## Pattern 1: Suggesting Custom `Vehicle__c` Without Checking Standard `Vehicle`

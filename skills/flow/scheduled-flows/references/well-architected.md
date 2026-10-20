@@ -25,7 +25,10 @@ Recurring automation must be idempotent and diagnosable. A job that cannot expla
 ## Official Sources Used
 
 - Schedule-Triggered Flows - https://help.salesforce.com/s/articleView?id=sf.flow_concepts_trigger_schedule.htm&type=5
-- Schedule-Triggered Flow Considerations - https://help.salesforce.com/s/articleView?id=sf.flow_considerations_trigger_schedule.htm&type=5
-- Optimizing Scheduled Automation Tasks (Trailhead) - https://trailhead.salesforce.com/content/learn/modules/autolaunched-scheduled-flows/schedule-a-flow
+- Schedule-Triggered Flow Considerations - https://help.salesforce.com/s/articleView?id=sf.flow_considerations_trigger_schedule.htm&type=5 (Help is not fetchable; UNVERIFIED 2026-10-20)
+- Metadata API Developer Guide 264 L74059-74111 (`FlowSchedule`: frequency values, startTime time zone), L75199-75200 (`schedule` required when triggerType is Scheduled), L120062-120065 (`enableFlowUseApexExceptionEmail`)
+- Apex Developer Guide 264 L19739 (synchronous limits apply to scheduled Apex), L19782 (CPU 10,000 / 60,000 ms), L17151 (100 scheduled Apex jobs)
+- Object Reference 264 L143558-143560 (schedule-triggered flow definition), L86852 (CronJobDetail JobType 6, Scheduled Flow); REST API Developer Guide 264 L8172 (`ScheduledFlowRunLimit`)
+- Optimizing Scheduled Automation Tasks (Trailhead) - https://trailhead.salesforce.com/content/learn/modules/autolaunched-scheduled-flows/schedule-a-flow (Trailhead is not in the corpus; UNVERIFIED 2026-10-20)
 - Flow Builder - https://help.salesforce.com/s/articleView?id=sf.flow.htm&type=5
 - Salesforce Well-Architected Overview - https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

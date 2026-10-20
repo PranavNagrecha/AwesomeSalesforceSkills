@@ -2,13 +2,15 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
-## Gotcha 1: ABF Recalc DPE Is Not Automatic
+UNVERIFIED (2026-10-20): the corpus holds no Manufacturing Cloud Developer Guide; the object, field, DPE and permission claims below are not in it (the few grounded facts are listed in the note in SKILL.md).
+
+## Gotcha 1: Legacy ABF Recalc DPE Is Not Automatic (UNVERIFIED 2026-10-20; advanced account forecast sets recalculate automatically, meta 264 L16757)
 
 **What happens:** Net-new Manufacturing Cloud orgs go live with no Account-Based Forecasting recalc job running. `AccountProductForecast` records never populate, and the executive forecast dashboard shows empty.
 
-**When it occurs:** Every Manufacturing Cloud go-live where the activation step was skipped.
+**When it occurs:** Every Manufacturing Cloud go-live where the activation step was skipped. Check first how often the forecast set recalculates by itself: `AdvAccountForecastSet.calculationFrequency` is Weekly, Monthly (default), Quarterly or Yearly (meta 264 L16754-16763).
 
-**How to handle:** As part of the go-live checklist, locate the **Account-Based Forecasting recalculation** definition under Setup → Data Processing Engine, activate it, and schedule it (nightly is typical). Run it manually once after activation to backfill any history accumulated during the gap.
+**How to handle:** As part of the go-live checklist, locate the **Account-Based Forecasting recalculation** definition under Setup → Data Processing Engine, activate it, and schedule it (nightly is typical; UNVERIFIED 2026-10-20). Run it manually once after activation to backfill any history accumulated during the gap.
 
 ---
 
@@ -18,7 +20,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Order ingestion paths (Apex triggers, Flows, integrations) that don't explicitly populate the `SalesAgreementId` lookup on OrderItem.
 
-**How to handle:** In every Order ingest path, populate `OrderItem.SalesAgreementId` by looking up the active `SalesAgreement` for the account+product+date combination. Add a trigger / Flow rule to fail orders where an active agreement exists but `SalesAgreementId` is null (or warn loudly).
+**How to handle:** Check `SalesAgreementSettings.actualsCalculationMode` first (Manual is the default; Orders, OrdersThroughContracts and DataProcessingEngine exist, meta 264 L128625-128639). In every Order ingest path, populate `OrderItem.SalesAgreementId` by looking up the active `SalesAgreement` for the account+product+date combination. Add a trigger / Flow rule to fail orders where an active agreement exists but `SalesAgreementId` is null (or warn loudly).
 
 ---
 

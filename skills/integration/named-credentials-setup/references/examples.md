@@ -4,11 +4,11 @@
 
 **Context:** A Salesforce org needs to call a third-party REST API (e.g., a logistics provider) from Apex batch jobs. The external system uses OAuth 2.0 Client Credentials grant. All callouts should use one shared service account — no per-user delegation needed.
 
-**Problem:** Without a Named Credential, the team hardcodes the token endpoint URL and client secret in a Custom Setting readable by any admin with SOQL access. Credential rotation requires a code or configuration change. The callout is also not covered by Salesforce's remote site whitelist enforcement.
+**Problem:** Without a Named Credential, the team hardcodes the token endpoint URL and client secret in a Custom Setting readable by any admin with SOQL access (UNVERIFIED 2026-10-20). Credential rotation requires a code or configuration change. The hard-coded endpoint also has to be registered in Remote Site Settings, or the callout fails (apexdev 264 L34727-34728); a named credential endpoint needs no remote site setting (apexdev 264 L34761-34763).
 
 **Solution:**
 
-Step 1 — Create the External Credential (Setup > Named Credentials > External Credentials > New):
+Step 1 — Create the External Credential (Setup > Named Credentials > External Credentials > New). The field labels below are a UI sketch (UNVERIFIED 2026-10-20: the corpus describes the metadata, where the token URL and flow sit on an external auth identity provider, meta 264 L65828-65831, L65916):
 
 ```
 Label:              Logistics API Auth
@@ -49,9 +49,9 @@ Http http = new Http();
 HttpResponse res = http.send(req);
 ```
 
-Salesforce automatically appends the Bearer token obtained via Client Credentials before sending the request. Token refresh is handled transparently.
+"Salesforce manages all authentication for Apex callouts that specify a named credential" (apexdev 264 L34744-34746); the Bearer-token and transparent-refresh details are UNVERIFIED (2026-10-20) beyond the 401 refresh rule (meta 264 L66295-66298).
 
-**Why it works:** The External Credential's Named Principal holds one org-wide token. The Permission Set assignment controls which running user context can trigger the callout. Rotating the client secret requires only a Setup UI update — no code or metadata deployment.
+**Why it works:** The External Credential's Named Principal holds one org-wide token. The Permission Set assignment controls which running user context can trigger the callout. Rotating the client secret requires only a Setup UI update — no code or metadata deployment (UNVERIFIED 2026-10-20).
 
 ---
 
@@ -62,6 +62,8 @@ Salesforce automatically appends the Bearer token obtained via Client Credential
 **Problem:** Using a Named Principal (shared credential) would return data from the service account's subscription, not the individual user's. Data leakage risk: user A could see user B's enrichment data if the external service scopes by authenticated identity.
 
 **Solution:**
+
+UNVERIFIED (2026-10-20): the callback URL form, the `offline_access` scope, where the token is stored and the exception for unauthorized users in this example are not in the corpus; the per-user step is "My Personal Information > External Credential" (pkg2 264 L9567).
 
 Step 1 — Register Salesforce as an OAuth client in the external enrichment system. Set the redirect URI to:
 
@@ -97,7 +99,7 @@ Assign the Permission Set that the sales team holds.
 Step 3 — Each salesperson authorizes the connection:
 
 ```
-User Settings > Authentication Settings for External Systems > New
+User Settings > Authentication Settings for External Systems > New   (UI path UNVERIFIED 2026-10-20; the corpus says "My Personal Information > External Credential", pkg2 264 L9567)
 External Credential: Enrichment Service Auth
 ```
 
@@ -115,9 +117,9 @@ Step 4 — Named Credential and Apex callout are identical in structure to Examp
 
 **What goes wrong:**
 
-- Custom Settings (Hierarchy type) are readable by all users with access to the object. A user with the "Customize Application" permission or even just Object permissions can query the value via SOQL or the Data Loader.
+- Custom Settings (Hierarchy type) are readable by all users with access to the object (UNVERIFIED 2026-10-20: not stated in the corpus). A user with the "Customize Application" permission or even just Object permissions can query the value via SOQL or the Data Loader.
 - Custom Metadata values are visible in metadata packages and version control, making secrets leak into source repositories.
 - Token rotation requires a metadata deployment or a Setup record update that is itself auditable but not protected by the same vault encryption as Named Credentials.
-- Remote Site Settings still require a separate entry; Named Credentials subsume the allowed-endpoint configuration in one record.
+- Remote Site Settings still require a separate entry for a hard-coded endpoint; a named credential endpoint needs none (apexdev 264 L34746-34747).
 
-**Correct approach:** Use Named Credentials + External Credentials for all outbound auth. The Salesforce credential vault is encrypted at rest and inaccessible via SOQL or API. Rotation is a Setup UI operation with no deployment required.
+**Correct approach:** Use Named Credentials + External Credentials for all outbound auth. Credentials are encrypted (meta 264 L92625-92627); that the vault is inaccessible via SOQL or API is UNVERIFIED (2026-10-20). Rotation is a Setup UI operation with no deployment required.

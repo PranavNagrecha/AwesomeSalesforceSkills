@@ -2,13 +2,15 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
+UNVERIFIED (2026-10-20): the corpus holds no Automotive Cloud Developer Guide; the object, field, sharing and orchestration claims below are not in it (see the note in SKILL.md for the few grounded facts).
+
 ## Gotcha 1: Standard Objects Hidden Until License Activates
 
 **What happens:** Practitioners try to find `Vehicle` or `VehicleDefinition` in Object Manager and see nothing. They conclude the objects don't exist and build custom `Vehicle__c`.
 
 **When it occurs:** Sandbox provisioned before the Automotive Cloud license was attached, or in a developer org where Automotive Cloud was never enabled.
 
-**How to handle:** Confirm license provisioning via Setup → Company Information → Org Edition. The Automotive Cloud standard objects (`Vehicle`, `VehicleDefinition`, `Appraisal`, `WarrantyTerm`, `Driver`, `DriverQualification`, `Fleet`, `FinancialAccount`) appear in Object Manager only after the license is active. If license is active and objects are still hidden, raise a support case before building custom equivalents.
+**How to handle:** Confirm license provisioning via Setup → Company Information → Org Edition (UNVERIFIED 2026-10-20: the Setup path is not in the corpus). The Automotive Cloud standard objects (`Vehicle`, `VehicleDefinition`, `Appraisal`, `Driver`, `DriverQualification`, `Fleet`, `FinancialAccount`) appear in Object Manager only after the license is active (`WarrantyTerm` is documented without an Automotive gate, obj 264 L313260-313262). If license is active and objects are still hidden, raise a support case before building custom equivalents.
 
 ---
 
@@ -18,7 +20,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** First-time inventory load that focused on `VehicleDefinition` and `Vehicle` only.
 
-**How to handle:** For every searchable field on `VehicleDefinition` (BodyStyle, FuelType, DriveTrain, etc.), populate a corresponding `VehDefSearchableField` row pointing at the definition. The searchable-fields table is what powers the inventory UI's filter facets — without rows in this table, the search returns empty.
+**How to handle:** For every searchable field on `VehicleDefinition` (BodyStyle, FuelType, DriveTrain, etc.), populate a corresponding `VehDefSearchableField` row pointing at the definition. The searchable-fields table is what powers the inventory UI's filter facets — without rows in this table, the search returns empty. Separately, `IndustriesSettings.enableCriteriaBasedSearchAndFilter` "applies to Automotive Cloud" and defaults to false (meta 264 L123156-123158); check it when search is empty after the rows exist.
 
 ---
 
@@ -38,7 +40,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs:** Custom completion-tracking automation that bypasses the ActionableEvent invocable actions.
 
-**How to handle:** Drive orchestration state through the `ActionableEventOrchestration` invocable actions (Start, Advance, Complete) rather than direct field updates. The orchestration engine performs side-effects (event publication, Case auto-creation) in the invocable path — direct DML skips those side-effects and leaves the orchestration in an inconsistent state.
+**How to handle:** Drive orchestration state through the `ActionableEventOrchestration` invocable actions (Start, Advance, Complete) rather than direct field updates. The `ActionableEventManagementFlow` process type is the documented Flow entry point (meta 264 L70724-70728); the action names and the side-effect claim are UNVERIFIED (2026-10-20). The orchestration engine performs side-effects (event publication, Case auto-creation) in the invocable path — direct DML skips those side-effects and leaves the orchestration in an inconsistent state.
 
 ---
 
@@ -54,7 +56,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 6: VIN Is Not Globally Unique Across Edge Cases
 
-**What happens:** Practitioners assume VIN is a true global natural key and use it as the only Vehicle external ID. Then a salvage-title vehicle is rebuilt with a different VIN, or a pre-1981 vehicle has a non-standard 11-character VIN, and the load fails or merges incorrectly.
+**What happens:** Practitioners assume VIN is a true global natural key and use it as the only Vehicle external ID. Then a salvage-title vehicle is rebuilt with a different VIN, or a pre-1981 vehicle has a non-standard 11-character VIN (UNVERIFIED 2026-10-20: VIN standards are not in the corpus), and the load fails or merges incorrectly.
 
 **When it occurs:** Used-vehicle inventory ingestion, especially fleet auctions or salvage operations.
 

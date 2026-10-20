@@ -37,14 +37,16 @@ triggers:
   - "vehicle 360 asset 360 auto industry data model in salesforce"
   - "set up automotive cloud for a dealership network"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Automotive Cloud Setup
 
 This skill activates when a practitioner is setting up Salesforce Automotive Cloud — the industry cloud that adds a VIN-centric data model, dealer hierarchy patterns, lifecycle event orchestration, and retail-credit financial objects on top of Sales / Service Cloud. It covers the Vehicle vs VehicleDefinition split, dealer-OEM relationship modeling, ActionableEvent orchestration, and FinancialAccount lifecycle. It does NOT cover Field Service mobile inventory, Manufacturing Cloud forecasting, or generic Sales Cloud opportunity flows that happen to reference a vehicle.
+
+UNVERIFIED (2026-10-20): the corpus holds no Automotive Cloud Developer Guide, and `VehicleDefinition`, `ActionableEventType`, `ActionableEventTypeDef`, `ActionableEventOrchestration`, `ActionableEventSubtype`, `AccountAccountRelation`, `DriverQualification`, `VehDefSearchableField`, `Appraisal` and the `FinancialAccount` family have no page in `object_reference` or `api_meta` (grep of all 14 files). Every object, field, relationship, sharing and orchestration claim below is therefore UNVERIFIED unless it carries a cite. Grounded: `Vehicle` and `Fleet` exist as Automotive Cloud objects (obj 264 L21902-21921, meta 264 L16456-16457); `ActionableEventManagementFlow` is a Flow `processType` "that triggers an actionable event orchestration process in the background" (API 62.0+, meta 264 L70724-70728); `WarrantyTerm` is a standard object from API 50.0 (obj 264 L313260-313262); `IndustriesSettings.enableCriteriaBasedSearchAndFilter` "applies to Automotive Cloud", default false (meta 264 L123156-123158).
 
 ---
 
@@ -52,12 +54,26 @@ This skill activates when a practitioner is setting up Salesforce Automotive Clo
 
 Gather this context before working in this domain:
 
-- Confirm the org has the Automotive Cloud license — the skill's standard objects (`Vehicle`, `VehicleDefinition`, `DriverQualification`, `WarrantyTerm`, the `Scope3CrbnFtprnt` family, etc.) are gated behind that license and will not appear in Object Manager otherwise.
+- Confirm the org has the Automotive Cloud license — the skill's standard objects (`Vehicle`, `VehicleDefinition`, `DriverQualification`, etc.) are gated behind that license and will not appear in Object Manager otherwise (UNVERIFIED 2026-10-20: the gating is not in the corpus). Two names the earlier text listed here do not belong: `WarrantyTerm` is documented without any Automotive gate (obj 264 L313260-313262), and the `Scope3CrbnFtprnt` footprint family belongs with the carbon-footprint objects covered by `integration/net-zero-cloud-setup` (api_meta 264 L146237-146240 lists it beside `VehicleAssetCrbnFtprnt` and `StnryAssetCrbnFtprnt`; UNVERIFIED 2026-10-20: no corpus page names the cloud that owns it, though Net Zero Cloud has the Scope 3 settings, L123249-123252).
 - Identify the source-of-truth for VIN data. In most installations the OEM inventory feed or a Dealer Management System (DMS) is upstream — Automotive Cloud is rarely the system of record for vehicle build data.
 - Map the dealer org structure on paper before configuring `AccountAccountRelation`. Multi-tenant OEM-dealer-customer hierarchies are difficult to refactor once relationship records exist.
 - Identify which lifecycle events ActionableEvent will orchestrate (recalls, service campaigns, warranty notifications). The `ActionableEventType` design happens up-front, not iteratively.
 
 ---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the Automotive Cloud license active and are `Vehicle` and `VehicleDefinition` visible? | Standard objects can look absent and teams build custom ones (gotchas.md, Standard Objects Hidden Until License Activates). | A license check recorded before any object design. |
+| What is the source of truth for VIN data, and is there a delta feed? | Idempotent loads need keys and a feed (SKILL gotcha 4, gotchas.md VIN Is Not Globally Unique). | The system of record and the key strategy. |
+| Does any dealer sell more than one OEM brand? | `ParentId` is single-valued (SKILL gotcha 2). | Yes/no and the relation roles needed. |
+| Are relationship effective dates available from the source? | Records without `EffectiveFromDate` can drop out of filters (gotchas.md AccountAccountRelation Effective Dates, UNVERIFIED). | A date convention for migration. |
+| Which lifecycle programs need orchestration, and do remedies change over time? | Type definitions are versioned so history is not rewritten (SKILL gotcha 3). | A catalog of types and versions. |
+| Do dealer staff need to see financing balances? | Sharing follows the customer Account (gotchas.md FinancialAccount Sharing, UNVERIFIED). | A sharing design for the customer Account. |
+| Does inventory search depend on `VehDefSearchableField` rows or on criteria-based search? | An empty facet table returns no results (SKILL gotcha 6, gotchas.md VehDefSearchableField). | A population step in the runbook and the `enableCriteriaBasedSearchAndFilter` decision. |
+
+A proper configuration adds a confirmed license, a VIN key strategy, relation-based sharing and versioned orchestration definitions, which "just loading vehicles" skips.
 
 ## Core Concepts
 
@@ -86,11 +102,11 @@ Automotive Cloud ships an event-driven orchestration model for recalls, service 
 - **`ActionableEventOrchestration`** — the runtime instance attached to a specific Vehicle / Account. Tracks state across the orchestration steps.
 - **`ActionableEventSubtype`** — sub-categories within a type, used to fan out the recipe.
 
-This is how a recall campaign reaches every affected VIN, opens a Case at the responsible dealer, and tracks remedy completion — without bespoke automation.
+This is how a recall campaign reaches every affected VIN, opens a Case at the responsible dealer, and tracks remedy completion — without bespoke automation. Grounded part: the Flow `processType` `ActionableEventManagementFlow` triggers an actionable event orchestration in the background (meta 264 L70724-70728); the type/definition/subtype split above is UNVERIFIED (2026-10-20).
 
 ### FinancialAccount for Retail Credit
 
-`FinancialAccount`, `FinancialAccountAddress`, `FinancialAccountBalance`, `FinancialAccountFee` — these objects model the loan / lease / financing tied to a vehicle sale. They are the same objects used by Financial Services Cloud, sharing the data model across the Industries platform. Connect them to the Vehicle (via a junction or custom lookup), to the customer Account, and to the Opportunity that closed the deal.
+`FinancialAccount`, `FinancialAccountAddress`, `FinancialAccountBalance`, `FinancialAccountFee` — these objects model the loan / lease / financing tied to a vehicle sale. They are the same objects used by Financial Services Cloud, sharing the data model across the Industries platform (UNVERIFIED 2026-10-20; the object reference shows only fields "available with Financial Services and Automotive Cloud" on other objects, e.g. obj 264 L216375). Connect them to the Vehicle (via a junction or custom lookup), to the customer Account, and to the Opportunity that closed the deal.
 
 ### DriverQualification and Fleet
 
@@ -208,6 +224,7 @@ This is how a recall campaign reaches every affected VIN, opens a Case at the re
 
 ## Related Skills
 
-- manufacturing-cloud-setup — for OEM-side production planning and account-based forecasting that feeds the dealer inventory
-- industries-cloud-selection — for the architect-level decision of whether Automotive Cloud is the right vertical fit
-- ha-dr-architecture — for backup strategy across the high-volume Vehicle / FinancialAccount data model
+- `integration/manufacturing-cloud-setup` — for OEM-side production planning and account-based forecasting that feeds the dealer inventory
+- `architect/industries-cloud-selection` — for the architect-level decision of whether Automotive Cloud is the right vertical fit
+- `architect/ha-dr-architecture` — for backup strategy across the high-volume Vehicle / FinancialAccount data model
+- `architect/industries-data-model` — for the cross-industry data-model view

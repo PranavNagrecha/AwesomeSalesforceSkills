@@ -37,14 +37,16 @@ triggers:
   - "supplier engagement scoring CSRD ESRS disclosure"
   - "we're having issues with net zero cloud"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-03
+updated: 2026-10-20
 ---
 
 # Net Zero Cloud Setup
 
 This skill activates when a practitioner is configuring Salesforce Net Zero Cloud (formerly Sustainability Cloud) — the industry cloud for greenhouse-gas inventory, carbon accounting, supplier engagement, and ESG disclosure. It covers the Scope 1 / 2 / 3 object families, emission factor library setup, DPE-driven carbon calculation, and disclosure-framework mapping. It does NOT cover Marketing Cloud ESG content scoring, generic financial reporting, or utility-billing flows that aren't carbon-related.
+
+UNVERIFIED (2026-10-20): the corpus holds no Net Zero Cloud Developer Guide and no object pages for this domain (grep of all 14 files). What it does hold: translation keys that show `StnryAssetCrbnFtprnt`, `VehicleAssetCrbnFtprnt`, `Scope3CrbnFtprnt`, `Scope3EmssnSrc`, `StnryAssetEnvrSrc` and `WasteFootprint` exist (meta 264 L146237-146240, L146917-146933, L146989); the `IndustriesSettings` Net Zero flags, all default false and "in editions where Net Zero Cloud is enabled": `enableSustainabilityCloud` (API 54.0+), `enableSCCarbonAccounting`, `enableSCCreateFootprint` (Auto-Create Carbon Footprints), `enableSCAssignFootprint` (Assign Carbon Footprint to Energy Use Records), `enableSCDGF` (Manage Data Gaps), `enableSCExternalEngMgmt` (Manage Supplier Sustainability Data), `enableSCScope3HubEnabled` (Scope 3 Procurement Hub), `enableGnrcDisclsFrmwrk` (Disclosure and Compliance Hub, API 57.0+, available "in editions where Disclosure and Compliance Hub is enabled", L123160-123163) (meta 264 L123160-123272); custom fuels are the `FuelType` and `FuelTypeSustnUom` types (API 57.0+) and need the Net Zero Cloud permission set license plus carbon accounting user access and custom-fuel org access (meta 264 L78287-78305, L78402-78408); and a scratch org gets Net Zero Cloud from the `SustainabilityApp` feature plus `industriesSettings` flags (sfdx 264 L9201-9218). `EmssnFctr`, `EmssnFctrSet`, `Scope3PcmtItem`, `Scope3PcmtSummary`, `StnryAssetEnrgyUse`, `RentalCarEnrgyUse`, the DPE definition names and every GHG Protocol, CSRD, ESRS, TCFD, SBTi, SEC and CDP statement (category numbers, dual Scope 2 reporting, materiality norms) are UNVERIFIED unless they carry a cite.
 
 ---
 
@@ -52,12 +54,26 @@ This skill activates when a practitioner is configuring Salesforce Net Zero Clou
 
 Gather this context before working in this domain:
 
-- Confirm Net Zero Cloud license is provisioned. The Scope 1/2/3 object families (`StnryAssetCrbnFtprnt`, `VehicleAssetCrbnFtprnt`, `Scope3CrbnFtprnt`, `Scope3EmssnSrc`, `Scope3PcmtItem`, `EmssnFctr`, `EmssnFctrSet`) appear in Object Manager only after license activation.
-- Identify the **disclosure framework** in scope: CSRD / ESRS for EU operations, SEC Climate Disclosure for US public filers, TCFD for voluntary, SBTi for science-based targets, GHG Protocol as the universal underpinning. The framework drives which scopes and categories are mandatory.
+- Confirm Net Zero Cloud is provisioned and enabled: the Net Zero features are `IndustriesSettings` flags that default to false (`enableSustainabilityCloud`, `enableSCCarbonAccounting`, and the feature flags listed above; meta 264 L123180-123272). The Scope 1/2/3 object families (`StnryAssetCrbnFtprnt`, `VehicleAssetCrbnFtprnt`, `Scope3CrbnFtprnt`, `Scope3EmssnSrc`, `Scope3PcmtItem`, `EmssnFctr`, `EmssnFctrSet`) appear in Object Manager only after license activation (UNVERIFIED 2026-10-20).
+- Identify the **disclosure framework** in scope: CSRD / ESRS for EU operations, SEC Climate Disclosure for US public filers, TCFD for voluntary, SBTi for science-based targets, GHG Protocol as the universal underpinning. The framework drives which scopes and categories are mandatory (UNVERIFIED 2026-10-20: regulatory scope statements are outside the corpus; check the current rule for the filer). In the platform the feature is the Disclosure and Compliance Hub (`enableGnrcDisclsFrmwrk`, meta 264 L123160-123163).
 - Identify activity data sources for each scope. Scope 1 = direct fuel / refrigerant logs. Scope 2 = utility bills (location-based vs market-based). Scope 3 = the 15 categories from purchased goods to franchises — most companies omit categories that don't apply.
-- Decide whether emission factors come from a vendor library (EPA, DEFRA, IEA bundled by Salesforce) or a custom factor set negotiated with an auditor. Custom factors require the most up-front work.
+- Decide whether emission factors come from a vendor library (EPA, DEFRA, IEA bundled by Salesforce; UNVERIFIED 2026-10-20) or a custom factor set negotiated with an auditor. Custom factors require the most up-front work; custom fuels and units of measure are the `FuelType` and `FuelTypeSustnUom` metadata types (API 57.0+, meta 264 L78287-78305, L78398-78408).
 
 ---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which Net Zero features are enabled in `IndustriesSettings`? | Each feature is a default-false flag (Before Starting). | A flag list per org, including carbon accounting and footprint auto-creation. |
+| Which disclosure framework and boundary apply? | The framework drives scopes and categories (Before Starting, Disclosure Pack Mapping). | Framework, boundary, base year. |
+| Which Scope 3 categories are material? | Loading all 15 adds noise (SKILL gotcha 3, gotchas.md Scope 3 Materiality Without Documentation). | A documented materiality table. |
+| Are the carbon calculation jobs activated and scheduled? | Empty footprints are the classic go-live failure (SKILL gotcha 1, gotchas.md DPE Is Not Automatic). | An activation runbook and a manual first run. |
+| How are Scope 2 location-based and market-based totals separated? | Dual reporting depends on factor selection (SKILL gotcha 2, gotchas.md Scope 2 Dual-Method). | A factor-selection rule per row. |
+| Who owns factor-set changes and restatements? | New factors do not recalculate history and manual edits are overwritten (SKILL gotchas 4 and 5, gotchas.md factor set and manual edits). | An audit log and a restatement procedure. |
+| Is Automotive Cloud also licensed? | `Vehicle` and `VehicleAssetCrbnFtprnt` are separate objects (SKILL gotcha 6, gotchas.md Vehicle confusion). | A mapping that keeps the two apart. |
+
+A proper configuration adds enabled features, a documented boundary and materiality table, activated calculation jobs and an audit trail, which "just loading activity data" skips.
 
 ## Core Concepts
 
@@ -94,7 +110,7 @@ Net Zero Cloud ships several Salesforce-curated factor sets out of the box. Cust
 
 ### DPE-Driven Carbon Calculation
 
-Like the rest of the Industries platform, Net Zero Cloud uses DPE batch jobs to multiply activity data × emission factor and produce the `…CrbnFtprnt` rows. The calculation jobs are **not automatic** — they must be activated.
+Like the rest of the Industries platform, Net Zero Cloud uses DPE batch jobs to multiply activity data × emission factor and produce the `…CrbnFtprnt` rows (UNVERIFIED 2026-10-20). The calculation jobs are **not automatic** — they must be activated (UNVERIFIED; the platform also has opt-in flags `enableSCCreateFootprint` "Auto-Create Carbon Footprints" and `enableSCAssignFootprint`, both default false, meta 264 L123190-123193, L123210-123213, so check them before assuming nothing runs).
 
 A typical setup activates:
 
@@ -109,7 +125,7 @@ Re-running the calculation after a factor set update is required to refresh hist
 Purchased Goods & Services is typically the largest Scope 3 category for non-extractive industries. Net Zero Cloud uses:
 
 - `Scope3PcmtItem` — line items from purchase records (often loaded from ERP spend data).
-- Supplier scoring via the Supplier Engagement feature — assigns each supplier a maturity level (e.g., "Reports Scope 1 & 2", "Has Verified Targets") and uses supplier-specific factors when available, falling back to spend-based factors otherwise.
+- Supplier scoring via the Supplier Engagement feature (the settings name is Manage Supplier Sustainability Data, `enableSCExternalEngMgmt`, API 54.0+, meta 264 L123224-123227; the maturity-level scoring is UNVERIFIED 2026-10-20) — assigns each supplier a maturity level (e.g., "Reports Scope 1 & 2", "Has Verified Targets") and uses supplier-specific factors when available, falling back to spend-based factors otherwise.
 
 ### Disclosure Pack Mapping
 
@@ -120,7 +136,7 @@ The output of Net Zero Cloud is a disclosure-ready pack mapped to a regulatory f
 - **CDP Climate Change Questionnaire** (annual voluntary).
 - **GHG Protocol Corporate Standard** (universal).
 
-The mapping happens in the disclosure pack configuration: which CrbnFtprnt totals roll into which disclosure metric.
+The mapping happens in the disclosure pack configuration: which CrbnFtprnt totals roll into which disclosure metric (UNVERIFIED 2026-10-20: "disclosure pack" is not a term in the corpus; the grounded feature is the Disclosure and Compliance Hub, `enableGnrcDisclsFrmwrk`).
 
 ---
 
@@ -180,7 +196,7 @@ The mapping happens in the disclosure pack configuration: which CrbnFtprnt total
 
 ## Recommended Workflow
 
-1. **Confirm license and framework scope.** Verify Net Zero Cloud license and that standard objects appear in Object Manager; identify disclosure framework(s) in scope — this drives mandatory scopes and categories.
+1. **Confirm license and framework scope.** Verify Net Zero Cloud license and that the `IndustriesSettings` flags you need are on (in a scratch org, add the `SustainabilityApp` feature and `industriesSettings` `enableSustainabilityCloud` and `enableSCCarbonAccounting`, sfdx 264 L9201-9218) and that standard objects appear in Object Manager; identify disclosure framework(s) in scope — this drives mandatory scopes and categories.
 2. **Activate emission factors.** Activate the appropriate `EmssnFctrSet` for operating regions (Salesforce-bundled or custom, with audit metadata if custom).
 3. **Load activity data by scope.**
    - Scope 1/2: stationary asset carbon footprint records and activity rows per period; vehicle asset carbon footprint records for owned fleet.
@@ -207,9 +223,9 @@ The mapping happens in the disclosure pack configuration: which CrbnFtprnt total
 
 ## Salesforce-Specific Gotchas
 
-1. **Carbon Calculation DPE Is Not Automatic** — Net Zero Cloud orgs go live with no calculation jobs running. `…CrbnFtprnt` rows stay empty even when activity data is loaded. Activate the DPE definitions and schedule them as part of go-live.
+1. **Carbon Calculation DPE Is Not Automatic (UNVERIFIED 2026-10-20; see also `enableSCCreateFootprint`, meta 264 L123210-123213)** — Net Zero Cloud orgs go live with no calculation jobs running. `…CrbnFtprnt` rows stay empty even when activity data is loaded. Activate the DPE definitions and schedule them as part of go-live.
 
-2. **Location-Based vs Market-Based Scope 2 Tracked Per Row** — Scope 2 reporting requires both location-based and market-based totals. The split is driven by the emission factor selected on each `StnryAssetEnrgyUse` row, not a separate object. Misconfiguring the factor selection silently produces a single-method total that fails dual-reporting requirements.
+2. **Location-Based vs Market-Based Scope 2 Tracked Per Row (UNVERIFIED 2026-10-20: GHG Protocol dual reporting and the per-row factor mechanism are not in the corpus)** — Scope 2 reporting requires both location-based and market-based totals. The split is driven by the emission factor selected on each `StnryAssetEnrgyUse` row, not a separate object. Misconfiguring the factor selection silently produces a single-method total that fails dual-reporting requirements.
 
 3. **Scope 3 Is NOT All 15 Categories By Default** — Loading every Scope 3 category produces noise (employee-commute estimates with high uncertainty crowd out material categories). Materially assess first; load only categories that pass the materiality threshold for the framework.
 
@@ -236,6 +252,6 @@ The mapping happens in the disclosure pack configuration: which CrbnFtprnt total
 
 ## Related Skills
 
-- manufacturing-cloud-setup — for sibling Industries Cloud DPE-activation patterns and shared platform behaviors
-- automotive-cloud-setup — for distinguishing the `Vehicle` (asset) vs. `VehicleAssetCrbnFtprnt` (emissions) split when both clouds are licensed
-- industries-cloud-selection — for the architect-level decision of whether Net Zero Cloud is the right fit
+- `integration/manufacturing-cloud-setup` — for sibling Industries Cloud DPE-activation patterns and shared platform behaviors
+- `integration/automotive-cloud-setup` — for distinguishing the `Vehicle` (asset) vs. `VehicleAssetCrbnFtprnt` (emissions) split when both clouds are licensed
+- `architect/industries-cloud-selection` — for the architect-level decision of whether Net Zero Cloud is the right fit

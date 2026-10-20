@@ -7,12 +7,18 @@ entry criteria (start element filters) likely permit self-re-entry:
 - Record-triggered after-save Flows whose `RecordUpdates`/`recordUpdates`
   target the same object as the trigger and write a field that appears in
   the start filter — possible self-re-entry without a state guard.
-- Start filters that reference `ISCHANGED(...)` on a field the Flow itself
-  updates, without a paired comparison clause (state guard).
+  A value comparison on that field (formula `<>`/`=`, or a filter row with
+  EqualTo/NotEqualTo) counts as the state guard; ISCHANGED/IsChanged alone does not.
 - "Run on Create or Update" triggers with no filter conditions (likely
   over-broad and a recursion risk).
 
-Stdlib only; XML parser is `xml.etree.ElementTree`.
+A Start element with doesRequireRecordChangedToMeetCriteria=true counts as a
+guard (api_meta 264 L75049-75052: conditions evaluate to true only if the record
+did not meet them before the triggering update but does now), so rule 2 skips it.
+
+Exit codes: parse errors and a missing directory are ERRORs and exit 1 always;
+WARN findings exit 0 unless --strict; a directory with no flow files prints one
+WARN and exits 0. Stdlib only; XML parser is `xml.etree.ElementTree`.
 """
 
 from __future__ import annotations
@@ -31,11 +37,12 @@ def parse_args() -> argparse.Namespace:
         description="Detect Flow recursion risk in record-triggered flows."
     )
     p.add_argument("--manifest-dir", default=".", help="Project root.")
+    p.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings too.")
     return p.parse_args()
 
 
 def flow_files(root: Path) -> list[Path]:
-    return list((root / "force-app").rglob("*.flow-meta.xml"))
+    return sorted(root.rglob("*.flow-meta.xml"))
 
 
 def text(elem: ET.Element | None) -> str:
@@ -79,13 +86,20 @@ def find_filter_fields(start: ET.Element) -> set[str]:
 
 
 def has_state_guard(start: ET.Element, field: str) -> bool:
-    """Heuristic: a filterFormula contains both ISCHANGED(field) and field <> something."""
+    """A value comparison on the field is the state guard (SKILL.md Pattern 1).
+
+    Accepts either form the skill documents: a filterFormula comparison
+    (`{!$Record.F} <> 'Active'` or `{!$Record.F} = TRUE`) or a `<filters>` row on
+    the field whose operator is EqualTo / NotEqualTo. An ISCHANGED / IsChanged
+    reference alone is not a guard.
+    """
     formula = text(start.find(f"{NS}filterFormula"))
-    if not formula:
-        return False
-    has_ischanged = bool(re.search(rf"ISCHANGED\(\s*\{{!\$Record\.{re.escape(field)}\}}\s*\)", formula))
-    has_compare = bool(re.search(rf"\{{!\$Record\.{re.escape(field)}\}}\s*<>", formula))
-    return has_ischanged and has_compare
+    if formula and re.search(rf"\{{!\$Record\.{re.escape(field)}\}}\s*(<>|!=|=)", formula):
+        return True
+    for f in start.findall(f"{NS}filters"):
+        if text(f.find(f"{NS}field")) == field and text(f.find(f"{NS}operator")) in {"EqualTo", "NotEqualTo"}:
+            return True
+    return False
 
 
 def check_flow(path: Path) -> list[str]:
@@ -93,7 +107,7 @@ def check_flow(path: Path) -> list[str]:
     try:
         tree = ET.parse(path)
     except ET.ParseError as exc:
-        return [f"{path}: parse error — {exc}"]
+        return [f"ERROR: {path}: parse error — {exc}"]
     root = tree.getroot()
 
     start = find_start(root)
@@ -115,7 +129,8 @@ def check_flow(path: Path) -> list[str]:
         )
 
     # 2. Self-re-entry: Flow writes a field that's in its own start filter
-    if trigger_object:
+    guarded = text(start.find(f"{NS}doesRequireRecordChangedToMeetCriteria")).lower() == "true"
+    if trigger_object and not guarded:
         written = find_record_update_targets(root, trigger_object)
         filtered = find_filter_fields(start)
         intersect = written & filtered
@@ -123,8 +138,8 @@ def check_flow(path: Path) -> list[str]:
             if not has_state_guard(start, fld):
                 issues.append(
                     f"{path}: Flow on `{trigger_object}` writes `{fld}` and references it in the entry filter "
-                    "without a paired `<>` state guard — possible self-re-entry. "
-                    "Pair ISCHANGED with a tracking-field comparison."
+                    "with only a change test (no value comparison) — possible self-re-entry. "
+                    "Pair ISCHANGED with a comparison that excludes the value the Flow writes."
                 )
 
     return issues
@@ -133,20 +148,28 @@ def check_flow(path: Path) -> list[str]:
 def main() -> int:
     args = parse_args()
     root = Path(args.manifest_dir)
-    if not (root / "force-app").exists():
-        print(f"ERROR: no force-app/ directory under {root}", file=sys.stderr)
-        return 1
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+
+    files = flow_files(root)
+    if not files:
+        print(f"WARN: no *.flow-meta.xml files under {root}; nothing to check")
+        return 0
 
     issues: list[str] = []
-    for f in flow_files(root):
+    for f in files:
         issues.extend(check_flow(f))
 
     if not issues:
         print("[recursion-and-re-entry-prevention] no issues found")
         return 0
+    errors = [i for i in issues if i.startswith("ERROR:")]
     for i in issues:
-        print(f"WARN: {i}", file=sys.stderr)
-    return 1
+        print(i if i.startswith("ERROR:") else f"WARN: {i}")
+    if errors or args.strict:
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

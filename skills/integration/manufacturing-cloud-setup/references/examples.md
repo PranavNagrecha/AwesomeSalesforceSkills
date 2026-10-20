@@ -1,5 +1,7 @@
 # Examples — Manufacturing Cloud Setup
 
+UNVERIFIED (2026-10-20): the corpus holds no Manufacturing Cloud Developer Guide; object and DPE names below are as the package authors described them, and the row counts, dates and dollar figures are illustrative, not measured.
+
 ## Example 1: First Sales Agreement Go-Live with ABF Activation
 
 **Context:** A consumer-goods manufacturer is rolling out Manufacturing Cloud to manage 24-month supply commitments with their top 50 distributors. Each agreement covers 30–60 SKUs with monthly schedules.

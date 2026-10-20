@@ -5,7 +5,7 @@ example names the Flow metadata that carries the semantics, because the recurrin
 failure in this domain is a team doing accessibility work in CSS and prose when
 the platform had a property for it.
 
-**The standard to target:** Salesforce states that "Lightning Experience follows
+**The standard to target (UNVERIFIED 2026-10-20: the quote and the WCAG criteria below are from Help and W3C pages outside the corpus):** Salesforce states that "Lightning Experience follows
 the internationally recognized best practices in Section 508 of the
 Rehabilitation Act and the Web Content Accessibility Guidelines (WCAG) 2.2 Level
 AA to the extent possible." Audit against 2.2 AA, not 2.1. The practical delta
@@ -25,13 +25,13 @@ duplicate IDs may no longer describe a conformance failure.
 
 ---
 
-## Example 1: Help Text Is a Tooltip, Not a Description
+## Example 1: Help Text Sits Behind a Click, Not in the Reading Order
 
 **Context:** A "Reason for Refund" text input carries important guidance in the
 screen component's Help Text: "Enter the RMA number if one was issued."
 
-**Problem:** `helpText` on a screen field renders as a help icon the user has to
-hover or activate. It is discoverable to a sighted mouse user scanning the form,
+**Problem:** `helpText` on a screen field "appears if the end user clicks the help
+icon" (api_meta 264 L74449-74450). It is discoverable to a sighted mouse user scanning the form,
 and it is discoverable to nobody who is not looking for it. Guidance that is
 required in order to complete the field correctly is not optional information,
 and putting it behind an interaction is a design decision most authors do not
@@ -91,8 +91,7 @@ in the screen.
 </fields>
 ```
 
-The asterisk in the label is a visual convention with no semantics behind it. A
-screen reader announces "Postal code star, edit text." The field is not
+The asterisk in the label is a visual convention with no semantics behind it. UNVERIFIED (2026-10-20: not in the corpus): a screen reader announces "Postal code star, edit text." The field is not
 programmatically required, so no assistive technology announces it as required,
 no browser validation fires, and the flow's own enforcement — if any — lives in a
 Decision several elements later where the error is disconnected from the field.
@@ -140,6 +139,8 @@ you can see the whole form and is invisible when you cannot.
 **Solution:**
 
 ```xml
+<!-- excerpt: two sibling fields of one screen, wrapped so the fence parses -->
+<screens>
 <fields>
     <name>Has_Promo_Code</name>
     <dataType>Boolean</dataType>
@@ -165,6 +166,7 @@ you can see the whole form and is invisible when you cannot.
         </conditions>
     </visibilityRule>
 </fields>
+</screens>
 ```
 
 Three design rules make this usable:
@@ -197,7 +199,7 @@ name" side by side, and below them "Address line 1" spanning both columns.
 
 **Problem:** Multi-column layouts in a Screen Flow are built from
 `RegionContainer` and `Region` fields, and the DOM order is the order the regions
-and their children appear in the metadata — not the visual grid position. Reorder
+and their children appear in the metadata (UNVERIFIED 2026-10-20: observed, not documented) — not the visual grid position. Reorder
 the fields for a nicer visual balance and the tab order can start going right,
 then left, then down, then back up.
 

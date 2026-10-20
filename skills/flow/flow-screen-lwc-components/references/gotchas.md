@@ -5,12 +5,13 @@ problems when building LWCs that render inside a Flow screen step.
 
 ---
 
-## Gotcha 1: Missing `lightning__FlowScreen` target → silently invisible
+## Gotcha 1: Missing `lightning__FlowScreen` target → invisible in the builder
 
 **What happens:** the LWC deploys cleanly, appears under Setup → Lightning
 Components, but Flow Builder's screen-component palette does not list it.
-There is no error, no warning, no validation message — the absence is
-silent.
+UNVERIFIED (2026-10-20): that there is no error or warning message is observed
+behaviour; the target page only says the target "enables a component to be used
+on flow screens" (lwcguide targets-lightning-flow-screen).
 
 **When it occurs:** any time the `js-meta.xml` declares targets like
 `lightning__AppPage` or `lightning__RecordPage` but omits
@@ -32,12 +33,13 @@ and use separate `<targetConfig>` blocks if behavior diverges.
 
 ---
 
-## Gotcha 2: `@api validate()` must be synchronous — async returns are ignored
+## Gotcha 2: `@api validate()` should be a synchronous plain method — async behaviour is undocumented
 
-**What happens:** an `async validate()` returns a Promise. The Flow runtime
-checks the return value synchronously, sees a truthy object that is not the
-documented `{ isValid, errorMessage }` shape, and treats the screen as
-valid. Navigation proceeds; the validation is silently bypassed.
+**What happens:** an `async validate()` returns a Promise, not the documented
+`{ isValid, errorMessage }` pair. UNVERIFIED (2026-10-20): what the runtime does
+with it is not in the guide; the observed behaviour is that navigation proceeds
+and the validation is bypassed. The guide does say arrow-function `validate`
+does not work (lwcguide use-flow-validate-user-input-for-custom-components).
 
 **When it occurs:** any time the LWC needs to validate against server-side
 state (uniqueness check, external system lookup, complex Apex evaluation)
@@ -45,7 +47,7 @@ and the author writes the natural-looking async pattern:
 
 ```js
 @api
-async validate() { ... }   // BROKEN — Flow ignores the Promise
+async validate() { ... }   // suspect — UNVERIFIED 2026-10-20: the guide does not say what Flow does with the Promise
 ```
 
 **How to avoid:**
@@ -60,16 +62,18 @@ async validate() { ... }   // BROKEN — Flow ignores the Promise
 
 ---
 
-## Gotcha 3: Reactive screen components require Flow API version 59.0+
+## Gotcha 3: Reactive screen components are built in at Flow API version 59.0+
 
 **What happens:** two LWCs are wired correctly via Flow variables on the
 same screen. Both `FlowAttributeChangeEvent` dispatches fire. But the
 consuming LWC's input never updates until the user clicks Next.
 
 **When it occurs:** the Flow's API version (set when the flow was created)
-is below 59.0. Reactive screen components shipped in Winter '24 with API
-version 59.0. Older flows — including clones of older flows — keep their
-original API version and do not opt in automatically.
+is below 59.0. For flows on 57.0 and 58.0, reactivity needs the Process
+Automation setting `enableFlowReactiveScreens` (default false); the setting
+does not apply at 59.0+ (api_meta 264 L120052-120055). UNVERIFIED (2026-10-20):
+the corpus is silent below 57.0 and does not name the release for 59.0. Older
+flows, including clones, keep their original API version.
 
 **How to avoid:**
 
@@ -88,10 +92,10 @@ original API version and do not opt in automatically.
 ## Gotcha 4: `FlowNavigationFinishEvent` from a non-final screen ends the flow abruptly
 
 **What happens:** an LWC fires `FlowNavigationFinishEvent` from screen 2
-of a 5-screen flow. The runtime treats Finish as terminal: screens 3, 4,
-and 5 are skipped, AND any post-screen actions (record updates, subflows,
-Apex actions) that were intended to run after the flow completes do not
-run for the skipped portion.
+of a 5-screen flow. Finish "finishes the flow interview" (lwcguide
+use-flow-screen-navigate), so screens 3, 4, and 5 are skipped. UNVERIFIED
+(2026-10-20): that later record updates, subflows or Apex actions are also
+skipped is inferred, not documented.
 
 **When it occurs:** authors copy a snippet that fires `FlowNavigationFinishEvent`
 from a single-screen wizard and reuse it in a multi-screen flow without
@@ -113,9 +117,10 @@ not revisited.
 ## Gotcha 5: `role="outputOnly"` does not auto-emit value changes
 
 **What happens:** the meta.xml declares the property `role="outputOnly"`.
-In Flow Builder, the property correctly appears in the output mapping
-panel. The admin maps it to a Flow variable. But the variable always
-holds the initial value — typing into the LWC field does not propagate.
+The admin maps it to a Flow variable, but reactive targets and conditional
+visibility never see typed values. (The runtime also reads each component's
+current `@api` state on Next or Finish, but the guide says not to rely on it,
+lwcguide use-best-practices-reactivity.)
 
 **When it occurs:** the LWC author assumes that declaring the role is
 enough. It is not — `role="outputOnly"` only changes Flow Builder's
@@ -129,7 +134,7 @@ matching dispatch in the JS:
 this.dispatchEvent(new FlowAttributeChangeEvent('myOutput', newValue));
 ```
 
-Where `'myOutput'` matches the `@api` property name **case-sensitively**.
+Where `'myOutput'` matches the `@api` property name exactly (see gotcha 6 for what is and is not documented).
 
 Code-review pairing rule: every `role="outputOnly"` in meta.xml should
 correspond to at least one `FlowAttributeChangeEvent` dispatch in the JS
@@ -137,17 +142,16 @@ naming the same property.
 
 ---
 
-## Gotcha 6: `FlowAttributeChangeEvent` attribute name is case-sensitive
+## Gotcha 6: `FlowAttributeChangeEvent` attribute name must match the `@api` name exactly
 
 **What happens:** the dispatch fires; no JS error is thrown; the Flow
-variable still does not update. Spending hours adding `console.log`
-statements does not reveal the cause because the dispatch *succeeds* — it
-just goes to a property name that does not exist.
+variable does not update. UNVERIFIED (2026-10-20): the guide says to pass the
+name as it appears in the JS and `.js-meta.xml` (lwcguide
+use-best-practices-reactivity) but does not state case-sensitivity or a silent
+no-op; both are observed behaviour.
 
-**When it occurs:** mismatched casing. `FlowAttributeChangeEvent('OutputValue', v)`
-for an `@api outputValue` (lowercase first letter) silently no-ops.
-Flow's case sensitivity differs from many JS conventions, so this trips
-up authors used to forgiving HTML attribute matching.
+**When it occurs:** mismatched casing, e.g. `FlowAttributeChangeEvent('OutputValue', v)`
+for an `@api outputValue`.
 
 **How to avoid:** always copy the exact `@api` property name when
 constructing the event. Code-review rule: pair every dispatch with the
@@ -158,10 +162,11 @@ constructing the event. Code-review rule: pair every dispatch with the
 ## Gotcha 7: `<isExposed>true</isExposed>` is required even for screen-only LWCs
 
 **What happens:** the component has the right target, the right
-`<targetConfig>`, but it still does not appear in Flow Builder.
+`<targetConfig>`, but it still does not appear in Flow Builder. If `isExposed`
+is false the component is not available to builders (api_meta 264 L86762-86765).
 
 **When it occurs:** the meta.xml has `<isExposed>false</isExposed>` (or
-omits the tag, which defaults to `false`). The convention from utility
+omits the tag; UNVERIFIED (2026-10-20): the default when omitted is not stated). The convention from utility
 LWCs (which often ship as internal-only) bleeds into screen LWC authoring.
 
 **How to avoid:** every component that should be available in any builder
@@ -170,15 +175,15 @@ needs `<isExposed>true</isExposed>`.
 
 ---
 
-## Gotcha 8: Mobile rendering requires explicit `<supportedFormFactors>`
+## Gotcha 8: Mobile rendering and `<supportedFormFactors>` (undocumented for FlowScreen)
 
-**What happens:** the screen flow runs in the desktop Lightning Experience
-correctly. The same flow, opened in the Salesforce mobile app, shows the
-flow up to the screen with the custom LWC, then renders an empty screen
-or an error.
+**What happens:** UNVERIFIED (2026-10-20): the lightning__FlowScreen target page
+of the LWC guide does not document `<supportedFormFactors>`, so the snippet below
+is the Lightning-page form (lwcguide use-config-form-factors) applied by analogy
+and the "empty screen on mobile" outcome is observed behaviour.
 
-**When it occurs:** `<supportedFormFactors>` is omitted (default = Large
-only) or declares only `Large`. Mobile is `Small`.
+**When it occurs:** `<supportedFormFactors>` is omitted or declares only
+`Large`. Mobile is `Small`.
 
 **How to avoid:** explicitly declare both form factors when the flow is
 intended to run on mobile, AND test on a real device:
@@ -196,10 +201,12 @@ not guarantee mobile correctness.
 
 ---
 
-## Gotcha 9: Firing navigation events when the action is unavailable is silently no-op
+## Gotcha 9: Firing navigation events when the action is not in `availableActions`
 
 **What happens:** the LWC dispatches `FlowNavigationBackEvent` on the very
-first screen of a flow. Nothing happens. No error, no log entry.
+first screen of a flow, where Back is not available (lwcguide
+use-flow-screen-navigate). UNVERIFIED (2026-10-20): that nothing happens and no
+error is logged is observed behaviour.
 
 **When it occurs:** the action is not in the screen's `availableActions`
 list (Back is unavailable on screen 1; Next is unavailable on the last
@@ -223,26 +230,24 @@ screen" — `FINISH` present, `NEXT` absent.
 
 ---
 
-## Gotcha 10: Apex-defined types require `extensionName` on the property
+## Gotcha 10: Apex-defined types use the `apex://` type form
 
-**What happens:** the LWC accepts an Apex-defined type as input. The
-`<property type="apex">` declaration deploys, the LWC sees the input as
-an empty object at runtime.
+**What happens:** the LWC accepts an Apex-defined type as input, but the
+`<property type="apex">` form is not the documented one. UNVERIFIED
+(2026-10-20): the "empty object at runtime" outcome is observed behaviour.
 
-**When it occurs:** the meta.xml omits `extensionName`:
-
-```xml
-<property name="payload" type="apex"/>   <!-- BROKEN -->
-```
-
-**How to avoid:** declare the fully qualified Apex class name:
+**When it occurs:** the meta.xml uses a bare `type="apex"` (with or without an
+`extensionName` attribute, which the LWC guide does not list):
 
 ```xml
-<property name="payload"
-          type="apex"
-          extensionName="MyNamespace.MyApexType"/>
+<property name="payload" type="apex"/>   <!-- not the documented form -->
 ```
 
-If the Apex type is defined in the default namespace, omit the namespace
-prefix but keep the attribute. Without `extensionName`, Flow Builder
-cannot validate the type and runtime serialization fails silently.
+**How to avoid:** use the `apex://` form (lwcguide targets-lightning-flow-screen):
+
+```xml
+<property name="payload" type="apex://MyNamespace.MyApexType"/>
+```
+
+If the class is in the component's own namespace, omit the namespace; for a
+managed-package class, specify the package namespace.

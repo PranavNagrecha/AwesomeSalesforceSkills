@@ -868,6 +868,15 @@ releases:
     - flow/flow-runtime-context-and-sharing
     - flow/flow-runtime-error-diagnosis
     - flow/flow-screen-input-validation-patterns
+    - flow/flow-screen-lwc-components
+    - flow/recursion-and-re-entry-prevention
+    - flow/scheduled-flows
+    - flow/screen-flow-accessibility
+    - flow/screen-flows
+    - integration/automotive-cloud-setup
+    - integration/manufacturing-cloud-setup
+    - integration/named-credentials-setup
+    - integration/net-zero-cloud-setup
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'

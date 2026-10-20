@@ -136,4 +136,6 @@ You review one writer's uncommitted worktree. You may edit, you never commit. Fo
 - 2026-10-20 (R3-06 batch 6): when a corpus passage has two lines that pull different ways (`Jwt` "Reserved for future use" at api_meta L66197 vs "select Jwt" at L66199), state both with their lines — quoting one side is a cite defect.
 - 2026-10-20 (R3-06 batch 6): a checker may ERROR on a missing field only if the guide marks that field Required; FlowLoop.nextValueConnector is not Required (api_meta 264 L73420), so its absence is a WARN. Open the field's row before choosing ERROR.
 - 2026-10-20 (R3-06 batch 6): an object-index or table-of-contents line is never a cite — cite the object's own page (FlowInterviewLog is obj 264 L140750, not the index line L8369).
+- 2026-10-20 (R3-06 batch 7): a contradicted claim may not be left standing under an UNVERIFIED hedge — when the cited line says the opposite ("recalculated automatically", api_meta 264 L16757) the sentence is corrected, not marked; a marker is for silence, never for contradiction.
+- 2026-10-20 (R3-06 batch 7): packaging and credentials facts live in pkg2_dev (packaged named credentials exclude secrets, L9543-9544) — grep pkg2_dev and sfdx_dev for any claim about what a package or deploy carries before marking it.
 

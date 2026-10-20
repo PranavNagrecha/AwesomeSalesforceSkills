@@ -11,6 +11,7 @@ Use this template when working on tasks in this area.
 ## Context Gathered
 
 - Net Zero Cloud license confirmed active (standard objects visible): YES / NO
+- `IndustriesSettings` flags on (enableSustainabilityCloud, enableSCCarbonAccounting, others needed):
 - Disclosure framework(s) in scope (CSRD/ESRS, TCFD, CDP, SBTi, GHG Protocol):
 - Operating regions (drives factor set selection):
 - Activity data sources (utility bills, fuel logs, ERP spend, supplier data):

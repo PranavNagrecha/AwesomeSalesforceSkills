@@ -19,8 +19,8 @@ a separate validation rule, which is awkward — a custom LWC is justified.
 **Problem without this skill:** authors commonly forget the
 `lightning__FlowScreen` target (component never appears in the palette),
 declare an `outputOnly` property without dispatching `FlowAttributeChangeEvent`
-(the Flow variable stays empty), or write `async validate()` (the validation
-is silently ignored).
+(reactive targets never see the value), or write `async validate()` (UNVERIFIED
+2026-10-20: the validation is observed to be bypassed; the guide is silent).
 
 **Solution:**
 
@@ -73,7 +73,7 @@ export default class CaseReferenceCapture extends LightningElement {
         this.dispatchEvent(new FlowAttributeChangeEvent('caseReference', newValue));
     }
 
-    // Synchronous. Flow ignores async returns silently.
+    // Keep validate() a plain synchronous method (UNVERIFIED 2026-10-20: async behaviour is undocumented).
     @api
     validate() {
         if (!this.caseReference || !PATTERN.test(this.caseReference)) {
@@ -110,12 +110,12 @@ export default class CaseReferenceCapture extends LightningElement {
   `FlowAttributeChangeEvent` dispatch in `handleChange`. Both are required;
   one without the other does nothing.
 - `validate()` is synchronous and returns the documented shape. The Flow
-  runtime calls it on every Next click and blocks navigation when
-  `isValid: false`.
+  runtime calls it when the flow moves to the next screen or finishes
+  (lwcguide use-flow-validate-external-internal-methods).
 - `placeholder` is a regular `@api` input declared in `<targetConfig>`
   without `role`, so admins can configure it from the property panel.
-- `<supportedFormFactors>` includes `Small`, so the component also runs in
-  the Salesforce mobile app.
+- `<supportedFormFactors>` includes `Small`. UNVERIFIED (2026-10-20): the
+  FlowScreen target page does not document this tag; verify on a device.
 
 ---
 
@@ -176,10 +176,12 @@ that the Flow runtime auto-populates.
 
 **Why it works:**
 
-- The dispatch order is attribute-change first, then `Next`. Reversed, the
-  next screen may render before the variable update propagates.
-- The `availableActions` guard prevents firing `Next` on the final screen
-  (where it does nothing) or in a paused state.
+- The dispatch order is attribute-change first, then `Next`. The guide warns
+  that firing both at the same time can race because the component may not
+  have rendered the updated values before navigation starts (lwcguide
+  use-best-practices-reactivity); test this on device.
+- The `availableActions` guard prevents firing `Next` where it is not in the
+  list, e.g. on the final screen where Finish applies (lwcguide use-flow-screen-navigate).
 - `validate()` still implements the same rule for users who manually click
   Next without scanning.
 
@@ -207,7 +209,7 @@ this.dispatchEvent(new FlowAttributeChangeEvent('selectedRegion', value));
 
 The admin in Flow Builder maps `regionPicker.selectedRegion` →
 `{!flowVar_Region}` (a screen-level Flow variable) → `regionCostSummary.region`
-(the consuming LWC's input). With Flow API version 59.0 +, the second LWC's
+(the consuming LWC's input). With a flow on API 59.0 or later, the second LWC's
 `region` setter fires the moment the first LWC dispatches the event, with no
 Next click.
 
@@ -224,7 +226,7 @@ set region(value) {
 **Why it works:**
 
 - There is NO direct LWC-to-LWC binding. The Flow variable is the contract.
-- The Flow's API version must be 59+; older flows ignore the reactive update.
+- The flow's API version must be 59.0+ (57.0 and 58.0 only with `enableFlowReactiveScreens`, api_meta 264 L120052-120055).
 - The consuming LWC uses a setter so it reacts to the input change.
 
 ---
@@ -243,10 +245,10 @@ async validate() {
 
 **What goes wrong:**
 
-The Flow runtime calls `validate()` synchronously during the Next-click
-handler. An `async` function returns a Promise; the runtime sees a truthy
-object that is not the documented shape, treats it as `{ isValid: true }`,
-and lets navigation proceed. Users sail past the duplicate check.
+An `async` function returns a Promise, not the documented
+`{ isValid, errorMessage }` pair. UNVERIFIED (2026-10-20): the guide does not
+say what the runtime does with it; the observed behaviour is that navigation
+proceeds and users sail past the duplicate check.
 
 **Correct approach:**
 

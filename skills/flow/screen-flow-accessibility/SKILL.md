@@ -27,9 +27,9 @@ outputs:
   - Remediation list mapped to WCAG 2.2 success criteria
   - Updated screens with accessible labels, grouping, and error handling
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Screen Flow Accessibility
@@ -53,16 +53,34 @@ the extent possible. Auditing against 2.1 — still the default in most
 accessibility guidance — misses six criteria that apply directly to Screen
 Flows.
 
+UNVERIFIED (2026-10-20): the corpus holds no WCAG text and no Salesforce accessibility statement (both live on W3C and Help pages outside it), so every criterion number, the 24×24 px figure, the contrast ratios, the 4.1.1 removal and the "Lightning Experience follows WCAG 2.2 AA" quote in this package come from those sources, not from a corpus line. The Flow metadata claims below are grounded in api_meta 264.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which accessibility standard and level is the procurement or legal target? | 2.1 and 2.2 differ by six criteria (Gotcha 1). | WCAG 2.2 AA, or a named deviation. |
+| Which containers will the flow run in: Lightning Experience, Experience Cloud, both? | A pass in one container does not carry to the other (Gotcha 8). | A container list for the audit plan. |
+| Which fields are inputs that can carry `validationRule`, and which are choice or component fields? | `validationRule` is limited to InputField, LargeTextArea and PasswordField (Gotcha 4). | A per-field plan for attaching errors. |
+| Does any field state requiredness with an asterisk or guidance in `helpText`? | These are the two most common metadata-level failures (Gotchas 2 and 3). | A list of fields to move to `isRequired` and Display Text. |
+| Are there multi-column sections or conditional reveals? | Reading order and reveals are the author's decisions (Gotchas 5 and 6). | Fields reordered and reveals placed after their triggers. |
+| Does any screen contain a `ComponentInstance`? | A custom LWC is a separate audit scope (Gotcha 7). | A named owner and an `lwc/lwc-accessibility` review. |
+| Is `allowPause` wanted, and how long are the screens? | Pause adds a footer control when the org setting is on, and long screens lengthen every traversal (Gotchas 9 and 10). | A per-screen `allowPause` decision and a screen-split plan. |
+
+A proper configuration adds metadata-level fixes, a per-container manual audit and an explicit scope for custom components, which a scanner-only pass does not.
+
 ## Recommended Workflow
 
-1. **Set the target to WCAG 2.2 AA and list the delta.** Six criteria are new
+1. **Set the target to WCAG 2.2 AA and list the delta (W3C text, UNVERIFIED 2026-10-20).** Six criteria are new
    at A/AA: 2.4.11 Focus Not Obscured (Minimum, AA), 2.5.7 Dragging Movements
    (AA), 2.5.8 Target Size (Minimum, AA) at 24×24 CSS pixels, 3.2.6 Consistent
    Help (A), 3.3.7 Redundant Entry (A), and 3.3.8 Accessible Authentication
    (Minimum, AA). Note that 4.1.1 Parsing was removed in 2.2.
 2. **Move semantics out of prose into properties.** `isRequired` for
-   requiredness (never an asterisk in `fieldText`); `validationRule` with an
-   `errorMessage` so the message attaches to its field; `fieldText` as a visible
+   requiredness (never an asterisk in `fieldText`; not supported for DisplayText
+   or boolean input fields, api_meta 264 L74482-74484); `validationRule` with an
+   `errorMessage` so the message attaches to its field (supported for InputField,
+   LargeTextArea and PasswordField only, api_meta 264 L74550-74552); `fieldText` as a visible
    label, never a placeholder.
 3. **Fix the reading order in metadata.** Multi-column screens use
    `RegionContainer` and `Region`, and DOM order follows metadata order, not the
@@ -85,14 +103,14 @@ Flows.
 
 | Requirement | Platform property | If you skip it |
 |---|---|---|
-| Required field | `isRequired` | An asterisk in the label announces as "star" and carries no semantics |
-| Field-attached error | `validationRule` + `errorMessage` | A Display Text error block is unassociated and easy to miss |
+| Required field | `isRequired` (not for DisplayText or boolean input, L74482-74484) | An asterisk in the label carries no semantics (screen reader "star" announcement: UNVERIFIED 2026-10-20) |
+| Field-attached error | `validationRule` + `errorMessage` (InputField, LargeTextArea, PasswordField only, L74550-74552) | A Display Text error block is unassociated and easy to miss |
 | Visible label | `fieldText` | A placeholder disappears on typing and has low contrast by design |
-| Reading order | Order of `<fields>` within `Region` | Tab order follows metadata, not layout |
+| Reading order | Order of `<fields>` within `Region` (UNVERIFIED 2026-10-20: that DOM and tab order follow metadata order is observed behaviour, not documented) | Tab order follows metadata, not layout |
 | Conditional content | `visibilityRule` | — but adjacency to the trigger is your decision, not the platform's |
-| Supplementary info | `helpText` | — it renders behind a hover/activate interaction; do not put essentials there |
+| Supplementary info | `helpText` | — it "appears if the end user clicks the help icon" (api_meta 264 L74449-74450); do not put essentials there |
 
-Nothing on this list is an ARIA attribute, because a Screen Flow author cannot
+Nothing on this list is an ARIA attribute, because (UNVERIFIED 2026-10-20: the metadata types expose no such property, but the corpus does not state the negative) a Screen Flow author cannot
 set arbitrary attributes on standard components. ARIA advice applies inside a
 custom LWC and nowhere else on the screen.
 
@@ -110,8 +128,12 @@ custom LWC and nowhere else on the screen.
 ## Error Handling Pattern
 
 - Field-level errors use the field's own `validationRule` with an
-  `errorMessage`. That is what attaches the message to the field so it is
-  announced in context.
+  `errorMessage` ("the error message to display when formulaExpression is false",
+  api_meta 264 L73389-73390). That is what attaches the message to the field so it is
+  announced in context. `validationRule` is supported only on InputField,
+  LargeTextArea and PasswordField (api_meta 264 L74550-74552); radio, dropdown,
+  multi-select and component fields have none, so use `isRequired` and a Display Text
+  message for them.
 - The `errorMessage` is a string you write. Write it as an instruction — "Enter a
   postal code in the format A1A 1A1" — not as a verdict.
 - Reserve a screen-level Display Text summary for cross-field rules that have no
@@ -123,20 +145,20 @@ custom LWC and nowhere else on the screen.
 
 ## Focus And Keyboard
 
-- Tab order follows metadata order within `Region` elements, which is what you
+- Tab order follows metadata order within `Region` elements (UNVERIFIED 2026-10-20: observed, not documented), which is what you
   control. Verify by tabbing through with no mouse and writing down the stops.
 - Every interactive control must be reachable by Tab / Shift-Tab. Anything
   reachable only by mouse is a failure with no exceptions.
-- Radio groups: arrow keys move within the group, Tab exits it.
+- Radio groups: arrow keys move within the group, Tab exits it (UNVERIFIED 2026-10-20: browser behaviour, not in the corpus).
 - The focus indicator must remain visible and unobscured by the flow footer, a
   modal, or a sticky site header — WCAG 2.2's 2.4.11. Test at a narrow viewport,
   where conditional reveals push content around.
-- Long screens have no skip mechanism. Screen length is an accessibility
-  parameter, not just a layout one.
+- Long screens have no skip mechanism (UNVERIFIED 2026-10-20: the negative is not in the corpus). Screen length is an accessibility
+  parameter, not just a layout one. `showFooter` and `showHeader` default to true; hiding them means you must supply navigation and help text in components (api_meta 264 L74235-74240, L74252-74257).
 
 ## Color Contrast
 
-- 4.5:1 for normal text, 3:1 for large text and UI components.
+- 4.5:1 for normal text, 3:1 for large text and UI components (WCAG values, UNVERIFIED 2026-10-20).
 - Colour is never the sole signal (WCAG 1.4.1). Requiredness comes from
   `isRequired`; error state comes from `validationRule` text. Styling then
   reinforces something that already exists rather than carrying it.
@@ -146,7 +168,7 @@ custom LWC and nowhere else on the screen.
 
 ## Content Hygiene Inside Display Text
 
-`fieldText` accepts rich text, so a Display Text field can carry markup nobody
+UNVERIFIED (2026-10-20): the metadata describes `fieldText` only as the "field label that is displayed on the screen" supporting merge fields (api_meta 264 L74401-74402); that a Display Text field takes rich-text markup is observed behaviour. Where it does, it can carry markup nobody
 reviewed as content:
 
 - Images that convey information need alt text; decorative ones need empty alt.

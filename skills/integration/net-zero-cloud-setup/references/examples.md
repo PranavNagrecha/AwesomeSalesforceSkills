@@ -1,5 +1,7 @@
 # Examples — Net Zero Cloud Setup
 
+UNVERIFIED (2026-10-20): the corpus holds no Net Zero Cloud Developer Guide; object and DPE names are as the package authors described them, and company profiles, counts, percentages and emission totals below are illustrative, not measured.
+
 ## Example 1: First-Year CSRD Inventory for an EU Manufacturer
 
 **Context:** A mid-sized EU manufacturer is preparing its first CSRD ESRS E1 disclosure. Operating in 4 EU countries, 12 plants, 800 vehicles in fleet, ~6,000 suppliers in Tier 1.

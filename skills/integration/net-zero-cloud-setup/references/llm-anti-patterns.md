@@ -1,6 +1,7 @@
 # LLM Anti-Patterns — Net Zero Cloud Setup
 
 Common mistakes AI coding assistants make when generating or advising on Net Zero Cloud Setup.
+UNVERIFIED (2026-10-20): the corpus holds no Net Zero Cloud Developer Guide, so the object-level and DPE claims in these patterns are not corpus-grounded; see the note in SKILL.md.
 These patterns help the consuming agent self-check its own output.
 
 ## Pattern 1: Building Custom `Carbon_Footprint__c` Objects

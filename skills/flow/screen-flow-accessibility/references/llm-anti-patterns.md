@@ -16,8 +16,8 @@ targets it.
 **Correct pattern:** Salesforce states that Lightning Experience follows Section
 508 and WCAG 2.2 Level AA to the extent possible. Audit against 2.2. The delta
 that matters here is 2.4.11 Focus Not Obscured (Minimum), 2.5.7 Dragging
-Movements, 2.5.8 Target Size (Minimum) at 24×24 CSS pixels, 3.3.7 Redundant Entry
-and 3.3.8 Accessible Authentication (Minimum) — plus the removal of 4.1.1
+Movements, 2.5.8 Target Size (Minimum) at 24×24 CSS pixels, 3.2.6 Consistent Help, 3.3.7 Redundant Entry
+and 3.3.8 Accessible Authentication (Minimum) (W3C text, UNVERIFIED 2026-10-20) — plus the removal of 4.1.1
 Parsing, which means an old duplicate-ID finding may no longer be a failure.
 
 **Detection hint:** "WCAG 2.1" as the stated target in a Salesforce
@@ -36,7 +36,7 @@ training data, and the guidance is correct for hand-written HTML. Nothing in the
 prompt signals that the author is editing declarative metadata.
 
 **Correct pattern:** a Screen Flow author cannot set arbitrary attributes on
-standard components. The available levers are metadata properties — `isRequired`
+standard components (UNVERIFIED 2026-10-20: the negative is not in the corpus). The available levers are metadata properties — `isRequired`
 for required semantics, `validationRule` with an `errorMessage` for field-attached
 errors, `fieldText` for the label, field order for reading order, `visibilityRule`
 for conditional content. ARIA advice applies only inside a custom LWC, which is
@@ -59,7 +59,7 @@ metadata and easy to overlook.
 **Correct pattern:** set `isRequired` to `true` and remove the asterisk. The
 marker, the announcement, and the translated text then come from the component.
 An asterisk typed into a label is a character a screen reader reads as "star" and
-no assistive technology treats as a requirement.
+no assistive technology treats as a requirement (UNVERIFIED 2026-10-20: assistive-technology behaviour is not in the corpus).
 
 **Detection hint:** `*` in a `<fieldText>` value.
 
@@ -75,7 +75,7 @@ in a Display Text block at the top with links to each field.
 hand-built web forms and is heavily documented. The model reproduces the shape
 without the platform's own affordance.
 
-**Correct pattern:** `validationRule` on the screen field attaches the message to
+**Correct pattern:** `validationRule` on the screen field (InputField, LargeTextArea and PasswordField only, api_meta 264 L74550-74552) attaches the message to
 its field, which is what makes it announced in context. Write the `errorMessage`
 as an instruction, not a verdict. A screen-level summary is a supplement for
 cross-field validation with no single field to attach to — not the mechanism.
@@ -94,8 +94,7 @@ stays clean."
 **Why it happens:** it is what the property is named, and it produces a tidier
 screen. The rendering behaviour is not visible from the metadata.
 
-**Correct pattern:** `helpText` renders as an icon the user must hover or
-activate. Content required in order to answer the field correctly must be in a
+**Correct pattern:** `helpText` "appears if the end user clicks the help icon" (api_meta 264 L74449-74450). Content required in order to answer the field correctly must be in a
 Display Text field in the reading order. The test: if a user who never opens the
 help icon can still complete the field, it belongs in Help Text.
 
@@ -135,7 +134,7 @@ The container's contribution to the rendered result is not visible in the flow
 metadata.
 
 **Correct pattern:** the two containers apply different themes, different SLDS
-versions, and different page structure. Contrast, focus order, and focus
+versions, and different page structure (UNVERIFIED 2026-10-20: not in the corpus). Contrast, focus order, and focus
 obscuring can all differ. Run the audit in every container the flow is actually
 published to.
 

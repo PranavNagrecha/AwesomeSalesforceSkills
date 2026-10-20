@@ -30,9 +30,9 @@ outputs:
   - "review findings for weak screen design or risky save placement"
   - "guidance for using standard components versus custom LWC screen components"
 dependencies: []
-version: 2.1.0
+version: 2.1.1
 author: Pranav Nagrecha
-updated: 2026-07-08
+updated: 2026-10-20
 ---
 
 Use this skill when the Flow is interactive and the quality of the user journey matters as much as the automation logic. Screen flows succeed when they guide the user through a deliberate sequence, validate at the right moments, and commit data only where the consequences are clear. They become fragile when navigation, validation, and side effects are all mixed together casually.
@@ -49,6 +49,20 @@ Gather if not available:
 - At what point should the flow create or update data, and what should happen if the user clicks Back, Cancel, or Next with invalid inputs?
 - Who is the target user (internal employee on desktop, field agent on mobile, Experience Cloud customer)?
 - Will this flow be embedded as a Quick Action, Lightning Record Page component, utility bar flow, or standalone URL?
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Where does the first record change happen, and can the user still go Back after it? | Early DML makes Back and Cancel misleading (Gotcha 1). | A commit point after the review screen, or a stated staging reason. |
+| Which inputs are standard components and which need a custom LWC? | Custom components must carry the validation contract (Gotcha 2). | A gap list per custom component and an owner. |
+| How many screens, and on which surface? | Surface and count set the Back/Cancel semantics (Gotchas 3 and 7). | A screen budget per surface. |
+| Are Back and Finish enabled on the right screens? | `allowBack` and `allowFinish` are per-screen properties (Gotchas 5 and 8). | A per-screen navigation table. |
+| Do any multi-select outputs feed a Loop, Get Records or Transform? | The output is a semicolon-delimited string (Gotcha 11). | A conversion step in the flow. |
+| Should returning to a screen keep or reset the user's inputs? | `inputsOnNextNavToAssocScrn` decides (Gotcha 12). | UseStoredValues or ResetValues per component. |
+| Who runs the flow: internal user, mobile agent, or site visitor? | Mobile and Experience Cloud change layout and access (Gotchas 6 and 9; UNVERIFIED 2026-10-20, Help-level). | The audience and a device or guest-access review. |
+
+A proper configuration adds a deliberate commit point, a validation contract for every custom component and explicit navigation properties, which "just adding screens" leaves to defaults.
 
 ## Core Concepts
 
@@ -69,7 +83,7 @@ If the flow creates or updates records before the user reaches a natural confirm
 
 Flow screen components cover many common needs without custom code. Reach for a custom LWC screen component only when the interaction model, validation behavior, or rendering requirement truly exceeds what standard screen elements provide.
 
-Standard screen components handle:
+Standard screen components handle (UNVERIFIED 2026-10-20: this component list is a Help list, not in the corpus; the metadata field types are in api_meta 264 L74413-74441):
 - Text, Number, Date, DateTime, Email, URL, Phone inputs
 - Picklist, Multi-select Picklist, Radio Buttons, Checkbox, Checkbox Group
 - Lookup (single- and multi-select)
@@ -79,7 +93,7 @@ Standard screen components handle:
 - Data Table (including editable)
 - Address compound input
 
-**Multi-select choice components output a string, not a collection.** Checkbox Group and Multi-Select Picklist let a user pick more than one value (unlike single-select Picklist and Radio Buttons), but they store every checked selection in a single semicolon-delimited text string, not a native Flow collection variable. Feeding that output straight into a Loop, a Get Records filter, or a Transform element fails — those elements expect structured (collection) data, so convert the string to a collection first. Checkbox Group, Choice Lookup, and Multi-Select Picklist are all explicitly incompatible with the Transform element for this reason, and all three require the Lightning runtime (they do not render on the Classic Flow runtime). On Lightning runtime version 58 and earlier these components also keep no built-in memory of their values: selections are dropped on Back navigation, pause/resume, or an input-validation error unless an attribute is configured to retain them. From Winter '24 (GA; Beta in Spring '23), Checkbox Group is a reactive source — other components on the same screen can react to its selections without a Next click — and since Spring '23 its choices can be backed by a multi-select picklist field with record-type awareness.
+**Multi-select choice components output a string, not a collection.** A `MultiSelectCheckboxes` or `MultiSelectPicklist` screen field "stores its field value as a concatenation of the user-selected choice values, separated by semicolons" and supports only the string data type (api_meta 264 L74442-74447, L74361-74364). Feeding that string into a Loop, a Get Records filter or a Transform element needs a conversion to a collection first. UNVERIFIED (2026-10-20): that Checkbox Group, Choice Lookup and Multi-Select Picklist are "explicitly incompatible with the Transform element", that they need the Lightning runtime, that Checkbox Group became a reactive source in Winter '24 (Beta in Spring '23) and that its choices can be backed by a multi-select picklist field with record-type awareness (since Spring '23) are Help and release-note statements, not corpus lines. Value retention is metadata-controlled: `inputsOnNextNavToAssocScrn` is `UseStoredValues` (default) or `ResetValues` and applies to screen components in API 51.0 and later and to record fields in API 57.0 and later (api_meta 264 L74469-74480), so the earlier claim that these components "keep no built-in memory" on runtime v58 and earlier is CONTRADICTED for flows at those API versions; UNVERIFIED: what a pre-51.0 flow or the "Lightning runtime version 58" number does.
 
 A custom LWC screen component is warranted when you need: cascading reactive UI between multiple fields on the same screen, real-time external-system validation, a rendering that truly isn't expressible with standard components (drag-and-drop, inline image annotation, etc.), or when a reusable LWC you already own must be surfaced.
 
@@ -88,7 +102,7 @@ A custom LWC screen component is warranted when you need: cascading reactive UI 
 A custom LWC used in Flow has to cooperate with Flow runtime validation intentionally. That means implementing the right methods and making sure internal validation, externally supplied error messages, and displayed errors stay consistent with how the user moves between screens.
 
 Required contract for Flow-compatible LWCs:
-- `@api validate()` method returning `{ isValid: boolean, errorMessage?: string }`.
+- `@api validate()` method returning `{ isValid: boolean, errorMessage?: string }`; the flow calls it when it moves to the next screen or finishes, and `setCustomValidity()` / `reportValidity()` are the hooks that receive and render external and internal errors (lwcguide use-flow-validate-external-internal-methods).
 - `@api`-exposed properties aligning with Flow variable types.
 - `FlowAttributeChangeEvent` dispatched when internal state changes affect Flow variables.
 - `FlowNavigationNextEvent` (optional) when the component wants to force advancement.
@@ -99,7 +113,7 @@ Missing any of these creates the "Next clicks past invalid data" class of bugs.
 
 The number of screens, presence of a Back path, and clarity of button labels all shape the experience. If a flow has too many screens or too much hidden branching, users stop understanding where they are in the process.
 
-**Heuristic:** < 4 screens feels like a form; 4–7 screens feels like a wizard; > 7 screens feels like a maze. If the flow needs more than 7 screens, reconsider: is this one task or two? Can some screens be combined? Does a custom LWC display replace a multi-screen sequence?
+**Heuristic (UNVERIFIED 2026-10-20: a rule of thumb, not a documented limit):** < 4 screens feels like a form; 4–7 screens feels like a wizard; > 7 screens feels like a maze. If the flow needs more than 7 screens, reconsider: is this one task or two? Can some screens be combined? Does a custom LWC display replace a multi-screen sequence?
 
 ## Common Patterns
 
@@ -144,7 +158,7 @@ Screen flows behave differently by surface:
 
 | Surface | Behavior | Use for |
 |---|---|---|
-| Quick Action modal | Dialog; Cancel closes without committing; tight screen-count budget (3–4 max); limited width | Focused tasks |
+| Quick Action modal | UNVERIFIED (2026-10-20: surface behaviours in this table are Help-level, not in the corpus). Dialog; Cancel closes without committing; tight screen-count budget (3–4 max); limited width | Focused tasks |
 | Lightning Record Page component | Embedded in the record view; persistent while user navigates; stateful across record refreshes | Ongoing data entry |
 | Standalone URL | Full-page flow; Cancel navigates away; widest width | Wizards and one-off journeys |
 | Utility bar flow | Persistent access; shared state across records | Tools |
@@ -175,13 +189,12 @@ The commit-timing rules change per surface: modal Cancel is a strong "undo" sign
 
 ## Recommended Workflow
 
-Step-by-step instructions for an AI agent or practitioner activating this skill:
-
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Common Patterns above; choose the surface deliberately
-4. Validate — run the skill's checker script and verify against the Review Checklist above
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Choose the surface (Quick Action, record page, standalone URL, utility bar) and the user, then fix the screen budget for it.
+2. Sketch the screens and mark every Create/Update/Delete element; move each one after the review screen unless the business case in the commit-timing table justifies it (Pattern 1).
+3. For each input pick a standard component first; justify any custom LWC against the Pattern 2 gap list and hand its build to `flow/flow-screen-lwc-components`.
+4. For every multi-select output, convert the semicolon-delimited string to a collection before a Loop or Get Records.
+5. Set Back, Cancel and Finish deliberately (`allowBack`, `allowFinish`, `showFooter`) and add a fault path on the commit step.
+6. Run `python3 scripts/check_screen_flows.py --manifest-dir <flows and lwc dir>`, walk the Review Checklist, and record decisions in `templates/screen-flows-template.md`.
 
 ---
 
@@ -191,14 +204,14 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 2. **Custom screen components need to cooperate with Flow validation** — they do not get correct validation behavior for free; missing `@api validate()` lets users click Next past errors.
 3. **Too many screens feel like poor information architecture, not better guidance** — sequence alone does not improve UX.
 4. **Standard components are easier to support than fully custom screen UIs** — custom screens should be the exception.
-5. **Finish button does NOT always go where admin expects** — screen flows finish at an implicit redirect; use `{!$Flow.CurrentRecord}` or explicit redirect to control.
+5. **Finish button does NOT always go where admin expects (UNVERIFIED 2026-10-20: the redirect behaviour and `{!$Flow.CurrentRecord}` are not in the corpus)** — use an explicit redirect to control it. `allowFinish` and `allowBack` cannot both be false (api_meta 264 L74178-74179).
 6. **Mobile behavior differs from desktop** — custom LWCs may render differently; some standard components (Data Table edit mode) have reduced mobile support.
 7. **Quick Action modal has a narrower width than standalone** — layouts that work in full-page break in the modal.
-8. **Back-button is disabled by default on some screen types** — explicitly enable if the UX needs it; don't rely on browser back.
-9. **Screen flows in Experience Cloud inherit the site's profile, not the invoking user's** — sharing implications differ (see `flow/flow-for-experience-cloud`).
-10. **Lookup component defaults to the first match on typeahead** — users sometimes pick the wrong record; include a disambiguator (e.g. show Account Name next to Contact Name).
-11. **Checkbox Group / Multi-Select Picklist output is a semicolon-delimited string, not a collection** — wiring it straight into a Loop or Get Records filter silently breaks; convert to a collection first. Checkbox Group, Choice Lookup, and Multi-Select Picklist are also incompatible with the Transform element.
-12. **Checkbox Group requires the Lightning runtime and, on runtime v58 and earlier, has no memory** — selections vanish on Back, pause/resume, or a validation error unless an attribute is configured to retain them. From Winter '24 it can serve as a reactive source for other same-screen components.
+8. **Back-button visibility is a screen property** — `allowBack` defaults to true and the Previous button shows only if the user visited a previous screen and `showFooter` is true (api_meta 264 L74170-74177); set it false after an action you do not want repeated, such as a payment. UNVERIFIED (2026-10-20): the earlier claim that Back is disabled by default on some screen types is not in the corpus. Don't rely on browser back.
+9. **Screen flows in Experience Cloud run under the site user's access (UNVERIFIED 2026-10-20: not in the corpus)** — sharing implications differ (see `flow/flow-for-experience-cloud`).
+10. **Lookup component defaults to the first match on typeahead (UNVERIFIED 2026-10-20)** — users sometimes pick the wrong record; include a disambiguator (e.g. show Account Name next to Contact Name).
+11. **Checkbox Group / Multi-Select Picklist output is a semicolon-delimited string, not a collection** (api_meta 264 L74442-74447) — wiring it straight into a Loop or Get Records filter breaks ("silently": UNVERIFIED 2026-10-20); convert to a collection first. Transform-element incompatibility: UNVERIFIED (2026-10-20).
+12. **Value retention follows `inputsOnNextNavToAssocScrn`** — default `UseStoredValues` for screen components in API 51.0+ (api_meta 264 L74469-74480); set `ResetValues` when inputs must refresh. UNVERIFIED (2026-10-20): the Lightning-runtime requirement, "no memory on runtime v58 and earlier" and the Winter '24 reactive-source statement are Help-only.
 
 ## Proactive Triggers
 
@@ -212,7 +225,7 @@ Surface these WITHOUT being asked:
 - **Custom LWC used where standard components would suffice** → Flag as Low. Maintenance-cost observation, not a bug.
 - **Back button disabled on a wizard-style flow** → Flag as Medium. Users want to go back; disabling surprises them.
 - **Screen flow embedded in Experience Cloud without guest-access review** → Flag as Critical. Route to `flow/flow-for-experience-cloud`.
-- **Checkbox Group / Multi-Select Picklist output wired directly into a Loop, Get Records filter, or Transform element** → Flag as High. The output is a semicolon-delimited string, not a collection; convert it first.
+- **Checkbox Group / Multi-Select Picklist output wired directly into a Loop, Get Records filter, or Transform element** → Flag as High. The output is a semicolon-delimited string, not a collection (api_meta 264 L74442-74447); convert it first.
 
 ## Output Artifacts
 

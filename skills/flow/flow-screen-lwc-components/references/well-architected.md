@@ -18,8 +18,8 @@ business process).
   screen LWC that pulls fresh data in `connectedCallback` adds latency
   to every screen render. Prefer pre-fetched Flow variables (cheap)
   over per-screen Apex calls (expensive). The synchronous `validate()`
-  hook is also a performance constraint: anything done there blocks the
-  Next click — keep it pure-function.
+  hook is also a performance constraint: it runs as the flow moves to the next
+  screen or finishes — keep it a pure function.
 - **Scalability** — screen LWCs are per-user, per-screen, per-flow-run,
   so individual scaling is rarely the bottleneck. The bottleneck is the
   Apex they call: a screen LWC that fires an Apex query on every
@@ -28,7 +28,7 @@ business process).
   triggered server calls.
 - **Reliability** — `validate()` is the single point of truth for
   screen-level gating. If it returns the wrong shape, returns a Promise,
-  or throws, navigation is silently allowed. The reliability discipline
+  or throws, navigation is observed to be allowed (UNVERIFIED 2026-10-20: not documented). The reliability discipline
   is to test the validation contract explicitly with Jest, not just by
   clicking through Flow Builder.
 - **Operational Excellence** — `<targetConfig>` is documentation. Every
@@ -56,8 +56,8 @@ business process).
 ## Anti-Patterns
 
 1. **Asynchronous `validate()`.** Returning a Promise from `validate()`
-   silently disables the validation. The Flow runtime treats the screen
-   as valid. Pre-fetch validation data via `@wire` or
+   is observed to bypass the validation (UNVERIFIED 2026-10-20: the guide
+   is silent). Pre-fetch validation data via `@wire` or
    `connectedCallback` and validate against the cached value
    synchronously. This anti-pattern is not just a bug — it is a
    security and data-integrity risk because users sail past intended
@@ -95,7 +95,7 @@ business process).
 
 - **Versioning the I/O contract.** Renaming an `@api` property is a
   breaking change for every Flow that consumes the LWC — the property
-  mapping in Flow Builder breaks silently. Add new properties; deprecate
+  mapping in Flow Builder breaks (UNVERIFIED 2026-10-20: "silently" is observed behaviour). Add new properties; deprecate
   old ones; never rename. Document the contract in the LWC's README.
 - **Testing the validation hook.** Jest tests must call `validate()`
   directly and assert the return shape AND that no Promise is returned:
@@ -107,14 +107,17 @@ business process).
   Flow Interview Logs because no Next click is recorded.
 - **Migration of older flows.** When introducing a reactive screen LWC
   pair, audit the consuming Flow's API version. Flows below 59.0 do
-  not propagate reactive updates; the LWC pair will appear broken
-  without the API version being the actual cause.
+  not get built-in reactivity (57.0 and 58.0 only with
+  `enableFlowReactiveScreens`, api_meta 264 L120052-120055); the LWC pair
+  will appear broken without the API version being the actual cause.
 
 ## Official Sources Used
 
 - Lightning Web Components Dev Guide — Build Components for Flow Screens: https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-builder-screen.html
 - Lightning Web Components Dev Guide — `lightning/flowSupport` Module Reference: https://developer.salesforce.com/docs/platform/lwc/guide/reference-lightning-flow-support.html
 - Lightning Web Components Dev Guide — Configure a Component for Flow Screens: https://developer.salesforce.com/docs/platform/lwc/guide/reference-targets.html
-- Salesforce Help — Reactive Screen Components: https://help.salesforce.com/s/articleView?id=sf.flow_concepts_screen_reactive.htm
+- Salesforce Help — Reactive Screen Components: https://help.salesforce.com/s/articleView?id=sf.flow_concepts_screen_reactive.htm (Help is not fetchable; UNVERIFIED 2026-10-20)
 - Salesforce Architects — Well-Architected: https://architect.salesforce.com/well-architected/overview
-- Winter '24 Release Notes — Reactive Screens: https://help.salesforce.com/s/articleView?id=release-notes.rn_automate_flow_builder_reactive_screens.htm
+- Winter '24 Release Notes — Reactive Screens (UNVERIFIED 2026-10-20: not in the corpus)
+- Metadata API Developer Guide 264 L120052-120055 — `FlowSettings.enableFlowReactiveScreens`; L86762-86765 — `LightningComponentBundle.isExposed`
+- LWC Developer Guide pages `use-flow-screen-navigate`, `use-best-practices-reactivity`, `use-flow-validate-external-internal-methods`, `targets-lightning-flow-screen` (cited as `lwcguide <slug>`)

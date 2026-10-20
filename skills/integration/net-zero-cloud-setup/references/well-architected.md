@@ -2,6 +2,8 @@
 
 ## Relevant Pillars
 
+UNVERIFIED (2026-10-20): the corpus holds no Net Zero Cloud Developer Guide; the bundled factor-set maintenance claim, the "30%+ uncertainty" figure, the 3-5 year progression and the CSRD / SEC liability statements below are not corpus-grounded.
+
 - **Reliability** — Carbon disclosure totals are externally audited and may carry legal liability under CSRD or SEC Climate Disclosure rules. Calculation jobs must run reliably; restated totals must be traceable to the factor change that drove them. DPE job monitoring and audit logging are non-optional.
 - **Security** — Emission data, supplier engagement scoring, and unverified Scope 3 estimates can be commercially sensitive. Restrict access to the Sustainability objects via a dedicated permission set; limit external sharing of calculation outputs.
 - **Operational Excellence** — Annual factor refresh cycles (DEFRA, EPA, IEA) require recurring restatement workflows. Build the restatement workflow as a runbook, not a one-off project task.
@@ -30,7 +32,8 @@
 
 ## Official Sources Used
 
-- Net Zero Cloud (Salesforce Help) — https://help.salesforce.com/s/articleView?id=sf.netzero_cloud.htm&type=5
+- Net Zero Cloud (Salesforce Help) — https://help.salesforce.com/s/articleView?id=sf.netzero_cloud.htm&type=5 (UNVERIFIED 2026-10-20: Help is not in the corpus)
+- Metadata API Developer Guide 264 — `IndustriesSettings` Net Zero flags L123160-123272; `FuelType` L78287-78305, `FuelTypeSustnUom` L78398-78408; translation keys L146237-146240, L146917-146933. Salesforce DX Developer Guide 264 — `SustainabilityApp` scratch org feature L9201-9218
 - Net Zero Cloud Object Reference (`StnryAssetCrbnFtprnt`, `Scope3CrbnFtprnt`, `EmssnFctr`) — https://developer.salesforce.com/docs/atlas.en-us.netzero_cloud_dev.meta/netzero_cloud_dev/netzero_cloud_intro.htm
 - Salesforce Industries Common Resources Developer Guide (Data Processing Engine, Batch Management) — https://developer.salesforce.com/docs/atlas.en-us.industries_dev.meta/industries_dev/industries_dev_intro.htm
 - GHG Protocol Corporate Accounting and Reporting Standard — https://ghgprotocol.org/corporate-standard

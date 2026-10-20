@@ -92,11 +92,13 @@ Start: Object = Contact, Criteria = Title = 'Director'
 "Use a scheduled flow to process 100,000 inactive accounts every night."
 ```
 
-**Why it happens:** LLMs recommend Flow for everything because it is declarative. An object-selected scheduled flow processes interviews in batches — 200 by default, settable from 1 to 200 in the Start element — and the total interviews per schedule is capped (250,000 per flow; per 24 hours, 250,000 or user licenses × 200, whichever is greater). Note the range: batch size can only be lowered below 200, never raised. For very high volumes, Batch Apex is more appropriate.
+**Why it happens:** LLMs recommend Flow for everything because it is declarative. An object-selected scheduled flow processes interviews in batches — 200 by default, settable from 1 to 200 in the Start element — and the total interviews per schedule is capped. UNVERIFIED (2026-10-20): the batch size (200, settable 1–200) and the 250,000-per-flow and "250,000 or user licenses × 200" figures are not in the corpus for flows; the 250,000 / licenses × 200 figure is the scheduled Apex execution limit (apexdev 264 L17155), a different limit. The corpus exposes `ScheduledFlowRunLimit` (rest 264 L8172). For very high volumes, Batch Apex is more appropriate.
 
 **Correct pattern:**
 
 Volume decision matrix:
+UNVERIFIED (2026-10-20): these bands are rules of thumb, not documented limits, and differ from the 250 / 500 figures in SKILL.md.
+
 - **< 2,000 records**: Scheduled flow is appropriate
 - **2,000 - 50,000 records**: Evaluate carefully; consider Batch Apex
 - **> 50,000 records**: Use Batch Apex with configurable scope size
@@ -123,7 +125,7 @@ global class InactiveAccountBatch implements Database.Batchable<SObject> {
 [If one record fails, the entire batch rolls back]
 ```
 
-**Why it happens:** LLMs describe the rollback behavior but do not design around it. If one record in a batch of 200 causes a DML failure, all 200 records in that batch fail.
+**Why it happens:** LLMs describe the rollback behavior but do not design around it. UNVERIFIED (2026-10-20): that one failing record fails all 200 in its batch is not in the corpus.
 
 **Correct pattern:**
 
@@ -152,7 +154,7 @@ Or design the flow so that individual record failures do not block the batch:
 "Schedule the flow to run at midnight."
 ```
 
-**Why it happens:** LLMs specify a time without clarifying the time zone. Salesforce scheduled flows run in the org's default time zone, which may not be the intended time zone for the business process.
+**Why it happens:** LLMs specify a time without clarifying the time zone. Scheduled flows run at `startTime` in the org's default time zone (meta 264 L74110-74111), which may not be the intended time zone for the business process.
 
 **Correct pattern:**
 
@@ -171,7 +173,7 @@ Or design the flow so that individual record failures do not block the batch:
 
 ```
 "Replace your time-dependent workflow rule with a scheduled flow
-that runs hourly and checks for records that are 24 hours old."
+that runs hourly and checks for records that are 24 hours old." (`FlowSchedule.frequency` Hourly is listed for segment-triggered flows only, meta 264 L74091-74092.)
 ```
 
 **Why it happens:** LLMs correctly advise migrating from workflow rules to flows. But the polling-based scheduled flow has different timing behavior than the event-based time-dependent workflow action.
@@ -180,7 +182,7 @@ that runs hourly and checks for records that are 24 hours old."
 
 Understand the behavioral differences:
 - **Time-dependent workflow**: fires at the exact time offset from the triggering event
-- **Scheduled flow**: fires on a fixed schedule (hourly, daily) and picks up qualifying records
+- **Scheduled flow**: fires on a fixed schedule (Once, Daily or Weekly, meta 264 L74076-74088) and picks up qualifying records
 
 Migration steps:
 1. Document the exact timing requirements

@@ -42,8 +42,8 @@
 
 ## Multi-Select Choice Output Is A String, Not A Collection
 
-**What happens:** A Checkbox Group or Multi-Select Picklist is wired straight into a Loop, a Get Records filter, or a Transform element, and the flow errors or silently processes nothing.
+**What happens:** A Checkbox Group or Multi-Select Picklist is wired straight into a Loop, a Get Records filter, or a Transform element, and the flow errors or processes nothing (UNVERIFIED 2026-10-20: the exact failure mode is not in the corpus).
 
-**When it occurs:** The builder assumes a component that lets users pick several values returns a collection. It does not — every checked selection is stored in one semicolon-delimited text string (unstructured data). Elements that need structured data, such as Loop and Get Records, cannot consume it directly, and Checkbox Group, Choice Lookup, and Multi-Select Picklist are explicitly incompatible with the Transform element.
+**When it occurs:** The builder assumes a component that lets users pick several values returns a collection. It does not — every checked selection is stored in one semicolon-delimited text string (api_meta 264 L74442-74447). Elements that need structured data, such as Loop and Get Records, cannot consume it directly; UNVERIFIED (2026-10-20): the claim that Checkbox Group, Choice Lookup, and Multi-Select Picklist are "explicitly incompatible with the Transform element" is Help-only.
 
-**How to avoid:** Convert the semicolon-delimited string into a collection variable before any Loop, Get Records, or Transform step. Remember these components also require the Lightning runtime, and on Lightning runtime version 58 and earlier they retain no memory of their values — selections are lost on Back navigation, pause/resume, or an input-validation error unless an attribute is configured to keep them.
+**How to avoid:** Convert the semicolon-delimited string into a collection variable before any Loop, Get Records, or Transform step. Value retention is controlled by `inputsOnNextNavToAssocScrn` (default `UseStoredValues` for screen components in API 51.0+, api_meta 264 L74469-74480). UNVERIFIED (2026-10-20): the Lightning-runtime requirement and the "no memory on runtime v58 and earlier" claim are Help-only.

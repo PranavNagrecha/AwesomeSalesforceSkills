@@ -10,15 +10,15 @@ Non-obvious behaviours that make an apparently accessible Screen Flow fail.
 a procurement questionnaire or a VPAT that assesses against 2.2.
 
 **When it occurs:** Whenever the audit criteria were set from older guidance.
-Salesforce's own statement is that "Lightning Experience follows the
+Salesforce's own statement (UNVERIFIED 2026-10-20: a Help page, not in the corpus) is that "Lightning Experience follows the
 internationally recognized best practices in Section 508 of the Rehabilitation
 Act and the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA to the
 extent possible."
 
 **How to avoid:** Audit against 2.2 AA. The delta that matters for a Screen Flow
 is 2.4.11 Focus Not Obscured (Minimum), 2.5.7 Dragging Movements, 2.5.8 Target
-Size (Minimum) at 24×24 CSS pixels, 3.3.7 Redundant Entry, and 3.3.8 Accessible
-Authentication (Minimum). Note also that 4.1.1 Parsing was removed in 2.2 — an
+Size (Minimum) at 24×24 CSS pixels, 3.2.6 Consistent Help, 3.3.7 Redundant Entry, and 3.3.8 Accessible
+Authentication (Minimum) (UNVERIFIED 2026-10-20: W3C text, not in the corpus). Note also that 4.1.1 Parsing was removed in 2.2 — an
 old report flagging duplicate IDs may no longer describe a conformance failure.
 
 ---
@@ -28,8 +28,8 @@ old report flagging duplicate IDs may no longer describe a conformance failure.
 **What happens:** Instructions essential to completing a field are placed in the
 screen component's Help Text, and a meaningful share of users never see them.
 
-**When it occurs:** Always. `helpText` renders as a help icon the user has to
-hover or activate. It is discoverable to a sighted mouse user scanning the form
+**When it occurs:** Always. `helpText` "appears if the end user clicks the help
+icon" (api_meta 264 L74449-74450). It is discoverable to a sighted mouse user scanning the form
 and to nobody else by default.
 
 **How to avoid:** Apply the completion test — if a user who never opens the help
@@ -41,7 +41,7 @@ order.
 
 ## Gotcha 3: An Asterisk in the Label Is Not a Required Field
 
-**What happens:** A screen reader announces "Postal code star, edit text." No
+**What happens:** A screen reader announces "Postal code star, edit text" (UNVERIFIED 2026-10-20: assistive-technology behaviour is not in the corpus). No
 required semantics reach any assistive technology, and enforcement happens in a
 Decision several elements later where the error has lost its connection to the
 field.
@@ -66,7 +66,7 @@ any input.
 routing back to the screen with an error variable) rather than as the screen
 field's own `validationRule`.
 
-**How to avoid:** Use `validationRule` on the field, with an `errorMessage`
+**How to avoid:** Use `validationRule` on the field (supported for InputField, LargeTextArea and PasswordField only, api_meta 264 L74550-74552; choice and component fields have none), with an `errorMessage`
 written as an instruction rather than a verdict — "Enter a postal code in the
 format A1A 1A1," not "Invalid." The platform then attaches the message to its
 field. Reserve a screen-level error summary for cross-field validation that has
@@ -81,7 +81,7 @@ mechanism.
 Nobody notices because nobody tabbed through it.
 
 **When it occurs:** Multi-column screen layouts are built from `RegionContainer`
-and `Region` fields, and the DOM order is the metadata order — not the visual
+and `Region` fields (api_meta 264 L74432-74437), and the DOM order is the metadata order (UNVERIFIED 2026-10-20: observed, not documented) — not the visual
 grid position. Rearranging fields for visual balance rearranges the tab order
 with no visible signal.
 
@@ -132,7 +132,7 @@ which fields are components.
 **What happens:** The same flow, audited and passed in LEX, fails contrast and
 focus checks on an Experience Cloud site.
 
-**When it occurs:** The two containers apply different themes, different SLDS
+**When it occurs:** UNVERIFIED (2026-10-20: container differences are not in the corpus) The two containers apply different themes, different SLDS
 versions, and different surrounding page structure. Brand colours on a site can
 fail contrast against text that passed on the LEX background; the site's page
 structure can change focus order; a sticky site header can obscure the focused
@@ -149,8 +149,8 @@ the second run.
 **What happens:** A keyboard user on a twenty-field screen must tab through every
 field to reach Next, every time they navigate back to correct something.
 
-**When it occurs:** Screen Flows do not provide a skip link, and `showFooter`
-controls whether the navigation footer renders at all rather than where it sits
+**When it occurs:** UNVERIFIED (2026-10-20: that Screen Flows provide no skip link is not in the corpus). `showFooter`
+controls whether the navigation footer renders at all (api_meta 264 L74235-74240) rather than where it sits
 in the tab order.
 
 **How to avoid:** Treat screen length as an accessibility parameter. Splitting a
@@ -166,8 +166,7 @@ correction pass, and the context-switch cost does not.
 **What happens:** An audit finds an unexplained "Pause" control in the tab order
 that the flow author did not knowingly add.
 
-**When it occurs:** `allowPause` on the Screen element defaults to enabled in
-common authoring paths. It adds a footer control, which is another tab stop and
+**When it occurs:** `allowPause` defaults to true, but the Pause button shows only when "Let users pause flows" is enabled in the org's process automation settings, `allowPause` is true, and `showFooter` is true (api_meta 264 L74203-74213). When it shows, it adds a footer control, which is another tab stop and
 another thing a screen reader announces on every screen — and it introduces a
 whole second lifecycle (paused interviews) that most flows have no reason to
 support.
@@ -179,14 +178,14 @@ screen and removes the paused-interview population from the org's cleanup burden
 
 ---
 
-## Gotcha 11: Rich Text in Display Text Can Carry Inaccessible Markup
+## Gotcha 11: Markup in Display Text Can Carry Inaccessible Content
 
 **What happens:** A Display Text field contains an image with no alt text, a
 heading level that skips from `h2` to `h4`, or a link labelled "click here."
 
-**When it occurs:** `fieldText` accepts rich text, and the rich-text editor lets
+**When it occurs:** UNVERIFIED (2026-10-20): the metadata calls `fieldText` the "field label that is displayed on the screen" (api_meta 264 L74401-74402) and does not mention rich text; that Display Text takes rich text, and that the editor lets
 authors insert images, headings, and links without prompting for alternatives or
-checking hierarchy. The output is raw markup in the flow metadata, unreviewed.
+checking hierarchy, is observed behaviour. The output is raw markup in the flow metadata, unreviewed.
 
 **How to avoid:** Read the `fieldText` markup, not just the rendered preview.
 Images that convey information need alt text; decorative ones need empty alt.

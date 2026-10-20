@@ -1,14 +1,39 @@
 #!/usr/bin/env python3
 """Checker script for Named Credentials Setup skill.
 
-Inspects Salesforce metadata in a local directory for common Named Credential
-and External Credential configuration issues.
+Reads *.namedCredential-meta.xml, *.externalCredential-meta.xml and
+*.permissionset-meta.xml under --manifest-dir (any layout). Stdlib only.
+Premises come from Metadata API 264 (cited as meta 264 L<n>):
 
-Uses stdlib only — no pip dependencies.
+  ERROR  a file that does not parse.
+  ERROR  ExternalCredential without authenticationProtocol or label (Required,
+         L66185, L66217), with a protocol outside AwsSv4, Basic, Custom, Jwt,
+         JwtExchange, NoAuthentication, Oauth, Password (L66186-66197), or a
+         parameterType outside the documented list (L66295-66356).
+  ERROR  NamedCredential of type PrivateEndpoint without an
+         OutboundNetworkConnection parameter (L92877-92880).
+  ERROR  PermissionSet externalCredentialPrincipal not in the form
+         ExternalCredential-Principal (L97696-97698).
+  WARN   protocol Jwt, JwtExchange, NoAuthentication or Password ("Reserved for
+         future use", L66193-66197) and internal-only parameter types.
+  WARN   ExternalCredential with no NamedPrincipal or PerUserPrincipal
+         parameter (L66348-66350); a sequenceNumber on a PerUserPrincipal
+         (only valid for NamedPrincipal, L66391); a `principal` element on a
+         parameter (removed in API 58.0, L66364-66383).
+  WARN   NamedCredential of type Legacy (fields deprecated in API 56.0,
+         L92874-92876), SecuredEndpoint without a Url or Authentication
+         parameter (L93044-93087), legacy-only elements on a non-Legacy type
+         (L92679), an Authentication reference to an ExternalCredential file
+         that is not in the directory, a placeholder-looking URL.
+  WARN   when permission-set files are present: a principal that no
+         externalCredentialPrincipalAccesses entry enables (L97687-97704).
 
-Usage:
-    python3 check_named_credentials.py --help
-    python3 check_named_credentials.py --manifest-dir path/to/force-app/main/default
+A URL ending in "/" is not flagged: the guide's own example ends with "/"
+(L93128).
+
+Exit codes: ERROR findings exit 1 always; WARN findings exit 0 unless
+--strict; a directory with none of these files prints one WARN and exits 0; a
+missing directory is an ERROR and exits 1.
 """
 
 from __future__ import annotations
@@ -18,240 +43,168 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-SF_NS = "http://soap.sforce.com/2006/04/metadata"
-
-
-def _tag(name: str) -> str:
-    return f"{{{SF_NS}}}{name}"
-
-
-def _text(element: ET.Element, tag: str) -> str:
-    child = element.find(_tag(tag))
-    return child.text.strip() if child is not None and child.text else ""
-
-
-# ---------------------------------------------------------------------------
-# Named Credential checks
-# ---------------------------------------------------------------------------
-
-def check_named_credentials(nc_dir: Path) -> list[str]:
-    issues: list[str] = []
-    nc_files = list(nc_dir.glob("*.namedCredential-meta.xml"))
-
-    if not nc_files:
-        return issues
-
-    for nc_file in nc_files:
-        try:
-            tree = ET.parse(nc_file)
-        except ET.ParseError as exc:
-            issues.append(f"[NC] Cannot parse {nc_file.name}: {exc}")
-            continue
-
-        root = tree.getroot()
-        label = _text(root, "label") or nc_file.stem
-        endpoint = _text(root, "endpoint")
-        protocol = _text(root, "protocol")
-
-        # Check for trailing slash in endpoint URL
-        if endpoint.endswith("/"):
-            issues.append(
-                f"[NC] '{label}': endpoint URL ends with a trailing slash ('{endpoint}'). "
-                "Apex callouts appending a path will produce double slashes."
-            )
-
-        # Check for legacy credentials that have embedded auth (no externalCredential reference)
-        # Enhanced NCs reference an External Credential; legacy ones embed auth directly.
-        ext_cred_ref = _text(root, "externalCredential")
-        has_embedded_auth = protocol in ("Password", "Oauth")  # legacy protocols in a single record
-
-        if not ext_cred_ref and has_embedded_auth:
-            issues.append(
-                f"[NC] '{label}': appears to be a legacy Named Credential "
-                f"(protocol='{protocol}', no externalCredential reference). "
-                "Consider migrating to the enhanced model (External Credential + Named Credential)."
-            )
-
-        # Check for placeholder or test-looking endpoint URLs in production-looking files
-        if endpoint and any(marker in endpoint.lower() for marker in ["example.com", "localhost", "todo", "placeholder"]):
-            issues.append(
-                f"[NC] '{label}': endpoint URL looks like a placeholder: '{endpoint}'. "
-                "Verify the correct production endpoint is set."
-            )
-
-    return issues
+PROTOCOLS = {"AwsSv4", "Basic", "Custom", "Jwt", "JwtExchange", "NoAuthentication", "Oauth", "Password"}
+RESERVED_PROTOCOLS = {"Jwt", "JwtExchange", "NoAuthentication", "Password"}
+EC_PARAM_TYPES = {
+    "AdditionalRefreshStatusCode", "AuthHeader", "AuthParameter", "AuthProtocolVariant", "AuthProvider",
+    "AuthProviderUrl", "AuthProviderUrlQueryParameter", "AwsStsPrincipal", "CreatedByNamespace", "CustomPrincipal",
+    "ExternalAuthIdentityProvider", "GlobalNamedPrincipal", "JwtBodyClaim", "JwtHeaderClaim", "ManagedByComponent",
+    "ManagedByFeature", "NamedPrincipal", "PerUserPrincipal", "PrincipalIdentityAlias", "SfHttpRequestExtensionName",
+    "SigningCertificate", "SystemUserPrincipal",
+}
+INTERNAL_EC_PARAM_TYPES = {
+    "CreatedByNamespace", "CustomPrincipal", "GlobalNamedPrincipal", "ManagedByComponent", "ManagedByFeature",
+    "PrincipalIdentityAlias", "SfHttpRequestExtensionName", "SystemUserPrincipal",
+}
+LEGACY_ONLY = ("endpoint", "principalType", "protocol", "username", "password", "oauthScope", "authProvider")
+PLACEHOLDERS = ("localhost", "todo", "placeholder")
 
 
-# ---------------------------------------------------------------------------
-# External Credential checks
-# ---------------------------------------------------------------------------
-
-def check_external_credentials(ec_dir: Path) -> list[str]:
-    issues: list[str] = []
-    ec_files = list(ec_dir.glob("*.externalCredential-meta.xml"))
-
-    if not ec_files:
-        return issues
-
-    for ec_file in ec_files:
-        try:
-            tree = ET.parse(ec_file)
-        except ET.ParseError as exc:
-            issues.append(f"[EC] Cannot parse {ec_file.name}: {exc}")
-            continue
-
-        root = tree.getroot()
-        label = _text(root, "label") or ec_file.stem
-        protocol = _text(root, "protocol")
-
-        # Check: principals section exists
-        principals = root.findall(_tag("principals"))
-        if not principals:
-            issues.append(
-                f"[EC] '{label}': no principals defined. "
-                "At least one principal is required for callouts to work."
-            )
-            continue
-
-        for principal in principals:
-            p_name = _text(principal, "principalName") or "(unnamed)"
-            p_type = _text(principal, "principalType")
-
-            # Check: permission set assignments on each principal
-            perm_sets = principal.findall(_tag("permissionSetNameBindings"))
-            if not perm_sets:
-                issues.append(
-                    f"[EC] '{label}' / principal '{p_name}': no Permission Set bindings found. "
-                    "Without Permission Set assignment, no user can make callouts through this principal. "
-                    "This is the most common cause of 401 errors after Enhanced NC setup."
-                )
-
-        # Check: OAuth Authorization Code flow should have a scope defined
-        if protocol == "Oauth":
-            flow_type = _text(root, "oauthFlowType")
-            scope = _text(root, "oauthScope")
-            if flow_type == "AuthorizationCode" and not scope:
-                issues.append(
-                    f"[EC] '{label}': OAuth Authorization Code flow has no scope defined. "
-                    "Ensure the correct scope (e.g., 'openid offline_access') is set to enable token refresh."
-                )
-
-            # Check: Per User + Authorization Code should have offline_access or equivalent for refresh
-            if flow_type == "AuthorizationCode" and scope and "offline_access" not in scope.lower() and "refresh_token" not in scope.lower():
-                issues.append(
-                    f"[EC] '{label}': OAuth Authorization Code scope ('{scope}') does not include "
-                    "offline_access or refresh_token. Without a refresh token, users will need to "
-                    "re-authorize whenever the access token expires."
-                )
-
-    return issues
+def local(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1]
 
 
-# ---------------------------------------------------------------------------
-# Cross-reference checks
-# ---------------------------------------------------------------------------
-
-def check_cross_references(nc_dir: Path, ec_dir: Path) -> list[str]:
-    issues: list[str] = []
-
-    # Build set of known External Credential developer names
-    known_ec_names: set[str] = set()
-    for ec_file in ec_dir.glob("*.externalCredential-meta.xml"):
-        # File name format: DeveloperName.externalCredential-meta.xml
-        dev_name = ec_file.name.replace(".externalCredential-meta.xml", "")
-        known_ec_names.add(dev_name)
-
-    # Check each Named Credential references a known External Credential
-    for nc_file in nc_dir.glob("*.namedCredential-meta.xml"):
-        try:
-            tree = ET.parse(nc_file)
-        except ET.ParseError:
-            continue
-        root = tree.getroot()
-        label = _text(root, "label") or nc_file.stem
-        ext_cred_ref = _text(root, "externalCredential")
-
-        if ext_cred_ref and known_ec_names and ext_cred_ref not in known_ec_names:
-            issues.append(
-                f"[XREF] Named Credential '{label}' references External Credential "
-                f"'{ext_cred_ref}' which was not found in the metadata directory. "
-                "Verify the developer name matches exactly (case-sensitive)."
-            )
-
-    return issues
+def kids(e: ET.Element, name: str) -> list[ET.Element]:
+    return [c for c in e if local(c.tag) == name]
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
+def text(e: ET.Element, name: str) -> str:
+    for c in kids(e, name):
+        if c.text:
+            return c.text.strip()
+    return ""
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Check Named Credential and External Credential metadata for common "
-            "configuration issues. Inspects XML metadata files in a local directory."
-        ),
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python3 check_named_credentials.py --manifest-dir force-app/main/default
-  python3 check_named_credentials.py --manifest-dir .
 
-Expected metadata structure:
-  <manifest-dir>/
-  ├── namedCredentials/        *.namedCredential-meta.xml
-  └── externalCredentials/     *.externalCredential-meta.xml
-        """,
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root of the Salesforce metadata tree (default: current directory).",
-    )
-    return parser.parse_args()
+def stem(path: Path, suffix: str) -> str:
+    return path.name[: -len(suffix)]
+
+
+def check_nc(path: Path, ec_names: set[str]) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    try:
+        root = ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        return [("ERROR", f"{path}: does not parse ({exc})")]
+    params = kids(root, "namedCredentialParameters")
+    nc_type = text(root, "namedCredentialType") or ("Legacy" if not params else "SecuredEndpoint")
+    if nc_type == "Legacy":
+        out.append(("WARN", f"{path}: Legacy Named Credential; its fields are deprecated in API 56.0, plan a migration to SecuredEndpoint"))
+        return out
+    legacy = [n for n in LEGACY_ONLY if kids(root, n)]
+    if legacy:
+        out.append(("WARN", f"{path}: legacy-only element(s) {legacy} on a {nc_type} credential; they are valid only for type Legacy"))
+    by_type: dict[str, list[ET.Element]] = {}
+    for p in params:
+        by_type.setdefault(text(p, "parameterType"), []).append(p)
+    if nc_type == "PrivateEndpoint" and "OutboundNetworkConnection" not in by_type:
+        out.append(("ERROR", f"{path}: PrivateEndpoint credential without an OutboundNetworkConnection parameter"))
+    if nc_type == "SecuredEndpoint":
+        if "Url" not in by_type:
+            out.append(("WARN", f"{path}: SecuredEndpoint credential without a Url parameter"))
+        if "Authentication" not in by_type:
+            out.append(("WARN", f"{path}: SecuredEndpoint credential without an Authentication parameter (no External Credential reference)"))
+    for p in by_type.get("Authentication", []):
+        ref = text(p, "externalCredential")
+        if ref and ec_names and ref not in ec_names:
+            out.append(("WARN", f"{path}: Authentication parameter references External Credential '{ref}' which is not in the directory"))
+    for p in by_type.get("Url", []):
+        url = text(p, "parameterValue").lower()
+        if any(m in url for m in PLACEHOLDERS):
+            out.append(("WARN", f"{path}: URL '{url}' looks like a placeholder"))
+    return out
+
+
+def check_ec(path: Path) -> tuple[list[tuple[str, str]], list[str]]:
+    """Return (findings, principal keys 'ECName-Principal')."""
+    out: list[tuple[str, str]] = []
+    try:
+        root = ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        return [("ERROR", f"{path}: does not parse ({exc})")], []
+    ec_name = stem(path, ".externalCredential-meta.xml")
+    proto = text(root, "authenticationProtocol")
+    if not proto:
+        out.append(("ERROR", f"{path}: authenticationProtocol is required"))
+    elif proto not in PROTOCOLS:
+        out.append(("ERROR", f"{path}: authenticationProtocol '{proto}' is not one of {sorted(PROTOCOLS)}"))
+    elif proto in RESERVED_PROTOCOLS:
+        out.append(("WARN", f"{path}: authenticationProtocol '{proto}' is 'Reserved for future use'"))
+    if not text(root, "label"):
+        out.append(("ERROR", f"{path}: label is required"))
+    principals: list[str] = []
+    for p in kids(root, "externalCredentialParameters"):
+        ptype, pname = text(p, "parameterType"), text(p, "parameterName")
+        if ptype and ptype not in EC_PARAM_TYPES:
+            out.append(("ERROR", f"{path}: parameterType '{ptype}' is not a documented ExternalCredentialParamType"))
+        elif ptype in INTERNAL_EC_PARAM_TYPES:
+            out.append(("WARN", f"{path}: parameterType '{ptype}' is reserved for internal use"))
+        if ptype in ("NamedPrincipal", "PerUserPrincipal"):
+            principals.append(f"{ec_name}-{pname}")
+            if kids(p, "principal"):
+                out.append(("WARN", f"{path}: principal '{pname}' sets a `principal` element; that field is removed in API 58.0, use PermissionSet externalCredentialPrincipalAccesses"))
+        if ptype == "PerUserPrincipal" and kids(p, "sequenceNumber"):
+            out.append(("WARN", f"{path}: sequenceNumber on PerUserPrincipal '{pname}'; it can be set only for NamedPrincipal"))
+    if not principals:
+        out.append(("WARN", f"{path}: no NamedPrincipal or PerUserPrincipal parameter; no one can authenticate"))
+    return out, principals
+
+
+def check_ps(path: Path) -> tuple[list[tuple[str, str]], set[str]]:
+    out: list[tuple[str, str]] = []
+    enabled: set[str] = set()
+    try:
+        root = ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        return [("ERROR", f"{path}: does not parse ({exc})")], enabled
+    for acc in kids(root, "externalCredentialPrincipalAccesses"):
+        key = text(acc, "externalCredentialPrincipal")
+        if "-" not in key:
+            out.append(("ERROR", f"{path}: externalCredentialPrincipal '{key}' must be ExternalCredential-Principal"))
+        if text(acc, "enabled").lower() == "true":
+            enabled.add(key)
+    return out, enabled
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir).resolve()
-
-    if not manifest_dir.exists():
-        print(f"ERROR: manifest directory not found: {manifest_dir}", file=sys.stderr)
-        return 2
-
-    # Locate metadata subdirectories — support both MDAPI and SFDX layouts
-    nc_candidates = [
-        manifest_dir / "namedCredentials",
-        manifest_dir / "force-app" / "main" / "default" / "namedCredentials",
-    ]
-    ec_candidates = [
-        manifest_dir / "externalCredentials",
-        manifest_dir / "force-app" / "main" / "default" / "externalCredentials",
-    ]
-
-    nc_dir = next((p for p in nc_candidates if p.is_dir()), manifest_dir)
-    ec_dir = next((p for p in ec_candidates if p.is_dir()), manifest_dir)
-
-    issues: list[str] = []
-    issues.extend(check_named_credentials(nc_dir))
-    issues.extend(check_external_credentials(ec_dir))
-    issues.extend(check_cross_references(nc_dir, ec_dir))
-
-    if not issues:
-        print("No issues found in Named Credential / External Credential metadata.")
+    ap = argparse.ArgumentParser(description="Check Named Credential / External Credential metadata.")
+    ap.add_argument("--manifest-dir", default=".", help="Root of the metadata tree (default: .).")
+    ap.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings too.")
+    args = ap.parse_args()
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest directory not found: {root}")
+        sys.exit(1)
+    ncs = sorted(root.rglob("*.namedCredential-meta.xml"))
+    ecs = sorted(root.rglob("*.externalCredential-meta.xml"))
+    pss = sorted(root.rglob("*.permissionset-meta.xml"))
+    if not (ncs or ecs):
+        print(f"WARN: no namedCredential or externalCredential files under {root}; nothing to check")
         return 0
-
-    print(f"Found {len(issues)} issue(s):\n")
-    for issue in issues:
-        print(f"  ISSUE: {issue}")
-        print()
-
-    return 1
+    findings: list[tuple[str, str]] = []
+    ec_names = {stem(p, ".externalCredential-meta.xml") for p in ecs}
+    principals: list[tuple[Path, str]] = []
+    for p in ecs:
+        f, pr = check_ec(p)
+        findings.extend(f)
+        principals.extend((p, k) for k in pr)
+    for p in ncs:
+        findings.extend(check_nc(p, ec_names))
+    enabled: set[str] = set()
+    for p in pss:
+        f, e = check_ps(p)
+        findings.extend(f)
+        enabled |= e
+    if pss:
+        for p, key in principals:
+            if key not in enabled:
+                findings.append(("WARN", f"{p}: principal '{key}' is not enabled by any permission set in the directory"))
+    for level, msg in findings:
+        print(f"{level}: {msg}")
+    if not findings:
+        print("No issues found in Named Credential / External Credential metadata.")
+    has_error = any(lv == "ERROR" for lv, _ in findings)
+    has_warn = any(lv == "WARN" for lv, _ in findings)
+    return 1 if has_error or (args.strict and has_warn) else 0
 
 
 if __name__ == "__main__":
