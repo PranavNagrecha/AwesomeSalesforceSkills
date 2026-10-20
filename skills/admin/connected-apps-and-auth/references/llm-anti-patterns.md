@@ -7,13 +7,14 @@ These patterns help the consuming agent self-check its own output.
 
 **What the LLM generates:** "Use the Username-Password OAuth flow to authenticate your integration. Pass the username, password, and security token in the request body."
 
-**Why it happens:** The Username-Password flow is the simplest to demonstrate and appears frequently in tutorials. LLMs default to it because it requires the fewest steps. However, this flow exposes credentials in the request body, does not support MFA, and Salesforce has deprecated it for new connected apps in recent releases.
+**Why it happens:** The Username-Password flow is the simplest to demonstrate and appears frequently in tutorials. LLMs default to it because it requires the fewest steps. However, this flow exposes credentials in the request body; the corpus says to use it only if you're handling your own credentials (api_streaming 264 L1770-1771). UNVERIFIED (2026-10-20): that it does not support MFA and is deprecated — Help-only.
 
 **Correct pattern:**
 
 ```
 For server-to-server (machine-to-machine) integrations:
-- Use the OAuth 2.0 Client Credentials flow (Spring '23+).
+- Use the OAuth 2.0 Client Credentials flow (isClientCredentialEnabled, API 56.0+ —
+  api_meta 264 L37466-37471; the run-as user needs API Only, L37577-37579).
 - Or use the JWT Bearer Token flow with a certificate.
 
 For user-delegated access:
@@ -23,7 +24,10 @@ Salesforce is deprecating the OAuth 2.0 username-password flow for
 connected apps. Orgs created in Summer '23 or later already block it by default.
 ```
 
-**Detection hint:** If the output includes `grant_type=password` or mentions passing a username and password in the OAuth token request body, the deprecated flow is being recommended. Search for `grant_type=password` or `Username-Password flow`.
+UNVERIFIED (2026-10-20): the deprecation and the Summer '23 default are Help-only; the Metadata API switch
+`OauthOidcSettings.blockOAuthUnPwFlow` blocks the flow and defaults to false (api_meta 264 L126184-126188).
+
+**Detection hint:** If the output includes `grant_type=password` or mentions passing a username and password in the OAuth token request body, the username-password flow is being recommended (its deprecation is UNVERIFIED (2026-10-20); `blockOAuthUnPwFlow` can block it, api_meta 264 L126184-126188). Search for `grant_type=password` or `Username-Password flow`.
 
 ---
 
@@ -131,7 +135,7 @@ Connected app hardening checklist:
 
 **What the LLM generates:** "In Setup, go to App Manager and click **New Connected App**, then enable OAuth settings and upload your certificate under Use Digital Signatures." Often paired with a generated `ConnectedApp` metadata file to deploy.
 
-**Why it happens:** Almost every OAuth, JWT-bearer, and CI/CD tutorial in the training corpus starts there, because until Spring '26 it was the only path. Salesforce has since restricted it: "Connected apps creation is restricted as of Spring '26." In an affected org that Setup path is closed by default, and the assistant never mentions External Client Apps. The mirror-image error is over-correcting into "everything is an ECA now," which breaks Salesforce DX.
+**Why it happens:** Almost every OAuth, JWT-bearer, and CI/CD tutorial in the training corpus starts there, because until Spring '26 it was the only path. Salesforce has since restricted it: "Connected apps creation is restricted as of Spring '26" (api_meta 264 L37161). In an affected org that Setup path is closed by default, and the assistant never mentions External Client Apps. The mirror-image error is over-correcting into "everything is an ECA now," which breaks Salesforce DX.
 
 **Correct pattern:**
 
@@ -141,8 +145,8 @@ Net-new inbound integration in a Spring '26+ org:
   client apps instead." Deploy via ExternalClientApplication metadata
   (API version 59.0 and later).
 - If a connected app is genuinely required: "If you must continue
-  creating connected apps, contact Salesforce Support," or deliver it
-  through a package install.
+  creating connected apps, contact Salesforce Support" (L37162-37163),
+  or deliver it through a package install (UNVERIFIED (2026-10-20)).
 
 Existing apps: leave them alone. "You can continue to use existing
 connected apps during and after Spring '26."
@@ -150,6 +154,7 @@ connected apps during and after Spring '26."
 Salesforce DX is the exception -- pick by command, not by era:
 - `org login jwt`            -> external client app (required)
 - `org create scratch|sandbox` from a Dev Hub -> connected app
+  (sfdx_dev 264 L3149-3153)
 ```
 
 **Detection hint:** If the output says "New Connected App" or emits `<ConnectedApp` metadata for a net-new integration without naming the Spring '26 restriction, it is stale. Conversely, if it recommends an ECA for a Dev Hub that runs `org create scratch`, it has over-corrected. Search for `New Connected App`, `ConnectedApp`, and `org create scratch`.

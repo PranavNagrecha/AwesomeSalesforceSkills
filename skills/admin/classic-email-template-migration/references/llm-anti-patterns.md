@@ -8,7 +8,7 @@ Common mistakes AI coding assistants make when generating or advising on Classic
 
 **Why it happens:** Merge formulas look like inline expressions; the model doesn't recognize that Lightning's merge engine is a strict subset.
 
-**Correct pattern:** Lightning supports straight field interpolation only. Pre-compute conditional values as formula fields on the merge record (Contact, Account, etc.) and merge the formula field. The migration is the moment to factor expressions into the data model.
+**Correct pattern:** UNVERIFIED (2026-10-20): that Lightning supports straight field interpolation only — no corpus line documents Lightning merge-function support; Lightning templates use SML or HML (object_reference 264 L110801-110802). Sandbox-test, and pre-compute conditional values as formula fields on the merge record (Contact, Account, etc.) and merge the formula field. The migration is the moment to factor expressions into the data model.
 
 ## Anti-Pattern 2: Assuming `TemplateType` Distinguishes Classic from Lightning
 
@@ -16,7 +16,7 @@ Common mistakes AI coding assistants make when generating or advising on Classic
 
 **Why it happens:** `TemplateType` is the more obvious axis; `UiType` is a less-known field.
 
-**Correct pattern:** Use `WHERE UiType = 'Aloha'` for Classic and `WHERE UiType = 'SFX'` for Lightning. `TemplateType` describes content format, not vintage. Lightning Email Templates also have `TemplateType='html'` — a script filtering by `TemplateType` will mix Classic and Lightning rows.
+**Correct pattern:** Use `WHERE UiType = 'Aloha'` for Classic and `WHERE UiType = 'SFX'` for Lightning. `TemplateType` describes content format, not vintage. Every Lightning Email Template has `TemplateType='custom'` (a `UiType` `SFX` template must be `custom`, api_meta 264 L59152) — a script filtering by `TemplateType` will mix Classic custom-HTML and Lightning rows.
 
 ## Anti-Pattern 3: Translating `{!Account.Name}` to `{{Account.Name}}` Without Recipient Scoping
 
@@ -28,7 +28,7 @@ Hello {{Contact.FirstName}}, your account {{Account.Name}} has been updated.
 
 **Why it happens:** Mechanical bracket substitution.
 
-**Correct pattern:** Lightning merge fields are scoped to Recipient / Sender / Related. The correct form:
+**Correct pattern:** Lightning merge fields are scoped to a prefix — pkg2_dev 264 L8196-8197 names the Recipients prefix for leads and contacts. UNVERIFIED (2026-10-20): the Sender and Related scopes, the `{{...}}` brace form below, and the claim that an unprefixed field fails to resolve. The form:
 
 ```
 Hello {{Recipient.FirstName}}, your account {{Recipient.Account.Name}} has been updated.
@@ -58,7 +58,7 @@ The Recipient object IS the Contact when the email targets a Contact; field path
 
 **Why it happens:** Folder structure feels like an admin concern, not a migration step.
 
-**Correct pattern:** Replicate folders BEFORE creating templates. For each Classic folder, create a Lightning folder with the same name and `FolderShare` rules. Place migrated templates in the corresponding folder. Without this, users who relied on Classic folder permissions lose access to migrated templates and their Email Alerts fail at send time.
+**Correct pattern:** Replicate folders BEFORE creating templates. For each Classic folder, create a Lightning folder (`EmailTemplateFolder`, api_meta 264 L77398-77399) with the same name and its `sharedTo` sharing (L77441) — not `FolderShare`, which covers report and dashboard folders (L77496-77497). Place migrated templates in the corresponding folder. Without this, users who relied on Classic folder permissions lose access to migrated templates (UNVERIFIED (2026-10-20): that their Email Alerts then fail at send time — no corpus line).
 
 ## Anti-Pattern 7: Editing Email Alerts in the Setup UI for Bulk Updates
 
@@ -68,13 +68,13 @@ The Recipient object IS the Contact when the email targets a Contact; field path
 
 **Correct pattern:** Use Metadata API for any update touching more than ~10 alerts. Retrieve all `WorkflowAlert` metadata, transform the `<template>` references via the old → new mapping, deploy as a single change set. Setup-UI editing is per-alert and error-prone at scale; one missed alert silently sends the wrong template.
 
-## Anti-Pattern 8: Forgetting to Re-set OrgWideEmailAddress on Downstream Consumers
+## Anti-Pattern 8: Claiming the Sender Moves From the Template to the Alert
 
-**What the LLM generates:** Migration plan that focuses entirely on template content, with no step to verify or re-set the OWA on Email Alerts and Apex calls.
+**What the LLM generates:** "Classic templates stored the OrgWideEmailAddress; Lightning templates don't, so re-set the OWA on every alert."
 
-**Why it happens:** OWA was attached to the Classic template; the model doesn't know it must move to the consumer in Lightning.
+**Why it happens:** The model pairs the sender with the template because both appear on the send screen.
 
-**Correct pattern:** For every Classic template that was paired with an OrgWideEmailAddress, the migration plan must include "set the OWA on each downstream Email Alert" (and on each Apex `setOrgWideEmailAddressId()` call). Lightning templates have no sender field — the sender lives on the consumer. Omitting this step results in alerts sending from the running user's address instead of the no-reply (or branded) address recipients expect.
+**Correct pattern:** No email template, Classic or Lightning, has a sender field (object_reference 264 L106331-106749). The alert's `senderType` (default `CurrentUser`) and `senderAddress` set the From (api_meta 264 L143859-143886); Apex uses `setOrgWideEmailAddressId()` (apexdev 264 L27130-27133). Swapping `<template>` leaves them as they were — change only `<template>`, then diff `senderType`/`senderAddress` before and after deploy.
 
 ## Anti-Pattern 9: Trusting the Salesforce Preview for Cross-Client Rendering
 
@@ -90,4 +90,4 @@ The Recipient object IS the Contact when the email targets a Contact; field path
 
 **Why it happens:** "Cleanup" instinct.
 
-**Correct pattern:** Set Classic templates to `IsActive = false` instead of deleting. Reasons: (a) audit trail — you may need to compare original vs migrated content; (b) Email Alerts that haven't been rewired yet may suddenly fail when the template disappears; (c) historical Activity records reference the original template. Schedule deletion only after a documented soak period (typically 90+ days) and a confirmation that no downstream consumer still references the old IDs.
+**Correct pattern:** Set Classic templates to `IsActive = false` instead of deleting. Reasons: (a) audit trail — you may need to compare original vs migrated content; (b) Email Alerts that haven't been rewired yet may suddenly fail when the template disappears; (c) UNVERIFIED (2026-10-20): that historical Activity records reference the original template. Schedule deletion only after a documented soak period (typically 90+ days) and a confirmation that no downstream consumer still references the old IDs.

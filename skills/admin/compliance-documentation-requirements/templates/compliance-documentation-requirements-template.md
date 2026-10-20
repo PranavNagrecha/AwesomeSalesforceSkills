@@ -46,12 +46,12 @@ Rationale: (why does this pattern apply to this request?)
 
 ## KYC Data Model Setup Checklist
 
-- [ ] FSC Know Your Customer feature enabled in Setup
+- [ ] IndustriesSettings `enableIndustriesKYC` true (api_meta 264 L122652-122654); `enableIndustriesAssessment` true if the Discovery Framework is used (L122648-122650)
 - [ ] `PartyIdentityVerification` object accessible; required fields confirmed
 - [ ] `IdentityDocument` object accessible; DocumentType picklist values configured
 - [ ] `PartyProfileRisk` object accessible; RiskCategory picklist values match regulatory risk tier definitions
-- [ ] `PartyScreeningSummary` object accessible; ScreeningStatus picklist values aligned with vendor response codes
-- [ ] All KYC objects linked to `Individual` (not Contact directly) — Individual-Contact link verified
+- [ ] `PartyScreeningSummary` object accessible; `Status` picklist values (standard value set, api_meta 264 L146588) aligned with vendor response codes
+- [ ] All KYC objects linked to `Individual` (UNVERIFIED (2026-10-20): the Individual lookup) — `Contact.IndividualId` populated
 - [ ] Page layouts and record types configured for agent-facing KYC views
 
 ---
@@ -61,7 +61,7 @@ Rationale: (why does this pattern apply to this request?)
 - [ ] `AssessmentQuestionSet` records defined for each questionnaire section
 - [ ] `AssessmentQuestion` records created with appropriate data types
 - [ ] OmniScript built and tested for guided data collection
-- [ ] DataRaptor Turbo Action saves `AssessmentQuestionResponse` records with user + timestamp
+- [ ] DataRaptor Turbo Action saves `AssessmentQuestionResponse` records with user + timestamp (UNVERIFIED (2026-10-20): object and fields)
 - [ ] Prior response versions are not overwritten on re-submission (new records created per cycle)
 - [ ] On completion, `PartyIdentityVerification` and `IdentityDocument` records created correctly
 
@@ -73,7 +73,7 @@ Rationale: (why does this pattern apply to this request?)
 - [ ] Named Credential created referencing External Credential; URL correct
 - [ ] Permission Set grants access to External Credential principal (not All Users)
 - [ ] Integration Procedure / Apex callout uses Named Credential label — no hardcoded URL or token
-- [ ] `PartyScreeningSummary` fields mapped: ScreeningStatus, VendorCaseReference, ScreeningDate
+- [ ] `PartyScreeningSummary` fields mapped: Status, VendorCaseReference, ScreeningDate (UNVERIFIED (2026-10-20): the last two)
 - [ ] `PartyProfileRisk.RiskCategory` updated after screening result received
 - [ ] Error handling implemented: vendor downtime surfaces a Case or alert, does not silently skip
 - [ ] Tested in sandbox with a real vendor API response
@@ -83,7 +83,7 @@ Rationale: (why does this pattern apply to this request?)
 ## Audit Trail Configuration Checklist
 
 - [ ] Field history tracking enabled on key fields (PartyIdentityVerification, PartyProfileRisk, PartyScreeningSummary)
-- [ ] If Shield licensed: Field Audit Trail Policy configured for fields requiring >18-month retention
+- [ ] If Shield licensed: `HistoryRetentionPolicy` deployed via Metadata API for objects requiring >18-month retention
 - [ ] Setup Audit Trail export and archival process documented and scheduled (interval < 180 days)
 - [ ] If Shield licensed: Event Monitoring log file retrieval process established
 - [ ] Retention period coverage documented per obligation (field history vs. Shield vs. external archive)
@@ -96,8 +96,8 @@ Rationale: (why does this pattern apply to this request?)
 |---|---|---|
 | Identity collected and verified | PartyIdentityVerification + IdentityDocument records | [ ] |
 | AML screening performed | PartyScreeningSummary with vendor case reference | [ ] |
-| Customer risk rating assigned | PartyProfileRisk with RiskCategory, RiskReason, RiskReviewDate | [ ] |
-| KYC collection timestamped and attributed | AssessmentQuestionResponse with user + timestamp | [ ] |
+| Customer risk rating assigned | PartyProfileRisk with RiskCategory (UNVERIFIED (2026-10-20): RiskReason, RiskReviewDate) | [ ] |
+| KYC collection timestamped and attributed | Response records with user + timestamp (UNVERIFIED (2026-10-20): `AssessmentQuestionResponse`) | [ ] |
 | Configuration change history | Setup Audit Trail + external archival | [ ] |
 | Field-level change history (long-term) | Field Audit Trail (Shield) if retention > 18 months | [ ] |
 | Data access history | Event Monitoring (Shield) | [ ] |

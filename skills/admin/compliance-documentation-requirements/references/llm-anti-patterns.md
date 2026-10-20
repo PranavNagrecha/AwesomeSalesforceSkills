@@ -8,7 +8,7 @@ Common mistakes AI coding assistants make when generating or advising on complia
 
 **Why it happens:** The LLM sees `PartyScreeningSummary` and `PartyProfileRisk` in the FSC data model documentation and infers that Salesforce performs the screening. Training data conflates "FSC has objects for screening results" with "FSC performs screening." The word "native" in feature descriptions is often misinterpreted.
 
-**Correct pattern:**
+**Correct pattern:** (UNVERIFIED (2026-10-20): FSC's lack of a screening engine and watchlist data has no corpus line; the corpus confirms only the objects, api_meta 264 L96644-96645.)
 
 ```
 FSC provides data model objects (PartyScreeningSummary, PartyProfileRisk) to store
@@ -25,19 +25,20 @@ records will remain empty and no regulatory screening is occurring.
 
 ## Anti-Pattern 2: Omitting That Field Audit Trail Requires a Salesforce Shield Add-On
 
-**What the LLM generates:** "Enable Field Audit Trail in Setup > Field History Tracking. This lets you retain field change history for up to 10 years on KYC objects, satisfying your 5-year regulatory retention requirement."
+**What the LLM generates:** "Enable Field Audit Trail in Setup > Field History Tracking. It's included in every edition and keeps field change history on KYC objects long enough for your 5-year regulatory retention requirement."
 
-**Why it happens:** LLMs often conflate standard field history tracking (free, built-in, 18-month max) with Field Audit Trail (Shield add-on, 10-year max). The name "Field Audit Trail" sounds like a standard audit feature, and training data includes documentation for both features without always disambiguating the licensing requirement.
+**Why it happens:** LLMs often conflate standard field history tracking (free, built-in, 18 months — 24 via the API) with Field Audit Trail (Shield add-on, kept until you delete it). The name "Field Audit Trail" sounds like a standard audit feature, and training data includes documentation for both features without always disambiguating the licensing requirement.
 
 **Correct pattern:**
 
 ```
-Field Audit Trail is a Salesforce Shield add-on and is NOT included in base FSC or
-standard Salesforce editions. Standard field history tracking (available in all editions)
-retains up to 18 months of history for up to 20 fields per object.
+Field Audit Trail is part of Salesforce Shield (secguide 262 L297-298). Without it,
+field history is kept up to 18 months (24 via the API) for up to 20 fields per object
+(secguide 262 L4632-4633, L4838).
 
 If regulatory obligations require retention beyond 18 months, Salesforce Shield must
-be licensed separately. Field Audit Trail (Shield) supports up to 10 years of retention.
+be licensed. Field Audit Trail keeps archived history until you delete it, under a
+HistoryRetentionPolicy deployed with Metadata API (secguide 262 L4833-4837).
 Confirm Shield licensing before designing compliance documentation retention architecture.
 ```
 
@@ -54,14 +55,15 @@ Confirm Shield licensing before designing compliance documentation retention arc
 **Correct pattern:**
 
 ```
-Setup Audit Trail retains entries for 180 days only. For annual regulatory audits
+Setup Audit Trail deletes entries after 180 days (secguide 262 L4974-4975). For annual regulatory audits
 (which typically cover a 12-month lookback period), entries older than 180 days
 will have already rolled off. Organizations must establish a recurring export
 and archival process — querying the SetupAuditTrail object via SOQL and storing
 results externally — to maintain a complete record beyond 180 days.
 
-The 180-day limit is not extended by Salesforce Shield.
 ```
+
+UNVERIFIED (2026-10-20): that Shield does not extend the 180-day limit — the corpus is silent on Shield and Setup Audit Trail.
 
 **Detection hint:** Any Setup Audit Trail recommendation that does not mention the 180-day retention limit or an external archival process is incomplete for compliance contexts.
 
@@ -71,7 +73,7 @@ The 180-day limit is not extended by Salesforce Shield.
 
 **What the LLM generates:** "To meet compliance requirements for financial data access control, configure Compliant Data Sharing in FSC. This ensures that only authorized users can see client records, satisfying your KYC and AML documentation obligations."
 
-**Why it happens:** "Compliance" appears in the name "Compliant Data Sharing" and in the phrase "compliance documentation," causing LLMs to conflate two unrelated FSC capabilities. Compliant Data Sharing (CDS) governs who sees which records via sharing rules. KYC and AML compliance documentation governs how identity and screening data is collected, stored, and preserved for audit. They are orthogonal.
+**Why it happens:** "Compliance" appears in the name "Compliant Data Sharing" and in the phrase "compliance documentation," causing LLMs to conflate two unrelated FSC capabilities. Compliant Data Sharing (CDS) governs who sees which records through participant roles and groups — not sharing rules; it has its own `CompliantDataSharing` share-row cause (object_reference 264 L56562), distinct from sharing-rule rows (`Rule`, L17480). KYC and AML compliance documentation governs how identity and screening data is collected, stored, and preserved for audit. They are orthogonal.
 
 **Correct pattern:**
 
@@ -99,7 +101,7 @@ These are separate admin tasks from CDS configuration.
 
 **Why it happens:** Per-User OAuth is a legitimate Named Credential configuration for interactive integrations where user-level access tokens are appropriate. LLMs apply this pattern broadly without recognizing that AML screening integrations run in non-interactive execution contexts (batch jobs, scheduled Apex, Platform Event triggers) where no user session exists.
 
-**Correct pattern:**
+**Correct pattern:** (UNVERIFIED (2026-10-20): the per-user failure in headless contexts and the `CalloutException` have no corpus line; Named Principal is "the same set of user credentials for all users", api_meta 264 L66348-66349.)
 
 ```
 AML screening integrations must use Named Principal (org-level) authentication
@@ -123,7 +125,7 @@ through the credential identity.
 
 **Why it happens:** "Identity Verification" in the FSC product name describes a contact-center feature for authenticating phone callers against stored identity records. LLMs conflate this caller authentication feature with KYC identity proofing (which involves verifying a new customer's identity against external government records or databases).
 
-**Correct pattern:**
+**Correct pattern:** The identity verification process metadata configures "the questions that CCA asks the caller before providing them with the information they need" (api_meta 264 L82831-82832); the type needs the Health Cloud permission set license (L82660). UNVERIFIED (2026-10-20): that it never performs KYC identity proofing for new customers.
 
 ```
 FSC Identity Verification is a contact-center feature that authenticates inbound

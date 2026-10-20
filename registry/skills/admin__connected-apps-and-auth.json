@@ -69,6 +69,7 @@
     "60cad59f623861e74402",
     "61f94cd956e7f7b57761",
     "627db784ced62c0c73b6",
+    "67fef0511b635a0b7a4c",
     "68941db1b2df070c531b",
     "68fddccc6141bd0902e9",
     "6b6ddb58184e69932d29",
@@ -82,6 +83,7 @@
     "77741d1e301b251c1222",
     "7924780f1995b43a3e8c",
     "7a0308f72d937065f610",
+    "7a5cd5bcab77fc530c37",
     "7bfe6262542de9dfd7ab",
     "7c6bf6f61bfac1750da8",
     "7e56f9afdbbbefbf1bd2",
@@ -116,8 +118,10 @@
     "adf32a06299087a204f2",
     "afba4758e176365c0000",
     "b09019b91aa0b418065b",
+    "b23f5c0971be46ba8abc",
     "b2e799d07a098d56bdd4",
     "b328873257f2b26c5539",
+    "b5ae8de3630b2f954eb7",
     "b5d150d40dc786ee6e64",
     "b8af961414a8f34f4050",
     "b90e80a3010fb210644d",
@@ -140,6 +144,7 @@
     "cc18ab74dec31119d45a",
     "cc87862fc009e48bfd7d",
     "ce19b84c0251e2f19ec4",
+    "cfc47dfdbd7ddf6b2115",
     "d079bcafbb2db4d60c6a",
     "d10a9551ccd57ece2b6e",
     "d401ecf4dae622cef1b6",
@@ -164,7 +169,7 @@
     "fdab38f020fb03a1ccc2",
     "feb3dc992865dd5b58e7"
   ],
-  "content_hash": "9b17cabde7745c0edcea71dee6129c79dc6c00c9964a98a15029177a96806408",
+  "content_hash": "5ce9b3fc9eb13498426e7f0794d4caede4ce3efe9c203332c4efeb657728998e",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce connected apps, External Client Apps, Named Credentials, External Credentials, and OAuth-based integration access. Triggers: 'connected app', 'OAuth flow', 'client credentials', 'JWT bearer', 'Named Credential', 'External Credential', 'integration user', 'IP restrictions', 'connectedApp-meta.xml', 'ExternalClientApplication', 'ExtlClntAppOauthSettings', 'isAdminApproved', 'refreshTokenPolicy', 'ipRelaxation', 'consumer key', 'consumer secret', 'permittedUsersPolicyType'. NOT for OAuth error codes you are already seeing \u2014 use admin/connected-app-troubleshooting. NOT for External Credential principal-type setup steps \u2014 use integration/named-credentials-setup.",
   "file_location": "skills/admin/connected-apps-and-auth",
@@ -176,6 +181,13 @@
   ],
   "name": "connected-apps-and-auth",
   "official_sources": [
+    "Connected app creation restricted as of Spring '26; Support exception \u2014 api_meta 264 L37161-37163; api_rest 264 L625-627; sfdx_dev 264 L3270-3271",
+    "`consumerKey` set only at creation, globally unique; `consumerSecret` not returned \u2014 api_meta 264 L37423-37427, L37443-37444",
+    "`isAdminApproved` and the profile / permission-set grant \u2014 api_meta 264 L37454-37462, L37225-37239",
+    "`ipRelaxation` and `refreshTokenPolicy` values and defaults \u2014 api_meta 264 L37789-37850",
+    "ECA floors, Opt in permission, global settings out of source control \u2014 api_meta 264 L65994-65998, L67114, L67127",
+    "DX: ECA for `org login jwt`, connected app for Dev Hub scratch/sandbox creation \u2014 sfdx_dev 264 L3149-3153",
+    "`OauthToken` visibility and `UncommittedWork` \u2014 object_reference 264 L191869-191870",
     "Salesforce Well-Architected Overview \u2014 security and operational framing for integration access",
     "REST API Developer Guide \u2014 OAuth and API usage context for connected-app design",
     "Integration Patterns \u2014 auth and system-boundary tradeoffs for integrations",
@@ -228,7 +240,7 @@
   "templates": [
     "skills/admin/connected-apps-and-auth/templates/auth-integration-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.3.0"
+  "version": "1.3.1"
 }

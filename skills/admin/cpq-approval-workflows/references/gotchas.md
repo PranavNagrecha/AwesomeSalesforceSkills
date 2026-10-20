@@ -2,6 +2,8 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
+UNVERIFIED (2026-10-20): the Advanced Approvals package (`SBAA__`) is not in the corpus, and of Salesforce CPQ the corpus holds only that it is a managed package (sfdx_dev 264 L6306-6307) whose fields carry the `SBQQ__` prefix (object_reference 264 L71334-71339) — every `SBAA__`/`SBQQ__` object, field, permission-set name, scheduled job and behaviour in this file is unverified.
+
 ## Gotcha 1: Smart Approvals Re-Approves All Approvers — Not Just Those Whose Conditions Were Affected
 
 **What happens:** When Smart Approvals is enabled and a requote changes any approval-relevant field, every approver across every rule that previously approved must re-approve — not just the approver whose specific condition threshold was crossed by the changed field.

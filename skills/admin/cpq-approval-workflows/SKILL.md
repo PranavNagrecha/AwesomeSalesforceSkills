@@ -43,14 +43,16 @@ outputs:
 dependencies:
   - cpq-product-catalog-setup
   - cpq-pricing-rules
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-07
+updated: 2026-10-20
 ---
 
 # CPQ Approval Workflows
 
 Use this skill when configuring or troubleshooting the CPQ Advanced Approvals managed package (namespace `SBAA__`): creating approval rules that evaluate fields across quote line items using Approval Variables, building sequential or parallel Approval Chains, enabling Smart Approvals to skip re-approval on unchanged requote fields, configuring escalation timeouts, and assigning the required permission sets. This skill does not cover standard Salesforce approval processes or CPQ pricing configuration.
+
+UNVERIFIED (2026-10-20): the Advanced Approvals package (`SBAA__`) is not in the corpus, and of Salesforce CPQ the corpus holds only that it is a managed package (sfdx_dev 264 L6306-6307) whose fields carry the `SBQQ__` prefix (object_reference 264 L71334-71339) — every `SBAA__`/`SBQQ__` object, field, permission-set name, scheduled job and behaviour in this file is unverified. Only the standard approval-process and roll-up facts carry corpus cites. The corpus's "Advanced Approvals" is a platform feature with standard objects — `ApprovalWorkItemCondition`, a condition "evaluated as part of the smart approval process" (API 64.0, object_reference 264 L36555-36557), `ApprovalWorkItemCriteria` (needs Modify All Data or Approval Admin, L36739-36749), `ApprovalAlertContentDef` (API 66.0, L35785-35796) — and the `AppvlWorkItemNtfcnEvent` platform event (platform_events 264 L8923-8924). UNVERIFIED (2026-10-20): their relation to the `SBAA__` package and its Smart Approvals — do not conflate them.
 
 ---
 
@@ -61,8 +63,24 @@ Gather this context before working on anything in this domain:
 - Confirm the **CPQ Advanced Approvals managed package** (`SBAA__`) is installed separately from the base Salesforce CPQ package (`SBQQ__`). Both must be present. Check via Setup > Installed Packages.
 - Confirm users who submit, approve, and administer approvals have the **"CPQ Advanced Approvals" permission set** assigned — this is a separate permission set from the base "Salesforce CPQ" permission set. Missing this permission set causes silent failures where approval buttons or records do not appear.
 - Identify whether the approval trigger must evaluate **quote-level fields** (e.g., total quote discount), **single quote-line fields** (e.g., line discount), or **aggregated values across all lines** (e.g., maximum discount across all line items). Line-level aggregation requires `SBAA__ApprovalVariable__c`, not a direct field reference.
-- Understand the most common wrong assumption: **standard Salesforce approval processes cannot evaluate across quote line items**. A standard approval process evaluates a single record; it cannot compute "the maximum discount across all lines." `SBAA__ApprovalVariable__c` is the only mechanism that solves this.
+- Understand the most common wrong assumption about **standard approval processes and quote lines**. A standard approval process evaluates the submitted record — `entryCriteria` decides which records enter (api_meta 264 L25183-25185) — so it sees line values only through a field on the quote. The platform's way to put a MAX/MIN/SUM of child lines on a parent is a roll-up summary field over a master-detail child (`summaryOperation` Count/Min/Max/Sum, api_meta 264 L45869-45877). UNVERIFIED (2026-10-20): whether `SBQQ__QuoteLine__c` is master-detail to the quote and whether such a summary is current at submission. Inside the package, `SBAA__ApprovalVariable__c` is the mechanism for line aggregation.
 - Identify whether **Smart Approvals** should be enabled. When enabled, a requote that changes only non-approval-relevant fields will not require re-approval; if any approval-relevant field changes, all previous approvers must re-approve.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the Advanced Approvals package installed alongside CPQ, at a compatible version? | The `SBAA__` objects exist only with it (Anti-Pattern 2 in references) | A go/no-go before any rule is designed |
+| Which thresholds read a quote field and which need a value across lines? | Line values reach a standard process only through a quote field (Gotcha 1) | The variable list, built before the rules |
+| Must any two thresholds fire on OR rather than AND? | Conditions on one rule are described as ANDed (Gotcha 5) | One rule per OR branch, counted against the design matrix |
+| Will reps requote, and which fields are approval-relevant? | Smart Approvals re-approval scope (Gotcha 2) | A documented field list reps can be told about |
+| Does any rule need escalation, and who owns the escalation job? | Escalation depends on a scheduled job (Gotcha 3) | A monitored job and a post-refresh check |
+| Which users submit, approve and administer? | The Advanced Approvals permission set is separate from the CPQ sets (Gotcha 4) | An assignment list per role |
+| Are approvers named users or fields on the quote? | Named-user chains stall when the user is deactivated (references/well-architected.md) | Dynamic approver fields where possible |
+
+A proper configuration designs variables, rules, chains and escalation as one matrix and tests every boundary; "just doing it" creates rules one by one and finds the OR gap, the stale escalation job or the missing permission set in production.
 
 ---
 
@@ -90,7 +108,7 @@ An `SBAA__ApprovalRule__c` record is the core unit: it defines the threshold con
 
 **Approval Conditions** (`SBAA__ApprovalCondition__c`) reference a field on the Quote (`SBQQ__Quote__c`) or an Approval Variable. Operators include: equals, not equals, greater than, less than, contains. Multiple conditions on a single rule are ANDed together. OR logic across separate conditions requires separate approval rules.
 
-**Approval Variables** (`SBAA__ApprovalVariable__c`) solve a problem that standard approval processes cannot: computing an aggregated value across all quote line items. For example, a rule that fires when "any single line discount exceeds 30%" requires knowing the maximum discount value across all lines. An Approval Variable is configured to aggregate a specific field on `SBQQ__QuoteLine__c` using a function (Max, Min, Sum, Average) and the result is then available as a field reference in an Approval Condition. Without Approval Variables, cross-line discount approvals cannot be implemented.
+**Approval Variables** (`SBAA__ApprovalVariable__c`) compute an aggregated value across all quote line items inside the package (standard processes reach line values only through a quote field — see Before Starting). For example, a rule that fires when "any single line discount exceeds 30%" requires knowing the maximum discount value across all lines. An Approval Variable is configured to aggregate a specific field on `SBQQ__QuoteLine__c` using a function (Max, Min, Sum, Average) and the result is then available as a field reference in an Approval Condition. Approval Variables keep cross-line logic inside the approval package.
 
 **Approver assignment** on a rule can be:
 - A specific user (User lookup on `SBAA__ApprovalRule__c`)
@@ -140,7 +158,7 @@ Each `SBAA__ApprovalRule__c` can have an escalation policy: a timeout period (in
    - Value: `30`
 4. Test by creating a CPQ quote with a line at 31% discount and verifying the approval is triggered; test a quote with all lines at 29% and verify no approval is required.
 
-**Why not a standard approval process:** Standard approval processes evaluate a single record. There is no native mechanism to evaluate a field across multiple child records (quote lines) within a standard approval process. `SBAA__ApprovalVariable__c` is the only correct solution for cross-line aggregation.
+**Why not a standard approval process:** it evaluates the submitted record (api_meta 264 L25183-25185); line values reach it only through a quote field such as a roll-up summary (api_meta 264 L45869-45877), whose availability on `SBQQ__QuoteLine__c` is unverified. `SBAA__ApprovalVariable__c` keeps the aggregation inside the approval package.
 
 ### Pattern: Sequential Approval Chain for Tiered Authority
 
@@ -174,12 +192,12 @@ Each `SBAA__ApprovalRule__c` can have an escalation policy: a timeout period (in
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Approval triggered by a field on the quote (not lines) | `SBAA__ApprovalRule__c` with condition on Quote field | Direct field reference; no variable needed |
-| Approval triggered by maximum or total discount across all lines | `SBAA__ApprovalVariable__c` (Max/Sum) + Approval Condition | Standard approvals cannot aggregate across child records |
+| Approval triggered by maximum or total discount across all lines | `SBAA__ApprovalVariable__c` (Max/Sum) + Approval Condition | Standard approvals see only quote fields (api_meta 264 L25183-25185) |
 | Multiple approvers required in a fixed sequence | `SBAA__ApprovalChain__c` with ordered `SBAA__Approver__c` steps | Enforces sequential routing; parallel steps possible within a step number |
 | Re-approval required only when pricing fields change on requote | Smart Approvals enabled on each rule | Skips re-approval for non-relevant field changes; still re-approves when conditions could be affected |
 | Approver has not responded after N days | Escalation config on `SBAA__ApprovalRule__c` | Routes to escalation user after timeout; requires scheduled job active |
 | OR logic across two separate conditions | Two separate Approval Rules each with one condition | Conditions within one rule are ANDed; separate rules cover OR scenarios |
-| Standard Salesforce approval process for a CPQ discount approval | Do NOT use — use CPQ Advanced Approvals instead | Standard processes cannot evaluate across quote line items |
+| Standard Salesforce approval process for a CPQ discount approval | Prefer CPQ Advanced Approvals | Standard processes see line values only via a quote field, e.g. a roll-up summary (api_meta 264 L45869-45877) |
 
 ---
 
@@ -224,7 +242,7 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Standard approval processes cannot aggregate across quote line items** — A standard Salesforce approval process evaluates a single record at submission time. It cannot evaluate a field value across all child `SBQQ__QuoteLine__c` records. `SBAA__ApprovalVariable__c` with a Max/Sum/Min/Average function is the only supported solution for cross-line aggregation logic.
+1. **Standard approval processes see quote lines only through a quote field** — A standard approval process evaluates the submitted record — `entryCriteria` decides which records enter (api_meta 264 L25183-25185) — so it sees line values only through a field on the quote. The platform's way to put a MAX/MIN/SUM of child lines on a parent is a roll-up summary field over a master-detail child (`summaryOperation` Count/Min/Max/Sum, api_meta 264 L45869-45877). UNVERIFIED (2026-10-20): whether `SBQQ__QuoteLine__c` is master-detail to the quote and whether such a summary is current at submission. `SBAA__ApprovalVariable__c` is the package's mechanism for cross-line aggregation.
 
 2. **Smart Approvals re-approves all approvers when any relevant field changes** — A common misconception is that Smart Approvals re-approves only the approver whose specific condition was affected by the field change. The actual behavior: if any approval-relevant field changes on a requote, every approver in every rule that previously approved must re-approve. There is no selective re-approval by rule.
 
@@ -252,7 +270,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- cpq-pricing-rules — Configure the price waterfall and discount mechanisms that approval thresholds evaluate against
-- cpq-product-catalog-setup — Set up product bundles and options before approval rules that reference product-level fields
-- approval-processes — Use for standard Salesforce approval processes on non-CPQ objects; do not use for cross-line CPQ discount approvals
-- quote-to-cash-requirements — Use during requirements gathering to map approval policies to CPQ mechanisms
+- admin/cpq-pricing-rules — Configure the price waterfall and discount mechanisms that approval thresholds evaluate against
+- admin/cpq-product-catalog-setup — Set up product bundles and options before approval rules that reference product-level fields
+- admin/approval-processes — Use for standard Salesforce approval processes on non-CPQ objects; do not use for cross-line CPQ discount approvals
+- admin/quote-to-cash-requirements — Use during requirements gathering to map approval policies to CPQ mechanisms

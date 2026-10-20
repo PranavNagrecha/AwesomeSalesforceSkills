@@ -27,9 +27,9 @@ SELECT TemplateType, COUNT(Id) cnt FROM EmailTemplate WHERE UiType='Aloha' GROUP
 
 | Template Name | Type | Decision | Lightning Equivalent | OWA Sender |
 |---|---|---|---|---|
-| | text | Migrate | Lightning text template | |
-| | html | Migrate | Lightning + Enhanced Letterhead | |
-| | custom | Migrate | Lightning HTML | |
+| | text | Migrate | Lightning template (`type` custom) | |
+| | html | Migrate | Lightning (`type` custom) + Enhanced Letterhead | |
+| | custom | Migrate | Lightning (`type` custom) | |
 | | visualforce | Retain VF | n/a | |
 
 Decision values: `Migrate`, `Retain VF`, `Retire (no replacement)`.
@@ -47,7 +47,7 @@ Decision values: `Migrate`, `Retain VF`, `Retire (no replacement)`.
 
 ## Merge Field Audit
 
-For each template body, find non-translatable patterns:
+For each template body, find patterns to sandbox-test (UNVERIFIED (2026-10-20): Lightning support for IF/CASE, `$Setup` and `System.` merges has no corpus line):
 
 ```bash
 # Pseudocode — adapt to your retrieval mechanism
@@ -57,7 +57,7 @@ for template in classic_templates:
     if '{!$Setup.' in body:
         flag('Custom Setting merge — surface via record field instead')
     if '{!System.' in body:
-        flag('System merge — no Lightning equivalent')
+        flag('System merge — sandbox-test in Lightning')
 ```
 
 | Template | Pattern Found | Mitigation |
@@ -80,11 +80,11 @@ Persist this in a `Email_Template_Migration_Map__c` custom object for ongoing au
 
 | Consumer Type | Count Referencing Old Templates | Update Mechanism | Verified |
 |---|---|---|---|
-| Email Alerts (`WorkflowAlert.TemplateId`) | | Metadata API bulk | [ ] |
+| Email Alerts (`<template>` in `<alerts>`) | | Metadata API bulk | [ ] |
 | Flows (`Send Email` action) | | Flow XML edit | [ ] |
 | Process Builder | | Migrate to Flow first | [ ] |
 | Apex `setTemplateId()` | | Code change | [ ] |
-| Approval Process emails | | Approval XML edit | [ ] |
+| Approval Process emails | | Keep `emailTemplate` Classic (api_meta 264 L25167-25168); repoint alerts | [ ] |
 | External marketing tools | | External integration update | [ ] |
 
 ---
@@ -95,7 +95,7 @@ Persist this in a `Email_Template_Migration_Map__c` custom object for ongoing au
 - [ ] Enhanced Letterhead(s) tested in Outlook + Gmail + Apple Mail
 - [ ] Merge field translation completed; non-translatable patterns mitigated
 - [ ] Folder structure replicated with sharing
-- [ ] Email Alerts updated via Metadata API; verification SOQL returns zero references to old IDs
-- [ ] OrgWideEmailAddress sender pairings re-set on each downstream consumer
+- [ ] Email Alerts updated via Metadata API; re-retrieved Workflow files name no old template
+- [ ] Each alert's `senderType`/`senderAddress` unchanged after the swap (no template stores a sender)
 - [ ] Test send completed for each Email Alert
 - [ ] Classic templates set to `IsActive=false` (not deleted) post-verification

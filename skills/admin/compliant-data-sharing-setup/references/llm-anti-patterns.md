@@ -8,7 +8,7 @@ Common mistakes AI coding assistants make when generating or advising on Complia
 
 **Why it happens:** LLMs trained on general Salesforce content learn that most sharing features extend the role hierarchy. CDS is the exception — it replaces hierarchy-based inheritance for its managed objects rather than supplementing it. The nuance is underrepresented in general Salesforce documentation relative to standard sharing content.
 
-**Correct pattern:**
+**Correct pattern:** (UNVERIFIED (2026-10-20): the hierarchy bypass has no corpus line; the corpus names only `enableFinancialDealRoleHierarchy` for Financial Deal, api_meta 264 L122614-122616.)
 
 ```
 CDS disables role-hierarchy-based sharing on supported objects entirely.
@@ -25,7 +25,7 @@ CDS is a parallel mechanism — it is NOT an extension of the role hierarchy.
 
 **What the LLM generates:** "You can enable Compliant Data Sharing with any OWD setting. If you want broad base access with targeted ethical walls, set OWD to Public Read/Write and use CDS to restrict sensitive records."
 
-**Why it happens:** LLMs understand that some features work across OWD settings and over-generalize. CDS specifically requires Private or Public Read-Only OWD. With Public Read/Write, the CDS engine accepts participant record inserts but writes no share rows because universal access already exists — there is nothing to extend.
+**Why it happens:** LLMs understand that some features work across OWD settings and over-generalize. CDS specifically requires Private or Public Read-Only OWD. UNVERIFIED (2026-10-20): this prerequisite and the no-share-rows outcome below — Help-only, no corpus line.
 
 **Correct pattern:**
 
@@ -42,7 +42,7 @@ Always set OWD before enabling CDS.
 
 ## Anti-Pattern 3: Skipping the Deal Management Prerequisite for Financial Deal CDS
 
-**What the LLM generates:** "To enable CDS for Financial Deal, set `enableCompliantDataSharingForFinancialDeal = true` in IndustriesSettings and add the Financial Deal Participants related list to your page layout."
+**What the LLM generates:** "To enable CDS for Financial Deal, set `enableCompliantDataSharingForFinancialDeal = true` in IndustriesSettings and add the Financial Deal Participants related list to your page layout." — and that flag is not in the IndustriesSettings field table at all (api_meta 264 L122543-122578).
 
 **Why it happens:** The LLM knows the IndustriesSettings flag and related list are required but does not know that Deal Management is a separate, independent feature that must be enabled first. This prerequisite is easy to miss because it is documented in a different section of the Salesforce Help than the CDS content.
 
@@ -50,11 +50,12 @@ Always set OWD before enabling CDS.
 
 ```
 Financial Deal CDS setup order:
-1. Enable Deal Management: Setup > Financial Services > Financial Deal Settings
-2. Enable CDS for Financial Deal: IndustriesSettings flag
+1. Enable Deal Management: IndustriesSettings enableDealManagement = true
+   (api_meta 264 L122580-122582)
+2. Create ParticipantRole metadata with parentObject FinancialDeal (L97142-97143)
 3. Add Financial Deal Participants related list to page layouts
 
-Without step 1, step 2 has no effect and step 3 is unavailable.
+UNVERIFIED (2026-10-20): that step 3 is unavailable without step 1.
 ```
 
 **Detection hint:** If the output for Financial Deal CDS setup does not mention Deal Management enablement as a step, it is incomplete.
@@ -71,7 +72,7 @@ Without step 1, step 2 has no effect and step 3 is unavailable.
 
 ```
 CDS is NOT a sharing rule mechanism.
-CDS is enabled via IndustriesSettings metadata flags, not in Sharing Rules.
+CDS is enabled via IndustriesSettings metadata flags (api_meta 264 L122543-122578), not in Sharing Rules.
 CDS grants access via Participant Role assignments on individual records.
 Standard sharing rules and CDS run simultaneously and independently.
 Existing sharing rules must be audited separately when enabling CDS.
@@ -87,7 +88,7 @@ Existing sharing rules must be audited separately when enabling CDS.
 
 **Why it happens:** The disabling step is a two-phase process (delete participant records first, then deactivate the flag), and the participant deletion prerequisite is easy to miss because it is documented in the Considerations and Limitations article rather than the main CDS setup article.
 
-**Correct pattern:**
+**Correct pattern:** (UNVERIFIED (2026-10-20): the deactivation sequence and the `AccountParticipant` object have no corpus line.)
 
 ```
 CDS deactivation sequence:
@@ -105,22 +106,22 @@ error and Salesforce Support will not proceed until cleanup is complete.
 
 ---
 
-## Anti-Pattern 6: Missing the CDS User Permission Assignment for Business Users
+## Anti-Pattern 6: Missing the Use Compliant Data Sharing Permission for Business Users
 
-**What the LLM generates:** "Assign the CDS Manager permission set to your administrators and the setup is complete. Business users will be automatically eligible to be added as participants."
+**What the LLM generates:** "Assign the CDS admin permission set to your administrators and the setup is complete. Business users will be automatically eligible to be added as participants."
 
-**Why it happens:** The two-permission model (CDS Manager for admins + CDS User for business users) is a detail that LLMs frequently collapse to a single permission. The CDS Manager permission for admins is more prominent in setup documentation, causing the CDS User permission for end users to be omitted.
+**Why it happens:** LLMs collapse the admin permission and the end-user permission into one, and the admin side is more prominent in setup documentation.
 
 **Correct pattern:**
 
 ```
-Two distinct permission sets are required:
-- CDS Manager (Configure CDS): assign to administrators who manage CDS setup
-- CDS User (Use CDS): assign to EVERY business user who will be 
-  assigned as a participant on any record
+Business users need the Use Compliant Data Sharing permission: a Participant
+group holds only internal users who have it (object_reference 264 L155375-155379).
+Assign it to EVERY business user who will be a participant on any record,
+separately from the admin permission set.
 
-Without "Use CDS", a user cannot be added as a participant even by 
-an admin. The assignment attempt silently fails or produces an error.
+UNVERIFIED (2026-10-20): the admin permission's name ("Configure CDS") and the
+exact failure when a user lacks Use Compliant Data Sharing.
 ```
 
 **Detection hint:** If the output mentions only one CDS permission set, or does not distinguish between admin and end-user CDS permissions, it is incomplete.

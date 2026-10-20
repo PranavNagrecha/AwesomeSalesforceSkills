@@ -2,6 +2,8 @@
 
 Use this template when working on tasks in this area. Fill in each section before starting implementation.
 
+UNVERIFIED (2026-10-20): the Advanced Approvals package (`SBAA__`) is not in the corpus, and of Salesforce CPQ the corpus holds only that it is a managed package (sfdx_dev 264 L6306-6307) whose fields carry the `SBQQ__` prefix (object_reference 264 L71334-71339) — every `SBAA__`/`SBQQ__` object, field, permission-set name, scheduled job and behaviour in this template is unverified.
+
 ---
 
 ## Scope

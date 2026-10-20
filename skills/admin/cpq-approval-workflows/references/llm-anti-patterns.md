@@ -3,6 +3,8 @@
 Common mistakes AI coding assistants make when generating or advising on CPQ Approval Workflows.
 These patterns help the consuming agent self-check its own output.
 
+UNVERIFIED (2026-10-20): the Advanced Approvals package (`SBAA__`) is not in the corpus, and of Salesforce CPQ the corpus holds only that it is a managed package (sfdx_dev 264 L6306-6307) whose fields carry the `SBQQ__` prefix (object_reference 264 L71334-71339) — every `SBAA__`/`SBQQ__` object, field, permission-set name, scheduled job and behaviour in this file is unverified. Standard approval processes evaluate the submitted record (api_meta 264 L25183-25185); a roll-up summary (api_meta 264 L45869-45877) is how line values would reach one.
+
 ## Anti-Pattern 1: Recommending a Standard Salesforce Approval Process for CPQ Line-Level Discount Approvals
 
 **What the LLM generates:** Advice to create a standard `ApprovalProcess` on `SBQQ__Quote__c` with entry criteria that check a discount field, or instructions to create a formula field on the quote that attempts to roll up line-level discounts for use in a standard approval process condition.
@@ -18,7 +20,8 @@ Use SBAA__ApprovalVariable__c to aggregate across quote line items:
   Operator:  Max
 
 Reference this variable in SBAA__ApprovalCondition__c on SBAA__ApprovalRule__c.
-Do NOT use ApprovalProcess metadata for line-level CPQ discount thresholds.
+Prefer Advanced Approvals over ApprovalProcess metadata for line-level CPQ
+discount thresholds; a standard process sees lines only through a quote field.
 ```
 
 **Detection hint:** Any response mentioning `ApprovalProcess`, `ProcessDefinition`, or "standard approval process" in the context of CPQ discount-based approval is likely applying this anti-pattern. Watch for phrases like "add an approval process to SBQQ__Quote__c" or "create a formula field to roll up discounts."
@@ -38,7 +41,7 @@ Before configuring any SBAA__ object:
 1. Verify Setup > Installed Packages shows the CPQ Advanced Approvals package.
 2. Verify the "CPQ Advanced Approvals" permission set exists.
 If the package is not installed, SBAA__ objects do not exist and cannot be created.
-Standard approval processes are not a fallback for cross-line discount logic.
+A standard approval process sees line values only through a quote field.
 ```
 
 **Detection hint:** Any response that jumps directly to creating `SBAA__ApprovalRule__c` records without first checking package installation is applying this anti-pattern. Also watch for responses that conflate the SBAA__ and SBQQ__ namespaces.

@@ -22,14 +22,14 @@ Record the answers to the Before Starting questions from SKILL.md here.
   - [ ] Opportunity
   - [ ] Interaction
   - [ ] Interaction Summary
-  - [ ] Financial Deal (requires Deal Management enabled)
-- Current OWD for each target object:
+  - [ ] Financial Deal (`enableDealManagement`, api_meta 264 L122580)
+- Current OWD for each target object (UNVERIFIED (2026-10-20): the Private/Read-Only requirement below is Help-only):
   - Account: ___ (must be Private or Public Read-Only)
   - Opportunity: ___ (must be Private or Public Read-Only)
   - Financial Deal: ___ (must be Private or Public Read-Only)
 - Deal Management enabled: [ ] Yes / [ ] No / [ ] Not applicable
-- CDS Manager permission assigned to admin(s): [ ] Yes / [ ] No
-- CDS User permission assigned to business users: [ ] Yes / [ ] No
+- CDS admin permission set assigned to admin(s): [ ] Yes / [ ] No
+- Use Compliant Data Sharing assigned to business users: [ ] Yes / [ ] No
 - Existing sharing rules on target objects that need audit: (list any)
 
 ---
@@ -38,11 +38,11 @@ Record the answers to the Before Starting questions from SKILL.md here.
 
 Complete all before enabling CDS:
 
-- [ ] OWD changed to Private or Public Read-Only for all target objects
+- [ ] OWD changed to Private or Public Read-Only for all target objects (UNVERIFIED (2026-10-20): Help-only prerequisite)
 - [ ] Sharing recalculation completed after OWD change
 - [ ] Deal Management enabled (if Financial Deal is in scope)
-- [ ] CDS Manager permission set assigned
-- [ ] CDS User permission set assigned to all participant-eligible users
+- [ ] CDS admin permission set assigned
+- [ ] Use Compliant Data Sharing assigned to all participant-eligible users
 
 ---
 
@@ -56,7 +56,8 @@ Objects to enable (check all that apply):
 - [ ] `enableCompliantDataSharingForOpportunity = true`
 - [ ] `enableCompliantDataSharingForInteraction = true`
 - [ ] `enableCompliantDataSharingForInteractionSummary = true`
-- [ ] `enableCompliantDataSharingForFinancialDeal = true`
+- [ ] `enableCompliantDataSharingForCustomObjects = true`
+- [ ] `enableDealManagement = true` (Financial Deal; no FinancialDeal CDS flag exists in IndustriesSettings)
 
 Deployment method: [ ] Setup UI / [ ] Metadata deploy
 
@@ -69,7 +70,7 @@ Deployment method: [ ] Setup UI / [ ] Metadata deploy
 
 Define the Participant Roles needed for this org:
 
-| Role Name | Access Level | Business Line / Use Case |
+| Role Name (masterLabel) | defaultAccessLevel (Edit / None / Read) | Business Line / Use Case |
 |---|---|---|
 | (e.g., Relationship Manager) | (Edit) | (Retail Banking) |
 | (e.g., Wealth Advisor) | (Edit) | (Wealth Management) |
@@ -90,10 +91,10 @@ List any sharing rules on target objects and their disposition:
 
 ## Validation Steps
 
-- [ ] Enabled CDS object shows "Compliant Data Sharing" in Setup > Sharing Settings
+- [ ] Enabled CDS object shows "Compliant Data Sharing" in Setup > Sharing Settings (UNVERIFIED (2026-10-20): this label)
 - [ ] Manager user confirmed to NOT see subordinate-owned records
 - [ ] Participant Role assignment on a test record grants access to the assigned user
-- [ ] User without CDS User permission cannot be added as a participant
+- [ ] User without Use Compliant Data Sharing cannot be added as a participant
 - [ ] Financial Deal Participants related list visible on layout (if applicable)
 - [ ] Cross-line access test: user from Line A cannot see Line B records (no participant assignment)
 
@@ -101,9 +102,9 @@ List any sharing rules on target objects and their disposition:
 
 ## Disabling CDS (if needed in future)
 
-- [ ] All `AccountParticipant` / `OpportunityParticipant` / `FinancialDealParticipant` records deleted
+- [ ] All participant records deleted (UNVERIFIED (2026-10-20): the `AccountParticipant` / `OpportunityParticipant` / `FinancialDealParticipant` object names)
 - [ ] Participant record count confirmed at zero
-- [ ] Salesforce Support ticket submitted for flag deactivation
+- [ ] Salesforce Support ticket submitted for flag deactivation (UNVERIFIED (2026-10-20): the Support step)
 
 ---
 

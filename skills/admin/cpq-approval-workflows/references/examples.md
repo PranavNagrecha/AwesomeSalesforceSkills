@@ -1,5 +1,7 @@
 # Examples — CPQ Approval Workflows
 
+UNVERIFIED (2026-10-20): the Advanced Approvals package (`SBAA__`) is not in the corpus, and of Salesforce CPQ the corpus holds only that it is a managed package (sfdx_dev 264 L6306-6307) whose fields carry the `SBQQ__` prefix (object_reference 264 L71334-71339) — every `SBAA__`/`SBQQ__` object, field, permission-set name, scheduled job and behaviour in this file is unverified.
+
 ## Example 1: Max Line Discount Approval Using an Approval Variable
 
 **Context:** A manufacturing company uses Salesforce CPQ. Sales reps can discount individual quote lines. The business requires manager approval any time a single line item discount exceeds 25%. A standard Salesforce approval process was previously attempted and failed because it evaluated only the quote header record, not individual line items.
@@ -144,6 +146,6 @@ Communicate to reps: changing `ExpirationDate`, `SBQQ__Notes__c`, or quote name 
 
 **What practitioners do:** Create a standard `ApprovalProcess` on `SBQQ__Quote__c` with entry criteria or a formula field that attempts to capture the maximum line discount — for example, a custom formula field on the quote that uses `MAX()` over a child relationship, or entry criteria with a formula referencing line-level fields.
 
-**What goes wrong:** Salesforce approval process entry criteria do not support aggregate functions over child records. A formula field on the quote attempting to reflect the maximum line discount requires a roll-up summary field, which is not available between `SBQQ__Quote__c` and `SBQQ__QuoteLine__c` when CPQ manages the relationship. The result is that line-level discounts are either not evaluated at all, or evaluated using a stale summary value that does not reflect the current state of all lines.
+**What goes wrong:** Approval process entry criteria evaluate the submitted record (api_meta 264 L25183-25185); a value across lines needs a roll-up summary on the quote (api_meta 264 L45869-45877). UNVERIFIED (2026-10-20): that a roll-up summary is unavailable between `SBQQ__Quote__c` and `SBQQ__QuoteLine__c`. The result is that line-level discounts are either not evaluated at all, or evaluated using a stale summary value that does not reflect the current state of all lines.
 
-**Correct approach:** Use `SBAA__ApprovalVariable__c` with `Operator = Max` targeting `SBQQ__Discount__c` on `SBQQ__QuoteLine__c`. This is the purpose-built mechanism for cross-line aggregation and is the only approach that correctly evaluates all line items in real time during approval submission.
+**Correct approach:** Use `SBAA__ApprovalVariable__c` with `Operator = Max` targeting `SBQQ__Discount__c` on `SBQQ__QuoteLine__c`. This is the package's purpose-built mechanism for cross-line aggregation.

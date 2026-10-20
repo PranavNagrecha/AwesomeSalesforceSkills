@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
 """Checker script for Compliance Documentation Requirements skill.
 
-Checks Salesforce metadata for common compliance documentation anti-patterns,
-including hardcoded API credentials in Named Credentials, missing Field Audit Trail
-configuration, and improper KYC object field tracking.
+Scans retrieved Salesforce metadata for compliance-documentation anti-patterns:
 
-Uses stdlib only — no pip dependencies.
+- ERROR: a NamedCredential / ExternalCredential / object / field file that does not parse
+- REVIEW: a per-user credential — legacy NamedCredential principalType PerUser, or an
+  ExternalCredential parameter of type PerUserPrincipal (api_meta 264 L66350, L92943).
+  NamedUser is Named Principal (L92832) and is never flagged. Whether per-user
+  credentials fail in batch or scheduled runs is UNVERIFIED (2026-10-20).
+- WARN: a credential-looking literal in a NamedCredential file, or an AML vendor host
+  or API key literal in Apex (use named credentials for secrets, apexdev 264 L13709-13713)
+- WARN: a corpus-confirmed KYC picklist field declared without trackHistory=true
+  (PartyProfileRisk.RiskCategory, PartyIdentityVerification.Status,
+  PartyScreeningSummary.Status — api_meta 264 L146588, L146637, L146690).
+  Fields not present in the retrieved metadata are not judged.
+
+Stdlib only. Exit 1 on ERROR; WARN/REVIEW exit 0 unless --strict; empty dir one WARN;
+missing dir ERROR exit 1.
 
 Usage:
-    python3 check_compliance_documentation_requirements.py [--help]
-    python3 check_compliance_documentation_requirements.py --manifest-dir path/to/metadata
+    python3 check_compliance_documentation_requirements.py --manifest-dir path/to/metadata [--strict]
 """
 
 from __future__ import annotations
@@ -19,296 +29,117 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Check Salesforce metadata for compliance documentation anti-patterns. "
-            "Covers KYC object configuration, Named Credential authentication type, "
-            "field history tracking on compliance objects, and hardcoded credentials."
-        ),
-    )
-    parser.add_argument(
-        "--manifest-dir",
-        default=".",
-        help="Root directory of the Salesforce metadata (default: current directory).",
-    )
-    return parser.parse_args()
+KYC_TRACKED = {
+    "PartyProfileRisk": {"RiskCategory"},
+    "PartyIdentityVerification": {"Status"},
+    "PartyScreeningSummary": {"Status"},
+}
+CREDENTIAL_PATTERNS = ["apikey=", "api_key=", "token=", "secret=", "password=", "authorization: basic"]
+VENDOR_STRINGS = ["onfido.com", "refinitiv.com", "lexisnexis.com", "worldcheck", "complyadvantage.com",
+                  "apikey", "api_key", "authorization: token"]
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def find_files(root: Path, pattern: str) -> list[Path]:
-    return list(root.rglob(pattern))
+def local(tag: str) -> str:
+    return tag.split("}", 1)[-1]
 
 
-def parse_xml(path: Path) -> ET.Element | None:
+def child(el: ET.Element, name: str) -> ET.Element | None:
+    for c in el:
+        if local(c.tag) == name:
+            return c
+    return None
+
+
+def text_of(el: ET.Element, name: str) -> str:
+    c = child(el, name)
+    return (c.text or "").strip() if c is not None else ""
+
+
+def files(root: Path, *patterns: str) -> list[Path]:
+    out: list[Path] = []
+    for pat in patterns:
+        out += [p for p in root.rglob(pat) if p.is_file()]
+    return out
+
+
+def parse(path: Path, out: list) -> ET.Element | None:
     try:
-        tree = ET.parse(path)
-        return tree.getroot()
-    except ET.ParseError:
+        return ET.parse(path).getroot()
+    except ET.ParseError as exc:
+        out.append(("ERROR", f"{path}: does not parse: {exc}"))
         return None
 
 
-# ---------------------------------------------------------------------------
-# Checks
-# ---------------------------------------------------------------------------
-
-KYC_OBJECTS = {
-    "PartyIdentityVerification",
-    "IdentityDocument",
-    "PartyProfileRisk",
-    "PartyScreeningSummary",
-}
-
-# Fields on KYC objects that should have history tracking enabled for compliance
-KYC_TRACKED_FIELDS = {
-    "PartyProfileRisk": {"RiskCategory", "RiskScore", "RiskReason", "RiskReviewDate"},
-    "PartyIdentityVerification": {"VerificationStatus", "VerificationDate"},
-    "PartyScreeningSummary": {"ScreeningStatus"},
-}
-
-# Patterns that suggest hardcoded credentials in Named Credential URL or body
-CREDENTIAL_PATTERNS = [
-    "apikey=",
-    "api_key=",
-    "token=",
-    "secret=",
-    "password=",
-    "Authorization: Basic",
-]
-
-
-def check_named_credential_auth_type(manifest_dir: Path) -> list[str]:
-    """Warn when Named Credentials use Per-User authentication.
-
-    Per-User auth fails in batch, scheduled, and Platform Event contexts —
-    all common execution paths for AML screening integrations.
-    """
-    issues: list[str] = []
-
-    nc_files = find_files(manifest_dir, "*.namedCredential")
-    nc_files += find_files(manifest_dir, "*.namedCredential-meta.xml")
-
-    for nc_file in nc_files:
-        root = parse_xml(nc_file)
-        if root is None:
+def scan(root: Path) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    for f in files(root, "*.namedCredential", "*.namedCredential-meta.xml"):
+        r = parse(f, out)
+        if r is None:
             continue
-        # Strip namespace if present
-        tag_map: dict[str, str] = {}
-        for elem in root.iter():
-            local = elem.tag.split("}")[-1] if "}" in elem.tag else elem.tag
-            tag_map[local] = elem.text or ""
-
-        auth_type = tag_map.get("oauthType", "") or tag_map.get("principalType", "")
-        label = tag_map.get("label", nc_file.name)
-
-        if auth_type.lower() in ("nameduser", "per-user", "peruser"):
-            issues.append(
-                f"Named Credential '{label}' uses Per-User authentication. "
-                "AML screening integrations run in batch/scheduled contexts where "
-                "Per-User auth fails — use Named Principal (org-level) auth instead. "
-                f"[{nc_file}]"
-            )
-
-    return issues
-
-
-def check_hardcoded_credentials_in_named_credentials(manifest_dir: Path) -> list[str]:
-    """Detect Named Credential metadata that may contain hardcoded secrets."""
-    issues: list[str] = []
-
-    nc_files = find_files(manifest_dir, "*.namedCredential")
-    nc_files += find_files(manifest_dir, "*.namedCredential-meta.xml")
-
-    for nc_file in nc_files:
-        try:
-            content = nc_file.read_text(encoding="utf-8", errors="ignore").lower()
-        except OSError:
+        if text_of(r, "principalType") == "PerUser":
+            out.append(("REVIEW", f"{f}: legacy principalType PerUser — confirm no batch/scheduled caller (headless failure UNVERIFIED)"))
+        body = f.read_text(encoding="utf-8", errors="ignore").lower()
+        hit = next((p for p in CREDENTIAL_PATTERNS if p in body), None)
+        if hit:
+            out.append(("WARN", f"{f}: possible hard-coded credential ('{hit}') — keep secrets in the External Credential"))
+    for f in files(root, "*.externalCredential", "*.externalCredential-meta.xml"):
+        r = parse(f, out)
+        if r is None:
             continue
-        for pattern in CREDENTIAL_PATTERNS:
-            if pattern.lower() in content:
-                issues.append(
-                    f"Named Credential file '{nc_file.name}' may contain a hardcoded "
-                    f"credential (found pattern: '{pattern}'). Use External Credentials "
-                    f"with encrypted secrets instead. [{nc_file}]"
-                )
-                break  # One warning per file is enough
-
-    return issues
-
-
-def check_field_history_tracking(manifest_dir: Path) -> list[str]:
-    """Warn when key KYC object fields are not tracked for field history."""
-    issues: list[str] = []
-
-    object_dirs = find_files(manifest_dir, "*.object")
-    object_dirs += find_files(manifest_dir, "*.object-meta.xml")
-
-    tracked_by_object: dict[str, set[str]] = {}
-
-    for obj_file in object_dirs:
-        # Determine object name from file name
-        obj_name = obj_file.stem.replace("-meta", "").replace(".object", "")
-        # Strip namespace prefix (e.g., FinServ__PartyProfileRisk__c → PartyProfileRisk)
-        bare_name = obj_name.split("__")[-1].replace("__c", "")
-        if bare_name not in KYC_TRACKED_FIELDS:
+        for el in r.iter():
+            if local(el.tag) == "externalCredentialParameters" and text_of(el, "parameterType") == "PerUserPrincipal":
+                out.append(("REVIEW", f"{f}: PerUserPrincipal parameter '{text_of(el, 'parameterName')}' — confirm no batch/scheduled caller"))
+    for f in files(root, "*.cls"):
+        low = f.read_text(encoding="utf-8", errors="ignore").lower()
+        hit = next((p for p in VENDOR_STRINGS if p in low), None)
+        if hit:
+            out.append(("WARN", f"{f}: possible hard-coded AML vendor endpoint or key ('{hit}') — use a named credential"))
+    # Field history on corpus-confirmed KYC picklists: object files (<fields>) and source-format field files.
+    declared: list[tuple[str, str, bool, Path]] = []
+    for f in files(root, "*.object", "*.object-meta.xml"):
+        obj = f.name.split(".")[0]
+        if obj not in KYC_TRACKED:
             continue
-
-        root = parse_xml(obj_file)
-        if root is None:
+        r = parse(f, out)
+        if r is None:
             continue
-
-        tracked_fields: set[str] = set()
-        for field_elem in root.iter():
-            local_tag = field_elem.tag.split("}")[-1] if "}" in field_elem.tag else field_elem.tag
-            if local_tag == "fields":
-                name_elem = field_elem.find(".//{*}fullName") or field_elem.find("fullName")
-                tracking_elem = (
-                    field_elem.find(".//{*}trackHistory")
-                    or field_elem.find("trackHistory")
-                )
-                if name_elem is not None and tracking_elem is not None:
-                    if (tracking_elem.text or "").lower() == "true":
-                        short_name = (name_elem.text or "").split("__")[0]
-                        tracked_fields.add(short_name)
-
-        tracked_by_object[bare_name] = tracked_fields
-
-    for obj_name, required_fields in KYC_TRACKED_FIELDS.items():
-        tracked = tracked_by_object.get(obj_name, set())
-        missing = required_fields - tracked
-        if missing:
-            issues.append(
-                f"Object '{obj_name}' is missing field history tracking on: "
-                f"{', '.join(sorted(missing))}. These fields are required for "
-                f"compliance audit trail. Enable trackHistory on each field, and "
-                f"note that tracking is capped at 18 months without Salesforce Shield "
-                f"Field Audit Trail."
-            )
-
-    return issues
-
-
-def check_aml_apex_for_hardcoded_endpoints(manifest_dir: Path) -> list[str]:
-    """Detect Apex classes with hardcoded AML vendor URLs or API tokens."""
-    issues: list[str] = []
-
-    SUSPICIOUS_STRINGS = [
-        "onfido.com",
-        "refinitiv.com",
-        "lexisnexis.com",
-        "worldcheck",
-        "fircosoft",
-        "accuity.com",
-        "complyadvantage.com",
-        "apikey",
-        "api_key",
-        "Authorization: Token",
-    ]
-
-    apex_files = find_files(manifest_dir, "*.cls")
-    apex_files += find_files(manifest_dir, "*.cls-meta.xml")
-
-    for apex_file in apex_files:
-        try:
-            content = apex_file.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
+        for fl in r:
+            if local(fl.tag) == "fields":
+                declared.append((obj, text_of(fl, "fullName"), text_of(fl, "trackHistory") == "true", f))
+    for f in files(root, "*.field-meta.xml"):
+        obj = f.parent.parent.name
+        if obj not in KYC_TRACKED:
             continue
-        content_lower = content.lower()
-        for pattern in SUSPICIOUS_STRINGS:
-            if pattern.lower() in content_lower:
-                # Skip metadata files that just declare the class
-                if apex_file.suffix == ".xml":
-                    continue
-                issues.append(
-                    f"Apex class '{apex_file.name}' may contain a hardcoded AML vendor "
-                    f"endpoint or credential (found: '{pattern}'). Use Named Credentials "
-                    f"for all external callouts. [{apex_file}]"
-                )
-                break
-
-    return issues
-
-
-def check_party_profile_risk_risk_category_picklist(manifest_dir: Path) -> list[str]:
-    """Warn if PartyProfileRisk RiskCategory has no picklist values defined.
-
-    An unconfigured picklist defaults to an empty or single-value set, which
-    cannot represent the regulatory risk tier definitions (Low/Medium/High/Prohibited).
-    """
-    issues: list[str] = []
-
-    object_files = find_files(manifest_dir, "*.object")
-    object_files += find_files(manifest_dir, "*.object-meta.xml")
-
-    for obj_file in object_files:
-        obj_name = obj_file.stem.replace("-meta", "")
-        if "PartyProfileRisk" not in obj_name and "partyprofileRisk" not in obj_name.lower():
+        r = parse(f, out)
+        if r is None:
             continue
-
-        root = parse_xml(obj_file)
-        if root is None:
-            continue
-
-        for field_elem in root.iter():
-            local_tag = field_elem.tag.split("}")[-1] if "}" in field_elem.tag else field_elem.tag
-            if local_tag != "fields":
-                continue
-            name_elem = field_elem.find(".//{*}fullName") or field_elem.find("fullName")
-            if name_elem is None:
-                continue
-            field_name = (name_elem.text or "").lower()
-            if "riskcategory" not in field_name:
-                continue
-            # Check for valueSet or picklist values
-            value_elements = list(field_elem.iter("{*}value")) + list(field_elem.iter("value"))
-            if not value_elements:
-                issues.append(
-                    f"PartyProfileRisk.RiskCategory has no picklist values defined in "
-                    f"'{obj_file.name}'. Define at least Low, Medium, High, and Prohibited "
-                    f"values to meet regulatory risk tier documentation requirements."
-                )
-
-    return issues
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-def check_compliance_documentation_requirements(manifest_dir: Path) -> list[str]:
-    """Return a list of issue strings found in the manifest directory."""
-    issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    issues.extend(check_named_credential_auth_type(manifest_dir))
-    issues.extend(check_hardcoded_credentials_in_named_credentials(manifest_dir))
-    issues.extend(check_field_history_tracking(manifest_dir))
-    issues.extend(check_aml_apex_for_hardcoded_endpoints(manifest_dir))
-    issues.extend(check_party_profile_risk_risk_category_picklist(manifest_dir))
-
-    return issues
+        declared.append((obj, text_of(r, "fullName") or f.name.split(".")[0], text_of(r, "trackHistory") == "true", f))
+    for obj, field, tracked, f in declared:
+        if field in KYC_TRACKED[obj] and not tracked:
+            out.append(("WARN", f"{f}: {obj}.{field} has no trackHistory=true — field history is the audit trail for this value"))
+    return out
 
 
 def main() -> int:
-    args = parse_args()
-    manifest_dir = Path(args.manifest_dir)
-    issues = check_compliance_documentation_requirements(manifest_dir)
-
-    if not issues:
-        print("No compliance documentation issues found.")
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--manifest-dir", default=".", help="Root of the retrieved metadata.")
+    ap.add_argument("--strict", action="store_true", help="Exit 1 on WARN/REVIEW findings too.")
+    args = ap.parse_args()
+    root = Path(args.manifest_dir)
+    if not root.is_dir():
+        print(f"ERROR: manifest dir not found: {root}")
+        sys.exit(1)
+    if not any(root.rglob("*")):
+        print(f"WARN: {root} is empty — nothing to check")
         return 0
-
-    for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
-
-    return 1
+    findings = scan(root)
+    for sev, msg in findings:
+        print(f"{sev}: {msg}")
+    if not findings:
+        print("OK: no compliance documentation issues found")
+    if any(s == "ERROR" for s, _ in findings):
+        return 1
+    return 1 if (args.strict and findings) else 0
 
 
 if __name__ == "__main__":

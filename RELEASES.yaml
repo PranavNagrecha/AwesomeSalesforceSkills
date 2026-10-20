@@ -897,6 +897,11 @@ releases:
     - security/secure-coding-review-checklist
     - security/service-account-credential-rotation
     - security/session-high-assurance-policies
+    - admin/classic-email-template-migration
+    - admin/compliance-documentation-requirements
+    - admin/compliant-data-sharing-setup
+    - admin/connected-apps-and-auth
+    - admin/cpq-approval-workflows
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'
@@ -917,6 +922,12 @@ releases:
   - id: R2-42
     title: 'AGENT_CONTRACT.md Apex security idiom table (L170-172): SECURITY_ENFORCED wording, USER_MODE version, 55.0-56.0
       AccessLevel row, stripInaccessible gate'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-43
+    title: Field Audit Trail 'up to 10 years' in 3 more skills (shield-architecture, hipaa-compliance-architecture, field-audit-trail
+      L207)
     size: S
     owner_model: sonnet
     status: todo
@@ -1337,5 +1348,13 @@ inbox:
     only); the <=56.0 row omits AccessLevel.USER_MODE on Database methods (55.0+, L11609), gives stripInaccessible ''48.0+''
     without a line, and omits the ''not recommended below 45.0'' caveat (L45412-45413). skills/security/secure-coding-review-checklist
     links to this table twice. Fix with cites; validate --agents.'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by R3-06 batch 11 (extends R2-41): the ''10 years'' retention figure also appears in skills/architect/salesforce-shield-architecture/SKILL.md
+    L79/L92/L177 and skills/architect/hipaa-compliance-architecture/SKILL.md L79/L136, plus skills/security/field-audit-trail/SKILL.md
+    L207. Corpus: archived history is kept until you delete it (secguide 262 L4836-4837; L4553-4555); archiveRetentionYears
+    is a manual-deletion reminder (api_meta 264 L46335-46337). Fix all sites with cites or fold into those skills'' audit
+    batch.'
   size: S
   slotted_into: 1.5.0

@@ -30,6 +30,18 @@ Stable token handling, clear endpoint management, and tested recovery steps impr
 
 ## Official Sources Used
 
+Corpus lines (Winter '27 / 264) for the claims this package asserts:
+
+- Connected app creation restricted as of Spring '26; Support exception — api_meta 264 L37161-37163; api_rest 264 L625-627; sfdx_dev 264 L3270-3271
+- `consumerKey` set only at creation, globally unique; `consumerSecret` not returned — api_meta 264 L37423-37427, L37443-37444
+- `isAdminApproved` and the profile / permission-set grant — api_meta 264 L37454-37462, L37225-37239
+- `ipRelaxation` and `refreshTokenPolicy` values and defaults — api_meta 264 L37789-37850
+- ECA floors, Opt in permission, global settings out of source control — api_meta 264 L65994-65998, L67114, L67127
+- DX: ECA for `org login jwt`, connected app for Dev Hub scratch/sandbox creation — sfdx_dev 264 L3149-3153
+- `OauthToken` visibility and `UncommittedWork` — object_reference 264 L191869-191870
+
+UNVERIFIED (2026-10-20): the Help-article bullets below (Spring '26 package-install exception, CA-to-ECA migration, MFA enforcement, OAuth Usage restriction dates, username-password deprecation, SOAP `login()` retirement, Hosted MCP scratch-org note) are not in the corpus.
+
 - Salesforce Well-Architected Overview — security and operational framing for integration access
 - REST API Developer Guide — OAuth and API usage context for connected-app design
 - Integration Patterns — auth and system-boundary tradeoffs for integrations

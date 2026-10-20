@@ -25,7 +25,7 @@ The worked example in each row is a headless billing sync — replace it, don't 
 | Item | Value |
 |------|-------|
 | Auth flow | JWT bearer / Client credentials / Web server (auth code + PKCE) / Named Credential outbound |
-| Container | Connected app (existing / package-delivered) or External Client App (net-new in Spring '26+) |
+| Container | Connected app (existing; package-delivered is UNVERIFIED (2026-10-20)) or External Client App (net-new in Spring '26+) |
 | Metadata files | e.g. `connectedApps/Billing_Sync_JWT.connectedApp-meta.xml`, or the four-file ECA set |
 | Named Credential / External Credential | Only for outbound; name both, or write "n/a — inbound only" |
 | Integration user or principal | Dedicated user; for client credentials it must hold **API Only** |

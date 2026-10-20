@@ -1,5 +1,7 @@
 # Examples — Classic Email Template Migration
 
+UNVERIFIED (2026-10-20): the Lightning merge syntax in Examples 2-3 (`{{Recipient.X}}`, `{{Sender.X}}`, `{{Related.X}}`, and the NOT-supported rows) has no corpus line; pkg2_dev 264 L8196-8197 names only a Recipients prefix. Sandbox-test every translation.
+
 ## Example 1: Inventory Query
 
 ```sql
@@ -9,12 +11,9 @@ FROM EmailTemplate
 WHERE UiType = 'Aloha'
 GROUP BY TemplateType
 
--- Per-template downstream consumer count (Email Alerts)
-SELECT t.Id, t.Name, t.TemplateType,
-    (SELECT COUNT() FROM WorkflowAlerts WHERE TemplateId = t.Id) AlertCount
-FROM EmailTemplate t
-WHERE UiType = 'Aloha'
-ORDER BY AlertCount DESC
+-- Per-template Email Alert count: alerts name the template in <template>
+-- (a named reference, api_meta 264 L143888), so count from retrieved metadata:
+-- grep -rho '<template>[^<]*</template>' force-app/main/default/workflows | sort | uniq -c
 
 -- Find Apex code referencing Classic template IDs (run via Tooling API or grep on retrieved metadata)
 -- grep -rn 'setTemplateId' src/classes
@@ -77,11 +76,13 @@ ORDER BY AlertCount DESC
 
 ## Example 4: Email Alert Update via Metadata API
 
-**Retrieved `WorkflowAlert` XML (before):**
+**Retrieved Workflow file, one `WorkflowAlert` (before):**
 
 ```xml
-<workflowAlert>
-    <fullName>Account.Welcome_New_Account</fullName>
+<!-- excerpt of Account.workflow-meta.xml: alerts are <alerts> children of <Workflow> (api_meta 264 L143765, sample L144411-144413) -->
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+<alerts>
+    <fullName>Welcome_New_Account</fullName>
     <description>Welcome email for new Accounts</description>
     <protected>false</protected>
     <recipients>
@@ -90,14 +91,17 @@ ORDER BY AlertCount DESC
     </recipients>
     <senderType>CurrentUser</senderType>
     <template>unfiled$public/Welcome_New_Account_Classic</template>
-</workflowAlert>
+</alerts>
+</Workflow>
 ```
 
 **Updated XML (after):**
 
 ```xml
-<workflowAlert>
-    <fullName>Account.Welcome_New_Account</fullName>
+<!-- excerpt of Account.workflow-meta.xml: alerts are <alerts> children of <Workflow> (api_meta 264 L143765, sample L144411-144413) -->
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+<alerts>
+    <fullName>Welcome_New_Account</fullName>
     <description>Welcome email for new Accounts</description>
     <protected>false</protected>
     <recipients>
@@ -106,18 +110,14 @@ ORDER BY AlertCount DESC
     </recipients>
     <senderType>CurrentUser</senderType>
     <template>Customer_Communications/Welcome_New_Account_Lightning</template>
-</workflowAlert>
+</alerts>
+</Workflow>
 ```
 
-**Verification SOQL after deploy:**
+**Verification after deploy:** re-retrieve the Workflow files and search each `<template>` for the old names — expect zero hits.
 
-```sql
-SELECT Id, FullName, TemplateId
-FROM WorkflowAlert
-WHERE TemplateId IN (
-    SELECT Old_Template_Id__c FROM Email_Template_Migration_Map__c
-)
--- Expect: zero rows
+```bash
+grep -rn 'Welcome_New_Account_Classic' force-app/main/default/workflows   # expect no output
 ```
 
 ---
@@ -150,7 +150,7 @@ msg.setSaveAsActivity(true);
 Messaging.sendEmail(new Messaging.Email[] { msg });
 ```
 
-**Why the OWA reset:** Lightning templates don't store sender. If the Classic template was paired with a no-reply OWA, the Apex caller must restate it.
+**About the OWA line:** no email template stores a sender (object_reference 264 L106331-106749); the Apex caller sets it with `setOrgWideEmailAddressId` (apexdev 264 L27130-27133). Add it only when the From should be the OWA — the template swap itself does not change who sends.
 
 ---
 

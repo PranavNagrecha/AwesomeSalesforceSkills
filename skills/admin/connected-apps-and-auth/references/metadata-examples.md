@@ -1,8 +1,9 @@
 # Metadata Examples: Connected Apps, External Client Apps, Named + External Credentials
 
 Deployable shapes for the four auth artefacts an admin actually owns. Every element name,
-enum value, and default below comes from the Metadata API Developer Guide
-(https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf) — `ConnectedApp`,
+enum value, and default below comes from the Metadata API Developer Guide — re-checked against
+the Winter '27 copy (api_meta 264: ConnectedApp L37150-38174, ExtlClntApp* L65990-68288,
+NamedCredential L92622-93123) — `ConnectedApp`,
 `ExternalClientApplication` and its `ExtlClntApp*` siblings, `NamedCredential`, `ExternalCredential`.
 
 ## Pick the artefact first
@@ -71,7 +72,9 @@ The suffixes and folders are the guide's own: `ConnectedApp` components "have th
   shorter set of valid values "when retrieving metadata" — a round trip does not necessarily
   return the tokens you deployed.
 - `isAdminApproved` set to `true` means "only users with the appropriate profile or permission
-  set can access the app. These users don't have to approve the app before they can access it."
+  set can access the app. These users don't have to approve the app before they can access it"
+  (L37456-37458) — the grant can also be made on the profile's Connected App Access list or the
+  permission set's Assigned Connected App list (L37458-37460).
   It is the precondition for `permissionSetName` and `profileName`: "To use this field, the
   `isAdminApproved` field on the `ConnectedAppOauthConfig` subtype must be set to true."
 - `permissionSetName` takes one name per line; `profileName` is a repeating element. Deploying an
@@ -137,7 +140,7 @@ https://portal-uat.example.com/oauth/callback</callbackUrl>
 - `isRefreshTokenRotationEnabled` (API 60.0+): a new refresh token is issued on every refresh and
   the old one is invalidated. Reusing an invalidated token deletes "the current refresh token and
   its associated access tokens" — a client that caches the first token it ever saw will lock itself out.
-- `idTokenValidity` accepts 1–720 minutes and defaults to 2.
+- `idTokenValidity` accepts 1–720 minutes and defaults to 2 (api_meta 264 L37781).
 - `ENFORCE_RELAXREFRESH` "enforces the IP restrictions configured for the org … However, this
   option bypasses these restrictions when the connected app uses refresh tokens to get access tokens."
 - `sessionPolicy/sessionTimeout` is the app's own session length; "If you don't set a value,
@@ -152,7 +155,7 @@ contact Salesforce Support." An ECA is four files, not one: a header, the global
 (secrets), the developer OAuth settings (scopes, trusted IPs), and the admin policies.
 
 Access is gated in Setup: `ExternalClientApplication` "requires orgs to enable the **Opt in to
-External Client Apps** permission", the OAuth plugin types require the **Allow Access to OAuth
+External Client Apps** permission" (api_meta 264 L65998), the OAuth plugin types require the **Allow Access to OAuth
 Consumer Secrets via Metadata API** permission, and the policy types require the **View all
 External Client Apps, view their settings, and edit their policies** user permission.
 
@@ -231,7 +234,7 @@ a file you commit.
 | `isPkceRequired` default `false` | `isPkceRequired` default **`true`** ("If set to `true` (default) Proof Key for Code for Exchange (PKCE) is required") | Silently omitting the element flips behaviour between the two containers |
 | `ipRelaxation` values `ENFORCE` / `BYPASS` / `BYPASS_2FACTOR` / `ENFORCE_RELAXREFRESH` | `ipRelaxationPolicyType` values `Enforce` / `Bypass` / `Bypass_2factor` / `Enforce_RelaxRefresh` | Different casing; the connected-app spelling is rejected |
 | `refreshTokenPolicy` one packed string (`specific_inactivity:7:DAYS`) | `refreshTokenPolicyType` + `refreshTokenValidityPeriod` + `refreshTokenValidityUnit` (`SpecificInactivity` / `7` / `Days`) | Three elements, different vocabulary |
-| `isAdminApproved` boolean + `permissionSetName` | `permittedUsersPolicyType` = `AdminApprovedPreAuthorized` + `commaSeparatedPermissionSet` | The boolean has no ECA counterpart |
+| `isAdminApproved` boolean + `permissionSetName` | `permittedUsersPolicyType` = `AdminApprovedPreAuthorized` + `commaSeparatedPermissionSet` | The boolean has no ECA counterpart; the field text says "Permission set IDs in a comma-separated list" (api_meta 264 L67635) while the guide's sample uses a name (L67934) — test which your org accepts |
 | `oauthClientCredentialUser` | `clientCredentialsFlowUser` | Both require a user with the **API Only** permission |
 | Everything in one file | Secrets split into `ExtlClntAppGlobalOauthSettings`, which "can't be packaged and must not be added to source control" | The split is the point: policy is committable, secrets are not |
 
@@ -308,7 +311,7 @@ a file you commit.
   when a user participates in more than one principal. … Priority is from lower to higher numbers."
 - Apex references the endpoint by name, never by URL: `req.setEndpoint('callout:Billing_API/invoices')`.
 - Salesforce "stores third-party access and refresh tokens of up to 10,000 characters in length"
-  (Salesforce Developer Limits and Allocations Quick Reference) — a provider issuing longer tokens
+  (salesforce_app_limits_cheatsheet 264 L275) — a provider issuing longer tokens
   will not round-trip through an External Credential.
 
 ## 5. Org-wide switch: admin-approved apps only
@@ -411,8 +414,8 @@ sf project deploy start -x manifest/package.xml -o prod
 
 | Field | Guide's statement | Consequence |
 |---|---|---|
-| `oauthConfig/consumerSecret` | "When set, the value isn't returned in Metadata API requests." | A retrieved `.connectedApp-meta.xml` has no secret. Redeploying it into a second org creates an app whose secret nobody holds. |
-| `oauthConfig/consumerKey` | "In API version 32.0 and later, you can set this field's value only during creation. After you define and save the value, it can't be edited." Alphanumeric, 8–256 characters, "Consumer keys must be globally unique." | You cannot repoint an existing app at a new key by editing the file. Key rotation is a new app (or, for an ECA, `shouldRotateConsumerKey`). |
+| `oauthConfig/consumerSecret` | "When set, the value isn't returned in Metadata API requests." (api_meta 264 L37443-37444) | A retrieved `.connectedApp-meta.xml` has no secret. Redeploying it into a second org creates an app whose secret nobody holds. |
+| `oauthConfig/consumerKey` | "In API version 32.0 and later, you can set this field's value only during creation. After you define and save the value, it can't be edited." Alphanumeric, 8–256 characters, "Consumer keys must be globally unique." (L37423-37427) | You cannot repoint an existing app at a new key by editing the file. Key rotation is a new app (or, for an ECA, `shouldRotateConsumerKey`). |
 | `oauthConfig/scopes` | The guide publishes one enum list for deploying and a shorter one for retrieving. | Deployed scope names may not be the names you get back. Diff against intent, not against the last retrieve. |
 | ECA consumer key / secret | `shouldRotateConsumerKey` and `shouldRotateConsumerSecret`: "To maintain security, if this field is set to `true`, you must include the ignore warnings attribute in the deploy command." | An ECA rotation deploy fails unless warnings are ignored — by design, not by accident. |
 | `ExtlClntAppGlobalOauthSettings` (whole file) | "These settings include private and sensitive OAuth consumer information that can't be packaged and must not be added to source control." | Keep it out of the repo; deploy it out of band or configure it in Setup. |
@@ -420,14 +423,14 @@ sf project deploy start -x manifest/package.xml -o prod
 
 Migration of an existing connected app to an ECA is a Setup action, not a metadata edit: the
 **Migrate to External Client App** button in App Manager, which "preserves your consumer key and
-secret." Its eligibility rules are in `SKILL.md`.
+secret" (UNVERIFIED (2026-10-20): Help-only). Its eligibility rules are in `SKILL.md`.
 
 ---
 
 ## Verify after deploy
 
 `ConnectedApplication` is the read-only view of what actually landed — "Represents a connected app
-and its details; all fields are read-only", supporting `describeSObjects()`, `query()`, `retrieve()`.
+and its details; all fields are read-only" (object_reference 264 L70760), supporting `describeSObjects()`, `query()`, `retrieve()`.
 
 ```sql
 SELECT Name, OptionsAllowAdminApprovedUsersOnly, OptionsHasSessionLevelPolicy,

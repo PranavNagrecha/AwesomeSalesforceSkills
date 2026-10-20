@@ -7,9 +7,12 @@ Two modes:
     Parse the retrieved or source-format metadata tree with ElementTree and check the
     configuration mistakes that deploy cleanly and then behave wrong:
 
-    * ERROR  ``isAdminApproved`` true with neither ``permissionSetName`` nor ``profileName``
-             (the app is pre-authorized for nobody).
-    * ERROR  a ``callbackUrl`` value using ``http://``.
+    * ERROR  a file that does not parse, or an ``ipRelaxation`` value outside ENFORCE /
+             BYPASS_2FACTOR / BYPASS / ENFORCE_RELAXREFRESH (api_meta 264 L37789-37807).
+    * WARN   ``isAdminApproved`` true with neither ``permissionSetName`` nor ``profileName`` in
+             the file — the grant may instead live on a profile's Connected App Access list or
+             a permission set's Assigned Connected App list (api_meta 264 L37456-37460).
+    * WARN   a ``callbackUrl`` value using ``http://``.
     * WARN   ``scopes`` containing ``Full`` alongside narrower scopes.
     * WARN   ``refreshTokenPolicy`` left at ``infinite``.
     * WARN   ``ipRelaxation`` set to ``BYPASS``.
@@ -20,6 +23,8 @@ Two modes:
     Text scan of arbitrary files for hardcoded secrets, direct endpoints, and
     username-password flow references. Emits the JSON envelope.
 
+Exit codes: ERROR findings (and a missing path) exit 1; WARN/REVIEW/INFO and the text-scan
+HIGH/MEDIUM/LOW heuristics exit 0 unless --strict; an empty --manifest-dir is one WARN, exit 0.
 Stdlib only.
 
 Usage:
@@ -57,6 +62,8 @@ SEVERITY_WEIGHTS = {
 
 # Scopes that signal a headless / API integration rather than a UI app. An app carrying
 # these and no certificate is probably relying on a shared secret instead of a key pair.
+IP_RELAXATION_VALUES = {"ENFORCE", "BYPASS_2FACTOR", "BYPASS", "ENFORCE_RELAXREFRESH"}
+
 SERVER_TO_SERVER_SCOPES = {"api", "cdpingest", "cdpquery", "cdpprofile", "sfapiplatform"}
 
 # Scopes that only make sense when a person is completing a login. Their presence — like
@@ -156,16 +163,19 @@ def check_connected_app(path: Path) -> list[str]:
         profiles = _texts(root, "profileName")
         if admin_approved and not permission_sets and not profiles:
             findings.append(
-                f"ERROR {path}: isAdminApproved is true but neither permissionSetName nor "
-                "profileName is set; the app is pre-authorized for nobody. Ship the access "
-                "grant in the same file."
+                f"WARN {path}: isAdminApproved is true but neither permissionSetName nor "
+                "profileName is in this file; unless a profile's Connected App Access list or a "
+                "permission set's Assigned Connected App list grants it, nobody can use the app."
             )
 
         # --- Full alongside narrower scopes ---------------------------------------
         scopes = [scope.strip() for scope in _texts(oauth_config, "scopes")]
         lowered = {scope.lower() for scope in scopes}
-        if "full" in lowered and len(lowered) > 1:
-            others = sorted(scope for scope in scopes if scope.lower() != "full")
+        # RefreshToken and OpenID add capabilities Full lacks (api_meta 264 L37675-37676,
+        # L37690-37692), so the guide's own Full + RefreshToken sample is not flagged.
+        distinct = {"full", "refreshtoken", "offlineaccess", "openid"}
+        others = sorted(scope for scope in scopes if scope.lower() not in distinct)
+        if "full" in lowered and others:
             findings.append(
                 f"WARN {path}: scopes include Full alongside {', '.join(others)}; Full already "
                 "grants all data accessible to the running user, so the narrower scopes are "
@@ -178,8 +188,8 @@ def check_connected_app(path: Path) -> list[str]:
             candidate = line.strip()
             if candidate.lower().startswith("http://"):
                 findings.append(
-                    f"ERROR {path}: callbackUrl value '{candidate}' uses http://; the OAuth "
-                    "redirect must be https://."
+                    f"WARN {path}: callbackUrl value '{candidate}' uses http://; use an "
+                    "https:// redirect."
                 )
 
         # --- server-to-server shape with no certificate ----------------------------
@@ -209,6 +219,11 @@ def check_connected_app(path: Path) -> list[str]:
                 "or specific_inactivity:<n>:DAYS, or record why indefinite is acceptable."
             )
         ip_relaxation = (_text(oauth_policy, "ipRelaxation") or "").strip()
+        if ip_relaxation and ip_relaxation not in IP_RELAXATION_VALUES:
+            findings.append(
+                f"ERROR {path}: ipRelaxation '{ip_relaxation}' is not a valid option "
+                "(api_meta 264 L37789-37807)."
+            )
         if ip_relaxation.upper() == "BYPASS":
             findings.append(
                 f"WARN {path}: ipRelaxation is BYPASS; the app runs without the org's IP "
@@ -231,9 +246,9 @@ def check_eca_policies(path: Path) -> list[str]:
     profiles = _text(root, "commaSeparatedProfile")
     if permitted == "AdminApprovedPreAuthorized" and not permission_sets and not profiles:
         findings.append(
-            f"ERROR {path}: permittedUsersPolicyType is AdminApprovedPreAuthorized but neither "
-            "commaSeparatedPermissionSet nor commaSeparatedProfile is set; nobody is "
-            "pre-authorized."
+            f"WARN {path}: permittedUsersPolicyType is AdminApprovedPreAuthorized but neither "
+            "commaSeparatedPermissionSet nor commaSeparatedProfile is set (api_meta 264 "
+            "L67632-67642); confirm the grant is made elsewhere."
         )
 
     refresh_type = (_text(root, "refreshTokenPolicyType") or "").strip()
@@ -285,8 +300,10 @@ def check_named_credential(path: Path, external_credentials: set[str]) -> list[s
 
 
 def check_manifest_dir(manifest_dir: Path) -> list[str]:
-    if not manifest_dir.exists():
+    if not manifest_dir.is_dir():
         return [f"ERROR {manifest_dir}: manifest directory not found"]
+    if not any(manifest_dir.rglob("*")):
+        return [f"WARN {manifest_dir}: empty directory — nothing to check"]
 
     findings: list[str] = []
     external_credentials = collect_external_credential_names(manifest_dir)
@@ -338,7 +355,7 @@ def audit_file(path: Path) -> tuple[list[str], bool]:
     found_named_credential = False
 
     if not path.exists():
-        return [f"HIGH {path}: file not found"], found_named_credential
+        return [f"ERROR {path}: file not found"], found_named_credential
     if path.suffix.lower() not in TEXT_SUFFIXES:
         return findings, found_named_credential
 
@@ -411,13 +428,18 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     normalized = [normalize_finding(finding) for finding in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
+    errors = [item for item in normalized if item["severity"] == "ERROR"]
+    for item in errors:
+        print(f"ERROR: {item['location']}: {item['message']}", file=sys.stderr)
     if normalized:
         print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+    if errors:
+        return 1
+    return 1 if (strict and normalized) else 0
 
 
 def main() -> int:
@@ -435,6 +457,11 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN/REVIEW/INFO and text-scan findings too.",
+    )
+    parser.add_argument(
         "paths",
         nargs="*",
         help="Files or directories to text-scan for secrets and direct endpoints.",
@@ -446,6 +473,12 @@ def main() -> int:
 
     findings: list[str] = []
     summary_parts: list[str] = []
+
+    if args.manifest_dir and not args.paths:
+        root = Path(args.manifest_dir)
+        if root.is_dir() and not any(root.rglob("*")):
+            print(f"WARN: {root} is empty — nothing to check")
+            return 0
 
     if args.manifest_dir:
         manifest_findings = check_manifest_dir(Path(args.manifest_dir))
@@ -459,7 +492,7 @@ def main() -> int:
         findings.extend(text_findings)
         summary_parts.append(text_summary)
 
-    return emit_result(findings, " ".join(summary_parts))
+    return emit_result(findings, " ".join(summary_parts), args.strict)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 # Well-Architected Notes — CPQ Approval Workflows
 
+UNVERIFIED (2026-10-20): the Advanced Approvals package (`SBAA__`) is not in the corpus, and of Salesforce CPQ the corpus holds only that it is a managed package (sfdx_dev 264 L6306-6307) whose fields carry the `SBQQ__` prefix (object_reference 264 L71334-71339) — every `SBAA__`/`SBQQ__` object, field, permission-set name, scheduled job and behaviour in this file is unverified.
+
 ## Relevant Pillars
 
 ### Security
@@ -31,7 +33,7 @@ Approval workflows must fire deterministically on every qualifying quote. Reliab
 
 ### Approval Variables vs. Formula Fields on the Quote
 
-Using a formula field on `SBQQ__Quote__c` to pre-compute an aggregate (e.g., a max discount roll-up) and referencing that field in a standard approval process condition is tempting because it avoids the Advanced Approvals package dependency. The tradeoff: `SBQQ__Quote__c` to `SBQQ__QuoteLine__c` does not support Salesforce roll-up summary fields in the standard metadata model, and formula fields cannot natively aggregate over child records. `SBAA__ApprovalVariable__c` is the only supported, reliable mechanism and is the intended architectural solution.
+Using a formula field on `SBQQ__Quote__c` to pre-compute an aggregate (e.g., a max discount roll-up) and referencing that field in a standard approval process condition is tempting because it avoids the Advanced Approvals package dependency. The platform's aggregate-on-parent mechanism is a roll-up summary over a master-detail child (`summaryOperation` Count/Min/Max/Sum, api_meta 264 L45869-45877), and a standard process evaluates the submitted record (L25183-25185). UNVERIFIED (2026-10-20): that `SBQQ__Quote__c` to `SBQQ__QuoteLine__c` cannot carry a roll-up summary, and that formula fields cannot aggregate child records. `SBAA__ApprovalVariable__c` keeps the aggregation inside the approval package.
 
 ### Sequential Chains vs. Multiple Independent Rules
 
@@ -43,7 +45,7 @@ Smart Approvals reduces re-approval friction but introduces a dependency on accu
 
 ## Anti-Patterns
 
-1. **Standard Salesforce Approval Processes for Cross-Line CPQ Discounts** — Standard approval processes evaluate a single record. They cannot aggregate across `SBQQ__QuoteLine__c` child records. Practitioners who use standard processes for CPQ discount approvals create gaps where high line-level discounts bypass approval because the parent quote field does not reflect the true maximum. The correct mechanism is `SBAA__ApprovalVariable__c` within the Advanced Approvals package.
+1. **Standard Salesforce Approval Processes for Cross-Line CPQ Discounts** — Standard approval processes evaluate the submitted record (api_meta 264 L25183-25185) and see line values only through a quote field. Practitioners who use standard processes for CPQ discount approvals create gaps where high line-level discounts bypass approval because the parent quote field does not reflect the true maximum. The correct mechanism is `SBAA__ApprovalVariable__c` within the Advanced Approvals package.
 
 2. **Hardcoded User References in Approval Chains Without a Succession Plan** — `SBAA__Approver__c` records that reference specific Salesforce user IDs break when those users are deactivated or their role changes. In high-turnover sales organizations this causes approval chains to stall with no visible error. The architectural alternative is to use dynamic approver fields on the quote (e.g., a lookup to the account owner or the opportunity owner's manager) so approver routing survives personnel changes without rule edits.
 
@@ -51,6 +53,11 @@ Smart Approvals reduces re-approval friction but introduces a dependency on accu
 
 ## Official Sources Used
 
+- Standard approval `entryCriteria` evaluates the submitted record — api_meta 264 L25183-25185
+- Standard approval steps run in definition order, up to 30, with Unanimous/FirstResponse for multiple approvers — api_meta 264 L25330-25334, L25409-25414
+- Roll-up summary `summaryOperation` Count/Min/Max/Sum over a master-detail child — api_meta 264 L45869-45877
+- "Advanced Approvals" in the corpus is a platform feature: `ApprovalWorkItemCondition` ("smart approval process", API 64.0), `ApprovalWorkItemCriteria`, `ApprovalAlertContentDef` — object_reference 264 L36555-36557, L36739-36749, L35785-35796; `AppvlWorkItemNtfcnEvent` — platform_events 264 L8923-8924
+- Salesforce CPQ is a managed package; `SBQQ__` field prefix — sfdx_dev 264 L6306-6307; object_reference 264 L71334-71339
 - Salesforce CPQ Advanced Approvals — Advanced Approvals for Salesforce CPQ Managed Package: https://help.salesforce.com/s/articleView?id=sf.cpq_adv_approvals.htm
 - Salesforce CPQ Smart Approvals: https://help.salesforce.com/s/articleView?id=sf.cpq_smart_approvals.htm
 - Salesforce CPQ Approval Chains: https://help.salesforce.com/s/articleView?id=sf.cpq_approval_chains.htm

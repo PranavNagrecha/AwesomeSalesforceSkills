@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 """Checker script for Classic Email Template Migration skill.
 
-Scans retrieved email-template metadata (from `force-app/main/default/email/`)
-and Apex classes for migration concerns:
+Scans retrieved metadata (email/, workflows/, classes/) for migration concerns:
 
-- Classic templates (UiType=Aloha) still in use after presumed migration
-- Lightning template bodies still containing Classic-style {!IF()} / {!$Setup} / {!System.} merge formulas
-- Apex setTemplateId() calls referencing old (Classic) template IDs (heuristic: 18-char IDs in setTemplateId calls)
-- Workflow alerts with no <senderAddress> set (OWA may have been lost in migration)
+- ERROR: an .email-meta.xml that does not parse
+- ERROR: a template with <uiType>SFX</uiType> whose <type> is not custom
+  ("If UiType is SFX, the type must be custom", api_meta 264 L59152)
+- ERROR: a workflow <alerts> block with no <template> (Required, api_meta 264 L143888)
+- WARN: an alert with senderType OrgWideEmailAddress but no <senderAddress>
+  (api_meta 264 L143859-143886)
+- REVIEW: a Lightning (uiType SFX) template body still holding IF/CASE/$Setup/System.
+  merge expressions — Lightning support for them is UNVERIFIED (2026-10-20); sandbox-test
+- INFO: Apex setTemplateId() with a hard-coded 00X template ID — map old to new
 
-Stdlib only.
+No template stores a sender, so there is no rule about OrgWideEmailAddress on Apex calls.
+Stdlib only. Exit 1 on ERROR; WARN/REVIEW/INFO exit 0 unless --strict; empty dir one WARN.
 
 Usage:
-    python3 check_classic_email_template_migration.py --project-dir path/to/project
+    python3 check_classic_email_template_migration.py --manifest-dir path/to/force-app
 """
 
 from __future__ import annotations
@@ -20,94 +25,87 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
-
-def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--project-dir", type=Path, default=Path.cwd())
-    p.add_argument("--strict", action="store_true")
-    return p.parse_args()
-
-
-# Patterns that indicate Classic-only merge syntax still embedded
-CLASSIC_MERGE_PATTERNS = [
-    (r'\{!IF\s*\(', "Classic IF() merge formula — Lightning templates do not support"),
-    (r'\{!CASE\s*\(', "Classic CASE() merge formula — Lightning templates do not support"),
-    (r'\{!URLENCODE\s*\(', "URLENCODE merge — not portable to Lightning"),
-    (r'\{!\$Setup\.', "$Setup merge field — surface via a record field instead"),
-    (r'\{!\$User\.Profile', "$User.Profile merge — limited Lightning support; verify"),
-    (r'\{!System\.', "System.* merge — not available in Lightning"),
-    (r'\{!BLANKVALUE\s*\(', "BLANKVALUE() merge formula — not supported in Lightning"),
+MERGE_PATTERNS = [
+    (r"\{!IF\s*\(", "IF() merge expression"),
+    (r"\{!CASE\s*\(", "CASE() merge expression"),
+    (r"\{!URLENCODE\s*\(", "URLENCODE() merge expression"),
+    (r"\{!BLANKVALUE\s*\(", "BLANKVALUE() merge expression"),
+    (r"\{!\$Setup\.", "$Setup merge field"),
+    (r"\{!System\.", "System.* merge field"),
 ]
+HARDCODED_ID = re.compile(r"setTemplateId\s*\(\s*'00X[A-Za-z0-9]{12}(?:[A-Za-z0-9]{3})?'")
+ALERT_BLOCK = re.compile(r"<alerts>(.*?)</alerts>", re.DOTALL)
 
 
-def find_files(root: Path, pattern: str) -> list[Path]:
+def local(tag: str) -> str:
+    return tag.split("}", 1)[-1]
+
+
+def child_text(root: ET.Element, name: str) -> str | None:
+    for el in root:
+        if local(el.tag) == name:
+            return (el.text or "").strip()
+    return None
+
+
+def files(root: Path, pattern: str) -> list[Path]:
     return [p for p in root.rglob(pattern) if p.is_file() and ".sfdx" not in p.parts]
 
 
 def scan(root: Path) -> list[tuple[str, Path, int, str]]:
-    findings: list[tuple[str, Path, int, str]] = []
-
-    # Email template files
-    for f in find_files(root, "*.email") + find_files(root, "*.email-meta.xml"):
+    out: list[tuple[str, Path, int, str]] = []
+    for meta in files(root, "*.email-meta.xml"):
         try:
-            text = f.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
+            tree = ET.parse(meta).getroot()
+        except ET.ParseError as exc:
+            out.append(("ERROR", meta, 0, f"does not parse: {exc}"))
             continue
-        for line_no, line in enumerate(text.splitlines(), start=1):
-            for regex, msg in CLASSIC_MERGE_PATTERNS:
-                if re.search(regex, line):
-                    findings.append(("merge", f, line_no, msg))
-
-    # Apex setTemplateId calls
-    for f in find_files(root, "*.cls"):
-        try:
-            text = f.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            continue
-        for line_no, line in enumerate(text.splitlines(), start=1):
-            if "setTemplateId" in line:
-                findings.append(("apex", f, line_no, "setTemplateId() call — verify it references the new (Lightning) template ID, not Classic"))
-            if "setOrgWideEmailAddressId" not in text and "setTemplateId" in line:
-                # heuristic: in same file, no OWA setting
-                findings.append(("apex-owa", f, line_no, "setTemplateId without setOrgWideEmailAddressId in same file — Lightning templates don't store sender; OWA must be set on the call"))
-
-    # Workflow alerts missing senderAddress
-    for f in find_files(root, "*.workflow-meta.xml"):
-        try:
-            text = f.read_text(encoding="utf-8", errors="ignore")
-        except OSError:
-            continue
-        # Find each <alerts>...</alerts> block
-        for match in re.finditer(r'<alerts>(.*?)</alerts>', text, flags=re.DOTALL):
-            block = match.group(1)
-            if '<senderType>OrgWideEmailAddress</senderType>' in block and '<senderAddress>' not in block:
-                line_no = text[:match.start()].count('\n') + 1
-                findings.append(("workflow", f, line_no, "Workflow alert uses OrgWideEmailAddress senderType but no <senderAddress> set"))
-
-    return findings
+        ui, typ = child_text(tree, "uiType"), child_text(tree, "type")
+        if ui == "SFX" and typ is not None and typ != "custom":
+            out.append(("ERROR", meta, 0, f"uiType SFX requires type custom, found '{typ}' (api_meta 264 L59152)"))
+        body = meta.with_name(meta.name[: -len("-meta.xml")])
+        if ui == "SFX" and body.is_file():
+            for n, line in enumerate(body.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
+                for rx, label in MERGE_PATTERNS:
+                    if re.search(rx, line):
+                        out.append(("REVIEW", body, n, f"{label} in a Lightning template — support UNVERIFIED; sandbox-test or pre-compute"))
+    for wf in files(root, "*.workflow-meta.xml"):
+        text = wf.read_text(encoding="utf-8", errors="ignore")
+        for m in ALERT_BLOCK.finditer(text):
+            block, ln = m.group(1), text[: m.start()].count("\n") + 1
+            if "<template>" not in block:
+                out.append(("ERROR", wf, ln, "alert has no <template> (Required, api_meta 264 L143888)"))
+            if "<senderType>OrgWideEmailAddress</senderType>" in block and "<senderAddress>" not in block:
+                out.append(("WARN", wf, ln, "senderType OrgWideEmailAddress with no <senderAddress>"))
+    for cls in files(root, "*.cls"):
+        for n, line in enumerate(cls.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
+            if HARDCODED_ID.search(line):
+                out.append(("INFO", cls, n, "hard-coded template ID in setTemplateId() — resolve from the old-to-new map"))
+    return out
 
 
 def main() -> int:
-    args = parse_args()
-    root = args.project_dir.resolve()
-    if not root.exists():
-        print(f"ERROR: project dir not found: {root}", file=sys.stderr)
-        return 2
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--manifest-dir", "--project-dir", dest="root", type=Path, default=Path.cwd())
+    p.add_argument("--strict", action="store_true")
+    args = p.parse_args()
+    root = args.root
+    if not root.is_dir():
+        print(f"ERROR: manifest dir not found: {root}")
+        sys.exit(1)
+    if not any(root.rglob("*")):
+        print(f"WARN: {root} is empty — nothing to check")
+        return 0
     findings = scan(root)
-    print(f"Scanned: {root}")
-    print(f"Findings: {len(findings)}")
-    by_cat: dict[str, list] = {}
-    for cat, f, ln, msg in findings:
-        by_cat.setdefault(cat, []).append((f, ln, msg))
-    for cat in sorted(by_cat):
-        print(f"\n=== {cat} ({len(by_cat[cat])}) ===")
-        for f, ln, msg in by_cat[cat][:50]:
-            rel = f.relative_to(root) if f.is_relative_to(root) else f
-            print(f"  {rel}:{ln} — {msg}")
-        if len(by_cat[cat]) > 50:
-            print(f"  ... and {len(by_cat[cat]) - 50} more")
+    for sev, f, ln, msg in findings:
+        print(f"{sev}: {f}:{ln} — {msg}")
+    if not findings:
+        print("OK: no findings")
+    if any(s == "ERROR" for s, *_ in findings):
+        return 1
     return 1 if (args.strict and findings) else 0
 
 
