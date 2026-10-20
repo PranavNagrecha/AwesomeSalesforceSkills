@@ -1,0 +1,20 @@
+Use the `visibility` element with the value `Protected`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>My Setting</label>
+    <pluralLabel>My Settings</pluralLabel>
+    <visibility>Protected</visibility>
+</CustomObject>
+```
+
+- **`Public`** makes the type visible to any Apex, API, or other code in the org.
+- **`Protected`** hides the type and its records from code outside the managed package. Only Apex in the same managed package, and the package developer's own namespace, can read them. Subscriber org Apex, SOQL, and the API cannot.
+
+Things to be aware of:
+
+- **Released packages only:** The protection applies to the type once it is in a released managed package that is installed in a subscriber org. In an unmanaged or unpackaged context, such as your dev org, it doesn't restrict anything.
+- **Irreversible after release:** Once the type is released in a managed package, you can't change `Protected` back to `Public`.
+- **Updates:** The package developer can still deliver record updates to subscribers in new package versions.
+- **Enum value:** The `SetupObjectVisibility` enum also lists `PackageProtected`. `Protected` is the value to use for managed-package custom metadata types.

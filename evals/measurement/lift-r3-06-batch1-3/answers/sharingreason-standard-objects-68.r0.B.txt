@@ -1,0 +1,19 @@
+**Yes, from Metadata API version 68.0 (Winter '27), but treat it as "deploy it and prove it with a test insert", because the docs still disagree.**
+
+**What supports it**
+- The Metadata API documents `SharingReason` for standard objects in API version 68.0 and later (api_meta 264 L47635-47637, L47650-47651). It applies to standard objects that have a share object (such as `AccountShare` or `OpportunityShare`) and whose OWD can be Private or Public Read-Only.
+- The newer Apex guide notes say standard-object reasons are managed through the Metadata API, and that recalculation "is supported for both custom and standard objects" (apex dev guide 264 L12880-12881, L12916-12920).
+- You can't create the reason in the UI for a standard object. Lightning Experience doesn't offer Apex sharing reasons, and the Classic UI path is for custom objects only. For a standard object, deploy a `SharingReason` component at API 68.0 or later.
+
+**What still contradicts it**
+- Older Apex guide notes say reasons and recalculation are "only available for custom objects" (L12613, L13057).
+- The `AccountShare` object reference still says that when you create a sharing entry, "the only permitted value is Manual" for `RowCause` (object_reference 264 L17340-17342, L17472-17474).
+- The skill marks as UNVERIFIED which standard share objects actually accept a custom row cause on insert.
+
+**What I'd do in practice**
+1. Deploy the `SharingReason` for the standard object at API 68.0 or later, with the reason in the same package as the code that references it. `RowCause` is a restricted picklist, so the reason must exist first.
+2. Write a test that inserts the share row with that row cause (for example `Schema.AccountShare.rowCause.<Reason>__c`), and run it in the target org. Check that it succeeds and that the row survives an owner change.
+3. If the insert is rejected, or you're on an API version below 68.0, fall back to `RowCause = 'Manual'` (`Schema.AccountShare.rowCause.Manual`). Manual rows are deleted on an owner change, so you'd need to recreate them yourself, for example from an ownership-change trigger or a rebuild job.
+4. Whichever row cause you use, the grant must exceed the OWD, `All` can't be granted, and only users with Modify All Data can add or change Apex managed sharing.
+
+The earlier blanket claim that standard objects don't support custom sharing reasons is outdated for API 68.0 and later. It still holds for earlier versions.

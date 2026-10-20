@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**Yes, from Metadata API version 68.0 (Winter '27), but treat it as \"deploy it and prove it with a test insert\", because the docs still disagree.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.060444000000000005,
+    "duration_s": 1.625,
+    "input_tokens": 7369,
+    "output_tokens": 75
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**Yes, from Metadata API version 68.0 (Winter '27), but treat it as \\\"deploy it and prove it with a test insert\\\", because the docs still disagree.**\"}",
+  "prompt_sha": "53b69886561701bb"
+}

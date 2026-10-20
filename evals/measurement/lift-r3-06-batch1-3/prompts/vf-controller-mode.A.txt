@@ -1,0 +1,1 @@
+Do Visualforce custom controllers enforce the running user's object and field-level permissions, or must the developer add those checks manually?

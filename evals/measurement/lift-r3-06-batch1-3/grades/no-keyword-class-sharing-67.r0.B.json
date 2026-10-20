@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "At API version 67.0 and later, an Apex class that declares neither `with sharing` nor `without sharing` runs **with sharing**.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.056312,
+    "duration_s": 1.498,
+    "input_tokens": 6885,
+    "output_tokens": 62
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"At API version 67.0 and later, an Apex class that declares neither `with sharing` nor `without sharing` runs **with sharing**.\"}",
+  "prompt_sha": "6cbadcb0c0ca6864"
+}

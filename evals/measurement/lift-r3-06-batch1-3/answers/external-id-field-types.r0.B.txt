@@ -1,0 +1,23 @@
+**Custom External ID fields can be Text, Number, Email, or Auto Number.** That is the set Salesforce documents for the External ID attribute (`externalId` in Metadata API).
+
+| Data type | Notes |
+|---|---|
+| **Text** | The most common choice. You can also mark it Unique, with a case-sensitive or case-insensitive option. Case sensitivity changes how upsert matches values. |
+| **Number** | Use it for numeric keys from the source system. Decimal places are allowed, but integer keys are the safe choice. |
+| **Email** | Works for matching on email addresses. |
+| **Auto Number** | Works for system-generated identifiers. It is read-only, so it is usually used as the key other systems reference, not as the key you load with. |
+
+**Not supported:**
+- Text (Encrypted)
+- Long Text Area and Rich Text Area
+- Picklist, Checkbox, Date and Date/Time, Currency, Percent, Phone, URL
+- Formula fields
+- Lookup and Master-Detail fields
+- Geolocation
+
+**Practical notes:**
+- **Indexing:** External ID fields are indexed automatically, which helps selective SOQL filters as well as upsert.
+- **Per-object limit:** The default is 25 External ID fields per object. This is an org-level limit that I haven't re-verified for the current release, so check it in Setup before you rely on it.
+- **Standard fields:** You can't mark a standard field as External ID. The exceptions are the Name and ID fields on some objects, which behave as implicit external keys. If you need an external key on a standard object, add a custom field.
+- **Upsert and relationships:** External ID fields drive `upsert` in the API, Data Loader, and Bulk API. You can also use them to resolve parent lookups by external key (for example, `Account.ExtKey__c` in a child CSV) instead of by Salesforce ID. In Apex, `Database.upsert(records, Schema.Account.ExtKey__c)` takes the field token.
+- **Not a secret store:** An External ID is an indexed, widely readable matching key. Don't use one to hold tokens or credentials. For secrets, use the storage options in the secrets skill you attached (Named Credentials, Protected CMDT in a managed package, and so on).

@@ -1,0 +1,21 @@
+**Five levels.** At API 58.0 and later, a single SOQL query can nest parent-to-child subqueries up to five levels deep. This applies to queries made via REST, SOAP, and Apex. It does not apply to big objects or external objects, and Bulk API is also excluded.
+
+At API 57.0 and earlier the limit is two levels.
+
+Here is a sketch of a three-level query that works at 58.0+:
+
+```sql
+SELECT Name,
+  (SELECT LastName,
+     (SELECT Subject,
+        (SELECT Id FROM Tasks)
+      FROM Cases)
+   FROM Contacts)
+FROM Account
+```
+
+Related limits from the skill:
+- A query can include no more than 20 parent-to-child relationships.
+- Child-to-parent traversal via dot notation is a separate limit: up to five levels per relationship, and no more than 55 child-to-parent relationships per query.
+
+The skill's earlier text said "a subquery cannot itself contain a subquery." That was wrong, and the skill corrected it on 2026-10-20 against the corpus (app_limits 264 L713-721). Don't rely on the old statement.

@@ -1,0 +1,332 @@
+Use the following skill package when answering.
+
+<skill_package>
+=== apex-secrets-and-protected-cmdt/SKILL.md ===
+---
+name: apex-secrets-and-protected-cmdt
+description: "Storing API keys, signing secrets, and third-party tokens that Apex must consume — Protected Custom Metadata in a managed package, Protected Custom Settings, Encrypted Custom Fields, Apex Crypto, and what to NEVER do (hardcode, unprotected CMDT, System.debug). NOT for callout authentication — use apex/apex-named-credentials-patterns. NOT for computing the HMAC or signature itself — use apex/apex-encoding-and-crypto. NOT for record-level Shield data encryption — use security/platform-encryption."
+category: apex
+salesforce-version: "Spring '25+"
+well-architected-pillars:
+  - Security
+triggers:
+  - "where do I store an API key that apex needs to call a third party"
+  - "protected custom metadata type secret salesforce admin cannot read"
+  - "namespaceaccessible getter for hmac signing key apex"
+  - "should I put a secret in custom setting or custom metadata"
+  - "rotate webhook signing secret without code deploy"
+  - "subscriber org admin can see my protected cmdt values"
+inputs:
+  - Type of secret (callout auth, signing key, symmetric crypto key, lookup token)
+  - Whether the code lives in a managed package or unmanaged DX project
+  - Rotation cadence and operational ownership
+  - Subscriber-vs-source-org threat model
+outputs:
+  - Storage decision (Named/External Credential, Protected CMDT, Protected Custom Setting, Encrypted Field, off-platform vault)
+  - Apex retrieval pattern with @NamespaceAccessible where required
+  - Documented rotation procedure
+  - Source-control exclusion rules for `customMetadata/*-md.xml`
+dependencies: []
+version: 1.0.1
+author: Pranav Nagrecha
+updated: 2026-10-20
+tags:
+  - apex
+  - secrets
+  - cmdt
+  - encryption
+  - protected
+  - named-credentials
+  - security
+---
+
+# Apex Secrets and Protected Custom Metadata
+
+Activate when Apex needs to consume a secret value — API key, HMAC signing key, third-party token, per-tenant credential — and the engineer is reaching for `String API_KEY = '...';` or a plain Custom Setting. The platform offers a small set of correct mechanisms; pick the one that matches the secret's purpose and the deployment shape (managed package vs unmanaged DX), then document a rotation procedure.
+
+## Before Starting
+
+- Identify the secret's **purpose**: callout authentication, signature verification, symmetric encryption, or lookup token. The right storage differs.
+- Confirm whether the consuming Apex ships in a **managed package** (with a namespace) or an unmanaged DX project. "Protected" Custom Metadata and "Protected" Custom Settings are only protected against **subscribers** — they offer zero protection in the source org.
+- Decide who owns **rotation** and on what cadence. A secret with no rotation procedure is a future incident.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does the Apex ship in a managed package installed in subscriber orgs? | Gotcha 1: protection applies only there | Whether Protected CMDT/settings protect anything at all |
+| Is the secret used as callout authentication? | Decision tree: Named Credentials own that case | Removes Apex from the secret path entirely |
+| Must your own org's admins be unable to read it? | Gotcha 1: the source org always sees it | Forces an off-platform vault decision early |
+| Will several 2GP packages share the namespace? | Gotcha 3: `@NamespaceAccessible` crosses packages | Which getters need the annotation, and who can call them |
+| Are developers working in scratch orgs with the shared namespace? | Gotcha 1: secrets are visible there | Keeps real values out of scratch orgs |
+| Who rotates the value, and is a deploy acceptable? | Gotcha 2: records in git defeat rotation | A runbook and a `.forceignore` rule on day one |
+| Will anyone debug the integration in production? | Gotcha 5: debug logs keep what you print | A hash-only logging rule before the incident |
+
+A proper configuration decides the threat model first, so the storage choice is defensible, where "just doing it" stores a key wherever the first tutorial put it.
+
+## Core Concepts
+
+### The canonical decision tree
+
+| Secret purpose | Correct storage |
+|---|---|
+| Callout authentication (Authorization header, OAuth, mTLS) | Named Credential / External Credential — always. Apex never sees the credential. |
+| HMAC signing / webhook verification key | Protected Custom Metadata in a managed package, retrieved via `@NamespaceAccessible` Apex |
+| Symmetric encryption key (AES) | `Crypto.generateAesKey(256)` at install time, store ciphertext via Protected CMDT or off-platform vault — never hardcode |
+| Per-tenant lookup token / config secret | Protected Custom Setting (Hierarchy) in a managed package |
+| Field-level data encryption at rest | Shield Platform Encryption (Encrypted Custom Fields) |
+| Anything that needs admin-invisibility in the source org | Off-platform vault (HashiCorp, AWS KMS) — Salesforce cannot hide a value from a System Admin in the org that owns the metadata |
+
+### Why "Protected" only protects against subscribers
+
+Protection "only applies to custom settings that are marked protected and installed to a subscriber organization as part of a managed package"; otherwise they are public and "readable for all profiles, including the guest user" (apexdev 264 L13709-13711). Protected custom metadata types behave the same way outside a managed package (apexref 262 L170826-170828). The specific list of subscriber channels that are blocked (UI, SOQL, Workbench, Tooling API, anonymous Apex) is UNVERIFIED (2026-10-20); the packaging guide notes the package developer, logged in to a subscriber org as a user, can view and edit protected custom settings data (pkg2 264 L22831). Protection is a **packaging boundary**, not a cryptographic one. For custom metadata types, Metadata API also offers `<visibility>PackageProtected</visibility>` (API 47.0+): "only accessible by the custom Apex code in the package. Use this value to secure secrets such as API access keys" (api_meta 264 L44593-44594).
+
+Implication: shipping "Protected" CMDT in an unlocked package or DX project gives you **none** of the protection you may have read about; outside a managed package the guide says to use named credentials or encrypted custom fields for secrets (apexdev 264 L13712-13713). The values land in `force-app/main/default/customMetadata/MySecret.Foo.md-meta.xml` and ride your git history forever.
+
+### `@NamespaceAccessible` and the secret-getter pattern
+
+Inside the managed package, the secret retrieval method is annotated:
+
+```apex
+global class SecretsProvider {
+    @NamespaceAccessible
+    public static String getSecret(String key) {
+        Secret_Config__mdt cfg = Secret_Config__mdt.getInstance(key);
+        return cfg?.Value__c;
+    }
+}
+```
+
+Corrected 2026-10-20: `public` alone already makes `getSecret` "accessible by all Apex within a specific package" (apexdev 264 L3661). `@NamespaceAccessible` widens that to other 2GP packages sharing the namespace (apexdev 264 L3661-3663; pkg2 264 L17987-17990); `global` is available across all namespaces (pkg2 264 L17989-17990), which is what lets subscriber code call it. `getInstance(developerName)` returns null when no record matches (apexref 262 L204618-204620), hence the `?.`. `getInstance()` and `getAll()` return "only the first 255 characters of any field" — a Long Text Area secret longer than that is silently truncated; read it with SOQL instead (apexref 262 L204570-204571, L204645-204647).
+
+### Custom Settings, Hierarchy, Protected
+
+A Hierarchy Custom Setting marked **Protected** behaves like Protected CMDT: only managed-package code can read it. Hierarchy `getInstance()` returns the record for the current user, merged from the lowest level defined (apexref 262 L205082-205084). "Hierarchy is preferable to List because per-org values don't bloat the schema" is UNVERIFIED (2026-10-20). Same caveat: only protected against subscribers.
+
+### Shield Platform Encryption is for record data, not configuration
+
+Shield Platform Encryption exists for PII and regulated record data — encryption-at-rest with key management. That a Shield-encrypted value "still appears in screens, reports and Apex SOQL results" is UNVERIFIED (2026-10-20). Do not confuse it with Classic **encrypted custom fields** (Text (Encrypted)), which the Apex guide names as a secret store outside managed packages (apexdev 264 L13712-13713): only users with View Encrypted Data can see them, and they are limited to 175 characters (secguide 262 L2486, L2522) — too short for some keys.
+
+## Common Patterns
+
+### Pattern: HMAC signing key in Protected CMDT
+
+Define `Webhook_Secret__mdt` with `Value__c` (Long Text Area), mark the type **Protected**, ship inside a managed package. Apex:
+
+```apex
+@NamespaceAccessible
+public static Blob signingKey() {
+    return Blob.valueOf(Webhook_Secret__mdt.getInstance('Outbound').Value__c);
+}
+```
+
+### Pattern: Custom-supplied per-tenant API key
+
+Subscriber needs to plug in their own third-party key. Store it in a **Protected Hierarchy Custom Setting** with one record per packaging-namespace install, with a setup screen the admin uses to enter the value. Apex reads via `Tenant_Config__c.getInstance().Api_Key__c` from inside the namespace. The admin enters but cannot read back from outside the package.
+
+### Pattern: Symmetric crypto with rotated key material
+
+Store key version metadata in Protected CMDT (`Key_Version__c`, `Active__c`, `RetiredOn__c`); store the actual ciphertext key in an off-platform vault retrieved via Named Credential at use time. Rotate by inserting a new active version and deprecating the prior one — old ciphertext still decrypts via version lookup.
+
+## Decision Guidance
+
+| Situation | Correct mechanism | Why |
+|---|---|---|
+| Apex needs to call a SaaS REST API with bearer token | Named Credential + External Credential | Apex never sees the secret; framework injects it |
+| Verifying inbound webhook signatures | Protected CMDT in managed package | Symmetric secret, retrieved by namespace-only Apex |
+| Encrypting a value for storage in a custom field | Shield Platform Encryption (BYOK preferred) | Platform handles key lifecycle and access control |
+| Per-tenant integration credential | Protected Hierarchy Custom Setting (managed) | Per-org configurable; admin writes but cannot read |
+| Secret you must hide from your own org's admin | Off-platform vault | Salesforce cannot hide metadata from a source-org admin |
+
+## Recommended Workflow
+
+1. Classify the secret by purpose using the decision tree; reject hardcoding outright.
+2. Confirm packaging shape — managed (namespace) vs unmanaged (DX). If unmanaged and the secret needs subscriber-invisibility, escalate to managed packaging or off-platform vault.
+3. Pick storage: Named Credential (callouts), Protected CMDT or Protected Custom Setting (managed package), Encrypted Field (record data), or off-platform vault (admin-invisible).
+4. Implement Apex retrieval as a `public` getter (add `@NamespaceAccessible` only when other 2GP packages in the namespace must call it; never `global`); never read into a `static final String` constant.
+5. Add a `.forceignore` rule (or explicit absence from `package.xml`) so `customMetadata/Secret_Config.*.md-meta.xml` records do not get committed with values.
+6. Document a rotation procedure: who rotates, on what cadence, the runbook to update the CMDT row, and how dependent integrations re-sync.
+7. Run `scripts/check_apex_secrets_and_protected_cmdt.py` against the repo to detect hardcoded literals, unprotected secret-named CMDT fields, and `System.debug` of secret-named variables.
+
+## Review Checklist
+
+- [ ] No `String API_KEY = '...'` or equivalent in any `.cls`
+- [ ] Callout secrets use Named Credential; Apex never holds the value
+- [ ] CMDT used for secrets is marked Protected AND ships in a managed package
+- [ ] Custom Settings used for secrets are Hierarchy + Protected, in managed package
+- [ ] `customMetadata/*.md-meta.xml` for secret types is excluded from source control
+- [ ] No `System.debug` of variables named like a secret
+- [ ] Rotation procedure documented and assigned an owner
+- [ ] Subscriber-vs-source-org threat model documented
+
+## Salesforce-Specific Gotchas
+
+1. **Protected does not protect outside a managed package installed in a subscriber org.** There, protected settings are "readable for all profiles, including the guest user" (apexdev 264 L13709-13711).
+2. **Custom Metadata records are source-controlled by default.** `sf project retrieve` pulls `customMetadata/*.md-meta.xml` into git — including secret values someone typed in once. Add a `.forceignore` rule the day you create the type.
+3. **`public` already reaches every class in the package** (apexdev 264 L3661) — corrected 2026-10-20; the old text said `@NamespaceAccessible` is required inside one package. The annotation is for other 2GP packages sharing the namespace (pkg2 264 L17987-17990); never make a secret getter `global`.
+4. **Rotation must be planned upfront.** CMDT updates are deployable, but a rotation runbook that requires a deploy each time is operationally fragile — design the type so a manual record edit (by a controlled admin) is the rotation step.
+
+## Output Artifacts
+
+| Artifact | Description |
+|---|---|
+| Secret-storage decision record | One-pager mapping each secret to mechanism, owner, rotation cadence |
+| Protected CMDT definition | XML for `Secret_Config__mdt` with `Value__c` Long Text Area |
+| `@NamespaceAccessible` getter | Apex helper class shipped inside the managed namespace |
+| `.forceignore` snippet | Excludes `customMetadata/Secret_Config.**` from retrieve/deploy |
+| Rotation runbook | Step-by-step doc for the on-call rotation owner |
+
+## Related Skills
+
+- `apex/apex-named-credentials-patterns` — callout authentication (the most common reason engineers reach for "store an API key")
+- `security/platform-encryption` — record-data encryption-at-rest
+- `apex/apex-encoding-and-crypto` — `Crypto.generateAesKey`, signing, hashing
+- `devops/pipeline-secrets-management` — keeping secrets out of source and CI
+
+
+=== apex-secrets-and-protected-cmdt/references/llm-anti-patterns.md ===
+# LLM Anti-Patterns — Apex Secrets and Protected CMDT
+
+Common mistakes AI coding assistants make when generating or advising on Apex secret storage. These help the consuming agent self-check its own output.
+
+## Anti-Pattern 1: Suggesting `private static final String API_KEY = '...'` "for now"
+
+**What the LLM generates:**
+
+```apex
+public class StripeClient {
+    private static final String API_KEY = 'sk_live_REPLACE_ME';
+    // ... rest of class
+}
+```
+
+**Why it happens:** Java/Python training data is full of "constants at the top of the file" patterns. The LLM treats secrets as configuration constants. The placeholder lulls reviewers into thinking the value will be replaced before commit — it rarely is.
+
+**Correct pattern:**
+
+```apex
+public class StripeClient {
+    private static String apiKey() {
+        return SecretsProvider.getSecret('Stripe_Api_Key');  // backed by Protected CMDT
+    }
+}
+```
+
+**Detection hint:** Regex `(api_?key|secret|token|password)\s*=\s*'[^']{8,}'` against `.cls` files. The checker script in this skill implements exactly this.
+
+---
+
+## Anti-Pattern 2: "Store it in a Custom Setting" without specifying Protected + managed package
+
+**What the LLM generates:** "You can store the API key in a Custom Setting so you don't have to redeploy when it rotates."
+
+**Why it happens:** Custom Settings appear in Salesforce documentation as the canonical "configuration storage" mechanism. The LLM omits the two crucial qualifiers — **Protected** visibility AND **managed-package** packaging — because they're a paragraph deeper in the docs and absent from most blog tutorials.
+
+**Correct pattern:**
+
+> Store the API key in a **Hierarchy Custom Setting marked Protected**, packaged inside a managed package with a namespace. In the subscriber org, the value is readable only by Apex inside the namespace. Without managed packaging the Protected designation provides no protection — any System Admin in the source org can read it.
+
+**Detection hint:** Search assistant output for "custom setting" near "API key" or "secret" without the words "Protected" and "managed package" within the same paragraph.
+
+---
+
+## Anti-Pattern 3: Recommending Protected CMDT in an unmanaged DX project as if subscriber protection applies
+
+**What the LLM generates:** "Use Protected Custom Metadata. Mark the type Protected and the values will be hidden from admins."
+
+**Why it happens:** The LLM has read the Salesforce help article snippet "Protected components are hidden from subscribers" and internalized it as a general property of "Protected", missing the managed-package precondition.
+
+**Correct pattern:**
+
+> Protected CMDT hides values **only from subscribers of a managed package**. Outside a managed package protected types behave like public ones, "readable for all profiles, including the guest user" (apexref 262 L170826-170827). If your project is unmanaged, Protected CMDT is **not** a secret-storage mechanism — use an off-platform vault accessed via Named Credential.
+
+**Detection hint:** Look for assistant output that recommends Protected CMDT without first asking or asserting that the code lives in a managed (namespaced) package.
+
+---
+
+## Anti-Pattern 4: Adding `System.debug` of the secret during troubleshooting
+
+**What the LLM generates:**
+
+```apex
+String key = SecretsProvider.getSecret('Stripe_Api_Key');
+System.debug('Retrieved key: ' + key);  // for debugging
+HttpRequest req = new HttpRequest();
+req.setHeader('Authorization', 'Bearer ' + key);
+```
+
+**Why it happens:** Generic debugging guidance — "log the value to verify it's set correctly" — applied without secret-awareness.
+
+**Correct pattern:**
+
+```apex
+String key = SecretsProvider.getSecret('Stripe_Api_Key');
+System.debug('Stripe key length=' + (key == null ? 0 : key.length()));
+// or, if comparing across environments:
+System.debug('Stripe key sha256=' + EncodingUtil.convertToHex(
+    Crypto.generateDigest('SHA-256', Blob.valueOf(key))
+));
+```
+
+**Detection hint:** Regex `System\.debug\([^)]*\b(key|secret|token|password|credential)\b[^)]*\)` against `.cls`. Whitelist `.length()` and `Crypto.generateDigest`.
+
+---
+
+## Anti-Pattern 5: Generating a `customMetadata/*.md-meta.xml` record with the secret value populated
+
+**What the LLM generates:**
+
+```xml
+<!-- force-app/main/default/customMetadata/Webhook_Signing_Key.Outbound.md-meta.xml -->
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <values>
+        <field>Value__c</field>
+        <value xsi:type="xsd:string">sk_live_a1b2c3d4e5f6...</value>
+    </values>
+</CustomMetadata>
+```
+
+**Why it happens:** The LLM treats CMDT records as "data" to be deployed alongside code, and helpfully fills in the Value__c field with the placeholder it was given. It does not realize this file is committed to source control by default.
+
+**Correct pattern:** Do not generate the record file at all. Generate the type definition, the Apex retrieval class, and a `.forceignore` entry that excludes records of this type. Document that the record must be created post-deploy via a controlled admin procedure.
+
+```
+# .forceignore
+**/customMetadata/Webhook_Signing_Key.*.md-meta.xml
+```
+
+**Detection hint:** Scan generated `customMetadata/*.md-meta.xml` for fields named `Api_Key__c`, `Secret__c`, `Token__c`, `Password__c`, `Signing_Key__c` with non-placeholder values. The checker script in this skill flags this as P0.
+
+---
+
+## Anti-Pattern 6: Using `Crypto.encrypt`/`decrypt` with a hardcoded key parameter
+
+**What the LLM generates:**
+
+```apex
+Blob key = Blob.valueOf('mysecretkey12345');
+Blob iv  = Blob.valueOf('1234567890123456');
+Blob enc = Crypto.encryptWithManagedIV('AES256', key, Blob.valueOf(plain));
+```
+
+**Why it happens:** Tutorials often show `Blob.valueOf('...')` as the simplest way to construct a key Blob. The LLM does not flag that this defeats the purpose of encryption.
+
+**Correct pattern:** Use `Crypto.generateAesKey(256)` once at install time, store the resulting Blob via Protected CMDT (base64-encoded in the Long Text Area) or, preferably, in an off-platform KMS. Never construct the key from a string literal.
+
+**Detection hint:** Regex `Blob\.valueOf\s*\(\s*'[^']*'\s*\)\s*[,)].*Crypto\.(encrypt|decrypt)` against `.cls`.
+
+---
+
+## Anti-Pattern 7: Making a secret getter `global` because "`public` is class-only"
+
+**What the LLM generates:** "`public` methods in a managed package are only callable from the same class, so declare `getSecret` as `global`."
+
+**Why it happens:** It conflates Apex access with Java packages. The guide: `public` is "accessible by all Apex within a specific package" (apexdev 264 L3661), and `global` "is always available across all namespaces" (pkg2 264 L17989-17990) — i.e. to subscriber code.
+
+**Correct pattern:** `public` getter; `@NamespaceAccessible` only for other 2GP packages sharing the namespace (pkg2 264 L17987).
+
+**Detection hint:** `global` on any method whose name or return value matches key/secret/token.
+
+</skill_package>
+
+Which custom field data types can be marked External ID in Salesforce?

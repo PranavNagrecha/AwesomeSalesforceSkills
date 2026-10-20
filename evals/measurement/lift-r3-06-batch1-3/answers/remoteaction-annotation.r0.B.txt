@@ -1,0 +1,56 @@
+An Apex annotation: `@RemoteAction`. There is no `<apex:remoteAction>` component. The skill package corrects this explicitly (apexdev 264 L6245-6246), so don't reach for a VF component tag.
+
+## How it works
+
+Annotate a `global` or `public` **static** method in the page's controller or extension with `@RemoteAction`, then call it from the page's JavaScript through the controller name.
+
+```apex
+public with sharing class AccountRemoteController {
+
+    @RemoteAction
+    public static List<Account> searchAccounts(String namePrefix) {
+        String pattern = String.escapeSingleQuotes(namePrefix) + '%';
+        return [
+            SELECT Id, Name, Industry
+            FROM Account
+            WHERE Name LIKE :pattern
+            WITH USER_MODE
+            LIMIT 50
+        ];
+    }
+}
+```
+
+```html
+<apex:page controller="AccountRemoteController">
+    <script>
+        function search(prefix) {
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.AccountRemoteController.searchAccounts}',
+                prefix,
+                function(result, event) {
+                    if (event.status) {
+                        console.log(result);
+                    } else {
+                        console.error(event.message);
+                    }
+                },
+                { escape: true }
+            );
+        }
+    </script>
+    <button onclick="search('Acme')">Search</button>
+</apex:page>
+```
+
+The `{!$RemoteAction.ControllerName.methodName}` expression resolves the method at render time, and it is namespace-aware. This is the recommended form over hard-coding `ControllerName.methodName(...)`.
+
+## Why it matters for this skill
+
+- **View state:** Remoting calls don't round-trip `__VIEWSTATE`. That is why the skill lists it as the approach for read-heavy pages.
+- **Static means no controller state:** The method is static, so instance variables, including those restored from view state, are not available. Pass everything you need as arguments.
+- **Security:** Remoting methods are directly callable endpoints, so enforce access yourself.
+  - Classes saved at API 66.0 or earlier default to system mode, so add `WITH USER_MODE` (or `AccessLevel.USER_MODE` for DML).
+  - At API 67.0+, user mode is the default.
+  - Use bind variables or `escapeSingleQuotes`, never raw concatenation of arguments.
+- **Lightning Experience:** The page runs in a separate-origin iframe. Remoting still works because it posts back to the Visualforce host, but keep navigation on `sforce.one.*`.

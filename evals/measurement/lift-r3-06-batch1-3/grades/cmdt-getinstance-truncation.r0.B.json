@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "`getInstance()` and `getAll()` on a custom metadata type return only the first 255 characters of any field.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058147,
+    "duration_s": 2.129,
+    "input_tokens": 7090,
+    "output_tokens": 53
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"`getInstance()` and `getAll()` on a custom metadata type return only the first 255 characters of any field.\"}",
+  "prompt_sha": "6dcba7dc1cf757d0"
+}

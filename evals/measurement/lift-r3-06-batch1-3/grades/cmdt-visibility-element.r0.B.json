@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "Set the `visibility` element to `PackageProtected` in the CustomObject metadata for the custom metadata type:",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.05772,
+    "duration_s": 1.859,
+    "input_tokens": 7076,
+    "output_tokens": 56
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"Set the `visibility` element to `PackageProtected` in the CustomObject metadata for the custom metadata type:\"}",
+  "prompt_sha": "41cc05ed470d64b0"
+}

@@ -1,0 +1,1 @@
+Which custom field data types can be marked External ID in Salesforce?

@@ -1,0 +1,19 @@
+Set the `visibility` element to `PackageProtected` in the CustomObject metadata for the custom metadata type:
+
+```xml
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Secret Config</label>
+    <pluralLabel>Secret Configs</pluralLabel>
+    <visibility>PackageProtected</visibility>
+    <!-- fields ... -->
+</CustomObject>
+```
+
+The Metadata API reference for `visibility` (API 47.0+) describes `PackageProtected` as "only accessible by the custom Apex code in the package. Use this value to secure secrets such as API access keys" (api_meta 264 L44593-44594). In the Setup UI this corresponds to marking the type **Protected**.
+
+Caveats from the skill package:
+
+- **Protection only applies to subscribers of a managed package.** Outside a managed package, protected types behave like public ones, readable by all profiles, including guest (apexref 262 L170826-170828). In an unmanaged DX project or the source org, `PackageProtected` gives you no secrecy.
+- **Records still need handling.** Values in `customMetadata/*.md-meta.xml` are committed to git by default, so add a `.forceignore` rule for the secret type's records.
+- **Reading the value.** Inside the package, use a `public` getter wrapping `Secret_Config__mdt.getInstance(...)`. Add `@NamespaceAccessible` only if other 2GP packages in the same namespace must call it, and avoid `global` for secret getters.
+- **Truncation.** `getInstance()` returns only the first 255 characters of a field, so use SOQL for a longer Long Text Area secret.

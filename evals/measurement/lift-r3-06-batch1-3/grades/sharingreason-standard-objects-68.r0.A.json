@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "No. A custom Apex sharing reason can't be defined on a standard object such as Account, in any API version, so there is no version where it starts working.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0601589,
+    "duration_s": 2.056,
+    "input_tokens": 7311,
+    "output_tokens": 63
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"No. A custom Apex sharing reason can't be defined on a standard object such as Account, in any API version, so there is no version where it starts working.\"}",
+  "prompt_sha": "f045a43bc56a4374"
+}

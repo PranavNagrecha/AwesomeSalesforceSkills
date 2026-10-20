@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "`Protected` is the value to use for managed-package custom metadata types.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058356000000000005,
+    "duration_s": 2.243,
+    "input_tokens": 6958,
+    "output_tokens": 135
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"`Protected` is the value to use for managed-package custom metadata types.\"}",
+  "prompt_sha": "091cd41072e1a51b"
+}

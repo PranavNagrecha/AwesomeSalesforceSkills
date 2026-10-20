@@ -1,0 +1,23 @@
+Yes, `getPicklistValues()` returns both active and inactive values. Each `Schema.PicklistEntry` in the returned list carries an `isActive()` flag, so you have to filter yourself if you only want active ones.
+
+```apex
+List<Schema.PicklistEntry> entries =
+    Account.Industry.getDescribe().getPicklistValues();
+
+List<String> activeValues = new List<String>();
+for (Schema.PicklistEntry pe : entries) {
+    if (pe.isActive()) {
+        activeValues.add(pe.getValue());
+    }
+}
+```
+
+**Caveats**
+
+- **Inactive values appear in the list.** Anyone building a UI from this call (for example an `@AuraEnabled` method feeding a custom picklist) will show deprecated values unless they check `isActive()`.
+- **Standard value sets and global value sets behave the same way.** The describe reflects the field's value set, with `isActive()` indicating status.
+- **Record types are not reflected.** `getPicklistValues()` returns values for the field as a whole, not the subset available to a particular record type. If you need record-type-filtered values, use the UI API (`/ui-api/object-info/{objectApiName}/picklist-values/{recordTypeId}/{fieldApiName}`, or `getPicklistValues` from `lightning/uiObjectInfoApi` in LWC), which respects record types and returns only active values.
+- **Dependent picklists.** The describe exposes `getValidFor()` on each entry for controlling-field logic, but it doesn't filter by controlling value for you.
+- **Existing records can hold inactive values.** They remain valid on records that already have them, which is why describe includes them.
+
+I'm confident about the `isActive()` behavior, which is the documented purpose of that method. If this is for something critical, a quick anonymous Apex run against your own picklist with a deactivated value will confirm it in seconds.

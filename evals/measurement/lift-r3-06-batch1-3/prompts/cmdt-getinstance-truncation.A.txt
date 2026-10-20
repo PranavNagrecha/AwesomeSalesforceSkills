@@ -1,0 +1,1 @@
+When Apex reads a protected custom metadata type record with getInstance() or getAll(), is a long text field returned in full?

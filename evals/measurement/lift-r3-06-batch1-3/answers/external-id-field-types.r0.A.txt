@@ -1,0 +1,19 @@
+In Salesforce, the External ID attribute can be set on only three custom field data types:
+
+1. **Text** (including Text with a length up to 255)
+2. **Number**
+3. **Email**
+
+**Notes and caveats**
+
+- **Auto Number** fields can also be flagged External ID. Salesforce treats them as indexed and usable for upsert, and the checkbox is available on them in practice. If you need a system-generated unique key, this is a common choice.
+- **Not supported:** Picklist, Checkbox, Date/Time, Currency, Percent, Phone, URL, Lookup/Master-Detail, Formula, Roll-Up Summary, Text Area (including Long and Rich), Geolocation, and Encrypted text.
+- **Limit:** Each object can have up to **25 External ID fields** (this is the default; confirm for your edition).
+- **Uniqueness:** External ID does not enforce uniqueness. Tick **Unique** separately (and choose case-sensitive or not) if you need that guarantee. Without it, an upsert that matches multiple records fails.
+- **Indexing:** External ID fields are automatically indexed, which helps SOQL selectivity on large objects.
+- **Where it matters:** Upsert via API, Data Loader, and Data Import Wizard; relationship matching during loads (referencing a parent by its external ID instead of the Salesforce Id); and integrations where an outside system owns the key.
+- **Standard fields:** Some standard fields such as Name and Email on certain objects behave as implicit external IDs for specific tools (for example, the Data Import Wizard matches on them), but you can't set the External ID attribute on standard fields.
+
+**Practical guidance:** Use Text for alphanumeric keys (for example, an ERP account code), Number for purely numeric keys (watch leading zeros, which Number drops, so use Text for those), and Email when the key is the email address. Text External IDs are the most common choice.
+
+I'm confident about Text, Number, and Email. The Auto Number point and the 25-field limit are worth checking in your org's Setup, since limits can vary by edition and release.

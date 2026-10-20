@@ -1,0 +1,20 @@
+You are an eval grader checking ONE fact. Below is a practitioner question, the CORRECT fact, the WRONG fact a careless answer would give, and a candidate answer.
+Decide what the candidate answer asserts about that fact:
+- "correct": it states the correct fact (extra detail is fine).
+- "wrong": it asserts the wrong fact, or something that contradicts the correct fact.
+- "neither": it states neither, is silent on the point, or hedges without committing. If it asserts both, judge by what it finally tells the reader to do or believe; if that is unclear, answer neither.
+Ignore style, length and everything else. Do not use outside knowledge to overrule the CORRECT fact given here.
+Reply with ONLY strict JSON, no prose, no code fence:
+{"verdict": "correct" | "wrong" | "neither", "quote": "<the sentence of the candidate answer you judged, copied verbatim; empty if neither>"}
+
+=== QUESTION ===
+How many levels of parent-to-child relationship can a single SOQL query traverse in API 58.0 and later?
+
+=== CORRECT FACT ===
+Up to five levels of parent-to-child relationship (two levels at API 57.0 and earlier).
+
+=== WRONG FACT ===
+One: a subquery cannot itself contain a subquery.
+
+=== CANDIDATE ANSWER ===
+[CANDIDATE ANSWER GOES HERE]

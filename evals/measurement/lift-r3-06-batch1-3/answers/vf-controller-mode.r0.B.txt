@@ -1,0 +1,42 @@
+**It depends on the API version the class is saved at, so don't assume enforcement either way.**
+
+| Component | Enforcement |
+|---|---|
+| Standard controller | FLS is enforced automatically, but only on fields bound through the controller (e.g. `{!account.Name}`, `<apex:inputField>`). |
+| Custom controller or extension saved at **API 67.0+** | Database operations default to user mode, so object and field permissions of the running user are enforced without extra code. |
+| Custom controller or extension saved at **API 66.0 or earlier** | System mode is the default, so the developer must enforce access explicitly. |
+
+The skill cites the Apex guide (apexdev 264 L11928-11929) for the 67.0 default switch. I haven't verified that line myself.
+
+The same guide says that standard and custom controllers "execute entirely in user mode" (L19443-19444). That sentence is easy to over-read. For a controller pinned at 66.0 or earlier, treat your own SOQL and DML as system mode unless you opt in.
+
+A common mistake is assuming that using a standard controller with an extension covers the extension's own queries. It doesn't. Standard-controller FLS covers only the bound fields, not SOQL you write in the extension.
+
+**What to do for classes at ≤66.0 (or to be explicit at any version):**
+
+```apex
+public with sharing class AccountExtension {
+    public transient List<Contact> contacts { get; private set; }
+
+    public AccountExtension(ApexPages.StandardController sc) {
+        contacts = [
+            SELECT Id, Name, Email
+            FROM Contact
+            WHERE AccountId = :sc.getId()
+            WITH USER_MODE
+        ];
+    }
+
+    public PageReference addContact(Contact c) {
+        Database.insert(c, AccessLevel.USER_MODE);
+        return null;
+    }
+}
+```
+
+- **Queries:** use `WITH USER_MODE`.
+- **DML:** use `Database.insert/update/delete(records, AccessLevel.USER_MODE)`.
+- **Field-by-field checks:** `Schema.sObjectType.Contact.fields.Email.isAccessible()` also works.
+- **`WITH SECURITY_ENFORCED`:** it can't be used in Apex SOQL at API 67.0 and later (apexdev 264 L11926-11927). Use `WITH USER_MODE` instead.
+- **Sharing:** declare the class `with sharing`. This is separate from FLS/CRUD and governs record visibility.
+- **Testing:** run the page as a low-privilege user, not an admin, to confirm hidden fields don't leak.

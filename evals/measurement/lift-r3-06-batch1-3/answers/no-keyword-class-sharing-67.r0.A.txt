@@ -1,0 +1,14 @@
+I can't confirm any change at API 67.0, so I won't state one as fact. My knowledge doesn't include a documented API 67.0 change to the default sharing behavior of classes with no keyword.
+
+**Long-standing behavior, which is what I'd assume applies unless the Summer '26 release notes say otherwise:**
+- **As an entry point** (trigger, `@AuraEnabled`, REST, Visualforce controller, and so on), a class with no keyword runs in system mode with respect to record sharing. That is effectively `without sharing`, though it is not formally the same declaration.
+- **When called from another class**, it inherits the sharing mode of the caller. If a `with sharing` class calls it, it runs with sharing. If a `without sharing` class calls it, it runs without sharing.
+- **Inner classes** do not inherit sharing from their outer class. They follow the same rules as above.
+- **CRUD and FLS** are not affected by any sharing keyword. They are enforced separately, through `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, `stripInconsequentialFields`, or `Schema` describe checks.
+
+**What I'd do:**
+1. Check the Summer '26 (API 67.0) release notes and the Apex Developer Guide section on "Using the with sharing, without sharing, and inherited sharing keywords". Release updates that change defaults are listed there, usually with a note on whether they are versioned by class API version.
+2. Whatever the default is, don't depend on it. Declare `with sharing` by default, `inherited sharing` for utility or service classes that should follow their caller, and `without sharing` only where it's intentional and documented.
+3. If a class's API version changes how it behaves, check any classes you plan to bump to 67.0. Test them with a user who lacks broad record access, and don't rely on admin-run tests.
+
+If you've seen a specific claim about 67.0 in a doc or checker rule, tell me where and I can help interpret it. I just can't verify it from here.

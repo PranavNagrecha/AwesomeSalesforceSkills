@@ -1,0 +1,19 @@
+No. A custom Apex sharing reason can't be defined on a standard object such as Account, in any API version, so there is no version where it starts working.
+
+**Why**
+- Apex sharing reasons (`CustomObject.sharingReasons` in Metadata API, the "Apex Sharing Reasons" related list in Setup) exist only on custom objects. The Apex Sharing Reasons related list appears only on a custom object's detail page.
+- The reason is stored as a `RowCause` value like `Schema.MyObject__Share.rowCause.My_Reason__c`. For custom objects the `__c` suffix is appended automatically.
+- Standard share tables (`AccountShare`, `ContactShare`, `OpportunityShare`, `CaseShare`, `LeadShare`, and so on) only accept system-defined row causes. From Apex you can only insert rows with `RowCause = 'Manual'`, which is the default.
+
+**What this means in practice**
+- Records shared on a standard object through Apex show as "Manual" in the sharing UI. Anyone with Full Access, the owner, or a user above the owner in the role hierarchy can remove them.
+- Manual shares are deleted when the record owner changes. They are not tied to a reason you control, so your code has to recreate them.
+- You cannot distinguish "your" shares from other manual shares by row cause. If you need to find or clean up the ones your code created, you have to track them yourself, for example with a custom object or a field recording which shares you created, or by querying `AccountShare` by `AccountId`, `UserOrGroupId`, and `RowCause = 'Manual'`.
+
+**Alternatives if you need reason-tracked, durable sharing on Account**
+- Use criteria-based or owner-based sharing rules, which are declarative and survive ownership changes.
+- Use Account Teams or Territory Management (Enterprise Territory Management) if the access model fits.
+- Use a custom object that models the access (for example, `Account_Access__c`) and uses a real Apex sharing reason on its own share table. This only controls access to that custom object. It does not grant access to the Account itself.
+- Use a Share Group or public group with a sharing rule if the audience is a defined set of users.
+
+I haven't checked this against the current release notes, so if you need to cite a source, confirm it in the "Sharing a Record Using Apex" and "Apex Sharing Reasons" topics in the Apex Developer Guide.

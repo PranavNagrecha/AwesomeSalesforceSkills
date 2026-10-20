@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "It's an Apex annotation: `@RemoteAction`. No Visualforce component is needed to expose the method.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0634278,
+    "duration_s": 2.975,
+    "input_tokens": 7743,
+    "output_tokens": 54
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"It's an Apex annotation: `@RemoteAction`. No Visualforce component is needed to expose the method.\"}",
+  "prompt_sha": "da8abb34eecf0b1c"
+}

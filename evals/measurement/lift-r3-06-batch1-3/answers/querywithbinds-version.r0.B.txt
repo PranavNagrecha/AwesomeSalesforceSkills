@@ -1,0 +1,19 @@
+`Database.queryWithBinds` is available from **API version 57.0** and later. The Apex Developer Guide says that bind variables in the query are resolved from a Map parameter directly by key, which removes the need for them to be in scope when the query executes.
+
+Two related details:
+
+- The `accessLevel` parameter is older than the method. It is available from API 55.0, which is why you can use `AccessLevel.USER_MODE` with `Database.query` before 57.0.
+- The signature takes a `Map<String, Object>`. Keys are case-insensitive, and duplicate keys throw a runtime `QueryException`.
+
+A typical call looks like this:
+
+```apex
+Map<String, Object> binds = new Map<String, Object>{ 'term' => '%' + term + '%' };
+List<Account> accs = Database.queryWithBinds(
+    'SELECT Id, Name FROM Account WHERE Name LIKE :term',
+    binds,
+    AccessLevel.USER_MODE
+);
+```
+
+Classes saved below API 57.0 can't call it, so bump the class version first if you're maintaining older code.

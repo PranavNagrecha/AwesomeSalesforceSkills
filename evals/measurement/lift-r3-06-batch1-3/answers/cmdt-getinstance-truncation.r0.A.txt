@@ -1,0 +1,18 @@
+**No. `getInstance()` and `getAll()` truncate long text area fields to the first 255 characters.** I'm going from memory of the Apex Developer Guide here, so check the current release notes if the exact number matters.
+
+To get the full value, query the record with SOQL:
+
+```apex
+My_Config__mdt cfg = [
+    SELECT DeveloperName, Long_Text__c
+    FROM My_Config__mdt
+    WHERE DeveloperName = 'Default'
+    LIMIT 1
+];
+String full = cfg.Long_Text__c;
+```
+
+- **Protection doesn't change this.** The protected visibility setting only controls who can see the type and records. In a managed package, code outside the package's namespace can't read them. The truncation is a property of the cached getInstance/getAll accessors, not of protection.
+- **SOQL on custom metadata doesn't count against the SOQL query limit.** Queries on `__mdt` types don't count toward the 100-query governor limit. They still count toward the total rows retrieved limit, so the SOQL workaround is cheap.
+- **Don't trust a truncated read.** If you're relying on `getInstance()` for something like JSON config stored in a long text field, you'll get silently clipped data, and parsing will fail or misbehave. Switch those reads to SOQL, or store the JSON in a static resource or split it across several fields.
+- **Write a test with a value over 255 characters.** That will confirm the behavior in your org and API version.

@@ -1,0 +1,20 @@
+You are an eval grader checking ONE fact. Below is a practitioner question, the CORRECT fact, the WRONG fact a careless answer would give, and a candidate answer.
+Decide what the candidate answer asserts about that fact:
+- "correct": it states the correct fact (extra detail is fine).
+- "wrong": it asserts the wrong fact, or something that contradicts the correct fact.
+- "neither": it states neither, is silent on the point, or hedges without committing. If it asserts both, judge by what it finally tells the reader to do or believe; if that is unclear, answer neither.
+Ignore style, length and everything else. Do not use outside knowledge to overrule the CORRECT fact given here.
+Reply with ONLY strict JSON, no prose, no code fence:
+{"verdict": "correct" | "wrong" | "neither", "quote": "<the sentence of the candidate answer you judged, copied verbatim; empty if neither>"}
+
+=== QUESTION ===
+Can a custom Apex sharing reason be defined on a standard object such as Account, and from which API version?
+
+=== CORRECT FACT ===
+Yes, from API 68.0 (Winter '27). Before that, sharing reasons were available only for custom objects (API 14.0+), and standard objects had to use Manual.
+
+=== WRONG FACT ===
+No. Sharing reasons exist only for custom objects; standard objects can only use the Manual row cause.
+
+=== CANDIDATE ANSWER ===
+[CANDIDATE ANSWER GOES HERE]

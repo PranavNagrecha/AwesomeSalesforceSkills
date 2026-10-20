@@ -1,0 +1,105 @@
+{
+  "_comment": "R3-06 claims-audit wave, probes for batches 1-3 (27 skills, 75 contradicted claims). One probe per contradicted-claim class the writer+reviewer recipe fixed. Arm A = model alone, arm B = model + the owning skill's SKILL.md + llm-anti-patterns.md (run_lift). Quotes are verbatim lines from scratchpad/corpus264 (264) or scratchpad/corpus (262, Apex Reference / Security Guide). Built 2026-10-20.",
+  "probes": [
+    {
+      "id": "picklist-values-active-only",
+      "skill": "apex/apex-schema-describe",
+      "question": "Does Schema.DescribeFieldResult.getPicklistValues() return inactive picklist values as well as active ones?",
+      "wrong_answer": "Yes, it returns every value including inactive ones; filter with isActive().",
+      "correct_answer": "No. It returns only active PicklistEntry objects; inactive values are not in the list.",
+      "source": "salesforce_apex_reference_guide.txt 262 L190851",
+      "quote": "Returns a list of active PicklistEntry objects.",
+      "wrong_source": "skill before audit: 'getPicklistValues() returns inactive values' + a checker isActive rule"
+    },
+    {
+      "id": "cmdt-getinstance-truncation",
+      "skill": "apex/apex-secrets-and-protected-cmdt",
+      "question": "When Apex reads a protected custom metadata type record with getInstance() or getAll(), is a long text field returned in full?",
+      "wrong_answer": "Yes, getInstance() returns the complete field values of the record.",
+      "correct_answer": "No. Only the first 255 characters of any field are returned; use a SOQL query to read the full value.",
+      "source": "salesforce_apex_reference_guide.txt 262 L204570-204571",
+      "quote": "Only the first 255 characters are returned for any field in a custom metadata type record, so longer text",
+      "wrong_source": "skill before audit: read secrets with getInstance() with no truncation note"
+    },
+    {
+      "id": "cmdt-visibility-element",
+      "skill": "apex/apex-secrets-and-protected-cmdt",
+      "question": "In CustomObject metadata for a custom metadata type, which element and value make the type readable only by Apex inside the managed package?",
+      "wrong_answer": "<protected>true</protected> on the custom metadata type.",
+      "correct_answer": "<visibility>PackageProtected</visibility> (custom metadata types only, API 47.0 and later); Protected hides it from subscriber orgs but not from the package's own org admins.",
+      "source": "api_meta.txt 264 L44593-44594",
+      "quote": "PackageProtected— (Custom metadata type only) It’s only accessible by the custom Apex code in the package.",
+      "wrong_source": "skill template before audit: <protected>true</protected>"
+    },
+    {
+      "id": "remoteaction-annotation",
+      "skill": "apex/visualforce-fundamentals",
+      "question": "How do you expose an Apex method to JavaScript remoting in Visualforce: with a Visualforce component or an Apex annotation?",
+      "wrong_answer": "Add an <apex:remoteAction> component to the page and point it at the controller method.",
+      "correct_answer": "With the @RemoteAction annotation on a static Apex method; there is no <apex:remoteAction> component.",
+      "source": "salesforce_apex_developer_guide.txt 264 L6245-6246",
+      "quote": "The RemoteAction annotation provides support for Apex methods used in Visualforce to be called via JavaScript.",
+      "wrong_source": "skill before audit: <apex:remoteAction> in SKILL.md, well-architected and the template"
+    },
+    {
+      "id": "vf-controller-mode",
+      "skill": "apex/visualforce-fundamentals",
+      "question": "Do Visualforce custom controllers enforce the running user's object and field-level permissions, or must the developer add those checks manually?",
+      "wrong_answer": "Custom controllers run in system mode, so the developer must manually enforce CRUD, FLS and sharing.",
+      "correct_answer": "Standard and custom controllers execute entirely in user mode, so object and field-level permissions of the current user are enforced (system mode by default applied only at API 66.0 and earlier).",
+      "source": "salesforce_apex_developer_guide.txt 264 L19443-19444",
+      "quote": "both standard and custom controllers execute entirely in user mode, in which the object and field-level",
+      "wrong_source": "skill before audit: 'custom controllers must manually enforce sharing/FLS/CRUD'"
+    },
+    {
+      "id": "querywithbinds-version",
+      "skill": "apex/apex-dynamic-soql-binding-safety",
+      "question": "From which API version is Database.queryWithBinds available?",
+      "wrong_answer": "API 55.0 and later.",
+      "correct_answer": "API 57.0 and later (55.0 introduced only the accessLevel parameter on Database.query).",
+      "source": "salesforce_apex_developer_guide.txt 264 L11647",
+      "quote": "(API version 57.0 and later) Another option is to use the Database.queryWithBinds method.",
+      "wrong_source": "skill before audit: 'queryWithBinds API 55+'"
+    },
+    {
+      "id": "subquery-levels-58",
+      "skill": "apex/soql-fundamentals",
+      "question": "How many levels of parent-to-child relationship can a single SOQL query traverse in API 58.0 and later?",
+      "wrong_answer": "One: a subquery cannot itself contain a subquery.",
+      "correct_answer": "Up to five levels of parent-to-child relationship (two levels at API 57.0 and earlier).",
+      "source": "salesforce_app_limits_cheatsheet.txt 264 L716-717",
+      "quote": "In API version 58.0 and later, up to five levels of parent-to-child relationship can be queried via REST,",
+      "wrong_source": "skill before audit: 'a subquery cannot itself contain a subquery'"
+    },
+    {
+      "id": "sharingreason-standard-objects-68",
+      "skill": "apex/apex-managed-sharing",
+      "question": "Can a custom Apex sharing reason be defined on a standard object such as Account, and from which API version?",
+      "wrong_answer": "No. Sharing reasons exist only for custom objects; standard objects can only use the Manual row cause.",
+      "correct_answer": "Yes, from API 68.0 (Winter '27). Before that, sharing reasons were available only for custom objects (API 14.0+), and standard objects had to use Manual.",
+      "source": "api_meta.txt 264 L47650-47651",
+      "quote": "Sharing reasons for standard objects are available in API version 68.0 and later.",
+      "wrong_source": "skill before audit: 'standard objects have no reasons'"
+    },
+    {
+      "id": "no-keyword-class-sharing-67",
+      "skill": "apex/apex-managed-sharing",
+      "question": "At API 67.0 and later, how does an Apex class with no sharing keyword (neither with sharing nor without sharing) run?",
+      "wrong_answer": "It defaults to without sharing.",
+      "correct_answer": "It runs in with sharing mode; the older caller-determined behaviour applies only at API 66.0 and earlier.",
+      "source": "salesforce_apex_developer_guide.txt 264 L11930",
+      "quote": "In API version 67.0 and later, classes without an explicit sharing declaration run in with sharing mode.",
+      "wrong_source": "skill before audit: 'a class with no sharing keyword defaults to without sharing'"
+    },
+    {
+      "id": "external-id-field-types",
+      "skill": "apex/apex-secrets-and-protected-cmdt",
+      "question": "Which custom field data types can be marked External ID in Salesforce?",
+      "wrong_answer": "Any field type, including Long Text Area.",
+      "correct_answer": "Only auto number, email, number and text fields.",
+      "source": "api_meta.txt 264 L45638-45639",
+      "quote": "This property is returned only if the custom field data",
+      "wrong_source": "skill example before audit: 'Value__c (Long Text Area, External ID)'"
+    }
+  ]
+}

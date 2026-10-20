@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**Auto Number** fields can also be flagged External ID.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0634403,
+    "duration_s": 3.808,
+    "input_tokens": 7133,
+    "output_tokens": 302
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**Auto Number** fields can also be flagged External ID.\"}",
+  "prompt_sha": "5df90a0194edadc8"
+}

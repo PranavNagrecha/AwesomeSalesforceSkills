@@ -1,0 +1,20 @@
+You are an eval grader checking ONE fact. Below is a practitioner question, the CORRECT fact, the WRONG fact a careless answer would give, and a candidate answer.
+Decide what the candidate answer asserts about that fact:
+- "correct": it states the correct fact (extra detail is fine).
+- "wrong": it asserts the wrong fact, or something that contradicts the correct fact.
+- "neither": it states neither, is silent on the point, or hedges without committing. If it asserts both, judge by what it finally tells the reader to do or believe; if that is unclear, answer neither.
+Ignore style, length and everything else. Do not use outside knowledge to overrule the CORRECT fact given here.
+Reply with ONLY strict JSON, no prose, no code fence:
+{"verdict": "correct" | "wrong" | "neither", "quote": "<the sentence of the candidate answer you judged, copied verbatim; empty if neither>"}
+
+=== QUESTION ===
+In CustomObject metadata for a custom metadata type, which element and value make the type readable only by Apex inside the managed package?
+
+=== CORRECT FACT ===
+<visibility>PackageProtected</visibility> (custom metadata types only, API 47.0 and later); Protected hides it from subscriber orgs but not from the package's own org admins.
+
+=== WRONG FACT ===
+<protected>true</protected> on the custom metadata type.
+
+=== CANDIDATE ANSWER ===
+[CANDIDATE ANSWER GOES HERE]

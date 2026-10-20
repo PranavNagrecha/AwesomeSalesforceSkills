@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "Database operations default to user mode, so object and field permissions of the running user are enforced without extra code.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0644921,
+    "duration_s": 2.778,
+    "input_tokens": 7397,
+    "output_tokens": 244
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"Database operations default to user mode, so object and field permissions of the running user are enforced without extra code.\"}",
+  "prompt_sha": "1904de225b95f1b8"
+}

@@ -1,0 +1,16 @@
+**Up to 5 levels.** In API 58.0 and later, a single SOQL query can traverse up to five levels of parent-to-child relationships using nested subqueries in the `SELECT` list. In API 57.0 and earlier, you could only go one level deep.
+
+```sql
+SELECT Name,
+  (SELECT LastName,
+    (SELECT Subject,
+      (SELECT Description FROM Tasks)   -- deeper levels nest the same way
+     FROM Cases)
+   FROM Contacts)
+FROM Account
+```
+
+- **Counting the root:** As I recall, the documentation counts the root object as level 1, so five levels means the root plus four nested child subqueries. Check the current "Understanding Relationship Queries" page if the exact count matters.
+- **Child-to-parent is separate:** Dot-notation traversal (e.g. `Contact.Account.Owner.Manager.Name`) has its own limit of 5 levels. The two limits are independent.
+- **Other limits still apply:** The usual query limits (total rows, the 50,000-row governor limit in Apex, and the cap on relationships per query) apply to the nested results as well.
+- **Version matters:** The query must run at API 58.0 or later. Apex classes saved at an older API version, or REST calls to an older version path, will still hit the one-level restriction.

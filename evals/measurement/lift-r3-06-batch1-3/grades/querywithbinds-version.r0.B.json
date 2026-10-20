@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "`Database.queryWithBinds` is available from **API version 57.0** and later.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.055336,
+    "duration_s": 1.253,
+    "input_tokens": 6808,
+    "output_tokens": 44
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"`Database.queryWithBinds` is available from **API version 57.0** and later.\"}",
+  "prompt_sha": "e7407cc31ee00d24"
+}

@@ -1,0 +1,20 @@
+You are an eval grader checking ONE fact. Below is a practitioner question, the CORRECT fact, the WRONG fact a careless answer would give, and a candidate answer.
+Decide what the candidate answer asserts about that fact:
+- "correct": it states the correct fact (extra detail is fine).
+- "wrong": it asserts the wrong fact, or something that contradicts the correct fact.
+- "neither": it states neither, is silent on the point, or hedges without committing. If it asserts both, judge by what it finally tells the reader to do or believe; if that is unclear, answer neither.
+Ignore style, length and everything else. Do not use outside knowledge to overrule the CORRECT fact given here.
+Reply with ONLY strict JSON, no prose, no code fence:
+{"verdict": "correct" | "wrong" | "neither", "quote": "<the sentence of the candidate answer you judged, copied verbatim; empty if neither>"}
+
+=== QUESTION ===
+At API 67.0 and later, how does an Apex class with no sharing keyword (neither with sharing nor without sharing) run?
+
+=== CORRECT FACT ===
+It runs in with sharing mode; the older caller-determined behaviour applies only at API 66.0 and earlier.
+
+=== WRONG FACT ===
+It defaults to without sharing.
+
+=== CANDIDATE ANSWER ===
+[CANDIDATE ANSWER GOES HERE]

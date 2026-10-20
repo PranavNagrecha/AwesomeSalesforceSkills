@@ -1,0 +1,1 @@
+Does Schema.DescribeFieldResult.getPicklistValues() return inactive picklist values as well as active ones?

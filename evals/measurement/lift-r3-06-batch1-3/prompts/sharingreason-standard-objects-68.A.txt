@@ -1,0 +1,1 @@
+Can a custom Apex sharing reason be defined on a standard object such as Account, and from which API version?

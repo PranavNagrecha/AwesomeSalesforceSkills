@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**Custom External ID fields can be Text, Number, Email, or Auto Number.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.058452,
+    "duration_s": 1.866,
+    "input_tokens": 7190,
+    "output_tokens": 47
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**Custom External ID fields can be Text, Number, Email, or Auto Number.**\"}",
+  "prompt_sha": "4f63803428c81589"
+}

@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "No. Custom controllers (and controller extensions) run in system mode, so the developer must enforce CRUD and FLS explicitly.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.062568,
+    "duration_s": 6.808,
+    "input_tokens": 7603,
+    "output_tokens": 62
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"No. Custom controllers (and controller extensions) run in system mode, so the developer must enforce CRUD and FLS explicitly.\"}",
+  "prompt_sha": "042fbd19bb34904c"
+}

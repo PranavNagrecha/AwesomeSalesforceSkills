@@ -1,0 +1,23 @@
+**No. `getPicklistValues()` returns active picklist values only.**
+
+The Apex Reference (apexref 262 L190851) says: "Only active picklist values are returned." The skill package was corrected on 2026-10-20 to match this. The earlier wording, which said inactive entries appear in the list and need filtering, was wrong.
+
+**What this means in code:**
+
+```apex
+List<Schema.PicklistEntry> entries =
+    Account.Industry.getDescribe().getPicklistValues();
+
+List<String> values = new List<String>();
+for (Schema.PicklistEntry pe : entries) {
+    values.add(pe.getValue());   // API value; getLabel() for display
+}
+```
+
+- An `if (pe.isActive())` check is harmless but redundant. It never excludes anything, so you don't need it.
+- Don't write review notes or comments claiming the list "includes inactive" values.
+- If you need retired (inactive) values, for example to interpret historical data, `getPicklistValues()` can't supply them. Read them from the metadata layer instead (Metadata API or Tooling API).
+
+**Related reminders:**
+- `getValue()` returns the API name and `getLabel()` returns the display text.
+- For a restricted or dependent picklist, the describe call doesn't tell you which values are valid for a given record type. Use the record-type picklist values or the UI API for that.

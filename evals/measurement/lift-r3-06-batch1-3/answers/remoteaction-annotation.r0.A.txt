@@ -1,0 +1,73 @@
+It's an Apex annotation: `@RemoteAction`. No Visualforce component is needed to expose the method.
+
+## How it works
+
+Annotate a `global` or `public` **static** method with `@RemoteAction` in the controller or controller extension used by the page:
+
+```apex
+global with sharing class AccountRemoter {
+
+    public String accountName { get; set; }
+    public static Account account { get; set; }
+
+    // Standard controller / extension constructor if needed
+    public AccountRemoter() {}
+
+    @RemoteAction
+    global static Account getAccount(String accountName) {
+        return [SELECT Id, Name, Phone, Type
+                FROM Account
+                WHERE Name = :accountName
+                LIMIT 1];
+    }
+}
+```
+
+Then call it from JavaScript on the Visualforce page:
+
+```html
+<apex:page controller="AccountRemoter">
+    <script type="text/javascript">
+        function getRemoteAccount() {
+            var name = document.getElementById('acctSearch').value;
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.AccountRemoter.getAccount}',
+                name,
+                function(result, event) {
+                    if (event.status) {
+                        document.getElementById('result').innerHTML =
+                            result.Name + ' / ' + result.Phone;
+                    } else if (event.type === 'exception') {
+                        console.error(event.message, event.where);
+                    } else {
+                        console.error(event.message);
+                    }
+                },
+                { escape: true }
+            );
+        }
+    </script>
+
+    <input id="acctSearch" type="text"/>
+    <button onclick="getRemoteAccount(); return false;">Get Account</button>
+    <div id="result"></div>
+</apex:page>
+```
+
+## Key points
+
+- **Method requirements:** must be `static` and `public` or `global`. Use `global` if the controller is in a managed package or you want it callable from outside the namespace.
+- **Page binding:** the page must reference the class via `controller=`, `extensions=`, or (for a different class) use the `$RemoteAction` global variable with a fully qualified name. Using `{!$RemoteAction.ClassName.methodName}` lets the platform resolve namespace and route correctly.
+- **Invocation:** `Visualforce.remoting.Manager.invokeAction(remoteActionString, arg1, ..., callback, config)`.
+- **Callback:** receives `(result, event)`. Check `event.status` for success.
+- **Config options:** `escape` (HTML-escape the response, default `true`), `timeout` (ms, default 30000, max 120000), and `buffer` (batching of requests).
+- **Parameters and return types:** primitives, sObjects, collections, and Apex classes with `@RemoteAction`-visible (`public`/`global`) properties are supported. Return values are serialized to JSON.
+- **View state:** remote actions are stateless. They don't have access to the page's view state or instance variables, which is why the method must be static.
+- **Security:** remoting calls run with the permissions your class code enforces, so use `with sharing`, and enforce CRUD/FLS (e.g., `WITH USER_MODE` in SOQL or `Security.stripInaccessible`).
+
+## Contrast with the component-based approach
+
+`<apex:actionFunction>` and `<apex:actionSupport>` are Visualforce components that call controller *instance* methods via the page lifecycle (using view state, partial page rerenders). That's **JavaScript-driven action methods**, not JavaScript remoting. They're a different mechanism, heavier, and not `@RemoteAction`.
+
+So: use `@RemoteAction` for JavaScript remoting. Use `apex:actionFunction` only if you want the view-state-based approach.

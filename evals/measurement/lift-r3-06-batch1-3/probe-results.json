@@ -1,0 +1,504 @@
+{
+  "answer_model": "sonnet",
+  "grader_model": "opus",
+  "repeats": 1,
+  "probes": [
+    {
+      "id": "picklist-values-active-only",
+      "skill": "apex/apex-schema-describe",
+      "source": "salesforce_apex_reference_guide.txt 262 L190851",
+      "runs": [
+        {
+          "A": {
+            "answer": "Yes, `getPicklistValues()` returns both active and inactive values. Each `Schema.PicklistEntry` in the returned list carries an `isActive()` flag, so you have to filter yourself if you only want active ones.\n\n```apex\nList<Schema.PicklistEntry> entries =\n    Account.Industry.getDescribe().getPicklistValues();\n\nList<String> activeValues = new List<String>();\nfor (Schema.PicklistEntry pe : entries) {\n    if (pe.isActive()) {\n        activeValues.add(pe.getValue());\n    }\n}\n```\n\n**Caveats**\n\n- **Inactive values appear in the list.** Anyone building a UI from this call (for example an `@AuraEnabled` method feeding a custom picklist) will show deprecated values unless they check `isActive()`.\n- **Standard value sets and global value sets behave the same way.** The describe reflects the field's value set, with `isActive()` indicating status.\n- **Record types are not reflected.** `getPicklistValues()` returns values for the field as a whole, not the subset available to a particular record type. If you need record-type-filtered values, use the UI API (`/ui-api/object-info/{objectApiName}/picklist-values/{recordTypeId}/{fieldApiName}`, or `getPicklistValues` from `lightning/uiObjectInfoApi` in LWC), which respects record types and returns only active values.\n- **Dependent picklists.** The describe exposes `getValidFor()` on each entry for controlling-field logic, but it doesn't filter by controlling value for you.\n- **Existing records can hold inactive values.** They remain valid on records that already have them, which is why describe includes them.\n\nI'm confident about the `isActive()` behavior, which is the documented purpose of that method. If this is for something critical, a quick anonymous Apex run against your own picklist with a deactivated value will confirm it in seconds.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "Yes, `getPicklistValues()` returns both active and inactive values.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0885933,
+            "duration_s": 6.792,
+            "tokens": {
+              "input": 13216,
+              "output": 673
+            }
+          },
+          "B": {
+            "answer": "**No. `getPicklistValues()` returns active picklist values only.**\n\nThe Apex Reference (apexref 262 L190851) says: \"Only active picklist values are returned.\" The skill package was corrected on 2026-10-20 to match this. The earlier wording, which said inactive entries appear in the list and need filtering, was wrong.\n\n**What this means in code:**\n\n```apex\nList<Schema.PicklistEntry> entries =\n    Account.Industry.getDescribe().getPicklistValues();\n\nList<String> values = new List<String>();\nfor (Schema.PicklistEntry pe : entries) {\n    values.add(pe.getValue());   // API value; getLabel() for display\n}\n```\n\n- An `if (pe.isActive())` check is harmless but redundant. It never excludes anything, so you don't need it.\n- Don't write review notes or comments claiming the list \"includes inactive\" values.\n- If you need retired (inactive) values, for example to interpret historical data, `getPicklistValues()` can't supply them. Read them from the metadata layer instead (Metadata API or Tooling API).\n\n**Related reminders:**\n- `getValue()` returns the API name and `getLabel()` returns the display text.\n- For a restricted or dependent picklist, the describe call doesn't tell you which values are valid for a given record type. Use the record-type picklist values or the UI API for that.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**No. `getPicklistValues()` returns active picklist values only.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1127995,
+            "duration_s": 11.425,
+            "tokens": {
+              "input": 19710,
+              "output": 489
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cmdt-getinstance-truncation",
+      "skill": "apex/apex-secrets-and-protected-cmdt",
+      "source": "salesforce_apex_reference_guide.txt 262 L204570-204571",
+      "runs": [
+        {
+          "A": {
+            "answer": "**No. `getInstance()` and `getAll()` truncate long text area fields to the first 255 characters.** I'm going from memory of the Apex Developer Guide here, so check the current release notes if the exact number matters.\n\nTo get the full value, query the record with SOQL:\n\n```apex\nMy_Config__mdt cfg = [\n    SELECT DeveloperName, Long_Text__c\n    FROM My_Config__mdt\n    WHERE DeveloperName = 'Default'\n    LIMIT 1\n];\nString full = cfg.Long_Text__c;\n```\n\n- **Protection doesn't change this.** The protected visibility setting only controls who can see the type and records. In a managed package, code outside the package's namespace can't read them. The truncation is a property of the cached getInstance/getAll accessors, not of protection.\n- **SOQL on custom metadata doesn't count against the SOQL query limit.** Queries on `__mdt` types don't count toward the 100-query governor limit. They still count toward the total rows retrieved limit, so the SOQL workaround is cheap.\n- **Don't trust a truncated read.** If you're relying on `getInstance()` for something like JSON config stored in a long text field, you'll get silently clipped data, and parsing will fail or misbehave. Switch those reads to SOQL, or store the JSON in a static resource or split it across several fields.\n- **Write a test with a value over 255 characters.** That will confirm the behavior in your org and API version.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**No. `getInstance()` and `getAll()` truncate long text area fields to the first 255 characters.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09126499999999999,
+            "duration_s": 12.145999999999999,
+            "tokens": {
+              "input": 13067,
+              "output": 1012
+            }
+          },
+          "B": {
+            "answer": "**No, not in full.** `getInstance()` and `getAll()` on a custom metadata type return only the first 255 characters of any field. A Long Text Area secret longer than that is silently truncated, with no exception and no warning. This applies to protected types too, since protection controls who can read the record and has no effect on the 255-character limit. (The skill cites apexref 262 L204570-204571 and L204645-204647 for this.)\n\n**What to do instead**\n\nQuery the record with SOQL, which returns the whole field:\n\n```apex\n@NamespaceAccessible\npublic static String getSecret(String developerName) {\n    List<Secret_Config__mdt> rows = [\n        SELECT Value__c\n        FROM Secret_Config__mdt\n        WHERE DeveloperName = :developerName\n        LIMIT 1\n    ];\n    return rows.isEmpty() ? null : rows[0].Value__c;\n}\n```\n\n**Caveats**\n\n- `getInstance(developerName)` returns null when no record matches, so null-check or use `?.` on that path. The SOQL version needs the empty-list check shown above.\n- A SOQL query on CMDT doesn't count against the SOQL query limit, but I haven't verified that against the docs in the package, so confirm it before relying on it.\n- Most secrets fit within 255 characters, such as API keys and 256-bit AES keys in base64. Values that commonly exceed it include PEM private keys, JWT signing material, and some multi-part tokens. For those, use SOQL, or store the secret as a short reference and keep the long value off-platform.\n- The truncation is silent, so a truncated HMAC key or token just produces signatures or auth failures that look like a wrong secret. If you've seen intermittent \"invalid signature\" errors with a long key, check `value.length()` first. Log the length or a SHA-256 hash, never the value itself.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "`getInstance()` and `getAll()` on a custom metadata type return only the first 255 characters of any field.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1219741,
+            "duration_s": 7.616,
+            "tokens": {
+              "input": 21257,
+              "output": 664
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cmdt-visibility-element",
+      "skill": "apex/apex-secrets-and-protected-cmdt",
+      "source": "api_meta.txt 264 L44593-44594",
+      "runs": [
+        {
+          "A": {
+            "answer": "Use the `visibility` element with the value `Protected`:\n\n```xml\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<CustomObject xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <label>My Setting</label>\n    <pluralLabel>My Settings</pluralLabel>\n    <visibility>Protected</visibility>\n</CustomObject>\n```\n\n- **`Public`** makes the type visible to any Apex, API, or other code in the org.\n- **`Protected`** hides the type and its records from code outside the managed package. Only Apex in the same managed package, and the package developer's own namespace, can read them. Subscriber org Apex, SOQL, and the API cannot.\n\nThings to be aware of:\n\n- **Released packages only:** The protection applies to the type once it is in a released managed package that is installed in a subscriber org. In an unmanaged or unpackaged context, such as your dev org, it doesn't restrict anything.\n- **Irreversible after release:** Once the type is released in a managed package, you can't change `Protected` back to `Public`.\n- **Updates:** The package developer can still deliver record updates to subscribers in new package versions.\n- **Enum value:** The `SetupObjectVisibility` enum also lists `PackageProtected`. `Protected` is the value to use for managed-package custom metadata types.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "`Protected` is the value to use for managed-package custom metadata types.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09428829999999999,
+            "duration_s": 12.418000000000001,
+            "tokens": {
+              "input": 13061,
+              "output": 1260
+            }
+          },
+          "B": {
+            "answer": "Set the `visibility` element to `PackageProtected` in the CustomObject metadata for the custom metadata type:\n\n```xml\n<CustomObject xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <label>Secret Config</label>\n    <pluralLabel>Secret Configs</pluralLabel>\n    <visibility>PackageProtected</visibility>\n    <!-- fields ... -->\n</CustomObject>\n```\n\nThe Metadata API reference for `visibility` (API 47.0+) describes `PackageProtected` as \"only accessible by the custom Apex code in the package. Use this value to secure secrets such as API access keys\" (api_meta 264 L44593-44594). In the Setup UI this corresponds to marking the type **Protected**.\n\nCaveats from the skill package:\n\n- **Protection only applies to subscribers of a managed package.** Outside a managed package, protected types behave like public ones, readable by all profiles, including guest (apexref 262 L170826-170828). In an unmanaged DX project or the source org, `PackageProtected` gives you no secrecy.\n- **Records still need handling.** Values in `customMetadata/*.md-meta.xml` are committed to git by default, so add a `.forceignore` rule for the secret type's records.\n- **Reading the value.** Inside the package, use a `public` getter wrapping `Secret_Config__mdt.getInstance(...)`. Add `@NamespaceAccessible` only if other 2GP packages in the same namespace must call it, and avoid `global` for secret getters.\n- **Truncation.** `getInstance()` returns only the first 255 characters of a field, so use SOQL for a longer Long Text Area secret.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "Set the `visibility` element to `PackageProtected` in the CustomObject metadata for the custom metadata type:",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.12100469999999999,
+            "duration_s": 5.720000000000001,
+            "tokens": {
+              "input": 21246,
+              "output": 623
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "remoteaction-annotation",
+      "skill": "apex/visualforce-fundamentals",
+      "source": "salesforce_apex_developer_guide.txt 264 L6245-6246",
+      "runs": [
+        {
+          "A": {
+            "answer": "It's an Apex annotation: `@RemoteAction`. No Visualforce component is needed to expose the method.\n\n## How it works\n\nAnnotate a `global` or `public` **static** method with `@RemoteAction` in the controller or controller extension used by the page:\n\n```apex\nglobal with sharing class AccountRemoter {\n\n    public String accountName { get; set; }\n    public static Account account { get; set; }\n\n    // Standard controller / extension constructor if needed\n    public AccountRemoter() {}\n\n    @RemoteAction\n    global static Account getAccount(String accountName) {\n        return [SELECT Id, Name, Phone, Type\n                FROM Account\n                WHERE Name = :accountName\n                LIMIT 1];\n    }\n}\n```\n\nThen call it from JavaScript on the Visualforce page:\n\n```html\n<apex:page controller=\"AccountRemoter\">\n    <script type=\"text/javascript\">\n        function getRemoteAccount() {\n            var name = document.getElementById('acctSearch').value;\n\n            Visualforce.remoting.Manager.invokeAction(\n                '{!$RemoteAction.AccountRemoter.getAccount}',\n                name,\n                function(result, event) {\n                    if (event.status) {\n                        document.getElementById('result').innerHTML =\n                            result.Name + ' / ' + result.Phone;\n                    } else if (event.type === 'exception') {\n                        console.error(event.message, event.where);\n                    } else {\n                        console.error(event.message);\n                    }\n                },\n                { escape: true }\n            );\n        }\n    </script>\n\n    <input id=\"acctSearch\" type=\"text\"/>\n    <button onclick=\"getRemoteAccount(); return false;\">Get Account</button>\n    <div id=\"result\"></div>\n</apex:page>\n```\n\n## Key points\n\n- **Method requirements:** must be `static` and `public` or `global`. Use `global` if the controller is in a managed package or you want it callable from outside the namespace.\n- **Page binding:** the page must reference the class via `controller=`, `extensions=`, or (for a different class) use the `$RemoteAction` global variable with a fully qualified name. Using `{!$RemoteAction.ClassName.methodName}` lets the platform resolve namespace and route correctly.\n- **Invocation:** `Visualforce.remoting.Manager.invokeAction(remoteActionString, arg1, ..., callback, config)`.\n- **Callback:** receives `(result, event)`. Check `event.status` for success.\n- **Config options:** `escape` (HTML-escape the response, default `true`), `timeout` (ms, default 30000, max 120000), and `buffer` (batching of requests).\n- **Parameters and return types:** primitives, sObjects, collections, and Apex classes with `@RemoteAction`-visible (`public`/`global`) properties are supported. Return values are serialized to JSON.\n- **View state:** remote actions are stateless. They don't have access to the page's view state or instance variables, which is why the method must be static.\n- **Security:** remoting calls run with the permissions your class code enforces, so use `with sharing`, and enforce CRUD/FLS (e.g., `WITH USER_MODE` in SOQL or `Security.stripInaccessible`).\n\n## Contrast with the component-based approach\n\n`<apex:actionFunction>` and `<apex:actionSupport>` are Visualforce components that call controller *instance* methods via the page lifecycle (using view state, partial page rerenders). That's **JavaScript-driven action methods**, not JavaScript remoting. They're a different mechanism, heavier, and not `@RemoteAction`.\n\nSo: use `@RemoteAction` for JavaScript remoting. Use `apex:actionFunction` only if you want the view-state-based approach.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "It's an Apex annotation: `@RemoteAction`. No Visualforce component is needed to expose the method.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.10043750000000001,
+            "duration_s": 12.392999999999999,
+            "tokens": {
+              "input": 13853,
+              "output": 1298
+            }
+          },
+          "B": {
+            "answer": "An Apex annotation: `@RemoteAction`. There is no `<apex:remoteAction>` component. The skill package corrects this explicitly (apexdev 264 L6245-6246), so don't reach for a VF component tag.\n\n## How it works\n\nAnnotate a `global` or `public` **static** method in the page's controller or extension with `@RemoteAction`, then call it from the page's JavaScript through the controller name.\n\n```apex\npublic with sharing class AccountRemoteController {\n\n    @RemoteAction\n    public static List<Account> searchAccounts(String namePrefix) {\n        String pattern = String.escapeSingleQuotes(namePrefix) + '%';\n        return [\n            SELECT Id, Name, Industry\n            FROM Account\n            WHERE Name LIKE :pattern\n            WITH USER_MODE\n            LIMIT 50\n        ];\n    }\n}\n```\n\n```html\n<apex:page controller=\"AccountRemoteController\">\n    <script>\n        function search(prefix) {\n            Visualforce.remoting.Manager.invokeAction(\n                '{!$RemoteAction.AccountRemoteController.searchAccounts}',\n                prefix,\n                function(result, event) {\n                    if (event.status) {\n                        console.log(result);\n                    } else {\n                        console.error(event.message);\n                    }\n                },\n                { escape: true }\n            );\n        }\n    </script>\n    <button onclick=\"search('Acme')\">Search</button>\n</apex:page>\n```\n\nThe `{!$RemoteAction.ControllerName.methodName}` expression resolves the method at render time, and it is namespace-aware. This is the recommended form over hard-coding `ControllerName.methodName(...)`.\n\n## Why it matters for this skill\n\n- **View state:** Remoting calls don't round-trip `__VIEWSTATE`. That is why the skill lists it as the approach for read-heavy pages.\n- **Static means no controller state:** The method is static, so instance variables, including those restored from view state, are not available. Pass everything you need as arguments.\n- **Security:** Remoting methods are directly callable endpoints, so enforce access yourself.\n  - Classes saved at API 66.0 or earlier default to system mode, so add `WITH USER_MODE` (or `AccessLevel.USER_MODE` for DML).\n  - At API 67.0+, user mode is the default.\n  - Use bind variables or `escapeSingleQuotes`, never raw concatenation of arguments.\n- **Lightning Experience:** The page runs in a separate-origin iframe. Remoting still works because it posts back to the Visualforce host, but keep navigation on `sforce.one.*`.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "An Apex annotation: `@RemoteAction`. There is no `<apex:remoteAction>` component.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1340517,
+            "duration_s": 11.27,
+            "tokens": {
+              "input": 23400,
+              "output": 932
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "vf-controller-mode",
+      "skill": "apex/visualforce-fundamentals",
+      "source": "salesforce_apex_developer_guide.txt 264 L19443-19444",
+      "runs": [
+        {
+          "A": {
+            "answer": "**No. Custom controllers (and controller extensions) run in system mode, so the developer must enforce CRUD and FLS explicitly.** Only standard controllers enforce them automatically.\n\n## What is and isn't enforced\n\n| Scenario | CRUD/FLS | Sharing |\n|---|---|---|\n| Standard controller | Enforced | Enforced |\n| Custom controller or extension | **Not enforced** | Only if the class is declared `with sharing` (otherwise it follows the caller or defaults to system context) |\n| `<apex:inputField>` / `<apex:outputField>` bound to an sObject field | Enforced at render time, even with a custom controller. Inaccessible fields are hidden or read-only. | n/a |\n| `<apex:outputText>`, `{!record.Field}` in plain expressions, wrapper/DTO properties | **Not reliably enforced.** Don't depend on it. | n/a |\n\nTwo further points:\n- Users also need the controller class enabled through their profile or permission set. That controls who can run the page, not what data it can touch.\n- `with sharing` governs record visibility only, not CRUD or FLS. Teams often conflate the two.\n\n## Enforcing it in a custom controller\n\nPrefer user-mode queries and DML (API 62.0+ / current releases):\n\n```apex\npublic with sharing class AccountListController {\n    public List<Account> accounts { get; private set; }\n\n    public AccountListController() {\n        accounts = [\n            SELECT Id, Name, AnnualRevenue\n            FROM Account\n            WITH USER_MODE\n            LIMIT 200\n        ];\n    }\n\n    public PageReference save() {\n        try {\n            Database.update(accounts, AccessLevel.USER_MODE);\n        } catch (DmlException e) {\n            ApexPages.addMessages(e);\n        }\n        return null;\n    }\n}\n```\n\nAlternatives:\n\n- **`WITH SECURITY_ENFORCED`** on SOQL. It throws on inaccessible fields in the query, but it is older and coarser than `WITH USER_MODE`.\n- **`Security.stripInaccessible(AccessType.READABLE / CREATABLE / UPDATABLE, records)`**. It silently removes fields the user can't access, which suits partial-data UIs.\n- **Describe checks** such as `Schema.sObjectType.Account.isUpdateable()` and `Account.Name.getDescribe().isAccessible()`. These work everywhere and are verbose, but give fine-grained control, such as conditionally rendering UI.\n\n## Practical guidance\n\n1. Declare every controller and extension `with sharing`.\n2. Use `WITH USER_MODE` and `AccessLevel.USER_MODE` for queries and DML by default.\n3. Bind to sObject fields with `apex:inputField` / `apex:outputField` where you can, to get the UI-layer FLS behavior for free.\n4. If you have to run in system mode, such as for roll-ups or privileged lookups, isolate that code in a small, clearly named `without sharing` / system-mode helper. Never expose its results directly to the page without filtering.\n5. Remember that `@RemoteAction` and `@AuraEnabled` methods are also system mode, so the same rules apply.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "No. Custom controllers (and controller extensions) run in system mode, so the developer must enforce CRUD and FLS explicitly.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1021744,
+            "duration_s": 18.859,
+            "tokens": {
+              "input": 13710,
+              "output": 1567
+            }
+          },
+          "B": {
+            "answer": "**It depends on the API version the class is saved at, so don't assume enforcement either way.**\n\n| Component | Enforcement |\n|---|---|\n| Standard controller | FLS is enforced automatically, but only on fields bound through the controller (e.g. `{!account.Name}`, `<apex:inputField>`). |\n| Custom controller or extension saved at **API 67.0+** | Database operations default to user mode, so object and field permissions of the running user are enforced without extra code. |\n| Custom controller or extension saved at **API 66.0 or earlier** | System mode is the default, so the developer must enforce access explicitly. |\n\nThe skill cites the Apex guide (apexdev 264 L11928-11929) for the 67.0 default switch. I haven't verified that line myself.\n\nThe same guide says that standard and custom controllers \"execute entirely in user mode\" (L19443-19444). That sentence is easy to over-read. For a controller pinned at 66.0 or earlier, treat your own SOQL and DML as system mode unless you opt in.\n\nA common mistake is assuming that using a standard controller with an extension covers the extension's own queries. It doesn't. Standard-controller FLS covers only the bound fields, not SOQL you write in the extension.\n\n**What to do for classes at \u226466.0 (or to be explicit at any version):**\n\n```apex\npublic with sharing class AccountExtension {\n    public transient List<Contact> contacts { get; private set; }\n\n    public AccountExtension(ApexPages.StandardController sc) {\n        contacts = [\n            SELECT Id, Name, Email\n            FROM Contact\n            WHERE AccountId = :sc.getId()\n            WITH USER_MODE\n        ];\n    }\n\n    public PageReference addContact(Contact c) {\n        Database.insert(c, AccessLevel.USER_MODE);\n        return null;\n    }\n}\n```\n\n- **Queries:** use `WITH USER_MODE`.\n- **DML:** use `Database.insert/update/delete(records, AccessLevel.USER_MODE)`.\n- **Field-by-field checks:** `Schema.sObjectType.Contact.fields.Email.isAccessible()` also works.\n- **`WITH SECURITY_ENFORCED`:** it can't be used in Apex SOQL at API 67.0 and later (apexdev 264 L11926-11927). Use `WITH USER_MODE` instead.\n- **Sharing:** declare the class `with sharing`. This is separate from FLS/CRUD and governs record visibility.\n- **Testing:** run the page as a low-privilege user, not an admin, to confirm hidden fields don't leak.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "Database operations default to user mode, so object and field permissions of the running user are enforced without extra code.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.140629,
+            "duration_s": 11.461,
+            "tokens": {
+              "input": 23426,
+              "output": 1334
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "querywithbinds-version",
+      "skill": "apex/apex-dynamic-soql-binding-safety",
+      "source": "salesforce_apex_developer_guide.txt 264 L11647",
+      "runs": [
+        {
+          "A": {
+            "answer": "`Database.queryWithBinds` is available from **API version 57.0** (Spring '23).\n\nSignature:\n\n```apex\nDatabase.queryWithBinds(String queryString, Map<String, Object> bindMap, AccessLevel accessLevel)\n```\n\nIt runs a dynamic SOQL query, resolving bind variables from a map instead of from local variables in scope. Related methods arrived in the same release: `Database.getQueryLocatorWithBinds` and `Database.countQueryWithBinds`.\n\nKey points:\n\n- **Binds are resolved from the map.** In the query string you write `:name`, and the map key must be `'name'`. The query doesn't look at local variables, so the usual dynamic-SOQL problem of binds only working with in-scope variables goes away.\n- **The `AccessLevel` argument is required.** Use `AccessLevel.USER_MODE` to enforce the running user's CRUD, FLS and sharing, or `AccessLevel.SYSTEM_MODE` to run in system mode.\n- **It is an injection defense.** Because values are bound rather than concatenated, it removes the need for `String.escapeSingleQuotes` on those values. Only the structure of the query (object and field names) still has to be controlled by you.\n\nExample:\n\n```apex\nMap<String, Object> binds = new Map<String, Object>{\n    'minAmount' => 10000,\n    'stage'     => 'Closed Won'\n};\n\nList<Opportunity> opps = Database.queryWithBinds(\n    'SELECT Id, Name FROM Opportunity WHERE Amount > :minAmount AND StageName = :stage',\n    binds,\n    AccessLevel.USER_MODE\n);\n```\n\nIf you're writing code that must deploy to orgs or packages pinned at an API version below 57.0, the method won't compile there. Check the class's `-meta.xml` `apiVersion`.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "`Database.queryWithBinds` is available from **API version 57.0** (Spring '23).",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.08845610000000001,
+            "duration_s": 6.779,
+            "tokens": {
+              "input": 13152,
+              "output": 671
+            }
+          },
+          "B": {
+            "answer": "`Database.queryWithBinds` is available from **API version 57.0** and later. The Apex Developer Guide says that bind variables in the query are resolved from a Map parameter directly by key, which removes the need for them to be in scope when the query executes.\n\nTwo related details:\n\n- The `accessLevel` parameter is older than the method. It is available from API 55.0, which is why you can use `AccessLevel.USER_MODE` with `Database.query` before 57.0.\n- The signature takes a `Map<String, Object>`. Keys are case-insensitive, and duplicate keys throw a runtime `QueryException`.\n\nA typical call looks like this:\n\n```apex\nMap<String, Object> binds = new Map<String, Object>{ 'term' => '%' + term + '%' };\nList<Account> accs = Database.queryWithBinds(\n    'SELECT Id, Name FROM Account WHERE Name LIKE :term',\n    binds,\n    AccessLevel.USER_MODE\n);\n```\n\nClasses saved below API 57.0 can't call it, so bump the class version first if you're maintaining older code.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "`Database.queryWithBinds` is available from **API version 57.0** and later.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.12534150000000002,
+            "duration_s": 5.102,
+            "tokens": {
+              "input": 23120,
+              "output": 405
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "subquery-levels-58",
+      "skill": "apex/soql-fundamentals",
+      "source": "salesforce_app_limits_cheatsheet.txt 264 L716-717",
+      "runs": [
+        {
+          "A": {
+            "answer": "**Up to 5 levels.** In API 58.0 and later, a single SOQL query can traverse up to five levels of parent-to-child relationships using nested subqueries in the `SELECT` list. In API 57.0 and earlier, you could only go one level deep.\n\n```sql\nSELECT Name,\n  (SELECT LastName,\n    (SELECT Subject,\n      (SELECT Description FROM Tasks)   -- deeper levels nest the same way\n     FROM Cases)\n   FROM Contacts)\nFROM Account\n```\n\n- **Counting the root:** As I recall, the documentation counts the root object as level 1, so five levels means the root plus four nested child subqueries. Check the current \"Understanding Relationship Queries\" page if the exact count matters.\n- **Child-to-parent is separate:** Dot-notation traversal (e.g. `Contact.Account.Owner.Manager.Name`) has its own limit of 5 levels. The two limits are independent.\n- **Other limits still apply:** The usual query limits (total rows, the 50,000-row governor limit in Apex, and the cap on relationships per query) apply to the nested results as well.\n- **Version matters:** The query must run at API 58.0 or later. Apex classes saved at an older API version, or REST calls to an older version path, will still hit the one-level restriction.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "In API 58.0 and later, a single SOQL query can traverse up to five levels of parent-to-child relationships using nested subqueries in the `SELECT` list.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.09474279999999999,
+            "duration_s": 11.039,
+            "tokens": {
+              "input": 13016,
+              "output": 1176
+            }
+          },
+          "B": {
+            "answer": "**Five levels.** At API 58.0 and later, a single SOQL query can nest parent-to-child subqueries up to five levels deep. This applies to queries made via REST, SOAP, and Apex. It does not apply to big objects or external objects, and Bulk API is also excluded.\n\nAt API 57.0 and earlier the limit is two levels.\n\nHere is a sketch of a three-level query that works at 58.0+:\n\n```sql\nSELECT Name,\n  (SELECT LastName,\n     (SELECT Subject,\n        (SELECT Id FROM Tasks)\n      FROM Cases)\n   FROM Contacts)\nFROM Account\n```\n\nRelated limits from the skill:\n- A query can include no more than 20 parent-to-child relationships.\n- Child-to-parent traversal via dot notation is a separate limit: up to five levels per relationship, and no more than 55 child-to-parent relationships per query.\n\nThe skill's earlier text said \"a subquery cannot itself contain a subquery.\" That was wrong, and the skill corrected it on 2026-10-20 against the corpus (app_limits 264 L713-721). Don't rely on the old statement.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "At API 58.0 and later, a single SOQL query can nest parent-to-child subqueries up to five levels deep.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1325923,
+            "duration_s": 5.939,
+            "tokens": {
+              "input": 24690,
+              "output": 435
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "sharingreason-standard-objects-68",
+      "skill": "apex/apex-managed-sharing",
+      "source": "api_meta.txt 264 L47650-47651",
+      "runs": [
+        {
+          "A": {
+            "answer": "No. A custom Apex sharing reason can't be defined on a standard object such as Account, in any API version, so there is no version where it starts working.\n\n**Why**\n- Apex sharing reasons (`CustomObject.sharingReasons` in Metadata API, the \"Apex Sharing Reasons\" related list in Setup) exist only on custom objects. The Apex Sharing Reasons related list appears only on a custom object's detail page.\n- The reason is stored as a `RowCause` value like `Schema.MyObject__Share.rowCause.My_Reason__c`. For custom objects the `__c` suffix is appended automatically.\n- Standard share tables (`AccountShare`, `ContactShare`, `OpportunityShare`, `CaseShare`, `LeadShare`, and so on) only accept system-defined row causes. From Apex you can only insert rows with `RowCause = 'Manual'`, which is the default.\n\n**What this means in practice**\n- Records shared on a standard object through Apex show as \"Manual\" in the sharing UI. Anyone with Full Access, the owner, or a user above the owner in the role hierarchy can remove them.\n- Manual shares are deleted when the record owner changes. They are not tied to a reason you control, so your code has to recreate them.\n- You cannot distinguish \"your\" shares from other manual shares by row cause. If you need to find or clean up the ones your code created, you have to track them yourself, for example with a custom object or a field recording which shares you created, or by querying `AccountShare` by `AccountId`, `UserOrGroupId`, and `RowCause = 'Manual'`.\n\n**Alternatives if you need reason-tracked, durable sharing on Account**\n- Use criteria-based or owner-based sharing rules, which are declarative and survive ownership changes.\n- Use Account Teams or Territory Management (Enterprise Territory Management) if the access model fits.\n- Use a custom object that models the access (for example, `Account_Access__c`) and uses a real Apex sharing reason on its own share table. This only controls access to that custom object. It does not grant access to the Account itself.\n- Use a Share Group or public group with a sharing rule if the audience is a defined set of users.\n\nI haven't checked this against the current release notes, so if you need to cite a source, confirm it in the \"Sharing a Record Using Apex\" and \"Apex Sharing Reasons\" topics in the Apex Developer Guide.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "No. A custom Apex sharing reason can't be defined on a standard object such as Account, in any API version, so there is no version where it starts working.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0975005,
+            "duration_s": 12.748999999999999,
+            "tokens": {
+              "input": 13409,
+              "output": 1337
+            }
+          },
+          "B": {
+            "answer": "**Yes, from Metadata API version 68.0 (Winter '27), but treat it as \"deploy it and prove it with a test insert\", because the docs still disagree.**\n\n**What supports it**\n- The Metadata API documents `SharingReason` for standard objects in API version 68.0 and later (api_meta 264 L47635-47637, L47650-47651). It applies to standard objects that have a share object (such as `AccountShare` or `OpportunityShare`) and whose OWD can be Private or Public Read-Only.\n- The newer Apex guide notes say standard-object reasons are managed through the Metadata API, and that recalculation \"is supported for both custom and standard objects\" (apex dev guide 264 L12880-12881, L12916-12920).\n- You can't create the reason in the UI for a standard object. Lightning Experience doesn't offer Apex sharing reasons, and the Classic UI path is for custom objects only. For a standard object, deploy a `SharingReason` component at API 68.0 or later.\n\n**What still contradicts it**\n- Older Apex guide notes say reasons and recalculation are \"only available for custom objects\" (L12613, L13057).\n- The `AccountShare` object reference still says that when you create a sharing entry, \"the only permitted value is Manual\" for `RowCause` (object_reference 264 L17340-17342, L17472-17474).\n- The skill marks as UNVERIFIED which standard share objects actually accept a custom row cause on insert.\n\n**What I'd do in practice**\n1. Deploy the `SharingReason` for the standard object at API 68.0 or later, with the reason in the same package as the code that references it. `RowCause` is a restricted picklist, so the reason must exist first.\n2. Write a test that inserts the share row with that row cause (for example `Schema.AccountShare.rowCause.<Reason>__c`), and run it in the target org. Check that it succeeds and that the row survives an owner change.\n3. If the insert is rejected, or you're on an API version below 68.0, fall back to `RowCause = 'Manual'` (`Schema.AccountShare.rowCause.Manual`). Manual rows are deleted on an owner change, so you'd need to recreate them yourself, for example from an ownership-change trigger or a rebuild job.\n4. Whichever row cause you use, the grant must exceed the OWD, `All` can't be granted, and only users with Modify All Data can add or change Apex managed sharing.\n\nThe earlier blanket claim that standard objects don't support custom sharing reasons is outdated for API 68.0 and later. It still holds for earlier versions.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**Yes, from Metadata API version 68.0 (Winter '27), but treat it as \"deploy it and prove it with a test insert\", because the docs still disagree.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.14012550000000001,
+            "duration_s": 12.425,
+            "tokens": {
+              "input": 24392,
+              "output": 1112
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "no-keyword-class-sharing-67",
+      "skill": "apex/apex-managed-sharing",
+      "source": "salesforce_apex_developer_guide.txt 264 L11930",
+      "runs": [
+        {
+          "A": {
+            "answer": "I can't confirm any change at API 67.0, so I won't state one as fact. My knowledge doesn't include a documented API 67.0 change to the default sharing behavior of classes with no keyword.\n\n**Long-standing behavior, which is what I'd assume applies unless the Summer '26 release notes say otherwise:**\n- **As an entry point** (trigger, `@AuraEnabled`, REST, Visualforce controller, and so on), a class with no keyword runs in system mode with respect to record sharing. That is effectively `without sharing`, though it is not formally the same declaration.\n- **When called from another class**, it inherits the sharing mode of the caller. If a `with sharing` class calls it, it runs with sharing. If a `without sharing` class calls it, it runs without sharing.\n- **Inner classes** do not inherit sharing from their outer class. They follow the same rules as above.\n- **CRUD and FLS** are not affected by any sharing keyword. They are enforced separately, through `WITH USER_MODE`, `WITH SECURITY_ENFORCED`, `stripInconsequentialFields`, or `Schema` describe checks.\n\n**What I'd do:**\n1. Check the Summer '26 (API 67.0) release notes and the Apex Developer Guide section on \"Using the with sharing, without sharing, and inherited sharing keywords\". Release updates that change defaults are listed there, usually with a note on whether they are versioned by class API version.\n2. Whatever the default is, don't depend on it. Declare `with sharing` by default, `inherited sharing` for utility or service classes that should follow their caller, and `without sharing` only where it's intentional and documented.\n3. If a class's API version changes how it behaves, check any classes you plan to bump to 67.0. Test them with a user who lacks broad record access, and don't rely on admin-run tests.\n\nIf you've seen a specific claim about 67.0 in a doc or checker rule, tell me where and I can help interpret it. I just can't verify it from here.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "wrong",
+              "quote": "As an entry point (trigger, `@AuraEnabled`, REST, Visualforce controller, and so on), a class with no keyword runs in system mode with respect to record sharing. That is effectively `without sharing`, though it is not formally the same declaration.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.100755,
+            "duration_s": 15.968,
+            "tokens": {
+              "input": 13250,
+              "output": 1463
+            }
+          },
+          "B": {
+            "answer": "At API version 67.0 and later, an Apex class that declares neither `with sharing` nor `without sharing` runs **with sharing**. That is, it enforces the running user's record-level sharing rules for SOQL and DML inside the class. The skill package cites this to the Apex developer guide (264, L11930-11931).\n\nTwo practical consequences:\n\n- **Older API versions are different.** Per the usual platform behavior, a class saved at an API version below 67.0 with no keyword does not get this default. It runs in the mode of its caller, or system context at an entry point. I'd confirm the exact pre-67.0 behavior before relying on it, since the skill package only documents the 67.0+ case.\n- **Be explicit for sharing-sensitive code.** A recalculation batch class like `JobSharingRecalc` must be declared `without sharing`. Otherwise, at 67.0+ it would silently inherit `with sharing` and its `start` query would only see the parent records the running user can access. Likewise, use `inherited sharing` for utility or service classes that need to adopt the caller's mode, rather than relying on the default.\n\nThis is also why the anti-pattern file warns about omitting the keyword on recalculation batches: the default is no longer neutral.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "At API version 67.0 and later, an Apex class that declares neither `with sharing` nor `without sharing` runs **with sharing**.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1298289,
+            "duration_s": 6.54,
+            "tokens": {
+              "input": 23916,
+              "output": 466
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "external-id-field-types",
+      "skill": "apex/apex-secrets-and-protected-cmdt",
+      "source": "api_meta.txt 264 L45638-45639",
+      "runs": [
+        {
+          "A": {
+            "answer": "In Salesforce, the External ID attribute can be set on only three custom field data types:\n\n1. **Text** (including Text with a length up to 255)\n2. **Number**\n3. **Email**\n\n**Notes and caveats**\n\n- **Auto Number** fields can also be flagged External ID. Salesforce treats them as indexed and usable for upsert, and the checkbox is available on them in practice. If you need a system-generated unique key, this is a common choice.\n- **Not supported:** Picklist, Checkbox, Date/Time, Currency, Percent, Phone, URL, Lookup/Master-Detail, Formula, Roll-Up Summary, Text Area (including Long and Rich), Geolocation, and Encrypted text.\n- **Limit:** Each object can have up to **25 External ID fields** (this is the default; confirm for your edition).\n- **Uniqueness:** External ID does not enforce uniqueness. Tick **Unique** separately (and choose case-sensitive or not) if you need that guarantee. Without it, an upsert that matches multiple records fails.\n- **Indexing:** External ID fields are automatically indexed, which helps SOQL selectivity on large objects.\n- **Where it matters:** Upsert via API, Data Loader, and Data Import Wizard; relationship matching during loads (referencing a parent by its external ID instead of the Salesforce Id); and integrations where an outside system owns the key.\n- **Standard fields:** Some standard fields such as Name and Email on certain objects behave as implicit external IDs for specific tools (for example, the Data Import Wizard matches on them), but you can't set the External ID attribute on standard fields.\n\n**Practical guidance:** Use Text for alphanumeric keys (for example, an ERP account code), Number for purely numeric keys (watch leading zeros, which Number drops, so use Text for those), and Email when the key is the email address. Text External IDs are the most common choice.\n\nI'm confident about Text, Number, and Email. The Auto Number point and the 25-field limit are worth checking in your org's Setup, since limits can vary by edition and release.",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**Auto Number** fields can also be flagged External ID.",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.0948503,
+            "duration_s": 11.154,
+            "tokens": {
+              "input": 13217,
+              "output": 997
+            }
+          },
+          "B": {
+            "answer": "**Custom External ID fields can be Text, Number, Email, or Auto Number.** That is the set Salesforce documents for the External ID attribute (`externalId` in Metadata API).\n\n| Data type | Notes |\n|---|---|\n| **Text** | The most common choice. You can also mark it Unique, with a case-sensitive or case-insensitive option. Case sensitivity changes how upsert matches values. |\n| **Number** | Use it for numeric keys from the source system. Decimal places are allowed, but integer keys are the safe choice. |\n| **Email** | Works for matching on email addresses. |\n| **Auto Number** | Works for system-generated identifiers. It is read-only, so it is usually used as the key other systems reference, not as the key you load with. |\n\n**Not supported:**\n- Text (Encrypted)\n- Long Text Area and Rich Text Area\n- Picklist, Checkbox, Date and Date/Time, Currency, Percent, Phone, URL\n- Formula fields\n- Lookup and Master-Detail fields\n- Geolocation\n\n**Practical notes:**\n- **Indexing:** External ID fields are indexed automatically, which helps selective SOQL filters as well as upsert.\n- **Per-object limit:** The default is 25 External ID fields per object. This is an org-level limit that I haven't re-verified for the current release, so check it in Setup before you rely on it.\n- **Standard fields:** You can't mark a standard field as External ID. The exceptions are the Name and ID fields on some objects, which behave as implicit external keys. If you need an external key on a standard object, add a custom field.\n- **Upsert and relationships:** External ID fields drive `upsert` in the API, Data Loader, and Bulk API. You can also use them to resolve parent lookups by external key (for example, `Account.ExtKey__c` in a child CSV) instead of by Salesforce ID. In Apex, `Database.upsert(records, Schema.Account.ExtKey__c)` takes the field token.\n- **Not a secret store:** An External ID is an indexed, widely readable matching key. Don't use one to hold tokens or credentials. For secrets, use the storage options in the secrets skill you attached (Named Credentials, Protected CMDT in a managed package, and so on).",
+            "answer_error": null,
+            "grade": {
+              "verdict": "correct",
+              "quote": "**Custom External ID fields can be Text, Number, Email, or Auto Number.**",
+              "quote_found": true
+            },
+            "grade_error": null,
+            "cost_usd": 0.1264334,
+            "duration_s": 22.588,
+            "tokens": {
+              "input": 21343,
+              "output": 1091
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "skills": {
+      "apex/apex-schema-describe": {
+        "correct_a": 0,
+        "correct_b": 1,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/apex-secrets-and-protected-cmdt": {
+        "correct_a": 2,
+        "correct_b": 3,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 3,
+        "errors": 0
+      },
+      "apex/visualforce-fundamentals": {
+        "correct_a": 1,
+        "correct_b": 2,
+        "wrong_a": 1,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      },
+      "apex/apex-dynamic-soql-binding-safety": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/soql-fundamentals": {
+        "correct_a": 1,
+        "correct_b": 1,
+        "wrong_a": 0,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 1,
+        "errors": 0
+      },
+      "apex/apex-managed-sharing": {
+        "correct_a": 0,
+        "correct_b": 2,
+        "wrong_a": 2,
+        "wrong_b": 0,
+        "neither_a": 0,
+        "neither_b": 0,
+        "paired": 2,
+        "errors": 0
+      }
+    },
+    "overall": {
+      "correct_a": 5,
+      "correct_b": 10,
+      "wrong_a": 5,
+      "wrong_b": 0,
+      "neither_a": 0,
+      "neither_b": 0,
+      "paired": 10,
+      "errors": 0,
+      "probes": 10,
+      "quotes_not_found": 0,
+      "pct_correct_a": 50.0,
+      "pct_correct_b": 100.0,
+      "pct_wrong_a": 50.0,
+      "pct_wrong_b": 0.0,
+      "pct_neither_a": 0.0,
+      "pct_neither_b": 0.0
+    },
+    "cost_usd": 2.2378438,
+    "call_seconds": 220.38299999999995,
+    "input_tokens": 359451,
+    "output_tokens": 19005,
+    "elapsed_s": 254.72903545899317
+  }
+}

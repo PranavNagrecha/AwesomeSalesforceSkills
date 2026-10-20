@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "As an entry point (trigger, `@AuraEnabled`, REST, Visualforce controller, and so on), a class with no keyword runs in system mode with respect to record sharing. That is effectively `without sharing`, though it is not formally the same declaration.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.065332,
+    "duration_s": 5.122,
+    "input_tokens": 7141,
+    "output_tokens": 388
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"As an entry point (trigger, `@AuraEnabled`, REST, Visualforce controller, and so on), a class with no keyword runs in system mode with respect to record sharing. That is effectively `without sharing`, though it is not formally the same declaration.\"}",
+  "prompt_sha": "91a533b8435bedd3"
+}

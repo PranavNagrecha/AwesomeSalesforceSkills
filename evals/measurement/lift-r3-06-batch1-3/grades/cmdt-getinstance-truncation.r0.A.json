@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**No. `getInstance()` and `getAll()` truncate long text area fields to the first 255 characters.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.057150299999999994,
+    "duration_s": 2.042,
+    "input_tokens": 6965,
+    "output_tokens": 54
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**No. `getInstance()` and `getAll()` truncate long text area fields to the first 255 characters.**\"}",
+  "prompt_sha": "1e0762956f301c45"
+}

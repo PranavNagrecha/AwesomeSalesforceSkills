@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "At API 58.0 and later, a single SOQL query can nest parent-to-child subqueries up to five levels deep.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.056156899999999996,
+    "duration_s": 2.724,
+    "input_tokens": 6854,
+    "output_tokens": 56
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"At API 58.0 and later, a single SOQL query can nest parent-to-child subqueries up to five levels deep.\"}",
+  "prompt_sha": "8191f7ea210e7e2d"
+}

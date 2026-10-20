@@ -1,0 +1,1 @@
+How do you expose an Apex method to JavaScript remoting in Visualforce: with a Visualforce component or an Apex annotation?

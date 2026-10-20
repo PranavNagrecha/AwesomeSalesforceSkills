@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "**No. `getPicklistValues()` returns active picklist values only.**",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.056248,
+    "duration_s": 1.39,
+    "input_tokens": 6927,
+    "output_tokens": 42
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"**No. `getPicklistValues()` returns active picklist values only.**\"}",
+  "prompt_sha": "dcbe80b31a9fe16a"
+}

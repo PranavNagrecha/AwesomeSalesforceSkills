@@ -1,0 +1,8 @@
+At API version 67.0 and later, an Apex class that declares neither `with sharing` nor `without sharing` runs **with sharing**. That is, it enforces the running user's record-level sharing rules for SOQL and DML inside the class. The skill package cites this to the Apex developer guide (264, L11930-11931).
+
+Two practical consequences:
+
+- **Older API versions are different.** Per the usual platform behavior, a class saved at an API version below 67.0 with no keyword does not get this default. It runs in the mode of its caller, or system context at an entry point. I'd confirm the exact pre-67.0 behavior before relying on it, since the skill package only documents the 67.0+ case.
+- **Be explicit for sharing-sensitive code.** A recalculation batch class like `JobSharingRecalc` must be declared `without sharing`. Otherwise, at 67.0+ it would silently inherit `with sharing` and its `start` query would only see the parent records the running user can access. Likewise, use `inherited sharing` for utility or service classes that need to adopt the caller's mode, rather than relying on the default.
+
+This is also why the anti-pattern file warns about omitting the keyword on recalculation batches: the default is no longer neutral.

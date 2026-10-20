@@ -1,0 +1,1 @@
+In CustomObject metadata for a custom metadata type, which element and value make the type readable only by Apex inside the managed package?

@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "In API 58.0 and later, a single SOQL query can traverse up to five levels of parent-to-child relationships using nested subqueries in the `SELECT` list.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.0612519,
+    "duration_s": 3.582,
+    "input_tokens": 6913,
+    "output_tokens": 281
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"In API 58.0 and later, a single SOQL query can traverse up to five levels of parent-to-child relationships using nested subqueries in the `SELECT` list.\"}",
+  "prompt_sha": "3e532e61f05aa24e"
+}

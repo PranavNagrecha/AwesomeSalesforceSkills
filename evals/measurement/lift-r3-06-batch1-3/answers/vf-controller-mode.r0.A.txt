@@ -1,0 +1,56 @@
+**No. Custom controllers (and controller extensions) run in system mode, so the developer must enforce CRUD and FLS explicitly.** Only standard controllers enforce them automatically.
+
+## What is and isn't enforced
+
+| Scenario | CRUD/FLS | Sharing |
+|---|---|---|
+| Standard controller | Enforced | Enforced |
+| Custom controller or extension | **Not enforced** | Only if the class is declared `with sharing` (otherwise it follows the caller or defaults to system context) |
+| `<apex:inputField>` / `<apex:outputField>` bound to an sObject field | Enforced at render time, even with a custom controller. Inaccessible fields are hidden or read-only. | n/a |
+| `<apex:outputText>`, `{!record.Field}` in plain expressions, wrapper/DTO properties | **Not reliably enforced.** Don't depend on it. | n/a |
+
+Two further points:
+- Users also need the controller class enabled through their profile or permission set. That controls who can run the page, not what data it can touch.
+- `with sharing` governs record visibility only, not CRUD or FLS. Teams often conflate the two.
+
+## Enforcing it in a custom controller
+
+Prefer user-mode queries and DML (API 62.0+ / current releases):
+
+```apex
+public with sharing class AccountListController {
+    public List<Account> accounts { get; private set; }
+
+    public AccountListController() {
+        accounts = [
+            SELECT Id, Name, AnnualRevenue
+            FROM Account
+            WITH USER_MODE
+            LIMIT 200
+        ];
+    }
+
+    public PageReference save() {
+        try {
+            Database.update(accounts, AccessLevel.USER_MODE);
+        } catch (DmlException e) {
+            ApexPages.addMessages(e);
+        }
+        return null;
+    }
+}
+```
+
+Alternatives:
+
+- **`WITH SECURITY_ENFORCED`** on SOQL. It throws on inaccessible fields in the query, but it is older and coarser than `WITH USER_MODE`.
+- **`Security.stripInaccessible(AccessType.READABLE / CREATABLE / UPDATABLE, records)`**. It silently removes fields the user can't access, which suits partial-data UIs.
+- **Describe checks** such as `Schema.sObjectType.Account.isUpdateable()` and `Account.Name.getDescribe().isAccessible()`. These work everywhere and are verbose, but give fine-grained control, such as conditionally rendering UI.
+
+## Practical guidance
+
+1. Declare every controller and extension `with sharing`.
+2. Use `WITH USER_MODE` and `AccessLevel.USER_MODE` for queries and DML by default.
+3. Bind to sObject fields with `apex:inputField` / `apex:outputField` where you can, to get the UI-layer FLS behavior for free.
+4. If you have to run in system mode, such as for roll-ups or privileged lookups, isolate that code in a small, clearly named `without sharing` / system-mode helper. Never expose its results directly to the page without filtering.
+5. Remember that `@RemoteAction` and `@AuraEnabled` methods are also system mode, so the same rules apply.

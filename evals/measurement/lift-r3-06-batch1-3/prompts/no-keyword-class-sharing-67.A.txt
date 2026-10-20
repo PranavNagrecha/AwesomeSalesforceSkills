@@ -1,0 +1,1 @@
+At API 67.0 and later, how does an Apex class with no sharing keyword (neither with sharing nor without sharing) run?

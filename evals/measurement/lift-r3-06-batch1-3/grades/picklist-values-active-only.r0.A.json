@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "wrong",
+    "quote": "Yes, `getPicklistValues()` returns both active and inactive values.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.05774,
+    "duration_s": 1.338,
+    "input_tokens": 7111,
+    "output_tokens": 43
+  },
+  "raw": "{\"verdict\": \"wrong\", \"quote\": \"Yes, `getPicklistValues()` returns both active and inactive values.\"}",
+  "prompt_sha": "3ed4160f17312952"
+}

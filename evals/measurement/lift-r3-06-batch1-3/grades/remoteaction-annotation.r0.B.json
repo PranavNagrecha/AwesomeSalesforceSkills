@@ -1,0 +1,15 @@
+{
+  "grade": {
+    "verdict": "correct",
+    "quote": "An Apex annotation: `@RemoteAction`. There is no `<apex:remoteAction>` component.",
+    "quote_found": true
+  },
+  "meta": {
+    "cost_usd": 0.060028,
+    "duration_s": 1.863,
+    "input_tokens": 7372,
+    "output_tokens": 53
+  },
+  "raw": "{\"verdict\": \"correct\", \"quote\": \"An Apex annotation: `@RemoteAction`. There is no `<apex:remoteAction>` component.\"}",
+  "prompt_sha": "a41667c27fed4bbc"
+}

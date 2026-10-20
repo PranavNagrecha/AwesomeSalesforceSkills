@@ -1,0 +1,25 @@
+**No, not in full.** `getInstance()` and `getAll()` on a custom metadata type return only the first 255 characters of any field. A Long Text Area secret longer than that is silently truncated, with no exception and no warning. This applies to protected types too, since protection controls who can read the record and has no effect on the 255-character limit. (The skill cites apexref 262 L204570-204571 and L204645-204647 for this.)
+
+**What to do instead**
+
+Query the record with SOQL, which returns the whole field:
+
+```apex
+@NamespaceAccessible
+public static String getSecret(String developerName) {
+    List<Secret_Config__mdt> rows = [
+        SELECT Value__c
+        FROM Secret_Config__mdt
+        WHERE DeveloperName = :developerName
+        LIMIT 1
+    ];
+    return rows.isEmpty() ? null : rows[0].Value__c;
+}
+```
+
+**Caveats**
+
+- `getInstance(developerName)` returns null when no record matches, so null-check or use `?.` on that path. The SOQL version needs the empty-list check shown above.
+- A SOQL query on CMDT doesn't count against the SOQL query limit, but I haven't verified that against the docs in the package, so confirm it before relying on it.
+- Most secrets fit within 255 characters, such as API keys and 256-bit AES keys in base64. Values that commonly exceed it include PEM private keys, JWT signing material, and some multi-part tokens. For those, use SOQL, or store the secret as a short reference and keep the long value off-platform.
+- The truncation is silent, so a truncated HMAC key or token just produces signatures or auth failures that look like a wrong secret. If you've seen intermittent "invalid signature" errors with a long key, check `value.length()` first. Log the length or a SHA-256 hash, never the value itself.

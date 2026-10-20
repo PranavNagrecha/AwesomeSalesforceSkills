@@ -1,0 +1,32 @@
+`Database.queryWithBinds` is available from **API version 57.0** (Spring '23).
+
+Signature:
+
+```apex
+Database.queryWithBinds(String queryString, Map<String, Object> bindMap, AccessLevel accessLevel)
+```
+
+It runs a dynamic SOQL query, resolving bind variables from a map instead of from local variables in scope. Related methods arrived in the same release: `Database.getQueryLocatorWithBinds` and `Database.countQueryWithBinds`.
+
+Key points:
+
+- **Binds are resolved from the map.** In the query string you write `:name`, and the map key must be `'name'`. The query doesn't look at local variables, so the usual dynamic-SOQL problem of binds only working with in-scope variables goes away.
+- **The `AccessLevel` argument is required.** Use `AccessLevel.USER_MODE` to enforce the running user's CRUD, FLS and sharing, or `AccessLevel.SYSTEM_MODE` to run in system mode.
+- **It is an injection defense.** Because values are bound rather than concatenated, it removes the need for `String.escapeSingleQuotes` on those values. Only the structure of the query (object and field names) still has to be controlled by you.
+
+Example:
+
+```apex
+Map<String, Object> binds = new Map<String, Object>{
+    'minAmount' => 10000,
+    'stage'     => 'Closed Won'
+};
+
+List<Opportunity> opps = Database.queryWithBinds(
+    'SELECT Id, Name FROM Opportunity WHERE Amount > :minAmount AND StageName = :stage',
+    binds,
+    AccessLevel.USER_MODE
+);
+```
+
+If you're writing code that must deploy to orgs or packages pinned at an API version below 57.0, the method won't compile there. Check the class's `-meta.xml` `apiVersion`.
