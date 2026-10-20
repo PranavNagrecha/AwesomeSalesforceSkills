@@ -39,7 +39,7 @@ Args: `--release <version>` (default: the current release printed by `release_pl
 1. `AGENT_RULES.md` — repo-wide rules every agent follows.
 2. `CLAUDE.md` — the skill workflow and the "do not hand-edit generated files" rule.
 3. `RELEASES.yaml` — read the header comment only (size vocabulary, slotting, job types `full` / `topup` / `review`). Read item state through `release_plan.py`, never by parsing the file.
-4. `standards/skill-writer-brief.md` — the brief handed to every skill writer in Step 2. Do not paraphrase it into the prompt; pass its path.
+4. `standards/skill-writer-brief.md` — the brief handed to every skill writer in Step 2 and every reviewer in Step 2b: the recipe, the job types, the reviewer brief, and the append-only Learned rules this agent extends in Step 3b. Do not paraphrase it into the prompt; pass its path.
 5. `standards/skill-authoring-style.md` — what "at the bar" means when you verify a writer's output in Step 3.
 
 ---
@@ -86,7 +86,7 @@ Choose by job type and `owner_model`:
 
 | Item | Dispatch |
 |---|---|
-| `full` or `topup` skill wave | One Opus writer per batch of 10 skills, launched with the Agent tool and `isolation: "worktree"`. The prompt is the path `standards/skill-writer-brief.md`, the batch's `domain/slug` list, and the corpus directory (default: the session scratchpad `corpus/`; if absent the writer fetches the PDFs the brief names). Writers never commit and never run `skill_sync.py`. |
+| `full`, `topup`, `winter27` or `audit` skill wave | One Opus writer per batch of 10 skills, launched with the Agent tool and `isolation: "worktree"`. The prompt is the path `standards/skill-writer-brief.md`, the batch's `domain/slug` list, and the corpus directory (default: the session scratchpad `corpus/`; if absent the writer fetches the PDFs the brief names). Writers never commit and never run `skill_sync.py`. |
 | `review` | One Opus adversarial reviewer on the writer's worktree, before merge. Stance: "this batch contains a fabrication." Aim it at "there is no X" claims and at checker rules (fail-open code). It fixes in place and reports CONTRADICTED and UNVERIFIED counts. |
 | Tooling, size S or M, `owner_model: sonnet` | One Sonnet agent, test first. Run `/code-review` on its diff before you accept it. |
 | `owner_model: fable` (release steps, measurements) | You do it yourself. |
