@@ -33,9 +33,9 @@ outputs:
   - Subscriber Flow design with idempotency and error handling
   - Fan-out topology and failure-compensation plan
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 Use this skill when Platform Events are the coordination mechanism between Flow and another component — another Flow, Apex, or an external system. Flow can BOTH publish (by creating records on the event sObject) AND subscribe (via a Platform-Event-Triggered Flow). Both sides have transaction-context, delivery-semantics, and error-handling rules that teams commonly get wrong, producing three recurring defect classes: lost events (publisher succeeded, subscriber never ran), replayed events (subscriber ran twice for one logical message), and out-of-order events (two events delivered in the opposite order from publish).
@@ -105,7 +105,7 @@ Publish behavior is set on the platform event definition, not on the flow: the e
 A Platform-Event-Triggered flow activates when a message is delivered on its event channel. Key properties:
 
 - Runs asynchronously in a NEW transaction. Not part of the publisher's transaction.
-- Receives the event payload as `$Record` with the event's fields.
+- Receives the event payload as `$Record` with the event's fields (`platform_events.txt` 264 L2156). UNVERIFIED (2026-10-20): the corpus says a flow can receive a batch of up to 200 event messages (L2185) but not how `$Record` exposes the batch; every `$Record` "collection" statement below is unconfirmed.
 - Runs in the context of the user who published the event message — records it creates or updates carry that user in `CreatedById` / `LastModifiedById` — while its debug logs appear under the Automated Process user (`platform_events.txt` 264 L2190–2192). The running-user override `PlatformEventSubscriberConfig` configures a platform event *Apex trigger*, not a flow (`api_meta.txt` 264 L99118; `platform_events.txt` 264 L2366–2368). UNVERIFIED (2026-10-19): the corpus documents no run-as setting for a platform event–triggered flow.
 - Gets its own, freshly reset governor limits. Which column (sync or async) a platform event–triggered flow draws from is UNVERIFIED (2026-10-19): `platform_events.txt` 264 says only that each interview runs asynchronously in a separate transaction (L2187–2188), while for platform event *triggers* "the synchronous limits apply" (L2338–2339). Budget against the synchronous column — 100 SOQL, 10 MB heap (`apexdev.txt` 264 L19747, L19780). The heap figure is a Winter '27 release-level change for every org, not an API-version gate; Summer '26 was 6 MB sync / 12 MB async.
 - Cannot "reject" the delivery — if the subscriber fails, the platform logs the failure; it does not propagate back to the publisher.
@@ -238,7 +238,7 @@ Both a Platform-Event-Triggered flow AND an `apex trigger ... on Event__e (after
 **Mitigation:**
 ```text
 [After-Save Flow]
-  └── [Get Records: count $Record collection size]
+  └── [Get Records: count $Record collection size]   # UNVERIFIED (2026-10-20): collection-shaped $Record is not documented in the corpus; confirm in Flow Builder
   └── [Decision: collection size > 100]
         ├── Yes → [Create Records: Batch_Publish_Request__c row per 100]
         │          (a Scheduled Path sweeps Batch_Publish_Request__c rows in smaller batches)
@@ -270,9 +270,9 @@ Alternative: switch the event to High-Volume if the workload demands steady-stat
 
 Both publish and subscribe have bulk semantics.
 
-- **Publisher bulk:** when a bulk save invokes the publisher flow, the flow is invoked ONCE with a batched `$Record` collection (up to 200 records per batch). A Create Records on the event object inside a Loop — publishing one event per iteration — is safe IF each iteration is a single Create Records call (Salesforce groups them into one DML operation internally in Flow). But a mis-bulkified publisher can still exceed the per-transaction DML statement count and the org-wide publish-per-hour limit.
+- **Publisher bulk:** when a bulk save invokes the publisher flow, the flow is invoked ONCE with a batched `$Record` collection (up to 200 records per batch) [UNVERIFIED (2026-10-20): the corpus documents the 200 batch for platform event flows, L2185, not a collection-typed `$Record`]. A Create Records on the event object inside a Loop — publishing one event per iteration — is safe IF each iteration is a single Create Records call (Salesforce groups them into one DML operation internally in Flow). But a mis-bulkified publisher can still exceed the per-transaction DML statement count and the org-wide publish-per-hour limit.
 - **Subscriber bulk:** the platform batches up to 200 event messages per flow invocation (`platform_events.txt` 264 L2185; 2,000 is the Apex trigger batch, `apexdev.txt` 264 L20065). Your subscriber flow must be bulk-safe. Specifically:
-  - The trigger-entry collection ($Record collection) may contain many events.
+  - The trigger-entry collection ($Record collection) may contain many events. UNVERIFIED (2026-10-20): how the batch is exposed is not documented; test with a multi-event publish.
   - Any Get Records should filter on a Set of input Ids extracted from the event batch, not one event at a time.
   - DML at the end should be against a collection, not per-event.
 - **Combined publisher + subscriber math:** if Publisher A publishes 200 events in one transaction and Subscriber B processes them in one batch (200 is the flow's batch ceiling) with 3 DML each, that's 600 DML statements — within the 10,000-DML-row limit but against the 150-statement limit at 3 DML/event * 200 events if not collection-batched. Always collection-batch the subscriber.

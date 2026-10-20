@@ -65,7 +65,7 @@ A platform event–triggered flow can receive "a batch of event messages at once
 UNVERIFIED (2026-10-19): the corpus says a flow receives a batch but not whether `$Record` exposes it as a collection or as one event per interview.
 
 Avoid it:
-- Treat the subscriber's `$Record` as a COLLECTION.
+- Treat the subscriber's `$Record` as a COLLECTION. UNVERIFIED (2026-10-20): see the marker above; design defensively and confirm in a sandbox.
 - Use the bulkification patterns from `flow/flow-bulkification`: one SOQL against the batch, one DML at the end.
 
 ## 9. Events Published In A Loop Can Exceed Per-Transaction DML

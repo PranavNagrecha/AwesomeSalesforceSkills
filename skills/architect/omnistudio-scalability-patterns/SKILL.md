@@ -47,7 +47,7 @@ outputs:
   - "Escalation criteria for MuleSoft middleware at extreme scale"
   - "Filled omnistudio-scalability-patterns-template.md"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

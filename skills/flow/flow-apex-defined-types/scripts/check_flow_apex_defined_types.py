@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Heuristic checker for Apex-Defined Type classes used by Flow."""
+"""Heuristic checker for Apex-Defined Type classes used by Flow.
+
+Findings print as `WARN:` lines and exit 0; `--strict` exits 1 on any finding.
+No .cls files prints one WARN line (exit 0, 1 with --strict). A missing
+directory prints ERROR and exits 1.
+"""
 
 from __future__ import annotations
 
@@ -18,7 +23,10 @@ CLASS_DECL = re.compile(r"public\s+class\s+\w+")
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Scan Apex-Defined Types for Flow.")
-    parser.add_argument("--src-dir", default=".")
+    parser.add_argument("--src-dir", "--manifest-dir", dest="src_dir", default=".",
+                        help="Root directory of Apex classes to scan (--manifest-dir is an alias).")
+    parser.add_argument("--strict", action="store_true",
+                        help="Exit 1 when any finding (or the empty-directory WARN) is reported.")
     return parser.parse_args()
 
 
@@ -53,13 +61,13 @@ def main() -> int:
     args = parse_args()
     root = Path(args.src_dir)
     if not root.exists():
-        print(f"ERROR: directory not found: {root}")
+        print(f"ERROR: directory not found: {root}")  # missing path: ERROR, exit 1
         return 1
 
     targets = list(root.rglob("*.cls"))
     if not targets:
-        print("No .cls files found.")
-        return 0
+        print(f"WARN: no .cls files found under {root}")
+        return 1 if args.strict else 0
 
     issues: list[str] = []
     for path in targets:
@@ -70,8 +78,8 @@ def main() -> int:
         return 0
 
     for issue in issues:
-        print(f"ISSUE: {issue}")
-    return 1
+        print(f"WARN: {issue}")
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

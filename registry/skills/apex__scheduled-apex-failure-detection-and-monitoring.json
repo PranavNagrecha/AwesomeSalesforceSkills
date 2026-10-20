@@ -64,6 +64,7 @@
     "912f4db6120f9a580c7e",
     "945d65930efbb335f201",
     "9692e9df2f3a5828aad8",
+    "9ebf5a26243140b9157c",
     "a207566b061e33bb0f81",
     "a31286f4f5a8e1d43583",
     "a83d880de18d22b1f4c0",
@@ -72,10 +73,12 @@
     "ac8ddcb852a8c40aae92",
     "adf5f66e1a2d02ff249f",
     "b2c1ae0f6601566461c0",
+    "b357ea5b8d4e91d37305",
     "b437af81fe993ae2f300",
     "b452c929ce758b20fefb",
     "b6e1528d9c1b715deaf9",
     "ba1f25ffd31882ce275b",
+    "c0068462af4a69c91727",
     "c6e79f65fec8aedfae19",
     "c722499a4b39a99057ca",
     "cf5b6cf5075f6902abd8",
@@ -97,7 +100,7 @@
     "f74edbc3f4dcd2e0982d",
     "fcfab0c7a33805ea7efb"
   ],
-  "content_hash": "ce41cb235fd3c42304eb30e0b2c696a401a4e7fe502fe10c6845c23da6bbcfd7",
+  "content_hash": "6e15fb6869a775b7766d3e90a49931ba62fb7c5da5c3d961aba7c1af41bbdb3f",
   "dependencies": [],
   "description": "Use when nightly batch / scheduled Apex jobs are failing without anyone noticing \u2014 covers why uncaught exceptions in `execute()` are easy to miss (the exception email reaches only the class's last modifier unless Apex Exception Email recipients are set), how to query `AsyncApexJob` for `Status`, `NumberOfErrors`, and `ExtendedStatus`, when to implement `Database.RaisesPlatformEvents` so the platform publishes `BatchApexErrorEvent` on uncaught failures, how to subscribe to that event with an Apex trigger and notify operators, and how to layer a custom watcher schedule on top so silent-failure modes (job that never started, scheduled class deleted, queue stuck on `Queued`) still surface. Triggers: 'nightly batch failed at 2am with no notification', 'how do we know if a scheduled apex job is failing', 'BatchApexErrorEvent vs custom retry logic', 'Setup Apex Jobs only shows last 7 days, where else can I look', 'job is stuck in queued status nobody noticed for a week'. NOT for general Apex exception handling patterns (use apex/exception-handling), NOT for Batch Apex authoring or chunking strategy (use apex/batch-apex-patterns), NOT for Setup \u2192 Apex Jobs UI walkthrough as an admin task (use admin/batch-job-scheduling-and-monitoring), NOT for writing the Schedulable class itself (use apex/apex-scheduled-jobs).",
   "file_location": "skills/apex/scheduled-apex-failure-detection-and-monitoring",
@@ -149,5 +152,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

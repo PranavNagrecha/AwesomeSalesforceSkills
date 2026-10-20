@@ -12,8 +12,12 @@ Anti-patterns detected:
 
 Stdlib only.
 
+Findings print as `WARN:` lines and exit 0; `--strict` exits 1 on any finding.
+No Apex files prints one WARN line (exit 0, 1 with --strict). A missing or
+non-directory path prints `ERROR:` and exits 1.
+
 Usage:
-    python3 check_salesforce_files_architecture.py --src-root .
+    python3 check_salesforce_files_architecture.py --src-root . [--strict]
     python3 check_salesforce_files_architecture.py --help
 """
 
@@ -114,13 +118,13 @@ def _scan(path: Path) -> list[str]:
     return findings
 
 
+def apex_files(root: Path) -> list[Path]:
+    return list(root.rglob("*.cls")) + list(root.rglob("*.trigger"))
+
+
 def scan_tree(root: Path) -> list[str]:
-    if not root.exists():
-        return [f"src-root does not exist: {root}"]
-    if not root.is_dir():
-        return [f"src-root is not a directory: {root}"]
     findings: list[str] = []
-    for apex in list(root.rglob("*.cls")) + list(root.rglob("*.trigger")):
+    for apex in apex_files(root):
         findings.extend(_scan(apex))
     return findings
 
@@ -136,12 +140,30 @@ def main() -> int:
     )
     parser.add_argument(
         "--src-root",
+        "--manifest-dir",
+        dest="src_root",
         default=".",
-        help="Root of the Apex source tree (default: current directory).",
+        help="Root of the Apex source tree (default: current directory). --manifest-dir is an alias.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any finding (or the empty-directory WARN) is reported.",
     )
     args = parser.parse_args()
 
-    findings = scan_tree(Path(args.src_root))
+    root = Path(args.src_root)
+    if not root.exists():
+        print(f"ERROR: src-root does not exist: {root}")
+        return 1
+    if not root.is_dir():
+        print(f"ERROR: src-root is not a directory: {root}")
+        return 1
+    if not apex_files(root):
+        print(f"WARN: no .cls or .trigger files found under {root}")
+        return 1 if args.strict else 0
+
+    findings = scan_tree(root)
 
     if not findings:
         print("OK: no Salesforce Files anti-patterns detected.")
@@ -150,7 +172,7 @@ def main() -> int:
     for f in findings:
         print(f"WARN: {f}", file=sys.stderr)
     print(f"\n{len(findings)} finding(s).", file=sys.stderr)
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

@@ -13,7 +13,10 @@ Two modes, both stdlib-only:
                            documented `automation-selection.md Q<n>` form, and every
                            rejected alternative carrying a reason.
 
-Both emit the same JSON envelope: {"score", "findings", "summary"}.
+Both emit the same JSON envelope: {"score", "findings", "summary"}, plus one `WARN:` line
+per finding on stderr. Exit codes: findings alone exit 0; --strict makes any finding exit 1;
+an empty directory prints a WARN line and exits 0 (1 with --strict); a missing directory or
+decision record prints ERROR and exits 1.
 """
 
 from __future__ import annotations
@@ -66,6 +69,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Path to a decision record (markdown with a YAML front-matter block) to lint instead of scanning metadata.",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 when any finding (or the empty-directory WARN) is reported.")
     return parser.parse_args()
 
 
@@ -195,13 +199,19 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
+    """Print the JSON envelope and one `WARN:` line per finding (stderr).
+
+    Findings alone exit 0; --strict makes any finding exit 1.
+    """
     normalized = [normalize_finding(item) for item in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
+    for item in normalized:
+        print(f"WARN: {item['severity']} {item['location']}: {item['message']}", file=sys.stderr)
     if normalized:
         print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+    return 1 if (normalized and strict) else 0
 
 
 def read_text(path: Path) -> str:
@@ -212,12 +222,17 @@ def main() -> int:
     args = parse_args()
 
     if args.decision_record:
-        findings, summary = lint_decision_record(Path(args.decision_record))
-        return emit_result(findings, summary)
+        record = Path(args.decision_record)
+        if not record.is_file():
+            print(f"ERROR: decision record not found: {record}")
+            return 1
+        findings, summary = lint_decision_record(record)
+        return emit_result(findings, summary, args.strict)
 
     root = Path(args.manifest_dir)
     if not root.exists():
-        return emit_result([f"HIGH {root}: manifest directory not found"], "Scanned 0 files; manifest directory was missing.")
+        print(f"ERROR: manifest directory not found: {root}")
+        return 1
 
     findings: list[str] = []
     object_flows: dict[str, int] = defaultdict(int)
@@ -252,10 +267,10 @@ def main() -> int:
 
     scanned = len(workflow_files) + len(list(root.rglob('*.flow-meta.xml'))) + len(list(root.rglob('*.trigger')))
     if scanned == 0:
-        return emit_result([f"HIGH {root}: no Flow, Workflow Rule, or trigger metadata found"], "Scanned 0 automation files.")
+        return emit_result([f"INFO {root}: no Flow, Workflow Rule, or trigger metadata found"], "Scanned 0 automation files.", args.strict)
 
     summary = f"Scanned {scanned} automation file(s); {len(findings)} selection-boundary finding(s) detected."
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, args.strict)
 
 
 if __name__ == "__main__":

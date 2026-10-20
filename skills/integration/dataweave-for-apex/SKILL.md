@@ -29,9 +29,9 @@ outputs:
   - "Apex caller using `Dataweave.Script` and `dwscript.execute()`"
   - "test fixture covering the input payload variants and the failure modes (empty input, malformed JSON, oversize payload)"
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # DataWeave for Apex

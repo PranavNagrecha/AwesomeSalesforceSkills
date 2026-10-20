@@ -147,8 +147,8 @@ selective, and the query does a full table scan.
 
 | Index type | Threshold | Cap |
 |---|---|---|
-| Standard index (`Id`, `Name`, `OwnerId`, `CreatedDate`, `SystemModstamp`, lookup and master-detail foreign keys, `CreatedById`, `LastModifiedById`) | 30% of the first million targeted records, 15% beyond | 1,000,000 records |
-| Custom index (including fields marked Unique or External Id) | 10% of the first million targeted records, 5% beyond | 333,333 records |
+| Standard index (`Id`, `Name`, `OwnerId`, `CreatedDate`, `SystemModstamp`, lookup and master-detail foreign keys, `CreatedById`, `LastModifiedById`) | 30% of the first million targeted records, 15% beyond | 1,000,000 records (UNVERIFIED 2026-10-20: cap not in the 264 corpus) |
+| Custom index (including fields marked Unique or External Id) | 10% of the first million targeted records, 5% beyond | 333,333 records (UNVERIFIED 2026-10-20: cap not in the 264 corpus) |
 
 `Status__c = 'Open'` returning 900,000 rows blows past the 333,333 cap even with
 a custom index. Adding an index to that field will not make the query selective.

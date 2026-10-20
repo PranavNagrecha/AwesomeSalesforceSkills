@@ -16,7 +16,11 @@ a governor-limit boundary badly. This checker flags:
   - Scheduled-path entries missing a timeSource — almost always a misfire.
 
 Usage:
-    python3 check_flow_transactional_boundaries.py path/to/force-app
+    python3 check_flow_transactional_boundaries.py path/to/force-app [--strict]
+
+Exit codes: 1 when a given path does not exist or on any ERROR finding; ISSUE and
+WARN findings exit 0 unless --strict (then 1). No Flow metadata under the paths
+prints one WARN and exits 0 (1 with --strict).
 """
 
 from __future__ import annotations
@@ -138,27 +142,42 @@ def audit_flow(path: Path) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("paths", nargs="+", help="Flow metadata files or directories")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on any finding (and on an empty scan). Default: ISSUE/WARN findings exit 0.",
+    )
     args = parser.parse_args()
+
+    missing = [raw for raw in args.paths if not Path(raw).exists()]
+    if missing:
+        for raw in missing:
+            print(f"ERROR: path not found: {raw}")
+        return 1
 
     files = iter_flow_files(args.paths)
     if not files:
         print(json.dumps({"findings": [], "summary": "no Flow metadata found"}))
         print("WARN: no Flow metadata under provided paths", file=sys.stderr)
-        return 0
+        return 1 if args.strict else 0
 
     findings: list[str] = []
     for path in files:
-        findings.extend(audit_flow(path))
+        try:
+            findings.extend(audit_flow(path))
+        except ET.ParseError as exc:
+            findings.append(f"WARN {path}: not well-formed XML ({exc}); not audited")
 
     summary = f"Scanned {len(files)} Flow metadata file(s); {len(findings)} finding(s)."
     print(json.dumps({"findings": findings, "summary": summary}, indent=2))
 
-    hard = sum(1 for f in findings if f.startswith(("ERROR", "ISSUE")))
+    hard = sum(1 for f in findings if f.startswith("ERROR"))
     if hard:
-        print(f"ERROR: {hard} transaction-boundary issue(s) require action", file=sys.stderr)
+        print(f"ERROR: {hard} transaction-boundary error(s) require action", file=sys.stderr)
         return 1
     if findings:
         print(f"WARN: {len(findings)} advisory finding(s)", file=sys.stderr)
+        return 1 if args.strict else 0
     return 0
 
 

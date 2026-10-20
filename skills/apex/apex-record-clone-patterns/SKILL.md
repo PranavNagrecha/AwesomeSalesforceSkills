@@ -27,7 +27,7 @@ outputs:
   - Relationship reparenting plan
   - Insert strategy
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

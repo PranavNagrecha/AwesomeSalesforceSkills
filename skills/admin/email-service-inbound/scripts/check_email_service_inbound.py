@@ -387,15 +387,31 @@ def main() -> int:
             "force-app/main/default (default: current directory)."
         ),
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on any finding (and on an empty directory). Default: findings exit 0.",
+    )
     args = parser.parse_args()
 
     manifest_dir = Path(args.manifest_dir)
     if not manifest_dir.exists():
         print(f"ERROR: --manifest-dir does not exist: {manifest_dir}", file=sys.stderr)
-        return 2
+        return 1
     if not manifest_dir.is_dir():
         print(f"ERROR: --manifest-dir is not a directory: {manifest_dir}", file=sys.stderr)
-        return 2
+        return 1
+
+    has_inputs = any((manifest_dir / "emailservices").glob("*.xml")) or any(
+        manifest_dir.rglob("*.cls")
+    )
+    if not has_inputs:
+        print(
+            f"WARN: no emailservices/*.xml or *.cls files found under {manifest_dir}; "
+            "nothing to check.",
+            file=sys.stderr,
+        )
+        return 1 if args.strict else 0
 
     findings = check_email_services(manifest_dir) + check_apex(manifest_dir)
 
@@ -406,7 +422,7 @@ def main() -> int:
     for f in findings:
         print(f"WARN: {f}", file=sys.stderr)
     print(f"\n{len(findings)} finding(s).", file=sys.stderr)
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

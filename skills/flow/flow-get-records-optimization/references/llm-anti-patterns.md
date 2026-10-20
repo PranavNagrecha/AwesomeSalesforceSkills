@@ -76,7 +76,7 @@ database, and it is usually right there.
 **Correct pattern:** Salesforce selectivity is measured in absolute rows against
 documented thresholds. A custom index is selective below 10% of the first million
 targeted records and 5% beyond, capping at 333,333 records; a standard index
-below 30% / 15%, capping at 1,000,000. A filter matching 500,000 rows on a
+below 30% / 15%, capping at 1,000,000 (UNVERIFIED 2026-10-20: the caps are not in the 264 corpus; the percentages are, `salesforce_large_data_volumes_bp.txt` L463-468). A filter matching 500,000 rows on a
 four-million-row object cannot be made selective by indexing. Lead with a
 genuinely narrow filter instead, and verify with the Developer Console Query Plan
 tool, where a Cost above 1 means a full table scan.

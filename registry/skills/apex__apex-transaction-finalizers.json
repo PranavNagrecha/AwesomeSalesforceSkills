@@ -170,7 +170,7 @@
     "ff4368b079048a11c259",
     "ff76529704b5f7fe2a8a"
   ],
-  "content_hash": "474ff2d37624394b9c5efd1ba4efdb0cefee0e3ccb12f0ad2d8842083c8c6c61",
+  "content_hash": "0a9975812e027b4e3d65291a713ebe1a56df4188b6254eeed6c066cce82ec8f2",
   "dependencies": [
     "apex-queueable-patterns"
   ],
@@ -225,5 +225,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.2"
+  "version": "1.1.3"
 }

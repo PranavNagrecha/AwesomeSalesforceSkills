@@ -12,6 +12,7 @@
     "147129e0bfa13b68ce87",
     "1487868f19dfe70b8fc4",
     "172b83ad3fcee20a0789",
+    "19a5793be74a574879f2",
     "1a799e80acd20de2934a",
     "1b43ec35d9085c6a76b1",
     "1c085157cb4c40381596",
@@ -23,7 +24,6 @@
     "252f9892fcd0a2cd9026",
     "293e43d51f030de9fd95",
     "2b24cbe6e11e093a8242",
-    "2ccaf38bbecbf28bdf5d",
     "32bca27d7a660ce2bca5",
     "33e7787becbd730b08d7",
     "3aa1bf077b938a47f957",
@@ -38,7 +38,6 @@
     "50af6a9421f2805710d3",
     "544fe387c65e74536269",
     "551f7381194de6de18c7",
-    "56a6903b2a986668ede9",
     "56ead580050e93f66b19",
     "58857f7fdf39744a3bdf",
     "595ece84101a8a48b299",
@@ -95,6 +94,7 @@
     "bc9df56384e13052b837",
     "beed7929354984271c1d",
     "c143b6a1c63a063e38f9",
+    "c29aa3e3cc32ee4dda70",
     "c32dd2f24948232c398a",
     "c5f4b3828dbf48f6d262",
     "c6216e21389cf307b214",
@@ -105,6 +105,7 @@
     "cf9c2b911d1aef6fd38c",
     "d1abfbddb991d7595d12",
     "d1fd7cebb2ea34468421",
+    "d50b528a3acfe8182ace",
     "d5884b1bd3524ab15bdb",
     "d689a95266e484118f8a",
     "da991fc7a9cd827da0be",
@@ -129,7 +130,7 @@
     "fbffccfa81815bd3ae86",
     "fcd098b731850f1652d7"
   ],
-  "content_hash": "5d7df28cf1ab9a769dda665a716d2a6cd7ed989563709576cb7b0931c897d14c",
+  "content_hash": "7df9d9d1f5450d49133d57c0c53fa64690e016eb6bf44740437501eae437b730",
   "dependencies": [],
   "description": "Use when DataRaptor Transform operations are slow, hit governor limits, or use Apex where formula fields would suffice. Covers formula vs Apex expressions, bulk transform sizing, and chained transform composition. Triggers: 'dataraptor transform slow'. NOT for DataRaptor Extract or Load performance \u2014 use omnistudio/dataraptor-patterns.",
   "file_location": "skills/omnistudio/dataraptor-transform-optimization",
@@ -182,5 +183,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

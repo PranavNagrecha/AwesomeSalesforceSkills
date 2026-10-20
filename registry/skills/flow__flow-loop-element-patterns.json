@@ -69,6 +69,7 @@
     "513e5e3c659d7dfe77a6",
     "51ad3471fbaef5464fee",
     "5518ad47f1695dded305",
+    "556743e9730dee418494",
     "575325b6c2112371c691",
     "57c43a29a7b088a108cc",
     "580af6304dadacb1d049",
@@ -215,7 +216,7 @@
     "fdbfc7f82b26079f60c7",
     "fe68c637cb6240ab0860"
   ],
-  "content_hash": "3a8f89dde90b05aa6500b26baefdf662d99dd621b5d26d4e8b4b5cf268c50dbc",
+  "content_hash": "fb9f55f13304a1c51f76d74673089ae4951d98ddb38bb97f51f69667ee48ee4e",
   "dependencies": [],
   "description": "Use when reviewing or authoring Flow logic that contains a Loop element \u2014 DML-in-loop / SOQL-in-loop refactors, the collect-then-DML idiom, nested loops, and loop-free alternatives (Collection Filter, Transform, Get-with-criteria). Triggers: 'DML inside flow loop', 'Get Records inside loop element', 'Update Records in loop blowing governor limits', 'nested loop in flow', 'Subflow in loop'. NOT for collection elements on their own \u2014 use flow/flow-collection-processing. NOT for whole-flow bulk redesign \u2014 use flow/flow-bulkification. Also covers: Loop metadata (FlowLoop collectionReference / iterationOrder / nextValueConnector / noMoreValuesConnector), Collection Filter, Sort and Map processors (FlowCollectionProcessor), collection Assignment operators (Add, AssignCount, RemoveAll, RemoveUncommon), and FLOW_LOOP_DETAIL debug-log analysis.",
   "file_location": "skills/flow/flow-loop-element-patterns",
@@ -268,7 +269,7 @@
   "templates": [
     "skills/flow/flow-loop-element-patterns/templates/flow-loop-element-patterns-template.md"
   ],
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

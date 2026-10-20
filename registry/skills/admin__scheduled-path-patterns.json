@@ -16,6 +16,7 @@
     "36d97f79d0aba2a52c2e",
     "3b9544e85c3dc522e225",
     "3ce915ddc5b89c6e023c",
+    "4db13be3baa1a0fb9bc8",
     "50bc203bc6c38b0e218b",
     "554d41889fb2227ffdae",
     "58e1fcf7d866bdeba523",
@@ -68,7 +69,7 @@
     "fa12994250c93afa2885",
     "fc357b5c607b7ea7d078"
   ],
-  "content_hash": "94790a14febd5933267861e4e9b3d46e26908b0e4dec316deeb608cd0ba41ecd",
+  "content_hash": "64f418998e9644055832e06e80d17df3c89a1bd662e62081853840b90624b06a",
   "dependencies": [],
   "description": "Scheduled Paths in record-triggered Flow: delayed execution, time-offset from field, batch size tuning, monitoring Paused Flow Interviews, async limits. NOT for picking between Scheduled Path, Wait and Scheduled Flow, or migrating time-based workflow rules \u2014 use flow/flow-time-based-patterns. NOT for a flow that runs on a recurring schedule \u2014 use flow/scheduled-flows.",
   "file_location": "skills/admin/scheduled-path-patterns",
@@ -114,5 +115,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

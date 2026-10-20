@@ -23,6 +23,11 @@ Rules, each mapped to a gotcha or anti-pattern in this skill:
   W7  WARN   Apex names `Dataweave.ExecuteException` / `Dataweave.ScriptException`; the
              documented type is System.DataWeaveScriptException (apexdev 264 L26887).
 
+  W8  WARN   DataWeave content packaged as a static resource: a `.resource-meta.xml`
+             whose sibling content is a `.dwl` or starts with a `%dw` header, or a
+             non-.dwl file under `staticresources/` with a `%dw` header (E1 already
+             covers a `.dwl` under staticresources/). Gotcha 1.
+
 Exit codes: 1 on a missing directory or any ERROR; 0 otherwise (WARN included) unless
 --strict, which promotes WARN to a failing exit.
 
@@ -50,6 +55,11 @@ _RE_CATCH_DW = re.compile(
     re.I,
 )
 _RE_LEGACY_EXC = re.compile(r"\bDataweave\.(ExecuteException|ScriptException)\b", re.I)
+_RE_DW_HEADER = re.compile(r"^\s*%dw\s+\d", re.M)
+_W8_MSG = (
+    "W8 DataWeave script packaged as a static resource; use DataWeaveResource metadata "
+    "(dw/<name>.dwl + .dwl-meta.xml)"
+)
 _RE_GET_MESSAGE = re.compile(r"\.getMessage\(\)")
 
 Finding = Tuple[str, str]
@@ -84,6 +94,41 @@ def _scan_dwl(path: Path, root: Path) -> List[Finding]:
     for line_no, raw in enumerate(text.splitlines(), 1):
         if _RE_DWL_AS_TYPE.search(raw) and "default" not in raw:
             out.append(("WARN", f"{rel}:{line_no}: W3 `as <Type>` without `default` — throws on a null source"))
+    return out
+
+
+def _looks_like_dataweave(path: Path) -> bool:
+    if path.suffix.lower() == ".dwl":
+        return True
+    try:
+        with path.open("r", encoding="utf-8", errors="replace") as fh:
+            head = fh.read(4096)
+    except OSError:
+        return False
+    return bool(_RE_DW_HEADER.search(head))
+
+
+def _scan_static_resources(root: Path) -> List[Finding]:
+    """W8: DataWeave packaged via *.resource-meta.xml or under staticresources/."""
+    out: List[Finding] = []
+    seen: set = set()
+    for meta in sorted(root.rglob("*.resource-meta.xml")):
+        stem = meta.name[: -len(".resource-meta.xml")]
+        for cand in sorted(meta.parent.iterdir()):
+            if cand == meta or not cand.is_file() or cand.name.endswith("-meta.xml"):
+                continue
+            if not cand.name.startswith(stem + "."):
+                continue
+            if _looks_like_dataweave(cand):
+                seen.add(cand)
+                out.append(("WARN", f"{meta.relative_to(root)}: {_W8_MSG}"))
+                break
+    for path in sorted(root.rglob("*")):
+        if path in seen or not path.is_file() or path.suffix.lower() in (".dwl", ".cls", ".xml"):
+            continue
+        rel = path.relative_to(root)
+        if "staticresources" in {p.lower() for p in rel.parts} and _looks_like_dataweave(path):
+            out.append(("WARN", f"{rel}: {_W8_MSG}"))
     return out
 
 
@@ -150,9 +195,13 @@ def main() -> int:
         scanned += 1
         findings.extend(_scan_apex(path, root))
 
+    static_findings = _scan_static_resources(root)
+    findings.extend(static_findings)
+    scanned += len(list(root.rglob("*.resource-meta.xml")))
+
     if scanned == 0:
         print(f"WARN: no .dwl or .cls files found under {root}; nothing to check.")
-        return 0
+        return 1 if args.strict else 0
 
     for level, msg in findings:
         print(f"{level}: {msg}")

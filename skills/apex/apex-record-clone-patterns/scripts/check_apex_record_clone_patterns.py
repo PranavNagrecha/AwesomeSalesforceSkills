@@ -5,8 +5,12 @@ Scans Apex for:
 - clone(true, ...) (preserveId) followed by insert in the same class
 - clone() + insert of child records without reparenting the lookup
 
+Findings print as `WARN:` lines and exit 0; `--strict` exits 1 on any finding.
+No .cls files prints one WARN line (exit 0, 1 with --strict). A missing
+directory prints ERROR and exits 1.
+
 Usage:
-    python3 check_apex_record_clone_patterns.py [--manifest-dir path/to/metadata]
+    python3 check_apex_record_clone_patterns.py [--manifest-dir path/to/metadata] [--strict]
 """
 
 from __future__ import annotations
@@ -25,6 +29,11 @@ CLONE_CALL = re.compile(r"\.clone\s*\(", re.IGNORECASE)
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check clone() anti-patterns.")
     parser.add_argument("--manifest-dir", default=".", help="Root directory of metadata.")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any finding (or the empty-directory WARN) is reported.",
+    )
     return parser.parse_args()
 
 
@@ -52,13 +61,17 @@ def main() -> int:
         print(f"ERROR: directory not found: {root}", file=sys.stderr)
         return 1
 
+    if not any(root.rglob("*.cls")):
+        print(f"WARN: no .cls files found under {root}")
+        return 1 if args.strict else 0
+
     issues = check_apex(root)
     if not issues:
         print("No clone anti-patterns detected.")
         return 0
     for issue in issues:
-        print(f"ISSUE: {issue}", file=sys.stderr)
-    return 1
+        print(f"WARN: {issue}", file=sys.stderr)
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

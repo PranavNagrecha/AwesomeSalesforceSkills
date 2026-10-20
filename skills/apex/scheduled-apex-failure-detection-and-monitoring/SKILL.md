@@ -35,7 +35,7 @@ outputs:
   - "Watcher schedule that polls AsyncApexJob and publishes failure notifications"
   - "Operator notification recipe (email + Custom Notification fallback)"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

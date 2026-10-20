@@ -45,7 +45,7 @@ outputs:
   - "Deployable EmailServicesFunction XML with nested address records"
   - "package.xml entries and the post-deploy SOQL that reveals the routing address"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---
@@ -395,9 +395,9 @@ per-sender-plus-content, not per-domain.
 6. **Check before deploying.**
    ```bash
    python3 skills/admin/email-service-inbound/scripts/check_email_service_inbound.py \
-       --manifest-dir force-app/main/default
+       --manifest-dir force-app/main/default --strict
    ```
-   It flags an unresolvable `apexClass`, an inactive service, an address
+   `--strict` makes any finding exit 1 (without it findings exit 0). It flags an unresolvable `apexClass`, an inactive service, an address
    missing `runAsUser`, `isErrorRoutingEnabled` with no
    `errorRoutingAddress`, an invented `maxEmailSize`, DML inside an
    attachment loop, a stack-trace leak and a synchronous callout. Then

@@ -292,9 +292,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--quiet",
         action="store_true",
-        help="Suppress the 'no issues' line; still exits non-zero on findings.",
+        help="Suppress the 'no issues' line.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on any finding (and on an empty directory). Default: findings exit 0.",
     )
     return parser.parse_args()
+
+
+EMPTY_SENTINEL = "\0empty"
 
 
 def check_flow_loop_element_patterns(manifest_dir: Path) -> list[str]:
@@ -307,7 +315,7 @@ def check_flow_loop_element_patterns(manifest_dir: Path) -> list[str]:
     )
     if not flows:
         print(f"WARN: No *.flow-meta.xml files found under {manifest_dir}; nothing to check.")
-        return []
+        return [EMPTY_SENTINEL]
 
     issues: list[str] = []
     for flow in flows:
@@ -319,6 +327,9 @@ def main() -> int:
     args = parse_args()
     issues = check_flow_loop_element_patterns(Path(args.manifest_dir))
 
+    if issues == [EMPTY_SENTINEL]:
+        return 1 if args.strict else 0
+
     if not issues:
         if not args.quiet:
             print("No issues found.")
@@ -327,7 +338,7 @@ def main() -> int:
     for issue in issues:
         print(f"WARN: {issue}", file=sys.stderr)
     print(f"\n{len(issues)} issue(s) found.", file=sys.stderr)
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

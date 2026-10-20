@@ -66,13 +66,13 @@ Step-by-step elements:
 - Uniqueness derived from `(opportunityId, closedAt)`. Even if the subscriber runs twice, the second run finds the existing request and exits.
 - To make this robust against concurrent duplicate events, add a unique external-id index on `Source_Opportunity_Id__c` (unique across the org). Then a concurrent duplicate Create Records fails with a DUPLICATE_VALUE error that the fault path catches.
 
-**Bulk behavior:** the platform may batch up to 200 event messages into one flow invocation (`platform_events.txt` 264 L2185). The flow receives `$Record` as a COLLECTION of events. The Get Records filter should be reworked to `Source_Opportunity_Id__c IN :{!allOpportunityIdsFromBatch}` for bulk-safety:
+**Bulk behavior:** the platform may batch up to 200 event messages into one flow invocation (`platform_events.txt` 264 L2185). The flow receives `$Record` as a COLLECTION of events. UNVERIFIED (2026-10-20): the corpus states the batch of up to 200 but not that `$Record` is collection-typed; verify in a sandbox before relying on the Loop below. The Get Records filter should be reworked to `Source_Opportunity_Id__c IN :{!allOpportunityIdsFromBatch}` for bulk-safety:
 
 ```text
 [Start: PE-Triggered on Opportunity_Won__e]
   └── [Assignment: collect allOpportunityIds, allClosedAts from $Record batch]
   └── [Get Records: Fulfillment_Request__c WHERE Source_Opportunity_Id__c IN :allOpportunityIds]
-  └── [Loop over $Record batch]
+  └── [Loop over $Record batch]   # UNVERIFIED (2026-10-20): collection exposure unconfirmed
         └── [Find matching Fulfillment_Request__c in in-memory collection]
         └── [Decision: matched?]
               ├── Yes → skip
@@ -118,7 +118,7 @@ Name: `Analytics_Snapshot_Order_Placed`
 Type: Platform-Event-Triggered on `Order_Placed__e`
 Running user: whoever published `Order_Placed__e` (`platform_events.txt` 264 L2190–2192) — every publishing persona needs FLS on the analytics object; no flow run-as override is documented.
 Elements:
-1. Loop over `$Record` batch (up to 200 events, `platform_events.txt` 264 L2185).
+1. Loop over `$Record` batch (up to 200 events, `platform_events.txt` 264 L2185). UNVERIFIED (2026-10-20): whether `$Record` is a collection is not stated there.
 2. Build a collection of `Analytics_Snapshot__c` records in memory.
 3. One Create Records DML at the end.
 4. Fault path to error log.

@@ -9,6 +9,7 @@
     "14bd61d17da1b4f0e27b",
     "20bf6df90ee67fa5e851",
     "2851479f07cb4d16e954",
+    "28cc66222b80c84e9eb1",
     "28f8af554ecedb68837d",
     "2b8b6c15b21ac6a26e27",
     "2d12d6d7599e7fd55d54",
@@ -80,7 +81,7 @@
     "f8c9f83093f52df04fd4",
     "fc12cf0e6b38e6aa4a72"
   ],
-  "content_hash": "df77ff61fcb85455f815f50508ace219f53b5c83b46c68149b32797945a1a2c5",
+  "content_hash": "0bcb8bfd223e74ddd5f485548f76188163a7e309e2f38c87947dbe7985082703",
   "dependencies": [],
   "description": "Use when posting to a Chatter feed, creating feed comments, @mentioning users or groups, or rendering rich-text posts from Apex via the ConnectApi namespace. Trigger keywords: ConnectApi, FeedItem, Chatter post, @mention, rich text post, FeedElementCapabilities, link post. NOT for Experience Cloud feed embeds. NOT for sending email from Apex \u2014 use apex/apex-outbound-email-patterns. NOT for custom bell notifications \u2014 use apex/apex-custom-notifications-from-apex. NOT for turning down org-wide Chatter feed and digest noise \u2014 use admin/chatter-notification-tuning.",
   "file_location": "skills/apex/apex-connect-api-chatter",
@@ -126,5 +127,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

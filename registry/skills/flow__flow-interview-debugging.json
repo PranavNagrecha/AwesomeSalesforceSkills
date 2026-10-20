@@ -2,10 +2,12 @@
   "category": "flow",
   "chunk_ids": [
     "077b64e232095b5b0bac",
+    "091451dd8403a4e625e4",
     "09177c380278e9420c5d",
     "0993eb45cc77df8c9530",
     "0b14f6b01a5dcf63ba8d",
     "0e95008d450fd350398b",
+    "0f67072a62ac41141fcd",
     "1c3598a557b50ef41de6",
     "1d4548c154c74f8c0074",
     "24c3109ea869c34acb32",
@@ -18,6 +20,7 @@
     "31e68a8fc8e6a6fa279a",
     "3485721eaac512a04337",
     "378cf8d956f5b475833f",
+    "3c268bf4e8575dc236ea",
     "3e9426f6217acd1217b5",
     "3fd970475430b76cd59d",
     "4089f44e48e790ed2343",
@@ -32,6 +35,7 @@
     "58fb780a51d9c1f5e55e",
     "5acc9d76ed13b328945c",
     "5b15597d76278de8c6e2",
+    "5b3ddc30b9b96d172593",
     "5ba62e45f86c28fe8be6",
     "5ca9e2186c21363cbbe4",
     "5dfdb51ce4990e71fa6c",
@@ -43,6 +47,7 @@
     "6a3b15836383f4977ec8",
     "7113986abd508596f056",
     "741c6dfa580ad8316ee9",
+    "77345d0c8614de3fa89c",
     "7927eeef64f351ad6688",
     "794d1eaef1b55f871d02",
     "7c85963970795075543a",
@@ -51,6 +56,7 @@
     "9270e26bed8bb8b11749",
     "93873a4119e3560c242e",
     "94861fd51e5d982a66e7",
+    "97dbe0a5e00524faaabc",
     "9b901d5de6f21e1e75d9",
     "9e654039a7a821e71d33",
     "a04d193a410712fa3fe5",
@@ -81,7 +87,7 @@
     "fd316752c81c7fa17196",
     "ffc3b3a5a2e80ec388b5"
   ],
-  "content_hash": "b21e77fa520186bcc26350de29de8b9b0462c5f43fab1081e237090aa8082bb6",
+  "content_hash": "6d21abeabce11edae8c2a8362d18a1319d0a16a8320d6118aee0f55e80661f17",
   "dependencies": [],
   "description": "Diagnose Flow failures using the Debug Log, Flow Error emails, and the Debug panel; instrument flows so production issues are triageable. NOT for Apex debugging - use apex/salesforce-debug-log-analysis.",
   "file_location": "skills/flow/flow-interview-debugging",
@@ -127,5 +133,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

@@ -42,9 +42,9 @@ outputs:
   - "Recommendation to keep, replace with Collection Filter / Transform / Get-with-criteria, or escalate to invocable Apex"
   - "Worst-case element-execution and CPU-time estimate for the loop"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # Flow Loop Element Patterns

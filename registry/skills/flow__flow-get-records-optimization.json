@@ -25,6 +25,7 @@
     "4e794e0ad7e153a78e83",
     "4eb25c4afea9e1f54bc1",
     "5510c2d729fcf70c13f7",
+    "5a43b2ca11407be8eb35",
     "5a98e4969610f67ed444",
     "5b2ea5831d250d48d7a8",
     "5be47751be5785335a06",
@@ -56,6 +57,7 @@
     "b1f8b567b32874a23382",
     "b4c69b8ba8fdffd70543",
     "b7d5ccab459a58ba76b2",
+    "ba3600a1279df47f8351",
     "bac6ceaed44a27c1e420",
     "baf9ebafa655e8043dd0",
     "bcf24e5a270162b4a7a6",
@@ -81,7 +83,7 @@
     "fe2182d7e2653f3ae87c",
     "ff5b910b618fc3f244b3"
   ],
-  "content_hash": "446df834d542197eda49e33d1dfbc7839e9749891a727cd184047dbd6b7bf5f3",
+  "content_hash": "cc965a9f6da94c145c679ba211d49e8987e9284d2fb99577aab8cab74b58169f",
   "dependencies": [
     "flow/flow-governor-limits-deep-dive",
     "flow/flow-performance-optimization"
@@ -98,7 +100,7 @@
     "Get Records Element \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_data_get.htm&type=5",
     "Per-Transaction Apex Governor Limits \u2014 100 SOQL synchronous / 200 asynchronous, 50,000 query rows, 10,000 ms / 60,000 ms CPU, 10 MB / 25 MB heap (Apex Developer Guide 264 L19780, a Winter '27 release-level change for every org; 6 MB / 12 MB in Summer '26; Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit`, api_meta.txt L113855-113862) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
     "Best Practices for Deployments with Large Data Volumes \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/",
-    "Maximizing the Performance of Force.com SOQL, Reports, and List Views (Salesforce Developers) \u2014 standard index selective below 30% of the first million targeted records and 15% beyond, capping at 1,000,000; custom index below 10% / 5%, capping at 333,333; standard-indexed fields are primary keys (Id, Name, OwnerId), foreign keys (CreatedById, LastModifiedById, lookup and master-detail fields), and audit fields (CreatedDate, SystemModstamp) \u2014 https://developer.salesforce.com/blogs/engineering/2013/07/maximizing-the-performance-of-force-com-soql-reports-and-list-views",
+    "Maximizing the Performance of Force.com SOQL, Reports, and List Views (Salesforce Developers) \u2014 standard index selective below 30% of the first million targeted records and 15% beyond, capping at 1,000,000; custom index below 10% / 5%, capping at 333,333 (UNVERIFIED 2026-10-20: the percentages are in `salesforce_large_data_volumes_bp.txt` L463-468; the caps are not); standard-indexed fields are primary keys (Id, Name, OwnerId), foreign keys (CreatedById, LastModifiedById, lookup and master-detail fields), and audit fields (CreatedDate, SystemModstamp) \u2014 https://developer.salesforce.com/blogs/engineering/2013/07/maximizing-the-performance-of-force-com-soql-reports-and-list-views",
     "Developer Console Query Plan Tool FAQ \u2014 a Cost above 1 means the filter is not selective and a full table scan will be used \u2014 https://help.salesforce.com/s/articleView?id=000386864&type=1",
     "Make a SOQL Query Selective by Marking a Field as External ID or Unique \u2014 https://help.salesforce.com/s/articleView?id=000383981&type=1",
     "Flow metadata type \u2014 `FlowRecordLookup` fields (`object`, `filters`, `filterLogic`, `queriedFields`, `sortField`, `sortOrder`, `limit`, `getFirstRecordOnly`, `storeOutputAutomatically`, `assignNullValuesIfNoRecordsFound`, `outputReference`, `faultConnector`) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm",
@@ -130,5 +132,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

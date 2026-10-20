@@ -10,12 +10,20 @@ Flags high-signal mistakes:
      still accepted for backward compatibility, though no ConnectApi mock class is documented.
   4. ConnectApi call with no surrounding `try/catch (ConnectApi.ConnectApiException)`.
   5. ConnectApi call inside a `for` loop inside a trigger.
-  6. `SeeAllData=true` near a ConnectApi call.
+  6. (removed) `SeeAllData=true` near a ConnectApi call is no longer flagged. The Apex
+     Developer Guide 264 (L26331-26332) states: "Most Connect in Apex methods require access to
+     real org data, and fail unless used in test methods marked @IsTest(SeeAllData=true)."
+     The old `connectapi-with-seealldata` MEDIUM contradicted that requirement. Rule 3 above
+     still flags a ConnectApi test that has neither SeeAllData=true nor a registration.
 
-Stdlib only. Emits JSON.
+Stdlib only. Emits JSON on stdout plus one `WARN:` line per finding (file:line) on stderr.
+Exit codes: findings alone exit 0; --strict makes any finding exit 1; a directory with no
+Apex files prints one WARN line and exits 0 (1 with --strict); a missing path prints ERROR
+and exits 1.
 
 Usage:
-    python3 check_apex_connect_api_chatter.py --path force-app/main/default
+    python3 check_apex_connect_api_chatter.py --path force-app/main/default [--strict]
+    (--manifest-dir is accepted as an alias of --path)
 """
 
 from __future__ import annotations
@@ -176,19 +184,11 @@ def check_file(path: Path) -> list[dict]:
                 }
             )
 
-        if is_test and see_all_data:
-            issues.append(
-                {
-                    "severity": "MEDIUM",
-                    "rule": "connectapi-with-seealldata",
-                    "file": str(path),
-                    "line": line_of(text, m.start()),
-                    "message": (
-                        "ConnectApi test uses SeeAllData=true, which most Connect in Apex methods require. "
-                        "Keep it to the tests that make the real call; test payload assembly in isolation."
-                    ),
-                }
-            )
+        # Former rule `connectapi-with-seealldata` (MEDIUM on @IsTest(SeeAllData=true) next to a
+        # ConnectApi call) was removed: the Apex Developer Guide 264 says "Most Connect in Apex
+        # methods require access to real org data, and fail unless used in test methods marked
+        # @IsTest(SeeAllData=true)" (L26331-26332), so SeeAllData=true on a ConnectApi test is
+        # the documented requirement, not a defect, and is no longer reported.
 
         if is_trigger and in_for_loop(text, m.start()):
             issues.append(
@@ -211,10 +211,17 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Lint Apex ConnectApi / Chatter usage.")
     parser.add_argument(
         "--path",
+        "--manifest-dir",
+        dest="path",
         default="force-app/main/default",
-        help="Root directory to scan (default: force-app/main/default).",
+        help="Root directory to scan (default: force-app/main/default). --manifest-dir is an alias.",
     )
     parser.add_argument("--format", choices=["json", "text"], default="json")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any finding (or the empty-directory WARN) is reported.",
+    )
     return parser.parse_args()
 
 
@@ -222,12 +229,23 @@ def main() -> int:
     args = parse_args()
     root = Path(args.path)
     if not root.exists():
-        print(json.dumps({"error": f"path not found: {root}"}))
-        return 2
+        print(f"ERROR: path not found: {root}")
+        return 1
+
+    apex_paths = list(apex_files(root))
+    if not apex_paths:
+        print(f"WARN: no .cls or .trigger files found under {root}")
+        return 1 if args.strict else 0
 
     issues: list[dict] = []
-    for apex_path in apex_files(root):
+    for apex_path in apex_paths:
         issues.extend(check_file(apex_path))
+    for issue in issues:
+        print(
+            f"WARN: {issue['severity']} {issue['file']}:{issue['line']} "
+            f"[{issue['rule']}] {issue['message']}",
+            file=sys.stderr,
+        )
 
     score = sum(SEVERITY_WEIGHTS.get(i["severity"], 0) for i in issues)
 
@@ -241,7 +259,7 @@ def main() -> int:
             )
         print(f"\nTotal weighted score: {score}")
 
-    return 0 if not issues else 1
+    return 1 if (issues and args.strict) else 0
 
 
 if __name__ == "__main__":

@@ -722,24 +722,40 @@ releases:
       .resource-meta.xml detection
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'checker-contract pass (findings exit 0 unless --strict; empty dir WARN 0; missing path ERROR 1) with before/after
+      fixture matrices in scratchpad r233fx/r234fx; 22 checkers across flow/integration/omnistudio/apex/admin/data/devops;
+      Fable re-ran 7 + 7 fixture cases: all match; connectapi SeeAllData rule removed (apexdev 264 L26331-26332); wrapper
+      Questions header fixed; $Record-as-collection and 1M/333k caps UNVERIFIED'
   - id: R2-34
     title: Checker contract drift in 4 scripts (async-apex, apex-transaction-finalizers, apex-execute-anonymous, devops-center-advanced)
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'checker-contract pass (findings exit 0 unless --strict; empty dir WARN 0; missing path ERROR 1) with before/after
+      fixture matrices in scratchpad r233fx/r234fx; 22 checkers across flow/integration/omnistudio/apex/admin/data/devops;
+      Fable re-ran 7 + 7 fixture cases: all match; connectapi SeeAllData rule removed (apexdev 264 L26331-26332); wrapper
+      Questions header fixed; $Record-as-collection and 1M/333k caps UNVERIFIED'
   - id: R2-35
     title: 'Batch H follow-ups: 7 checkers off the exit-code contract (scheduled-apex fails open on missing path), connect-api
       checker flags the documented SeeAllData pattern, wrapper-class Questions header nonstandard'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'checker-contract pass (findings exit 0 unless --strict; empty dir WARN 0; missing path ERROR 1) with before/after
+      fixture matrices in scratchpad r233fx/r234fx; 22 checkers across flow/integration/omnistudio/apex/admin/data/devops;
+      Fable re-ran 7 + 7 fixture cases: all match; connectapi SeeAllData rule removed (apexdev 264 L26331-26332); wrapper
+      Questions header fixed; $Record-as-collection and 1M/333k caps UNVERIFIED'
   - id: R2-36
     title: 'Batch E/I checker findings: middleware http.send regex, dataraptor Transform detection never fires, transactional-boundaries
       fails open on missing path, 1,000,000/333,333 Get Records caps unsourced'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'checker-contract pass (findings exit 0 unless --strict; empty dir WARN 0; missing path ERROR 1) with before/after
+      fixture matrices in scratchpad r233fx/r234fx; 22 checkers across flow/integration/omnistudio/apex/admin/data/devops;
+      Fable re-ran 7 + 7 fixture cases: all match; connectapi SeeAllData rule removed (apexdev 264 L26331-26332); wrapper
+      Questions header fixed; $Record-as-collection and 1M/333k caps UNVERIFIED'
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)

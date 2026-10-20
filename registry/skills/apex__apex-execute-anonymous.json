@@ -36,6 +36,7 @@
     "63334dfc3b03364b8aa9",
     "65fba9c0fcf7e26b362a",
     "6dee27f60bcf767b9f0c",
+    "70a12d6df2bf33a567a2",
     "7282019c7bd8b5be1163",
     "733fe8e4a91d1c73cfea",
     "770e00cbf3984d21917f",
@@ -83,7 +84,7 @@
     "fbee6a54d78d6977c8f4",
     "fe7b88250cfbd0c13e5e"
   ],
-  "content_hash": "964d362df2ece72e75dc9ceef4f6b0d2a5dc0adfa70bca39e6fc3b3c7fb76272",
+  "content_hash": "9c0f85c8786e4d9173e3f7f10a3a89037786ccf0fbd3aaed6829dfacc09408c6",
   "dependencies": [],
   "description": "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for trace flags or reading the log output \u2014 use apex/debug-logs-and-developer-console. NOT for async job design \u2014 use apex/async-apex.",
   "file_location": "skills/apex/apex-execute-anonymous",
@@ -131,5 +132,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

@@ -36,7 +36,7 @@ outputs:
   - "migration or consolidation findings"
   - "boundary decision for Flow, Apex, or legacy retirement"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

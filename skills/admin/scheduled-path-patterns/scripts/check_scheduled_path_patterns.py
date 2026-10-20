@@ -5,8 +5,12 @@ Scans Flow metadata for:
 - Record-triggered Flows with scheduled paths missing entry conditions
 - Scheduled paths without Get Records or Decision re-check at branch start
 
+Findings print as `WARN:` lines and exit 0; `--strict` exits 1 on any finding.
+No Flow files prints one WARN line (exit 0, 1 with --strict). A missing
+directory prints ERROR and exits 1.
+
 Usage:
-    python3 check_scheduled_path_patterns.py [--manifest-dir path/to/metadata]
+    python3 check_scheduled_path_patterns.py [--manifest-dir path/to/metadata] [--strict]
 """
 
 from __future__ import annotations
@@ -23,6 +27,11 @@ NS = {"sf": "http://soap.sforce.com/2006/04/metadata"}
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check scheduled-path anti-patterns.")
     parser.add_argument("--manifest-dir", default=".", help="Root directory of metadata.")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any finding (or the empty-directory WARN) is reported.",
+    )
     return parser.parse_args()
 
 
@@ -67,16 +76,21 @@ def main() -> int:
         print(f"ERROR: directory not found: {root}", file=sys.stderr)
         return 1
 
+    flows = list(iter_flows(root))
+    if not flows:
+        print(f"WARN: no Flow metadata (*.flow-meta.xml or *.flow) found under {root}")
+        return 1 if args.strict else 0
+
     issues: list[str] = []
-    for flow in iter_flows(root):
+    for flow in flows:
         issues.extend(check_flow(flow, root))
 
     if not issues:
         print("No scheduled-path anti-patterns detected.")
         return 0
     for issue in issues:
-        print(f"ISSUE: {issue}", file=sys.stderr)
-    return 1
+        print(f"WARN: {issue}", file=sys.stderr)
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

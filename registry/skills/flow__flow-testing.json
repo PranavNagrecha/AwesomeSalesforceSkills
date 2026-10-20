@@ -160,6 +160,7 @@
     "ea7658989a15232db094",
     "eb34434dc739e25a0226",
     "eca082eef241457f718d",
+    "ed6d17f1ae53c87d7830",
     "f1aca03dc6cb5c93bcac",
     "f342b9a032402d40c2d4",
     "f3519e1e8066f03e5632",
@@ -171,7 +172,7 @@
     "fe3125df4302470b4606",
     "ffb336159214b4c99313"
   ],
-  "content_hash": "77f58858dc5867913611f7afbb76c82155120f878eae5b590654947c9d81320b",
+  "content_hash": "68d6642f6b6797502d874955445127dfa029c8a9d9ce7eeb3ea0d8f0b9de5735",
   "dependencies": [],
   "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior \u2014 use flow/flow-debugging. Also covers: FlowTest metadata, flowtest-meta.xml, testPoints, Flow.Interview, sf flow run test, flow coverage.",
   "file_location": "skills/flow/flow-testing",
@@ -221,7 +222,7 @@
   "templates": [
     "skills/flow/flow-testing/templates/flow-testing-template.md"
   ],
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "2.1.1"
+  "version": "2.1.2"
 }

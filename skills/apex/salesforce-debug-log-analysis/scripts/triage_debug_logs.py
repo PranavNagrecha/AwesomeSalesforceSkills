@@ -10,6 +10,10 @@ Scans .log files in a directory and reports:
 - cross-log timeline with inter-log deltas
 
 Stdlib-only. Designed to be the first thing an analyst runs on an uploaded set.
+
+Exit codes: per-log warnings print `WARN:` lines on stderr and exit 0; --strict makes any
+warning exit 1; a directory with no .log files prints one WARN line and exits 0 (1 with
+--strict); a missing directory prints ERROR and exits 1.
 """
 
 from __future__ import annotations
@@ -50,8 +54,15 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--logs-dir",
+        "--manifest-dir",
+        dest="logs_dir",
         default=".",
-        help="Directory containing .log files (default: current directory).",
+        help="Directory containing .log files (default: current directory). --manifest-dir is an alias.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any log carries a warning (or the directory has no .log files).",
     )
     parser.add_argument(
         "--format",
@@ -209,20 +220,24 @@ def main() -> int:
     args = parse_args()
     root = Path(args.logs_dir)
     if not root.exists():
-        print(f"ERROR: logs directory not found: {root}", file=sys.stderr)
-        return 2
+        print(f"ERROR: logs directory not found: {root}")
+        return 1
     files = sorted(path for path in root.glob("*.log") if path.is_file())
     if not files:
-        print(f"ERROR: no .log files found in {root}", file=sys.stderr)
-        return 2
+        print(f"WARN: no .log files found in {root}")
+        return 1 if args.strict else 0
     entries = [analyze_file(path) for path in files]
     timeline = build_timeline(entries)
     if args.format == "json":
         print(json.dumps({"entries": entries, "timeline": timeline}, indent=2))
     else:
         print(format_text(entries, timeline))
-    any_warnings = any(entry["warnings"] for entry in entries)
-    return 1 if any_warnings else 0
+    any_warnings = False
+    for entry in entries:
+        for warning in entry["warnings"]:
+            any_warnings = True
+            print(f"WARN: {entry['file']}: {warning}", file=sys.stderr)
+    return 1 if (any_warnings and args.strict) else 0
 
 
 if __name__ == "__main__":

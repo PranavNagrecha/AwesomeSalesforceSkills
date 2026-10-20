@@ -29,7 +29,7 @@ outputs:
   - "bulkification recommendations"
 dependencies: []
 runtime_orphan: true
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

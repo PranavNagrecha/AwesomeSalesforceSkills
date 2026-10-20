@@ -9,7 +9,11 @@ Uses stdlib only — no pip dependencies.
 
 Usage:
     python3 check_middleware_integration_patterns.py [--help]
-    python3 check_middleware_integration_patterns.py --manifest-dir path/to/metadata
+    python3 check_middleware_integration_patterns.py --manifest-dir path/to/metadata [--strict]
+
+Exit codes: 1 when --manifest-dir does not exist; findings exit 0 unless --strict
+(then 1). A directory with no triggers/, classes/ or flows/ files prints one WARN
+and exits 0 (1 with --strict).
 """
 
 from __future__ import annotations
@@ -33,7 +37,27 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on any finding (and on an empty directory). Default: findings exit 0.",
+    )
     return parser.parse_args()
+
+
+# Http callouts: `new Http().send(`, or `<v>.send(` where `<v>` is declared as an Http
+# instance (field, local or parameter) -- not only a variable literally named `http`.
+_HTTP_DECL = re.compile(r"\bHttp\s+(\w+)\s*[;=,)]", re.IGNORECASE)
+_HTTP_INLINE = re.compile(r"\bnew\s+Http\s*\(\s*\)\s*\.send\s*\(", re.IGNORECASE)
+
+
+def count_http_sends(content: str) -> int:
+    """Count Http.send() call sites in Apex source on any Http instance."""
+    total = len(_HTTP_INLINE.findall(content))
+    names = {m.group(1) for m in _HTTP_DECL.finditer(content)}
+    for name in names:
+        total += len(re.findall(rf"\b{re.escape(name)}\s*\.send\s*\(", content))
+    return total
 
 
 # ---------------------------------------------------------------------------
@@ -51,17 +75,15 @@ def check_multi_callout_apex_triggers(manifest_dir: Path) -> list[str]:
     if not trigger_dir.exists():
         return issues
 
-    callout_pattern = re.compile(r"http\.send\s*\(", re.IGNORECASE)
-
     for apex_file in trigger_dir.glob("*.trigger"):
         try:
             content = apex_file.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        matches = callout_pattern.findall(content)
-        if len(matches) >= 2:
+        n_sends = count_http_sends(content)
+        if n_sends >= 2:
             issues.append(
-                f"{apex_file.name}: contains {len(matches)} Http.send() calls. "
+                f"{apex_file.name}: contains {n_sends} Http.send() calls. "
                 "Multiple callouts in one trigger risks governor limits (100/transaction) "
                 "and indicates orchestration that should be handled by middleware. "
                 "Consider publishing a Platform Event and delegating fanout to an iPaaS."
@@ -85,13 +107,12 @@ def check_apex_callouts_in_triggers_without_platform_events(manifest_dir: Path) 
 
     # Collect trigger files with callouts
     callout_triggers: list[str] = []
-    callout_pattern = re.compile(r"http\.send\s*\(", re.IGNORECASE)
     for apex_file in trigger_dir.glob("*.trigger"):
         try:
             content = apex_file.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        if callout_pattern.search(content):
+        if count_http_sends(content) >= 1:
             callout_triggers.append(apex_file.name)
 
     if not callout_triggers:
@@ -214,14 +235,17 @@ def check_flow_http_callout_count(manifest_dir: Path) -> list[str]:
 # Main orchestrator
 # ---------------------------------------------------------------------------
 
+def has_checkable_files(manifest_dir: Path) -> bool:
+    for sub, pattern in (("triggers", "*.trigger"), ("classes", "*.cls"), ("flows", "*.flow-meta.xml")):
+        d = manifest_dir / sub
+        if d.is_dir() and any(d.glob(pattern)):
+            return True
+    return False
+
+
 def check_middleware_integration_patterns(manifest_dir: Path) -> list[str]:
     """Return a list of issue strings found in the manifest directory."""
     issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
     issues.extend(check_multi_callout_apex_triggers(manifest_dir))
     issues.extend(check_apex_callouts_in_triggers_without_platform_events(manifest_dir))
     issues.extend(check_future_methods_with_callouts(manifest_dir))
@@ -234,6 +258,18 @@ def check_middleware_integration_patterns(manifest_dir: Path) -> list[str]:
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
+
+    if not manifest_dir.exists():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        return 1
+
+    if not has_checkable_files(manifest_dir):
+        print(
+            f"WARN: no triggers/*.trigger, classes/*.cls or flows/*.flow-meta.xml found "
+            f"under {manifest_dir}; nothing to check."
+        )
+        return 1 if args.strict else 0
+
     issues = check_middleware_integration_patterns(manifest_dir)
 
     if not issues:
@@ -243,7 +279,7 @@ def main() -> int:
     for issue in issues:
         print(f"WARN: {issue}", file=sys.stderr)
 
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

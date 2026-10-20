@@ -31,7 +31,7 @@ outputs:
   - "SOQL query patterns for record-attached files"
   - "Migration plan from Attachment to Files (if applicable)"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

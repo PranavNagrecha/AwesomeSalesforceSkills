@@ -13,6 +13,7 @@
     "14d9dc7cea4029ba168d",
     "20331fa82c1fe86ffe9f",
     "20eae65809112df8c3c1",
+    "213c74eb397c7e7fa636",
     "29fbaa2b09dabe45d542",
     "2dbd0df8cc520a3b7ff9",
     "33c1c981da1714e7ce61",
@@ -63,7 +64,7 @@
     "f99a4c0139596e8abb5a",
     "ffd46c259b3c7e296100"
   ],
-  "content_hash": "b17151018b07e9eaa092143b0015ce7094096255824fa9b8a03884956913b195",
+  "content_hash": "1178cccf5c2d16c04b0b723292e4082993dbb112d41923af3daef2dbc2579c0d",
   "dependencies": [],
   "description": "Working with Salesforce Files at the data layer \u2014 `ContentVersion` (binary content + version metadata), `ContentDocument` (the shareable parent handle), `ContentDocumentLink` (the sharing / parent-record join), the 2 GB single-file and 10 MB feed-attached limits, the deprecated `Attachment` object, the Classic-only `Document` object, and Files Connect for external sources. Covers SOQL to enumerate files on a record, Apex insert / link patterns, and `ShareType` / `Visibility` sharing implications. NOT for bulk-migrating Classic Attachments and Notes over to Files \u2014 use data/attachment-to-files-migration. NOT for the file upload UI in a component \u2014 use lwc/file-upload-patterns.",
   "file_location": "skills/data/salesforce-files-architecture",
@@ -110,5 +111,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

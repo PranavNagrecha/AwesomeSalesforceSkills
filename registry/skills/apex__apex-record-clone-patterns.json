@@ -7,6 +7,7 @@
     "066c559f2df29a7a815a",
     "07548c32278eb3a3e526",
     "089545b169bf3382650f",
+    "0a4777be82f391abdcf7",
     "0e3f93c87277fe548983",
     "1adff30049630c6c3a83",
     "1cdf5ab61fab0f5c18f0",
@@ -81,7 +82,7 @@
     "fe1a5064e9667e9b71a4",
     "ffc4fb859e995be5b4f3"
   ],
-  "content_hash": "bbe336b70ea527e2b4cfee86ccf79b0f711d7bfa50a982aa0ec6f35c632b6364",
+  "content_hash": "63bcdec18c894099b693e5e3b37b660961c5f83fd9cf333d7a1a4f98a0427a54",
   "dependencies": [],
   "description": "SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): shallow vs deep clone semantics, related-record replication, clone with parent repointing, autonumber preservation. NOT for data migration \u2014 use data/bulk-api-and-large-data-loads. NOT for record snapshots \u2014 use data/field-history-tracking.",
   "file_location": "skills/apex/apex-record-clone-patterns",
@@ -129,5 +130,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

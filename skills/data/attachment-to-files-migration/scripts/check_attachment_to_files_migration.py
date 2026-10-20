@@ -13,7 +13,10 @@ Scans a Salesforce project for common migration anti-patterns:
 Stdlib only.
 
 Usage:
-    python3 check_attachment_to_files_migration.py --project-dir path/to/project
+    python3 check_attachment_to_files_migration.py --project-dir path/to/project [--strict]
+
+Exit codes: 1 when --project-dir does not exist; findings exit 0 unless --strict (then 1).
+A directory with no .cls files prints one WARN and exits 0 (1 with --strict).
 """
 
 from __future__ import annotations
@@ -27,7 +30,7 @@ from pathlib import Path
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--project-dir", type=Path, default=Path.cwd())
-    p.add_argument("--strict", action="store_true")
+    p.add_argument("--strict", action="store_true", help="Exit 1 on any finding (and on an empty directory).")
     return p.parse_args()
 
 
@@ -62,7 +65,10 @@ def main() -> int:
     root = args.project_dir.resolve()
     if not root.exists():
         print(f"ERROR: project dir not found: {root}", file=sys.stderr)
-        return 2
+        return 1
+    if not any(p.is_file() and ".sfdx" not in p.parts for p in root.rglob("*.cls")):
+        print(f"WARN: no .cls files found under {root}; nothing to check.")
+        return 1 if args.strict else 0
     findings = scan(root)
     print(f"Scanned: {root}")
     print(f"Findings: {len(findings)}")
@@ -73,7 +79,7 @@ def main() -> int:
         print(f"\n=== {cat} ({len(by_cat[cat])}) ===")
         for f, ln, msg in by_cat[cat]:
             rel = f.relative_to(root) if f.is_relative_to(root) else f
-            print(f"  {rel}:{ln} — {msg}")
+            print(f"WARN: {rel}:{ln} — {msg}")
     return 1 if (args.strict and findings) else 0
 
 

@@ -445,18 +445,9 @@ def collect(manifest_dir: Path) -> list[ApexFile]:
 
 
 def run(manifest_dir: Path) -> tuple[list[dict], int]:
-    if not manifest_dir.exists():
-        return [issue("F000", manifest_dir, 0,
-                      f"Manifest directory not found: {manifest_dir}",
-                      "Pass --manifest-dir pointing at the source tree "
-                      "(e.g. force-app).")], 0
-
+    """Return (findings, relevant-class count). The caller has already verified
+    that the directory exists and holds at least one .cls file."""
     files = collect(manifest_dir)
-    if not files:
-        return [issue("F000", manifest_dir, 0,
-                      f"No .cls files found under {manifest_dir}",
-                      "Point --manifest-dir at a directory containing Apex "
-                      "classes.")], 0
 
     relevant = [
         f for f in files
@@ -478,29 +469,46 @@ def parse_args() -> argparse.Namespace:
         help="Root of the Salesforce source tree to scan (default: current directory).",
     )
     parser.add_argument("--json", action="store_true", help="Emit findings as JSON.")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any finding (or the empty-directory WARN) is reported.",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    findings, scanned = run(Path(args.manifest_dir))
+    manifest_dir = Path(args.manifest_dir)
+
+    # Exit contract: findings alone exit 0; --strict makes any finding exit 1;
+    # an empty tree is one WARN line (exit 0, 1 with --strict); a missing
+    # directory is an ERROR (exit 1).
+    if not manifest_dir.exists():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        return 1
+    if not any(manifest_dir.rglob("*.cls")):
+        print(f"WARN: no .cls files found under {manifest_dir}")
+        return 1 if args.strict else 0
+
+    findings, scanned = run(manifest_dir)
 
     if args.json:
         print(json.dumps({"scanned_classes": scanned, "findings": findings}, indent=2))
-        return 1 if findings else 0
+        return 1 if (findings and args.strict) else 0
 
     if not findings:
         print(f"No issues found ({scanned} Finalizer-related class(es) scanned).")
         return 0
 
     for f in findings:
-        print(f"{f['code']} {f['file']}:{f['line']}: {f['message']}", file=sys.stderr)
+        print(f"WARN: {f['code']} {f['file']}:{f['line']}: {f['message']}", file=sys.stderr)
         print(f"      fix: {f['fix']}", file=sys.stderr)
     print(
         f"\n{len(findings)} issue(s) across {scanned} Finalizer-related class(es).",
         file=sys.stderr,
     )
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

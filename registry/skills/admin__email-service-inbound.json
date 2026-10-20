@@ -153,7 +153,7 @@
     "ff53f6839820a74dfeb1",
     "ffb129a99499fa8acab4"
   ],
-  "content_hash": "a5d35cf171e44b8325b07f2360a5bcd2c8927c0f020fd7c9bd207f79fc67b60a",
+  "content_hash": "01b3b073d852c2f188d47edd416c7f0182480b615c99bc2fc680ff7e1f1a0e49",
   "dependencies": [],
   "description": "Inbound email processing in Salesforce via Email Services + the `Messaging.InboundEmailHandler` Apex interface. Covers EmailService configuration (running user, accept-from address, attachment handling, error / failure routing), the EmailServicesAddress per-routing-address pattern, the handler's `Messaging.InboundEmail` payload (text body, HTML body, headers, attachments, in-reply-to threading), and the canonical Email-to-Case alternative for case creation. NOT for outbound email (use admin/email-templates-and-alerts), NOT for Email-to-Case flow customization itself (use admin/email-to-case-configuration). Trigger keywords: EmailServicesFunction, EmailServicesAddress, runAsUser, localPart, EmailDomainName, attachmentOption, overLimitAction, errorRoutingAddress, routing address, inbound email limit.",
   "file_location": "skills/admin/email-service-inbound",
@@ -212,5 +212,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

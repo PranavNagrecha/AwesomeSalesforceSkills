@@ -87,7 +87,7 @@ Correct approach:
 A subscriber designed as if it receives exactly one event per invocation will fail under High-Volume. The assistant should always design the subscriber for a batch of up to 200 event messages (`platform_events.txt` 264 L2185; 2,000 is the Apex trigger figure, `apexdev.txt` 264 L20065).
 
 Correct approach:
-- Subscriber flow starts with Assignment elements that collect ids from the `$Record` collection.
+- Subscriber flow starts with Assignment elements that collect ids from the `$Record` collection. UNVERIFIED (2026-10-20): collection exposure of `$Record` is not documented in the corpus (`platform_events.txt` 264 L2185 says only "a batch of event messages").
 - SOQL and DML inside the subscriber operate on collections, not individual events.
 
 ## 12. Neglecting Running-User Context on Subscribers

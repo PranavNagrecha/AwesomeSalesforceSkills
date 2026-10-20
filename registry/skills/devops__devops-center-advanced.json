@@ -14,6 +14,7 @@
     "26add60701288c3bd034",
     "298eeee27320e51825b1",
     "2a766c1f9897c8435788",
+    "2b7d1488cd3be83275f3",
     "316905f84412db0c0a60",
     "31df624d419b9aa4ebf5",
     "3244b90e943a48e98a56",
@@ -89,9 +90,10 @@
     "ebb5e983277171094aa6",
     "f2d7095020f86c8ad2cb",
     "f5e027d5d771aeaa632f",
-    "f767a0c4b0a2961cf7df"
+    "f767a0c4b0a2961cf7df",
+    "f7f3699cae7b61345f57"
   ],
-  "content_hash": "10b96dfe3e27f29a1f78ac4970089cea43ed5667565a23cc4ee5ba98cb213bcd",
+  "content_hash": "81797c1120df89c2814eb8a636bc9f4e6ea010d4efee0b5aff97fbe6e4521ebc",
   "dependencies": [],
   "description": "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup \u2014 use admin/devops-process-documentation.",
   "file_location": "skills/devops/devops-center-advanced",
@@ -139,5 +141,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

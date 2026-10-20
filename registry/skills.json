@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "5adb95977fcf485b5287b6f746d17ca9d0f717999576222946af8e3101779050",
+  "generated_from_hash": "d1456f176927313e5e5881fc5d6aa58190edfae240bea3187b10731cc88daf57",
   "schema_version": 1,
   "skill_count": 1040,
   "skills": [
@@ -18451,7 +18451,7 @@
         "ff53f6839820a74dfeb1",
         "ffb129a99499fa8acab4"
       ],
-      "content_hash": "a5d35cf171e44b8325b07f2360a5bcd2c8927c0f020fd7c9bd207f79fc67b60a",
+      "content_hash": "01b3b073d852c2f188d47edd416c7f0182480b615c99bc2fc680ff7e1f1a0e49",
       "dependencies": [],
       "description": "Inbound email processing in Salesforce via Email Services + the `Messaging.InboundEmailHandler` Apex interface. Covers EmailService configuration (running user, accept-from address, attachment handling, error / failure routing), the EmailServicesAddress per-routing-address pattern, the handler's `Messaging.InboundEmail` payload (text body, HTML body, headers, attachments, in-reply-to threading), and the canonical Email-to-Case alternative for case creation. NOT for outbound email (use admin/email-templates-and-alerts), NOT for Email-to-Case flow customization itself (use admin/email-to-case-configuration). Trigger keywords: EmailServicesFunction, EmailServicesAddress, runAsUser, localPart, EmailDomainName, attachmentOption, overLimitAction, errorRoutingAddress, routing address, inbound email limit.",
       "file_location": "skills/admin/email-service-inbound",
@@ -18510,7 +18510,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "category": "admin",
@@ -38026,7 +38026,7 @@
         "f6f3a06ddc99235cee25",
         "f8c2fda1f6845c5b0c5b"
       ],
-      "content_hash": "3cfd7ac232b8d47b854542810da2fc0436a53111c5d4682c4a433b983006e18e",
+      "content_hash": "ee7a9b9f21f9395b5f6e98e0eb45eb9675f1ec18c6de55820766dc2df8becde6",
       "dependencies": [],
       "description": "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger', 'automation decision record', 'why did we reject Apex', 'one object one order', 'automation inventory for this object', 'scheduled Flow or Batch Apex'. NOT for 'which tool should stamp this field on save, and will it recurse' \u2014 use admin/workflow-field-update-patterns. NOT for actually running the conversion of an existing Process Builder \u2014 use flow/process-builder-to-flow-migration.",
       "file_location": "skills/admin/process-automation-selection",
@@ -38079,7 +38079,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "category": "admin",
@@ -44909,6 +44909,7 @@
         "36d97f79d0aba2a52c2e",
         "3b9544e85c3dc522e225",
         "3ce915ddc5b89c6e023c",
+        "4db13be3baa1a0fb9bc8",
         "50bc203bc6c38b0e218b",
         "554d41889fb2227ffdae",
         "58e1fcf7d866bdeba523",
@@ -44961,7 +44962,7 @@
         "fa12994250c93afa2885",
         "fc357b5c607b7ea7d078"
       ],
-      "content_hash": "94790a14febd5933267861e4e9b3d46e26908b0e4dec316deeb608cd0ba41ecd",
+      "content_hash": "64f418998e9644055832e06e80d17df3c89a1bd662e62081853840b90624b06a",
       "dependencies": [],
       "description": "Scheduled Paths in record-triggered Flow: delayed execution, time-offset from field, batch size tuning, monitoring Paused Flow Interviews, async limits. NOT for picking between Scheduled Path, Wait and Scheduled Flow, or migrating time-based workflow rules \u2014 use flow/flow-time-based-patterns. NOT for a flow that runs on a recurring schedule \u2014 use flow/scheduled-flows.",
       "file_location": "skills/admin/scheduled-path-patterns",
@@ -45007,7 +45008,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "admin",
@@ -59817,6 +59818,7 @@
         "14bd61d17da1b4f0e27b",
         "20bf6df90ee67fa5e851",
         "2851479f07cb4d16e954",
+        "28cc66222b80c84e9eb1",
         "28f8af554ecedb68837d",
         "2b8b6c15b21ac6a26e27",
         "2d12d6d7599e7fd55d54",
@@ -59888,7 +59890,7 @@
         "f8c9f83093f52df04fd4",
         "fc12cf0e6b38e6aa4a72"
       ],
-      "content_hash": "df77ff61fcb85455f815f50508ace219f53b5c83b46c68149b32797945a1a2c5",
+      "content_hash": "0bcb8bfd223e74ddd5f485548f76188163a7e309e2f38c87947dbe7985082703",
       "dependencies": [],
       "description": "Use when posting to a Chatter feed, creating feed comments, @mentioning users or groups, or rendering rich-text posts from Apex via the ConnectApi namespace. Trigger keywords: ConnectApi, FeedItem, Chatter post, @mention, rich text post, FeedElementCapabilities, link post. NOT for Experience Cloud feed embeds. NOT for sending email from Apex \u2014 use apex/apex-outbound-email-patterns. NOT for custom bell notifications \u2014 use apex/apex-custom-notifications-from-apex. NOT for turning down org-wide Chatter feed and digest noise \u2014 use admin/chatter-notification-tuning.",
       "file_location": "skills/apex/apex-connect-api-chatter",
@@ -59934,7 +59936,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "apex",
@@ -61598,6 +61600,7 @@
         "63334dfc3b03364b8aa9",
         "65fba9c0fcf7e26b362a",
         "6dee27f60bcf767b9f0c",
+        "70a12d6df2bf33a567a2",
         "7282019c7bd8b5be1163",
         "733fe8e4a91d1c73cfea",
         "770e00cbf3984d21917f",
@@ -61645,7 +61648,7 @@
         "fbee6a54d78d6977c8f4",
         "fe7b88250cfbd0c13e5e"
       ],
-      "content_hash": "964d362df2ece72e75dc9ceef4f6b0d2a5dc0adfa70bca39e6fc3b3c7fb76272",
+      "content_hash": "9c0f85c8786e4d9173e3f7f10a3a89037786ccf0fbd3aaed6829dfacc09408c6",
       "dependencies": [],
       "description": "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for trace flags or reading the log output \u2014 use apex/debug-logs-and-developer-console. NOT for async job design \u2014 use apex/async-apex.",
       "file_location": "skills/apex/apex-execute-anonymous",
@@ -61693,7 +61696,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "category": "apex",
@@ -64069,6 +64072,7 @@
         "066c559f2df29a7a815a",
         "07548c32278eb3a3e526",
         "089545b169bf3382650f",
+        "0a4777be82f391abdcf7",
         "0e3f93c87277fe548983",
         "1adff30049630c6c3a83",
         "1cdf5ab61fab0f5c18f0",
@@ -64143,7 +64147,7 @@
         "fe1a5064e9667e9b71a4",
         "ffc4fb859e995be5b4f3"
       ],
-      "content_hash": "bbe336b70ea527e2b4cfee86ccf79b0f711d7bfa50a982aa0ec6f35c632b6364",
+      "content_hash": "63bcdec18c894099b693e5e3b37b660961c5f83fd9cf333d7a1a4f98a0427a54",
       "dependencies": [],
       "description": "SObject.clone(preserveId, isDeepClone, preserveReadonly, preserveAutonumber): shallow vs deep clone semantics, related-record replication, clone with parent repointing, autonumber preservation. NOT for data migration \u2014 use data/bulk-api-and-large-data-loads. NOT for record snapshots \u2014 use data/field-history-tracking.",
       "file_location": "skills/apex/apex-record-clone-patterns",
@@ -64191,7 +64195,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "category": "apex",
@@ -66558,7 +66562,7 @@
         "ff4368b079048a11c259",
         "ff76529704b5f7fe2a8a"
       ],
-      "content_hash": "474ff2d37624394b9c5efd1ba4efdb0cefee0e3ccb12f0ad2d8842083c8c6c61",
+      "content_hash": "0a9975812e027b4e3d65291a713ebe1a56df4188b6254eeed6c066cce82ec8f2",
       "dependencies": [
         "apex-queueable-patterns"
       ],
@@ -66613,7 +66617,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.2"
+      "version": "1.1.3"
     },
     {
       "category": "apex",
@@ -67233,7 +67237,7 @@
         "fdbdf7b4940892af33ce",
         "feb0cf2aec77add5b632"
       ],
-      "content_hash": "c23dd92d2d4622566893eb9304dc8d999eaf52875370e06e31ce222e0d3c6117",
+      "content_hash": "e85cb3e8cbf1b298b418490b0831109a859658fe8fa5ba3eedd62a17a8c1ed52",
       "dependencies": [],
       "description": "Use when designing wrapper or inner classes in Apex to combine SObjects with computed fields, shape data for LWC consumption, or sort collections with Comparable or Comparator. Trigger keywords: wrapper class, inner class, Comparable, Comparator, @AuraEnabled fields, @JsonAccess, return a wrapper list to LWC, sort a list of wrapper objects. NOT for JSON serialization mechanics \u2014 use apex/apex-json-serialization. NOT for LWC data-binding patterns \u2014 use lwc/lwc-reactive-state-patterns.",
       "file_location": "skills/apex/apex-wrapper-class-patterns",
@@ -67297,7 +67301,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "category": "apex",
@@ -67668,7 +67672,7 @@
         "f9442addca798ba29de0",
         "fcc938aead54845dbe5b"
       ],
-      "content_hash": "e86e8f546bb22493f41b2102367f36a0d9ee6708556e5f6d846790c7e0cfd504",
+      "content_hash": "488cce4b0cc354efca54325cdd4e35a251c5d94f0456c93cb0b08d4a85b6ba9d",
       "dependencies": [],
       "description": "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex', 'move a callout out of a trigger', 'run Apex in the background'. NOT for Batchable structure or scope sizing \u2014 use apex/batch-apex-patterns. NOT for Queueable chaining \u2014 use apex/apex-queueable-patterns.",
       "file_location": "skills/apex/async-apex",
@@ -67729,7 +67733,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "category": "apex",
@@ -79873,7 +79877,7 @@
         "ff72be1944a3d585ac42",
         "ffaec02f00561a63ee04"
       ],
-      "content_hash": "40583978415c6a95f9ea062b0084b4e344f46331c8530f9b331f04731523ee5f",
+      "content_hash": "b8ea0f423ce8a8464a243f0b9095509756313f72d3f7ef85241ca8f7c9e07c98",
       "dependencies": [],
       "description": "Use when the user has captured Salesforce debug logs and needs forensic analysis of runtime behavior \u2014 trigger cascades, flow interviews, LWC/Aura @AuraEnabled calls, batch/queueable/future/scheduled Apex, platform events, CDC, validation/workflow/approvals, callouts, DML failures, governor limit hits, managed-package traces, flip-flop fields, UNABLE_TO_LOCK_ROW, INSUFFICIENT_ACCESS, mixed DML. Triggers: '.log file', 'debug log', 'why is this field changing', 'flow cascade', 'CPU timeout', 'heap exceeded', 'UNABLE_TO_LOCK_ROW', 'INSUFFICIENT_ACCESS', 'replay debugger'. NOT for choosing log levels or designing a logging framework (use apex/debug-and-logging), and NOT for setting up trace flags or Developer Console (use apex/debug-logs-and-developer-console).",
       "file_location": "skills/apex/salesforce-debug-log-analysis",
@@ -79938,7 +79942,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "category": "apex",
@@ -80006,6 +80010,7 @@
         "912f4db6120f9a580c7e",
         "945d65930efbb335f201",
         "9692e9df2f3a5828aad8",
+        "9ebf5a26243140b9157c",
         "a207566b061e33bb0f81",
         "a31286f4f5a8e1d43583",
         "a83d880de18d22b1f4c0",
@@ -80014,10 +80019,12 @@
         "ac8ddcb852a8c40aae92",
         "adf5f66e1a2d02ff249f",
         "b2c1ae0f6601566461c0",
+        "b357ea5b8d4e91d37305",
         "b437af81fe993ae2f300",
         "b452c929ce758b20fefb",
         "b6e1528d9c1b715deaf9",
         "ba1f25ffd31882ce275b",
+        "c0068462af4a69c91727",
         "c6e79f65fec8aedfae19",
         "c722499a4b39a99057ca",
         "cf5b6cf5075f6902abd8",
@@ -80039,7 +80046,7 @@
         "f74edbc3f4dcd2e0982d",
         "fcfab0c7a33805ea7efb"
       ],
-      "content_hash": "ce41cb235fd3c42304eb30e0b2c696a401a4e7fe502fe10c6845c23da6bbcfd7",
+      "content_hash": "6e15fb6869a775b7766d3e90a49931ba62fb7c5da5c3d961aba7c1af41bbdb3f",
       "dependencies": [],
       "description": "Use when nightly batch / scheduled Apex jobs are failing without anyone noticing \u2014 covers why uncaught exceptions in `execute()` are easy to miss (the exception email reaches only the class's last modifier unless Apex Exception Email recipients are set), how to query `AsyncApexJob` for `Status`, `NumberOfErrors`, and `ExtendedStatus`, when to implement `Database.RaisesPlatformEvents` so the platform publishes `BatchApexErrorEvent` on uncaught failures, how to subscribe to that event with an Apex trigger and notify operators, and how to layer a custom watcher schedule on top so silent-failure modes (job that never started, scheduled class deleted, queue stuck on `Queued`) still surface. Triggers: 'nightly batch failed at 2am with no notification', 'how do we know if a scheduled apex job is failing', 'BatchApexErrorEvent vs custom retry logic', 'Setup Apex Jobs only shows last 7 days, where else can I look', 'job is stuck in queued status nobody noticed for a week'. NOT for general Apex exception handling patterns (use apex/exception-handling), NOT for Batch Apex authoring or chunking strategy (use apex/batch-apex-patterns), NOT for Setup \u2192 Apex Jobs UI walkthrough as an admin task (use admin/batch-job-scheduling-and-monitoring), NOT for writing the Schedulable class itself (use apex/apex-scheduled-jobs).",
       "file_location": "skills/apex/scheduled-apex-failure-detection-and-monitoring",
@@ -80091,7 +80098,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "apex",
@@ -96193,6 +96200,7 @@
         "5153d0544c482703f0d1",
         "5228291bf3df1ce98cb0",
         "52ccbc57424d9a9806f0",
+        "534396ea23b06b6d632c",
         "55f48537848310201ba3",
         "58b75cfbfc543d3023c2",
         "58ce59420ed6fcc123dd",
@@ -96271,7 +96279,7 @@
         "ff228f06f03243c7bb0d",
         "ffc66473bede42636a6f"
       ],
-      "content_hash": "cdffd5dae1ed0f934d59195eadab4dc51ff0f830c9c28a84d9cd9ab6d2416abd",
+      "content_hash": "d0d9452e4a75636e44b8056db077f48f09b55457c2613a9b5bf4d5a9d61fdc84",
       "dependencies": [],
       "description": "Use when OmniStudio components are degrading under high concurrent user load, when Integration Procedures are hitting governor limits at portal scale, or when designing an OmniStudio deployment for thousands of simultaneous Experience Cloud users. Trigger keywords: OmniScript concurrency, Integration Procedure SOQL limits portal, Queueable Chainable, Direct Platform Access, LWR CDN Experience Cloud high volume. NOT for generic scalability planning (use architect/limits-and-scalability-planning), NOT for single-session performance tuning (use omnistudio/omnistudio-performance).",
       "file_location": "skills/architect/omnistudio-scalability-patterns",
@@ -96337,7 +96345,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "architect",
@@ -100792,6 +100800,7 @@
         "afb68e6d876a3dc97e46",
         "b12bf408fc73baebda26",
         "b239c465262ced7b12ce",
+        "b264e90e70c9613e75f4",
         "b34b180a035eab6b067e",
         "b5ef6110cb8f48b3778c",
         "b938fd3b0b4f029f6eb2",
@@ -100814,7 +100823,7 @@
         "f4def55f3c4d055427e5",
         "f8f0a75a3c2937f025ea"
       ],
-      "content_hash": "5ced17e0beedb187e575c2d716dd34fd7f3eca75012df6c99ca5465e7b21d9c8",
+      "content_hash": "39ab3d2aa03933e85965ec720e8cbd1922a9c35cfd9f7ac83ffab2f5eb911b89",
       "dependencies": [],
       "description": "Migrating Classic Notes & Attachments to Salesforce Files (ContentDocument / ContentVersion / ContentDocumentLink): bulk extraction, owner and parent preservation, sharing translation, idempotent re-runs, and post-migration cleanup. Triggers: 'attachments to files', 'notes and attachments migration', 'ContentDocument from Attachment', 'enable Files for Salesforce'. NOT for general file storage strategy (use data/salesforce-files-architecture) or for ContentVersion API patterns in new code (use integration/file-and-document-integration).",
       "file_location": "skills/data/attachment-to-files-migration",
@@ -100869,7 +100878,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "data",
@@ -112691,6 +112700,7 @@
         "14d9dc7cea4029ba168d",
         "20331fa82c1fe86ffe9f",
         "20eae65809112df8c3c1",
+        "213c74eb397c7e7fa636",
         "29fbaa2b09dabe45d542",
         "2dbd0df8cc520a3b7ff9",
         "33c1c981da1714e7ce61",
@@ -112741,7 +112751,7 @@
         "f99a4c0139596e8abb5a",
         "ffd46c259b3c7e296100"
       ],
-      "content_hash": "b17151018b07e9eaa092143b0015ce7094096255824fa9b8a03884956913b195",
+      "content_hash": "1178cccf5c2d16c04b0b723292e4082993dbb112d41923af3daef2dbc2579c0d",
       "dependencies": [],
       "description": "Working with Salesforce Files at the data layer \u2014 `ContentVersion` (binary content + version metadata), `ContentDocument` (the shareable parent handle), `ContentDocumentLink` (the sharing / parent-record join), the 2 GB single-file and 10 MB feed-attached limits, the deprecated `Attachment` object, the Classic-only `Document` object, and Files Connect for external sources. Covers SOQL to enumerate files on a record, Apex insert / link patterns, and `ShareType` / `Visibility` sharing implications. NOT for bulk-migrating Classic Attachments and Notes over to Files \u2014 use data/attachment-to-files-migration. NOT for the file upload UI in a component \u2014 use lwc/file-upload-patterns.",
       "file_location": "skills/data/salesforce-files-architecture",
@@ -112788,7 +112798,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "data",
@@ -117473,6 +117483,7 @@
         "26add60701288c3bd034",
         "298eeee27320e51825b1",
         "2a766c1f9897c8435788",
+        "2b7d1488cd3be83275f3",
         "316905f84412db0c0a60",
         "31df624d419b9aa4ebf5",
         "3244b90e943a48e98a56",
@@ -117548,9 +117559,10 @@
         "ebb5e983277171094aa6",
         "f2d7095020f86c8ad2cb",
         "f5e027d5d771aeaa632f",
-        "f767a0c4b0a2961cf7df"
+        "f767a0c4b0a2961cf7df",
+        "f7f3699cae7b61345f57"
       ],
-      "content_hash": "10b96dfe3e27f29a1f78ac4970089cea43ed5667565a23cc4ee5ba98cb213bcd",
+      "content_hash": "81797c1120df89c2814eb8a636bc9f4e6ea010d4efee0b5aff97fbe6e4521ebc",
       "dependencies": [],
       "description": "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup \u2014 use admin/devops-process-documentation.",
       "file_location": "skills/devops/devops-center-advanced",
@@ -117598,7 +117610,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "category": "devops",
@@ -125663,13 +125675,14 @@
         "dc98990f359f7830ea40",
         "e3437dfcbf07b5f64a7b",
         "e44f7bf1e2f992a2486d",
+        "e598b302b7a7432c0621",
         "ece291dc5bb8be234947",
         "ee17e04f5e826088fdce",
         "ef7869541fc1b01f24b7",
         "fe9d4ba8ba81ab65d3d4",
         "ff2de4e13d170aca81fa"
       ],
-      "content_hash": "e8fd30578c5023b08ffaa2259f5d3fd57660a33fb7c478e1d4cbef7babd1ce85",
+      "content_hash": "8aefa7ade105b2a6c455a4581e0b9031344a59edfabbd2c9b9cfc451b4de0091",
       "dependencies": [
         "flow/flow-http-callout-action",
         "flow/flow-invocable-from-apex"
@@ -125718,7 +125731,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "category": "flow",
@@ -129283,6 +129296,7 @@
         "4e794e0ad7e153a78e83",
         "4eb25c4afea9e1f54bc1",
         "5510c2d729fcf70c13f7",
+        "5a43b2ca11407be8eb35",
         "5a98e4969610f67ed444",
         "5b2ea5831d250d48d7a8",
         "5be47751be5785335a06",
@@ -129314,6 +129328,7 @@
         "b1f8b567b32874a23382",
         "b4c69b8ba8fdffd70543",
         "b7d5ccab459a58ba76b2",
+        "ba3600a1279df47f8351",
         "bac6ceaed44a27c1e420",
         "baf9ebafa655e8043dd0",
         "bcf24e5a270162b4a7a6",
@@ -129339,7 +129354,7 @@
         "fe2182d7e2653f3ae87c",
         "ff5b910b618fc3f244b3"
       ],
-      "content_hash": "446df834d542197eda49e33d1dfbc7839e9749891a727cd184047dbd6b7bf5f3",
+      "content_hash": "cc965a9f6da94c145c679ba211d49e8987e9284d2fb99577aab8cab74b58169f",
       "dependencies": [
         "flow/flow-governor-limits-deep-dive",
         "flow/flow-performance-optimization"
@@ -129356,7 +129371,7 @@
         "Get Records Element \u2014 https://help.salesforce.com/s/articleView?id=platform.flow_ref_elements_data_get.htm&type=5",
         "Per-Transaction Apex Governor Limits \u2014 100 SOQL synchronous / 200 asynchronous, 50,000 query rows, 10,000 ms / 60,000 ms CPU, 10 MB / 25 MB heap (Apex Developer Guide 264 L19780, a Winter '27 release-level change for every org; 6 MB / 12 MB in Summer '26; Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit`, api_meta.txt L113855-113862) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
         "Best Practices for Deployments with Large Data Volumes \u2014 https://developer.salesforce.com/docs/atlas.en-us.salesforce_large_data_volumes_bp.meta/salesforce_large_data_volumes_bp/",
-        "Maximizing the Performance of Force.com SOQL, Reports, and List Views (Salesforce Developers) \u2014 standard index selective below 30% of the first million targeted records and 15% beyond, capping at 1,000,000; custom index below 10% / 5%, capping at 333,333; standard-indexed fields are primary keys (Id, Name, OwnerId), foreign keys (CreatedById, LastModifiedById, lookup and master-detail fields), and audit fields (CreatedDate, SystemModstamp) \u2014 https://developer.salesforce.com/blogs/engineering/2013/07/maximizing-the-performance-of-force-com-soql-reports-and-list-views",
+        "Maximizing the Performance of Force.com SOQL, Reports, and List Views (Salesforce Developers) \u2014 standard index selective below 30% of the first million targeted records and 15% beyond, capping at 1,000,000; custom index below 10% / 5%, capping at 333,333 (UNVERIFIED 2026-10-20: the percentages are in `salesforce_large_data_volumes_bp.txt` L463-468; the caps are not); standard-indexed fields are primary keys (Id, Name, OwnerId), foreign keys (CreatedById, LastModifiedById, lookup and master-detail fields), and audit fields (CreatedDate, SystemModstamp) \u2014 https://developer.salesforce.com/blogs/engineering/2013/07/maximizing-the-performance-of-force-com-soql-reports-and-list-views",
         "Developer Console Query Plan Tool FAQ \u2014 a Cost above 1 means the filter is not selective and a full table scan will be used \u2014 https://help.salesforce.com/s/articleView?id=000386864&type=1",
         "Make a SOQL Query Selective by Marking a Field as External ID or Unique \u2014 https://help.salesforce.com/s/articleView?id=000383981&type=1",
         "Flow metadata type \u2014 `FlowRecordLookup` fields (`object`, `filters`, `filterLogic`, `queriedFields`, `sortField`, `sortOrder`, `limit`, `getFirstRecordOnly`, `storeOutputAutomatically`, `assignNullValuesIfNoRecordsFound`, `outputReference`, `faultConnector`) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_visual_workflow.htm",
@@ -129388,7 +129403,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "category": "flow",
@@ -130000,10 +130015,12 @@
       "category": "flow",
       "chunk_ids": [
         "077b64e232095b5b0bac",
+        "091451dd8403a4e625e4",
         "09177c380278e9420c5d",
         "0993eb45cc77df8c9530",
         "0b14f6b01a5dcf63ba8d",
         "0e95008d450fd350398b",
+        "0f67072a62ac41141fcd",
         "1c3598a557b50ef41de6",
         "1d4548c154c74f8c0074",
         "24c3109ea869c34acb32",
@@ -130016,6 +130033,7 @@
         "31e68a8fc8e6a6fa279a",
         "3485721eaac512a04337",
         "378cf8d956f5b475833f",
+        "3c268bf4e8575dc236ea",
         "3e9426f6217acd1217b5",
         "3fd970475430b76cd59d",
         "4089f44e48e790ed2343",
@@ -130030,6 +130048,7 @@
         "58fb780a51d9c1f5e55e",
         "5acc9d76ed13b328945c",
         "5b15597d76278de8c6e2",
+        "5b3ddc30b9b96d172593",
         "5ba62e45f86c28fe8be6",
         "5ca9e2186c21363cbbe4",
         "5dfdb51ce4990e71fa6c",
@@ -130041,6 +130060,7 @@
         "6a3b15836383f4977ec8",
         "7113986abd508596f056",
         "741c6dfa580ad8316ee9",
+        "77345d0c8614de3fa89c",
         "7927eeef64f351ad6688",
         "794d1eaef1b55f871d02",
         "7c85963970795075543a",
@@ -130049,6 +130069,7 @@
         "9270e26bed8bb8b11749",
         "93873a4119e3560c242e",
         "94861fd51e5d982a66e7",
+        "97dbe0a5e00524faaabc",
         "9b901d5de6f21e1e75d9",
         "9e654039a7a821e71d33",
         "a04d193a410712fa3fe5",
@@ -130079,7 +130100,7 @@
         "fd316752c81c7fa17196",
         "ffc3b3a5a2e80ec388b5"
       ],
-      "content_hash": "b21e77fa520186bcc26350de29de8b9b0462c5f43fab1081e237090aa8082bb6",
+      "content_hash": "6d21abeabce11edae8c2a8362d18a1319d0a16a8320d6118aee0f55e80661f17",
       "dependencies": [],
       "description": "Diagnose Flow failures using the Debug Log, Flow Error emails, and the Debug panel; instrument flows so production issues are triageable. NOT for Apex debugging - use apex/salesforce-debug-log-analysis.",
       "file_location": "skills/flow/flow-interview-debugging",
@@ -130125,7 +130146,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "category": "flow",
@@ -130440,6 +130461,7 @@
         "513e5e3c659d7dfe77a6",
         "51ad3471fbaef5464fee",
         "5518ad47f1695dded305",
+        "556743e9730dee418494",
         "575325b6c2112371c691",
         "57c43a29a7b088a108cc",
         "580af6304dadacb1d049",
@@ -130586,7 +130608,7 @@
         "fdbfc7f82b26079f60c7",
         "fe68c637cb6240ab0860"
       ],
-      "content_hash": "3a8f89dde90b05aa6500b26baefdf662d99dd621b5d26d4e8b4b5cf268c50dbc",
+      "content_hash": "fb9f55f13304a1c51f76d74673089ae4951d98ddb38bb97f51f69667ee48ee4e",
       "dependencies": [],
       "description": "Use when reviewing or authoring Flow logic that contains a Loop element \u2014 DML-in-loop / SOQL-in-loop refactors, the collect-then-DML idiom, nested loops, and loop-free alternatives (Collection Filter, Transform, Get-with-criteria). Triggers: 'DML inside flow loop', 'Get Records inside loop element', 'Update Records in loop blowing governor limits', 'nested loop in flow', 'Subflow in loop'. NOT for collection elements on their own \u2014 use flow/flow-collection-processing. NOT for whole-flow bulk redesign \u2014 use flow/flow-bulkification. Also covers: Loop metadata (FlowLoop collectionReference / iterationOrder / nextValueConnector / noMoreValuesConnector), Collection Filter, Sort and Map processors (FlowCollectionProcessor), collection Assignment operators (Add, AssignCount, RemoveAll, RemoveUncommon), and FLOW_LOOP_DETAIL debug-log analysis.",
       "file_location": "skills/flow/flow-loop-element-patterns",
@@ -130639,9 +130661,9 @@
       "templates": [
         "skills/flow/flow-loop-element-patterns/templates/flow-loop-element-patterns-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "category": "flow",
@@ -131251,7 +131273,7 @@
         "f82576156305370eb06f",
         "f9ea6f1a442c28e544e0"
       ],
-      "content_hash": "f879295d480c92345b3cc21c13cfcce4c26791112593c6349e432facea9ec780",
+      "content_hash": "023ddd947815edd06ed929e0f4132655e679d76e1aa5c7b8c331190da52b2c05",
       "dependencies": [],
       "description": "Use when Flow is a Platform Event publisher, subscriber, or both. Triggers: 'publish platform event from flow', 'platform-event-triggered flow', 'high-volume platform event', 'publish after commit vs immediate', 'PE subscriber error handling', 'integration fan-out from save'. NOT for Change Data Capture \u2014 use integration/change-data-capture-integration. NOT for async work that needs no pub/sub \u2014 use flow/scheduled-flows.",
       "file_location": "skills/flow/flow-platform-events-integration",
@@ -131301,9 +131323,9 @@
       "templates": [
         "skills/flow/flow-platform-events-integration/templates/flow-platform-events-integration-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "flow",
@@ -132744,6 +132766,7 @@
         "ea7658989a15232db094",
         "eb34434dc739e25a0226",
         "eca082eef241457f718d",
+        "ed6d17f1ae53c87d7830",
         "f1aca03dc6cb5c93bcac",
         "f342b9a032402d40c2d4",
         "f3519e1e8066f03e5632",
@@ -132755,7 +132778,7 @@
         "fe3125df4302470b4606",
         "ffb336159214b4c99313"
       ],
-      "content_hash": "77f58858dc5867913611f7afbb76c82155120f878eae5b590654947c9d81320b",
+      "content_hash": "68d6642f6b6797502d874955445127dfa029c8a9d9ce7eeb3ea0d8f0b9de5735",
       "dependencies": [],
       "description": "Use when defining or reviewing test strategy for Salesforce Flow, including Flow Tests, debug runs, path coverage, test data, and explicit validation of fault paths and custom component behavior. Triggers: 'flow test tool', 'how do i test a flow', 'flow fault path testing', 'flow debug interview'. NOT for Apex unit testing or manual QA planning that is unrelated to Flow behavior \u2014 use flow/flow-debugging. Also covers: FlowTest metadata, flowtest-meta.xml, testPoints, Flow.Interview, sf flow run test, flow coverage.",
       "file_location": "skills/flow/flow-testing",
@@ -132805,9 +132828,9 @@
       "templates": [
         "skills/flow/flow-testing/templates/flow-testing-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "2.1.1"
+      "version": "2.1.2"
     },
     {
       "category": "flow",
@@ -133117,6 +133140,7 @@
         "7ccf0fe78aff4d21bb2c",
         "81b8add517ce692c6438",
         "839f0dd5efbccd2624fc",
+        "88c0ca079d08ad28c8ad",
         "95c4a4643cb5fc2fb8d1",
         "986393daaf08a02aac3b",
         "9b5d017d16febc4ffca6",
@@ -133160,7 +133184,7 @@
         "f89285768b1ef0d6202c",
         "fb4a38250d0f89a8a926"
       ],
-      "content_hash": "f1fcdf2d8591a34c35a0f52a7d9ee95a9a7c562fa3adcaadb8c578fc661be0a6",
+      "content_hash": "fee3fe236333cd3f09ae5a42a634de92d21dfa33105e87147a16d6076acd33f1",
       "dependencies": [],
       "description": "Reason about when a Flow is inside the caller's transaction vs starts its own. Pick Before-Save vs After-Save vs Async Path vs Pause + Resume when transaction boundaries matter. Covers governor-limit sharing, DML sequencing, recoverability, and the limits that reset when a new transaction starts. NOT for choosing Flow vs Apex (use admin/process-automation-selection) or record-triggered design \u2014 use flow/record-triggered-flow-patterns.",
       "file_location": "skills/flow/flow-transactional-boundaries",
@@ -133214,7 +133238,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.3"
+      "version": "1.0.4"
     },
     {
       "category": "flow",
@@ -137329,6 +137353,7 @@
         "4f42de7689f215f0ce15",
         "505aa7f5cdc9765f4706",
         "526b08a00ad8706f428e",
+        "52bac6fa1b5310461ce4",
         "588eaeb14fca609af32a",
         "5a1128a55edac39cef27",
         "5af7132e0fe766ef1859",
@@ -137359,6 +137384,7 @@
         "b9f29f6dea60d230a802",
         "bd7d94f66266e23e8f67",
         "c3b7554c229b45085b06",
+        "c3f887f6abfc3d865335",
         "c4b1b41eb840c10f8335",
         "c5e7283c3bc10df792f9",
         "c6e93384e4aa42c4f50d",
@@ -137377,7 +137403,7 @@
         "fd6845fe95eb54626027",
         "fe52b99eb4f213d66a10"
       ],
-      "content_hash": "a4cd28eb50d345c93aa197875427ab4f93728649ba576df90d5925bd78419e50",
+      "content_hash": "a168c664cfa04c8c504759c5ab78b37ac8527a492bfe6673e9263ee3c276fcb3",
       "dependencies": [],
       "description": "Use when transforming structured data inside Apex \u2014 CSV \u2192 JSON, XML \u2192 SObject list, JSON \u2192 flattened CSV, or schema-mapping a third-party payload to a Salesforce model \u2014 and the existing options (`JSON.deserialize`, `Dom.Document` traversal) are too fragile. NOT for MuleSoft Anypoint DataWeave running off-platform (use architect/mulesoft-anypoint-architecture) \u2014 use apex/apex-json-serialization.",
       "file_location": "skills/integration/dataweave-for-apex",
@@ -137423,9 +137449,9 @@
       "templates": [
         "skills/integration/dataweave-for-apex/templates/dataweave-for-apex-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "category": "integration",
@@ -138686,9 +138712,7 @@
       "category": "integration",
       "chunk_ids": [
         "079d117aefc2896ae60c",
-        "0b0d5073437eb6814da0",
         "0beee316454cb9731a67",
-        "115c2aeb53900eb699ac",
         "135e86ba05d23f5e1240",
         "1543766fa2f4a3f54a04",
         "16c5c8833f0632b26439",
@@ -138697,16 +138721,16 @@
         "1e568d8e9d220f796d66",
         "20f87f453e0dffa0a070",
         "212e9c77a27b82be05e2",
+        "219624a5217f23708413",
         "225ea8295104ba7ddb3c",
         "23a78d0ee3716602a4d2",
         "27d494cafa6112f8f84c",
         "2c91411b91c1c6205800",
-        "2d89268fed26530a992b",
         "2fea5eff037a5c7576f1",
+        "304415690dcc28bf6741",
         "3108db4dd7cfb0a5dca9",
         "3196188614dce44589d3",
         "319ec51f5db4655ea84e",
-        "32f118a5fc7c05ccbcae",
         "33a0730ba0bd4d058ee5",
         "33b63521d28fe4ff7702",
         "3833b437a5151da4ac4c",
@@ -138718,7 +138742,7 @@
         "3c828abb52592509b208",
         "3df1cedd0c1c0b62341a",
         "3e477d6148490895ff69",
-        "3e7f09d6365c0f45864c",
+        "4141af34628c50c7359c",
         "443667245ff0c4834fc8",
         "449fb24b0ba91299f9b2",
         "45392759bbe6884cd6fb",
@@ -138730,11 +138754,10 @@
         "5a4d549024b9edc834ff",
         "5acde3a6f21c3c9cec42",
         "5b806e8be6891241413c",
-        "5b8bcdda64b151645122",
+        "5c0155b4b0b2e74ec0b6",
         "5da37dfa05e06070b269",
         "5dcc9c3a0954db277312",
         "60bb6a3a79c1240fe349",
-        "63ea477614b86d8fea77",
         "6d50e0c5ddb70a405d65",
         "6da96912bcafe48adf4f",
         "6ee08e9ec5ef52d99c18",
@@ -138745,10 +138768,12 @@
         "813da85b704a94331544",
         "825f4b3f32021e27cc77",
         "8855ea690f6f088c7305",
-        "8cd4c8123df5053435d6",
+        "88a6b4a1bcc6a77dc803",
+        "88d88fc623a6c699d8db",
         "8e1ce5c27e22adc1aeec",
         "8f0f033f4be73821ad32",
         "93a3fdaaba3fb67fada7",
+        "95e029a033bad072f1ef",
         "9678ff9ceb065eda3ca9",
         "997ef0c8a8ce84594666",
         "9af64956aec5929c19eb",
@@ -138761,36 +138786,40 @@
         "abf2be2b1a1f175da243",
         "ac48751dc0fd87381de7",
         "af3aac03c82590204452",
-        "afa87921a07e50616497",
         "b2301220617744ae9b15",
         "b34d42c7a97657a58d2c",
         "b4bebd9d0e186acf88b2",
         "b6a3067032ee21786bcc",
         "bbc5a9a6ad24b30ffc79",
+        "bf78b98368337860b8df",
         "c113a1afe71669acad94",
         "c1d5d083a48ae0f3bb3e",
         "c222f0e212b9755bdd9e",
         "c4d4673051629f356746",
         "c55f1adfadd5fc65f2fa",
+        "c5992c246fe5a7ce604a",
+        "c79eb5a9e27dfa5593c4",
         "cbc201b07f19556d52a7",
+        "cf1c44cf09f2b462393f",
         "d6ba0beeea38ce6a983a",
         "d7a4cfcd67b0964bb69f",
         "dcf9a031d4aeaea01999",
+        "de7a933a6e7a11398bf2",
         "e1b4f68adb080c14f3ad",
         "e26738d48a104ce93562",
         "e32f431ff7c742fd0887",
         "e3a61397f89564908428",
-        "e3fb27440eb16a994ad1",
         "eba7f78e1b941f88478a",
         "ee2d57382f340b949598",
         "f104a3d667d3710db073",
         "f18bd8362204748afe78",
         "f1f656631c335595cbb7",
         "f659dc7ad2223cce53bd",
-        "fa02be5f21fff4a6a911",
-        "fd3670c2e8a01e537ca0"
+        "f7016d74d540fca5f350",
+        "fd3670c2e8a01e537ca0",
+        "fe6b314e11449045a85a"
       ],
-      "content_hash": "6e59a56c0cfc1e70c000db78addb67fb68c035d3493768bfabf39073ecbaee23",
+      "content_hash": "32bb75af5377f6fed93b50bf460ef57976f06b41a917d91d8e42aeb2958ed4c7",
       "dependencies": [
         "mulesoft-salesforce-connector",
         "api-led-connectivity",
@@ -138847,7 +138876,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "integration",
@@ -156633,6 +156662,7 @@
         "147129e0bfa13b68ce87",
         "1487868f19dfe70b8fc4",
         "172b83ad3fcee20a0789",
+        "19a5793be74a574879f2",
         "1a799e80acd20de2934a",
         "1b43ec35d9085c6a76b1",
         "1c085157cb4c40381596",
@@ -156644,7 +156674,6 @@
         "252f9892fcd0a2cd9026",
         "293e43d51f030de9fd95",
         "2b24cbe6e11e093a8242",
-        "2ccaf38bbecbf28bdf5d",
         "32bca27d7a660ce2bca5",
         "33e7787becbd730b08d7",
         "3aa1bf077b938a47f957",
@@ -156659,7 +156688,6 @@
         "50af6a9421f2805710d3",
         "544fe387c65e74536269",
         "551f7381194de6de18c7",
-        "56a6903b2a986668ede9",
         "56ead580050e93f66b19",
         "58857f7fdf39744a3bdf",
         "595ece84101a8a48b299",
@@ -156716,6 +156744,7 @@
         "bc9df56384e13052b837",
         "beed7929354984271c1d",
         "c143b6a1c63a063e38f9",
+        "c29aa3e3cc32ee4dda70",
         "c32dd2f24948232c398a",
         "c5f4b3828dbf48f6d262",
         "c6216e21389cf307b214",
@@ -156726,6 +156755,7 @@
         "cf9c2b911d1aef6fd38c",
         "d1abfbddb991d7595d12",
         "d1fd7cebb2ea34468421",
+        "d50b528a3acfe8182ace",
         "d5884b1bd3524ab15bdb",
         "d689a95266e484118f8a",
         "da991fc7a9cd827da0be",
@@ -156750,7 +156780,7 @@
         "fbffccfa81815bd3ae86",
         "fcd098b731850f1652d7"
       ],
-      "content_hash": "5d7df28cf1ab9a769dda665a716d2a6cd7ed989563709576cb7b0931c897d14c",
+      "content_hash": "7df9d9d1f5450d49133d57c0c53fa64690e016eb6bf44740437501eae437b730",
       "dependencies": [],
       "description": "Use when DataRaptor Transform operations are slow, hit governor limits, or use Apex where formula fields would suffice. Covers formula vs Apex expressions, bulk transform sizing, and chained transform composition. Triggers: 'dataraptor transform slow'. NOT for DataRaptor Extract or Load performance \u2014 use omnistudio/dataraptor-patterns.",
       "file_location": "skills/omnistudio/dataraptor-transform-optimization",
@@ -156803,7 +156833,7 @@
       ],
       "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.2"
+      "version": "1.0.3"
     },
     {
       "category": "omnistudio",

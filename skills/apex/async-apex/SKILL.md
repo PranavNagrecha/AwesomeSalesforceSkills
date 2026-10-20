@@ -30,7 +30,7 @@ outputs:
   - "review findings for queueable, batch, future, or scheduler usage"
   - "migration guidance from legacy future methods"
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

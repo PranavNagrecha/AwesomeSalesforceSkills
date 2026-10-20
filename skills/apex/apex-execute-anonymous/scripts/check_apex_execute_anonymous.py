@@ -5,8 +5,12 @@ Scans .apex scripts for:
 - SOQL without LIMIT followed by DML
 - DML without a savepoint or dry-run toggle
 
+Findings print as `WARN:` lines and exit 0; `--strict` exits 1 on any finding.
+No .apex files prints one WARN line (exit 0, 1 with --strict). A missing
+directory prints ERROR and exits 1.
+
 Usage:
-    python3 check_apex_execute_anonymous.py [--manifest-dir path/to/project]
+    python3 check_apex_execute_anonymous.py [--manifest-dir path/to/project] [--strict]
 """
 
 from __future__ import annotations
@@ -27,6 +31,11 @@ APPLY_TOGGLE = re.compile(r"\bBoolean\s+APPLY\s*=", re.IGNORECASE)
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check anonymous-Apex anti-patterns.")
     parser.add_argument("--manifest-dir", default=".", help="Root directory to scan.")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any finding (or the empty-directory WARN) is reported.",
+    )
     return parser.parse_args()
 
 
@@ -62,14 +71,17 @@ def main() -> int:
     if not root.exists():
         print(f"ERROR: directory not found: {root}", file=sys.stderr)
         return 1
+    if not any(root.rglob("*.apex")):
+        print(f"WARN: no .apex scripts found under {root}")
+        return 1 if args.strict else 0
 
     issues = check_scripts(root)
     if not issues:
         print("No anonymous-Apex anti-patterns detected.")
         return 0
     for issue in issues:
-        print(f"ISSUE: {issue}", file=sys.stderr)
-    return 1
+        print(f"WARN: {issue}", file=sys.stderr)
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

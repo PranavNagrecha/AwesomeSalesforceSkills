@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Audit Apex files for common Async Apex selection and implementation risks.
 
-Stdlib only. Scans *.cls and *.trigger under --manifest-dir and prints a JSON report.
-Exit 1 when any finding is reported.
+Stdlib only. Scans *.cls and *.trigger under --manifest-dir and prints a JSON report on
+stdout plus one `WARN:` line per finding (with file:line) on stderr.
+Exit codes: findings alone exit 0; --strict makes any finding exit 1; an empty directory
+prints one WARN line and exits 0 (1 with --strict); a missing directory prints ERROR and
+exits 1.
 
 Rules and the Apex Developer Guide (262) statement each one encodes:
   CRITICAL  System.enqueueJob inside a loop. 50 enqueues per synchronous transaction, 1 per
@@ -55,6 +58,7 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory to scan for Apex classes and triggers.",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 when any finding (or the empty-directory WARN) is reported.")
     parser.add_argument("--self-test", action="store_true", help="Run against scripts/fixtures/good and bad.")
     return parser.parse_args()
 
@@ -68,13 +72,15 @@ def normalize_finding(finding: str) -> dict[str, str]:
     return {"severity": severity or "INFO", "location": location, "message": message}
 
 
-def emit_result(findings: list[str], summary: str) -> int:
+def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     normalized = [normalize_finding(item) for item in findings]
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
+    for item in normalized:
+        print(f"WARN: {item['severity']} {item['location']}: {item['message']}", file=sys.stderr)
     if normalized:
         print(f"WARN: {len(normalized)} finding(s) detected", file=sys.stderr)
-    return 1 if normalized else 0
+    return 1 if (normalized and strict) else 0
 
 
 def iter_apex_files(root: Path) -> list[Path]:
@@ -174,11 +180,12 @@ def main() -> int:
         return self_test()
     root = Path(args.manifest_dir)
     if not root.exists():
-        return emit_result([f"HIGH {root}: manifest directory not found"], "Scanned 0 Apex files; manifest directory was missing.")
+        print(f"ERROR: manifest directory not found: {root}")
+        return 1
 
     files = iter_apex_files(root)
     if not files:
-        return emit_result([f"HIGH {root}: no Apex files found"], "Scanned 0 Apex files; no .cls or .trigger files were found.")
+        return emit_result([f"HIGH {root}: no Apex files found"], "Scanned 0 Apex files; no .cls or .trigger files were found.", args.strict)
 
     collect_future_methods(files)
     findings: list[str] = []
@@ -186,7 +193,7 @@ def main() -> int:
         findings.extend(audit_file(path))
 
     summary = f"Scanned {len(files)} Apex file(s); {len(findings)} async-Apex finding(s) detected."
-    return emit_result(findings, summary)
+    return emit_result(findings, summary, args.strict)
 
 
 if __name__ == "__main__":

@@ -33,7 +33,7 @@ outputs:
   - "Review checklist confirming Finalizer constraints are respected"
 dependencies:
   - apex-queueable-patterns
-version: 1.1.2
+version: 1.1.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

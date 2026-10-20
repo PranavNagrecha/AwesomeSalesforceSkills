@@ -17,11 +17,14 @@ Walks an SFDX-style metadata tree (force-app/) and reports:
 Stdlib only — no pip dependencies.
 
 Usage:
-    python3 check_scheduled_apex_failure_detection_and_monitoring.py [--root force-app/main/default]
+    python3 check_scheduled_apex_failure_detection_and_monitoring.py [--root force-app/main/default] [--strict]
 
-Exit codes:
-    0  no findings
-    1  findings present (informational, non-blocking)
+Every finding, including the project-level gaps (3 and 4 above), prints as a
+``WARN:`` line. Exit codes:
+    0  no findings, or findings (class-level or project-level) without --strict
+    1  --strict and at least one finding; also --strict on an empty tree (no
+       .cls/.trigger files prints one WARN line and exits 0 without --strict)
+    1  missing --root (``ERROR:`` line)
 """
 
 from __future__ import annotations
@@ -173,16 +176,34 @@ def main() -> int:
             "watcher."
         )
     )
-    p.add_argument("--root", default="force-app/main/default")
+    p.add_argument(
+        "--root",
+        "--manifest-dir",
+        dest="root",
+        default="force-app/main/default",
+        help="Metadata root containing classes/ and triggers/ (--manifest-dir is an alias).",
+    )
+    p.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any finding or project-level gap (or the empty-directory WARN) is reported.",
+    )
     args = p.parse_args()
 
     root = Path(args.root)
     if not root.exists():
-        print(f"metadata root not found: {root}", file=sys.stderr)
-        return 0
+        print(f"ERROR: metadata root not found: {root}")
+        return 1
 
     classes_dir = root / "classes"
     triggers_dir = root / "triggers"
+
+    if not (
+        (classes_dir.exists() and any(classes_dir.rglob("*.cls")))
+        or (triggers_dir.exists() and any(triggers_dir.rglob("*.trigger")))
+    ):
+        print(f"WARN: no Apex classes or triggers found under {root} (expected classes/ and triggers/)")
+        return 1 if args.strict else 0
 
     findings_count = 0
 
@@ -196,7 +217,7 @@ def main() -> int:
             "they only land in the debug log + ExtendedStatus."
         )
         for fp, name in sched_no_try:
-            print(f"  - {fp.relative_to(root)}: class {name}")
+            print(f"WARN: {fp.relative_to(root)}: Schedulable class {name} has no try-catch in execute()")
         findings_count += len(sched_no_try)
 
     batch_no_raises = find_batchable_without_raises(classes_dir)
@@ -210,7 +231,7 @@ def main() -> int:
             "cannot detect them."
         )
         for fp, name in batch_no_raises:
-            print(f"  - {fp.relative_to(root)}: class {name}")
+            print(f"WARN: {fp.relative_to(root)}: Batchable class {name} lacks Database.RaisesPlatformEvents")
         findings_count += len(batch_no_raises)
 
     has_subscriber, subscriber_paths = has_batch_apex_error_event_trigger(
@@ -225,6 +246,7 @@ def main() -> int:
             "BatchApexErrorEvent. Even Batch classes that publish the event "
             "have nowhere to deliver to. Add one trigger that logs + notifies."
         )
+        print(f"WARN: project-level gap: no trigger on BatchApexErrorEvent under {root}")
         findings_count += 1
     else:
         print(
@@ -242,6 +264,7 @@ def main() -> int:
             "stuck-queued jobs, completed-with-errors batches, and Queueable "
             "failures are invisible. See the skill workflow step 4."
         )
+        print(f"WARN: project-level gap: no Schedulable class queries AsyncApexJob under {root}")
         findings_count += 1
     else:
         print(
@@ -261,8 +284,8 @@ def main() -> int:
         "Refer to skills/apex/scheduled-apex-failure-detection-and-monitoring/SKILL.md "
         "for the recommended workflow."
     )
-    print(f"ERROR: {findings_count} failure-detection gap(s); see report above.", file=sys.stderr)
-    return 1
+    print(f"WARN: {findings_count} failure-detection gap(s); see report above.", file=sys.stderr)
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

@@ -92,7 +92,7 @@
     "f9442addca798ba29de0",
     "fcc938aead54845dbe5b"
   ],
-  "content_hash": "e86e8f546bb22493f41b2102367f36a0d9ee6708556e5f6d846790c7e0cfd504",
+  "content_hash": "488cce4b0cc354efca54325cdd4e35a251c5d94f0456c93cb0b08d4a85b6ba9d",
   "dependencies": [],
   "description": "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex', 'move a callout out of a trigger', 'run Apex in the background'. NOT for Batchable structure or scope sizing \u2014 use apex/batch-apex-patterns. NOT for Queueable chaining \u2014 use apex/apex-queueable-patterns.",
   "file_location": "skills/apex/async-apex",
@@ -153,5 +153,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

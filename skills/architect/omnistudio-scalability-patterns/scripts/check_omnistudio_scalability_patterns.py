@@ -11,7 +11,10 @@ Uses stdlib only — no pip dependencies.
 
 Usage:
     python3 check_omnistudio_scalability_patterns.py [--help]
-    python3 check_omnistudio_scalability_patterns.py --manifest-dir path/to/metadata
+    python3 check_omnistudio_scalability_patterns.py --manifest-dir path/to/metadata [--strict]
+
+Exit codes: 1 when --manifest-dir does not exist; findings exit 0 unless --strict (then 1).
+A directory with no .json or .cls files prints one WARN and exits 0 (1 with --strict).
 """
 
 from __future__ import annotations
@@ -54,9 +57,10 @@ def _parse_xml_safe(path: Path) -> ET.Element | None:
 def check_ip_fire_and_forget_misuse(manifest_dir: Path) -> List[str]:
     """Flag Integration Procedures using useFuture=true.
 
-    Fire-and-forget (useFuture=true) does NOT escape SOQL governor limits.
-    Practitioners who see limit errors and add fire-and-forget are applying
-    the wrong fix. Flag these for manual review.
+    Fire-and-forget (useFuture=true) runs the IP in one future-method transaction.
+    Limits are per transaction (Apex Developer Guide 264 L19729-19731); the
+    asynchronous column allows 200 SOQL queries instead of 100 (L19747), so the
+    wrong fix for a limit overrun is to add fire-and-forget. Flag for review.
     """
     issues = []
     # OmniStudio IPs are stored as JSON or XML depending on deployment method.
@@ -81,8 +85,11 @@ def check_ip_fire_and_forget_misuse(manifest_dir: Path) -> List[str]:
             ip_name = data.get("Name") or data.get("name") or ip_file.stem
             issues.append(
                 f"Integration Procedure '{ip_name}' uses fire-and-forget (useFuture=true). "
-                f"This removes UI blocking but does NOT escape SOQL governor limits. "
-                f"If limit errors occur under load, Queueable Chainable is required. "
+                f"This removes UI blocking, but the whole IP still runs in one future-method "
+                f"transaction: limits are per transaction and the asynchronous budget raises "
+                f"SOQL only from 100 to 200 (Apex Developer Guide 264 L19729-19731, L19747). "
+                f"If an IP needs more than that budget, Queueable Chainable (a separate "
+                f"transaction per designated step) is required. "
                 f"File: {ip_file}"
             )
     return issues
@@ -256,10 +263,6 @@ def check_omnistudio_scalability_patterns(manifest_dir: Path) -> Tuple[List[str]
     issues: List[str] = []
     infos: List[str] = []
 
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues, infos
-
     issues.extend(check_ip_fire_and_forget_misuse(manifest_dir))
     issues.extend(check_missing_ip_caching(manifest_dir))
     issues.extend(check_aura_experience_cloud_sites(manifest_dir))
@@ -288,12 +291,23 @@ def parse_args() -> argparse.Namespace:
         default=False,
         help="Also show informational findings (default: warnings and errors only).",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on any finding (and on an empty directory). Default: findings exit 0.",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
+    if not manifest_dir.exists():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        return 1
+    if not _walk_files(manifest_dir, ".json") and not _walk_files(manifest_dir, ".cls"):
+        print(f"WARN: no .json or .cls files found under {manifest_dir}; nothing to check.")
+        return 1 if args.strict else 0
     issues, infos = check_omnistudio_scalability_patterns(manifest_dir)
 
     if args.show_info:
@@ -315,7 +329,7 @@ def main() -> int:
         file=sys.stderr,
     )
 
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

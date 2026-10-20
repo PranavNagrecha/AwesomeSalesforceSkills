@@ -25,6 +25,7 @@
     "4f42de7689f215f0ce15",
     "505aa7f5cdc9765f4706",
     "526b08a00ad8706f428e",
+    "52bac6fa1b5310461ce4",
     "588eaeb14fca609af32a",
     "5a1128a55edac39cef27",
     "5af7132e0fe766ef1859",
@@ -55,6 +56,7 @@
     "b9f29f6dea60d230a802",
     "bd7d94f66266e23e8f67",
     "c3b7554c229b45085b06",
+    "c3f887f6abfc3d865335",
     "c4b1b41eb840c10f8335",
     "c5e7283c3bc10df792f9",
     "c6e93384e4aa42c4f50d",
@@ -73,7 +75,7 @@
     "fd6845fe95eb54626027",
     "fe52b99eb4f213d66a10"
   ],
-  "content_hash": "a4cd28eb50d345c93aa197875427ab4f93728649ba576df90d5925bd78419e50",
+  "content_hash": "a168c664cfa04c8c504759c5ab78b37ac8527a492bfe6673e9263ee3c276fcb3",
   "dependencies": [],
   "description": "Use when transforming structured data inside Apex \u2014 CSV \u2192 JSON, XML \u2192 SObject list, JSON \u2192 flattened CSV, or schema-mapping a third-party payload to a Salesforce model \u2014 and the existing options (`JSON.deserialize`, `Dom.Document` traversal) are too fragile. NOT for MuleSoft Anypoint DataWeave running off-platform (use architect/mulesoft-anypoint-architecture) \u2014 use apex/apex-json-serialization.",
   "file_location": "skills/integration/dataweave-for-apex",
@@ -119,7 +121,7 @@
   "templates": [
     "skills/integration/dataweave-for-apex/templates/dataweave-for-apex-template.md"
   ],
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

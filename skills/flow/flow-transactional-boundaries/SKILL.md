@@ -34,7 +34,7 @@ outputs:
   - Governor-limit budget per boundary
   - Idempotency + recoverability notes
 dependencies: []
-version: 1.0.3
+version: 1.0.4
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

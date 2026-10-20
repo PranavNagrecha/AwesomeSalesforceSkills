@@ -33,7 +33,7 @@ outputs:
   - "Cleanup script that deletes original Attachments only after verification"
   - "Updated reports / list views / LWC references to use ContentDocument relationships"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

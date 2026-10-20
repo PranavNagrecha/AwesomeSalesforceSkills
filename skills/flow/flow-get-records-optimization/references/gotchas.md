@@ -62,8 +62,9 @@ turns out to do a full table scan.
 thresholds, not in intuitive narrowness. A standard index is selective below 30%
 of the first million targeted records and 15% beyond, capping at 1,000,000. A
 custom index is selective below 10% of the first million and 5% beyond, capping
-at 333,333. One value out of eight on a four-million-row object is roughly
-500,000 rows — past the custom index cap, so indexing that field cannot help.
+at 333,333. UNVERIFIED (2026-10-20): the 30%/15% and 10%/5% thresholds are grounded in the 264 large-data-volumes guide (`salesforce_large_data_volumes_bp.txt` L463-468), but the absolute caps of 1,000,000 and 333,333 appear in no 264 source (the one 333,333 in `salesforce_apex_developer_guide.txt` L9820 is a CONTAINS full-scan threshold, a different rule) and rest on a 2013 engineering blog.
+One value out of eight on a four-million-row object is roughly
+500,000 rows — past the custom index threshold (10% of the first million plus 5% beyond is about 250,000 rows on four million), so indexing that field cannot help.
 
 **How to avoid:** Lead with something genuinely narrow — an Id, a foreign key, an
 owner, a date range — and let the status filter reduce the small result. Check

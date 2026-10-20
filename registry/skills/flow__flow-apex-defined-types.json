@@ -64,13 +64,14 @@
     "dc98990f359f7830ea40",
     "e3437dfcbf07b5f64a7b",
     "e44f7bf1e2f992a2486d",
+    "e598b302b7a7432c0621",
     "ece291dc5bb8be234947",
     "ee17e04f5e826088fdce",
     "ef7869541fc1b01f24b7",
     "fe9d4ba8ba81ab65d3d4",
     "ff2de4e13d170aca81fa"
   ],
-  "content_hash": "e8fd30578c5023b08ffaa2259f5d3fd57660a33fb7c478e1d4cbef7babd1ce85",
+  "content_hash": "8aefa7ade105b2a6c455a4581e0b9031344a59edfabbd2c9b9cfc451b4de0091",
   "dependencies": [
     "flow/flow-http-callout-action",
     "flow/flow-invocable-from-apex"
@@ -119,5 +120,5 @@
   ],
   "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

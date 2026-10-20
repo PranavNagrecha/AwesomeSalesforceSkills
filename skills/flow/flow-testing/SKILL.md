@@ -35,9 +35,9 @@ outputs:
   - "review findings for missing test coverage, weak data setup, or manual-only validation"
   - "guidance on combining Flow Tests, debug runs, and component-level tests where needed"
 dependencies: []
-version: 2.1.1
+version: 2.1.2
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 Use this skill when a Flow works in a demo but nobody can yet prove it is safe to change. Flow testing is not one tool — it is a test STRATEGY that combines declarative Flow Tests where they fit, focused debug runs for diagnosis, deliberate test data, and extra coverage at custom component or Apex boundaries when the Flow itself is not the whole system.

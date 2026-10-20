@@ -28,7 +28,7 @@ outputs:
 dependencies:
   - flow/flow-http-callout-action
   - flow/flow-invocable-from-apex
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

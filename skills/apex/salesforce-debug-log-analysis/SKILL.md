@@ -43,7 +43,7 @@ outputs:
   - "explicit statement of what the log cannot tell you plus concrete next steps"
   - "ordered recommendations from stop-the-bleeding to long-term fix"
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

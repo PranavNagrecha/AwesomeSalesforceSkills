@@ -26,7 +26,7 @@ outputs:
 dependencies:
   - flow/flow-governor-limits-deep-dive
   - flow/flow-performance-optimization
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---
@@ -107,7 +107,7 @@ of the multiplication is often what actually breaches.
 2. **Make the filter selective, and check rather than guess.** Selectivity is
    measured in absolute rows: a standard index is selective below 30% of the
    first million targeted records and 15% beyond, capping at 1,000,000; a custom
-   index below 10% / 5%, capping at 333,333. A filter matching 500,000 rows
+   index below 10% / 5%, capping at 333,333 [UNVERIFIED (2026-10-20): the 30%/15% and 10%/5% thresholds are grounded in the 264 large-data-volumes guide (`salesforce_large_data_volumes_bp.txt` L463-468), but the absolute caps of 1,000,000 and 333,333 appear in no 264 source (the one 333,333 in `salesforce_apex_developer_guide.txt` L9820 is a CONTAINS full-scan threshold, a different rule) and rest on a 2013 engineering blog.]. A filter matching 500,000 rows
    cannot be made selective by indexing it. Verify in Developer Console → Query
    Plan; a Cost above 1 means a full table scan.
 3. **Know which fields are actually indexed.** The standard-indexed set is `Id`,

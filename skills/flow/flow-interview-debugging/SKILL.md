@@ -21,7 +21,7 @@ inputs:
 outputs:
   - "root cause + remediation + logging upgrade"
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

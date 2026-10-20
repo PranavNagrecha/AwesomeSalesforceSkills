@@ -23,7 +23,7 @@ outputs:
   - "ConnectApi-based Chatter post implementation"
   - "Checker findings against unsupported async usage and unsafe input"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---

@@ -31,7 +31,7 @@ outputs:
   - "Guidance on inner-class sharing context and @JsonAccess requirements"
   - "Top-level wrapper class, controller, comparator, and test class ready to deploy"
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---
@@ -54,14 +54,14 @@ Use this skill to design a wrapper class that combines sObject data with compute
 
 ## Questions to Ask Before Configuring
 
-| Question | Why it matters | What a good answer adds | What proper configuration adds over just doing it |
-|---|---|---|---|
-| "Will a Lightning web component or Aura component receive or send this object?" | The LWC and Aura guides say an Apex inner class as a parameter or return value isn't supported | A top-level wrapper class instead of an inner class | A component contract that is supported, not one that works until it doesn't |
-| "Which properties does the component read?" | Only public instance properties and methods annotated with `@AuraEnabled` are serialized | The exact list of annotated properties | Smaller payloads and no `undefined` values in the template |
-| "Is the wrapper also passed back to Apex as a parameter?" | Custom-class parameters need `@AuraEnabled` on each property plus a getter and setter | `{get; set;}` on those properties | Round-trips that deserialize cleanly |
-| "Does any wrapper method query or write records?" | Inner classes don't adopt the container's sharing mode; in API 67.0 and later a class without a declaration runs with sharing | An explicit sharing keyword on the class that touches data | Record access that is decided on purpose |
-| "Can a sort key be null, or can the list contain null entries?" | The Comparable and Comparator references say implementations must handle nulls to avoid a null pointer exception | A null ordering rule (nulls first or last) | Sorts that never fail on real data |
-| "Does code in another namespace or package serialize this class?" | From API 49.0 the default `@JsonAccess` for both directions is `sameNamespace` | `@JsonAccess` only where cross-namespace access is real | No over-broad `always` access on internal types |
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Will a Lightning web component or Aura component receive or send this object?" | The LWC and Aura guides say an Apex inner class as a parameter or return value isn't supported | A top-level wrapper class instead of an inner class. Proper configuration adds a component contract that is supported, not one that works until it doesn't |
+| "Which properties does the component read?" | Only public instance properties and methods annotated with `@AuraEnabled` are serialized | The exact list of annotated properties. Proper configuration adds smaller payloads and no `undefined` values in the template |
+| "Is the wrapper also passed back to Apex as a parameter?" | Custom-class parameters need `@AuraEnabled` on each property plus a getter and setter | `{get; set;}` on those properties. Proper configuration adds round-trips that deserialize cleanly |
+| "Does any wrapper method query or write records?" | Inner classes don't adopt the container's sharing mode; in API 67.0 and later a class without a declaration runs with sharing | An explicit sharing keyword on the class that touches data. Proper configuration adds record access that is decided on purpose |
+| "Can a sort key be null, or can the list contain null entries?" | The Comparable and Comparator references say implementations must handle nulls to avoid a null pointer exception | A null ordering rule (nulls first or last). Proper configuration adds sorts that never fail on real data |
+| "Does code in another namespace or package serialize this class?" | From API 49.0 the default `@JsonAccess` for both directions is `sameNamespace` | `@JsonAccess` only where cross-namespace access is real. Proper configuration adds no over-broad `always` access on internal types |
 
 What a proper design adds over "just add an inner class": the wrapper uses a supported component contract, exposes only what the client needs, sorts safely, and has a sharing and serialization posture someone chose.
 

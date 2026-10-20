@@ -30,8 +30,8 @@ Checks implemented (see ../references/gotchas.md for the grounding):
   FT07  A test point whose <elementApiName> is not Start or Finish -- the only two
         documented values (api_meta.txt L74143-74150).
 
-Exit codes: 1 if --manifest-dir does not exist or any issue is found, else 0.
-An empty tree is a WARN, not a failure.
+Exit codes: 1 if --manifest-dir does not exist; findings exit 0 unless --strict (then 1).
+An empty tree is a WARN (exit 0; 1 with --strict).
 
 Usage:
     python3 check_flow_testing.py --manifest-dir force-app/main/default
@@ -306,7 +306,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--quiet",
         action="store_true",
-        help="Suppress the 'no issues' line; still exits non-zero on findings.",
+        help="Suppress the 'no issues' line.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on any finding or warning. Default: findings exit 0.",
     )
     return parser.parse_args()
 
@@ -325,14 +330,14 @@ def main() -> int:
         print(f"WARN: {warning}", file=sys.stderr)
 
     if not issues:
-        if not args.quiet:
+        if not args.quiet and not warnings:
             print("No issues found.")
-        return 0
+        return 1 if (args.strict and warnings) else 0
 
     for issue in issues:
         print(f"WARN: {issue}", file=sys.stderr)
     print(f"\n{len(issues)} issue(s) found.", file=sys.stderr)
-    return 1
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

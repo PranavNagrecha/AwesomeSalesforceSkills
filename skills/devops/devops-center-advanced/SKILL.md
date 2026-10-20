@@ -21,7 +21,7 @@ inputs:
 outputs:
   - "work-item model + bypass rules + hybrid SFDX + DOC workflow"
 dependencies: []
-version: 1.0.2
+version: 1.0.3
 author: Pranav Nagrecha
 updated: 2026-10-20
 ---
