@@ -613,7 +613,7 @@ releases:
       pairs in batches of 9'
     size: L
     owner_model: opus
-    status: running
+    status: done
     target: 45
     floor: 18
     domains:
@@ -692,6 +692,13 @@ releases:
     - integration/salesforce-functions-replacement
     - omnistudio/dataraptor-transform-optimization
     - omnistudio/integration-procedure-cacheable-patterns
+    evidence: '7 batches (C,D,F,G,H,E,I) = 64 skills corrected vs corpus264 by Opus writers + Opus adversarial reviewers,
+      two agents max; every batch''s reviewer found and fixed writer or pre-existing defects (D: describe-limit leftovers;
+      F: PE running user + 200 batch, DataWeaveResource storage; G: debug-log 20 MB, anonymous-block methods, 27 stale cites;
+      H: ConnectApi test guidance, flex-queue 5/100, exception email; E: omnistudio async SOQL 100->200; I: middleware 120
+      s / uncatchable LimitException) and 0 heap sentences gate on API 68.0 after the delta-doc root-cause fix 5a01909bd;
+      commits c14eadaec e72046612 898093693 d77516d59 5ce3a1c70 + E/I; validate per domain 0 errors; checker-contract drift
+      filed as R2-33..R2-36; 10-probe extension evals/probes/winter27-probes-ext.json'
   - id: R2-33
     title: flow-loop + flow-testing checkers exit 1 on WARN-only; PE flow $Record batch shape UNVERIFIED; DataWeave checker
       .resource-meta.xml detection

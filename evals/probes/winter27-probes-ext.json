@@ -1,0 +1,115 @@
+{
+  "_comment": "Winter '27 (release 264 / API 68.0) probe EXTENSION for scale-out wave R3-05 (batches C-I, 64 skills). One probe per defect class the writer+adversarial-reviewer recipe corrected in those skills. Unlike winter27-probes.json, not every fact here is new in Winter '27: several are long-standing facts the skills had wrong (marked era: longstanding). Arm A (no skill) may already be right on those; the lift of interest is on era: winter27 rows and on arm B never repeating the package's old wrong answer. Quotes are verbatim lines from scratchpad/corpus264/*.txt (grep -n on the 264 text). Built 2026-10-20.",
+  "probes": [
+    {
+      "id": "pe-flow-batch-size",
+      "era": "longstanding",
+      "skill": "flow/flow-platform-events-integration",
+      "question": "How many platform event messages can a single platform event-triggered flow interview receive in one batch?",
+      "wrong_answer": "Up to 2,000 event messages per batch, the same as an Apex trigger.",
+      "correct_answer": "Up to 200 event messages per batch for a flow (2,000 is the Apex trigger batch size).",
+      "source": "platform_events.txt L2185",
+      "quote": "A flow can receive a batch of event messages at once, up to a maximum of 200 event messages.",
+      "wrong_source": "skills/flow/flow-platform-events-integration before batch F: 'up to 2,000 per batch'"
+    },
+    {
+      "id": "pe-flow-running-user",
+      "era": "longstanding",
+      "skill": "flow/flow-platform-events-integration",
+      "question": "When a platform event-triggered flow creates or updates records, which user's context does the flow interview run in?",
+      "wrong_answer": "The Automated Process user, because the flow is subscribed to the event and runs asynchronously.",
+      "correct_answer": "The user who published the event message; only the debug logs appear under the Automated Process user.",
+      "source": "platform_events.txt L2190-2191",
+      "quote": "each flow interview runs in the context of the user who published the event message.",
+      "wrong_source": "skills/flow/flow-platform-events-integration before batch F: 'runs as Automated Process user'"
+    },
+    {
+      "id": "dataweave-storage",
+      "era": "longstanding",
+      "skill": "integration/dataweave-for-apex",
+      "question": "How is a DataWeave script that Apex invokes stored and deployed in a Salesforce org?",
+      "wrong_answer": "As a static resource (.resource file) that Apex loads at run time.",
+      "correct_answer": "As DataWeaveResource metadata (a .dwl file with its -meta.xml under dw/), invoked directly from Apex.",
+      "source": "salesforce_apex_developer_guide.txt L26823",
+      "quote": "You can create DataWeave scripts as metadata and invoke them directly from Apex.",
+      "wrong_source": "skills/integration/dataweave-for-apex before batch F: scripts stored as static resources"
+    },
+    {
+      "id": "lifecycle-center-name",
+      "era": "winter27",
+      "skill": "devops/devops-center-advanced",
+      "question": "In the Winter '27 (API 68.0) Metadata API, what is the product name used for the AI-powered change and release management experience that replaced the 'next-generation DevOps Center' wording?",
+      "wrong_answer": "Next-generation DevOps Center (DevOps Center 2.0).",
+      "correct_answer": "Lifecycle Center (the enableALMDevopsCorePref setting).",
+      "source": "api_meta.txt L117302",
+      "quote": "Indicates whether the Lifecycle Center is enabled: true or false.",
+      "wrong_source": "api_meta.txt 262 L114168: 'next-generation DevOps Center'"
+    },
+    {
+      "id": "flow-runinmode-usermode",
+      "era": "winter27",
+      "skill": "flow/record-triggered-flow-patterns",
+      "question": "Besides DefaultMode, SystemModeWithSharing and SystemModeWithoutSharing, is there a fourth Flow runInMode value in API 68.0, and what does it do?",
+      "wrong_answer": "No. The only values are DefaultMode, SystemModeWithSharing and SystemModeWithoutSharing; user context is only reachable through DefaultMode.",
+      "correct_answer": "Yes: UserMode (API 68.0 and later) runs the flow with the user's security context explicitly enforced, without inheriting sharing from the calling context.",
+      "source": "api_meta.txt L70923-70927",
+      "quote": "UserMode—The flow runs with the user's security context explicitly enforced, without inheriting sharing settings from the calling context.",
+      "wrong_source": "api_meta.txt 262 L68374-68382 lists three values"
+    },
+    {
+      "id": "debug-log-size",
+      "era": "longstanding",
+      "skill": "apex/salesforce-debug-log-analysis",
+      "question": "What is the maximum size of a single Apex debug log, and what happens to a log that exceeds it?",
+      "wrong_answer": "5 MB; anything past the limit is cut off at the end, so a missing EXECUTION_FINISHED line means truncation.",
+      "correct_answer": "20 MB; larger logs are reduced by removing older log lines, which can be removed from any location, not just the start.",
+      "source": "salesforce_apex_developer_guide.txt L38602-38604",
+      "quote": "Each debug log must be 20 MB or smaller. Debug logs that are larger than 20 MB are reduced in size by removing older log lines",
+      "wrong_source": "skills/apex/salesforce-debug-log-analysis before batch H: '5MB per-log cap'"
+    },
+    {
+      "id": "flex-queue-capacity",
+      "era": "longstanding",
+      "skill": "apex/scheduled-apex-failure-detection-and-monitoring",
+      "question": "How many batch Apex jobs can be held in the Apex flex queue, and what happens when Database.executeBatch is called while it is full?",
+      "wrong_answer": "5 jobs in Holding or Queued; a sixth call is queued behind them.",
+      "correct_answer": "100 jobs in Holding status; when the flex queue is full, Database.executeBatch throws a LimitException (the separate limit of 5 applies to queued-or-active jobs).",
+      "source": "salesforce_apex_developer_guide.txt L17436-17439",
+      "quote": "With the Apex flex queue, you can submit up to 100 batch jobs.",
+      "wrong_source": "skills/apex/scheduled-apex-failure-detection-and-monitoring before batch H: '5 batch jobs in Holding/Queued'"
+    },
+    {
+      "id": "apex-exception-email",
+      "era": "longstanding",
+      "skill": "apex/scheduled-apex-failure-detection-and-monitoring",
+      "question": "When an unhandled exception occurs in asynchronous Apex such as a scheduled or batch job, who receives the unhandled exception email by default?",
+      "wrong_answer": "No one; exception emails are sent only for synchronous Apex, so async failures go only to the debug log.",
+      "correct_answer": "The developer in the LastModifiedBy field of the failing class or trigger, plus any Apex Exception Email recipients configured in Setup; this applies to asynchronous code too.",
+      "source": "salesforce_apex_developer_guide.txt L39995-39996",
+      "quote": "Unhandled exception emails are sent by default to the developer specified in the LastModifiedBy field on the failing class or trigger.",
+      "wrong_source": "skills/apex/scheduled-apex-failure-detection-and-monitoring before batch H: async exceptions 'email no one'"
+    },
+    {
+      "id": "connectapi-test-context",
+      "era": "longstanding",
+      "skill": "apex/apex-connect-api-chatter",
+      "question": "How do you make Connect in Apex (ConnectApi) methods work inside an Apex test method?",
+      "wrong_answer": "Register a mock with Test.setMock(ConnectApi.ConnectApi.class, mockInstance) so no org data is needed.",
+      "correct_answer": "Most ConnectApi methods need real org data and fail unless the test is marked @IsTest(SeeAllData=true); some methods instead require a setTest* registration method named in the method's Usage section.",
+      "source": "salesforce_apex_developer_guide.txt L26331-26332",
+      "quote": "Most Connect in Apex methods require access to real org data, and fail unless used in test methods marked @IsTest(SeeAllData=true).",
+      "wrong_source": "skills/apex/apex-connect-api-chatter before batch H: Test.setMock(ConnectApi.ConnectApi.class, ...)"
+    },
+    {
+      "id": "callout-timeout-governor",
+      "era": "longstanding",
+      "skill": "integration/middleware-integration-patterns",
+      "question": "What is the governor limit on callout time in a single Apex transaction, and is the 10-second figure a governor limit?",
+      "wrong_answer": "10 seconds is the synchronous callout governor limit; exceeding it throws a LimitException that you can catch.",
+      "correct_answer": "The governor limit is 120 seconds cumulative across all callouts in the transaction; 10 seconds is only the default per-callout timeout (settable per request), and a LimitException cannot be caught.",
+      "source": "salesforce_apex_developer_guide.txt L19768; L20046",
+      "quote": "Maximum cumulative timeout for all callouts (HTTP requests or Web services calls) in a           120 seconds           120 seconds",
+      "wrong_source": "skills/integration/middleware-integration-patterns before batch I: '10-second synchronous timeout' as a governor limit"
+    }
+  ]
+}
