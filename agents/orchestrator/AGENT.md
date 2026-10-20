@@ -1,7 +1,7 @@
 ---
 id: orchestrator
 class: build
-version: 2.2.0
+version: 2.3.0
 status: stable
 requires_org: false
 modes: [single]
@@ -163,6 +163,24 @@ a checker that fails open). After each batch, before Step 4, append each NEW cla
 else: no rewording of earlier rules, no deletions. Writers and reviewers read that section through the brief, and
 `scripts/new_skill.py` prints its path, so every new skill is held to what the last review learned. If a report
 names no new class, write nothing. Commit the brief change in the same batch commit.
+
+Then record the batch — this is the learning KPI the owner reads:
+
+```bash
+python3 scripts/audit_ledger.py add --item <ID> --batch <n> --writer <opus|sonnet> --reviewer opus \
+  --skills <k> --grounded <G> --contradicted <C> --not-found <NF> \
+  --writer-defects <total the reviewer found> --defect-classes "<name>=<n>,..." \
+  --learned-rules-added <lines appended> --commit <sha>
+python3 scripts/audit_ledger.py report
+```
+
+`writer_defects / skills` must fall batch over batch. If `report` prints `NOT FALLING`, stop dispatching writers
+and escalate: the Learned rules are not reaching them (wrong brief path, stale worktree, or a rule written
+too vaguely to act on). Every third batch, write one probe per contradicted-claim class fixed since the last
+probe run (`evals/probes/<item>-batch<n>.json`, same shape as `winter27-probes.json`), run
+`python3 evals/scripts/run_lift.py --probes <file> --out evals/measurement/lift-<item>-batch<n>`, and put
+the `A x/n B y/n` result in that batch's ledger line (`--probe-result`). A fix that does not move its probe is
+not a fix.
 
 ### Step 4 — Close items
 
