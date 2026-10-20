@@ -55,7 +55,7 @@ been applied is being made faster at the failure, not fixed.
   (<https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf>,
   text extract `apexdev.txt` L19542–L19599): every ceiling in this skill's meter table — SOQL 100/200,
   SOQL rows 50,000, DML 150, DML rows 10,000, stack depth 16, callouts 100, `@future` 50,
-  `System.enqueueJob` 50/1, `sendEmail` 10, heap 6/12 MB, CPU 10,000/60,000 ms, publish-immediately
+  `System.enqueueJob` 50/1, `sendEmail` 10, heap 6/12 MB (10/25 MB from the Winter '27 release, 264 L19780), CPU 10,000/60,000 ms, publish-immediately
   150.
 - Apex Developer Guide — governor-table footnotes 1, 2, 3 and 5 (`apexdev.txt` L19612–L19657):
   parent-child subqueries counting as extra queries (Gotcha 3), `Approval.process` and Publish After

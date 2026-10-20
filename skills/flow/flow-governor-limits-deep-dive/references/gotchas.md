@@ -298,12 +298,13 @@ each side of it.
 
 ---
 
-## Gotcha 17: Get Records stores every queried field, and heap is 6 MB
+## Gotcha 17: Get Records stores every queried field, and heap is 10 MB
 
 **What happens:** a Get Records that returns a few thousand wide records exhausts heap before it
 exhausts the row meter.
 
-**When it occurs:** heap is 6 MB synchronous and 12 MB asynchronous (`apexdev.txt` L19577), and
+**When it occurs:** heap is 10 MB synchronous and 25 MB asynchronous from the Winter '27 release (`apexdev.txt` 264
+L19780; 6 MB / 12 MB through Summer '26, L19577), and
 heap size in bytes is one of the twelve meters every flow limit-usage event reports (L38801,
 L38830). `queriedFields` is "an array that specifies which fields from the selected record are saved
 to the specified record variable" (`api_meta.txt` L71202–L71204) — but it is "supported only when

@@ -187,7 +187,7 @@
     "fa4cac3fa6d07d646873",
     "fcd4f4cf63ffa7c5fcf5"
   ],
-  "content_hash": "c518e1c91b9236e90b719682803df009337de05dd2c15c56d7c7b67057fa0a24",
+  "content_hash": "3a2503455f6135e04c3bb77e0f0371da8c10bfb47478e87393280db0c362bb87",
   "dependencies": [],
   "description": "Use when designing, implementing, reviewing, or debugging Queueable Apex jobs that chain, use the Finalizer interface, pass state across transactions, or need controlled async depth. Trigger keywords: 'Queueable', 'System.enqueueJob', 'Finalizer', 'QueueableContext', 'AsyncOptions', 'stack depth', 'chained queueable', 'DuplicateMessageException', 'QueueableDuplicateSignature', 'AsyncInfo', 'MinimumQueueableDelayInMinutes', 'attachFinalizer', 'AsyncApexJob'. NOT for choosing Queueable vs Batch \u2014 use apex/async-apex. NOT for large-volume chunked record processing \u2014 use apex/batch-apex-patterns.",
   "file_location": "skills/apex/apex-queueable-patterns",
@@ -240,7 +240,7 @@
   "templates": [
     "skills/apex/apex-queueable-patterns/templates/apex-queueable-patterns-template.md"
   ],
-  "updated": "2026-09-16",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

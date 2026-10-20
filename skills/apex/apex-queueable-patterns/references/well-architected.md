@@ -87,8 +87,9 @@ extractions of the Summer '26 (v67.0) PDFs used while authoring this package.
 - **Apex Developer Guide v67.0 — Execution Governors and Limits**
   (`apexdev` L19528-19580, L17691-17700) —
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm —
-  supports: asynchronous SOQL 200 vs synchronous 100 (L19546); DML 150 both
-  (L19553); heap 6 MB vs 12 MB and CPU 10,000 ms vs 60,000 ms (L19576-19578);
+  supports: asynchronous SOQL 200 vs synchronous 100 (L19544); DML 150 both
+  (L19554); heap 6 MB vs 12 MB through Summer '26 (L19577), 10 MB vs 25 MB
+  from the Winter '27 release (`apexdev` 264 L19780); CPU 10,000 ms vs 60,000 ms (L19579);
   `enqueueJob` 50 / 1 (L19573); `@future` allowance of 50 in a queueable context
   and 0 in batch and future contexts (L19568-19572); the 250,000-or-licences×200
   rolling 24-hour asynchronous cap shared by all async Apex (L17693-17700).

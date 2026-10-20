@@ -603,6 +603,11 @@ releases:
     size: S
     owner_model: opus
     status: todo
+  - id: R2-32
+    title: 'check_limits_plan.py: empty-dir WARN semantics; scope heap pattern'
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -853,5 +858,11 @@ inbox:
     with managed packages (contradicts the certified-package section, apexdev264 ~L19925); Gotcha 5 + the batch table state
     a ''50 million records per 24 hours'' Batch Apex limit that the corpus does not have (only 50M QueryLocator rows per query,
     L20059/L17902). Needs a full-mode claims audit of that skill'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: architect/limits-and-scalability-planning checker check_limits_plan.py exits 1 on an empty directory (expects a file);
+    checker rules say empty dir = WARN exit 0 (exit 1 only with --strict); also the 10 mb/25 mb pattern can match non-heap
+    figures — scope it to heap context
   size: S
   slotted_into: 1.5.0

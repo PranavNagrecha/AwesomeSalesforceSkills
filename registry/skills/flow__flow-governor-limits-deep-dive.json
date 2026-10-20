@@ -38,6 +38,7 @@
     "2960507cec96a63a7eec",
     "2963bd141662f0f2aba0",
     "2a2dd8fad6da039e046a",
+    "2d2ad706126d9bd84e6f",
     "2e1d02e384b73a513e9e",
     "2ecb2f535b675b28f97f",
     "30ad3f60a297f7478a25",
@@ -110,7 +111,6 @@
     "87a43d7645463ef4b64f",
     "88a53015e66f826df1c2",
     "8928d9d03cf722dc5928",
-    "8bc08459f203aabf268b",
     "8d5bf25a70e69c4ea452",
     "8d99fdaa49f068308be2",
     "8d9b91b404045f5ba43d",
@@ -145,6 +145,7 @@
     "b71136d653ad150f6fe5",
     "b71545f5dd62221b3d0d",
     "b8b72d52d3fd0e4652db",
+    "ba1037def59138172273",
     "ba1c76aabfeb1934d36d",
     "bdae72a2c313e8d717a8",
     "bf3fb7ec00d191207f48",
@@ -171,6 +172,7 @@
     "d932fdc5628fb9fdbedc",
     "da2b4b3508fecb77a585",
     "db44609e93a8f0d5f6b0",
+    "db4893930072f4a08015",
     "dfbfd708e8f2df2d18cc",
     "e06bd4ab582cd000124e",
     "e2138b6401b634b69a37",
@@ -202,7 +204,7 @@
     "ff991b2b84e1367b2156",
     "ffe069d7edeeea80a201"
   ],
-  "content_hash": "b5be692af2443583d08a7a270a550e1ae9f9f5f25a4fafbcac1f1fd8a1ee88dc",
+  "content_hash": "bbffbc95a577212a46b527e23cdab0513fba1d09d4334ffef77e407cf8945359",
   "dependencies": [],
   "description": "Compute and budget governor-limit consumption per Flow type with worked math: SOQL, DML rows, CPU time, heap. Includes per-entry-point budget tables, cross-automation shared-limit math, and tuning strategies when a flow hits a ceiling. Triggers: 'flow too many SOQL queries 101', 'flow too many DML statements 150', 'which flow element spends which limit', 'FLOW_INTERVIEW_FINISHED_LIMIT_USAGE', 'FLOW_ELEMENT_LIMIT_USAGE', 'flowTransactionModel NewTransaction', 'AsyncAfterCommit scheduled path', 'flow 2000 elements limit', 'flow shares limits with trigger'. NOT for general bulkification \u2014 use flow/flow-bulkification. NOT for Apex limits \u2014 use apex/governor-limits.",
   "file_location": "skills/flow/flow-governor-limits-deep-dive",
@@ -265,7 +267,7 @@
   "templates": [
     "skills/flow/flow-governor-limits-deep-dive/templates/flow-governor-limits-deep-dive-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "2.0.0"
+  "version": "2.0.1"
 }

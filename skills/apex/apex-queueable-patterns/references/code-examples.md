@@ -56,7 +56,7 @@ public with sharing class RecalculateAccountRollupQueueable implements Queueable
 
     // 200 Ids per link keeps one job inside the async SOQL and DML ceilings:
     // 200 SOQL queries and 150 DML statements per async transaction
-    // (apexdev L19546, L19553).
+    // (apexdev L19544, L19554).
     @TestVisible private static final Integer CHUNK_SIZE = 200;
 
     // The chain ceiling this code enforces. Production editions enforce none of

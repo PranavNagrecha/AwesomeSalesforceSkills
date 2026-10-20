@@ -35,6 +35,7 @@
     "287f15209a824d05ba49",
     "2b28041b8afb181bce46",
     "2c2b45c17226775c7e7c",
+    "2d853dc4d18a983ad201",
     "2eff4470847a6f26ce35",
     "2f0f70dbc5cca35b5228",
     "307666241854745b543d",
@@ -55,6 +56,7 @@
     "462085130f707aeeb3d5",
     "47a290b33a31d7d5903c",
     "47c9f4827eb36c5f2820",
+    "49a1adb36368377e7b90",
     "4ca71620724e349da4c2",
     "4d3d699959e5ec69189e",
     "4d8b9e38ac74a84ef672",
@@ -160,11 +162,13 @@
     "c4b7a9592839cdcef168",
     "c97e0ad7e70e3d825983",
     "ca932e61423a8728a454",
+    "cd9c1a6e0cb751bde4ed",
     "cdc99a1b15c389d61a1d",
     "ce935c15459aa4e37050",
     "ceb8ee3d2e6628136328",
     "d044937d2fa41ef2db37",
     "d43e9572731f1d7d64b9",
+    "d52bc3f8798313d55026",
     "d62e699b4099b287f28f",
     "d6abe56467ed21ef9aee",
     "d6f156515f97b74601c3",
@@ -194,7 +198,7 @@
     "fe55aa2f34ad371dfa09",
     "ff5080c748c9595ea7ec"
   ],
-  "content_hash": "06ed2bae93efcc33168e5411a39e4924338211b648f541fcc1875fa78ca5e668",
+  "content_hash": "fa1fa27b6793f1dba4b03065dbdfd09253eea00fb68a9a3b6b81f7d0be898bcc",
   "dependencies": [],
   "description": "Use this skill when writing Apex that must check governor limits at runtime before executing expensive operations \u2014 guard clauses, early-exit patterns, Queueable re-queue on limit approach, and batch scope sizing. Also covers building the monitoring layer above those checks: ApexTestResultLimits regression gates in CI, debug-log LIMIT_USAGE events, and a Scheduled Apex poller that writes OrgLimits readings into a Limit_Snapshot__c time series with threshold alerts. Trigger keywords: check governor limits before SOQL apex, defensive coding against limits apex, Limits.getDMLStatements getLimitDMLStatements, Limits class usage, guard clause governor limits, remaining SOQL queries Apex, heap size check before DML, LimitException handling, alert before we hit a governor limit, limit consumption regression in CI. NOT for diagnosing a limit you already hit \u2014 use apex/governor-limits. NOT for CPU and heap tuning \u2014 use apex/apex-cpu-and-heap-optimization. NOT for choosing which org limits matter or the org-wide alert routing architecture \u2014 use architect/org-limits-monitoring.",
   "file_location": "skills/apex/apex-limits-monitoring",
@@ -255,7 +259,7 @@
   "templates": [
     "skills/apex/apex-limits-monitoring/templates/apex-limits-monitoring-template.md"
   ],
-  "updated": "2026-09-05",
+  "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

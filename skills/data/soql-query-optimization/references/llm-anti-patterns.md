@@ -51,7 +51,7 @@ Before asking for an index:
 
 ```text
 - Select only the fields this transaction reads.
-- Every selected field costs heap: 6 MB synchronous, 12 MB asynchronous.
+- Every selected field costs heap: 10 MB synchronous, 25 MB asynchronous from the Winter '27 release (6 MB / 12 MB through Summer '26).
 - Use relationship fields (Account.Name) instead of a second query.
 - For admin-configurable lists, build the SELECT from a field set.
 - A skinny table only helps queries whose fields are all in it,

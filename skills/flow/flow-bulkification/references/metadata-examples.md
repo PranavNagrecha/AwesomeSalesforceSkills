@@ -404,8 +404,8 @@ Same requirement. One `recordLookups`, one `loops` whose body contains **only** 
   element, and reviewing it per element is the point.
 - **`<queriedFields>`** — "An array that specifies which fields from the selected record
   are saved to the specified record variable" (`api_meta.txt` L71202–71204). Three fields
-  rather than the whole row. Heap is 6 MB synchronous / 12 MB asynchronous
-  (`apexdev.txt` L19577), and a collection variable is what fills it.
+  rather than the whole row. Heap is 10 MB synchronous / 25 MB asynchronous
+  from the Winter '27 release (`apexdev.txt` 264 L19780; 6 MB / 12 MB through Summer '26), and a collection variable is what fills it.
 - **`$Flow.FaultMessage` / `$Flow.InterviewGuid`** in `Log_Line_Sync_Fault` follow
   `templates/flow/FaultPath_Template.md`. Both database elements route their
   `faultConnector` to it; the log create is itself a fault target, so it takes no fault
@@ -886,8 +886,8 @@ must bound it.
   running user" (`api_meta.txt` L68379–68386). A scheduled flow has no interactive user, so
   leaving `DefaultMode` makes the running context a question rather than a decision.
 - **UNVERIFIED (2026-09-05):** whether a schedule-triggered flow's interview runs against
-  the *synchronous* (100 SOQL / 6 MB heap / 10,000 ms CPU) or *asynchronous* (200 SOQL /
-  12 MB / 60,000 ms) limits is not stated in `api_meta.txt` or `apexdev.txt`. Size the two
+  the *synchronous* (100 SOQL / 10 MB heap / 10,000 ms CPU) or *asynchronous* (200 SOQL /
+  25 MB / 60,000 ms; Winter '27 heap figures, 264 L19780) limits is not stated in `api_meta.txt` or `apexdev.txt`. Size the two
   `<limit>` values against the synchronous column until you have measured a real run with
   `FLOW_INTERVIEW_FINISHED_LIMIT_USAGE` in the debug log (see § 8).
 

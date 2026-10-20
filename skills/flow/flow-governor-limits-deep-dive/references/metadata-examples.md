@@ -416,7 +416,7 @@ opened, so they share one set of meters. Assume 6 critical findings per audit.
 | Email invocations | 10 | 1 | 10% | `apexdev.txt` L19575 |
 | Publish-immediately calls | 150 | 1 (or 0, if the event is Publish After Commit) | <1% | `apexdev.txt` L19598–L19599 |
 | CPU time | 10,000 ms | 1,200 loop iterations + the Apex action | **unknown until measured** | `apexdev.txt` L19579 |
-| Heap | 6 MB | 1,200 findings + 1,200 staged tasks | **unknown until measured** | `apexdev.txt` L19577 |
+| Heap | 10 MB (Winter '27+; 6 MB before) | 1,200 findings + 1,200 staged tasks | **unknown until measured** | `apexdev.txt` 264 L19780 |
 
 Notice what the table cannot tell you. Four meters are arithmetic from the metadata; **CPU and heap
 are not**, because their spend depends on `FacilityAuditRiskScorer`'s implementation and on field
@@ -961,7 +961,8 @@ test coverage (`api_meta.txt` L7715, L7727, L7729), and one is a UI display cap
 as retired; budget the meters the log actually prints.
 
 The guide ships one real limit-usage log excerpt, and it is an Apex one — `LIMIT_USAGE_FOR_NS`
-(`apexdev.txt` L38274–L38287), reproduced verbatim:
+(`apexdev.txt` L38274–L38287; Winter '27 copy 264 L38759–L38774, which prints the 10 MB heap), reproduced
+from the Winter '27 copy:
 
 ```text
 16:06:58.49 (49590539)|CUMULATIVE_LIMIT_USAGE
@@ -972,7 +973,7 @@ The guide ships one real limit-usage log excerpt, and it is an Apex one — `LIM
   Number of DML statements: 0 out of 150
   Number of DML rows: 0 out of 10000
   Maximum CPU time: 0 out of 10000
-  Maximum heap size: 0 out of 6000000
+  Maximum heap size: 0 out of 10000000
   Number of callouts: 0 out of 100
   Number of Email Invocations: 0 out of 10
   Number of future calls: 0 out of 50

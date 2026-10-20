@@ -92,7 +92,7 @@
     "fd0c7e8f9c043f87677a",
     "fe7b37762fb24430d682"
   ],
-  "content_hash": "5b430200db50c401b467374513c2c95b7133cc8a091019493386ad9625303cdb",
+  "content_hash": "8a845a1f0216d33e2ba9e0ddd8f6b072ba756e737d46aec94b4bf6e78bf27796",
   "dependencies": [],
   "description": "Use when a SOQL query is running slowly, causing timeouts, or returning UNABLE_TO_LOCK_ROW errors in large data volume orgs. Covers index-aware query writing, selectivity rules, the Query Plan tool, skinny tables, and dynamic field-set queries. Triggers: slow soql query, query timeout, non-selective query, query plan tool, index usage, soql optimization, large object performance. NOT for org-wide large-data-volume architecture \u2014 ownership or account data skew, Big Object archival, tens of millions of rows on one object \u2014 use architect/large-data-volume-architecture. NOT for the custom-index or composite-index request itself \u2014 use data/custom-index-requests. NOT for Apex CPU or heap governor limits \u2014 use apex/apex-cpu-and-heap-optimization. NOT for writing basic SOQL \u2014 use apex/soql-fundamentals.",
   "file_location": "skills/data/soql-query-optimization",
@@ -111,7 +111,7 @@
     "Metadata API Developer Guide (`api_meta.txt`): CustomIndex type, `.indx-meta` suffix, API 50.0+, Support contact required, `allowNullValues` and `booleanIndexedValue` fields (L41099-41138).",
     "SOQL and SOSL Reference, FIND {SearchQuery} wildcards (fetched from https://developer.salesforce.com/docs/get_document_content/soql_sosl/sforce_api_calls_sosl_find.htm/en-us/262.0): asterisks match at the middle or end of a search term.",
     "Object Reference (`object_reference.txt`): UserPreference value 99 \"Enable Query Plan\" (L301033).",
-    "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): total heap size 6 MB synchronous, 12 MB asynchronous (L89).",
+    "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): total heap size 6 MB synchronous, 12 MB asynchronous (262 L89). The Winter '27 cheatsheet drops its Apex tables and points to the Apex Developer Guide (264 L21\u201329), which lists 10 MB / 25 MB from the Winter '27 release (`salesforce_apex_developer_guide.txt` 264 L19780).",
     "Salesforce Help: Custom Indexes \u2014 https://help.salesforce.com/s/articleView?id=sf.custom_indexes.htm",
     "Salesforce Help: Non-Selective Query Error \"System.QueryException\" \u2014 https://help.salesforce.com/s/articleView?id=000386468&type=1",
     "Salesforce Help: Developer Console Query Plan Tool FAQ \u2014 https://help.salesforce.com/s/articleView?id=000386864&type=1",
@@ -146,5 +146,5 @@
   ],
   "updated": "2026-10-19",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

@@ -86,7 +86,7 @@ global class MyBatch implements Database.Batchable<SObject>, Database.Stateful {
     }
 
     global void finish(Database.BatchableContext bc) {
-        sendSummaryEmail(allProcessed); // 12 MB heap limit hit at scale
+        sendSummaryEmail(allProcessed); // 25 MB async heap limit (12 MB pre-Winter '27) hit at scale
     }
 }
 ```

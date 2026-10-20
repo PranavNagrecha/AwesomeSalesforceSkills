@@ -43,9 +43,9 @@ outputs:
   - "A deployable CollectionUtils class, Comparator, and custom key class with tests"
   - "Checker findings from scripts/check_apex_collections_patterns.py"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 # Apex Collections Patterns
@@ -79,7 +79,7 @@ Ask these before the first `new Map<...>` is written. Each one maps to a documen
 | "Is a custom class going to be a Map key or a Set element?" | Uniqueness of user-defined key types comes from `equals` and `hashCode` you write (`apexdev` L1700); without them the types compare by reference (`apexdev` L2135–L2138) | Whether the class needs both methods, and whether its fields must be immutable after insertion |
 | "Does anything downstream depend on the order of this collection?" | Set and Map iteration order is deterministic per code path but is not insertion order (`apexdev` L1642, L1692), and default `List.sort()` on sObjects uses a fixed field sequence (`apexdev` L10245–L10258) | Whether a `Comparator` is required, and what the test should assert instead of "the list has 3 elements" |
 | "Will the collection be edited while it is being iterated?" | "Modifying a collection's elements while iterating through that collection is not supported and causes an error" (`apexdev` L3182–L3183), and `keySet()` is a live view of the map (`apexrefguide` L222249) | The temporary collection the removals or additions have to go into |
-| "What is the largest realistic volume this collection will hold in one transaction?" | There is no item-count limit on a collection, only the heap ceiling — 6 MB sync, 12 MB async (`apexdev` L1431, L19577) | The number the bulk test uses, and whether the design needs a per-chunk flush instead of accumulation |
+| "What is the largest realistic volume this collection will hold in one transaction?" | There is no item-count limit on a collection, only the heap ceiling — 10 MB sync, 25 MB async from the Winter '27 release (`apexdev` L1431; 264 L19780) | The number the bulk test uses, and whether the design needs a per-chunk flush instead of accumulation |
 
 What a proper configuration adds over just doing it: the container is chosen from the access pattern rather than from habit, key semantics are asserted in a test rather than assumed, and the failure modes that produce silently wrong data — a collapsed null key, a duplicated Id string, a mutable custom key — are caught by `scripts/check_apex_collections_patterns.py` before a reviewer has to notice them.
 
@@ -89,7 +89,7 @@ What a proper configuration adds over just doing it: the container is chosen fro
 
 ### Collections Are Bounded By Heap, Not By Item Count
 
-The Apex Developer Guide is explicit: "There is no limit on the number of items a collection can hold. However, there is a general limit on heap size" (`apexdev` L1431). That ceiling is 6 MB for synchronous transactions and 12 MB for asynchronous ones (`apexdev` L19577). A Map<Id, List<SObject>> is the standard bulkification container in trigger handlers: one SOQL returns all related records, and the Map groups them by parent Id. Each inner List is a separate allocation on the same budget. In a `Database.Stateful` batch job, instance-level Map or List fields persist across every `execute()` call, so the accumulation grows against a ceiling that does not reset even though the per-chunk governor counters do (`apexdev` L19530–L19531).
+The Apex Developer Guide is explicit: "There is no limit on the number of items a collection can hold. However, there is a general limit on heap size" (`apexdev` L1431). That ceiling is 10 MB for synchronous transactions and 25 MB for asynchronous ones from the Winter '27 release (`apexdev` 264 L19780); Summer '26 was 6 MB / 12 MB (`apexdev` L19577). A Map<Id, List<SObject>> is the standard bulkification container in trigger handlers: one SOQL returns all related records, and the Map groups them by parent Id. Each inner List is a separate allocation on the same budget. In a `Database.Stateful` batch job, instance-level Map or List fields persist across every `execute()` call, so the accumulation grows against a ceiling that does not reset even though the per-chunk governor counters do (`apexdev` L19530–L19531).
 
 ### Map.get() Returns null — Not an Exception
 

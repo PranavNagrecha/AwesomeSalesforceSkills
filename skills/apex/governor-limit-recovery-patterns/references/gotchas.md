@@ -6,7 +6,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** When any governor limit is exceeded, the Apex runtime throws `System.LimitException`. Unlike `DmlException`, `CalloutException`, or even `NullPointerException`, this exception type bypasses all catch blocks. The transaction terminates, the full stack unwinds, and a complete rollback occurs. No catch handler fires.
 
-**When it occurs:** Triggered by any limit breach: 101st synchronous SOQL query, 151st DML statement, CPU time over 10 000 ms, heap over 6 MB, etc. Developers discover this behavior when a catch block they expected to fire silently never executes.
+**When it occurs:** Triggered by any limit breach: 101st synchronous SOQL query, 151st DML statement, CPU time over 10 000 ms, heap over 10 MB synchronous (Winter '27 release, not API-version-gated; 6 MB through Summer '26 — Apex Developer Guide 264 L19780, whose footnote at L19853 calls the heap `System.LimitException` uncatchable), etc. Developers discover this behavior when a catch block they expected to fire silently never executes. During Winter '27 only, a nonproduction org can keep the Summer '26 heap via `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API Developer Guide 264 L113855–113862), so the heap ceiling a guard trips on can differ between sandbox and production for that release — read `Limits.getLimitHeapSize()`, never a byte constant.
 
 **How to avoid:** Never design limit-breach recovery around try/catch. Design recovery to fire before the limit is reached using `Limits.*` comparisons. Threshold: if remaining headroom is less than your per-iteration cost plus a buffer, exit the loop or defer work.
 

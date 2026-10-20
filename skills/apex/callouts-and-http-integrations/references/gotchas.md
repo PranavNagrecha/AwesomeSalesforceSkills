@@ -96,9 +96,12 @@ while the record count looks perfectly modest.
 call): **6 MB for synchronous Apex or 12 MB for asynchronous Apex**" (cheatsheet L389–391; the same
 limit is restated per-method at apexrefguide L216506 for `setBody`, L216863 for `getBody`, L216887
 for `getBodyAsBlob`). The footnote is the part that bites: "The HTTP request and response sizes
-count towards the total heap size" (cheatsheet L415). Total heap is itself 6 MB sync / 12 MB async
-(apexdev L19577). So a 5 MB synchronous response leaves roughly 1 MB for everything else in the
-transaction, and `JSON.deserialize` allocates a second copy of what it parses.
+count towards the total heap size" (cheatsheet L415). The payload cap is unchanged in Winter '27
+(apexdev 264 L20048, footnote L20063), but total heap is not: 10 MB sync / 25 MB async from Winter '27 /
+API 68.0 (apexdev 264 L19780), up from 6 MB / 12 MB (262 L19577). So a 5 MB synchronous response
+leaves roughly 5 MB for everything else in the transaction (1 MB on a Summer '26 heap, or in a
+nonproduction org pinned by `ApexSettings.enableEnforceSummer26ApexHeapLimit`, api_meta 264
+L113855–113862), and `JSON.deserialize` allocates a second copy of what it parses.
 
 **How to avoid:** page the remote API rather than pulling one large document, and run anything above
 a megabyte in asynchronous context for the doubled ceiling. `HttpRequest.setCompressed(true)`

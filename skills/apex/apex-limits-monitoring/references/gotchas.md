@@ -9,7 +9,7 @@ Line citations are into the Summer '26 guide text: `apexdev` = Apex Developer Gu
 
 **What happens:** `System.LimitException` cannot be caught — but the part that destroys a logging strategy is the second half of the same sentence: "When exceptions are uncatchable, catch blocks, **as well as `finally` blocks if any**, aren't executed" (`apexdev L39727–39728`). Code that buffers log records and flushes them in a `finally` block loses the entire buffer at the exact moment it mattered, and the transaction leaves no trace of which meter it blew.
 
-**When it occurs:** any breach of a governor ceiling — 100 SOQL statements synchronously, 150 DML statements, 10,000 ms CPU, 6 MB heap. The runtime throws "if a governor limit such as heap size or CPU time has been exceeded, when the maximum number of SOQL queries issued has been exceeded, an attempt is made to retrieve more than the maximum number of records, and so on" (`apexdev L39723–39726`).
+**When it occurs:** any breach of a governor ceiling — 100 SOQL statements synchronously, 150 DML statements, 10,000 ms CPU, 10 MB heap (Winter '27+, `apexdev` 264 L19780). The runtime throws "if a governor limit such as heap size or CPU time has been exceeded, when the maximum number of SOQL queries issued has been exceeded, an attempt is made to retrieve more than the maximum number of records, and so on" (`apexdev L39723–39726`).
 
 **How to avoid:** write the log line from inside the guard, *before* the expensive operation, not from a `finally`. For post-mortem, use a surface outside the transaction: `BatchApexErrorEvent` (`apexdev L17852–17858`), a Queueable Finalizer (`apexdev L16290–16303`), or the `ApexUnexpectedException` event log whose `EXCEPTION_CATEGORY` names the meter (`object_reference L114265–114285`).
 
@@ -27,7 +27,7 @@ Line citations are into the Summer '26 guide text: `apexdev` = Apex Developer Gu
 
 ## Gotcha 3: Scheduled Apex Is Asynchronous But Runs Under Synchronous Limits
 
-**What happens:** the note above the Per-Transaction Apex Limits table reads: "Although scheduled Apex is an asynchronous feature, synchronous limits apply to scheduled Apex jobs" (`apexdev L19536`). A `Schedulable` sized against 200 SOQL, 12 MB heap and 60,000 ms CPU actually has 100, 6 MB and 10,000 ms. The job passes in a sandbox with ten records and fails nightly in production.
+**What happens:** the note above the Per-Transaction Apex Limits table reads: "Although scheduled Apex is an asynchronous feature, synchronous limits apply to scheduled Apex jobs" (`apexdev L19536`). A `Schedulable` sized against 200 SOQL, 25 MB heap and 60,000 ms CPU actually has 100, 10 MB and 10,000 ms (Winter '27 figures; the note is unchanged at `apexdev` 264 L19739). The job passes in a sandbox with ten records and fails nightly in production.
 
 **When it occurs:** most often in a limits *monitor* — the scheduled poller that reads `OrgLimits.getAll()` and inserts a row per limit is itself the class most likely to hit a synchronous ceiling nobody budgeted for.
 
@@ -71,7 +71,7 @@ Line citations are into the Summer '26 guide text: `apexdev` = Apex Developer Gu
 
 **When it occurs:** heap guards with tight margins in code that builds large collections, where the gap between the reported figure and the enforced one is widest.
 
-**How to avoid:** leave a wider margin on heap than on the other meters, and do not describe a heap number as exact in a log line or a dashboard. Email services are a separate case entirely: their heap is 50 MB, neither the 6 MB nor the 12 MB column (`apexdev L19650`).
+**How to avoid:** leave a wider margin on heap than on the other meters, and do not describe a heap number as exact in a log line or a dashboard. Email services are a separate case entirely: their heap is 50 MB, neither the 10 MB nor the 25 MB column (`apexdev` 264 L19853).
 
 ---
 
@@ -127,7 +127,7 @@ Line citations are into the Summer '26 guide text: `apexdev` = Apex Developer Gu
 
 ## Gotcha 13: A Heap Guard at Method Entry Measures Nothing the Method Will Do
 
-**What happens:** heap consumption accumulates as the method allocates, so a single `getHeapSize()` check before the work reports the state of the caller, not of the collection about to be built. The synchronous ceiling is 6 MB and the asynchronous one 12 MB (`apexdev L19577`), and the reading itself is documented as approximate (`apexrefguide L220711`), so the margin between "looks fine at entry" and "terminated at 91%" is both wide and unsigned.
+**What happens:** heap consumption accumulates as the method allocates, so a single `getHeapSize()` check before the work reports the state of the caller, not of the collection about to be built. The synchronous ceiling is 10 MB and the asynchronous one 25 MB from the Winter '27 release (`apexdev` 264 L19780; Summer '26 was 6 MB / 12 MB, 262 L19577), and the reading itself is documented as approximate (`apexrefguide L220711`), so the margin between "looks fine at entry" and "terminated at 91%" is both wide and unsigned.
 
 **When it occurs:** service methods that query large SObject lists and then build intermediate maps inside a loop, and Batch `execute` bodies whose scope was sized for SOQL rather than for the object graph the query returns.
 

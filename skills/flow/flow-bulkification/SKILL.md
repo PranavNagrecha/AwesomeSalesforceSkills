@@ -44,9 +44,9 @@ outputs:
   - "collection-based flow redesign guidance"
   - "decision on whether Flow should stay Flow or move to Apex"
 dependencies: []
-version: 2.1.0
+version: 2.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 Use this skill when a Flow works for one record in a sandbox but becomes dangerous when data arrives in volume. A Flow that a user triggers with a button click may run ONCE with 100 SOQL queries available. The same Flow triggered by a 200-record Bulk API insert runs 200 times in the SAME transaction — with the SAME 100 SOQL budget. A `Get Records` inside a loop that worked fine during UI testing will exhaust the budget on row 50 of the bulk insert and roll back the remaining 150.
@@ -97,9 +97,10 @@ Flows are not exempt from Salesforce governor limits. A record-triggered flow ru
 | DML statements | 150 | 150 | 1 per `Create` / `Update` / `Delete Records` element execution, whatever the row count |
 | DML rows | 10,000 | 10,000 | The size of the collection a single `Update Records` commits |
 | CPU time | 10,000 ms | 60,000 ms | Decisions, formulas and loop iterations — no database access required to exhaust it |
-| Heap size | 6 MB | 12 MB | Collection variables. `<queriedFields>` is the lever, not the row count alone |
+| Heap size (Winter '27 release onward) | 10 MB | 25 MB | Collection variables. `<queriedFields>` is the lever, not the row count alone |
 
-Every figure: Apex Developer Guide, Per-Transaction Apex Limits (`apexdev.txt` L19541–19580).
+Every figure: Apex Developer Guide, Per-Transaction Apex Limits (`apexdev.txt` L19541–19580); heap from
+the Winter '27 guide (264 L19780) — Summer '26 was 6 MB / 12 MB.
 The asynchronous column is not decoration — it is why the same flow behaves differently
 on a scheduled path than on the save, and **UNVERIFIED (2026-09-05):** which column a
 schedule-triggered flow's interview draws from is not stated in `api_meta.txt` or
@@ -332,7 +333,7 @@ If either combined number exceeds the limit, redesign BEFORE deploying. If the t
 2. **After-save updates on the same record are more expensive than before-save field changes** — using after-save for simple enrichment wastes transaction budget and can trigger more automation (including re-triggering the same Flow on the `Update`).
 3. **Subflows do not magically bulkify a bad design** — moving a query-in-loop pattern into a subflow only hides it.
 4. **Invocable Apex called from Flow still shares the transaction** — wrapping heavy work in Apex helps only if the Apex code is genuinely bulk-safe (method signature accepts `List<T>`, not a single instance).
-5. **Collection variables consume heap memory** — a collection with 10,000 items that each hold 20 fields ≈ ~2 MB of heap. Two such collections + variable assignments may exceed the 6 MB synchronous heap limit. Heap exhaustion is a silent failure mode.
+5. **Collection variables consume heap memory** — a collection with 10,000 items that each hold 20 fields ≈ ~2 MB of heap. A handful of such collections + variable assignments can exhaust the 10 MB synchronous heap limit (Winter '27 release, not API-version-gated, `apexdev.txt` 264 L19780; 6 MB through Summer '26). Heap exhaustion is a silent failure mode.
 6. **Before-save on certain standard objects has restrictions** — **UNVERIFIED (2026-09-05):** the specific OpportunityLineItem / `ActivatedDate` behaviour this bullet used to name is not stated in `apexdev.txt` or `object_reference.txt`; searching both for `ActivatedDate` returns only field definitions, and the guide's `OpportunityLineItem` material is a bulk-trigger example (`apexdev.txt` L15202–15240), not a restriction. What *is* documented and matters here: on a recursive save Salesforce skips steps 9 through 17 of the order of execution — which includes after-save record-triggered flows at step 14 (`apexdev.txt` L15414–15415, L15470). Verify per-object before-save behaviour in a scratch org rather than trusting a remembered rule.
 7. **Platform Events in a Flow still count against the org-wide publish allocation** — Standard-Volume is 100,000 events/hour org-wide on Enterprise / Performance / Unlimited, but only 1,000/hour on Developer and Professional-with-API-Add-On. A before-save that publishes one event per save will exhaust the Developer-edition allocation during a 1k-record load and the Enterprise allocation during a 100k-record load, and the bucket is shared with every other Standard-Volume publisher in the org.
 8. **Recursion controls on Flow are weaker than on Apex** — a flow that updates its own triggering object in after-save re-fires, and each re-entry spends more of the same transaction budget. The canonical guard is `<doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>` on the Start element: "conditions evaluate to true only if the record didn't meet the required conditions before the triggering update but now meets the conditions after the update", API 50.0+ (`api_meta.txt` L72322–72325; the same field exists on `FlowRule`, L71320–71323). Field History is a tracking feature, not a recursion control — do not reach for it here. The hard ceiling is stack depth 16 for recursive trigger firing (`apexdev.txt` L19559–19560); you will exhaust SOQL or DML long before you reach it.

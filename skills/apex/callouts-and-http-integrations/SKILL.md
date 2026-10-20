@@ -36,9 +36,9 @@ outputs:
   - "review findings for security, transaction safety, and testability"
   - "Apex callout scaffold using Named Credentials and mocks"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-16
+updated: 2026-10-19
 ---
 
 Use this skill when an Apex integration needs to leave Salesforce safely. The aim is to use Named Credentials correctly, keep authentication and endpoint management out of code, separate callouts from unsafe transaction contexts, and make failure modes visible and testable.
@@ -164,7 +164,7 @@ The full list with **What happens / When it occurs / How to avoid** and guide li
 1. **The blocker is "pending work", not "DML".** Enqueuing a job, running `Database.executeBatch`, calling a `@future` method or sending email all block a later callout the same way an `insert` does (apexdev L35379–35380).
 2. **`setTimeout` is a connect timeout.** It bounds establishing the connection, not the transfer (apexrefguide L216720–216723). The real ceiling is 120 s cumulative across the transaction (apexdev L35856–35857).
 3. **A body on a GET silently becomes a POST** (apexdev L35377–35378) — no exception, no warning.
-4. **The 6 MB / 12 MB payload cap is also a heap cap** (cheat sheet L389–391, L415), so a large response leaves almost nothing for parsing it.
+4. **The 6 MB / 12 MB payload cap is also a heap cap** (cheat sheet L389–391, L415; unchanged at apexdev 264 L20048, L20063), so a 6 MB synchronous response leaves about 4 MB of the Winter '27 10 MB heap (apexdev 264 L19780) for parsing it, and nothing on a Summer '26 6 MB heap.
 5. **Queueables that make callouts need `Database.AllowsCallouts`** (apexdev L16164–16166); future methods need `@Future(callout=true)`, whose default is `false` (apexdev L5134–5135).
 6. **An unreleased savepoint blocks the callout even after a rollback** — a different `CalloutException` with a different message (apexdev L8747–8748).
 7. **A 200-series response is not the whole contract** — a 200 carrying an HTML maintenance page is the case that reaches production.

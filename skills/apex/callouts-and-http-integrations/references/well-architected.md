@@ -86,7 +86,8 @@ Tag findings as Reliability when:
   `references/code-examples.md` is built from these field tables.
   https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
 - Salesforce App Limits Cheat Sheet — Per-Transaction Apex Limits L72–91 (100 callouts, 120 s
-  cumulative, 6 MB/12 MB heap, 50 sync / 1 async `System.enqueueJob`, CPU time) and Static Apex
+  cumulative, 6 MB/12 MB heap through Summer '26 — 10 MB/25 MB from the Winter '27 release per
+  apexdev 264 L19780, while the callout size cap stays 6 MB/12 MB at apexdev 264 L20048 — 50 sync / 1 async `System.enqueueJob`, CPU time) and Static Apex
   Limits L386–415 (10 s default callout timeout, 6 MB/12 MB callout request-or-response size and the
   footnote that it counts against heap). Used for every numeric limit stated in this package.
 - Salesforce Well-Architected — Trusted (secret management, least-privilege remote identity) and

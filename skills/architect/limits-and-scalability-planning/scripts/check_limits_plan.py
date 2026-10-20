@@ -106,12 +106,14 @@ CHECKS: list[Check] = [
         name="heap_size_consideration",
         description=(
             "Heap size noted or SELECT field list reduction mentioned "
-            "(limit: 6MB sync / 12MB async)"
+            "(limit: 10MB sync / 25MB async from Winter '27; 6MB / 12MB before)"
         ),
         patterns=[
             _p(r'\bheap\s+(?:size|limit|usage)\b'),
             _p(r'\b6\s*mb\b'),
             _p(r'\b12\s*mb\b'),
+            _p(r'\b10\s*mb\b'),
+            _p(r'\b25\s*mb\b'),
             _p(r'\bgetheapsize\b'),
             _p(r'\bselect\s+only\s+(?:needed|required|specific)\s+fields?\b'),
             _p(r'\bfield\s+list\s+(?:reduction|selective|minimal)\b'),

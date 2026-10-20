@@ -48,7 +48,8 @@ Every source below was read for this skill; the parenthesis names the claim it c
   version floor in `references/metadata-examples.md`.
   PDF: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf
 - **Apex Developer Guide — Per-Transaction Apex Limits** (L19541–19580): 100 SOQL queries
-  synchronous / 200 asynchronous, 150 DML statements, 10,000 DML rows, 6 MB / 12 MB heap,
+  synchronous / 200 asynchronous, 150 DML statements, 10,000 DML rows, 6 MB / 12 MB heap (10 MB / 25 MB from
+  the Winter '27 release, 264 L19780),
   10,000 ms / 60,000 ms CPU. Every number in the limits table in `SKILL.md` and in the
   scale arithmetic in `references/examples.md`.
   PDF: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf

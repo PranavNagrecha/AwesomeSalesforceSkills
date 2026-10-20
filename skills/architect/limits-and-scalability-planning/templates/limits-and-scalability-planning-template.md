@@ -31,7 +31,7 @@ For each significant synchronous transaction type (user action, trigger path, AP
 - DML statements: 150 per transaction
 - DML rows: 10,000 per transaction
 - CPU time: 10,000ms
-- Heap: 6MB
+- Heap: 10MB (Winter '27 release, not API-version-gated; 6MB through Summer '26)
 - Callouts: 100 per transaction; 120s total timeout
 
 **Risk Rating Key:** Low (<50% of any limit) | Medium (50–70%) | High (70–90%) | Critical (>90%)
@@ -48,12 +48,12 @@ For each Queueable, Future method, or Scheduled Apex, complete one row.
 | | | | | | | | |
 | | | | | | | | |
 
-**Reference limits (async — Queueable, Future, Scheduled):**
-- SOQL: 100 per transaction
+**Reference limits (async — Queueable, Future; Scheduled Apex uses the synchronous limits):**
+- SOQL: 200 per transaction
 - DML statements: 150 per transaction
 - DML rows: 10,000 per transaction
 - CPU time: 60,000ms
-- Heap: 12MB
+- Heap: 25MB (Winter '27 release, not API-version-gated; 12MB through Summer '26)
 
 ---
 
@@ -71,7 +71,7 @@ For each Batch Apex job in the org, complete one row.
 - Max scope size: 2,000 records (recommended: 200)
 - Max records processed per 24-hour rolling window: 50,000,000
 - Max concurrent/queued jobs: 5 (Flex Queue: 100 in Holding state)
-- CPU per execute() call: 60,000ms; Heap: 12MB
+- CPU per execute() call: 60,000ms; Heap: 25MB (12MB through Summer '26)
 
 **24-hour rolling window total (all jobs):** _Sum of est. 24hr record volumes above_
 **Headroom against 50M limit:** _50,000,000 − total = remaining_

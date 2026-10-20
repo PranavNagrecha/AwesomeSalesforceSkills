@@ -80,7 +80,7 @@ Future calls                     50          0        0        0       0       0
 Jobs in queue (enqueueJob)       50          0        0        0       0       0    0%   yes
 Stack depth (recursive save)     16          2        1        1       0       4   25%   yes  (**)
 CPU time (ms)                10,000          ?        ?        ?       ?       ?    ?    NO   - measure
-Heap (bytes)              6,000,000          ?        ?        ?       ?       ?    ?    NO   - measure
+Heap (bytes)             10,000,000          ?        ?        ?       ?       ?    ?    NO   - measure
 
 (*)  Only if the platform event's publish behavior is "Publish Immediately". If it is
      "Publish After Commit" the spend moves to the DML statements row instead.
@@ -88,7 +88,7 @@ Heap (bytes)              6,000,000          ?        ?        ?       ?       ?
 
 Ceilings: apexdev.txt L19542-L19599 (SOQL L19544, rows L19546, DML L19554, DML rows L19556,
 stack depth L19559, callouts L19563, future L19568, enqueueJob L19573, email L19575,
-heap L19577, CPU L19579, publish-immediately L19598).
+heap 264 L19780 [Winter '27; 6,000,000 at L19577 before], CPU L19579, publish-immediately L19598).
 
 MEASURED (fill after a sandbox run at peak batch size)
   Source: debug log, Workflow category at FINER

@@ -32,9 +32,9 @@ outputs:
   - Decision table for choosing the right recovery strategy per execution context
 dependencies:
   - governor-limits
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-05
+updated: 2026-10-19
 ---
 
 # Governor Limit Recovery Patterns
@@ -49,7 +49,23 @@ Gather this context before working on anything in this domain:
 
 - Determine the execution context: synchronous (trigger/VF controller), asynchronous (future/queueable), batch (Database.Batchable), or scheduled. Each context has different limit ceilings and recovery options.
 - The most common wrong assumption is that `try/catch` can intercept a `LimitException`. It cannot. `System.LimitException` is uncatchable — the transaction terminates immediately with a full rollback the moment the limit is exceeded. Recovery must happen proactively, before the limit is breached.
-- Know which limits are in play for the context: SOQL queries (100 sync / 200 async), DML statements (150), heap size (6 MB sync / 12 MB async), CPU time (10 000 ms sync / 60 000 ms async), callouts (100), future calls (50).
+- Know which limits are in play for the context: SOQL queries (100 sync / 200 async), DML statements (150), heap size (10 MB sync / 25 MB async from the Winter '27 release, Apex Developer Guide 264 L19780; 6 MB / 12 MB through Summer '26 — read `Limits.getLimitHeapSize()` rather than either constant), CPU time (10 000 ms sync / 60 000 ms async), callouts (100), future calls (50).
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which context runs this code: trigger, Queueable, Batch `execute`, or Scheduled?" | Every ceiling and every recovery option differs by context, and a breach is never catchable (Gotcha 1) | The `Limits.getLimitX()` pairs the guard reads, and whether deferral to async is even available |
+| "Is the target org a nonproduction org on Winter '27 that might keep the Summer '26 heap?" | The heap ceiling a guard is tuned against can differ between sandbox and production for one release (Gotcha 1) | A guard that reads `Limits.getLimitHeapSize()` instead of a hardcoded byte count |
+| "Does any caller treat a populated `Id` as proof the record committed?" | `Database.rollback()` leaves the `Id` on the in-memory sObject (Gotcha 2) | The exact lines that must null the `Id` after a rollback |
+| "Which static variables does this transaction mutate after the savepoint?" | Statics survive the rollback and go stale (Gotcha 3) | A named reset method called beside every rollback |
+| "How close to the DML ceiling is the path where the savepoint is set?" | `setSavepoint()` itself costs one DML statement (Gotcha 4) | A savepoint budget of one or two per logical unit |
+| "Will the Batch failure handler need the full list of failed Ids?" | `BatchApexErrorEvent.JobScope` truncates silently on large scopes (Gotcha 5) | A `DoesExceedJobScopeMaxLength` branch that re-queries by `AsyncApexJobId` |
+| "Can the tests drive real SOQL and DML up to the guard threshold?" | Fully mocked tests never move the `Limits` counters (Gotcha 6) | A parameterised threshold constant the test lowers to force the deferral path |
+
+Asking these first turns a recovery pattern from a `try/catch` that never fires into a guard that is tuned to the context it runs in, budgets its own savepoints, and is proven by a test that actually crosses the threshold.
 
 ---
 

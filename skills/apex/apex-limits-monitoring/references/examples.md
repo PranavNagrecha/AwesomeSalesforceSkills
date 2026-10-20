@@ -278,7 +278,7 @@ Three preconditions decide whether that query returns anything at all, and all t
 
 **Problem:** `Limits.getQueries()` reports *your namespace's* consumption. A certified managed package in the same transaction has its own 100-query allocation, and the transaction also has a cumulative cross-namespace ceiling (Apex Developer Guide, `apexdev L19666–19680`). The guard is reading one column of a wider table.
 
-**Solution:** capture a debug log at FINEST for the Apex Profiling category and read the `CUMULATIVE_LIMIT_USAGE` block, which prints one `LIMIT_USAGE_FOR_NS` section per namespace. This is the guide's own sample output (`apexdev L38274–38289`):
+**Solution:** capture a debug log at FINEST for the Apex Profiling category and read the `CUMULATIVE_LIMIT_USAGE` block, which prints one `LIMIT_USAGE_FOR_NS` section per namespace. The block below follows the format of the guide's sample output (`apexdev L38274–38289`; the Winter '27 copy prints the heap ceiling as `10000000`, 264 L38759–38774); the usage figures and the `vendorpkg` section are illustrative, not from the guide:
 
 ```text
 16:06:58.49 (49590539)|CUMULATIVE_LIMIT_USAGE
@@ -289,7 +289,7 @@ Three preconditions decide whether that query returns anything at all, and all t
   Number of DML statements: 3 out of 150
   Number of DML rows: 210 out of 10000
   Maximum CPU time: 1840 out of 10000
-  Maximum heap size: 0 out of 6000000
+  Maximum heap size: 0 out of 10000000
   Number of callouts: 0 out of 100
   Number of Email Invocations: 0 out of 10
   Number of future calls: 0 out of 50

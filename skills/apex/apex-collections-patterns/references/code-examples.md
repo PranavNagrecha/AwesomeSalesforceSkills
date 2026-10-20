@@ -32,7 +32,8 @@ practice: "There is no limit on the number of items a collection can hold.
 However, there is a general limit on heap size" (`apexdev` L1431), and a list,
 set or map key may nest "up to seven levels of nested collections … up to eight
 levels overall" (`apexdev` L1471, L1601, L1657). The binding constraint is heap:
-6 MB synchronous, 12 MB asynchronous (`apexdev` L19577).
+10 MB synchronous, 25 MB asynchronous from the Winter '27 release (`apexdev` 264
+L19780); Summer '26 was 6 MB / 12 MB (`apexdev` L19577).
 
 ---
 

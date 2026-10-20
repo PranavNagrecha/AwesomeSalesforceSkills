@@ -30,11 +30,13 @@ Mitigation:
 
 ---
 
-## Gotcha 3: Future Methods Do NOT Get Higher SOQL Limits — The CPU and Heap Expansion Is All They Get
+## Gotcha 3: Future Methods Get Higher SOQL, CPU and Heap Limits — But Not Higher DML Limits
 
-A common misconception is that `@future` methods have "relaxed" governor limits across the board. They do not. Future methods receive the same SOQL query limit (100), DML statement limit (150), and DML row limit (10,000) as synchronous code. The only limits that are higher for future (and other async Apex) are CPU time (60,000ms vs. 10,000ms) and heap size (12MB vs. 6MB).
+A common misconception is that `@future` methods have "relaxed" governor limits across the board. They do not. Future methods receive the same DML statement limit (150) and DML row limit (10,000) as synchronous code. The limits that are higher for future (and other async Apex) are SOQL queries (200 vs. 100), CPU time (60,000ms vs. 10,000ms) and heap size (25MB vs. 10MB from the Winter '27 release; 12MB vs. 6MB through Summer '26) — Apex Developer Guide 264 L19747, L19780.
 
-This matters when developers move SOQL-heavy logic to `@future` expecting the extra headroom to solve a `Too many SOQL queries` error. It will not. If the synchronous transaction hit 101 SOQL queries, moving the same code to `@future` will also hit 101 SOQL queries — just with more CPU budget available before the failure.
+This matters when developers move SOQL-heavy logic to `@future` expecting the extra headroom to solve a `Too many SOQL queries` error. It will not. If the synchronous transaction hit 101 SOQL queries because the query sits in a loop, moving the same code to `@future` only moves the failure to the 201st query.
+
+Scheduled Apex is the exception inside "async": it is an asynchronous feature, but synchronous limits apply to it (Apex Developer Guide 264 L19739), so a `Schedulable` gets 100 SOQL, 10,000ms CPU and the 10MB heap, not the async column.
 
 The only async pattern that genuinely resets the SOQL limit per chunk is Batch Apex, because each `execute()` call is a fresh transaction with a fresh governor limit budget. For SOQL-heavy operations, Batch Apex is the correct escalation path, not `@future`.
 
@@ -65,7 +67,9 @@ Monitor cumulative batch consumption using the Apex Jobs page in Setup or throug
 
 ## Gotcha 6: Heap Size Limit Applies to Peak Usage, Not Average — String Concatenation in Loops Is a Silent Heap Killer
 
-The 6MB synchronous and 12MB async heap limits apply to the peak live object graph at any single point in the transaction, not the average. If your code builds a large string by concatenating in a loop and the string reaches 6MB in the middle of the transaction, the transaction fails even if you immediately discard the string afterward.
+The heap limits (10MB synchronous and 25MB async from the Winter '27 release, Apex Developer Guide 264 L19780; 6MB / 12MB through Summer '26) apply to the peak live object graph at any single point in the transaction, not the average. If your code builds a large string by concatenating in a loop and the string reaches the ceiling in the middle of the transaction, the transaction fails even if you immediately discard the string afterward.
+
+During Winter '27 only, a nonproduction org can keep the lower Summer '26 heap through `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855–113862; from Spring '27 the higher heap is enforced everywhere), so a sandbox load test can report 6MB / 12MB headroom while production has 10MB / 25MB. Read `Limits.getLimitHeapSize()` in the test run rather than assuming either pair.
 
 The most common violation pattern:
 

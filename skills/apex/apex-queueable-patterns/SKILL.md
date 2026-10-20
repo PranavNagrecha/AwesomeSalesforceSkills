@@ -35,9 +35,9 @@ triggers:
   - "delay a queueable job retry instead of scheduling apex"
   - "queueable job shows completed in Apex Jobs but nothing changed"
 dependencies: []
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-16
+updated: 2026-10-19
 ---
 
 # Apex Queueable Patterns
@@ -66,7 +66,7 @@ untouched.
 | Ask | Why it matters | What a good answer adds |
 |---|---|---|
 | "Where is this enqueued from — a trigger, a Lightning controller, a batch `finish()`, or a finalizer?" | The ceiling differs by context: 50 enqueues per synchronous transaction, exactly 1 per asynchronous transaction (`apexdev` L16179-16181, L19573). A per-record loop in a trigger fails on the 51st record, not the 2nd | The one call site that owns the enqueue, and whether the code path is ever reached from inside another job |
-| "What is the largest number of records one enqueue can be asked to cover?" | It decides the chunk size and therefore the chain length. One async transaction gets 200 SOQL queries, 150 DML statements and 12 MB heap (`apexdev` L19546, L19553, L19576) | A chunk size, the resulting link count, and whether that count is still under the depth cap |
+| "What is the largest number of records one enqueue can be asked to cover?" | It decides the chunk size and therefore the chain length. One async transaction gets 200 SOQL queries, 150 DML statements and 25 MB heap (`apexdev` L19544, L19554; heap 25 MB from the Winter '27 release, `apexdev` 264 L19780, 12 MB through Summer '26) | A chunk size, the resulting link count, and whether that count is still under the depth cap |
 | "Can the same logical work be enqueued twice from two different transactions?" | A static guard resets at the transaction boundary (`apexdev` L3738-3740). Cross-transaction suppression needs `AsyncOptions.DuplicateSignature`, and a suppressed enqueue *throws* `DuplicateMessageException` rather than returning quietly | The stable business key the signature is built from, and the `catch` that turns the exception into a no-op instead of failed DML |
 | "Does anything in this job call an external system, and does it also write records?" | The marker interface grants permission, not ordering: callouts are impossible after DML in the same transaction (`apexdev` L35860-35862) | The order inside `execute()`, and whether the callout and the DML need to be split across two jobs |
 | "When this job throws, what must still happen?" | `try/catch` cannot survive a limit exception that terminates the transaction. A Finalizer runs either way, and its budget is five consecutive re-enqueues (`apexdev` L16291-16294) | Whether a Finalizer is needed at all, and what it does on `SUCCESS` versus `UNHANDLED_EXCEPTION` |
@@ -85,7 +85,7 @@ rather than on how many chain levels the test runtime happened to drive.
 
 ### The Queueable Interface
 
-A Queueable class implements `Queueable` and defines a single `execute(QueueableContext ctx)` method. The job is enqueued with `System.enqueueJob(new MyJob())` and runs asynchronously in a separate transaction under the *asynchronous* limit column — 200 SOQL queries (not the synchronous 100), 150 DML statements, 12 MB heap, and 60,000 ms CPU time (`apexdev` L19546, L19553, L19576-19578). The job Id returned by `enqueueJob` "corresponds to the ID of the AsyncApexJob record" (`apexdev` L15965-15967), which is what makes a Queueable monitorable where a `@future` method is not.
+A Queueable class implements `Queueable` and defines a single `execute(QueueableContext ctx)` method. The job is enqueued with `System.enqueueJob(new MyJob())` and runs asynchronously in a separate transaction under the *asynchronous* limit column — 200 SOQL queries (not the synchronous 100), 150 DML statements, 25 MB heap (Winter '27 release, not API-version-gated; 12 MB through Summer '26 — `apexdev` 264 L19780), and 60,000 ms CPU time (`apexdev` L19544, L19554, L19579). The job Id returned by `enqueueJob` "corresponds to the ID of the AsyncApexJob record" (`apexdev` L15965-15967), which is what makes a Queueable monitorable where a `@future` method is not.
 
 Adding `Database.AllowsCallouts` to the `implements` clause is required for any Queueable that makes HTTP or web service callouts: "Apex allows HTTP and web service callouts from queueable jobs, if they implement the Database.AllowsCallouts marker interface. In queueable jobs that implement this interface, callouts are also allowed in chained queueable jobs." (`apexdev` L16164-16165). The interface grants permission only — it does not reorder the transaction, so a callout still cannot follow DML inside the same `execute()` (`apexdev` L35860-35862).
 

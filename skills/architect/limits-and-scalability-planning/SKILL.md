@@ -49,9 +49,9 @@ outputs:
   - "Storage capacity projection"
   - "Filled limits-and-scalability-planning-template.md"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-10-19
 ---
 
 Use this skill when designing a new Salesforce implementation for scale, auditing an existing org for governor limit exposure before a major release, or troubleshooting a production incident caused by limit violations. This skill provides a structured approach to understanding, measuring, and planning around Salesforce's governor limit architecture. It does not cover individual code optimization techniques — for code-level CPU and heap tuning, use `apex-cpu-and-heap-optimization`.
@@ -64,6 +64,22 @@ Use this skill when designing a new Salesforce implementation for scale, auditin
 - **What are the current record counts on key objects?** Objects with more than 1 million records require different query and DML strategies than smaller objects.
 - **Is there an active incident or is this preventive planning?** Mode 1 (planning), Mode 2 (audit), and Mode 3 (troubleshoot) each have a different entry point.
 - **What is the org edition?** Enterprise and Unlimited Edition orgs have higher metadata limits (800 custom objects) than Professional Edition orgs.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Which context runs each heavy job: trigger, Queueable, Future, or Batch `execute`?" | Async raises SOQL, CPU and heap but not the DML ceilings (Gotcha 3) | The limit column each inventory row in the template is scored against |
+| "Is any of this work Scheduled Apex?" | Scheduled Apex is async but runs on the synchronous limits (Gotcha 3; Asynchronous Transaction Limits) | Rows sized against 100 SOQL / 10MB heap, or a plan to enqueue a Queueable from the scheduler |
+| "What formulas, validation rules and package triggers fire on the busiest objects?" | All of it shares the one CPU budget, not just your Apex (Gotcha 1) | A CPU estimate taken from a profiled `CUMULATIVE_LIMIT_USAGE`, not from code review |
+| "How many separate DML calls does the heaviest transaction make, and how many rows in total?" | Statements (150) and rows (10,000) fail independently (Gotcha 4) | Both counts in the inventory, with the closer one rated |
+| "What is the largest single structure held in memory — a string, a JSON payload, a related-record graph?" | Heap fails at the peak, not the average (Gotcha 6) | A batch scope or chunk size derived from the peak, not the record count |
+| "Do the sandboxes used for load testing keep the Summer '26 heap via `ApexSettings.enableEnforceSummer26ApexHeapLimit`?" | During Winter '27 a pinned sandbox reports 6MB / 12MB headroom while production has 10MB / 25MB (Gotcha 6) | A load-test result that is read against the right ceiling |
+| "How many custom fields does each growing object hold, including ones deleted in the last 15 days?" | Deleted fields keep counting until hard delete (Gotcha 7) | Real field headroom before the next release adds fields |
+
+Asking these before sizing turns a generic limits table into a plan scored against the context each job actually runs in, with the CPU and heap figures measured rather than assumed.
 
 ---
 
@@ -85,23 +101,25 @@ These apply to all Apex executed in the context of a synchronous user action (bu
 | DML statements | 150 per transaction |
 | DML rows | 10,000 per transaction |
 | CPU time | 10,000ms (10 seconds) |
-| Heap size | 6MB |
+| Heap size | 10MB (Winter '27 release, not API-version-gated; 6MB through Summer '26) |
 | Callouts (HTTP or web service) | 100 per transaction |
 | Callout total timeout | 120 seconds |
 | Records locked simultaneously | 10 |
 
 ### Asynchronous Transaction Limits
 
-Future methods, Queueable Apex, and scheduled Apex run asynchronously. They receive the same SOQL and DML limits as synchronous code, but CPU and heap are higher:
+Future methods, Queueable Apex, and Batch Apex run under the asynchronous column. Scheduled Apex is asynchronous but runs on the synchronous limits (Apex Developer Guide 264 L19739). DML limits match synchronous code; SOQL, CPU and heap are higher (264 L19747, L19780):
 
 | Resource | Limit |
 |---|---|
-| SOQL queries | 100 per transaction |
+| SOQL queries | 200 per transaction |
 | DML statements | 150 per transaction |
 | DML rows | 10,000 per transaction |
 | CPU time | 60,000ms (60 seconds) |
-| Heap size | 12MB |
+| Heap size | 25MB (Winter '27 release, not API-version-gated; 12MB through Summer '26) |
 | Callouts | 100 per transaction |
+
+Heap rose at Winter '27 (Apex Developer Guide 264 L19780). During Winter '27 only, a nonproduction org can keep the Summer '26 heap via `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855–113862), so confirm that setting before trusting a sandbox load test's heap headroom for production.
 
 The expanded CPU limit (6x synchronous) is why callout-heavy or compute-heavy operations should be moved to `@future`, Queueable, or Batch Apex.
 
@@ -117,7 +135,7 @@ Batch Apex (`Database.Batchable`) is the correct pattern for processing large da
 | Maximum scope size | 2,000 records |
 | Recommended scope for most workloads | 200 records |
 | CPU time per batch execute() call | 60,000ms (async limit) |
-| Heap per batch execute() call | 12MB (async limit) |
+| Heap per batch execute() call | 25MB (async limit; 12MB through Summer '26) |
 
 **Scope size tuning:** The default scope size when not specified in `Database.executeBatch()` is 200. Smaller scopes (50–100) reduce heap and CPU pressure per chunk at the cost of more `execute()` calls and more governor limit cycles. Larger scopes (1,000–2,000) maximize throughput but risk heap overflow if each record produces a large object graph. Tune scope size based on record complexity and the operations in `execute()`.
 
@@ -312,21 +330,21 @@ Use this mode when a production incident involves `System.LimitException`, timeo
 
 ## Related Skills
 
-- `apex/batch-apex` — for Batch Apex authoring patterns and trigger mechanics
-- `apex/async-patterns` — for Queueable, Future, and scheduling patterns
+- `apex/batch-apex-patterns` — for Batch Apex authoring patterns and trigger mechanics
+- `apex/async-apex` — for Queueable, Future, and scheduling patterns
 - `apex-cpu-and-heap-optimization` — for code-level CPU and heap tuning (NOT this skill)
-- `data/large-data-volumes` — for LDV indexing, skinny tables, and archival strategies
+- `architect/large-data-volume-architecture` — for LDV indexing, skinny tables, and archival strategies
 - `architect/solution-design-patterns` — for automation layer selection
 
 ## Recommended Workflow
 
 Step-by-step instructions for an AI agent or practitioner activating this skill:
 
-1. Gather context — confirm the org edition, relevant objects, and current configuration state
-2. Review official sources — check the references in this skill's well-architected.md before making changes
-3. Implement or advise — apply the patterns from Core Concepts and Common Patterns sections above
-4. Validate — run the skill's checker script and verify against the Review Checklist below
-5. Document — record any deviations from standard patterns and update the template if needed
+1. Pick the mode (Plan for Scale, Audit, or Troubleshoot) and answer the Questions table above, recording each job's execution context.
+2. Copy `templates/limits-and-scalability-planning-template.md` and fill one inventory row per synchronous path, async job and batch, scoring each against its own column (Scheduled Apex on the synchronous one).
+3. Replace estimated CPU and heap with figures read from a representative debug log's `CUMULATIVE_LIMIT_USAGE` block, and note whether the test org pins the Summer '26 heap.
+4. Run `python3 scripts/check_limits_plan.py --file <your-plan.md> --strict` and close every MISSING required check.
+5. Record each High or Critical row with its mitigation (smaller scope, async offload, field-list reduction) and the follow-up skill from Related Skills.
 
 ---
 

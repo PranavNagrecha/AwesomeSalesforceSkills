@@ -48,9 +48,9 @@ outputs:
   - "A deployable LimitGuard class, OrgLimitsPoller Schedulable, Limit_Snapshot__c object, Limit_Threshold__mdt config and test class"
   - "A CI query over ApexTestResultLimits that fails the build on a per-test-method limit regression"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 # Apex Limits Monitoring
@@ -133,7 +133,7 @@ Wording matters when you write the log line: `getHeapSize()` "returns the **appr
 
 ### Sync vs Async Ceilings — and Where "Async" Is a Lie
 
-From the Per-Transaction Apex Limits table (`apexdev L19540–19580`):
+From the Per-Transaction Apex Limits table (`apexdev L19540–19580`; heap row from the Winter '27 guide, 264 L19780):
 
 | Limit | Synchronous | Asynchronous |
 |---|---|---|
@@ -145,7 +145,7 @@ From the Per-Transaction Apex Limits table (`apexdev L19540–19580`):
 | `System.enqueueJob` calls | 50 | 1 |
 | `@future` methods per invocation | 50 | 0 in batch/future, 50 in queueable |
 | CPU time | 10,000 ms | 60,000 ms |
-| Heap size | 6 MB | 12 MB |
+| Heap size (Winter '27 release onward) | 10 MB | 25 MB |
 | `EventBus.publish` (publish immediately) | 150 | 150 |
 
 Three notes on that table the platform prints right beside it:
@@ -153,6 +153,7 @@ Three notes on that table the platform prints right beside it:
 - Scheduled Apex is asynchronous but runs under the **synchronous** column (`apexdev L19536`). A `Schedulable` that assumes 200 SOQL has half the room it thinks.
 - A Finalizer also runs under synchronous limits, with three exceptions where async limits apply: total heap size, `System.enqueueJob` count, and `@future` methods per invocation (`apexdev L16297–16303`).
 - Email services get a 50 MB heap (`apexdev L19650`), which is neither column.
+One more, from the release rather than the table: heap moved at the Winter '27 release to 10 MB / 25 MB (`apexdev` 264 L19780), up from Summer '26's 6 MB / 12 MB (262 L19577). It is a release change, not an API-version-gated one — heap is absent from the 68.0 versioned-behaviour list (`apexdev` 264 L45118–45131). During Winter '27 only, a nonproduction org can pin the old figures with `ApexSettings.enableEnforceSummer26ApexHeapLimit` (`api_meta` 264 L113855–113862) — one more reason to read `Limits.getLimitHeapSize()` instead of a constant.
 
 Guard clauses must therefore call `Limits.getLimitX()` rather than a constant. The runtime already knows which column applies; a hardcoded number does not.
 

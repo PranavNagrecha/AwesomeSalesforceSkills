@@ -32,7 +32,7 @@ triggers:
   - "check whether my SOQL filter is selective before moving it into a trigger"
   - "get a query plan from the REST API explain parameter instead of Developer Console"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
 updated: 2026-10-19
 ---
@@ -184,7 +184,7 @@ String soql = 'SELECT ' + String.join(paths, ', ')
 List<Account> rows = Database.query(soql);
 ```
 
-Selectivity rules are the same for dynamic and static SOQL. Prefer explicit field lists: every selected field counts toward the 6 MB synchronous or 12 MB asynchronous heap.
+Selectivity rules are the same for dynamic and static SOQL. Prefer explicit field lists: every selected field counts toward the 10 MB synchronous or 25 MB asynchronous heap (Winter '27 release, not API-version-gated, Apex Developer Guide 264 L19780; 6 MB / 12 MB through Summer '26).
 
 ---
 

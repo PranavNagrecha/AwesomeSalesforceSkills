@@ -80,7 +80,7 @@ if (Limits.getQueries() >= MAX_SOQL - 10) {
 }
 ```
 
-**Why it happens:** synchronous examples dominate the training corpus, so 100 SOQL, 10,000 ms CPU and 6 MB heap get baked in as constants. The same code in a Batch `execute` throws away half its allocation; a Scheduled class assuming the async numbers has half the room it expects.
+**Why it happens:** synchronous examples dominate the training corpus, so 100 SOQL, 10,000 ms CPU and a 6 MB heap (the Summer '26 figure; Winter '27 raised it to 10 MB, `apexdev` 264 L19780) get baked in as constants. The same code in a Batch `execute` throws away half or more of its allocation (SOQL 100 of 200, heap 10 of 25 MB); a Scheduled class assuming the async numbers has half the room it expects, or less.
 
 **Correct pattern:**
 

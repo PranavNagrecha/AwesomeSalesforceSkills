@@ -33,7 +33,7 @@ Read for this revision (2026-10-19), Summer '26 (API 67.0) PDFs in the local cor
 - Metadata API Developer Guide (`api_meta.txt`): CustomIndex type, `.indx-meta` suffix, API 50.0+, Support contact required, `allowNullValues` and `booleanIndexedValue` fields (L41099-41138).
 - SOQL and SOSL Reference, FIND {SearchQuery} wildcards (fetched from https://developer.salesforce.com/docs/get_document_content/soql_sosl/sforce_api_calls_sosl_find.htm/en-us/262.0): asterisks match at the middle or end of a search term.
 - Object Reference (`object_reference.txt`): UserPreference value 99 "Enable Query Plan" (L301033).
-- Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): total heap size 6 MB synchronous, 12 MB asynchronous (L89).
+- Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): total heap size 6 MB synchronous, 12 MB asynchronous (262 L89). The Winter '27 cheatsheet drops its Apex tables and points to the Apex Developer Guide (264 L21–29), which lists 10 MB / 25 MB from the Winter '27 release (`salesforce_apex_developer_guide.txt` 264 L19780).
 
 Listed in the original version and not re-read (help.salesforce.com cannot be fetched):
 

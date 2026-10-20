@@ -36,7 +36,9 @@ Scalability planning must address BOTH transaction-level AND org-level limits:
 Transaction-level: SOQL, DML, CPU, heap, callouts per execution
 Org-level (daily/rolling):
   - API request allocation (based on edition + user licenses)
-  - Async Apex executions (250,000 or licenses x 200)
+  - Async Apex executions (250,000 or licenses x 200; the opt-in elastic beta adds up to 2 million
+    more for Batch, Queueable and future in production orgs only — scheduled stays capped,
+    apexdev 264 L19937-19953, L20222, L20237)
   - Bulk API batches (15,000/day for rolling 24h window)
   - Data storage (per edition, per license type)
   - File storage (separate allocation)

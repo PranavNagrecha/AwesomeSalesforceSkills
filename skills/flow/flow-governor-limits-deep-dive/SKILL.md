@@ -48,9 +48,9 @@ outputs:
   - A filled limits budget worksheet with the arithmetic rows separated from the measured rows
   - Checker findings mapped to the review checklist
 dependencies: []
-version: 2.0.0
+version: 2.0.1
 author: Pranav Nagrecha
-updated: 2026-09-05
+updated: 2026-10-19
 ---
 
 # Flow Governor Limits Deep Dive
@@ -122,7 +122,7 @@ automation in the transaction. Ceilings from the Apex Developer Guide's governor
 | `@future` methods per invocation | 50 | 0 in batch/future, 50 in queueable | L19568–L19571 |
 | `System.enqueueJob` | 50 | 1 | L19573 |
 | `sendEmail` invocations | 10 | 10 | L19575 |
-| Heap | 6 MB | 12 MB | L19577 (email services: 50 MB, footnote 4 L19650) |
+| Heap (Winter '27 release onward) | 10 MB | 25 MB | 264 L19780; 6 MB / 12 MB through Summer '26 at L19577 (email services: 50 MB, footnote 4 L19650) |
 | CPU time | 10,000 ms | 60,000 ms | L19579 |
 | `EventBus.publish`, publish-immediately events | 150 | 150 | L19598–L19599 |
 
@@ -279,7 +279,7 @@ Full statements with grounding in `references/gotchas.md`; the index:
 14. The App Limits cheat sheet has no Flow row at all.
 15. `maxBatchSize` is a limits lever wearing a throughput costume.
 16. Async paths are post-commit, so nothing they do is rolled back.
-17. Get Records stores every queried field, and heap is 6 MB.
+17. Get Records stores every queried field, and heap is 10 MB.
 18. Platform-Event subscriber batches can surprise.
 19. A Scheduled Path's fresh budget is fresh, not larger.
 20. Async meters reset per execution, not per job.

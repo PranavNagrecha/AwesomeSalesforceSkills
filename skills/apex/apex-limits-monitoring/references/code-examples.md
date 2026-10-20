@@ -57,8 +57,9 @@ and the CI query that catches per-test-method limit regressions.
  * LimitGuard — one place to ask "how close is this transaction to a ceiling?".
  *
  * Every answer is derived from the matching Limits.getLimitX() call at run time, so the
- * same code is correct in a trigger (100 SOQL / 6 MB heap / 10 s CPU) and in a Batch
- * execute (200 SOQL / 12 MB heap / 60 s CPU) without a branch.
+ * same code is correct in a trigger (100 SOQL / 10 MB heap / 10 s CPU) and in a Batch
+ * execute (200 SOQL / 25 MB heap / 60 s CPU) without a branch. Heap figures are Winter '27+
+ * (apexdev 264 L19780); Summer '26 was 6 MB / 12 MB, which is why nothing here hardcodes them.
  *   Apex Reference Guide, Limits Class: apexrefguide L220152-220176
  *   Apex Developer Guide, Per-Transaction Apex Limits: apexdev L19540-19580
  *
@@ -276,7 +277,7 @@ public inherited sharing class LimitGuard {
  *
  * Two platform facts shape this class:
  *   1. Scheduled Apex gets SYNCHRONOUS governor limits (apexdev L19536), so 150 DML
- *      statements and 6 MB heap — hence the LimitGuard call before the insert.
+ *      statements and 10 MB heap (Winter '27+) — hence the LimitGuard call before the insert.
  *   2. OrgLimit values "are updated asynchronously, in near-real-time"
  *      (apexrefguide L226215). These rows are a trend line, never a gate.
  */
@@ -721,7 +722,7 @@ private class LimitGuardTest {
 
     @IsTest
     static void ceilingComesFromTheContextNotAConstant() {
-        // The point of the class: no hardcoded 100 or 6000000 anywhere.
+        // The point of the class: no hardcoded 100 or heap-byte constant anywhere.
         Assert.areEqual(Limits.getLimitQueries(), (Integer) LimitGuard.soql().ceiling,
             'soql ceiling must be read from Limits.getLimitQueries()');
         Assert.areEqual(Limits.getLimitCpuTime(), (Integer) LimitGuard.cpu().ceiling,
