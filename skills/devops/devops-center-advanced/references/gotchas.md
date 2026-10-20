@@ -9,9 +9,9 @@ Non-obvious behaviours that bite teams already running DevOps Center at scale.
 **What happens:** A runbook, a blog post, or an AI answer describes a setup step
 that does not exist in your org, and the team concludes their install is broken.
 
-**When it occurs:** Constantly, since the next-generation DevOps Center shipped.
-The managed-package version is installed and configured as an app; the
-next-generation version is a native platform capability with no package to
+**When it occurs:** Constantly, since Lifecycle Center (formerly
+"next-generation DevOps Center", 262) shipped. The managed-package version is
+installed and configured as an app; Lifecycle Center is a native platform capability with no package to
 install. Salesforce documents them as separate products — *Install and Configure
 DevOps Center (Managed Package)* versus *Set Up Next Generation DevOps Center* —
 and they differ in source-control support, change tracking, and governance
@@ -20,7 +20,11 @@ surface.
 **How to avoid:** Establish which product a piece of guidance describes before
 acting on it. The strongest tell is the setup step: if it starts with installing
 a package, it is the managed-package product. Anything that mentions DX
-Inspector, agent governance policies, or Bitbucket is next-generation.
+Inspector, agent governance policies, or Bitbucket is Lifecycle Center
+(UNVERIFIED (2026-10-20): from the help articles written under the next-generation name; help.salesforce.com is not fetchable and the Winter '27 Metadata API entry (`api_meta.txt` 264 L117302–L117346) does not state it.) In
+metadata, Lifecycle Center is `DevHubSettings.enableALMDevopsCorePref` and the
+package is `enableDevOpsCenterGA`, "an older version of Lifecycle Center"
+(`api_meta.txt` 264 L117302–L117311).
 
 ---
 
@@ -167,13 +171,13 @@ instead of a human clicking Promote — but the interface is not yet stable.
 
 ## Gotcha 9: The Edition and Region Floor Is a Hard Stop, Not a Recommendation
 
-**What happens:** A team plans a migration to next-generation DevOps Center and
+**What happens:** A team plans a migration to Lifecycle Center and
 discovers late that their org cannot enable it.
 
-**When it occurs:** Next-generation DevOps Center requires Professional Edition
+**When it occurs:** Lifecycle Center requires Professional Edition
 with API access or higher and Lightning Experience, and is not available in
 Government Cloud Plus or the EU Operating Zone. An org in an excluded region is
-not making a choice.
+not making a choice. UNVERIFIED (2026-10-20): from the help articles written under the next-generation name; help.salesforce.com is not fetchable and the Winter '27 Metadata API entry (`api_meta.txt` 264 L117302–L117346) does not state it.
 
 **How to avoid:** Check the edition and region constraints as the first step of
 any migration assessment, before the blocker analysis. If the org is excluded,
@@ -184,13 +188,13 @@ over.
 
 ## Gotcha 10: Bitbucket Support Is Beta and GitHub Is Not
 
-**What happens:** A team standardized on Bitbucket adopts next-generation DevOps
+**What happens:** A team standardized on Bitbucket adopts Lifecycle
 Center on the strength of "Bitbucket is supported" and finds beta-level rough
 edges in a production release process.
 
-**When it occurs:** Next-generation DevOps Center documents GitHub and Bitbucket,
+**When it occurs:** Lifecycle Center documents GitHub and Bitbucket,
 with Bitbucket in beta. The managed-package product's Bitbucket support is
-likewise documented as beta.
+likewise documented as beta. UNVERIFIED (2026-10-20): from the help articles written under the next-generation name; help.salesforce.com is not fetchable and the Winter '27 Metadata API entry (`api_meta.txt` 264 L117302–L117346) does not state it.
 
 **How to avoid:** Treat a beta source-control provider as a pilot, run it
 alongside the existing process for at least a full release cycle, and do not
@@ -223,10 +227,10 @@ of commits that outpaces human review, and something lands in a pipeline branch
 that nobody read.
 
 **When it occurs:** Any team that has given an agent write access without a
-policy. This is the specific problem next-generation DevOps Center's governance
+policy. This is the specific problem Lifecycle Center's governance
 layer exists to address — it defines policies covering coding agents as well as
 users, and the DevOps Center MCP tools are designed to be driven from an
-MCP-enabled IDE with a user-facing client.
+MCP-enabled IDE with a user-facing client. UNVERIFIED (2026-10-20): from the help articles written under the next-generation name; help.salesforce.com is not fetchable and the Winter '27 Metadata API entry (`api_meta.txt` 264 L117302–L117346) does not state it.
 
 **How to avoid:** Set the agent policy before granting the access, not after the
 first incident. The same rule from Gotcha 2 applies with more force to an agent

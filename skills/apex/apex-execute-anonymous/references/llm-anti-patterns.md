@@ -64,26 +64,25 @@ Production data fixes without review = tomorrow's incident.
 
 ---
 
-## Anti-Pattern 3: Declaring a method
+## Anti-Pattern 3: Declaring a `static` helper method
 
 **What the LLM generates:**
 
 ```
-void helper(Account a) { /* ... */ }
+static void helper(Account a) { /* ... */ }
 List<Account> accs = [...];
 for (Account a : accs) helper(a);
 ```
 
-**Why it happens:** Model exports a helper as if it were a full class.
+**Why it happens:** Model exports a helper as if it were a static utility on a full class. An anonymous block can include user-defined methods, but they "can't include the keyword static" (Apex Developer Guide 264, Anonymous Blocks, L14988-L14989).
 
 **Correct pattern:**
 
 ```
-Anonymous has no top-level methods. Inline it:
+Drop the static keyword:
 
-for (Account a : accs) {
-    // inline logic
-}
+void helper(Account a) { /* ... */ }
+for (Account a : accs) helper(a);
 
 Or declare an inner class:
 
@@ -94,7 +93,7 @@ Helper h = new Helper();
 for (Account a : accs) h.process(a);
 ```
 
-**Detection hint:** Top-level `void` or `public` method declaration in a `.apex` anonymous file.
+**Detection hint:** A top-level method declared `static` in a `.apex` anonymous file.
 
 ---
 

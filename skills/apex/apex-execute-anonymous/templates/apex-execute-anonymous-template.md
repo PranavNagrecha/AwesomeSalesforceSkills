@@ -10,7 +10,7 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Record the answers to the Questions to Ask Before Configuring table in SKILL.md here.
 
 - Setting / configuration:
 - Known constraints:
@@ -18,15 +18,19 @@ TODO: Record the answers to the Before Starting questions from SKILL.md here.
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Name the SKILL.md pattern (savepoint-guarded fix, iteration-bounded cleanup, or dry-run toggle) and the Decision Guidance row that selected it.
 
 ## Checklist
 
 Copy the review checklist from SKILL.md and tick items as you complete them.
 
-- [ ] TODO
-- [ ] TODO
+- [ ] Target org confirmed explicitly (never rely on default config for prod)
+- [ ] Savepoint or dry-run toggle present for DML scripts
+- [ ] Record count bounded via `LIMIT` clause
+- [ ] Debug output includes before/after counts
+- [ ] Script saved to repo for audit trail
+- [ ] Peer review for any production anonymous script
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Record any deviations from the standard pattern and why.

@@ -34,9 +34,9 @@ outputs:
   - "Optional per-chunk emptyRecycleBin() call in execute() so deleted rows cannot be restored (Recycle Bin rows do not count against storage)"
   - "Error log or custom object record capturing partial-delete failures"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # Batch Data Cleanup Patterns

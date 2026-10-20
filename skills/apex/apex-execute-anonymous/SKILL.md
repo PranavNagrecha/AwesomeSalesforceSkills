@@ -28,9 +28,9 @@ outputs:
   - CLI invocation command
   - Rollback plan (if DML)
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-05-19
+updated: 2026-10-20
 ---
 
 # Apex Execute Anonymous
@@ -42,6 +42,20 @@ Activate when running ad-hoc Apex — investigation, data fixes, one-off operati
 - **Confirm org and user.** `sf org display` — especially before running against production.
 - **Plan rollback.** Anonymous Apex commits by default. Add `Database.setSavepoint`/`Database.rollback` for reversibility.
 - **Estimate record volume.** Anonymous runs the full governor budget once; bulk work past ~10k records must be Batch-ified.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which org, and which user will run the script? | The block runs with that user's sharing, CRUD and FLS, so an admin-tested script can fail or return zero rows for someone else (gotcha 1). | A rehearsal in a sandbox as the same user or permission set. |
+| How many records will it read and write? | Per-transaction limits apply in full: 150 DML statements, 10,000 DML rows, 50,000 query rows (gotcha 3). | The anonymous-vs-Batch decision before the script is written. |
+| How large are the collections it holds? | Heap is 10 MB synchronous from Winter '27, but during Winter '27 a nonproduction org with `enableEnforceSummer26ApexHeapLimit` set still enforces the Summer '26 6 MB limit (gotcha 3). | A heap estimate checked in an org with the same heap setting as the target. |
+| Must the change be reversible, and how? | It commits on success, and a savepoint does not survive a governor-limit fault (gotcha 3). | A dry-run toggle or savepoint plus a pre-state export. |
+| How much debug output will it write, at what log level? | A log over 20 MB loses older lines, from anywhere in the log, and can lose the summary you need (gotcha 2). | Explicit debug levels and one summary line per run. |
+| Is this one script, or several runs that share state? | Nothing persists between `executeAnonymous` calls (gotcha 4). | One self-contained script, or state persisted to a record between runs. |
+| Does it start Batch or Queueable work, and who confirms it finished? | The script returns before async jobs run (gotcha 5). | The captured job ID and an `AsyncApexJob` check in the runbook. |
+
+Answering these first turns a one-off script into a rehearsed, bounded and reversible change, where running it ad hoc risks committing partial data under the wrong user.
 
 ## Core Concepts
 
@@ -75,9 +89,9 @@ Variables declared at the top live for the whole anonymous script. No `class` wr
 
 ### What you CAN'T do
 
-- Define a method (only inline code and inner classes).
+- Declare a `static` method. User-defined methods and exceptions are allowed in the block, but they can't use the keyword `static` (Apex Developer Guide 264, Anonymous Blocks, L14988-L14989).
 - Run test classes (`Test.startTest` is legal but you can't `@IsTest`-annotate code).
-- Use `global`/`public` modifiers at the top level.
+- Get anything from access modifiers: `global` is legal but has no meaning, because the block has local scope (L14995-L14996).
 - Access protected members of a class outside its namespace.
 
 ### Debug output
@@ -160,7 +174,7 @@ if (APPLY) update updates;
 1. **Anonymous Apex commits on success. There is no implicit savepoint.** A runaway loop will destroy data before you can interrupt.
 2. **`sf apex run` without `--file` reads from stdin** — useful for piped commands but easy to confuse with execution against stdin-EOF.
 3. **Governor limits are per-execution, not per-statement.** A 50k-record loop inside anonymous hits CPU/DML-row caps. Use Batch for volume.
-4. **Declaring a method fails:** Anonymous cannot contain top-level method definitions. Wrap reusable logic in an inner class with a method, then call `new MyInner().doThing()`.
+4. **Declaring a `static` method fails:** user-defined methods are allowed in an anonymous block, but not with the keyword `static` (Apex Developer Guide 264, L14988-L14989). Drop `static`, or wrap reusable logic in an inner class and call `new MyInner().doThing()`.
 5. **Debug log level affects output.** If you see `System.debug()` lines missing, raise `Apex Code` to `FINE`.
 
 ## Output Artifacts
@@ -174,5 +188,6 @@ if (APPLY) update updates;
 ## Related Skills
 
 - `apex/apex-savepoint-and-rollback` — transactional control details
-- `apex/apex-batch-patterns` — for volume fixes
-- `devops/salesforce-dx-source-tracking` — CLI fundamentals
+- `apex/batch-apex-patterns` — for volume fixes
+- `apex/sf-cli-and-sfdx-essentials` — CLI fundamentals (org auth, `sf` basics)
+- `devops/salesforce-cli-automation` — scripting `sf apex run` in CI with `--json` and aliases

@@ -92,7 +92,7 @@
     "f9442addca798ba29de0",
     "fcc938aead54845dbe5b"
   ],
-  "content_hash": "9d5db579da8a885ff5187ac44cd62d55407661a909396791603e64e3f55434de",
+  "content_hash": "e86e8f546bb22493f41b2102367f36a0d9ee6708556e5f6d846790c7e0cfd504",
   "dependencies": [],
   "description": "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex', 'move a callout out of a trigger', 'run Apex in the background'. NOT for Batchable structure or scope sizing \u2014 use apex/batch-apex-patterns. NOT for Queueable chaining \u2014 use apex/apex-queueable-patterns.",
   "file_location": "skills/apex/async-apex",
@@ -107,7 +107,7 @@
     "Apex Developer Guide, Summer '26 (262): \"Execution Governors and Limits\" (Per-Transaction Apex Limits, Salesforce Platform Apex Limits; pdftotext lines L19529 to L19837), \"Asynchronous Apex,\" \"Queueable Apex\" and \"Queueable Apex Limits,\" \"Detecting Duplicate Queueable Jobs,\" \"Future Annotation,\" \"Future Method Considerations,\" \"Future Methods,\" \"Testing Future Methods,\" \"Batch Apex Governor Limits,\" \"Holding Batch Jobs in the Apex Flex Queue,\" \"Testing Batch Apex,\" \"Apex Scheduler Limits,\" \"Apex Scheduler Notes and Best Practices.\" https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
     "Object Reference for the Salesforce Platform, Summer '26 (262): \"AsyncApexJob\" (Status values including Holding for the flex queue). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf",
     "Platform Events Developer Guide, Summer '26 (262): Publish Immediately behavior and rollback. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/platform_events.pdf",
-    "Salesforce Developer Limits and Allocations Quick Reference, Summer '26 (262): asynchronous Apex limits summary. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf",
+    "Apex Developer Guide, Winter '27 (264): \"Execution Governors and Limits\" (L19711 onward), the per-transaction table including heap 10 MB sync / 25 MB async (L19780) and the uncatchable heap `System.LimitException` footnote (L19853). The Winter '27 limits cheatsheet dropped its Apex tables and now points to this section (`salesforce_app_limits_cheatsheet.txt` 264 L21-29), replacing the Summer '26 cheatsheet summary this package cited before. https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
     "Apex Developer Guide, Execution Governors and Limits (atlas page): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
     "Apex Developer Guide, Future Methods (atlas page): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_invoking_future_methods.htm",
     "Apex Developer Guide, Queueable Apex (atlas page): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm",
@@ -151,7 +151,7 @@
   "templates": [
     "skills/apex/async-apex/templates/async-apex-template.md"
   ],
-  "updated": "2026-10-03",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

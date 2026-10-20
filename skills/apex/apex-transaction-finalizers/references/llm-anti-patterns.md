@@ -202,7 +202,7 @@ public class OrderFinalizer implements Finalizer {
 
 // CORRECT — keep the state serializable and keep it small by storing IDs,
 //           not sObjects. Asynchronous heap limits apply to the Finalizer
-//           transaction (Apex Developer Guide v67.0 L16298-16303), so IDs are
+//           transaction (Apex Developer Guide v67.0 L16298-16303; 264 L16503-16508), so IDs are
 //           almost never the thing that blows the budget.
 public class OrderFinalizer implements Finalizer {
     private final List<Id> orderIds;

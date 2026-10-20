@@ -67,7 +67,7 @@
     "f496d72018651e8cb1cb",
     "f538f0377039e987ff6a"
   ],
-  "content_hash": "0492c10cc290c697980c015c2f0d4484d0f26b4abd3447fd222240ade4373fdb",
+  "content_hash": "e9c6c887c5bc833af37e04bebc89b26a72d2271b7bbda9cf7fe1fae94f8959ea",
   "dependencies": [],
   "description": "Monitor and govern Salesforce API consumption: per-user limits, org allocation, lightning-rest limits, and backoff. NOT for designing new endpoints \u2014 use security/api-security-and-rate-limiting.",
   "file_location": "skills/integration/api-governance-and-rate-limits",
@@ -78,11 +78,11 @@
   ],
   "name": "api-governance-and-rate-limits",
   "official_sources": [
-    "Limits cheat sheet (`salesforce_app_limits_cheatsheet.txt`) L469\u2013495 \u2014 three limit types; 25 / 5 concurrent requests of 20 seconds or longer; `REQUEST_LIMIT_EXCEEDED`; no limit under 20 seconds (gotcha 4, anti-pattern 1).",
-    "Limits cheat sheet L496\u2013505 \u2014 10-minute REST/SOAP timeout; for composite resources it applies to the whole request (Decision Guidance).",
-    "Limits cheat sheet L516\u2013616 \u2014 total allocation table by edition and licence, Full sandbox 5,000,000; APIs that count (incl. Bulk API 2.0); mobile app calls excluded; `DebuggingHeader` separate 1,000; aggregate, not per user (Core Concepts, gotchas 1 and 3).",
-    "Limits cheat sheet L620\u2013660 \u2014 monitoring options, API Usage Notifications, managed-package calls count, over-limit headroom only for paid active orgs (gotchas 6 and 7).",
-    "Limits cheat sheet L687\u2013690 \u2014 115,000-call worked example; rolling 24-hour Developer Edition example (Core Concepts, anti-pattern 1).",
+    "Limits cheat sheet (`salesforce_app_limits_cheatsheet.txt`) 264 L31\u201362 \u2014 three limit types; 25 / 5 concurrent requests of 20 seconds or longer; `REQUEST_LIMIT_EXCEEDED`; no limit under 20 seconds (gotcha 4, anti-pattern 1).",
+    "Limits cheat sheet 264 L65\u201373 \u2014 10-minute REST/SOAP timeout; for composite resources it applies to the whole request (Decision Guidance).",
+    "Limits cheat sheet 264 L76\u2013187 \u2014 total allocation table by edition and licence, Full sandbox 5,000,000 (L165); APIs that count (incl. Bulk API 2.0); mobile app calls excluded; `DebuggingHeader` separate 1,000; aggregate, not per user (L181\u2013187) (Core Concepts, gotchas 1 and 3).",
+    "Limits cheat sheet 264 L190\u2013233 \u2014 monitoring options, API Usage Notifications, managed-package calls count (L212), over-limit headroom only for paid active orgs (L216\u2013230) (gotchas 6 and 7).",
+    "Limits cheat sheet 264 L249\u2013254 \u2014 115,000-call worked example; rolling 24-hour Developer Edition example (Core Concepts, anti-pattern 1).",
     "REST API Developer Guide (`api_rest.txt`) L915\u2013932 \u2014 `Sforce-Limit-Info: api-usage=<used>/<limit>` on every response (examples.md Example 2).",
     "REST API Developer Guide L1145\u20131146 \u2014 403 with `REQUEST_LIMIT_EXCEEDED` when API request limits are exceeded (gotcha 5).",
     "REST API Developer Guide L7790\u20137797 \u2014 `/limits`: accurate within five minutes; avoid concurrent or rapid requests; View Setup and Configuration (gotcha 6).",
@@ -112,7 +112,7 @@
   "templates": [
     "skills/integration/api-governance-and-rate-limits/templates/api-governance-and-rate-limits-template.md"
   ],
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.2.0"
+  "version": "1.2.1"
 }

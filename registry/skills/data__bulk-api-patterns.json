@@ -94,7 +94,7 @@
     "f9fb28917615bf1f3507",
     "fc83404c7a6d1b1bd7f8"
   ],
-  "content_hash": "bde758173f61290f23bb06204a95473cce871b8165bca5485531e7b4d6b368b2",
+  "content_hash": "239b81fc267c33760bb4c79960c4cada87822829f5f0563e1ac82ffae40772d9",
   "dependencies": [],
   "description": "Use when implementing Bulk API 2.0 REST calls, choosing between Bulk API 2.0 and legacy Bulk API v1, handling CSV format requirements for bulk ingest, paginating query job results with locators, or constructing multipart job requests. Triggers: bulk api 2.0 endpoint, ingest job REST call, query job locator, bulk CSV format, hard delete bulk, v1 vs v2 bulk api. NOT for Data Loader UI steps \u2014 use admin/data-import-and-management. NOT for strategic load-size decisions or serial vs parallel concurrency mode \u2014 use data/bulk-api-and-large-data-loads.",
   "file_location": "skills/data/bulk-api-patterns",
@@ -109,7 +109,7 @@
   "name": "bulk-api-patterns",
   "official_sources": [
     "Bulk API 2.0 and Bulk API Developer Guide (`api_asynch.txt`): v2 versus v1 comparison (ingest from API 41.0, content types, automatic versus manual PK chunking, big objects) (L177-201); 150 MB per job (L602); upload completed automatically for multipart jobs (L814-815); 10,000-record internal batches, 150,000,000 daily, 5-minute batches, 20 retries then job Failed (L1242-1247); Prepare CSV Files: UTF-8, base64 growth, delimiters, lineEnding, quoting, no trimming, empty values ignored on update, `#N/A`, 32,000-character header (L1280-1318); dateTime formats (L1454-1460); `concurrencyMode` for future use (L1668-1670); multipart for 100,000 characters or less (L1726); upload request limit (L1782-1787); `sf__Id`, `sf__Created`, `sf__Error` (L2113-2161); unprocessed records for failed or aborted jobs at `.../unprocessedrecords/` (L2188-2190); lock contention guidance (L2694-2708); query results `locator`, `maxRecords`, `Sforce-Locator` string `null`, do not guess locators (L3336-3506); PK chunking header in v1 (L7313-7356); job info counters (L1992-1997).",
-    "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): 2,000-record guidance and 15,000 shared batches per rolling 24 hours (L729-740); 24-hour open job and 7-day results (L768-770, L800-803); 150 MB per job for Bulk API 2.0 (L804-818).",
+    "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): 2,000-record guidance and 15,000 shared batches per rolling 24 hours (264 L293-303); 24-hour open job and 7-day results (264 L340-342, L386-389); 150 MB per job for Bulk API 2.0 (264 L391). Values unchanged from the 262 edition, which had them at L729-818.",
     "REST API Developer Guide (`api_rest.txt`): regular composite requests limited to 25 subrequests, composite graphs 500 (L6288).",
     "Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): consider Bulk API 2.0 query for results over one million rows (L913-915).",
     "Bulk API 2.0 Developer Guide (atlas) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm",
@@ -144,7 +144,7 @@
   "templates": [
     "skills/data/bulk-api-patterns/templates/bulk-api-patterns-template.md"
   ],
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

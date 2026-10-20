@@ -4,21 +4,21 @@ Mistakes AI assistants reliably make when asked about DevOps Center pipelines.
 
 ---
 
-## Anti-Pattern 1: Answering About the Managed Package When the Org Is on Next-Gen
+## Anti-Pattern 1: Answering About the Managed Package When the Org Is on Lifecycle Center
 
 **What the LLM generates:** setup and troubleshooting steps that begin with
 installing or upgrading the DevOps Center managed package, regardless of which
 product the user is on.
 
 **Why it happens:** the managed-package product has years of documentation,
-blogs, and community answers behind it; the native next-generation product is
-recent and thinly represented. The model answers from the larger corpus.
+blogs, and community answers behind it; the native Lifecycle Center (formerly
+"next-generation DevOps Center", 262) is recent and thinly represented. The model answers from the larger corpus.
 
-**Correct pattern:** establish which product first. Next-generation DevOps Center
+**Correct pattern:** establish which product first. Lifecycle Center
 is a native platform capability with no package install, adds Bitbucket (beta)
 alongside GitHub, surfaces change tracking through DX Inspector inside the org,
 and carries governance policies covering coding agents. Salesforce documents the
-two separately.
+two separately. UNVERIFIED (2026-10-20): from the help articles written under the next-generation name; help.salesforce.com is not fetchable and the Winter '27 Metadata API entry (`api_meta.txt` 264 L117302–L117346) does not state it.
 
 **Detection hint:** any instruction to install a package, or a reference to
 configuring "the DevOps Center app," in an answer about an org that mentions DX
@@ -145,15 +145,15 @@ Bitbucket without the word "beta" anywhere near it.
 
 ## Anti-Pattern 8: Skipping the Edition and Region Check
 
-**What the LLM generates:** a full migration plan to next-generation DevOps
+**What the LLM generates:** a full migration plan to Lifecycle
 Center that never asks what edition or region the org is in.
 
 **Why it happens:** availability constraints are boilerplate at the bottom of a
 help page and read as low-information to a model summarizing capability.
 
-**Correct pattern:** check first. Next-generation DevOps Center requires
+**Correct pattern:** check first. Lifecycle Center requires
 Professional Edition with API access or higher and Lightning Experience, and is
-not available in Government Cloud Plus or the EU Operating Zone. An org in an
+not available in Government Cloud Plus or the EU Operating Zone (UNVERIFIED (2026-10-20): from the help articles written under the next-generation name; help.salesforce.com is not fetchable and the Winter '27 Metadata API entry (`api_meta.txt` 264 L117302–L117346) does not state it.) An org in an
 excluded region has no decision to make, and finding that out after the
 assessment is wasted work.
 

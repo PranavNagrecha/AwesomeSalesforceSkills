@@ -12,7 +12,7 @@
 
 **Context:** Stale Leads must be closed nightly and the volume can exceed one transaction.
 
-**Approach:** A thin `Schedulable` that calls `Database.executeBatch`, because synchronous limits apply to scheduled Apex (Apex Developer Guide 262, L19536). The batch uses partial-success DML and `Database.Stateful` for a failure count. Batch, scheduler, tests, metadata, and package.xml are in `code-examples.md`.
+**Approach:** A thin `Schedulable` that calls `Database.executeBatch`, because synchronous limits apply to scheduled Apex (Apex Developer Guide 264, L19739; 262 L19536). The batch uses partial-success DML and `Database.Stateful` for a failure count. Batch, scheduler, tests, metadata, and package.xml are in `code-examples.md`.
 
 ---
 

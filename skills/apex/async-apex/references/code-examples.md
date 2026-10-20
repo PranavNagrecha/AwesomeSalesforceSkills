@@ -110,7 +110,7 @@ private class OrderDispatchQueueableTest {
 
 `MockHttpResponseGenerator` is the shared mock at `templates/apex/tests/MockHttpResponseGenerator.cls`; deploy it with the test. UNVERIFIED (2026-10-03): whether an exception thrown inside a Queueable surfaces at `Test.stopTest()` in every API version; the second test tolerates both behaviors. `Order__c` needs `External_Key__c` and `Status__c`, and the `OMS_NC` Named Credential must exist.
 
-**Why it works:** The enqueue happens once per trigger chunk, well under the 50-enqueue synchronous limit (Apex Developer Guide 262, L19573). The job re-queries current data, calls out under `Database.AllowsCallouts`, and leaves a failed `AsyncApexJob` behind when the remote system rejects it.
+**Why it works:** The enqueue happens once per trigger chunk, well under the 50-enqueue synchronous limit (Apex Developer Guide 264, L19776; 262 L19573). The job re-queries current data, calls out under `Database.AllowsCallouts`, and leaves a failed `AsyncApexJob` behind when the remote system rejects it.
 
 ---
 
@@ -228,4 +228,4 @@ Each class needs a `-meta.xml`, for example `force-app/main/default/classes/Stal
 
 After deployment, schedule the job once: `System.schedule('Stale lead nightly', '0 0 2 * * ?', new StaleLeadScheduler());`. Before redeploying `StaleLeadScheduler`, delete the scheduled job; deploying a class with pending scheduled jobs fails.
 
-**Why it works:** The scheduler only dispatches, because synchronous limits apply to scheduled Apex (L19536). The batch gets fresh limits per scope, uses partial-success DML, and keeps a failure count across scopes with `Database.Stateful` (instance variables only).
+**Why it works:** The scheduler only dispatches, because synchronous limits apply to scheduled Apex (Apex Developer Guide 264, L19739; 262 L19536). The batch gets fresh limits per scope, uses partial-success DML, and keeps a failure count across scopes with `Database.Stateful` (instance variables only).

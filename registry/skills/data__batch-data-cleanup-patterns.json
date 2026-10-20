@@ -31,6 +31,7 @@
     "51dc50deb9ef71e1e20a",
     "546749fa4e8967b2786a",
     "57d4ffae3634a22974f5",
+    "5846737dde54cf0fcde0",
     "5903afc4abde2188a084",
     "5e4f04caa8ee840dbea5",
     "604eced2ff17b32ca07e",
@@ -79,7 +80,7 @@
     "f8ae1dc33f4959f917b6",
     "f9f88f50bbb79209d904"
   ],
-  "content_hash": "33d824d54e6165dc8f670e6568f490befcd418a9c919623db3aa959933ffa400",
+  "content_hash": "393b69a3e494c52f67a08ee75d0edcae276b8b91d3b6dfffdad066d3499547b8",
   "dependencies": [],
   "description": "Use when scheduling automated deletion of temporary records, enforcing data retention policies, running nightly cleanup jobs, reclaiming org storage, managing recycle bin, or performing async bulk deletion of aged records. Trigger keywords: batch delete, retention policy, purge records, cleanup job, recycle bin, emptyRecycleBin, hard delete, nightly purge, storage optimization. NOT for archiving records to Big Objects or external storage instead of deleting them \u2014 use data/data-archival-strategies. NOT for deleting unused fields, flows and other metadata \u2014 use admin/org-cleanup-and-technical-debt.",
   "file_location": "skills/data/batch-data-cleanup-patterns",
@@ -94,8 +95,8 @@
   "official_sources": [
     "Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): soft deletion still affects performance; Recycle Bin items don't count against storage; no item limit; 15-day retention and no guaranteed purge time; Bulk API hard delete recommended (L733-742); hard delete for one million or more records (L1019-1023).",
     "Apex Reference Guide (`salesforce_apex_reference_guide.txt`): `Database.emptyRecycleBin` is permanent, takes 10,000 records, cascade Ids must be excluded (account example), and counts against DML statements (L206900-206935); `Test.setCreatedDate` (L240831-240836).",
-    "Apex Developer Guide (`salesforce_apex_developer_guide.txt`): test DML rolled back (L1008-1010); cron syntax and user time zone (L16812-16820); 100 scheduled Apex jobs (L16947); five queued or active batch jobs (L17012) and flex queue of 100 (L17235); invoking batch from a trigger with extreme caution (L17731-17733); one execute per batch test (L17734-17737); 50 million QueryLocator rows (L17701); default scope 200 and QueryLocator chunks up to 2,000 (L17309-17311, L17792).",
-    "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): 10,000 DML rows per transaction (L66).",
+    "Apex Developer Guide (`salesforce_apex_developer_guide.txt`, Winter '27 264; re-pointed 2026-10-20 from the 262 lines in parentheses, every value unchanged): test DML rolled back (L1007-1009; 262 L1008-1010); cron syntax and user time zone (L17017-17024; 262 L16812-16820); 100 scheduled Apex jobs (L17151; 262 L16947); five queued or active batch jobs (L17216; 262 L17012) and flex queue of 100 (L17436; 262 L17235); invoking batch from a trigger with extreme caution (L17932-17934; 262 L17731-17733); one execute per batch test (L17937-17938; 262 L17734-17737); 50 million QueryLocator rows (L17902; 262 L17701); default scope 200 and QueryLocator chunks up to 2,000 (L17510-17512, L17993; 262 L17309-17311, L17792).",
+    "Apex Developer Guide 264, Execution Governors and Limits (`salesforce_apex_developer_guide.txt`): 10,000 records processed by DML statements, `Approval.process`, or `database.emptyRecycleBin` per transaction, sync and async (264 L19759). The Winter '27 limits cheatsheet no longer carries the Apex tables and points to that section (`salesforce_app_limits_cheatsheet.txt` 264 L21-29); the earlier cite was cheatsheet 262 L66.",
     "Bulk API 2.0 and Bulk API Developer Guide (`api_asynch.txt`): `hardDelete` skips the Recycle Bin; \"Bulk API Hard Delete\" permission off by default (L1640-1647); ingest workflow, batches upload, UploadComplete, and results resources (L161, L605-647, L698-734).",
     "Metadata API Developer Guide (`api_meta.txt`): no deploy of a class with active jobs by default (L22218-22221); ApexClass `.cls-meta.xml` and `status` (L22231, L22271); `purgeOnDelete` only in Developer Edition and sandboxes, roll-up summary fields purged on Metadata API delete (L4234-4246, L4638-4640).",
     "Salesforce Security Guide (`salesforce_security_impl_guide.txt`): deleting a record cascades to its field history (L4895-4896).",
@@ -131,7 +132,7 @@
   "templates": [
     "skills/data/batch-data-cleanup-patterns/templates/batch-data-cleanup-patterns-template.md"
   ],
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

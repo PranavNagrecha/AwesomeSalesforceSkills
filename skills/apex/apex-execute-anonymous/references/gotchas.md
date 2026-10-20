@@ -49,17 +49,17 @@ if (!Schema.sObjectType.Account.isAccessible()) {
 
 ---
 
-## Gotcha 2: The debug log truncates at 5MB — and it's the *end* that survives, not the beginning
+## Gotcha 2: A debug log over 20 MB is trimmed — older lines go, from anywhere in the log
 
 **What happens:** A long-running script with `System.debug` inside
-a loop runs to completion. You scroll the log to find the "Updated
-N records" summary at the bottom and instead see `MAXIMUM DEBUG LOG
-SIZE REACHED` — the platform has dropped the start of the log to keep
-the most recent ~5MB, but if your summary fired before the dropped
-window or the truncation happened mid-line, you can lose the exact
-output you wanted. (The 5MB cap applies to the log body; the platform
-also enforces a 250MB-per-24h-per-user log allocation that, when hit,
-silently disables further log capture for that user.)
+a loop runs to completion. You look for the "Updated N records" summary
+and it is not there. Each debug log must be 20 MB or smaller; a larger
+log is reduced by removing older log lines, such as earlier
+`System.debug` output, and the lines "can be removed from any location,
+not just the start of the debug log" (Apex Developer Guide 264, Debug
+Log Limits, L38600-L38604). Separately, generating more than 1,000 MB
+of debug logs in a 15-minute window disables your trace flags
+(L38606-L38607).
 
 **When it occurs:** Loops with `System.debug` inside, especially at
 `FINEST` log level which dumps method enter/exit for every framework
@@ -84,9 +84,11 @@ for (Account a : accs) {
 System.debug(LoggingLevel.ERROR, 'Processed: ' + String.join(trail, '\n'));
 ```
 
-For longer captures, increase the `TraceFlag.ExpirationDate` (max 24h
-in the future) and pull logs via the Tooling API rather than
-scrolling the Developer Console.
+For longer captures, extend the `TraceFlag.ExpirationDate` and pull logs
+via the Tooling API rather than scrolling the Developer Console.
+UNVERIFIED (2026-10-20): the 24-hour maximum for `ExpirationDate` is not
+stated in the Winter '27 corpus; system debug logs are retained for 24
+hours (L38605).
 
 ---
 
@@ -96,8 +98,16 @@ scrolling the Developer Console.
 it's "just a script, not a transaction" — has more headroom than a
 production trigger. It doesn't. The per-transaction governor limits
 apply identically: 100 SOQL queries, 50,000 query rows, 150 DML
-statements, 10,000 DML rows, 6MB heap, 10,000ms (sync) / 60,000ms
-(async) CPU time. A script that loops "all Accounts" doing one update
+statements, 10,000 DML rows, 10 MB heap, 10,000ms (sync) / 60,000ms
+(async) CPU time (Apex Developer Guide 264, Execution Governors and
+Limits, L19747-L19782). The heap figure was 6 MB through Summer '26;
+the 10 MB sync / 25 MB async heap is a Winter '27 release-level change
+that applies to every org and class regardless of API version (it is
+not in the API 68.0 versioned-behaviour list, L45118-L45129). For
+Winter '27 only, a nonproduction org can stay on the Summer '26 heap
+limits with `ApexSettings.enableEnforceSummer26ApexHeapLimit`
+(`api_meta.txt` 264 L113855-L113862). Exceeding heap raises an
+uncatchable `System.LimitException` (L19853). A script that loops "all Accounts" doing one update
 per iteration hits the DML-statement cap at row 151 and the entire
 transaction rolls back — the `Database.setSavepoint` doesn't save you
 from a governor-limit fault because the limit cancels the transaction

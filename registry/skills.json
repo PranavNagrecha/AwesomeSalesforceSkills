@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "0799a94eec03ae3ab0a4abc13004074306f24946db62d7140d836bef067fe9d9",
+  "generated_from_hash": "a4b5769d0f4858599dfd7631becfbb2aed37ad4f117ee940c2b5db3ae8050ba1",
   "schema_version": 1,
   "skill_count": 1040,
   "skills": [
@@ -61540,55 +61540,62 @@
     {
       "category": "apex",
       "chunk_ids": [
-        "04caa9fdc50b5a2dffbe",
+        "003c1577fc834286c3b5",
+        "0191379c5b32b51982a9",
         "05cf6a190f40ebe3f538",
-        "111afbe06c0bfb40aed8",
+        "0d07ef1258aeceb14162",
         "12214df4d804dcfe4ccf",
         "149ffbcdbadc0e2389a7",
         "1543f78e63f57c6b1998",
+        "16981d875fd15dc8d0e2",
         "1c2d8ad6b8117d3d5b5e",
+        "2253ca1a0e5662343cd2",
         "23968cb53132da9867ff",
         "24b3906aea5204027f23",
-        "25f303c2192a662ec434",
-        "29ea0969a051d1262fb5",
+        "2856a1af1ee378731adb",
+        "29ce10f30a51824c2746",
         "2ecd6c5f2d683012c5c8",
+        "31811b443795effc6142",
         "35507845468bd46f7ea2",
         "3d1cafb574a20c7678bc",
         "40293ce674c7cfa6df36",
         "41f8da3fbca861f604ac",
-        "42e18a0ed702ec15902a",
+        "45d719c9497fce9631d0",
+        "46d008cf115fd27b881f",
         "474cf2323882f87851ca",
-        "4b4bbfbb9a56d879fd5d",
         "4c0966dc5bcf999082ca",
-        "50d5aa3e61246639a325",
+        "4e56d48c9db97b6ae366",
         "51b21ea2a4c3fcb29884",
+        "55448d8ace25a68073dc",
         "56ba243ca982d102acb5",
         "57414535cbbb7084e467",
         "57e4eae4147ef5d43db0",
         "5c92a2999ddf14822a55",
+        "609485322b27a26bf820",
         "63334dfc3b03364b8aa9",
         "65fba9c0fcf7e26b362a",
-        "660b175cbee62a130c16",
         "6dee27f60bcf767b9f0c",
         "7282019c7bd8b5be1163",
         "733fe8e4a91d1c73cfea",
         "770e00cbf3984d21917f",
         "7b76dc601d2d6d00701d",
+        "7c419451bc2449cb1c31",
         "7dde4fc30268c442f43a",
         "7e2b907e075541bce3cb",
         "7e92d8b2e4692f3d8e22",
-        "82d94fcaf3cdd6ed9a18",
-        "852fe4d088b87f9c7646",
-        "8f53ccf718c610a0fdb0",
-        "95b0bf922fc3582981dc",
+        "7edefe64fda14fc2261e",
+        "7fcfa33f723330df4ac7",
+        "86d64bb86f553a0b3bd7",
+        "8c45eb173d23d8a927da",
+        "930047369a7073d9663d",
         "9a40bdc88faff657a9ba",
         "9c5a76b3bed7de9e66f6",
         "9cd31b4a5689b3646f37",
         "9d95a4a830ab69bf2536",
+        "9f279e16d16769284e17",
         "9fe092b5eb715e6acb6d",
-        "a0484653b934a42f406b",
+        "a2543f9b3be94408c519",
         "a631fcb3388ae717a3a9",
-        "a9016505cbcab92a191b",
         "af11ef379c9fa134d1c0",
         "b2b3771114cfce52a0c8",
         "b55f2a981f6b95883873",
@@ -61597,26 +61604,25 @@
         "bebd36636a59641a296e",
         "c3059970a96f5d769f62",
         "c5fdee2eb1c6fb06f9d1",
-        "c895e3722751853827e3",
         "c8dc87536fdd78fb8422",
-        "c94df44bad060d65d475",
         "c9fc8800427350706e43",
         "caac4ba0190f550ec593",
         "ccc3011c231c2e67d77f",
-        "d05dbaa45a692a6c3b79",
+        "d08e1a6d6e75aead951d",
         "d6588cbbbeaa344d5719",
-        "d8c2146a51de1614d920",
-        "e568f099d387d91476d8",
+        "d8d207a0f4118672fcb8",
+        "daa9553797915a017c1d",
+        "dac599de8d0010824067",
+        "e72816343642ee0f3f2c",
         "eacb5059fa254d1a2b26",
         "eb0c0fc48a8c4d3e3d8e",
         "eb77e0c6f78f04ff2904",
         "f908395c37b4b05454d6",
-        "f978269b1f2cdd76c9d7",
         "fb48e1797a56a584e8c5",
-        "fe7b88250cfbd0c13e5e",
-        "fef50f5c3cbe680898e7"
+        "fbee6a54d78d6977c8f4",
+        "fe7b88250cfbd0c13e5e"
       ],
-      "content_hash": "fb04792ebafba12e064c435991dad1d76369d67a07e981536dc9d9556ab3dfb7",
+      "content_hash": "964d362df2ece72e75dc9ceef4f6b0d2a5dc0adfa70bca39e6fc3b3c7fb76272",
       "dependencies": [],
       "description": "Execute Anonymous Apex: Developer Console, VS Code SFDX, `sf apex run`, variable scope, transaction semantics, governor limits, debugging output, common errors. NOT for trace flags or reading the log output \u2014 use apex/debug-logs-and-developer-console. NOT for async job design \u2014 use apex/async-apex.",
       "file_location": "skills/apex/apex-execute-anonymous",
@@ -61662,9 +61668,9 @@
       "templates": [
         "skills/apex/apex-execute-anonymous/templates/apex-execute-anonymous-template.md"
       ],
-      "updated": "2026-05-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "apex",
@@ -66381,6 +66387,7 @@
         "2d130ad2f26233815b6c",
         "2e4af1c365f168ffca92",
         "2e5a135b16b1241339e1",
+        "2f63fbb22b0f4c522b8f",
         "335ee02aba663c3d4e55",
         "33a610949019b29181cb",
         "3aefa7c7b2f2ffa8f722",
@@ -66418,6 +66425,7 @@
         "7049edb9478745af99b6",
         "706f64c34b5a7a202e21",
         "707b6d613e8ad2d77f90",
+        "73bc7824fa9561bf6727",
         "743a40d39138c13c17ff",
         "747282d65b0d8a79a5f8",
         "74a1a9e0ce55ab6700f7",
@@ -66488,6 +66496,7 @@
         "d565680614318e4d3c34",
         "d66e2782d8775358b106",
         "d6e13bc1d70aba490f7d",
+        "d7ed4c198817c1d8557d",
         "d8cf664610f50fcab86e",
         "d9bef43a90c29add7abc",
         "db31121b5c7dfad16766",
@@ -66517,7 +66526,7 @@
         "ff4368b079048a11c259",
         "ff76529704b5f7fe2a8a"
       ],
-      "content_hash": "2ca05f475fbc115c658c113964384b598040703b780adbfc4bc17d7354123509",
+      "content_hash": "474ff2d37624394b9c5efd1ba4efdb0cefee0e3ccb12f0ad2d8842083c8c6c61",
       "dependencies": [
         "apex-queueable-patterns"
       ],
@@ -66531,7 +66540,7 @@
       ],
       "name": "apex-transaction-finalizers",
       "official_sources": [
-        "Apex Developer Guide v67.0, Summer '26 \u2014 \"Transaction Finalizers\", L16284-16303 (separate Apex and Database transactions; no extra daily async execution; synchronous governor limits except heap / `enqueueJob` count / `@future` count; five consecutive re-enqueues with reset-on-success): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
+        "Apex Developer Guide v67.0, Summer '26 \u2014 \"Transaction Finalizers\", L16284-16303; same section at Winter '27 264 L16489-16508 (separate Apex and Database transactions; no extra daily async execution; synchronous governor limits except heap / `enqueueJob` count / `@future` count; five consecutive re-enqueues with reset-on-success): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
         "Apex Developer Guide v67.0 \u2014 \"System.FinalizerContext Interface\" and \"Implementation Details\", L16316-16363 (the four context methods; one finalizer per job; one async job enqueued per finalizer; callouts allowed; state mutation after attach supported; `transient` fields dropped)",
         "Apex Developer Guide v67.0 \u2014 \"Logging Finalizer Example\" and \"Retry Queueable Example\", L16364-16530 (the fused `Queueable, Finalizer` class shape; `System.attachFinalizer(this)`; `Database.insert(logRecords, false)`; the five-retry chaining-limit comment)",
         "Apex Developer Guide v67.0 \u2014 \"Considerations\", \"Best Practices\" and \"Transaction Finalizers Error Messages\", L16532-16587 (unexpected termination can skip the finalizer; ISV caution on global state-mutating finalizers; the exact attach-error and runtime-error strings)",
@@ -66570,9 +66579,9 @@
       "templates": [
         "skills/apex/apex-transaction-finalizers/templates/apex-transaction-finalizers-template.md"
       ],
-      "updated": "2026-09-16",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "category": "apex",
@@ -67626,7 +67635,7 @@
         "f9442addca798ba29de0",
         "fcc938aead54845dbe5b"
       ],
-      "content_hash": "9d5db579da8a885ff5187ac44cd62d55407661a909396791603e64e3f55434de",
+      "content_hash": "e86e8f546bb22493f41b2102367f36a0d9ee6708556e5f6d846790c7e0cfd504",
       "dependencies": [],
       "description": "Use when selecting, designing, or reviewing Queueable, Batch, Future, or Schedulable Apex for callouts, large data processing, retries, or background work. Triggers: 'queueable vs batch', 'future method', 'flex queue', 'async job failed', 'schedule apex', 'move a callout out of a trigger', 'run Apex in the background'. NOT for Batchable structure or scope sizing \u2014 use apex/batch-apex-patterns. NOT for Queueable chaining \u2014 use apex/apex-queueable-patterns.",
       "file_location": "skills/apex/async-apex",
@@ -67641,7 +67650,7 @@
         "Apex Developer Guide, Summer '26 (262): \"Execution Governors and Limits\" (Per-Transaction Apex Limits, Salesforce Platform Apex Limits; pdftotext lines L19529 to L19837), \"Asynchronous Apex,\" \"Queueable Apex\" and \"Queueable Apex Limits,\" \"Detecting Duplicate Queueable Jobs,\" \"Future Annotation,\" \"Future Method Considerations,\" \"Future Methods,\" \"Testing Future Methods,\" \"Batch Apex Governor Limits,\" \"Holding Batch Jobs in the Apex Flex Queue,\" \"Testing Batch Apex,\" \"Apex Scheduler Limits,\" \"Apex Scheduler Notes and Best Practices.\" https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
         "Object Reference for the Salesforce Platform, Summer '26 (262): \"AsyncApexJob\" (Status values including Holding for the flex queue). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf",
         "Platform Events Developer Guide, Summer '26 (262): Publish Immediately behavior and rollback. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/platform_events.pdf",
-        "Salesforce Developer Limits and Allocations Quick Reference, Summer '26 (262): asynchronous Apex limits summary. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf",
+        "Apex Developer Guide, Winter '27 (264): \"Execution Governors and Limits\" (L19711 onward), the per-transaction table including heap 10 MB sync / 25 MB async (L19780) and the uncatchable heap `System.LimitException` footnote (L19853). The Winter '27 limits cheatsheet dropped its Apex tables and now points to this section (`salesforce_app_limits_cheatsheet.txt` 264 L21-29), replacing the Summer '26 cheatsheet summary this package cited before. https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
         "Apex Developer Guide, Execution Governors and Limits (atlas page): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm",
         "Apex Developer Guide, Future Methods (atlas page): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_invoking_future_methods.htm",
         "Apex Developer Guide, Queueable Apex (atlas page): https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm",
@@ -67685,9 +67694,9 @@
       "templates": [
         "skills/apex/async-apex/templates/async-apex-template.md"
       ],
-      "updated": "2026-10-03",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "apex",
@@ -100797,6 +100806,7 @@
         "51dc50deb9ef71e1e20a",
         "546749fa4e8967b2786a",
         "57d4ffae3634a22974f5",
+        "5846737dde54cf0fcde0",
         "5903afc4abde2188a084",
         "5e4f04caa8ee840dbea5",
         "604eced2ff17b32ca07e",
@@ -100845,7 +100855,7 @@
         "f8ae1dc33f4959f917b6",
         "f9f88f50bbb79209d904"
       ],
-      "content_hash": "33d824d54e6165dc8f670e6568f490befcd418a9c919623db3aa959933ffa400",
+      "content_hash": "393b69a3e494c52f67a08ee75d0edcae276b8b91d3b6dfffdad066d3499547b8",
       "dependencies": [],
       "description": "Use when scheduling automated deletion of temporary records, enforcing data retention policies, running nightly cleanup jobs, reclaiming org storage, managing recycle bin, or performing async bulk deletion of aged records. Trigger keywords: batch delete, retention policy, purge records, cleanup job, recycle bin, emptyRecycleBin, hard delete, nightly purge, storage optimization. NOT for archiving records to Big Objects or external storage instead of deleting them \u2014 use data/data-archival-strategies. NOT for deleting unused fields, flows and other metadata \u2014 use admin/org-cleanup-and-technical-debt.",
       "file_location": "skills/data/batch-data-cleanup-patterns",
@@ -100860,8 +100870,8 @@
       "official_sources": [
         "Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): soft deletion still affects performance; Recycle Bin items don't count against storage; no item limit; 15-day retention and no guaranteed purge time; Bulk API hard delete recommended (L733-742); hard delete for one million or more records (L1019-1023).",
         "Apex Reference Guide (`salesforce_apex_reference_guide.txt`): `Database.emptyRecycleBin` is permanent, takes 10,000 records, cascade Ids must be excluded (account example), and counts against DML statements (L206900-206935); `Test.setCreatedDate` (L240831-240836).",
-        "Apex Developer Guide (`salesforce_apex_developer_guide.txt`): test DML rolled back (L1008-1010); cron syntax and user time zone (L16812-16820); 100 scheduled Apex jobs (L16947); five queued or active batch jobs (L17012) and flex queue of 100 (L17235); invoking batch from a trigger with extreme caution (L17731-17733); one execute per batch test (L17734-17737); 50 million QueryLocator rows (L17701); default scope 200 and QueryLocator chunks up to 2,000 (L17309-17311, L17792).",
-        "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): 10,000 DML rows per transaction (L66).",
+        "Apex Developer Guide (`salesforce_apex_developer_guide.txt`, Winter '27 264; re-pointed 2026-10-20 from the 262 lines in parentheses, every value unchanged): test DML rolled back (L1007-1009; 262 L1008-1010); cron syntax and user time zone (L17017-17024; 262 L16812-16820); 100 scheduled Apex jobs (L17151; 262 L16947); five queued or active batch jobs (L17216; 262 L17012) and flex queue of 100 (L17436; 262 L17235); invoking batch from a trigger with extreme caution (L17932-17934; 262 L17731-17733); one execute per batch test (L17937-17938; 262 L17734-17737); 50 million QueryLocator rows (L17902; 262 L17701); default scope 200 and QueryLocator chunks up to 2,000 (L17510-17512, L17993; 262 L17309-17311, L17792).",
+        "Apex Developer Guide 264, Execution Governors and Limits (`salesforce_apex_developer_guide.txt`): 10,000 records processed by DML statements, `Approval.process`, or `database.emptyRecycleBin` per transaction, sync and async (264 L19759). The Winter '27 limits cheatsheet no longer carries the Apex tables and points to that section (`salesforce_app_limits_cheatsheet.txt` 264 L21-29); the earlier cite was cheatsheet 262 L66.",
         "Bulk API 2.0 and Bulk API Developer Guide (`api_asynch.txt`): `hardDelete` skips the Recycle Bin; \"Bulk API Hard Delete\" permission off by default (L1640-1647); ingest workflow, batches upload, UploadComplete, and results resources (L161, L605-647, L698-734).",
         "Metadata API Developer Guide (`api_meta.txt`): no deploy of a class with active jobs by default (L22218-22221); ApexClass `.cls-meta.xml` and `status` (L22231, L22271); `purgeOnDelete` only in Developer Edition and sandboxes, roll-up summary fields purged on Metadata API delete (L4234-4246, L4638-4640).",
         "Salesforce Security Guide (`salesforce_security_impl_guide.txt`): deleting a record cascades to its field history (L4895-4896).",
@@ -100897,9 +100907,9 @@
       "templates": [
         "skills/data/batch-data-cleanup-patterns/templates/batch-data-cleanup-patterns-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "data",
@@ -101332,7 +101342,7 @@
         "f9fb28917615bf1f3507",
         "fc83404c7a6d1b1bd7f8"
       ],
-      "content_hash": "bde758173f61290f23bb06204a95473cce871b8165bca5485531e7b4d6b368b2",
+      "content_hash": "239b81fc267c33760bb4c79960c4cada87822829f5f0563e1ac82ffae40772d9",
       "dependencies": [],
       "description": "Use when implementing Bulk API 2.0 REST calls, choosing between Bulk API 2.0 and legacy Bulk API v1, handling CSV format requirements for bulk ingest, paginating query job results with locators, or constructing multipart job requests. Triggers: bulk api 2.0 endpoint, ingest job REST call, query job locator, bulk CSV format, hard delete bulk, v1 vs v2 bulk api. NOT for Data Loader UI steps \u2014 use admin/data-import-and-management. NOT for strategic load-size decisions or serial vs parallel concurrency mode \u2014 use data/bulk-api-and-large-data-loads.",
       "file_location": "skills/data/bulk-api-patterns",
@@ -101347,7 +101357,7 @@
       "name": "bulk-api-patterns",
       "official_sources": [
         "Bulk API 2.0 and Bulk API Developer Guide (`api_asynch.txt`): v2 versus v1 comparison (ingest from API 41.0, content types, automatic versus manual PK chunking, big objects) (L177-201); 150 MB per job (L602); upload completed automatically for multipart jobs (L814-815); 10,000-record internal batches, 150,000,000 daily, 5-minute batches, 20 retries then job Failed (L1242-1247); Prepare CSV Files: UTF-8, base64 growth, delimiters, lineEnding, quoting, no trimming, empty values ignored on update, `#N/A`, 32,000-character header (L1280-1318); dateTime formats (L1454-1460); `concurrencyMode` for future use (L1668-1670); multipart for 100,000 characters or less (L1726); upload request limit (L1782-1787); `sf__Id`, `sf__Created`, `sf__Error` (L2113-2161); unprocessed records for failed or aborted jobs at `.../unprocessedrecords/` (L2188-2190); lock contention guidance (L2694-2708); query results `locator`, `maxRecords`, `Sforce-Locator` string `null`, do not guess locators (L3336-3506); PK chunking header in v1 (L7313-7356); job info counters (L1992-1997).",
-        "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): 2,000-record guidance and 15,000 shared batches per rolling 24 hours (L729-740); 24-hour open job and 7-day results (L768-770, L800-803); 150 MB per job for Bulk API 2.0 (L804-818).",
+        "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): 2,000-record guidance and 15,000 shared batches per rolling 24 hours (264 L293-303); 24-hour open job and 7-day results (264 L340-342, L386-389); 150 MB per job for Bulk API 2.0 (264 L391). Values unchanged from the 262 edition, which had them at L729-818.",
         "REST API Developer Guide (`api_rest.txt`): regular composite requests limited to 25 subrequests, composite graphs 500 (L6288).",
         "Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): consider Bulk API 2.0 query for results over one million rows (L913-915).",
         "Bulk API 2.0 Developer Guide (atlas) \u2014 https://developer.salesforce.com/docs/atlas.en-us.api_asynch.meta/api_asynch/asynch_api_intro.htm",
@@ -101382,9 +101392,9 @@
       "templates": [
         "skills/data/bulk-api-patterns/templates/bulk-api-patterns-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "data",
@@ -105318,7 +105328,7 @@
         "fa62ba2a94058d0c2162",
         "fb087a4064f99617a39f"
       ],
-      "content_hash": "530ab88d007a10be89debed264be5a40d2aabe915018503ace18f5b7799f553d",
+      "content_hash": "7ad39014fe7fa372242abdcd6e76d2bdda81edeed53b0881cc752fc69cf1bcb8",
       "dependencies": [],
       "description": "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices \u2014 lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for drawing or diagramming the model \u2014 use architect/salesforce-erd-and-diagramming. NOT for the Setup steps to create the object itself \u2014 use admin/object-creation-and-design. NOT for hierarchical or external relationship types, polymorphic lookups, or the per-object relationship limits \u2014 use admin/lookup-and-relationship-design.",
       "file_location": "skills/data/data-model-design-patterns",
@@ -105337,7 +105347,7 @@
         "Apex Developer Guide (`salesforce_apex_developer_guide.txt`): cascade deletes succeed only if each child can be deleted (L8236-8240); Recycle Bin for 15 days and undelete (L8259-8262); default indexes and when a custom index isn't used (L9641-9663).",
         "Apex Reference Guide (`salesforce_apex_reference_guide.txt`): `emptyRecycleBin` takes the top-level Id for cascade-deleted records (L206927-206931).",
         "Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): custom index thresholds (L463-471); unindexable types and deterministic formulas (L409, L483-484); skinny tables (L329-385).",
-        "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): a custom object allows up to 40 relationships (L1131-1134); a query operation has 2 minutes to execute (L1101-1104).",
+        "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): a custom object allows up to 40 relationships (264 L687-691); a query operation has 2 minutes to execute (264 L665-669). Values unchanged from the 262 edition (L1131-1134, L1101-1104).",
         "REST API Developer Guide (`api_rest.txt`): upsert key matched multiple times returns a 300 error (L2977); `explain` plans (L17784-17867).",
         "Salesforce Help \u2014 Enable 'cascade delete on custom lookup relationships' feature \u2014 https://help.salesforce.com/s/articleView?id=000382017&language=en_US&type=1",
         "Salesforce Help \u2014 Relationship Considerations \u2014 https://help.salesforce.com/s/articleView?id=sf.relationships_considerations.htm",
@@ -105377,9 +105387,9 @@
       "templates": [
         "skills/data/data-model-design-patterns/templates/data-model-design-patterns-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "data",
@@ -113710,7 +113720,7 @@
         "f9c7fe33d3367d6de368",
         "faa0f31921325f1e3eea"
       ],
-      "content_hash": "158a9a923f49492d4d78e0ae48a6ea9df35321a037e10a6957682ceaf2548e7d",
+      "content_hash": "2f16bb4617e475fedb1bd3955f168ae663fabbfa561fdf8ec0efe45611bb90e7",
       "dependencies": [],
       "description": "Use when a SOSL search silently omits a record that clearly matches the search term \u2014 diagnosing the search engine's internal per-stage record caps: the 2,000-record term-matching scan (API v28.0+), the 250-record single-object default and how a WHERE or ORDER BY inside the RETURNING clause raises it to 2,000, the min(2000/n, 250) multi-object split, View All Data vs. per-user permission filtering of results, and the dynamic SearchQuery string-length thresholds (>4,000 chars strips logical operators, >10,000 chars returns zero rows) plus the 100,000-character statement limit. Triggers: 'SOSL not returning all records', 'SOSL only returns 250', '2000 record search cap', 'missing search result', 'SearchQuery too long'. NOT for choosing SOSL vs SOQL, FIND syntax, injection safety, search groups, or USING ListView scoping (use data/sosl-search-patterns); NOT for SOQL row limits or general query governor limits.",
       "file_location": "skills/data/sosl-search-result-limits",
@@ -113725,7 +113735,8 @@
         "SOQL and SOSL Reference, \"SOSL Limits on Search Results\" (API 67.0, fetched from https://developer.salesforce.com/docs/get_document_content/soql_sosl/sforce_api_calls_sosl_limits.htm/en-us/262.0): the 2,000-record term scan from API 28.0, the 250 single-object default and WHERE/ORDER BY raise to 2,000, min(2,000/n, 250) with the 2- and 10-object examples, View All Data versus permission filters, results changing as the index changes, and the Joe example.",
         "SOQL and SOSL Reference, \"SOSL Syntax\" and \"FIND {SearchQuery}\" (fetched, same endpoint, pages sforce_api_calls_sosl_syntax and sforce_api_calls_sosl_find): `{SearchQuery}` is the text to search for; over 10,000 characters returns no rows; over 4,000 removes logical operators and AND defaults to OR; asterisks match at the middle or end of a term.",
         "SOQL and SOSL Reference, \"RETURNING FieldSpec\" and \"LIMIT n\" (fetched, pages sforce_api_calls_sosl_returning and sforce_api_calls_sosl_limit): WHERE, ORDER BY, LIMIT, and OFFSET need a field list; OFFSET only for a single object; USING ListView searches the first 2,000 list-view records; RETURNING affects what is returned, not what is searched; LIMIT up to 2,000, cannot increase the maximum, statement LIMIT spread evenly across objects, LIMIT 0 returns none.",
-        "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): 20 SOSL queries and 2,000 records per SOSL query per transaction (L60-62); SOSL statement length 100,000 characters by default (L1106-1107); SearchQuery 10,000/4,000 thresholds and AND-to-OR example (L1109-1123); 2,000 results total including child objects from API 28.0 (L1126-1129).",
+        "Apex Developer Guide 264, Execution Governors and Limits (`salesforce_apex_developer_guide.txt`): 20 SOSL queries and 2,000 records per SOSL query per transaction (264 L19753, L19755). The Winter '27 limits cheatsheet dropped its Apex tables and points to that section (`salesforce_app_limits_cheatsheet.txt` 264 L21-29); the earlier cite was cheatsheet 262 L60-62.",
+        "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): SOSL statement length 100,000 characters by default (264 L671-672); SearchQuery 10,000/4,000 thresholds and AND-to-OR example (264 L674-680); 2,000 results total including child objects from API 28.0 (264 L682-685). Values unchanged from the 262 edition (L1106-1129).",
         "Metadata API Developer Guide (`api_meta.txt`): CustomObject `enableSearch`, disabled by default for new custom objects, disabled after 120 days without searches (L42062-42071).",
         "Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): indexing before search and \"about 15 minutes or more\" latency (L160-162); index searched first, then narrowed by permissions and limits, remainder discarded (L171-174); large data changes must be indexed (L748); specific terms, search crowding over 2,000 matches, not indexing unwanted custom objects, targeted search groups (L921, L994-1005).",
         "Apex Developer Guide (`salesforce_apex_developer_guide.txt`): SOSL in tests returns empty results unless `Test.setFixedSearchResults` is called; WHERE and LIMIT are applied to the fixed list (L41467-41475)."
@@ -113755,9 +113766,9 @@
       "templates": [
         "skills/data/sosl-search-result-limits/templates/sosl-search-result-limits-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.1.0"
+      "version": "1.1.1"
     },
     {
       "category": "data",
@@ -117343,23 +117354,29 @@
     {
       "category": "devops",
       "chunk_ids": [
-        "05fa74f99d41dff86f9b",
+        "0198f985822e2c50e185",
+        "059db403ddf00aa4440c",
         "064aeef27ac27272a5c2",
         "10456dc255e1db729f3c",
         "13203b44fb525f5069f4",
         "1329666a07b70821d022",
         "146ce16e07f7c862b975",
+        "15c43dcacb8433401394",
+        "1a8e6f990199d4f6fc24",
+        "2228970a8ef56f6c1c90",
         "26add60701288c3bd034",
         "298eeee27320e51825b1",
         "2a766c1f9897c8435788",
-        "2ad93adf992616c04207",
         "316905f84412db0c0a60",
         "31df624d419b9aa4ebf5",
         "3244b90e943a48e98a56",
         "325aa7a2dd6e601154b9",
+        "33adc0f0ea3aebd2b0aa",
         "350967d98b3cedce59f0",
-        "366890f0d8811f5fb0b0",
         "3e4d20469104cb55aee8",
+        "400d1d28a7015c73d04c",
+        "44ae48776cdeb599f951",
+        "45f3c7b9af0c057ad460",
         "463e67eaf603f26906a0",
         "472dc100ca0641df33cc",
         "4b75d090d9a4647e3b46",
@@ -117368,6 +117385,8 @@
         "4ed7293535ceac867fcb",
         "4f2a53ee263b4beedd6b",
         "51741b9c375d4b17b733",
+        "54a93640ea0631e49482",
+        "5555d663c1f4d60ac06a",
         "5561f985d887f33fda90",
         "5d1535c97824e4586ae6",
         "5f5f922272f81850afbb",
@@ -117379,18 +117398,20 @@
         "6d4a490aa267015fb47b",
         "6dc5d8589a97cc00ac89",
         "7160bd594f9642a54c62",
+        "72f958a44dd50f3a9056",
         "75a0b23a973cad3a7aaa",
-        "7816e9dedb8215cf56f2",
-        "8043b7c0c7efccbc46bf",
+        "782d5d0500eb025e5991",
         "83eba6e232be5b6a1ece",
         "8910eaee8de71a029105",
+        "8928813eaf65375eb9ef",
         "8b735db0f7770585cd6a",
-        "8dd54e03223708dcb22a",
         "8e2551f20ca91655c43e",
         "8e7a58b9680a41c9ece0",
         "8f4ec9fb8b09caf5ee78",
         "90a311bb2435169e8ac8",
-        "9f6cf779689f1a6a8a3b",
+        "9869ba440240a5603b0a",
+        "99070434d146ceabe0b1",
+        "ae77bbf4f9e17be5e884",
         "af660b3ae6e7a51ca2d7",
         "b57f97004d53b10d778d",
         "b755c870b56a1bdfc7fd",
@@ -117398,35 +117419,32 @@
         "bb31204107a40d039b2e",
         "be3873ba92f88bdd0d25",
         "c09ccd23510246c000d3",
+        "c184002a62c23ebf90bf",
         "c28b2750fcc12d8fe73b",
         "c782e94c93ffd0a77846",
-        "cc820c3d2254e26fddab",
+        "cd399dfde4a377a29a88",
         "cde685c75e5405b40945",
         "ce8ce9696c1d1710eab6",
         "d171eebe5af9d2bf4839",
         "d2a23d28c1a3e4568697",
         "d3cab64d92a9c004bd58",
-        "d45abf141522313cea98",
         "d781d88f106e84f5b363",
+        "d7c8aabef2c6a68a02a0",
         "d8f9bc84013223efc2a4",
         "d9f274b6ef9bf9605b9c",
         "dc62baf4cc8f302ab770",
         "dd8210fce555b09f6328",
+        "ddbdfd0ceab6ea4b010d",
         "de96319be031c5aa4e20",
         "e226583349290fdaf814",
         "e4387bc03fc43891ee84",
-        "e58b3dd09101f7ad47d2",
         "e8981e57a99f7950e7b9",
-        "e914391761d19f32e64c",
-        "eae9d5ac40e46def1fd6",
         "ebb5e983277171094aa6",
         "f2d7095020f86c8ad2cb",
-        "f46f9b9f3b1ff072f21c",
         "f5e027d5d771aeaa632f",
-        "f7d6cd8fe881527d4150",
-        "ff112f0d3296b7cef82d"
+        "f767a0c4b0a2961cf7df"
       ],
-      "content_hash": "8ec691150557b764ad19ec1335e19e4b6027b0f062b282c497eb0300d7fc0e22",
+      "content_hash": "10b96dfe3e27f29a1f78ac4970089cea43ed5667565a23cc4ee5ba98cb213bcd",
       "dependencies": [],
       "description": "Use DevOps Center for work item tracking, org-based release pipelines, and merging into existing SFDX workflows. NOT for first-time setup \u2014 use admin/devops-process-documentation.",
       "file_location": "skills/devops/devops-center-advanced",
@@ -117437,6 +117455,7 @@
       ],
       "name": "devops-center-advanced",
       "official_sources": [
+        "Metadata API Developer Guide (264), DevHubSettings \u2014 `enableALMDevopsCorePref` \"Indicates whether the Lifecycle Center is enabled\" (API 65.0+); `enableDevOpsCenterGA` is \"an older version of Lifecycle Center\" (API 56.0+); `enableDevopsCenterMigrationPref` (API 67.0+) is a developer preview \u2014 `api_meta.txt` 264 L117302\u2013L117346. The 262 guide called the product \"next-generation DevOps Center\" (`api_meta.txt` 262 L114168); the help articles below are cited under the titles they had when this package was written.",
         "Next Generation DevOps Center \u2014 AI-powered, click-based central development hub with governance for coding agents and users; instant setup with no package download; SLDS 2 UI; flexible environment support; integrated change tracking via DX Inspector \u2014 https://help.salesforce.com/s/articleView?id=platform.next_generation_devops_center.htm&type=5",
         "Set Up Next Generation DevOps Center \u2014 requires a GitHub or Bitbucket account; MCP tools require an MCP-enabled IDE and a user-facing MCP client \u2014 https://help.salesforce.com/s/articleView?id=platform.next_gen_devops_center_setup.htm&type=5",
         "Considerations to Set Up Next Generation DevOps Center \u2014 Professional Edition with API access or higher, Lightning Experience, not available in Government Cloud Plus or the EU Operating Zone \u2014 https://help.salesforce.com/s/articleView?id=platform.next_gen_devops_center_setup_considerations.htm&type=5",
@@ -117471,9 +117490,9 @@
       "templates": [
         "skills/devops/devops-center-advanced/templates/devops-center-advanced-template.md"
       ],
-      "updated": "2026-08-14",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "category": "devops",
@@ -135305,7 +135324,7 @@
         "f496d72018651e8cb1cb",
         "f538f0377039e987ff6a"
       ],
-      "content_hash": "0492c10cc290c697980c015c2f0d4484d0f26b4abd3447fd222240ade4373fdb",
+      "content_hash": "e9c6c887c5bc833af37e04bebc89b26a72d2271b7bbda9cf7fe1fae94f8959ea",
       "dependencies": [],
       "description": "Monitor and govern Salesforce API consumption: per-user limits, org allocation, lightning-rest limits, and backoff. NOT for designing new endpoints \u2014 use security/api-security-and-rate-limiting.",
       "file_location": "skills/integration/api-governance-and-rate-limits",
@@ -135316,11 +135335,11 @@
       ],
       "name": "api-governance-and-rate-limits",
       "official_sources": [
-        "Limits cheat sheet (`salesforce_app_limits_cheatsheet.txt`) L469\u2013495 \u2014 three limit types; 25 / 5 concurrent requests of 20 seconds or longer; `REQUEST_LIMIT_EXCEEDED`; no limit under 20 seconds (gotcha 4, anti-pattern 1).",
-        "Limits cheat sheet L496\u2013505 \u2014 10-minute REST/SOAP timeout; for composite resources it applies to the whole request (Decision Guidance).",
-        "Limits cheat sheet L516\u2013616 \u2014 total allocation table by edition and licence, Full sandbox 5,000,000; APIs that count (incl. Bulk API 2.0); mobile app calls excluded; `DebuggingHeader` separate 1,000; aggregate, not per user (Core Concepts, gotchas 1 and 3).",
-        "Limits cheat sheet L620\u2013660 \u2014 monitoring options, API Usage Notifications, managed-package calls count, over-limit headroom only for paid active orgs (gotchas 6 and 7).",
-        "Limits cheat sheet L687\u2013690 \u2014 115,000-call worked example; rolling 24-hour Developer Edition example (Core Concepts, anti-pattern 1).",
+        "Limits cheat sheet (`salesforce_app_limits_cheatsheet.txt`) 264 L31\u201362 \u2014 three limit types; 25 / 5 concurrent requests of 20 seconds or longer; `REQUEST_LIMIT_EXCEEDED`; no limit under 20 seconds (gotcha 4, anti-pattern 1).",
+        "Limits cheat sheet 264 L65\u201373 \u2014 10-minute REST/SOAP timeout; for composite resources it applies to the whole request (Decision Guidance).",
+        "Limits cheat sheet 264 L76\u2013187 \u2014 total allocation table by edition and licence, Full sandbox 5,000,000 (L165); APIs that count (incl. Bulk API 2.0); mobile app calls excluded; `DebuggingHeader` separate 1,000; aggregate, not per user (L181\u2013187) (Core Concepts, gotchas 1 and 3).",
+        "Limits cheat sheet 264 L190\u2013233 \u2014 monitoring options, API Usage Notifications, managed-package calls count (L212), over-limit headroom only for paid active orgs (L216\u2013230) (gotchas 6 and 7).",
+        "Limits cheat sheet 264 L249\u2013254 \u2014 115,000-call worked example; rolling 24-hour Developer Edition example (Core Concepts, anti-pattern 1).",
         "REST API Developer Guide (`api_rest.txt`) L915\u2013932 \u2014 `Sforce-Limit-Info: api-usage=<used>/<limit>` on every response (examples.md Example 2).",
         "REST API Developer Guide L1145\u20131146 \u2014 403 with `REQUEST_LIMIT_EXCEEDED` when API request limits are exceeded (gotcha 5).",
         "REST API Developer Guide L7790\u20137797 \u2014 `/limits`: accurate within five minutes; avoid concurrent or rapid requests; View Setup and Configuration (gotcha 6).",
@@ -135350,9 +135369,9 @@
       "templates": [
         "skills/integration/api-governance-and-rate-limits/templates/api-governance-and-rate-limits-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-10-20",
       "vector_embedding": null,
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "category": "integration",

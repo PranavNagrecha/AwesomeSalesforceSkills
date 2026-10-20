@@ -10,15 +10,18 @@
   reconciliation step is not paperwork; it is the thing that stops the next
   normal promotion from reverting the fix.
 - **Security** — governance over who (and now *what*) can commit and promote is
-  a release-integrity control. Next-generation DevOps Center extends policy
+  a release-integrity control. Lifecycle Center extends policy
   coverage to coding agents, which is the newest version of the same question.
+  UNVERIFIED (2026-10-20): help-article claim under the next-generation name, not
+  re-checked at Winter '27.
 
 ## Architectural Tradeoffs
 
-- **Managed package vs next-generation:** the managed package is mature and
-  broadly documented; next-generation removes the install/upgrade cycle, adds
+- **Managed package vs Lifecycle Center:** the managed package is mature and
+  broadly documented; Lifecycle Center removes the install/upgrade cycle, adds
   Bitbucket (beta), surfaces change tracking through DX Inspector inside the org,
-  and governs agents. The decision should turn on a named blocker, not on which
+  and governs agents (UNVERIFIED (2026-10-20): help-article claims under the
+  next-generation name, not re-checked at Winter '27). The decision should turn on a named blocker, not on which
   is newer — and it is not a decision at all in Government Cloud Plus or the EU
   Operating Zone, or below Professional Edition with API access.
 - **UI promotion vs CLI pipeline commands:** clicking Promote is legible to
@@ -70,6 +73,7 @@
 
 ## Official Sources Used
 
+- Metadata API Developer Guide (264), DevHubSettings — `enableALMDevopsCorePref` "Indicates whether the Lifecycle Center is enabled" (API 65.0+); `enableDevOpsCenterGA` is "an older version of Lifecycle Center" (API 56.0+); `enableDevopsCenterMigrationPref` (API 67.0+) is a developer preview — `api_meta.txt` 264 L117302–L117346. The 262 guide called the product "next-generation DevOps Center" (`api_meta.txt` 262 L114168); the help articles below are cited under the titles they had when this package was written.
 - Next Generation DevOps Center — AI-powered, click-based central development hub with governance for coding agents and users; instant setup with no package download; SLDS 2 UI; flexible environment support; integrated change tracking via DX Inspector — https://help.salesforce.com/s/articleView?id=platform.next_generation_devops_center.htm&type=5
 - Set Up Next Generation DevOps Center — requires a GitHub or Bitbucket account; MCP tools require an MCP-enabled IDE and a user-facing MCP client — https://help.salesforce.com/s/articleView?id=platform.next_gen_devops_center_setup.htm&type=5
 - Considerations to Set Up Next Generation DevOps Center — Professional Edition with API access or higher, Lightning Experience, not available in Government Cloud Plus or the EU Operating Zone — https://help.salesforce.com/s/articleView?id=platform.next_gen_devops_center_setup_considerations.htm&type=5

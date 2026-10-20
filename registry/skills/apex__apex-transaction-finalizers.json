@@ -31,6 +31,7 @@
     "2d130ad2f26233815b6c",
     "2e4af1c365f168ffca92",
     "2e5a135b16b1241339e1",
+    "2f63fbb22b0f4c522b8f",
     "335ee02aba663c3d4e55",
     "33a610949019b29181cb",
     "3aefa7c7b2f2ffa8f722",
@@ -68,6 +69,7 @@
     "7049edb9478745af99b6",
     "706f64c34b5a7a202e21",
     "707b6d613e8ad2d77f90",
+    "73bc7824fa9561bf6727",
     "743a40d39138c13c17ff",
     "747282d65b0d8a79a5f8",
     "74a1a9e0ce55ab6700f7",
@@ -138,6 +140,7 @@
     "d565680614318e4d3c34",
     "d66e2782d8775358b106",
     "d6e13bc1d70aba490f7d",
+    "d7ed4c198817c1d8557d",
     "d8cf664610f50fcab86e",
     "d9bef43a90c29add7abc",
     "db31121b5c7dfad16766",
@@ -167,7 +170,7 @@
     "ff4368b079048a11c259",
     "ff76529704b5f7fe2a8a"
   ],
-  "content_hash": "2ca05f475fbc115c658c113964384b598040703b780adbfc4bc17d7354123509",
+  "content_hash": "474ff2d37624394b9c5efd1ba4efdb0cefee0e3ccb12f0ad2d8842083c8c6c61",
   "dependencies": [
     "apex-queueable-patterns"
   ],
@@ -181,7 +184,7 @@
   ],
   "name": "apex-transaction-finalizers",
   "official_sources": [
-    "Apex Developer Guide v67.0, Summer '26 \u2014 \"Transaction Finalizers\", L16284-16303 (separate Apex and Database transactions; no extra daily async execution; synchronous governor limits except heap / `enqueueJob` count / `@future` count; five consecutive re-enqueues with reset-on-success): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
+    "Apex Developer Guide v67.0, Summer '26 \u2014 \"Transaction Finalizers\", L16284-16303; same section at Winter '27 264 L16489-16508 (separate Apex and Database transactions; no extra daily async execution; synchronous governor limits except heap / `enqueueJob` count / `@future` count; five consecutive re-enqueues with reset-on-success): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
     "Apex Developer Guide v67.0 \u2014 \"System.FinalizerContext Interface\" and \"Implementation Details\", L16316-16363 (the four context methods; one finalizer per job; one async job enqueued per finalizer; callouts allowed; state mutation after attach supported; `transient` fields dropped)",
     "Apex Developer Guide v67.0 \u2014 \"Logging Finalizer Example\" and \"Retry Queueable Example\", L16364-16530 (the fused `Queueable, Finalizer` class shape; `System.attachFinalizer(this)`; `Database.insert(logRecords, false)`; the five-retry chaining-limit comment)",
     "Apex Developer Guide v67.0 \u2014 \"Considerations\", \"Best Practices\" and \"Transaction Finalizers Error Messages\", L16532-16587 (unexpected termination can skip the finalizer; ISV caution on global state-mutating finalizers; the exact attach-error and runtime-error strings)",
@@ -220,7 +223,7 @@
   "templates": [
     "skills/apex/apex-transaction-finalizers/templates/apex-transaction-finalizers-template.md"
   ],
-  "updated": "2026-09-16",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

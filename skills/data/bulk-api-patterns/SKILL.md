@@ -35,9 +35,9 @@ outputs:
   - Result retrieval pattern (successfulResults, failedResults, unprocessedrecords)
   - Locator-based pagination pattern for query results
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # Bulk API Patterns

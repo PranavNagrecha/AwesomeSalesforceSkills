@@ -30,9 +30,9 @@ outputs:
   - "review findings for queueable, batch, future, or scheduler usage"
   - "migration guidance from legacy future methods"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-10-03
+updated: 2026-10-20
 ---
 
 Use this skill when synchronous Apex is the wrong execution model or when an existing async design is brittle. The job is to choose the smallest async mechanism that fits the workload, keeps it observable, and stays inside the per-transaction and org-wide async limits.
@@ -61,7 +61,7 @@ What a proper design adds over "just make it async": the job runs in the right m
 
 ### Choosing the mechanism
 
-| Mechanism | Use it for | Key limits (Apex Developer Guide 262) |
+| Mechanism | Use it for | Key limits (Apex Developer Guide 264; unchanged from 262) |
 |---|---|---|
 | Queueable | Default background work, callouts after DML, non-primitive state, chaining | 50 enqueues per synchronous transaction, 1 per async transaction; one child per executing job; chain depth unlimited except 5 in Developer and Trial orgs |
 | Batch Apex | Large, query-driven volumes with fresh limits per scope | `QueryLocator` up to 50 million rows; scope up to 2,000 with a `QueryLocator` (default 200); 5 active jobs; flex queue of 100; one `start` at a time |

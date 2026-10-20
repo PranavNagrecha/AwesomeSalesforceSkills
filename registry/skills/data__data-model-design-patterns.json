@@ -106,7 +106,7 @@
     "fa62ba2a94058d0c2162",
     "fb087a4064f99617a39f"
   ],
-  "content_hash": "530ab88d007a10be89debed264be5a40d2aabe915018503ace18f5b7799f553d",
+  "content_hash": "7ad39014fe7fa372242abdcd6e76d2bdda81edeed53b0881cc752fc69cf1bcb8",
   "dependencies": [],
   "description": "Use when designing, reviewing, or troubleshooting Salesforce object relationships and field type choices \u2014 lookup vs master-detail, junction object modeling, indexing strategy, and data model anti-patterns. NOT for drawing or diagramming the model \u2014 use architect/salesforce-erd-and-diagramming. NOT for the Setup steps to create the object itself \u2014 use admin/object-creation-and-design. NOT for hierarchical or external relationship types, polymorphic lookups, or the per-object relationship limits \u2014 use admin/lookup-and-relationship-design.",
   "file_location": "skills/data/data-model-design-patterns",
@@ -125,7 +125,7 @@
     "Apex Developer Guide (`salesforce_apex_developer_guide.txt`): cascade deletes succeed only if each child can be deleted (L8236-8240); Recycle Bin for 15 days and undelete (L8259-8262); default indexes and when a custom index isn't used (L9641-9663).",
     "Apex Reference Guide (`salesforce_apex_reference_guide.txt`): `emptyRecycleBin` takes the top-level Id for cascade-deleted records (L206927-206931).",
     "Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): custom index thresholds (L463-471); unindexable types and deterministic formulas (L409, L483-484); skinny tables (L329-385).",
-    "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): a custom object allows up to 40 relationships (L1131-1134); a query operation has 2 minutes to execute (L1101-1104).",
+    "Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): a custom object allows up to 40 relationships (264 L687-691); a query operation has 2 minutes to execute (264 L665-669). Values unchanged from the 262 edition (L1131-1134, L1101-1104).",
     "REST API Developer Guide (`api_rest.txt`): upsert key matched multiple times returns a 300 error (L2977); `explain` plans (L17784-17867).",
     "Salesforce Help \u2014 Enable 'cascade delete on custom lookup relationships' feature \u2014 https://help.salesforce.com/s/articleView?id=000382017&language=en_US&type=1",
     "Salesforce Help \u2014 Relationship Considerations \u2014 https://help.salesforce.com/s/articleView?id=sf.relationships_considerations.htm",
@@ -165,7 +165,7 @@
   "templates": [
     "skills/data/data-model-design-patterns/templates/data-model-design-patterns-template.md"
   ],
-  "updated": "2026-10-19",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

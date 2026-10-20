@@ -6,7 +6,7 @@ with a CLI-based workflow, survive an emergency, and stay governable at scale.
 Two products share the name and are documented separately. Getting the
 distinction right is the first thing every one of these examples depends on:
 
-| | DevOps Center (Managed Package) | Next Generation DevOps Center |
+| | DevOps Center (Managed Package) | Lifecycle Center (formerly next-generation) |
 |---|---|---|
 | Delivery | Installed as a managed package and configured as an app | Native platform capability — no package install |
 | Setup docs | *Install and Configure DevOps Center (Managed Package)* | *Set Up Next Generation DevOps Center* |
@@ -41,7 +41,7 @@ Work item WI-0142  "Add renewal reminder automation"
   │
   ├── Admin path
   │     Change made declaratively in the dev sandbox
-  │     DX Inspector (next-gen) surfaces the change in the org itself:
+  │     DX Inspector (Lifecycle Center) surfaces the change in the org itself:
   │       track → select components → commit to the work item branch
   │
   ├── Developer path
@@ -196,10 +196,9 @@ sf project deploy quick --job-id <job-id> --target-org prod
 The expensive part happens once, ahead of the change window, and the production
 step is short. A validated deployment does not stay eligible for quick-deploy
 indefinitely, so plan the validation close to the change window rather than
-weeks ahead. <!-- UNVERIFIED: the exact eligibility window for a quick deploy
-(commonly cited as 10 days) was not confirmed against a fetchable official page
-during authoring; check the Metadata API deploy documentation before writing a
-number into a runbook. -->
+weeks ahead: the components must have been validated for the target org
+"within the last 10 days" (`api_meta.txt` 264 L3576–L3580; `sfdx_dev.txt` 264
+L14372).
 
 **Driving the same thing from the CLI — install the plugin first:** the pipeline
 commands are *not* part of the base Salesforce CLI. They come from
@@ -229,10 +228,10 @@ constraint, not a rounding error.
 
 ---
 
-## Example 5: Deciding Whether to Move to Next Generation DevOps Center
+## Example 5: Deciding Whether to Move to Lifecycle Center
 
 **Context:** A team on the managed-package DevOps Center is asked whether to
-move to the next-generation, native version.
+move to the native version, Lifecycle Center.
 
 **Problem:** "It's the newer one" is not a decision. The two differ in setup
 model, source-control support, and governance surface, and the answer depends on
@@ -240,7 +239,7 @@ which of those the team is actually blocked on.
 
 **Solution:** Decide against concrete blockers, in this order.
 
-| If the team is blocked on… | Next-gen changes it? |
+| If the team is blocked on… | Lifecycle Center changes it? |
 |---|---|
 | Managed package install / upgrade friction in a regulated org | Yes — instant setup, no package to install or upgrade |
 | Bitbucket rather than GitHub | Yes, in beta — treat a beta as a pilot, not a migration target |
@@ -252,7 +251,9 @@ which of those the team is actually blocked on.
 Then check the constraints before committing: Professional Edition with API
 access or higher, Lightning Experience, and availability — Government Cloud Plus
 and the EU Operating Zone are excluded. An org in either of those is not
-choosing.
+choosing. UNVERIFIED (2026-10-20): the table rows and these constraints come from
+help articles written under the next-generation name and were not re-checked at
+Winter '27.
 
 **Why it works:** It converts a version-number question into a blocker question.
 It also surfaces the case that most teams are in — nothing is blocked — where

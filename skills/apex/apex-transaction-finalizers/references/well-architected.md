@@ -6,7 +6,7 @@
 
 - **Operational Excellence** — Logging failures to a queryable object rather than to a transient debug log supports observability, SLA reporting, and manual reprocessing. The Finalizer's own failures, by contrast, surface only as `Error processing finalizer for queueable job id: {0}` in the log (guide L16578-16587), so the monitoring design must alert on the *absence* of a dead-letter row for a failed `AsyncApexJob`, not just on its presence.
 
-- **Performance** — The Finalizer runs in its own Apex and Database transaction (guide L16297) and does not extend the parent Queueable. It also does not cost a daily async execution: "Using a finalizer doesn't count as an extra execution against your daily Async Apex limit" (guide L16298). The retry it enqueues does. Budget the Finalizer as a synchronous unit of work — "Synchronous governor limits apply for the Finalizer transaction" except for heap, `System.enqueueJob` count, and `@future` count (guide L16298-16303).
+- **Performance** — The Finalizer runs in its own Apex and Database transaction (guide L16297) and does not extend the parent Queueable. It also does not cost a daily async execution: "Using a finalizer doesn't count as an extra execution against your daily Async Apex limit" (guide L16298). The retry it enqueues does. Budget the Finalizer as a synchronous unit of work — "Synchronous governor limits apply for the Finalizer transaction" except for heap, `System.enqueueJob` count, and `@future` count (guide L16298-16303; same text at apexdev 264 L16503-16508).
 
 ## Architectural Tradeoffs
 
@@ -36,7 +36,7 @@
 
 ## Official Sources Used
 
-- Apex Developer Guide v67.0, Summer '26 — "Transaction Finalizers", L16284-16303 (separate Apex and Database transactions; no extra daily async execution; synchronous governor limits except heap / `enqueueJob` count / `@future` count; five consecutive re-enqueues with reset-on-success): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Apex Developer Guide v67.0, Summer '26 — "Transaction Finalizers", L16284-16303; same section at Winter '27 264 L16489-16508 (separate Apex and Database transactions; no extra daily async execution; synchronous governor limits except heap / `enqueueJob` count / `@future` count; five consecutive re-enqueues with reset-on-success): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
 - Apex Developer Guide v67.0 — "System.FinalizerContext Interface" and "Implementation Details", L16316-16363 (the four context methods; one finalizer per job; one async job enqueued per finalizer; callouts allowed; state mutation after attach supported; `transient` fields dropped)
 - Apex Developer Guide v67.0 — "Logging Finalizer Example" and "Retry Queueable Example", L16364-16530 (the fused `Queueable, Finalizer` class shape; `System.attachFinalizer(this)`; `Database.insert(logRecords, false)`; the five-retry chaining-limit comment)
 - Apex Developer Guide v67.0 — "Considerations", "Best Practices" and "Transaction Finalizers Error Messages", L16532-16587 (unexpected termination can skip the finalizer; ISV caution on global state-mutating finalizers; the exact attach-error and runtime-error strings)

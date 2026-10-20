@@ -18,7 +18,7 @@ UNVERIFIED (2026-10-19): the 250 default, the quoted raise to 2,000, and the fie
 
 **What happens:** Widening a search to more objects returns fewer rows for each of them.
 
-**When it occurs:** Each object returns up to min(2,000/n, 250). The reference's examples: 2 objects → 250 each; 10 objects → 200 each. Past eight objects every addition lowers every object's cap (16 objects → 125). UNVERIFIED (2026-10-19): the min(2,000/n, 250) formula comes from the SOSL reference page, which is not in the local corpus. The 2,000 statement total includes results from child objects (Limits Quick Reference L1126-1129).
+**When it occurs:** Each object returns up to min(2,000/n, 250). The reference's examples: 2 objects → 250 each; 10 objects → 200 each. Past eight objects every addition lowers every object's cap (16 objects → 125). UNVERIFIED (2026-10-19): the min(2,000/n, 250) formula comes from the SOSL reference page, which is not in the local corpus. The 2,000 statement total includes results from child objects (Limits Quick Reference 264 L682-685).
 
 **How to avoid:** Keep the RETURNING list as short as the requirement allows. To protect one object's results, search it alone.
 

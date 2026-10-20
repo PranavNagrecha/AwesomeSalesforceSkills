@@ -8,13 +8,13 @@
 
 ## Official Sources Used
 
-Corpus: Summer '26 (API 67.0) PDFs; line numbers are `grep -n` positions in the `pdftotext -layout` text.
+Corpus: Summer '26 (API 67.0) PDFs; line numbers are `grep -n` positions in the `pdftotext -layout` text. The limits cheat sheet lines below are re-resolved against the Winter '27 (264) edition (2026-10-20); every value is unchanged, the section moved from 262 L469–690 to 264 L31–254.
 
-- Limits cheat sheet (`salesforce_app_limits_cheatsheet.txt`) L469–495 — three limit types; 25 / 5 concurrent requests of 20 seconds or longer; `REQUEST_LIMIT_EXCEEDED`; no limit under 20 seconds (gotcha 4, anti-pattern 1).
-- Limits cheat sheet L496–505 — 10-minute REST/SOAP timeout; for composite resources it applies to the whole request (Decision Guidance).
-- Limits cheat sheet L516–616 — total allocation table by edition and licence, Full sandbox 5,000,000; APIs that count (incl. Bulk API 2.0); mobile app calls excluded; `DebuggingHeader` separate 1,000; aggregate, not per user (Core Concepts, gotchas 1 and 3).
-- Limits cheat sheet L620–660 — monitoring options, API Usage Notifications, managed-package calls count, over-limit headroom only for paid active orgs (gotchas 6 and 7).
-- Limits cheat sheet L687–690 — 115,000-call worked example; rolling 24-hour Developer Edition example (Core Concepts, anti-pattern 1).
+- Limits cheat sheet (`salesforce_app_limits_cheatsheet.txt`) 264 L31–62 — three limit types; 25 / 5 concurrent requests of 20 seconds or longer; `REQUEST_LIMIT_EXCEEDED`; no limit under 20 seconds (gotcha 4, anti-pattern 1).
+- Limits cheat sheet 264 L65–73 — 10-minute REST/SOAP timeout; for composite resources it applies to the whole request (Decision Guidance).
+- Limits cheat sheet 264 L76–187 — total allocation table by edition and licence, Full sandbox 5,000,000 (L165); APIs that count (incl. Bulk API 2.0); mobile app calls excluded; `DebuggingHeader` separate 1,000; aggregate, not per user (L181–187) (Core Concepts, gotchas 1 and 3).
+- Limits cheat sheet 264 L190–233 — monitoring options, API Usage Notifications, managed-package calls count (L212), over-limit headroom only for paid active orgs (L216–230) (gotchas 6 and 7).
+- Limits cheat sheet 264 L249–254 — 115,000-call worked example; rolling 24-hour Developer Edition example (Core Concepts, anti-pattern 1).
 - REST API Developer Guide (`api_rest.txt`) L915–932 — `Sforce-Limit-Info: api-usage=<used>/<limit>` on every response (examples.md Example 2).
 - REST API Developer Guide L1145–1146 — 403 with `REQUEST_LIMIT_EXCEEDED` when API request limits are exceeded (gotcha 5).
 - REST API Developer Guide L7790–7797 — `/limits`: accurate within five minutes; avoid concurrent or rapid requests; View Setup and Configuration (gotcha 6).

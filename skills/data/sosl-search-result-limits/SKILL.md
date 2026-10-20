@@ -28,9 +28,9 @@ outputs:
   - "A diagnosis of which stage limit (2,000-record scan, 250 single-object default, min(2000/n, 250) split, permission filter, or SearchQuery length) is dropping the record"
   - "A remediation: add WHERE/ORDER BY/LIMIT inside the RETURNING clause, narrow to fewer objects, or bound the SearchQuery string length"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # SOSL Search Result Limits
@@ -79,7 +79,7 @@ A proper configuration adds a stage-by-stage explanation of where the record was
 | Statement total | 2,000 results (API 28.0+) including child objects, unless custom limits are set | Limits Quick Reference |
 | Permission filter | View All Data sees everything returned; other users see only records they can access | SOSL Limits on Search Results |
 
-UNVERIFIED (2026-10-19): the 250 single-object default, the WHERE/ORDER BY raise to 2,000, the min(2,000/n, 250) split, and the View All Data wording come from the SOQL and SOSL Reference page "SOSL Limits on Search Results", which is not in the Summer '26 PDF corpus; the corpus confirms only the 2,000-per-statement total from API 28.0 (Limits Quick Reference L1126-1129) and that results are narrowed by access permissions and limits after the index search (LDV guide L171-174).
+UNVERIFIED (2026-10-19): the 250 single-object default, the WHERE/ORDER BY raise to 2,000, the min(2,000/n, 250) split, and the View All Data wording come from the SOQL and SOSL Reference page "SOSL Limits on Search Results", which is not in the Summer '26 PDF corpus; the corpus confirms only the 2,000-per-statement total from API 28.0 (Limits Quick Reference 264 L682-685) and that results are narrowed by access permissions and limits after the index search (LDV guide L171-174).
 
 Result sets and order also vary by user and "can change throughout the day as records are added or removed from the index."
 

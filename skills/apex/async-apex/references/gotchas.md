@@ -1,6 +1,6 @@
 # Gotchas: Async Apex
 
-Non-obvious Salesforce platform behaviors that cause real production problems in this domain. Line numbers refer to the pdftotext extraction of the Apex Developer Guide PDF, release 262 (`salesforce_apex_developer_guide.pdf`).
+Non-obvious Salesforce platform behaviors that cause real production problems in this domain. Line numbers refer to the pdftotext extraction of the Apex Developer Guide PDF (`salesforce_apex_developer_guide.pdf`); each is labelled 264 (Winter '27) or 262 (Summer '26). Section-name citations without line numbers hold for both releases.
 
 ## Gotcha 1: One child Queueable per executing Queueable, and one enqueue in any async context
 
@@ -10,7 +10,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **How to avoid:** Chain exactly one next job. Fan out from the synchronous entry point (up to 50 enqueues) or redesign with Batch, Cursors, or Platform Events.
 
-**Source:** Apex Developer Guide (262), Per-Transaction Apex Limits, "Maximum number of Apex jobs added to the queue with System.enqueueJob": 50 synchronous, 1 asynchronous (L19573); "Queueable Apex Limits": "Only one child job can exist for each parent queueable job."
+**Source:** Apex Developer Guide (264), Per-Transaction Apex Limits, "Maximum number of Apex jobs added to the queue with System.enqueueJob": 50 synchronous, 1 asynchronous (264 L19776; 262 L19573); "Queueable Apex Limits": "Only one child job can exist for each parent queueable job."
 
 ---
 
@@ -34,7 +34,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **How to avoid:** From Batch, enqueue one Queueable per `execute` or make callouts directly in a batch that implements `Database.AllowsCallouts`. Future calls from a Queueable are allowed (50), though Salesforce discourages fanning out many.
 
-**Source:** Apex Developer Guide (262), Per-Transaction Apex Limits, "Maximum number of methods with the future annotation allowed per Apex invocation": 50 synchronous; "0 in batch and future contexts; 50 in queueable context" (L19568 to L19571); "Future Method Considerations." The exact exception text is UNVERIFIED (2026-10-03).
+**Source:** Apex Developer Guide (264), Per-Transaction Apex Limits, "Maximum number of methods with the future annotation allowed per Apex invocation": 50 synchronous; "0 in batch and future contexts; 50 in queueable context" (264 L19771 to L19774; 262 L19568 to L19571); "Future Method Considerations." The exact exception text is UNVERIFIED (2026-10-03).
 
 ---
 
@@ -58,7 +58,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **How to avoid:** Keep the scheduler thin: enqueue a callout-capable Queueable or start a Batch. Mark member variables `transient` if they must not persist between runs.
 
-**Source:** Apex Developer Guide (262), Per-Transaction Apex Limits note: "Although scheduled Apex is an asynchronous feature, synchronous limits apply to scheduled Apex jobs" (L19536); "Apex Scheduler Notes and Best Practices": "Synchronous Web service callouts aren't supported from scheduled Apex" and member variables persist between runs.
+**Source:** Apex Developer Guide (264), Per-Transaction Apex Limits note: "Although scheduled Apex is an asynchronous feature, synchronous limits apply to scheduled Apex jobs" (264 L19739; 262 L19536); "Apex Scheduler Notes and Best Practices": "Synchronous Web service callouts aren't supported from scheduled Apex" and member variables persist between runs.
 
 ---
 
@@ -70,7 +70,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **How to avoid:** Start batches from a single dispatcher, check flex-queue depth (`AsyncApexJob` with Status = 'Holding') before submitting, or use Cursors with chained Queueables.
 
-**Source:** Apex Developer Guide (262), Salesforce Platform Apex Limits: batch jobs queued or active concurrently 5, flex queue Holding 100, start method concurrent executions 1 (L19779 to L19783); "Holding Batch Jobs in the Apex Flex Queue": "If the Apex flex queue has the maximum number of 100 jobs, Database.executeBatch throws a LimitException."
+**Source:** Apex Developer Guide (264), Salesforce Platform Apex Limits: batch jobs queued or active concurrently 5, flex queue Holding 100, start method concurrent executions 1 (264 L19983 to L19987; 262 L19779 to L19783); "Holding Batch Jobs in the Apex Flex Queue": "If the Apex flex queue has the maximum number of 100 jobs, Database.executeBatch throws a LimitException."
 
 ---
 
@@ -94,7 +94,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **How to avoid:** Monitor `DailyAsyncApexExecutions` through the REST limits resource or `OrgLimits`, and reduce per-record jobs.
 
-**Source:** Apex Developer Guide (262), Salesforce Platform Apex Limits (L19732 to L19736) and footnote 7: "Batch Apex preemptively checks the required asynchronous job capacity."
+**Source:** Apex Developer Guide (264), Salesforce Platform Apex Limits (264 L19936 to L19940; 262 L19732 to L19736) and footnote 7: "Batch Apex preemptively checks the required asynchronous job capacity." (264 L20027 to L20029)
 
 ---
 

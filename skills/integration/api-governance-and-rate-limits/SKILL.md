@@ -24,9 +24,9 @@ inputs:
 outputs:
   - "governance dashboard + per-consumer throttling + allocation plan"
 dependencies: []
-version: 1.2.0
+version: 1.2.1
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # API Governance and Rate Limits
@@ -64,7 +64,7 @@ A governed integration estate adds per-consumer attribution, admission control f
 
 ### What the allocation is
 
-| Item | Value (Summer '26 cheat sheet) |
+| Item | Value (Winter '27 cheat sheet L76–187, unchanged from Summer '26) |
 |---|---|
 | Developer Edition total per 24 h | 15,000 |
 | Enterprise / Professional with API | 100,000 + licences × per-licence calls (Salesforce licence: 1,000) + add-ons |

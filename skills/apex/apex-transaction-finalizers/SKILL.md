@@ -33,9 +33,9 @@ outputs:
   - "Review checklist confirming Finalizer constraints are respected"
 dependencies:
   - apex-queueable-patterns
-version: 1.1.1
+version: 1.1.2
 author: Pranav Nagrecha
-updated: 2026-09-16
+updated: 2026-10-20
 ---
 
 # Apex Transaction Finalizers
@@ -107,7 +107,7 @@ There is **no** `getJobId()` on `FinalizerContext`. `getJobId()` belongs to `Que
 | Five consecutive retries | "can be successively re-enqueued five times by a transaction finalizer. This limit applies to a series of consecutive Queueable job failures. The counter is reset when the Queueable job completes without an unhandled exception" (guide L16293–16295) |
 | Callouts permitted | "Callouts are allowed in finalizer implementations" (guide L16357) |
 | No extra daily async execution | "Using a finalizer doesn't count as an extra execution against your daily Async Apex limit" (guide L16298) |
-| Governor limits | "Synchronous governor limits apply for the Finalizer transaction, except in these cases where asynchronous limits apply: • Total heap size • Maximum number of Apex jobs added to the queue with System.enqueueJob • Maximum number of methods with the future annotation allowed per Apex invocation" (guide L16298–16303) |
+| Governor limits | "Synchronous governor limits apply for the Finalizer transaction, except in these cases where asynchronous limits apply: • Total heap size • Maximum number of Apex jobs added to the queue with System.enqueueJob • Maximum number of methods with the future annotation allowed per Apex invocation" (guide L16298–16303; same text at apexdev 264 L16503–16508) |
 
 The retry example in the guide re-enqueues unconditionally and annotates the call `// This call fails after 5 times when it hits the chaining limit` (guide L16523). The platform therefore stops the loop for you — but it stops it by *failing*, at the fifth retry, with no failure record written. A bounded counter is how you stop it on your own terms.
 

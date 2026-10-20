@@ -10,6 +10,7 @@ triggers:
   - "work item salesforce"
   - "devops center merge conflict"
   - "bypass devops center"
+  - "lifecycle center vs devops center managed package"
 tags:
   - devops-center
   - work-item
@@ -20,9 +21,9 @@ inputs:
 outputs:
   - "work-item model + bypass rules + hybrid SFDX + DOC workflow"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # DevOps Center Advanced Workflows
@@ -36,7 +37,7 @@ This skill assumes the pipeline already exists. It covers making DevOps Center
 coexist with a CLI workflow, surviving an emergency without diverging the
 repository from production, resolving the metadata types that conflict badly, and
 deciding whether to move from the managed package to the native
-next-generation product.
+Lifecycle Center (formerly "next-generation DevOps Center", 262).
 
 ## Establish Which Product First
 
@@ -44,7 +45,7 @@ Two things answer to "DevOps Center" and Salesforce documents them separately.
 Nearly every wasted hour in this domain starts with guidance written for the
 other one.
 
-| | DevOps Center (Managed Package) | Next Generation DevOps Center |
+| | DevOps Center (Managed Package) | Lifecycle Center |
 |---|---|---|
 | Delivery | Installed and configured as a managed-package app | Native platform capability; no package install |
 | Source control | GitHub | GitHub, Bitbucket (beta) |
@@ -55,10 +56,35 @@ other one.
 The strongest tell in any document: if setup begins with installing a package,
 it is the managed-package product.
 
+The native product's current name is **Lifecycle Center**. In the Winter '27
+Metadata API guide, `DevHubSettings.enableALMDevopsCorePref` (API 65.0+)
+"Indicates whether the Lifecycle Center is enabled", and the managed package
+(`enableDevOpsCenterGA`, API 56.0+) is "an older version of Lifecycle Center"
+(`api_meta.txt` 264 L117302–L117311). The Summer '26 guide called the same
+setting the "next-generation DevOps Center" (`api_meta.txt` 262 L114168). Moving
+projects from the package (`enableDevopsCenterMigrationPref`, API 67.0+) is
+still a developer preview (264 L117334–L117346). The table rows come from help
+articles written under the old name; UNVERIFIED (2026-10-20): help.salesforce.com
+is not fetchable, so the rows were not re-checked against Winter '27 text.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the org on the managed package or Lifecycle Center? | Guidance for one product describes steps that do not exist in the other (gotcha 1). | The right setup model, source-control options and governance surface from the first step. |
+| For a move to Lifecycle Center: what edition and region is the org in? | Below Professional Edition with API access, in Government Cloud Plus or the EU Operating Zone, there is nothing to decide (gotcha 9). | An eligibility answer before any blocker analysis is spent. |
+| Which source-control provider does the team use? | Bitbucket support is beta in both products (gotcha 10). | A pilot plan for Bitbucket, or GitHub as the lower-risk path. |
+| Who commits outside DevOps Center today, and how do emergency fixes reach production? | Non-work-item commits are invisible to promotion, and an un-reconciled bypass is reverted by the next promotion (gotchas 2, 6). | The negative merge rule and a bypass runbook with a down-cascade step. |
+| Which flows, permission sets and profiles do several people edit in the same sprint? | Flow XML cannot be hand-merged safely, and permission sets deploy as a full replace (gotchas 3, 4). | Work-item assignment constraints and a retrieve-merge-commit rule for those types. |
+| What test level should each stage run, and is it set on every command? | An omitted `--test-level` inherits each org's default (gotcha 7). | One explicit test level per stage, identical in CI and by hand. |
+| Do coding agents have write access to the repository? | Agents commit faster than humans review (gotcha 12). | An agent policy set before access is granted, with the promotion gate as the human review point. |
+
+A configuration that answers these first keeps one artifact, the work item and its branch, as the record of what each org contains; doing it ad hoc leaves a second writer that the pipeline cannot see.
+
 ## Recommended Workflow
 
 1. **Establish the product and its constraints.** Managed package or
-   next-generation, and — for next-generation — confirm the edition and region
+   Lifecycle Center, and — for Lifecycle Center — confirm the edition and region
    are eligible before any migration analysis.
 2. **Make the work item the unit of promotion for everyone.** Admins reach it
    through the UI (or DX Inspector); developers check out the work item's branch
@@ -117,8 +143,9 @@ to put promotion behind CI. Because both the plugin and the commands are beta, p
 the plugin version in the CI image and pilot before depending on it.
 
 **Coding agents commit at machine speed.** The governance layer in
-next-generation DevOps Center covers agents as well as users; set the policy
-before granting write access, and keep the promotion gate as the point where a
+Lifecycle Center covers agents as well as users (UNVERIFIED (2026-10-20):
+help-article claim made under the next-generation name, not re-checked at
+Winter '27); set the policy before granting write access, and keep the promotion gate as the point where a
 human looks at the diff.
 
 ## Worked Examples (see `references/examples.md`)
@@ -131,7 +158,7 @@ human looks at the diff.
   the flow.
 - *Wrong vs right: testing on the promotion* — validate-then-quick, and the
   beta pipeline CLI commands.
-- *Deciding whether to move to next-generation DevOps Center* — blockers, not
+- *Deciding whether to move to Lifecycle Center* — blockers, not
   version numbers.
 
 ## Common Gotchas (see `references/gotchas.md`)
@@ -146,7 +173,7 @@ human looks at the diff.
 
 ## Top LLM Anti-Patterns (full list in `references/llm-anti-patterns.md`)
 
-- Answering about the managed package when the org is on next-generation.
+- Answering about the managed package when the org is on Lifecycle Center.
 - Recommending parallel git and DevOps Center workflows as a feature.
 - Improvising an emergency bypass with no reconciliation step.
 - Omitting `--test-level`.
@@ -165,6 +192,7 @@ human looks at the diff.
 
 - Next Generation DevOps Center — https://help.salesforce.com/s/articleView?id=platform.next_generation_devops_center.htm&type=5
 - Considerations to Set Up Next Generation DevOps Center — https://help.salesforce.com/s/articleView?id=platform.next_gen_devops_center_setup_considerations.htm&type=5
+- Metadata API Developer Guide (264), DevHubSettings — `api_meta.txt` L117302–L117346: Lifecycle Center naming, the managed package as "an older version", migration pref in developer preview
 - Install and Configure DevOps Center (Managed Package) — https://help.salesforce.com/s/articleView?id=platform.devops_center_setup.htm&type=5
 - Promote Work Items Through Your Pipeline — https://help.salesforce.com/s/articleView?id=platform.devops_center_work_items_promote.htm&type=5
 - Salesforce CLI Command Reference, `sf project deploy` — https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference_project_commands_unified.htm

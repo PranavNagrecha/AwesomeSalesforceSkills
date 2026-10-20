@@ -655,9 +655,23 @@ releases:
     - flow/flow-testing
     - flow/subflows-and-reusability
     - flow/record-triggered-flow-patterns
+    - devops/devops-center-advanced
+    - data/batch-data-cleanup-patterns
+    - data/bulk-api-patterns
+    - data/data-model-design-patterns
+    - data/sosl-search-result-limits
+    - integration/api-governance-and-rate-limits
+    - apex/async-apex
+    - apex/apex-transaction-finalizers
+    - apex/apex-execute-anonymous
   - id: R2-33
     title: flow-loop + flow-testing checkers exit 1 on WARN-only; PE flow $Record batch shape UNVERIFIED; DataWeave checker
       .resource-meta.xml detection
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-34
+    title: Checker contract drift in 4 scripts (async-apex, apex-transaction-finalizers, apex-execute-anonymous, devops-center-advanced)
     size: S
     owner_model: sonnet
     status: todo
@@ -919,5 +933,12 @@ inbox:
     still models $Record as a collection of events (docs say a flow receives a batch of up to 200, not how it is exposed)
     — ground or rewrite; integration/dataweave-for-apex checker no longer detects a stray .resource-meta.xml (static-resource
     anti-pattern) after the DataWeaveResource rewrite'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by reviewer G (R3-05 batch G), pre-existing: async-apex checker exits 1 on WARN-only and on an empty dir; apex-transaction-finalizers
+    exits 1 on empty dir, no --strict; apex-execute-anonymous exits 1 on findings, no --strict, no WARN on empty dir; devops-center-advanced
+    checker is a shape-only stub that ignores --manifest-dir and exits 0 on /nonexistent. Bring all four to the brief contract
+    (findings exit 0 unless --strict, missing path exit 1, empty dir WARN) with fixtures.'
   size: S
   slotted_into: 1.5.0

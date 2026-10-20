@@ -41,9 +41,9 @@ outputs:
   - "Data model anti-pattern findings with remediation steps"
   - "Completed data-model-design-patterns-template.md for the org"
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # Data Model Design Patterns

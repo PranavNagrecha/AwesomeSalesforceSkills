@@ -126,7 +126,7 @@ trigger AccountTrigger on Account (after update) {
 }
 ```
 
-**Why it happens:** LLMs generate per-record async dispatch. A synchronous transaction can enqueue up to 50 Queueables and an asynchronous one only 1 (Apex Developer Guide 262, Per-Transaction Apex Limits, L19573). Version 1.0.0 of this skill said the synchronous limit was 1; that was wrong. Per-record enqueues still fail: a 200-record trigger chunk can pass 50, and each job counts against the org's daily async executions.
+**Why it happens:** LLMs generate per-record async dispatch. A synchronous transaction can enqueue up to 50 Queueables and an asynchronous one only 1 (Apex Developer Guide 264, Per-Transaction Apex Limits, L19776; 262 L19573). Version 1.0.0 of this skill said the synchronous limit was 1; that was wrong. Per-record enqueues still fail: a 200-record trigger chunk can pass 50, and each job counts against the org's daily async executions.
 
 **Correct pattern:**
 
@@ -159,7 +159,7 @@ public void finish(Database.BatchableContext bc) {
 }
 ```
 
-**Why it happens:** LLMs chain batch jobs in `finish()` without considering that only 5 batch jobs can be queued or active (the rest wait in the flex queue with Status `Holding`, up to 100). If the flex queue already holds 100 jobs, `Database.executeBatch` throws a `LimitException` (Apex Developer Guide 262, "Holding Batch Jobs in the Apex Flex Queue").
+**Why it happens:** LLMs chain batch jobs in `finish()` without considering that only 5 batch jobs can be queued or active (the rest wait in the flex queue with Status `Holding`, up to 100). If the flex queue already holds 100 jobs, `Database.executeBatch` throws a `LimitException` (Apex Developer Guide 264, "Holding Batch Jobs in the Apex Flex Queue", L17439; Salesforce Platform Apex Limits L19983 to L19985).
 
 **Correct pattern:**
 
@@ -195,7 +195,7 @@ public static void processAllContacts() {
 }
 ```
 
-**Why it happens:** LLMs know that async Apex gets higher governor limits (200 SOQL queries, 12 MB heap, 60,000 ms CPU) and assume rows are unlimited too. The total number of records retrieved by SOQL is 50,000 in both synchronous and asynchronous Apex (Apex Developer Guide 262, Per-Transaction Apex Limits, L19546). Only a Batch `start()` returning `Database.getQueryLocator` reaches 50 million rows.
+**Why it happens:** LLMs know that async Apex gets higher governor limits (200 SOQL queries, 25 MB heap, 60,000 ms CPU; Apex Developer Guide 264, Execution Governors and Limits, L19747, L19780, L19782) and assume rows are unlimited too. The async heap was 12 MB through Summer '26; the raise to 25 MB is a Winter '27 release-level change for every org and class regardless of API version, not an API 68.0 versioned behaviour (264 L45118-45129), and for Winter '27 only a nonproduction org can keep the Summer '26 limits with `ApexSettings.enableEnforceSummer26ApexHeapLimit` (api_meta 264 L113855-113862). The total number of records retrieved by SOQL is 50,000 in both synchronous and asynchronous Apex (Apex Developer Guide 264 L19749; 262 L19546). Only a Batch `start()` returning `Database.getQueryLocator` reaches 50 million rows.
 
 **Correct pattern:**
 
@@ -232,7 +232,7 @@ global class NightlySync implements Schedulable {
 
 **Why it happens:** The model treats the scheduler as an async worker with async limits.
 
-**Correct pattern:** Synchronous limits apply to scheduled Apex, and synchronous callouts aren't supported from it (Apex Developer Guide 262, L19536 and "Apex Scheduler Notes and Best Practices"). Dispatch instead:
+**Correct pattern:** Synchronous limits apply to scheduled Apex, and synchronous callouts aren't supported from it (Apex Developer Guide 264, L19739 and "Apex Scheduler Notes and Best Practices", L17179; 262 L19536). Dispatch instead:
 
 ```apex
 global class NightlySync implements Schedulable {

@@ -55,7 +55,7 @@ Read for this revision (2026-10-19):
 - Apex Developer Guide (`salesforce_apex_developer_guide.txt`): cascade deletes succeed only if each child can be deleted (L8236-8240); Recycle Bin for 15 days and undelete (L8259-8262); default indexes and when a custom index isn't used (L9641-9663).
 - Apex Reference Guide (`salesforce_apex_reference_guide.txt`): `emptyRecycleBin` takes the top-level Id for cascade-deleted records (L206927-206931).
 - Best Practices for Deployments with Large Data Volumes (`salesforce_large_data_volumes_bp.txt`): custom index thresholds (L463-471); unindexable types and deterministic formulas (L409, L483-484); skinny tables (L329-385).
-- Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): a custom object allows up to 40 relationships (L1131-1134); a query operation has 2 minutes to execute (L1101-1104).
+- Salesforce Developer Limits and Allocations Quick Reference (`salesforce_app_limits_cheatsheet.txt`): a custom object allows up to 40 relationships (264 L687-691); a query operation has 2 minutes to execute (264 L665-669). Values unchanged from the 262 edition (L1131-1134, L1101-1104).
 - REST API Developer Guide (`api_rest.txt`): upsert key matched multiple times returns a 300 error (L2977); `explain` plans (L17784-17867).
 
 Listed in the original version and not re-read (help.salesforce.com cannot be fetched); claims that rested only on them (lookup Cascade enablement and its sharing behaviour, the 25 External ID limit, field-history behaviour on lookup deletes) were removed or turned into questions:
