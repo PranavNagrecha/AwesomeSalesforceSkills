@@ -373,6 +373,13 @@ releases:
     size: M
     owner_model: opus
     status: todo
+  - id: R2-18
+    title: 'Winter ''27 (264 / API 68.0) corpus: fetch, diff vs 262, delta list for writers, re-ground future waves'
+    size: M
+    owner_model: sonnet
+    status: todo
+    notes: 'Moved from 1.6.0 by the orchestrator: the 1.5.0 accuracy wave (R2-04) must not be grounded on a superseded release.
+      Fetch into scratchpad/corpus264; keep 262 for comparison.'
   - id: R2-04
     title: 'Accuracy wave (continues R1): full rewrites with claims audit on the next 20 lowest data/devops/integration/security
       skills + adversarial review per batch'
@@ -466,11 +473,6 @@ releases:
       to record-triggered-flow-patterns'
     size: M
     owner_model: opus
-    status: todo
-  - id: R3-04
-    title: 'Winter ''27 (264 / API 68.0) corpus: fetch, diff vs 262, delta list for writers, re-ground future waves'
-    size: M
-    owner_model: sonnet
     status: todo
   - id: R3-02
     title: Release 1.6.0 / 0.5.3 — content set by R3-01
@@ -568,7 +570,7 @@ inbox:
     api_meta L71100-71107). Fix with an upgrade-only rule (raise to High on Sev1/Premier, never downgrade) and add a Severity
     input to the form contract; add the ''defaulted-on-create field makes IsNull entry guards dead'' gotcha to flow/record-triggered-flow-patterns'
   size: M
-  slotted_into: 1.6.0
+  slotted_into: 1.5.0 (R2-18, moved ahead of the accuracy wave)
 - date: 2026-10-19
   ask: 'Library contradictions found by agent proof R2-01-3 (verified verbatim by the grader): flow/record-triggered-flow-patterns
     L89, flow/flow-deployment-and-packaging L77, flow/flow-transactional-boundaries L216 contradict each other / the Metadata
@@ -582,4 +584,4 @@ inbox:
     must consult, update standards/skill-writer-brief.md and the docs-fetching memory, and queue skills whose claims the delta
     contradicts'
   size: M
-  slotted_into: 1.6.0
+  slotted_into: 1.5.0 (R2-18, moved ahead of the accuracy wave)
