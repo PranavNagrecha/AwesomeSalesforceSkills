@@ -120,9 +120,10 @@
     "f58564b983a84e7bbec8",
     "f80deaf826f5e2cdd2a0",
     "f9e7cb4528398ee92e98",
+    "fb4c19e7dcf69d86ef5a",
     "fbabf1dac5d8adde6f8c"
   ],
-  "content_hash": "52c74b5cbd0074db758135e61b3e28e4e292203286e75241a8430f022e54ffa2",
+  "content_hash": "d7e8ae186461ef36e6b56c3598617935142a47eb2fae2b3c4523b39349ef1485",
   "dependencies": [],
   "description": "Use when designing, reviewing, or debugging Apex execution context, sharing keywords, CRUD/FLS enforcement, system-vs-user mode behavior, or secure write patterns. Triggers: 'with sharing', 'inherited sharing', 'AuraEnabled security', 'what execution context does this class run in', 'system mode vs user mode'. NOT for remediating a CRUD/FLS finding \u2014 use apex/apex-stripinaccessible-and-fls-enforcement for stripInaccessible, AccessType, SObjectAccessDecision and WITH USER_MODE mechanics. NOT for SOQL injection review alone \u2014 use apex/soql-security.",
   "file_location": "skills/apex/apex-security-patterns",

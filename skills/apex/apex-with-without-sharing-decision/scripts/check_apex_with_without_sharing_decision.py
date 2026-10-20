@@ -23,7 +23,9 @@ issues:
         usually need system context; `with sharing` here may silently
         under-process records.
 
-  WARN: `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` inside a class
+  WARN: `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` (which also covers
+        `Database.<op>(records, AccessLevel.SYSTEM_MODE)`) / `<dml> as system`
+        DML inside a class
         whose own declaration is `with sharing` (or bare at apiVersion
         67.0+, which is `with sharing` unless the class extends a parent,
         whose mode it then adopts). System mode ignores FLS and
@@ -60,6 +62,11 @@ EXEC_BATCH_SELF_RE = re.compile(r"Database\.executeBatch\s*\(\s*this\b", re.IGNO
 REASON_COMMENT_RE = re.compile(r"//\s*reason\s*:", re.IGNORECASE)
 EXTENDS_RE = re.compile(r"\bextends\b", re.IGNORECASE)
 SYSTEM_MODE_RE = re.compile(r"\bWITH\s+SYSTEM_MODE\b|\bAccessLevel\s*\.\s*SYSTEM_MODE\b", re.IGNORECASE)
+# DML keyword form: `insert as system records;`. Matched on the string-blanked
+# variant so a literal containing the words does not warn.
+AS_SYSTEM_DML_RE = re.compile(
+    r"\b(?:insert|update|upsert|delete|undelete|merge)\s+as\s+system\b", re.IGNORECASE
+)
 
 # The bare-class default inverted in API 67.0 (Summer '26): below it a class
 # with no sharing keyword ran effectively `without sharing`; at and above it
@@ -169,6 +176,7 @@ def system_mode_in_with_sharing(
                 kw = "extends"
             pending = (decl.group(2), kw)
         starts = {m.start() for m in SYSTEM_MODE_RE.finditer(with_strings[idx])}
+        starts |= {m.start() for m in AS_SYSTEM_DML_RE.finditer(line)}
         for pos, ch in enumerate(line):
             if pos in starts and stack:
                 name, keyword, _ = stack[-1]
@@ -274,7 +282,7 @@ def check_file(path: Path) -> Tuple[List[str], List[str], List[str]]:
     # follow the class keyword, so this does not reach hidden records.
     for line_no, class_name, keyword in system_mode_in_with_sharing(lines, bare_is_with_sharing):
         warn.append(
-            f"{path}:{line_no}: WARN SYSTEM_MODE inside class `{class_name}` "
+            f"{path}:{line_no}: WARN system-mode statement inside class `{class_name}` "
             f"({keyword}). System mode ignores FLS and object permissions only; "
             f"record sharing still follows the class keyword, so this statement "
             f"does NOT return rows the user cannot see. If it must, move it into a "

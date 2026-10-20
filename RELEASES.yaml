@@ -458,7 +458,11 @@ releases:
     title: 'Sharing checker: cover ''as system'' DML; fix inherited-sharing-from-batch nuance in apex-security-patterns'
     size: S
     owner_model: sonnet
-    status: running
+    status: done
+    evidence: 'sharing checker AS_SYSTEM_DML_RE (insert/update/upsert/delete/undelete/merge as system) on the masked line,
+      innermost-class aware; fixtures a WARN/strict 1, b/c/d/e none, own Apex only the deliberate anti-pattern; apex-security-patterns
+      anti-pattern 3 corrected: inherited sharing runs without sharing only from an established without-sharing caller (apexdev264
+      L4889) and at 67.0+ only for system-mode statements; verify no FAIL; validate 0 errors'
   - id: R2-14
     title: 'Approval invalidation on later discount change: gotcha in admin/approval-processes + northwind-sales build fix'
     size: S
@@ -468,7 +472,7 @@ releases:
     title: 'access-path-explainer: record access as H0; submitter eligibility check before an approval remedy; AdminOnly wording'
     size: S
     owner_model: sonnet
-    status: todo
+    status: running
   - id: R2-16
     title: Reconcile three flow skills' contradictory before-save statements (record-triggered-flow-patterns L89, flow-deployment-and-packaging
       L77, flow-transactional-boundaries L216)

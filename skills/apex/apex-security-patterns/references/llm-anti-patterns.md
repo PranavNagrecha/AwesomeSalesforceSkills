@@ -78,7 +78,7 @@ public inherited sharing class RecordService {
 }
 ```
 
-**Why it happens:** LLMs recommend `inherited sharing` as a safe default. But `inherited sharing` inherits from the caller. If the caller is a trigger handler, Batch Apex, or a `without sharing` class, the service silently runs without sharing — which is the opposite of what the developer intended.
+**Why it happens:** LLMs recommend `inherited sharing` as a safe default. But `inherited sharing` inherits from the caller. It runs `without sharing` only when called from an already-established `without sharing` context (Apex Developer Guide L4889); used as an entry point (`@AuraEnabled`, REST, Visualforce, async such as Batch Apex) it runs `with sharing` (L4881-4888, L4961). So "silently runs without sharing" holds only when a `without sharing` class calls it, and at API 67.0+ only for statements that explicitly use system mode (`WITH SYSTEM_MODE`, `as system`, `AccessLevel.SYSTEM_MODE`): mode-less SOQL/DML defaults to user mode there, which still applies the user's sharing rules (L12111-12112, L12116-12118). Either way the sharing behavior depends on the caller, the opposite of what the developer intended.
 
 **Correct pattern:**
 
