@@ -1,7 +1,7 @@
 ---
 id: orchestrator
 class: build
-version: 2.3.0
+version: 2.4.0
 status: stable
 requires_org: false
 modes: [single]
@@ -98,7 +98,10 @@ Then `python3 scripts/release_plan.py set-status <ID> running` if the item is no
 When a writer reports, spot-check two of its cites yourself, commit its work in the worktree with `--no-verify`
 (`wip(...)`, unreviewed), and dispatch an **Opus** adversarial reviewer on that worktree with the path of
 `standards/skill-writer-brief.md` and the instruction to follow its `## Reviewer brief` section. Pass the
-writer's "contradictions found but not fixed" list verbatim. Never merge a writer's batch that no reviewer has
+writer's "contradictions found but not fixed" list verbatim, and run `scripts/audit_sweep.py --base <merge commit>
+--skills ... --corpus ... --cwd <worktree>` on the worktree yourself; its LEFTOVER/MARKER counts go into the reviewer's brief
+and, after review, into the ledger's defect classes. A trend verdict of NOT FALLING means: stop dispatching writers,
+find the dominant defect class in the last report, and turn it into a script or a brief sentence before the next batch. Never merge a writer's batch that no reviewer has
 read: every batch of R3-05 had reviewer-found defects.
 
 ### Step 3 — Merge and verify, one writer at a time
