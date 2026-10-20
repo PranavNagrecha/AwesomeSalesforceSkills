@@ -598,6 +598,11 @@ releases:
     size: S
     owner_model: sonnet
     status: todo
+  - id: R2-31
+    title: 'limits-and-scalability-planning: two ungrounded limit claims (managed-package SOQL sharing; 50M/24h batch)'
+    size: S
+    owner_model: opus
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -841,5 +846,12 @@ inbox:
     is applied to the whole comment block (a ''does not need'' elsewhere suppresses a ''runs in system mode'' claim) and the
     claim regex cannot cross a '' * '' continuation line — both tier2-webhook stale comments were missed. Fix per-sentence
     matching + multi-line comments; fixtures'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-19
+  ask: 'Found by scale-out writer C in architect/limits-and-scalability-planning: Gotcha 2 says the 100-SOQL limit is shared
+    with managed packages (contradicts the certified-package section, apexdev264 ~L19925); Gotcha 5 + the batch table state
+    a ''50 million records per 24 hours'' Batch Apex limit that the corpus does not have (only 50M QueryLocator rows per query,
+    L20059/L17902). Needs a full-mode claims audit of that skill'
   size: S
   slotted_into: 1.5.0
