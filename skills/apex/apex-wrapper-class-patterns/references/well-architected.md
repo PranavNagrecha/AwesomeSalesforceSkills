@@ -18,7 +18,7 @@
 - `Comparator<T>` isolates sort logic from the data class, so a new order is a new comparator and the wrapper stays unchanged. The cost is one more class per order. UNVERIFIED (2026-10-03): the API version that introduced `Comparator`.
 
 **Heap usage:**
-- Wrapper lists live entirely in heap memory. Very large lists of wrappers with many fields can approach the total heap limit: 6 MB synchronous, 12 MB asynchronous (Apex Developer Guide 262, Per-Transaction Apex Limits, pdftotext line 19577). For large datasets, return only the fields needed by the consumer and consider pagination rather than returning the full dataset.
+- Wrapper lists live entirely in heap memory. Very large lists of wrappers with many fields can approach the total heap limit: 10 MB synchronous, 25 MB asynchronous (Apex Developer Guide 264, Per-Transaction Apex Limits, pdftotext line 19780), and the overrun is an uncatchable `System.LimitException` (264 L19853). The rise is release-level in Winter '27 — it applies to every class whatever its API version (not in the API 68.0 versioned list, 264 L45116-45131). Summer '26 was 6 MB / 12 MB (262 L19577); in Winter '27 only, a nonproduction org can opt back to it with `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855-113862). For large datasets, return only the fields needed by the consumer and consider pagination rather than returning the full dataset.
 
 ## Anti-Patterns
 
@@ -31,6 +31,7 @@
 ## Official Sources Used
 
 - Apex Developer Guide, Summer '26 (262): "Inner classes" and "Using Static Methods and Variables" (no implicit outer-instance pointer, no statics), "Using the with sharing, without sharing, and inherited sharing Keywords" (Other Implementation Details, Versioned Behavior Changes for API 67.0), "AuraEnabled Annotation," "JsonAccess Annotation," "List Sorting," "Lists of Custom Types and Sorting," "Custom Sort Order of sObjects," "Per-Transaction Apex Limits" (heap, SOQL). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
+- Apex Developer Guide, Winter '27 (264): "Per-Transaction Apex Limits" heap row 10 MB / 25 MB (L19780) and footnote 4 (L19853); Metadata API 264 `ApexSettings.enableEnforceSummer26ApexHeapLimit` (L113855-113862) — supports the Heap usage note above. https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
 - Apex Reference Guide, Summer '26 (262): "Comparable Interface," "Comparator Interface." https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_reference_guide.pdf
 - Lightning Aura Components Developer Guide, Summer '26 (262): "AuraEnabled Annotation," "Returning Data from an Apex Server-Side Controller," "Supported Apex Data Types," custom Apex class parameter example. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/lightning.pdf
 - Lightning Web Components Developer Guide, "Expose Apex Methods to Lightning Web Components" (fetched 2026-10-03): https://developer.salesforce.com/docs/platform/lwc/guide/apex-expose-method.html

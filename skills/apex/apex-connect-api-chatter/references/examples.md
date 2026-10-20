@@ -73,46 +73,44 @@ public static void postReportToAccount(Id accountId, Blob pdfBlob, String fileNa
 
 ## Example 3: Unit Testing A ConnectApi Call
 
-**Context:** You need to unit-test code that calls `ConnectApi.ChatterFeeds.postFeedElement` without actually posting to a real feed.
+**Context:** You need to test code that calls `ConnectApi.ChatterFeeds.postFeedElement`. Most Connect in Apex methods fail in tests unless the method is marked `@IsTest(SeeAllData=true)`; a few need their output registered with a `setTest*` method, as each method's Usage section states (Apex Developer Guide 264 L26331-26335). There is no documented `Test.setMock` mock for ConnectApi.
 
-**Solution:**
+**Solution:** split the service so payload assembly is a separate method (`buildEscalationInput`, returning the `FeedItemInput` that Example 1 builds inline), test that in isolation, and keep one `SeeAllData=true` test for the real post.
 
 ```apex
 @IsTest
 private class EscalationFeedServiceTest {
-    public class MockConnectApi extends ConnectApi.ConnectApi {
-        public ConnectApi.FeedItemInput capturedInput;
-
-        public override ConnectApi.FeedElement postFeedElement(
-            String communityId, ConnectApi.FeedElementInput input) {
-            capturedInput = (ConnectApi.FeedItemInput) input;
-            return null; // simplified
-        }
-    }
-
     @IsTest
-    static void postsMentionSegment() {
-        MockConnectApi mock = new MockConnectApi();
-        Test.setMock(ConnectApi.ConnectApi.class, mock);
+    static void buildsMentionSegment() {
+        Id caseId = '500000000000001'; // 15-char Case Id; no DML needed
+        Id ownerId = UserInfo.getUserId();
 
-        User u = [SELECT Id FROM User WHERE IsActive = true LIMIT 1];
-        Case c = new Case(Subject = 'Test'); insert c;
+        ConnectApi.FeedItemInput input =
+            EscalationFeedService.buildEscalationInput(caseId, ownerId, 'SLA breach');
 
-        Test.startTest();
-        EscalationFeedService.postEscalationMention(c.Id, u.Id, 'SLA breach');
-        Test.stopTest();
-
-        System.assertNotEquals(null, mock.capturedInput, 'ConnectApi was not called');
         Boolean hasMention = false;
-        for (ConnectApi.MessageSegmentInput seg : mock.capturedInput.body.messageSegments) {
+        for (ConnectApi.MessageSegmentInput seg : input.body.messageSegments) {
             if (seg instanceof ConnectApi.MentionSegmentInput) hasMention = true;
         }
-        System.assert(hasMention, 'Post missing mention segment');
+        Assert.isTrue(hasMention, 'Post missing mention segment');
+        Assert.areEqual(caseId, input.subjectId);
+    }
+
+    @IsTest(SeeAllData=true)
+    static void postsToCaseFeed() {
+        Case c = new Case(Subject = 'Test');
+        insert c;
+
+        Test.startTest();
+        EscalationFeedService.postEscalationMention(c.Id, UserInfo.getUserId(), 'SLA breach');
+        Test.stopTest();
+
+        Assert.areEqual(1, [SELECT COUNT() FROM FeedItem WHERE ParentId = :c.Id]);
     }
 }
 ```
 
-**Why it works:** `Test.setMock` intercepts `ConnectApi` calls at runtime. The test asserts the mention was assembled correctly without requiring Chatter permissions or posting real content.
+**Why it works:** the isolated test needs no Chatter call, so it runs without org data and asserts the mention was assembled. The `SeeAllData=true` test exercises the real post under the annotation most Connect in Apex methods require. UNVERIFIED (2026-10-20): that a `FeedItem` row is queryable in the same test transaction after `postFeedElement` — not stated in Apex Developer Guide 264; drop the final assertion if it does not hold in your org.
 
 ---
 

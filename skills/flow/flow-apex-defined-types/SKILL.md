@@ -28,9 +28,9 @@ outputs:
 dependencies:
   - flow/flow-http-callout-action
   - flow/flow-invocable-from-apex
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Flow Apex-Defined Types
@@ -50,6 +50,20 @@ updated: 2026-08-14
   lighter.
 - The structure changes frequently — prefer JSON string + targeted parse
   to avoid churn on the Apex class.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which fields does the flow actually read or set? | Mirroring the upstream schema turns every field into a commitment (gotcha 8), and a field without `@AuraEnabled` is silently invisible (gotcha 3). | A minimal field list, each one annotated. |
+| Is the source shape nested? | Inner classes are not supported as Apex-defined types (gotcha 1). | One top-level class per nested level. |
+| Does the source carry maps or key-value pairs? | There is no `Map` type, and a list of lists is not supported as a field (gotchas 2 and 7). | `List<KeyValue>` or named fields resolved in Apex. |
+| Does the class need constructors, getters or computed values? | Adding any constructor removes the required no-argument one, and methods and getters are not reflected (gotchas 4 and 5). | A data-only class, with logic kept in a separate service. |
+| Who may rename or remove fields once flows use the class? | A rename breaks the flow at run time, not at deploy (gotcha 6). | A change rule and a search of flow metadata before any field change. |
+| Is the class also an invocable input or output? | `@InvocableVariable` and `@AuraEnabled` are not interchangeable (gotcha 9). | Both annotations placed where each surface needs them. |
+| How large do the collections get, and does the flow pause? | Heap is 10 MB sync / 25 MB async in Winter '27, and screen and paused flows carry the state (gotcha 12). | Identifiers carried across pauses and records re-fetched on resume. |
+
+Answering these first gives a small, stable type that Flow can see in full, where modelling it directly from the source JSON ships a class that breaks flows on its first change.
 
 ## Contract
 

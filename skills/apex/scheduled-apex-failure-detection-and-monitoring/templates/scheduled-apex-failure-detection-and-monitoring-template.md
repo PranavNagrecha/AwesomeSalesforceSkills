@@ -10,7 +10,7 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Record the answers to the Questions to Ask Before Configuring table in SKILL.md here.
 
 - Setting / configuration:
 - Known constraints:
@@ -18,15 +18,20 @@ TODO: Record the answers to the Before Starting questions from SKILL.md here.
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Name the detection layers chosen from SKILL.md Core Concepts (try-catch logging, `BatchApexErrorEvent`, `AsyncApexJob` watcher) and the job shape each one covers.
 
 ## Checklist
 
-Copy the review checklist from SKILL.md and tick items as you complete them.
+Tick each Recommended Workflow step from SKILL.md as you complete it.
 
-- [ ] TODO
-- [ ] TODO
+- [ ] Scheduled jobs inventoried and classified from `CronTrigger`
+- [ ] Every `execute()` body wrapped in try-catch with structured logging
+- [ ] `Database.RaisesPlatformEvents` on every business-critical batch class
+- [ ] `AsyncApexJob` watcher covers Failed/Aborted, stuck Queued/Holding, and Completed with `NumberOfErrors > 0`
+- [ ] Notification channel chosen and idempotent
+- [ ] Runbook linked from every alert payload
+- [ ] Controlled failure injected in a sandbox and every alert path confirmed
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Record any deviations from the standard pattern and why.

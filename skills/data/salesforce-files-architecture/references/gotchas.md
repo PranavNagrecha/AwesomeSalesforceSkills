@@ -65,16 +65,27 @@ Connect.
 ## Gotcha 5: Heap limits constrain bulk file operations in Apex
 
 **What happens.** Batch class loading `VersionData` for many files
-hits a heap-limit governor. Per-execution heap is 12 MB sync, 36 MB
-async.
+hits a heap-limit governor. Per-transaction heap is 10 MB sync,
+25 MB async — Winter '27 values (Apex Developer Guide 264 L19780),
+a release-level rise for every org whatever the class API version.
+Summer '26 was 6 MB / 12 MB; the earlier "12 MB / 36 MB" here matched
+neither release. In Winter '27 only, a nonproduction org can opt back
+to 6/12 MB with `ApexSettings.enableEnforceSummer26ApexHeapLimit`
+(Metadata API 264 L113855-113862). The overrun is an uncatchable
+`System.LimitException` (L19853).
 
 **When it occurs.** Migration jobs, file export jobs, Apex that
 processes file content in bulk.
 
 **How to avoid.** Use small batch sizes (1–5 records per execution)
-when `VersionData` is loaded. Stream content where possible
-(`HttpRequest.setBodyAsBlob`) instead of materializing the whole
-blob.
+when `VersionData` is loaded, and check `ContentSize` before
+loading. Sending the file out by callout does not avoid the heap:
+`HttpRequest.setBodyAsBlob` holds the whole body in memory, the HTTP
+request and response sizes count toward total heap (Apex Developer
+Guide 264 L20062), and a callout request or response is capped at
+6 MB synchronous / 12 MB asynchronous (L20048-20049). Files larger
+than that must leave Salesforce by a non-Apex path (for example the
+REST API from the external system).
 
 ---
 
@@ -126,7 +137,13 @@ expected upload volume * average file size.
 **What happens.** A `ContentDocument` is deleted (cascading the
 versions), then restored from Recycle Bin. The restored document
 gets a different `Id`, breaking any external references that
-captured the original Id.
+captured the original Id. UNVERIFIED (2026-10-20): the Object
+Reference 264 lists `undelete()` among `ContentDocument`'s supported
+calls (L76748) and says deleting a document deletes all its versions
+(L77099), but says nothing about the Id changing on restore; the Apex
+Developer Guide 264 describes undelete as restoring the record from
+the Recycle Bin (L8409-8411). Test the restore in a sandbox before
+relying on either outcome.
 
 **When it occurs.** Any "delete then undelete" workflow on Files.
 

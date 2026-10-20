@@ -158,9 +158,14 @@ child). On a small source (3 levels populated), the clone runs in
 20+ records each), the clone throws `System.LimitException: Apex
 heap size too large` or `System.LimitException: Apex CPU time limit
 exceeded` part-way through `JSON.serialize()`. Heap usage during
-serialize can briefly hit 6MB on a populated graph, and the
-serialize/deserialize round-trip is single-transaction so the limit
-is the full 6MB synchronous / 12MB async heap.
+serialize can briefly reach the synchronous ceiling on a populated
+graph, and the serialize/deserialize round-trip is single-transaction
+so the limit is the full 10MB synchronous / 25MB async heap — the
+Winter '27 values (Apex Developer Guide 264 L19780), a release-level
+rise for every org whatever the class API version. Summer '26 was
+6MB / 12MB; in Winter '27 only, a nonproduction org can opt back to
+it with `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata
+API 264 L113855-113862).
 
 **When it occurs:** Any JSON-based deep clone where the source graph
 is meaningfully deep AND wide. The serializer doesn't stream — it
@@ -169,13 +174,16 @@ mirror in-memory graph, so peak memory is roughly 2× the source
 graph's size in addition to the original SOQL result. CPU spends
 linearly with the number of fields serialized. Empirically the
 pattern is safe for ~1k total records across all levels in a sync
-transaction; beyond that you need to split.
+transaction; beyond that you need to split. UNVERIFIED (2026-10-20):
+the ~1k figure was observed against the Summer '26 6MB limit and has
+not been re-measured at 10MB — size by `Limits.getHeapSize()`, not by
+record count.
 
 **How to avoid:** For graphs that flirt with the limits, abandon JSON
 round-trip and use per-level explicit cloning with
 `Map<Id, Id>` translation tables (one per child relationship) and
 incremental insert. Or move the clone to Queueable / Batch where the
-12MB heap and 60-second CPU limits buy headroom. Watch heap with
+25MB heap and 60-second CPU limits buy headroom. Watch heap with
 `Limits.getHeapSize()` / `Limits.getLimitHeapSize()` around the
 serialize call to catch this in dev before production traffic does.
 For one-shot admin tools cloning at most a handful of records, the

@@ -5,7 +5,9 @@ Flags high-signal mistakes:
 
   1. FeedItem DML with `@` literal in Body (literal mention, won't notify).
   2. Hardcoded Network Id literal (`0DB...`) as ConnectApi argument.
-  3. ConnectApi call in a @IsTest method with no `Test.setMock` earlier.
+  3. ConnectApi call in a @IsTest class with no `SeeAllData=true` (most Connect in Apex
+     methods require it; Apex Developer Guide 264 L26331-26335). A `Test.setMock` match is
+     still accepted for backward compatibility, though no ConnectApi mock class is documented.
   4. ConnectApi call with no surrounding `try/catch (ConnectApi.ConnectApiException)`.
   5. ConnectApi call inside a `for` loop inside a trigger.
   6. `SeeAllData=true` near a ConnectApi call.
@@ -167,8 +169,9 @@ def check_file(path: Path) -> list[dict]:
                     "file": str(path),
                     "line": line_of(text, m.start()),
                     "message": (
-                        "ConnectApi call in a test class with no Test.setMock(ConnectApi.ConnectApi.class, ...). "
-                        "The test will throw UnsupportedOperationException."
+                        "ConnectApi call in a test class without @IsTest(SeeAllData=true). Most Connect in Apex "
+                        "methods fail in tests without it; some need a setTest* registration instead "
+                        "(Apex Developer Guide 264 L26331-26335)."
                     ),
                 }
             )
@@ -181,7 +184,8 @@ def check_file(path: Path) -> list[dict]:
                     "file": str(path),
                     "line": line_of(text, m.start()),
                     "message": (
-                        "ConnectApi test uses SeeAllData=true. Prefer Test.setMock for deterministic tests."
+                        "ConnectApi test uses SeeAllData=true, which most Connect in Apex methods require. "
+                        "Keep it to the tests that make the real call; test payload assembly in isolation."
                     ),
                 }
             )

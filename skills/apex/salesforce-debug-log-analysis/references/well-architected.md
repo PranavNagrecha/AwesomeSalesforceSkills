@@ -34,7 +34,7 @@ Tag findings as Reliability when:
 
 1. **Blaming the first trigger logged** — it is almost never the writer. Classify the mechanism (Apex direct, Flow assignment, rollup, formula) before accusing any component.
 2. **Treating managed-package internals as debuggable** — code inside `ENTERING_MANAGED_PKG` is deliberately opaque. Use known package signatures from `managed-packages.md` and route unresolved behavior to the package vendor.
-3. **Drawing conclusions from a truncated log** — a log at exactly 20 MB with no `EXECUTION_FINISHED` is truncated. Analyzing it as if complete leads to wrong conclusions about which events ran last.
+3. **Drawing conclusions from a truncated log** — a log at the 20 MB cap has had older lines removed, possibly from anywhere in it (Apex Developer Guide 264 L38602-38604). Analyzing it as if complete leads to wrong conclusions about which events ran, and in what order.
 4. **Ignoring `What the log cannot tell you`** — every report should explicitly list the questions the log cannot answer, with concrete next steps (impersonate user, query CronTrigger, open field metadata). Silence on limits is dishonest.
 5. **Loading all references up-front** — the reference folder has 12+ category guides. Preloading them wastes attention. Classify the question first (Step 3) and load only the matching reference.
 6. **Summing `DML_BEGIN.Rows`** — those values are per-statement, not cumulative, and bulk operations log multiple statements. Use `TESTING_LIMITS` or `LIMIT_USAGE_FOR_NS` for governor-limit accounting.
@@ -42,6 +42,7 @@ Tag findings as Reliability when:
 ## Official Sources Used
 
 - Apex Developer Guide — [Debug Log](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_debugging_debug_log.htm), [Log Event Reference](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_log_events_reference.htm)
+- Apex Developer Guide, Winter '27 (264) — Debug Log Limits (L38602-38607: 20 MB per log trimmed by removing older lines from any location; system logs kept 24 hours, monitoring logs seven days; over 1,000 MB in 15 minutes disables trace flags), sample `CUMULATIVE_LIMIT_USAGE` block (L38759-38774), and the "Total heap size" row 10 MB sync / 25 MB async (L19780) with the uncatchable `System.LimitException` footnote (L19853) and scheduled Apex on synchronous limits (L19739); Metadata API 264 `ApexSettings.enableEnforceSummer26ApexHeapLimit` (L113855-113862)
 - Apex Reference Guide — [System.Limits](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_limits.htm)
 - Apex Reference Guide — [Exception Class and Built-In Exceptions](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm) — used to confirm the exception class names quoted in log signatures; there is no `MixedDmlException` type, so mixed-DML log lines read `System.DmlException: … MIXED_DML_OPERATION`
 - SOAP API Developer Guide — [StatusCode enumeration](https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_concepts_core_data_objects.htm) — used to verify status-code strings quoted in the error-code reference

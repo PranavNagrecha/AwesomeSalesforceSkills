@@ -2,7 +2,7 @@
 
 ## Relevant Pillars
 
-- **Reliability** — This is the primary pillar. Reliability requires the system to *know* when a critical async job has failed within a bounded time. Default platform behavior (uncaught exceptions in async go to debug log only, no email, no record) violates this directly. The skill's three layered mechanisms (in-job try-catch + log, `BatchApexErrorEvent` subscriber, `AsyncApexJob` watcher) are the reliability instrumentation that makes failures observable.
+- **Reliability** — This is the primary pillar. Reliability requires the system to *know* when a critical async job has failed within a bounded time. Default platform behavior (uncaught async exceptions land in the debug log and `ExtendedStatus`, and the unhandled-exception email goes to the class's last modifier, deduplicated and rate-capped — Apex Developer Guide 264 L39995-40009) violates this directly. The skill's three layered mechanisms (in-job try-catch + log, `BatchApexErrorEvent` subscriber, `AsyncApexJob` watcher) are the reliability instrumentation that makes failures observable.
 - **Operational Excellence** — Operational Excellence requires the team to be able to act on signals. A failure-detection design without a runbook reference, deduplication, and a clear notification channel produces noise and operator fatigue, which is the opposite of operational excellence. The skill's workflow step on "deduplicate by `AsyncApexJobId`" and "include a runbook link in every alert" is the operational-excellence half of the work.
 - **Performance** — Indirect. A watcher schedule is itself code that runs every 15 minutes and consumes async governor budget. Designs should keep the watcher lean (Gotcha 7), but performance is not the dominant concern in this domain.
 - **Scalability** — Indirect. As the org grows, `AsyncApexJob` query windows must stay narrow (use `CompletedDate >= :recent` and `LIMIT N`) so the watcher continues to run within governor limits.
@@ -27,6 +27,9 @@
 ## Official Sources Used
 
 - Apex Developer Guide — `BatchApexErrorEvent`: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch_interface_BatchApexErrorEvent.htm
+- Apex Developer Guide, Winter '27 (264) — Unhandled Exception Emails: recipients are the class's `LastModifiedBy` developer plus Apex Exception Email addresses, duplicates suppressed for sync and async code, 10 emails per hour per application server (L39995-40009); supports Gotcha 1, Concept 1 and anti-pattern 1
+- Apex Developer Guide, Winter '27 (264) — Batch Apex: 5 queued-or-active batch jobs (L17216, L17887), up to 100 `Holding` jobs in the flex queue and `executeBatch` throwing `LimitException` when it is full (L17436-17439, L17888), and `LimitException` uncatchable with catch/finally skipped (L40117-40123); supports Gotcha 4 and Example 1
+- Apex Developer Guide, Winter '27 (264) — Execution Governors and Limits: synchronous limits apply to scheduled Apex (L19739) and "Total heap size" 10 MB sync / 25 MB async (L19780), supporting Gotcha 7; Metadata API 264 `ApexSettings.enableEnforceSummer26ApexHeapLimit` (L113855-113862) for the Winter '27-only nonproduction opt-out
 - Apex Developer Guide — `Database.RaisesPlatformEvents` interface: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_async_async_database_raises_platform_events.htm
 - Apex Reference Guide — `AsyncApexJob` class: https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_async_async_apex_job.htm
 - SOAP API Object Reference — `AsyncApexJob` standard object: https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_asyncapexjob.htm

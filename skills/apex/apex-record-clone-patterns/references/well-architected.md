@@ -41,8 +41,10 @@ preserve audit history, and how the clone is traced after the fact.
   troubleshooting and data lineage audits.
 - **Performance** — The JSON serialize/deserialize deep-clone
   pattern peaks at roughly 2× the source graph size in heap memory
-  during the round-trip. For a synchronous transaction (6MB heap),
-  source graphs above ~1k total records hit `LimitException`. The
+  during the round-trip. For a synchronous transaction (10MB heap in
+  Winter '27, Apex Developer Guide 264 L19780; 6MB in Summer '26),
+  source graphs above ~1k total records hit `LimitException` at the
+  old 6MB limit (not re-measured at 10MB). The
   alternative (per-level explicit cloning with `Map<Id, Id>` lookup
   translation) trades code complexity for headroom — a real
   architectural tradeoff that depends on how big and how deep the
@@ -58,7 +60,7 @@ primitive" to "custom service class":
 |---|---|---|
 | `src.clone()` shallow | Single record, no children, no audit-history preservation | Misses child records; doesn't preserve audit |
 | `src.clone(false, false, false, true)` autonumber-preserve | Test data builder needing same autonumber, migration row-mirroring | Same shallow limits; uniqueness collisions if downstream code keys on autonumber |
-| `JSON.serialize` + `JSON.deserialize` | Parent + ≤1k records of children, one-shot admin actions | Heap-bound (~6MB sync); CPU-bound; relationship rewriting still manual |
+| `JSON.serialize` + `JSON.deserialize` | Parent + ≤1k records of children, one-shot admin actions | Heap-bound (10MB sync in Winter '27, 6MB before); CPU-bound; relationship rewriting still manual |
 | Manual `new SObject(field = value, ...)` field-by-field copy | Almost never — see `examples.md` anti-pattern | Schema drift makes the copy lose fields silently as the schema grows |
 | `Database.merge()` for true duplicates | Two records that should become one (deduplication, not cloning) | Different operation — merges instead of cloning; only works on Accounts, Contacts, Leads |
 | Custom `DuplicateBuilder` service class | Repeated clone-with-rules logic across multiple call sites | Higher up-front investment; pays back on the 3rd+ call site |
@@ -109,8 +111,8 @@ source and copy."
    `Cloned_From__c` lookup per cloneable object is a low-cost,
    high-payoff governance move.
 5. **JSON round-trip deep clones on graphs >1k records in a sync
-   transaction.** Peaks at 2× source graph size in heap; hits 6MB
-   sync limit. Move to Queueable / Batch when source size is unbounded,
+   transaction.** Peaks at 2× source graph size in heap; hits the
+   10MB sync limit (6MB before Winter '27). Move to Queueable / Batch when source size is unbounded,
    or fall back to per-level explicit cloning with `Map<Id, Id>`
    translation.
 
@@ -118,6 +120,10 @@ source and copy."
 
 - Apex Developer Guide — Using SObjects:
   https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/langCon_apex_SObjects_clone.htm
+- Apex Developer Guide, Winter '27 (264) — Execution Governors and Limits, "Total heap size"
+  10 MB sync / 25 MB async (L19780; Summer '26 6 MB / 12 MB at 262 L19577), supporting
+  Gotcha 5 and the Performance pillar; Metadata API 264 `ApexSettings.enableEnforceSummer26ApexHeapLimit`
+  (L113855-113862), the Winter '27-only nonproduction opt-out.
 - Apex Reference Guide — SObject Class (clone method overloads):
   https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm
 - Apex Reference Guide — System.JSON Methods (serialize/deserialize):

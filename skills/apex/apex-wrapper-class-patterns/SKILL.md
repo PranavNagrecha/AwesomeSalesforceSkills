@@ -31,9 +31,9 @@ outputs:
   - "Guidance on inner-class sharing context and @JsonAccess requirements"
   - "Top-level wrapper class, controller, comparator, and test class ready to deploy"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-10-03
+updated: 2026-10-20
 ---
 
 # Apex Wrapper Class Patterns

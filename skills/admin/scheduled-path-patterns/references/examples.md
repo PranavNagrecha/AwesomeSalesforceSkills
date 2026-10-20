@@ -113,7 +113,7 @@ If the business needs the reminder to genuinely track the current date rather th
 
 **What practitioners do:** Add a scheduled path to a record-triggered Flow on Lead or Task with entry criteria left at "every record", planning to filter inside the branch with a Decision element.
 
-**What goes wrong:** Every record that fires the trigger queues a paused interview, including the 500,000 rows from tonight's data load. The Decision element cannot help — it runs *after* the interview has already been created and resumed. The queue becomes the bottleneck, the resumed batches contend for the asynchronous limit budget (200 SOQL queries, 150 DML statements, 12 MB heap, 60,000 ms CPU per transaction — shared across each resumed batch, not per interview), and Setup → Paused And Waiting Interviews becomes unusable for diagnosing anything else.
+**What goes wrong:** Every record that fires the trigger queues a paused interview, including the 500,000 rows from tonight's data load. The Decision element cannot help — it runs *after* the interview has already been created and resumed. The queue becomes the bottleneck, the resumed batches contend for the asynchronous limit budget (200 SOQL queries, 150 DML statements, 25 MB heap (Winter '27, apexdev 264 L19780; 12 MB in Summer '26), 60,000 ms CPU per transaction — shared across each resumed batch, not per interview), and Setup → Paused And Waiting Interviews becomes unusable for diagnosing anything else.
 
 **Correct approach:** Filter at the Start element, where the platform evaluates the criteria before creating an interview:
 

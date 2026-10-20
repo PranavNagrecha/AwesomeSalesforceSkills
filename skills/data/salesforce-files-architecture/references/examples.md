@@ -133,8 +133,9 @@ Caveats:
   allows up to 2 GB).
 - Heap usage: each batch loads `Body` blobs into memory; tune batch
   size accordingly. Default batch of 200 with average 5 MB per
-  Attachment = 1 GB heap which exceeds the per-execution limit (12
-  MB sync, 36 MB async). Use a small batch size for blob-heavy data.
+  Attachment = 1 GB heap which exceeds the per-transaction limit (10
+  MB sync, 25 MB async in Winter '27 — Apex Developer Guide 264
+  L19780). Use a small batch size for blob-heavy data.
 - Validate end-to-end before deleting Attachments.
 
 ---

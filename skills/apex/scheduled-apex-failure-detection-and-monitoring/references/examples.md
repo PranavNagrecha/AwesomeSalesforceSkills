@@ -36,7 +36,7 @@ public class NightlyAccountRollupSchedule implements Schedulable {
 }
 ```
 
-**Why it works:** The "schedule fired" log entry is the witness that distinguishes "schedule never ran" from "schedule ran but `executeBatch` failed". Without it, the gap between `CronTrigger.PreviousFireTime` advancing and `AsyncApexJob` not appearing is invisible. Re-throwing makes the failure also visible on the `AsyncApexJob` row's `ExtendedStatus` and (if the batch class itself implements `RaisesPlatformEvents`) on `BatchApexErrorEvent`.
+**Why it works:** The "schedule fired" log entry is the witness that distinguishes "schedule never ran" from "schedule ran but `executeBatch` failed". Without it, the gap between `CronTrigger.PreviousFireTime` advancing and `AsyncApexJob` not appearing is invisible. Re-throwing makes the failure also visible on the `AsyncApexJob` row's `ExtendedStatus` and (if the batch class itself implements `RaisesPlatformEvents`) on `BatchApexErrorEvent`. The catch block does not run when the flex queue is full: that `LimitException` cannot be caught (Apex Developer Guide 264 L17438-17439, L40117-40123), and the "schedule fired" row rolls back with the transaction — Gotcha 4 gives the `Holding`-count pre-check for that path.
 
 ---
 

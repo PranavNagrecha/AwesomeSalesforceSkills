@@ -23,9 +23,9 @@ outputs:
   - "ConnectApi-based Chatter post implementation"
   - "Checker findings against unsupported async usage and unsafe input"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-23
+updated: 2026-10-20
 ---
 
 # Apex Connect Api Chatter
@@ -42,6 +42,22 @@ Gather this context before working on anything in this domain:
 - What's the execution context? `ConnectApi` has strict restrictions in `@future` and test methods.
 - What sort of post? Plain text, text-with-mentions, link, file attachment, poll, or announcement?
 - Who's the author? Running user by default; can impersonate only via `ConnectApi.ChatterFeeds.postFeedElement` parameters in limited cases.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is Chatter enabled in every org this code deploys to? | With Chatter off, every ConnectApi call throws `ConnectApiException` (gotcha 3). | A feature check and a fallback path, decided before the code is written. |
+| Does the post need @mentions, files, links or polls? | `FeedItem` DML writes `@Jane` as literal text and fires no notification (gotcha 1). | The ConnectApi-vs-DML choice made from the content, not habit. |
+| Which feed parent — user, group or record — and is feed tracking on for that object? | Posting to an untracked object throws (gotcha 4). | The parent type and the feed-tracking setting listed as a deployment dependency. |
+| Will the post be made from an Experience Cloud site? | A missing or `null` network Id posts to internal Chatter, where site users never see it (gotcha 5). | `Network.getNetworkId()` passed, and a site test case. |
+| Can every mentioned user read the parent record? | The mention renders but no notification reaches a user without access (gotcha 6). | A sharing check on the mentioned users, or a different notification channel. |
+| How large are attached files, and does the post run sync or async? | A `Blob` counts toward heap: 10 MB sync / 25 MB async in Winter '27, and the overrun is uncatchable (gotcha 7). | A size guard, or a ContentVersion upload referenced by Id. |
+| Who should appear as the author? | Connect in Apex runs as the context user and does not support `runAs` (Apex Developer Guide 264 L26329-26330; gotcha 9). | The running user named for each entry point, including async ones. |
+
+Answering these first gives posts that reach the right feed, notify the right people and survive Chatter-off and large-file cases, where coding the post directly ships one that fails or posts invisibly.
 
 ---
 
@@ -66,8 +82,9 @@ Segments are concatenated in order into a `MessageBodyInput`, which is wrapped i
 
 ### Test Context Restrictions
 
-- `ConnectApi` methods throw in synchronous test methods unless `Test.setMock(ConnectApi.ConnectApi.class, mock)` or the `SeeAllData=true` annotation is used.
-- `SeeAllData=true` is a code-smell in most orgs; prefer the mock framework.
+- Most Connect in Apex methods need real org data and fail unless the test method is marked `@IsTest(SeeAllData=true)` (Apex Developer Guide 264 L26331-26332).
+- Some methods (for example `getFeedElementsFromFeed`) may not touch org data in tests; you register their output first with the matching `setTest*` method (`ConnectApi.ChatterFeeds.setTestGetFeedElementsFromFeed(...)`), and the method's "Usage" section says when this applies (L26333-26335, example at L26360-26377).
+- There is no documented `Test.setMock(ConnectApi.ConnectApi.class, …)` mock: no `ConnectApi.ConnectApi` class appears in the Apex Developer Guide 264 or the Apex Reference Guide 262, and the 262 reference lists no `setTestPostFeedElement`. To unit-test payload assembly without `SeeAllData`, build the `FeedItemInput` in a separate method and assert on it, and keep one `SeeAllData=true` test for the real post.
 - `@future` methods CAN call `ConnectApi`, but the calls run as the user who enqueued (or the automated user in some contexts) — test this explicitly.
 
 ### Feed Parent Id Types
@@ -161,7 +178,7 @@ ConnectApi.ChatterFeeds.postFeedElement(
 2. Identify feed parent — user, group, or record with feed tracking enabled.
 3. Build the `FeedItemInput` by assembling message segments; handle null/empty text explicitly.
 4. Decide sync vs async — post in the current transaction unless you need isolation; if async, write a governor-bounded Queueable.
-5. Write tests — `Test.setMock(ConnectApi.ConnectApi.class, ...)` to avoid real feed writes; assert the payload shape.
+5. Write tests — assert the payload shape on the `FeedItemInput` built by a separate method; cover the real post with an `@IsTest(SeeAllData=true)` test, or a `setTest*` registration where the method's Usage section requires one (Apex Developer Guide 264 L26331-26335).
 6. Test Experience Cloud separately if posts must appear in a partner/customer community — `Network.getNetworkId()` argument matters.
 
 ---
@@ -170,7 +187,7 @@ ConnectApi.ChatterFeeds.postFeedElement(
 
 - [ ] No literal `@username` strings in FeedItem.Body — mentions are always `MentionSegmentInput`.
 - [ ] `Network.getNetworkId()` (not hardcoded network Id) for community context.
-- [ ] Tests use `Test.setMock(ConnectApi.ConnectApi.class, ...)`.
+- [ ] Payload assembly is tested without ConnectApi; real ConnectApi calls are tested under `@IsTest(SeeAllData=true)` or with the method's `setTest*` registration (Apex Developer Guide 264 L26331-26335).
 - [ ] ConnectApi call wrapped in try/catch of `ConnectApi.ConnectApiException`.
 - [ ] Messages under Chatter's 10,000 char soft limit.
 - [ ] File attachments under 2GB / org-specific limit.
@@ -181,7 +198,7 @@ ConnectApi.ChatterFeeds.postFeedElement(
 
 1. **Chatter off means ConnectApiException** — orgs with Chatter disabled throw on every call; feature-flag the code.
 2. **`FeedItem` DML cannot render mentions** — `@Jane` appears as literal text, no notification fires.
-3. **`ConnectApi` in test requires mocks** — `SeeAllData=false` (the default) blocks real Chatter calls; use `Test.setMock` or the call throws.
+3. **`ConnectApi` in tests needs org data or registered output** — most methods fail without `@IsTest(SeeAllData=true)`; a few require a `setTest*` registration instead (Apex Developer Guide 264 L26331-26335). There is no `Test.setMock` mock for ConnectApi.
 4. **Network Id must be passed** — omitting or using the wrong community Id posts to the wrong feed silently.
 5. **Mentions require feed visibility** — user must have access to the parent record; otherwise the mention is rendered but no notification fires.
 6. **Feed tracking must be on** — posting to a record whose object lacks feed tracking fails with a specific ConnectApiException.
@@ -208,7 +225,7 @@ Earlier APIs expose materialized-view reads only. Version-gate call sites on **`
 
 | Artifact | Description |
 |---|---|
-| `scripts/check_apex_connect_api_chatter.py` | Scans for literal `@` mentions in FeedItem DML, missing ConnectApi mocks in tests, and unsafe error handling |
+| `scripts/check_apex_connect_api_chatter.py` | Scans for literal `@` mentions in FeedItem DML, ConnectApi test calls without `SeeAllData=true`, and unsafe error handling |
 | `templates/apex-connect-api-chatter-template.md` | Work template for assembling FeedItemInput with mentions and attachments |
 
 ---

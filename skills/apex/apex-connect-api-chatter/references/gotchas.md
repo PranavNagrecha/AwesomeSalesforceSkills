@@ -12,13 +12,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems.
 
 ---
 
-## Gotcha 2: ConnectApi Requires Mocks In Standard Tests
+## Gotcha 2: ConnectApi Needs Org Data Or Registered Test Output
 
-**What happens:** A unit test calling `ConnectApi.ChatterFeeds.postFeedElement` throws `System.UnsupportedOperationException: The method you called is not supported in Apex tests.`
+**What happens:** A unit test calling `ConnectApi.ChatterFeeds.postFeedElement` fails. Most Connect in Apex methods require access to real org data and fail unless the test method is marked `@IsTest(SeeAllData=true)`; some methods, such as `getFeedElementsFromFeed`, may not access org data in tests at all and need their output registered first with the matching `setTest*` method, as each method's "Usage" section states (Apex Developer Guide 264 L26331-26335). UNVERIFIED (2026-10-20): the exact exception type and message a non-`SeeAllData` test receives — not stated in Apex Developer Guide 264.
 
-**When it occurs:** Default tests (without `SeeAllData=true`).
+**When it occurs:** Default tests (without `SeeAllData=true`), and any test of a `setTest*`-registered method whose registration does not match the call's parameter signature (L26345-26346).
 
-**How to avoid:** `Test.setMock(ConnectApi.ConnectApi.class, new MyMock())` with a class extending `ConnectApi.ConnectApi`. Avoid `SeeAllData=true` — it breaks org isolation.
+**How to avoid:** Keep payload assembly in its own method and unit-test the `FeedItemInput` it returns without calling ConnectApi. Test the real call under `@IsTest(SeeAllData=true)`, or with the `setTest*` registration where the method's Usage section requires it. Do not reach for `Test.setMock(ConnectApi.ConnectApi.class, …)`: no `ConnectApi.ConnectApi` mock class is documented in Apex Developer Guide 264 or Apex Reference Guide 262.
 
 ---
 
@@ -64,7 +64,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems.
 
 ## Gotcha 7: `BinaryInput` Counts Against Heap, Not DML
 
-**What happens:** Uploading a 25MB PDF via `BinaryInput` hits the 6MB sync / 12MB async heap limit before it hits any DML limit.
+**What happens:** Uploading a 25MB PDF via `BinaryInput` exceeds the 10 MB synchronous heap limit outright and leaves no headroom under the 25 MB asynchronous one, so it fails on heap before it hits any DML limit. The heap overrun is an uncatchable `System.LimitException` (Apex Developer Guide 264 L19780, L19853). These are Winter '27 limits for every org whatever the class API version; Summer '26 was 6MB / 12MB, and in Winter '27 only a nonproduction org can opt back to those with `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855-113862).
 
 **When it occurs:** Posting generated reports, document attachments.
 

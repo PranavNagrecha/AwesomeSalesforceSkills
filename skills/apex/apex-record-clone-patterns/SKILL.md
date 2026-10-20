@@ -27,9 +27,9 @@ outputs:
   - Relationship reparenting plan
   - Insert strategy
 dependencies: []
-version: 1.1.0
+version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-05-19
+updated: 2026-10-20
 ---
 
 # Apex Record Clone Patterns
@@ -41,6 +41,20 @@ Activate when duplicating an sObject record in Apex — one record with a new Id
 - **Define scope.** Just the record, or the record + children? Clone does NOT walk relationships by default.
 - **Decide Id preservation.** Cloning for insert → `preserveId=false` (default). Cloning for in-memory work → `preserveId=true`.
 - **Audit-field expectations.** `CreatedDate`, `LastModifiedDate`, etc. are readonly; `preserveReadonly=true` requires `CreateAuditFields` user permission.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which related records must travel with the copy — children, Notes, Files, `ContentDocumentLink`s? | `.clone()` is shallow; nothing related travels unless code copies it (gotcha 1). | An explicit list of relationships to re-query and re-parent. |
+| Must the copy keep the source's created/modified dates? | `preserveReadonlyTimestamps=true` silently does nothing without `CreateAuditFields` (gotcha 2). | The permission and org setting confirmed, or the requirement dropped. |
+| Is the copy going to be inserted, or only used in memory? | A `preserveId=true` copy cannot be inserted (gotcha 3). | The right `preserveId` value for each call site. |
+| Who should own the copy? | `OwnerId` carries over from the source, not the cloning user (gotcha 4). | An explicit owner rule applied after `.clone()`. |
+| Which fields are unique or external Ids, and which addresses are geocoded? | Emails and external Ids clone literally and can collide; geocodes may be re-derived (gotcha 4). | A blank, suffix or carry decision per field. |
+| How deep and how wide is the largest source graph? | The JSON round-trip peaks at about twice the graph in heap — 10 MB sync / 25 MB async in Winter '27 (gotcha 5). | JSON round-trip, per-level cloning, or Queueable chosen from measured size. |
+| How will a support engineer trace a copy back to its source? | Clones carry no lineage once the transaction ends (well-architected.md, Operational Excellence). | A `Cloned_From__c` lookup populated on every copy. |
+
+Answering these first gives a clone that copies what the business expects, under the right owner, inside heap limits and traceable afterwards, where cloning directly loses related data silently.
 
 ## Core Concepts
 
@@ -182,6 +196,6 @@ List<Database.SaveResult> srs = Database.insert(copies, dmo);
 
 ## Related Skills
 
-- `apex/apex-record-relationships` — relationship traversal for deep copies
+- `apex/apex-soql-relationship-queries` — relationship traversal for deep copies
 - `data/bulk-api-and-large-data-loads` — volume cloning via ETL
 - `data/external-id-strategy` — matching source/target across orgs

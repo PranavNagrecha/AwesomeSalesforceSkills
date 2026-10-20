@@ -16,14 +16,14 @@ Limits differ between synchronous and asynchronous contexts.
 | SOSL query row limit | 2,000 | 2,000 |
 | DML statements | 150 | 150 |
 | DML row limit | 10,000 | 10,000 |
-| Total heap size | 6 MB | 12 MB |
+| Total heap size | 10 MB | 25 MB |
 | Max CPU time (ms) | 10,000 | 60,000 |
 | Max execution time (ms) | 10 min wall | 10 min wall |
 | Max callouts per transaction | 100 | 100 |
 | Max callout cumulative time (ms) | 120,000 | 120,000 |
 | Max @future calls per transaction | 50 | 50 |
 | Max email invocations per transaction | 10 | 10 |
-| Max stack depth | 1,000 frames | 1,000 frames |
+| Total stack depth for Apex that recursively fires triggers via insert/update/delete (Apex Developer Guide 264 L19762) | 16 | 16 |
 | Max records for @InvocableMethod | 2,000 | 2,000 |
 | Max PushTopic queries | 100 | 100 |
 | Max records returned by Database.Cursor fetch | 2,000 | 2,000 |
@@ -52,7 +52,7 @@ LIMIT_USAGE_FOR_NS|(default)|
   Number of DML statements: 12 out of 150
   Number of DML rows: 89 out of 10000
   Maximum CPU time: 3478 out of 10000
-  Maximum heap size: 2193423 out of 6000000
+  Maximum heap size: 2193423 out of 10000000
   Number of callouts: 0 out of 100
   Number of Email Invocations: 0 out of 10
   Number of future calls: 0 out of 50
@@ -170,7 +170,7 @@ Common CPU hogs:
 
 Symptoms: `System.LimitException: Apex heap size too large: <n>`.
 
-Heap counts the memory held by live Apex variables. 6MB sync, 12MB async.
+Heap counts the memory held by live Apex variables: 10 MB sync, 25 MB async in Winter '27 (Apex Developer Guide 264 L19780), and the exception is uncatchable (L19853). Scheduled Apex runs on the synchronous limits even though it is async (L19739). The rise is release-level — every org and class, whatever its API version; Summer '26 was 6 MB / 12 MB. Read the `out of` denominator in `LIMIT_USAGE_FOR_NS` rather than assuming: the 264 sample shows `Maximum heap size: 0 out of 10000000` (L38767). A Winter '27 sandbox log still showing `out of 6000000` points at the Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855-113862).
 
 Common heap hogs:
 - Large SObject lists held in memory.

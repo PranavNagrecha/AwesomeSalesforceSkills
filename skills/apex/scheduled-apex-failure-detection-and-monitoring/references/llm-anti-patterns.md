@@ -6,12 +6,12 @@ Common mistakes AI coding assistants make when generating or advising on Schedul
 
 **What the LLM generates:** "If the batch fails, Salesforce will email the user who scheduled it." Accompanied by no instrumentation in the generated batch class — just a `Database.Batchable` body that may throw freely.
 
-**Why it happens:** Synchronous Apex *does* email the user and Setup → Apex Exception Email recipients on uncaught exceptions. The model conflates the two paths because the Apex Developer Guide treats them in adjacent sections.
+**Why it happens:** Unhandled exceptions do trigger an email, so the model assumes it reaches the job's owner. It goes to the failing class's `LastModifiedBy` developer and Setup → Apex Exception Email recipients, repeats are suppressed, and it is capped at 10 per hour per application server (Apex Developer Guide 264 L39995-40009).
 
 **Correct pattern:**
 
 ```apex
-// Async Apex does NOT auto-email on uncaught exception. Either:
+// The unhandled-exception email is not a monitoring channel (last modifier, deduplicated, rate-capped). Either:
 // (a) catch + log + (optionally) re-throw, or
 // (b) implement Database.RaisesPlatformEvents and subscribe to BatchApexErrorEvent.
 public class NightlyJob implements Database.Batchable<SObject>,
@@ -20,7 +20,7 @@ public class NightlyJob implements Database.Batchable<SObject>,
 }
 ```
 
-**Detection hint:** Search generated Apex for `Database.Batchable` or `Schedulable` classes that have neither try-catch in `execute()`, nor `Database.RaisesPlatformEvents`, nor an accompanying watcher. Also flag any text claiming "Salesforce will email on async failure".
+**Detection hint:** Search generated Apex for `Database.Batchable` or `Schedulable` classes that have neither try-catch in `execute()`, nor `Database.RaisesPlatformEvents`, nor an accompanying watcher. Also flag any text claiming "Salesforce will email the user who scheduled it".
 
 ---
 

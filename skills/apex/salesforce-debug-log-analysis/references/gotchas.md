@@ -4,11 +4,11 @@ Non-obvious platform behaviors that mislead forensic log analysis. Each one has 
 
 ## The 20 MB Log Cap Truncates Silently
 
-**What happens:** A single debug log is capped at 20 MB. Anything past that is dropped with no end-of-log marker and no `FATAL_ERROR`. The user thinks the transaction completed cleanly because the log "just ends."
+**What happens:** A single debug log must be 20 MB or smaller. A larger log is reduced by removing *older* log lines (for example earlier `System.debug` lines), and the removed lines can come from any location in the log, not just the start (Apex Developer Guide 264 L38602-38604). Nothing marks the gap and no `FATAL_ERROR` is written, so the log reads as complete while the early cause is missing.
 
 **When it occurs:** Large cascades (DLRS recalculation across hundreds of records, CPQ QLI updates, bulk loads through a Flow). Heavy trace-flag levels like `APEX_CODE,FINEST` fill 20 MB in seconds.
 
-**How to avoid:** Compare `wc -c` against 20,000,000. If the log is exactly at the cap (within a few KB) and has no `EXECUTION_FINISHED`, it is truncated. Ask the user to lower `APEX_CODE` to `FINE` and re-capture, or use the `tail -f` pattern via `sf apex tail log`.
+**How to avoid:** Compare `wc -c` against 20,000,000. If the log is at the cap (within a few KB), treat it as trimmed: older lines may be missing from anywhere, so do not conclude "event X never ran" from its absence. A missing `EXECUTION_FINISHED` is a separate signal (the log is trimmed or incomplete), not proof of the size trim on its own. Ask the user to lower `APEX_CODE` to `FINE` and re-capture, or use the `tail -f` pattern via `sf apex tail log`.
 
 ---
 

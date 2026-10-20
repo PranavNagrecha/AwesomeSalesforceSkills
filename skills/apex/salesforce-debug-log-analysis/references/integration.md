@@ -22,8 +22,7 @@ Timestamp delta between REQUEST and RESPONSE is the callout duration.
 | Max callouts per transaction | 100 |
 | Max cumulative callout time | 120 seconds |
 | Single callout timeout (default / max) | 10s / 120s |
-| Max request body size | 12 MB |
-| Max response body size | 6 MB (sync) / 22 MB (async) |
+| Max callout request or response size | 6 MB sync / 12 MB async (Apex Developer Guide 264 L20048-20049); both count toward heap (L20062) |
 
 ### Async callouts
 
@@ -124,7 +123,7 @@ CODE_UNIT_STARTED|[EventService.....apex]|<MyRestService>.<method>
 
 The entry point is the Apex method. Running user is the authenticated API user.
 
-Response size limit: 15 MB. Response time limit: 60 seconds.
+Response size limit: 15 MB. Response time limit: 60 seconds. UNVERIFIED (2026-10-20): neither figure is stated for Apex REST in the Winter '27 corpus; the only 15 MB limit in the 264 limits quick reference is the Visualforce page response size (salesforce_app_limits_cheatsheet 264 L746).
 
 ## SOAP API (inbound)
 

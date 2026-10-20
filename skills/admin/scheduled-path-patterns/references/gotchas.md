@@ -30,7 +30,7 @@ Note also that the offset unit vocabulary is fixed. The Metadata API's `FlowSche
 
 **When it occurs:** Bulk inserts and data loads, which queue interviews in bulk and resume them in batches.
 
-**How to avoid:** Design the branch against the asynchronous numbers, which are the generous ones for CPU and heap and the tight ones nowhere: 200 SOQL queries (versus 100 synchronous), 150 DML statements, 50,000 records retrieved by SOQL, 12 MB heap (versus 6 MB), and a "Maximum CPU time on the Salesforce servers" of 60,000 milliseconds (versus 10,000 synchronous). The two that actually bite in a resumed path are the DML statement count and the 10,000-record ceiling on "Total number of records processed as a result of DML statements" — both are shared across the whole batch of interviews resumed together, not per interview.
+**How to avoid:** Design the branch against the asynchronous numbers, which are the generous ones for CPU and heap and the tight ones nowhere: 200 SOQL queries (versus 100 synchronous), 150 DML statements, 50,000 records retrieved by SOQL, 25 MB heap (versus 10 MB synchronous — Winter '27 values, apexdev 264 L19780, a release-level rise for every org whatever the API version; Summer '26 was 12 MB / 6 MB), and a "Maximum CPU time on the Salesforce servers" of 60,000 milliseconds (versus 10,000 synchronous). The two that actually bite in a resumed path are the DML statement count and the 10,000-record ceiling on "Total number of records processed as a result of DML statements" — both are shared across the whole batch of interviews resumed together, not per interview.
 
 The practical rule: never put an unbounded loop with a DML element inside it in a scheduled branch. Build a collection, commit once.
 

@@ -323,4 +323,4 @@ When asking the user to re-capture a log for deeper investigation, recommend the
 | Integration (callout) | INFO | INFO | FINEST | INFO | DEBUG | INFO | INFO | INFO |
 | VF page | INFO | INFO | INFO | FINE | DEBUG | INFO | FINEST | INFO |
 
-Setting everything to FINEST makes huge logs that may hit the 5MB per-log cap or 20MB daily cap. Be surgical.
+Setting everything to FINEST makes huge logs that hit the 20 MB per-log cap (older lines are then removed from anywhere in the log) and, past 1,000 MB of logs in a 15-minute window, get your trace flags disabled, with re-enabling allowed after 15 minutes (Apex Developer Guide 264 L38602-38607). Be surgical.

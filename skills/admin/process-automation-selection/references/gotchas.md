@@ -132,10 +132,14 @@ writes the triggering record, timing is `before_save` and nothing later reopens 
 
 **What happens:** Flow and Apex on the same save draw from the same per-transaction
 allowances. Synchronously that is 100 SOQL queries, 50,000 records retrieved by SOQL, 150 DML
-statements, 10,000 records processed by DML, 6 MB heap and 10,000 ms of CPU; asynchronously
-200 SOQL, 12 MB heap and 60,000 ms of CPU. Total stack depth for any Apex invocation that
+statements, 10,000 records processed by DML, 10 MB heap and 10,000 ms of CPU; asynchronously
+200 SOQL, 25 MB heap and 60,000 ms of CPU. Total stack depth for any Apex invocation that
 recursively fires triggers through insert, update or delete statements is 16. A flow that is
 comfortably within its own budget can still be the automation that tips the transaction over.
+The heap figures are Winter '27 (apexdev 264 L19780) and apply to every org and class whatever
+its API version — the rise is not in the API 68.0 versioned-behaviour list (L45116-45131).
+Summer '26 was 6 MB / 12 MB; in Winter '27 only, a nonproduction org can opt back to those
+lower limits with `ApexSettings.enableEnforceSummer26ApexHeapLimit` (api_meta 264 L113855-113862).
 
 **When it occurs:** Bulk loads and API batches, where 200 records per transaction multiply
 everything the object's automation does.

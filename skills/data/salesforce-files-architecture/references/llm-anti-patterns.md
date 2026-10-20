@@ -103,7 +103,8 @@ loads the full blob into heap.
 **Correct pattern.** For bulk operations, batch with small chunks
 (1–5 records per execution); for sync use cases, query
 `ContentSize` first and process selectively. Apex heap limits are
-12 MB sync / 36 MB async.
+10 MB sync / 25 MB async in Winter '27 (Apex Developer Guide 264
+L19780; 6 MB / 12 MB in Summer '26).
 
 **Detection hint.** Any `SELECT ... VersionData ...` without a
 `LIMIT` or batch context.

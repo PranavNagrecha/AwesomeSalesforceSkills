@@ -41,7 +41,7 @@
 3. **SOQL on `ContentDocument.ParentId`.** Field does not exist;
    use `ContentDocumentLink`.
 4. **Loading `VersionData` in bulk without heap awareness.** Hits
-   the 12 MB sync / 36 MB async governor.
+   the 10 MB sync / 25 MB async heap governor (Winter '27).
 5. **Omitting `Visibility` on `ContentDocumentLink` inserts in
    community-enabled orgs.** Risk of inadvertent disclosure.
 
@@ -50,6 +50,7 @@
 - ContentVersion Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_contentversion.htm
 - ContentDocument Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_contentdocument.htm
 - ContentDocumentLink Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_contentdocumentlink.htm
+- Apex Developer Guide, Winter '27 (264) — "Total heap size" 10 MB sync / 25 MB async (L19780) and the uncatchable `System.LimitException` footnote (L19853), supporting Gotcha 5 and anti-pattern 4; Metadata API 264 `ApexSettings.enableEnforceSummer26ApexHeapLimit` (L113855-113862), the Winter '27-only nonproduction opt-out — https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf
 - Files in Salesforce — https://help.salesforce.com/s/articleView?id=sf.collab_files_about.htm&type=5
 - Files Connect Overview — https://help.salesforce.com/s/articleView?id=sf.admin_files_connect_about.htm&type=5
 - Salesforce Well-Architected Trustworthy — https://architect.salesforce.com/well-architected/trusted/secure

@@ -104,6 +104,7 @@
     "c2aa2efeb0bf8410452d",
     "c44c334478c062a06172",
     "c61f4e73fd2c87fd4c0a",
+    "c7e8dd30443c574b4930",
     "c80faac30e230f3b907d",
     "cad87517e2a779fb7942",
     "cd2d8809fae95fa81148",
@@ -129,7 +130,7 @@
     "f6f3a06ddc99235cee25",
     "f8c2fda1f6845c5b0c5b"
   ],
-  "content_hash": "74d1c6c57992297543d25a0d07ca1d39f70db460bdb5853af8e9de36e6ccfdf7",
+  "content_hash": "3cfd7ac232b8d47b854542810da2fc0436a53111c5d4682c4a433b983006e18e",
   "dependencies": [],
   "description": "Use when deciding which Salesforce automation tool should own a requirement, including before-save and after-save Flow, screen Flow, scheduled Flow, invocable Apex, Apex triggers, and migration off Workflow Rules or Process Builder. Triggers: 'Flow or Apex trigger', 'which automation tool should I use', 'Process Builder migration', 'Workflow Rule retirement', 'same-record update or trigger', 'automation decision record', 'why did we reject Apex', 'one object one order', 'automation inventory for this object', 'scheduled Flow or Batch Apex'. NOT for 'which tool should stamp this field on save, and will it recurse' \u2014 use admin/workflow-field-update-patterns. NOT for actually running the conversion of an existing Process Builder \u2014 use flow/process-builder-to-flow-migration.",
   "file_location": "skills/admin/process-automation-selection",
@@ -143,7 +144,8 @@
   "official_sources": [
     "Apex Developer Guide \u2014 \"Triggers and Order of Execution\", steps 3, 4, 8, 11 and 14 and the recursive-save note (positions of before-save flow, before triggers, after triggers, workflow field-update re-fire and after-save flow; supports gotchas 1, 5 and 6 and the Core Concepts \"positional\" section): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
     "Apex Developer Guide \u2014 \"Triggers\" (\"The records that fire the after trigger are read-only\"; updating or deleting a record in its before trigger, or deleting it in its after trigger, raises a runtime error; supports gotcha 7): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
-    "Salesforce Developer Limits and Allocations Quick Reference \u2014 Apex Governor Limits table (100/200 SOQL, 50,000 rows, 150 DML statements, 10,000 DML rows, stack depth 16, 6 MB / 12 MB heap, 10,000 ms / 60,000 ms CPU; supports gotcha 8 and the volume fields on the decision record): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf",
+    "Salesforce Developer Limits and Allocations Quick Reference \u2014 Apex Governor Limits table (100/200 SOQL, 50,000 rows, 150 DML statements, 10,000 DML rows, stack depth 16, 10,000 ms / 60,000 ms CPU; supports gotcha 8 and the volume fields on the decision record): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_app_limits_cheatsheet.pdf",
+    "Apex Developer Guide, Winter '27 (264) \u2014 Execution Governors and Limits table, \"Total heap size\" 10 MB synchronous / 25 MB asynchronous (apexdev 264 L19780; Summer '26 was 6 MB / 12 MB, 262 L19577), release-level and not in the API 68.0 versioned list (L45116-45131); Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit` (api_meta 264 L113855-113862) \u2014 supports gotcha 8's heap figures",
     "Metadata API Developer Guide \u2014 `FlowStart`, `FlowSchedule`, `FlowScheduledPath` (`recordTriggerType` and `triggerType` enums, `schedule` required when `triggerType` is `Scheduled`, one interview per queried record, `maxBatchSize` 1\u2013200 default 200, `frequency` enum; supports gotcha 11 and worked decisions 1 and 3): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf",
     "Metadata API Developer Guide \u2014 Flow warning on retrieved Process Builder metadata (`processType` `Workflow` / `InvocableProcess` must not be edited and redeployed) and `WorkflowRule.failedMigrationToolVersion` (supports gotchas 9 and 10 and the legacy-inventory step): https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/api_meta.pdf",
     "Object Reference for the Salesforce Platform \u2014 `FlowDefinitionView` (`IsActive`, `IsOutOfDate`, `ProcessType`, `TriggerType`, `RecordTriggerType`, `TriggerOrder` 1\u20132,000, `TriggerObjectOrEventLabel`) and `ApexTrigger` (`TableEnumOrId`, `Status`, the `Usage*` context flags) \u2014 supports the one-object-one-order inventory queries: https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/object_reference.pdf",
@@ -179,7 +181,7 @@
   "templates": [
     "skills/admin/process-automation-selection/templates/process-automation-selection-template.md"
   ],
-  "updated": "2026-09-04",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

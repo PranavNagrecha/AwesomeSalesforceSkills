@@ -48,9 +48,9 @@ ConnectApi.ChatterFeeds.postFeedElement('0DB...', recordId, input);
 
 **Why it happens:** LLMs don't know ConnectApi has special test-mode rules.
 
-**Correct pattern:** `Test.setMock(ConnectApi.ConnectApi.class, new MockConnectApi())` before the call.
+**Correct pattern:** Test payload assembly separately, without ConnectApi. For the call itself, mark the test `@IsTest(SeeAllData=true)` (most methods), or register output with the method's `setTest*` method where its Usage section requires it (Apex Developer Guide 264 L26331-26335). `Test.setMock(ConnectApi.ConnectApi.class, …)` is not a documented mechanism.
 
-**Detection hint:** `ConnectApi.` call site inside `@IsTest` method without a preceding `Test.setMock` line.
+**Detection hint:** `ConnectApi.` call site inside an `@IsTest` method with neither `SeeAllData=true` nor a preceding `ConnectApi.*.setTest*` call.
 
 ---
 
@@ -79,20 +79,20 @@ try {
 
 ---
 
-## Anti-Pattern 5: Using `SeeAllData=true` To Make ConnectApi Tests Pass
+## Anti-Pattern 5: Putting Every Assertion Under `SeeAllData=true`
 
 **What the LLM generates:**
 
 ```apex
 @IsTest(SeeAllData=true)
-static void testPost() { /* ... */ }
+static void testPost() { /* builds data, posts, and asserts every branch */ }
 ```
 
-**Why it happens:** LLMs reach for the simplest fix that makes the test run without understanding the consequences.
+**Why it happens:** `SeeAllData=true` is what most Connect in Apex methods require (Apex Developer Guide 264 L26331-26332), so the model puts the whole test suite under it.
 
-**Correct pattern:** Use `Test.setMock(ConnectApi.ConnectApi.class, ...)`. `SeeAllData=true` makes tests org-specific and flaky.
+**Correct pattern:** Keep `SeeAllData=true` to the few tests that make the real ConnectApi call, and test payload assembly and error handling in ordinary isolated tests. Do not replace it with `Test.setMock(ConnectApi.ConnectApi.class, …)`, which is not a documented mechanism.
 
-**Detection hint:** `SeeAllData=true` annotation near a `ConnectApi.` call.
+**Detection hint:** A `SeeAllData=true` test class whose methods assert on message segments rather than on the post result.
 
 ---
 

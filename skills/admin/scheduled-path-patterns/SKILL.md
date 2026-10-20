@@ -30,9 +30,9 @@ outputs:
   - Fallback strategy for failed paths
   - Bulk test plan
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-21
+updated: 2026-10-20
 status: stub
 ---
 
@@ -45,6 +45,20 @@ Activate when designing a record-triggered Flow with delayed execution — "afte
 - **Understand the offset anchor.** Scheduled Paths offset from either the record-triggered event time OR a field value on the record.
 - **Plan for volume.** Scheduled Paths queue paused Flow Interviews; bulk inserts create bulk paused interviews with batch-size tuning.
 - **Know the monitoring surface.** Setup → Paused Flow Interviews shows queued interviews; failures surface in the Flow debug log and Apex exception email.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is the offset anchored on the trigger event or on a date field, and does the business revise that field? | The run time is computed once at queue time; editing the field does not reschedule (gotcha 2). | A cancel-and-requeue path on `ISCHANGED`, or a nightly scheduled Flow instead. |
+| What offset, in which unit? | `FlowScheduledPathOffsetUnit` has only Months, Days, Hours and Minutes (gotcha 2). | "Two weeks" authored as 14 Days, agreed before the build. |
+| Can the condition the path checks change during the wait? | The branch evaluates the queued snapshot, not the current record (gotcha 1). | A Get Records re-read at the top of the branch, and decisions made off it. |
+| How many records reach the path per hour and per data load? | Resumed interviews run in batches on the asynchronous limits, sharing DML statements and DML rows across the batch (gotcha 3). | Tight entry criteria, a batch size and a bulk test volume. |
+| Does the branch call invocable Apex, and at what `apiVersion`? | At 67.0+ the class defaults to user mode and can start failing for the running user (gotcha 4). | The class versions pinned in the design, and a permission review before any bump. |
+| Must the action happen even if the record is deleted or merged? | Deleting the record cancels its interview silently (gotcha 5). | A Schedulable sweep for must-happen work instead of a scheduled path. |
+| Will the Flow version change while interviews are queued? | Queued interviews keep running under the version that queued them (gotcha 5). | A drain window or a deliberate purge of paused interviews in the release plan. |
+
+Answering these first gives a path that re-reads its record, survives bulk loads and version swaps, and fires on the date the business means, where configuring it directly ships a reminder that runs against stale data or never runs.
 
 ## Core Concepts
 
@@ -127,6 +141,6 @@ Always re-query record state in the scheduled branch. The record may have change
 
 ## Related Skills
 
-- `flow/scheduled-flow-patterns` — absolute-time scheduled flows
-- `admin/migrate-workflow-pb` — replacing time-based workflow rules
+- `flow/scheduled-flows` — absolute-time scheduled flows
+- `flow/workflow-rule-to-flow-migration` — replacing time-based workflow rules
 - `apex/apex-queueable-patterns` — programmatic async alternatives

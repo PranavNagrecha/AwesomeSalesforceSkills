@@ -97,7 +97,7 @@ Specific limit hit. Message names it:
 - `Too many DML rows: 10001`
 - `Apex CPU time limit exceeded`
 - `Apex heap size too large`
-- `Maximum stack depth reached: 1000`
+- `Maximum stack depth reached: 1000` — UNVERIFIED (2026-10-20): message text not in Apex Developer Guide 264; the only documented stack-depth governor is 16 for Apex that recursively fires triggers (L19762)
 - `Too many query rows: 50001`
 - `Callout time limit exceeded`
 

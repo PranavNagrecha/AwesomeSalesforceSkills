@@ -65,8 +65,8 @@ public static void postToFeed(Id parentId, Id mentionedUserId, String message) {
 
 ## Test Setup
 
-- [ ] `Test.setMock(ConnectApi.ConnectApi.class, new MockConnectApi())`
-- [ ] Mock captures the `FeedItemInput` for assertion
+- [ ] Payload builder tested without ConnectApi (assert on the returned `FeedItemInput`)
+- [ ] Real ConnectApi call tested under `@IsTest(SeeAllData=true)`, or with the method's `setTest*` registration
 - [ ] Test asserts presence of mention segment when expected
 - [ ] Test covers the Chatter-disabled (ConnectApiException) path
 
@@ -75,7 +75,7 @@ public static void postToFeed(Id parentId, Id mentionedUserId, String message) {
 - [ ] No literal `'@'` in `FeedItem.Body` DML anywhere.
 - [ ] `Network.getNetworkId()` used, not a hardcoded `0DB...` literal.
 - [ ] `try/catch` around every `ConnectApi` call.
-- [ ] No `SeeAllData=true` near ConnectApi tests.
+- [ ] `SeeAllData=true` limited to the tests that make the real ConnectApi call.
 - [ ] Bulk posts go through Queueable, not per-record in trigger.
 
 ## Notes

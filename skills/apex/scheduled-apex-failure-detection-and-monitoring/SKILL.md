@@ -1,6 +1,6 @@
 ---
 name: scheduled-apex-failure-detection-and-monitoring
-description: "Use when nightly batch / scheduled Apex jobs are failing without anyone noticing — covers why uncaught exceptions in `execute()` go to the debug log instead of email, how to query `AsyncApexJob` for `Status`, `NumberOfErrors`, and `ExtendedStatus`, when to implement `Database.RaisesPlatformEvents` so the platform publishes `BatchApexErrorEvent` on uncaught failures, how to subscribe to that event with an Apex trigger and notify operators, and how to layer a custom watcher schedule on top so silent-failure modes (job that never started, scheduled class deleted, queue stuck on `Queued`) still surface. Triggers: 'nightly batch failed at 2am with no notification', 'how do we know if a scheduled apex job is failing', 'BatchApexErrorEvent vs custom retry logic', 'Setup Apex Jobs only shows last 7 days, where else can I look', 'job is stuck in queued status nobody noticed for a week'. NOT for general Apex exception handling patterns (use apex/exception-handling), NOT for Batch Apex authoring or chunking strategy (use apex/batch-apex-patterns), NOT for Setup → Apex Jobs UI walkthrough as an admin task (use admin/batch-job-scheduling-and-monitoring), NOT for writing the Schedulable class itself (use apex/apex-scheduled-jobs)."
+description: "Use when nightly batch / scheduled Apex jobs are failing without anyone noticing — covers why uncaught exceptions in `execute()` are easy to miss (the exception email reaches only the class's last modifier unless Apex Exception Email recipients are set), how to query `AsyncApexJob` for `Status`, `NumberOfErrors`, and `ExtendedStatus`, when to implement `Database.RaisesPlatformEvents` so the platform publishes `BatchApexErrorEvent` on uncaught failures, how to subscribe to that event with an Apex trigger and notify operators, and how to layer a custom watcher schedule on top so silent-failure modes (job that never started, scheduled class deleted, queue stuck on `Queued`) still surface. Triggers: 'nightly batch failed at 2am with no notification', 'how do we know if a scheduled apex job is failing', 'BatchApexErrorEvent vs custom retry logic', 'Setup Apex Jobs only shows last 7 days, where else can I look', 'job is stuck in queued status nobody noticed for a week'. NOT for general Apex exception handling patterns (use apex/exception-handling), NOT for Batch Apex authoring or chunking strategy (use apex/batch-apex-patterns), NOT for Setup → Apex Jobs UI walkthrough as an admin task (use admin/batch-job-scheduling-and-monitoring), NOT for writing the Schedulable class itself (use apex/apex-scheduled-jobs)."
 category: apex
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -35,14 +35,14 @@ outputs:
   - "Watcher schedule that polls AsyncApexJob and publishes failure notifications"
   - "Operator notification recipe (email + Custom Notification fallback)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-08
+updated: 2026-10-20
 ---
 
 # Scheduled Apex Failure Detection And Monitoring
 
-Activate this skill when a Salesforce team needs to *know* their scheduled and batch Apex jobs failed — not just hope they did. The default platform behavior swallows uncaught exceptions in async execution into the debug log, with no email, no record, and no signal to the system of record. This skill closes that gap with three layered mechanisms: in-job try-catch logging, the `BatchApexErrorEvent` platform event for batch-class crashes, and a custom `AsyncApexJob` watcher schedule for everything else (stuck jobs, never-fired schedules, deleted classes).
+Activate this skill when a Salesforce team needs to *know* their scheduled and batch Apex jobs failed — not just hope they did. By default an uncaught exception in async execution lands in the debug log and on the `AsyncApexJob` row; the only push signal is an unhandled-exception email that goes to the class's last modifier, is deduplicated and is rate-capped (gotcha 1). This skill closes that gap with three layered mechanisms: in-job try-catch logging, the `BatchApexErrorEvent` platform event for batch-class crashes, and a custom `AsyncApexJob` watcher schedule for everything else (stuck jobs, never-fired schedules, deleted classes).
 
 ---
 
@@ -60,13 +60,29 @@ Gather this context before designing failure detection:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Is each job a plain Schedulable, a Schedulable that launches a batch, or a batch started elsewhere? | Each shape fails on a different surface, and a failed `executeBatch` launch leaves no batch row at all (gotchas 1 and 4). | A per-job inventory with the signal to watch for each. |
+| Who must learn of a failure, through which channel, and how fast? | The unhandled-exception email goes to the class's last modifier, is deduplicated and is capped at 10 per hour per server (gotcha 1). | A named owner, channel and alert window per job. |
+| Which batch classes are critical enough to publish `BatchApexErrorEvent`? | `Database.RaisesPlatformEvents` covers Batch Apex only (gotcha 2). | The marker interface on the critical batches, and the watcher covering the rest. |
+| Does a job that completes with some failed chunks count as failed? | A batch can end `Completed` with `NumberOfErrors > 0` (gotcha 3). | A watcher query that includes that branch. |
+| How many schedules fire close together, for example at quarter-end? | A full flex queue (100 `Holding` jobs) makes `executeBatch` throw an uncatchable `LimitException` (gotcha 4). | A `Holding`-count pre-check before each launch, and staggered start times. |
+| Where is the authoritative list of expected schedules kept? | A deleted or renamed class can leave a dead `CronTrigger` that never runs (gotcha 5). | Reconciliation of `CronTrigger` against a configured list. |
+| How much work will the watcher do inside its own `execute()`? | Scheduled Apex runs on synchronous limits: 100 SOQL, 150 DML, 10 MB heap in Winter '27 (gotcha 7). | A lean watcher that enqueues a Queueable for heavy work. |
+
+Answering these first gives a monitor that catches every failure shape and reaches a named owner, where wiring an alert directly catches only the jobs that fail loudly.
+
+---
+
 ## Core Concepts
 
 ### Concept 1 — Why scheduled Apex fails silently by default
 
 Three behaviors compound into the silent-failure mode:
 
-1. **Uncaught exceptions in async `execute()` do not email the user who scheduled the job.** Synchronous Apex sends an unhandled-exception email to the user and to addresses configured in Setup → Apex Exception Email. *Async* Apex (Schedulable, Batch, Queueable, `@future`) does not — the exception is recorded on the `AsyncApexJob` row (in `ExtendedStatus`) and written to the debug log, but no email is sent unless you handle the exception yourself or subscribe to `BatchApexErrorEvent`. This is the single biggest gap teams discover after a quarter-end batch fails on a Sunday.
+1. **Uncaught exceptions in async `execute()` do not reliably notify the job's owner.** The exception is recorded on the `AsyncApexJob` row (in `ExtendedStatus`) and in the debug log. The unhandled-exception email goes to the class's `LastModifiedBy` developer and Setup → Apex Exception Email recipients, not to the user who scheduled the job; repeats are suppressed and the emails are capped at 10 per hour per application server (Apex Developer Guide 264 L39995-40009). This is the single biggest gap teams discover after a quarter-end batch fails on a Sunday.
 2. **Setup → Apex Jobs is a 7-day rolling window.** The page renders from `AsyncApexJob`, which is retained for 7 days for completed entries, longer for failed/aborted, but the UI filter typically defaults to recent entries and does not surface "schedule fired but enqueue failed" cleanly.
 3. **A scheduled job whose underlying Apex class is deleted continues to occupy a `CronTrigger` slot but cannot fire.** No email, no warning. The job appears in `CronTrigger` but produces no `AsyncApexJob` rows. The first symptom is almost always "we noticed last quarter's data wasn't being refreshed."
 
@@ -138,7 +154,7 @@ The watcher is itself scheduled Apex, so the same considerations apply: it must 
 ## Recommended Workflow
 
 1. **Inventory existing scheduled jobs and classify them.** Query `CronTrigger` for active schedules, cross-reference against `ApexClass`, and bucket each into Schedulable-only, Schedulable-launching-Batch, or pure Batch invoked elsewhere. Run `scripts/check_scheduled_apex_failure_detection_and_monitoring.py` against the SFDX project to flag classes that schedule themselves without exception handling.
-2. **Add try-catch + structured logging to every `execute()` body.** Whether `Schedulable` or `Batchable`, wrap the body in try-catch and write to a log object on exception. The catch must re-throw only if you *want* the platform to mark the job `Failed` (and, for batch classes implementing `Database.RaisesPlatformEvents`, publish `BatchApexErrorEvent`). For Schedulable classes that launch batches, log a "schedule fired" entry before `executeBatch` so a missing entry signals a pre-enqueue failure.
+2. **Add try-catch + structured logging to every `execute()` body.** Whether `Schedulable` or `Batchable`, wrap the body in try-catch and write to a log object on exception. The catch must re-throw only if you *want* the platform to mark the job `Failed` (and, for batch classes implementing `Database.RaisesPlatformEvents`, publish `BatchApexErrorEvent`). For Schedulable classes that launch batches, log a "schedule fired" entry before `executeBatch` so a missing entry signals a pre-enqueue failure. Count `Holding` jobs before the launch as well: a full flex queue makes `executeBatch` throw an uncatchable `LimitException`, which rolls that log entry back (gotcha 4).
 3. **Add `Database.RaisesPlatformEvents` to every business-critical batch class.** Audit each `Database.Batchable` class. For ones whose failure has user impact, add the marker interface and ship a `BatchApexErrorEventTrigger` that logs + notifies. See `references/examples.md` Example 2.
 4. **Build the `AsyncApexJob` watcher schedule.** A separate Schedulable class that queries `AsyncApexJob` for `Status IN ('Failed','Aborted')` in the last hour, plus stuck `Queued`/`Holding` jobs older than your SLA, plus `Completed` jobs with `NumberOfErrors > 0`. For each finding, log + notify. See Example 3.
 5. **Pick a notification channel and make it idempotent.** Email Alerts work for low volume but are easy to ignore. Custom Notifications (bell icon) are durable but have no Slack/external surface. For ops, a Platform Event subscribed by a middleware bridge to Slack/Pagerduty is the most reliable. Whichever you pick, deduplicate by `AsyncApexJobId` so a watcher running every 15 minutes does not page operators five times for the same failure.

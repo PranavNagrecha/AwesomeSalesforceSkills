@@ -20,7 +20,7 @@ Chatter can be disabled, rate-limited, or experience transient outages. A Chatte
 
 1. **Literal `@` strings in FeedItem DML** — looks right in UI, doesn't notify anyone.
 2. **Hardcoded Network Id** — breaks when the community Id differs between sandbox and prod.
-3. **ConnectApi in tests without mocks** — test fails immediately, or (with SeeAllData) becomes org-specific.
+3. **ConnectApi in tests without `SeeAllData=true` or a `setTest*` registration** — the test fails (Apex Developer Guide 264 L26331-26335); keep the `SeeAllData` tests few and test payload assembly in isolation.
 4. **Per-record ConnectApi call in a trigger** — governor-limit disaster at bulk sizes.
 
 ## Official Sources Used
@@ -29,5 +29,7 @@ Chatter can be disabled, rate-limited, or experience transient outages. A Chatte
 - Apex Reference — ConnectApi.ChatterFeeds: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm
 - Chatter REST API Developer Guide: https://developer.salesforce.com/docs/atlas.en-us.chatterapi.meta/chatterapi/intro.htm
 - Apex Reference — Testing ConnectApi: https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_connectapi_test_methods.htm
+- Apex Developer Guide, Winter '27 (264) — Connect in Apex testing: most methods need `@IsTest(SeeAllData=true)`, some need `setTest*` registration stated in the method's Usage section (L26331-26335, example L26360-26377), runs as the context user without `runAs` (L26329-26330); supports Gotcha 2, anti-patterns 3 and 5, and Example 3
+- Apex Developer Guide, Winter '27 (264) — "Total heap size" 10 MB sync / 25 MB async (L19780) and the uncatchable `System.LimitException` footnote (L19853), supporting Gotcha 7; Metadata API 264 `ApexSettings.enableEnforceSummer26ApexHeapLimit` (L113855-113862) for the Winter '27-only nonproduction opt-out
 - Salesforce Help — Chatter feed tracking: https://help.salesforce.com/s/articleView?id=sf.collab_feed_tracking_overview.htm
 - Salesforce Well-Architected — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html

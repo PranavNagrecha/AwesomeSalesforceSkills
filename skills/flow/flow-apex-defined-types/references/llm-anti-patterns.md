@@ -185,7 +185,8 @@ and pauses.
 **Why it happens:** the collection is the natural data structure for the
 requirement, and heap is not visible in the prompt.
 
-**Correct pattern:** heap is 6 MB synchronous and 12 MB asynchronous, and a
+**Correct pattern:** heap is 10 MB synchronous and 25 MB asynchronous in Winter '27
+(Apex Developer Guide 264 L19780; 6 MB / 12 MB in Summer '26), and a
 screen flow serializes its variables between screens, so the cost is paid on every
 transition rather than once — and pausing stores that state. Model the smallest
 useful shape and carry identifiers across a pause, re-fetching on resume, which is

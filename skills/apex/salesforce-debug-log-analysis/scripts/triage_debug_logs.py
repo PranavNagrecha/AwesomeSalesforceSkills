@@ -3,7 +3,9 @@
 
 Scans .log files in a directory and reports:
 - size, start timestamp, detected shape, trace flag levels
-- truncation risk (within 1 KB of 20 MB cap, or missing EXECUTION_FINISHED)
+- trim risk (within 1 KB of the 20 MB cap, where older lines may have been removed
+  from anywhere in the log -- Apex Developer Guide 264 L38602-38604) and a missing
+  EXECUTION_FINISHED (log trimmed or capture incomplete)
 - exception counts, DML counts, managed-package namespaces touched
 - cross-log timeline with inter-log deltas
 
@@ -116,10 +118,11 @@ def analyze_file(path: Path) -> dict:
     warnings: list[str] = []
     if truncated:
         warnings.append(
-            f"Log is within {CAP_WARN_WINDOW} bytes of the 20 MB cap; content may be truncated."
+            f"Log is within {CAP_WARN_WINDOW} bytes of the 20 MB cap; older lines may have been "
+            "removed from anywhere in the log, so an absent event proves nothing."
         )
     if missing_finish:
-        warnings.append("No EXECUTION_FINISHED event; transaction may have been cut off.")
+        warnings.append("No EXECUTION_FINISHED event; log trimmed or incomplete.")
     if shape == "cascade" and levels.get("WORKFLOW", "NONE") in {"NONE", "ERROR", "WARN", "INFO"}:
         warnings.append(
             "WORKFLOW level below FINER; FLOW_ASSIGNMENT_DETAIL events will be missing."

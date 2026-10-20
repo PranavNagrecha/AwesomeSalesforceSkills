@@ -43,14 +43,28 @@ outputs:
   - "explicit statement of what the log cannot tell you plus concrete next steps"
   - "ordered recommendations from stop-the-bleeding to long-term fix"
 dependencies: []
-version: 1.0.1
+version: 1.0.2
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Salesforce Debug Log Analysis
 
 Salesforce debug logs look like text but behave like event traces from a distributed system. A single record update can produce tens of thousands of lines across dozens of triggers, flows, LWC controllers, rollup calculations, validation rules, workflow field updates, platform events, and managed packages. The real cause is often in a different transaction than the one the user uploaded, or inside a package whose source you cannot read. This skill captures the complete investigation pattern for every type of Salesforce runtime behavior.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| How large is each log, and is any at 20 MB? | A log over 20 MB loses older lines from anywhere in it, so an absent event proves nothing (gotchas.md, "The 20 MB Log Cap"). | A list of trimmed logs and a recapture at lower levels where the gap matters. |
+| What were the trace-flag levels, especially `WORKFLOW`? | Below `FINER`, flow assignments are not logged (gotchas.md, `FLOW_ASSIGNMENT_DETAIL`). | Which attributions the log can and cannot support. |
+| Is the field in question a formula or a roll-up? | Formulas have no write event to find (gotchas.md, "Formula Fields Have No Write Event"). | The field's metadata type checked before any writer hunt. |
+| Who performed the action, and did it start async work? | Async logs carry the running user, not the person who clicked (gotchas.md, "The Running User In Async Context"). | The initiating user and the async job Ids to correlate. |
+| Which managed packages are installed on the objects involved? | Code below `ENTERING_MANAGED_PKG` cannot be read (gotchas.md, managed-package gotchas). | Package names and versions for the vendor escalation path. |
+| Were the follow-on transactions captured too? | Time-based workflow and async work run in other transactions (gotchas.md, "Time-Based Workflows Fire In A Different Transaction"). | Every related log in one timeline, not one log read alone. |
+| Is the question about a governor-limit total? | `DML_BEGIN.Rows` is per statement; limit totals come from `LIMIT_USAGE_FOR_NS` (gotchas.md, "`DML_BEGIN.Rows` Is Per-Statement"). | Limit claims read from the cumulative block, with its `out of` denominators. |
+
+Answering these first scopes the investigation to evidence the logs can actually carry, where reading the uploaded log directly invites conclusions drawn from trimmed or partial traces.
 
 ## Recommended Workflow
 

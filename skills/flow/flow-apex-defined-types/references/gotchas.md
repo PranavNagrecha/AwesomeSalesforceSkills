@@ -187,7 +187,11 @@ the flows first — the rebinding is manual and there is no compiler to find the
 **What happens:** A screen flow holding a large collection of Apex-defined
 records becomes sluggish between screens, and paused interviews grow.
 
-**When it occurs:** Heap is 6 MB synchronous and 12 MB asynchronous, and a screen
+**When it occurs:** Heap is 10 MB synchronous and 25 MB asynchronous in Winter '27
+(Apex Developer Guide 264 L19780; a release-level rise for every org whatever the
+API version — Summer '26 was 6 MB / 12 MB, and in Winter '27 only a nonproduction
+org can opt back to it with `ApexSettings.enableEnforceSummer26ApexHeapLimit`,
+Metadata API 264 L113855-113862), and a screen
 flow serializes its variables between screens — so a fat collection is paid for on
 every transition. Pausing stores that state.
 

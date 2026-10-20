@@ -664,6 +664,15 @@ releases:
     - apex/async-apex
     - apex/apex-transaction-finalizers
     - apex/apex-execute-anonymous
+    - admin/process-automation-selection
+    - admin/scheduled-path-patterns
+    - apex/apex-connect-api-chatter
+    - apex/apex-record-clone-patterns
+    - apex/apex-wrapper-class-patterns
+    - apex/salesforce-debug-log-analysis
+    - apex/scheduled-apex-failure-detection-and-monitoring
+    - data/salesforce-files-architecture
+    - flow/flow-apex-defined-types
   - id: R2-33
     title: flow-loop + flow-testing checkers exit 1 on WARN-only; PE flow $Record batch shape UNVERIFIED; DataWeave checker
       .resource-meta.xml detection
@@ -672,6 +681,12 @@ releases:
     status: todo
   - id: R2-34
     title: Checker contract drift in 4 scripts (async-apex, apex-transaction-finalizers, apex-execute-anonymous, devops-center-advanced)
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R2-35
+    title: 'Batch H follow-ups: 7 checkers off the exit-code contract (scheduled-apex fails open on missing path), connect-api
+      checker flags the documented SeeAllData pattern, wrapper-class Questions header nonstandard'
     size: S
     owner_model: sonnet
     status: todo
@@ -940,5 +955,15 @@ inbox:
     exits 1 on empty dir, no --strict; apex-execute-anonymous exits 1 on findings, no --strict, no WARN on empty dir; devops-center-advanced
     checker is a shape-only stub that ignores --manifest-dir and exits 0 on /nonexistent. Bring all four to the brief contract
     (findings exit 0 unless --strict, missing path exit 1, empty dir WARN) with fixtures.'
+  size: S
+  slotted_into: 1.5.0
+- date: 2026-10-20
+  ask: 'Found by reviewer H (R3-05 batch H), pre-existing: checkers in admin/process-automation-selection, admin/scheduled-path-patterns,
+    apex/apex-connect-api-chatter (missing path exit 2), apex/apex-record-clone-patterns, apex/salesforce-debug-log-analysis
+    (not named check_*.py, warnings exit 1, empty exit 2), apex/scheduled-apex-failure-detection-and-monitoring (exit 0 on
+    /nonexistent, exit 1 on clean code), data/salesforce-files-architecture, flow/flow-apex-defined-types drift from the brief
+    contract; apex-connect-api-chatter rule connectapi-with-seealldata raises MEDIUM on the pattern apexdev 264 L26331-26335
+    requires — invert or drop; apex/apex-wrapper-class-patterns Questions table header starts ''| Question |'' not ''| Ask
+    | Why it matters | What a good answer adds |''.'
   size: S
   slotted_into: 1.5.0

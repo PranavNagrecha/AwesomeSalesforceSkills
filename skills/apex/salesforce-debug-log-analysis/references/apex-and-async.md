@@ -235,7 +235,7 @@ Async contexts have different, usually higher, limits:
 | SOQL rows | 50,000 | 50,000 |
 | DML statements | 150 | 150 |
 | DML rows | 10,000 | 10,000 |
-| Heap size | 6 MB | 12 MB |
+| Heap size | 10 MB | 25 MB |
 | CPU time | 10 sec | 60 sec |
 | Callouts | 100 | 100 |
 

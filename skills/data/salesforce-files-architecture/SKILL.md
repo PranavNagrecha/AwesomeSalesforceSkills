@@ -31,9 +31,9 @@ outputs:
   - "SOQL query patterns for record-attached files"
   - "Migration plan from Attachment to Files (if applicable)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-10-20
 ---
 
 # Salesforce Files Architecture
@@ -51,6 +51,20 @@ This skill is the data-layer walkthrough. It covers the three-object
 model, the size limits practitioners hit in production, the
 deprecated objects (Attachment, Document) you may inherit, and Files
 Connect for external file sources.
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| How large are the biggest files, and through which surface are they uploaded? | `lightning-file-upload` stops at 38 MB, well below the 2 GB `ContentVersion` ceiling (gotcha 4). | The upload path matched to the largest real file. |
+| Who must see the files — internal users only, or Experience Cloud and portal users too? | `Visibility = 'AllUsers'` exposes files to site users who can see the parent (gotcha 6). | A default `Visibility` per object, set on every link insert. |
+| Should access follow the parent record or be granted explicitly? | A `ContentDocumentLink` insert needs a deliberate `ShareType` (gotcha 7). | `'I'` for parent-inherited access, `'V'` or `'C'` only where the requirement says so. |
+| What upload volume is expected, and how much file storage is left? | File storage is a separate allocation and runs out on its own (gotcha 8). | A storage forecast checked in Setup → System Overview. |
+| Will Apex read file bodies in bulk, for example in a migration? | Loaded `VersionData` counts toward heap: 10 MB sync / 25 MB async in Winter '27 (gotcha 5). | A batch size of a few records and a `ContentSize` pre-check. |
+| Will code or reports list "files attached to this record"? | `ContentDocument` has no `ParentId`, and version queries return every version unless filtered on `IsLatest` (gotchas 1 and 3). | Queries written through `ContentDocumentLink` with an `IsLatest = true` filter. |
+| Will Apex create files and links for many records in one transaction? | Reusing one `Set` across map keys links every document to every record (gotcha 10). | A fresh collection per key and a test asserting link counts. |
+
+Answering these first gives a files design that fits the real file sizes, exposes nothing to site users by accident and stays inside storage and heap limits, where uploading directly discovers each limit in production.
 
 ## The three-object model
 
@@ -146,7 +160,7 @@ reference. Auth is via named credential.
 
 | Topic | See instead |
 |---|---|
-| LWC file upload UI components | `lwc/lwc-file-upload-patterns` |
-| Static resources for LWC bundling | `lwc/static-resources` |
-| Salesforce CMS for marketing content | `experience/salesforce-cms-patterns` |
+| LWC file upload UI components | `lwc/file-upload-patterns` |
+| Static resources for LWC bundling | `lwc/static-resources-in-lwc` |
+| Salesforce CMS for marketing content | `admin/experience-cloud-cms-content` |
 | Big-file media streaming use cases | App-layer (S3 + signed URLs, etc.) |

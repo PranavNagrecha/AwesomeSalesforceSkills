@@ -1,20 +1,19 @@
 {
   "category": "flow",
   "chunk_ids": [
+    "00e59fd3d8a6ed122b0f",
     "02f6501d18a4e250ee3f",
     "034e957390813ddb0594",
     "06dbee807a9074dba6fd",
-    "08940f6997035a032cbe",
     "0957052c3890ef4ea46a",
     "0e1e054fc4a69c051117",
     "0fc36995a945b1242a8d",
     "1110740a7a273f8d3dbe",
-    "1854273423ea3876587c",
     "18b294ce6e1af65bbc74",
-    "18d95817c66df05a8172",
     "1d8e69771467e3a56b7a",
     "21fa5e4ebb7e915ec7bc",
     "2322be7d6ed3e5d4ac76",
+    "248c22b99412dc8e1d1c",
     "25e11c6b84011b913b36",
     "262cec0aca331f0cd8cf",
     "2786040f80c29604e29e",
@@ -23,8 +22,9 @@
     "2fc56efc895499648dd9",
     "354c57afb93d73d43976",
     "3ac6150e37703c8bd38f",
+    "519ea0df8518c9e5af26",
     "539fd7eb89d7d80931aa",
-    "5a3c78779cf705035035",
+    "5ac84aec42e049f246a5",
     "5e898cf893b3572239f6",
     "5f67a3135317a029c889",
     "68f4bcd8ce26e20caa9e",
@@ -36,20 +36,22 @@
     "716e3171f13e17e3bfac",
     "74e31b4c07d8fbd8630d",
     "74fe62c0de69ecc6a6a1",
-    "76d81ec73b60a3671e57",
     "7b036ee76211e9f5d035",
     "7c66424d92fda50f9860",
     "8f149f9b6aec5c33021b",
     "8fac605adfff1b916111",
     "975d1fb304237953457a",
+    "9bab6b3624861fe77b56",
     "9f53754ec0fd437840db",
+    "9f55cf88097b97ed2318",
     "a11acec14ce1040d98ff",
     "a317bda9c29e143b098b",
     "a37b8002ed266b495995",
     "a4cdcc04effa26126629",
     "a8dac399582275727351",
-    "a9aca40f9af613dc42ba",
     "a9c7615e13ef7c488d44",
+    "ad8f298bd83d54af943b",
+    "b3796cc3427a7d8ecb81",
     "b43d5ca17346317074b7",
     "bb05fc6d537b692aeb00",
     "bd82d96ac3f0e5c39a88",
@@ -60,13 +62,15 @@
     "d7c2265623fe80771618",
     "da94eb27cd64bb2c3cfe",
     "dc98990f359f7830ea40",
-    "e1f50efdc6299ef8c544",
+    "e3437dfcbf07b5f64a7b",
     "e44f7bf1e2f992a2486d",
+    "ece291dc5bb8be234947",
     "ee17e04f5e826088fdce",
     "ef7869541fc1b01f24b7",
-    "fe9d4ba8ba81ab65d3d4"
+    "fe9d4ba8ba81ab65d3d4",
+    "ff2de4e13d170aca81fa"
   ],
-  "content_hash": "73bacb3b8d64d3c69ece6538f128b88c04c410c9cb763d9d4acab512fe90193f",
+  "content_hash": "e8fd30578c5023b08ffaa2259f5d3fd57660a33fb7c478e1d4cbef7babd1ce85",
   "dependencies": [
     "flow/flow-http-callout-action",
     "flow/flow-invocable-from-apex"
@@ -86,7 +90,7 @@
     "Extend Flows with the Apex-Defined Data Type \u2014 https://help.salesforce.com/s/articleView?id=sf.flow_build_extend_apex_type.htm&type=5",
     "AuraEnabled Annotation (Apex Developer Guide) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_AuraEnabled.htm",
     "Supported Data Types in Flows (Lightning Web Components Developer Guide) \u2014 https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-data-types.html",
-    "Per-Transaction Apex Governor Limits \u2014 the 6 MB / 12 MB heap ceiling a large Apex-defined collection is charged against \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm"
+    "Per-Transaction Apex Governor Limits \u2014 the 10 MB / 25 MB heap ceiling a large Apex-defined collection is charged against (Apex Developer Guide 264 L19780, Winter '27; 6 MB / 12 MB at 262 L19577), with the Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855-113862) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm"
   ],
   "outputs": [
     "Apex-Defined Type class stub with @AuraEnabled fields",
@@ -113,7 +117,7 @@
   "templates": [
     "skills/flow/flow-apex-defined-types/templates/apex-defined-type.cls"
   ],
-  "updated": "2026-08-14",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

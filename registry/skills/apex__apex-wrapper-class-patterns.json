@@ -89,7 +89,7 @@
     "fdbdf7b4940892af33ce",
     "feb0cf2aec77add5b632"
   ],
-  "content_hash": "f11756374a5b0dc113ab79bfe5ca7b4de28a988d4c309f7e966c71fd0beed412",
+  "content_hash": "c23dd92d2d4622566893eb9304dc8d999eaf52875370e06e31ce222e0d3c6117",
   "dependencies": [],
   "description": "Use when designing wrapper or inner classes in Apex to combine SObjects with computed fields, shape data for LWC consumption, or sort collections with Comparable or Comparator. Trigger keywords: wrapper class, inner class, Comparable, Comparator, @AuraEnabled fields, @JsonAccess, return a wrapper list to LWC, sort a list of wrapper objects. NOT for JSON serialization mechanics \u2014 use apex/apex-json-serialization. NOT for LWC data-binding patterns \u2014 use lwc/lwc-reactive-state-patterns.",
   "file_location": "skills/apex/apex-wrapper-class-patterns",
@@ -102,6 +102,7 @@
   "name": "apex-wrapper-class-patterns",
   "official_sources": [
     "Apex Developer Guide, Summer '26 (262): \"Inner classes\" and \"Using Static Methods and Variables\" (no implicit outer-instance pointer, no statics), \"Using the with sharing, without sharing, and inherited sharing Keywords\" (Other Implementation Details, Versioned Behavior Changes for API 67.0), \"AuraEnabled Annotation,\" \"JsonAccess Annotation,\" \"List Sorting,\" \"Lists of Custom Types and Sorting,\" \"Custom Sort Order of sObjects,\" \"Per-Transaction Apex Limits\" (heap, SOQL). https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
+    "Apex Developer Guide, Winter '27 (264): \"Per-Transaction Apex Limits\" heap row 10 MB / 25 MB (L19780) and footnote 4 (L19853); Metadata API 264 `ApexSettings.enableEnforceSummer26ApexHeapLimit` (L113855-113862) \u2014 supports the Heap usage note above. https://resources.docs.salesforce.com/264/latest/en-us/sfdc/pdf/salesforce_apex_developer_guide.pdf",
     "Apex Reference Guide, Summer '26 (262): \"Comparable Interface,\" \"Comparator Interface.\" https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/salesforce_apex_reference_guide.pdf",
     "Lightning Aura Components Developer Guide, Summer '26 (262): \"AuraEnabled Annotation,\" \"Returning Data from an Apex Server-Side Controller,\" \"Supported Apex Data Types,\" custom Apex class parameter example. https://resources.docs.salesforce.com/262/latest/en-us/sfdc/pdf/lightning.pdf",
     "Lightning Web Components Developer Guide, \"Expose Apex Methods to Lightning Web Components\" (fetched 2026-10-03): https://developer.salesforce.com/docs/platform/lwc/guide/apex-expose-method.html",
@@ -150,7 +151,7 @@
   "templates": [
     "skills/apex/apex-wrapper-class-patterns/templates/apex-wrapper-class-patterns-template.md"
   ],
-  "updated": "2026-10-03",
+  "updated": "2026-10-20",
   "vector_embedding": null,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

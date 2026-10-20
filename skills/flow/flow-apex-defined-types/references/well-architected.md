@@ -75,4 +75,4 @@
 - Extend Flows with the Apex-Defined Data Type — https://help.salesforce.com/s/articleView?id=sf.flow_build_extend_apex_type.htm&type=5
 - AuraEnabled Annotation (Apex Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_AuraEnabled.htm
 - Supported Data Types in Flows (Lightning Web Components Developer Guide) — https://developer.salesforce.com/docs/platform/lwc/guide/use-flow-data-types.html
-- Per-Transaction Apex Governor Limits — the 6 MB / 12 MB heap ceiling a large Apex-defined collection is charged against — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
+- Per-Transaction Apex Governor Limits — the 10 MB / 25 MB heap ceiling a large Apex-defined collection is charged against (Apex Developer Guide 264 L19780, Winter '27; 6 MB / 12 MB at 262 L19577), with the Winter '27-only nonproduction opt-out `ApexSettings.enableEnforceSummer26ApexHeapLimit` (Metadata API 264 L113855-113862) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm
