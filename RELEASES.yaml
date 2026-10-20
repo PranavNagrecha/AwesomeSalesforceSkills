@@ -392,7 +392,7 @@ releases:
       skills + adversarial review per batch'
     size: L
     owner_model: opus
-    status: todo
+    status: dropped
     target: 20
     floor: 10
     domains:
@@ -404,6 +404,8 @@ releases:
     notes: 'R1-09 finding: target first the skills the five scenario builds actually retrieve (callouts-and-http-integrations,
       apex-named-credentials-patterns, platform-events-apex, named-credentials-setup, …) so accuracy work changes what the
       build loop asks.'
+    evidence: 'Owner 2026-10-20 night: enough bad decisions; no more skill writing until 1.5.0 measurements and the decision
+      memo are in. Content work resumes only if R2-06 says so.'
   - id: R2-05
     title: 'Candidate "better product" spike: package the skill checkers as one CI linter for Salesforce projects (run_all_checkers.py
       over a target tree, GitHub Action + CLI); run it on the five scenario builds and one real project; record findings/false
