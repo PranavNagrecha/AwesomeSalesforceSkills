@@ -384,8 +384,15 @@ releases:
       re-run cold; then an adversarial grader scores right/useful/wrong against the corpus'
     size: S
     owner_model: opus
-    status: running
+    status: done
     parent: R2-01
+    evidence: 'GRADE RIGHT-AND-USEFUL (orchestrator-verified: build_plan.py validate OK 1 milestone/1 step/0 warnings on the
+      cold plan; scale ask matches the committed run). Cold run: 21 clarifications (13 committed; +8 from tables that did
+      not exist in Sept), same single metadata-builder step, stricter formula on reopen-and-lower, weaker on same-save close,
+      one self-flagged ungrounded ''why''. Findings: section 3.1 vs clarifier Step 4 disagree on the generic requirements
+      set at ask tier; no decision tree covers ''reject a save'' (VR vs Flow vs Apex addError); template validation-rule-patterns
+      claims ISCHANGED fires on insert and mandates Integration_Bypass__c; check_custom_permissions --strict exits 0 on an
+      empty dir; envelope path schema rejects out-of-repo builds.'
   - id: R2-24
     title: 'Recipe test step 1: Winter ''27 probe set (facts the model cannot know) in run_lift probe format'
     size: M
@@ -551,6 +558,12 @@ releases:
       branch), lookup scope follows the ask, reporting asks produce a report type; sharing-and-visibility 1.1.1 gotcha: Contract
       has no ContractShare object (release 264 Object Reference; consequence UNVERIFIED); validate --agents 0, parity 0, verify
       no FAIL, validate --changed-only 0'
+  - id: R2-27
+    title: 'Build-loop fixes from the cold proof: 3.1 vs clarifier Step 4, reject-a-save tree branch, VR template claims,
+      custom-permissions --strict'
+    size: S
+    owner_model: sonnet
+    status: todo
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -753,3 +766,12 @@ inbox:
     fix the 3 wrong rows + DevHubSettings naming in standards/release-delta-winter27.md'
   size: M
   slotted_into: 1.6.0
+- date: 2026-10-19
+  ask: 'From agent proof R2-01-8 (cold build loop): (1) standards/build-orchestration.md section 3.1 says only cited skills''
+    rows at ask tier while agents/requirements-clarifier Step 4 says always add admin/requirements-gathering-for-sf — reconcile
+    (volume question was lost); (2) add a decision-tree branch for ''reject a save'' (validation rule vs Flow vs Apex addError)
+    to automation-selection.md; (3) templates/admin/validation-rule-patterns.md: verify or fix ''ISCHANGED fires on insert''
+    and the mandatory Integration_Bypass__c custom setting (no skill ships its XML); (4) skills/admin/custom-permissions checker:
+    --strict must exit 1 on an empty dir'
+  size: S
+  slotted_into: 1.5.0
