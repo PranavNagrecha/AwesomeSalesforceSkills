@@ -5,7 +5,10 @@ Scans Salesforce metadata for hard-coded record-type ID literals and other
 anti-patterns documented in references/llm-anti-patterns.md.
 
 Usage:
-    python3 check_record_type_id_management.py [--manifest-dir path/to/metadata]
+    python3 check_record_type_id_management.py [--manifest-dir path/to/metadata] [--strict]
+
+Exit codes: 1 on a missing --manifest-dir (ERROR); every finding is a WARN
+(an anti-pattern, not a schema break) and exits 0 unless --strict.
 """
 
 from __future__ import annotations
@@ -30,6 +33,11 @@ def parse_args() -> argparse.Namespace:
         "--manifest-dir",
         default=".",
         help="Root directory of Salesforce metadata (default: current directory).",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 when any WARN finding is reported.",
     )
     return parser.parse_args()
 
@@ -110,8 +118,8 @@ def coverage_note(root: Path) -> str | None:
 def main() -> int:
     args = parse_args()
     root = Path(args.manifest_dir)
-    if not root.exists():
-        print(f"ERROR: directory not found: {root}", file=sys.stderr)
+    if not root.is_dir():
+        print(f"ERROR: directory not found: {root}")
         return 1
 
     note = coverage_note(root)
@@ -127,8 +135,8 @@ def main() -> int:
         print("No record-type ID anti-patterns detected.")
         return 0
     for issue in issues:
-        print(f"ISSUE: {issue}", file=sys.stderr)
-    return 1
+        print(f"WARN: {issue}")
+    return 1 if args.strict else 0
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 # Examples — Report Performance Tuning
 
+UNVERIFIED (2026-10-21), applies to this file: the timings (60+ s → under 5 s, 45 s → 8 s), the "Opportunities with Contact Roles" report type, the claim that standard report types are pre-optimized, and the "Report data unavailable" dashboard error and error-instead-of-stale-data behaviour in Example 1 are illustrative or Help-only. Grounded: the Reports and Dashboards REST API "returns up to the first 2,000 report rows" sync or async (REST API 262, Requirements and Limitations); fields indexed by default include Id, Name, OwnerId, CreatedDate, SystemModstamp and RecordType (ldv 264 L308-309).
+
 ## Example 1: Opportunity Pipeline Report Timing Out in Enterprise Org
 
 **Context:** An enterprise org has 8 million Opportunity records spanning 6 years of sales history. The sales ops team built an "All Pipeline" report with no date filter and shared it on the executive dashboard. After the org grew past 5M records, the report began timing out intermittently, and the dashboard started showing "Report data unavailable."
@@ -19,48 +21,40 @@ Additional selective filter (recommended for additional safety):
 Dashboard configuration:
   - Split "Active Pipeline" and "Historical Pipeline" into two separate reports
   - Active Pipeline: Close Date = THIS QUARTER, NEXT QUARTER
-  - Historical Pipeline (for trend): run via async Analytics API nightly, cache results
+  - Historical Pipeline (for trend): summarized onto a parent/summary object nightly
 ```
 
-**Why it works:** Close Date on Opportunity is indexed by default in Salesforce. Adding a relative date range filter converts a full 8M-row scan into a targeted range scan, typically dropping query time from 60+ seconds to under 5 seconds. Splitting historical queries to async execution removes them from the interactive dashboard path entirely.
+**Why it works:** A selective date range lets the optimizer avoid a full scan — provided the date field is indexed (ldv 264 L305-309). UNVERIFIED (2026-10-21): that Close Date is indexed by default (CreatedDate is, ldv 264 L308-309); if it is not, ask Support for a custom index or filter on CreatedDate. Storing summarized history "on the parent record for the report ... is more efficient than having the report summarize the child records" (ldv 264 L799-801).
 
 ---
 
-## Example 2: Full Result Export Using Analytics API Async Execution
+## Example 2: Full Result Export — Bulk API 2.0, Not the Analytics API
 
-**Context:** A data team needs a daily extract of all closed Opportunities created in the current fiscal year — approximately 120,000 rows. They built a report in the UI but the exported CSV always stops at 2,000 rows. They incorrectly concluded the org "only has 2,000 records."
+**Context:** A data team needs a daily extract of all closed Opportunities created in the current fiscal year — approximately 120,000 rows. Their report-based pipeline always stops at 2,000 rows, and they concluded the org "only has 2,000 records."
 
-**Problem:** The Salesforce report UI and the synchronous Analytics API endpoint both display a maximum of 2,000 detail rows. The export button in the UI exports only the displayed rows. The underlying data is complete, but neither the UI nor the synchronous API surface it.
+**Problem:** The Reports and Dashboards REST API "returns up to the first 2,000 report rows" — synchronous and asynchronous runs alike (REST API 262, Requirements and Limitations). An async `POST .../analytics/reports/{reportId}/instances` run avoids the 2-minute API timeout and keeps results 24 hours (Run Reports Synchronously or Asynchronously), but it does not return row 2,001. Earlier versions of this example claimed it did.
 
-**Solution:**
+**Solution:** query the object with a Bulk API 2.0 query job (api_asynch 264 L1055-1069):
 
 ```http
-# Step 1: Submit async report instance
-POST /services/data/v60.0/analytics/reports/{reportId}/instances
+# Step 1: Create the query job
+POST /services/data/v68.0/jobs/query
 Content-Type: application/json
 Authorization: Bearer {accessToken}
 
 {
-  "reportMetadata": {
-    "reportFilters": [
-      {
-        "column": "CLOSE_DATE",
-        "operator": "greaterOrEqual",
-        "value": "2025-02-01"
-      }
-    ]
-  },
-  "includeDetails": true
+  "operation": "query",
+  "query": "SELECT Id, Name, Amount, CloseDate FROM Opportunity WHERE IsClosed = true AND CreatedDate = THIS_FISCAL_YEAR"
 }
 
-# Step 2: Poll for completion
-GET /services/data/v60.0/analytics/reports/{reportId}/instances/{instanceId}
+# Step 2: Poll the job until state is JobComplete
+GET /services/data/v68.0/jobs/query/{queryJobId}
 
-# Response when complete:
-# { "attributes": { "status": "Success" }, "factMap": { ... } }
+# Step 3: Download the CSV results
+GET /services/data/v68.0/jobs/query/{queryJobId}/results
 ```
 
-**Why it works:** The async Analytics API endpoint (`POST .../instances`) bypasses the 2,000-row display limit. The `includeDetails: true` parameter includes row-level detail in the `factMap`. Polling continues until `status` is `Success`, then the caller processes the full result set. For very large exports (>2M rows), the date filter in `reportMetadata.reportFilters` is chunked across multiple requests.
+**Why it works:** Bulk API 2.0 exists "to perform bulk queries on your org data" (api_asynch 264 L136-137) and has no 2,000-row report cap. The job and results URLs are the guide's own (api_asynch 264 L1093, L1126); `JobComplete` means "The job was processed" (L281). If the output must keep report formatting, split the report run into date windows that each return fewer than 2,000 rows.
 
 ---
 
@@ -99,6 +93,6 @@ GET /services/data/v60.0/analytics/reports/{reportId}/instances/{instanceId}
 
 **What practitioners do:** A user needs 50,000 rows from a report. They click "Export" in the Lightning Report UI, choosing CSV format, expecting to get all rows.
 
-**What goes wrong:** The UI export respects the same 2,000-row display cap. The downloaded CSV contains at most 2,000 rows. The user receives a file that appears complete but is missing 96% of the data. This is particularly dangerous when the exported data feeds a downstream process or calculation.
+**What goes wrong:** UNVERIFIED (2026-10-21): that the UI export stops at the 2,000-row display cap — Help-only. Either way, a report export is the wrong tool for a downstream process that must be complete, and the Analytics API is no escape hatch: it returns only the first 2,000 report rows, sync or async (REST API 262, Requirements and Limitations).
 
-**Correct approach:** Use the Analytics API async execution pattern (`POST /analytics/reports/{id}/instances` with `includeDetails: true`). For very large exports, filter by time windows and merge the resulting payloads. Alternatively, if the data is needed regularly, expose the underlying object via a Connected App and export directly from the API (`/query` or bulk API), bypassing the report layer entirely.
+**Correct approach:** Export directly from the object with a Bulk API 2.0 query job (Example 2; api_asynch 264 L136-137), bypassing the report layer. If report formatting is required, run the report in filter windows that each return fewer than 2,000 rows and merge the results.

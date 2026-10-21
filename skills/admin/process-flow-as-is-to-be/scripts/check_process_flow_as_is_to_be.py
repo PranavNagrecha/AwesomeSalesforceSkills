@@ -8,12 +8,13 @@ Stdlib only.
 
 Usage:
     python3 check_process_flow_as_is_to_be.py --map path/to/process-map.json
-    python3 check_process_flow_as_is_to_be.py --map ./examples/order-intake.json --strict
+    python3 check_process_flow_as_is_to_be.py --manifest-dir path/to/maps [--strict]
 
 Exit codes:
-    0 — no issues
-    1 — one or more validation issues found
-    2 — argument or file-system error
+    0 — no ERROR findings (WARN findings exit 0 unless --strict; an empty
+        --manifest-dir prints one WARN and exits 0)
+    1 — an ERROR finding (schema break: missing key, invalid tier enum,
+        unparseable JSON), a missing path, or any WARN under --strict
 """
 
 from __future__ import annotations
@@ -44,11 +45,16 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Validate an As-Is / To-Be process-map JSON handoff.",
     )
-    parser.add_argument(
+    target = parser.add_mutually_exclusive_group(required=True)
+    target.add_argument(
         "--map",
         dest="map_path",
-        required=True,
-        help="Path to the process-map JSON file.",
+        help="Path to one process-map JSON file.",
+    )
+    target.add_argument(
+        "--manifest-dir",
+        dest="manifest_dir",
+        help="Directory whose *.json files (recursive) are process-map handoffs.",
     )
     parser.add_argument(
         "--strict",
@@ -243,24 +249,46 @@ def validate_map(data: dict) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def _check_file(map_path: Path) -> tuple[list[str], list[str]]:
+    try:
+        data = json.loads(map_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        return [f"{map_path}: invalid JSON: {e}"], []
+    if not isinstance(data, dict):
+        return [f"{map_path}: top-level JSON must be an object"], []
+    errors, warnings = validate_map(data)
+    return [f"{map_path}: {e}" for e in errors], [f"{map_path}: {w}" for w in warnings]
+
+
 def main() -> int:
     args = parse_args()
-    map_path = Path(args.map_path)
-    if not map_path.exists():
-        print(f"ERROR: map file not found: {map_path}", file=sys.stderr)
-        return 2
-    try:
-        data = json.loads(map_path.read_text())
-    except json.JSONDecodeError as e:
-        print(f"ERROR: invalid JSON in {map_path}: {e}", file=sys.stderr)
-        return 2
+    if args.map_path:
+        target = Path(args.map_path)
+        if not target.is_file():
+            print(f"ERROR: map file not found: {target}")
+            return 1
+        files = [target]
+    else:
+        target = Path(args.manifest_dir)
+        if not target.is_dir():
+            print(f"ERROR: manifest directory not found: {target}")
+            return 1
+        files = sorted(target.rglob("*.json"))
+        if not files:
+            print(f"WARN: no *.json process maps under {target}; nothing was checked.")
+            return 0
 
-    errors, warnings = validate_map(data)
+    errors: list[str] = []
+    warnings: list[str] = []
+    for f in files:
+        e, w = _check_file(f)
+        errors.extend(e)
+        warnings.extend(w)
 
     for w in warnings:
-        print(f"WARN: {w}", file=sys.stderr)
+        print(f"WARN: {w}")
     for e in errors:
-        print(f"ERROR: {e}", file=sys.stderr)
+        print(f"ERROR: {e}")
 
     if errors:
         return 1

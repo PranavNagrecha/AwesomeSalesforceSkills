@@ -41,9 +41,9 @@ outputs:
   - "Exception path catalogue: the sad paths for every decision diamond and every integration handshake"
   - "Handoff JSON for /build-flow, /build-agentforce-action, and /design-object — process_id, as_is_steps[], to_be_steps[] each with actor, description, automation_tier, recommended_agents[]"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-21
 ---
 
 # Process Flow As-Is To-Be
@@ -65,6 +65,20 @@ Gather this context before mapping anything:
 - **Confirm there is no domain-specific sister skill that fits better.** A sales-stage transition map is `sales-process-mapping`. A donor stewardship cycle is `fundraising-process-mapping`. An FSL scheduling policy is `fsl-scheduling-policies`. Use those instead when the domain matches.
 
 ---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| What exactly starts the process and what state ends it? | Maps without both drift during build (gotchas.md Gotcha 1) | `scope.start_trigger` / `scope.end_state` the checker requires |
+| Who (by role), which systems (by name) and which customers act in it? | Lanes per system or phase hide responsibility (Gotchas 4, 6, 7) | One lane per actor, 4–7 lanes |
+| For each decision, what happens when the data is missing or the supplying system is down? | Implicit branches and missing sad paths surface at build time (Gotchas 2, 5) | ≥2 labelled branches plus a fault path per decision |
+| Which steps need a recorded sign-off? | Approval history lives in `ProcessInstance` records (obj 264 L228343-228344); a Flow decision writes no `ProcessInstance` (Gotcha 8; UNVERIFIED (2026-10-21) that the Flow has no equivalent record) | `[APPROVAL]` on the sign-off step, `[FLOW]` around it |
+| Which steps stay manual on purpose, and why? | "Automate everything" is the costliest failure (Gotcha 3) | A signed-off manual residue table |
+| Who signs off the To-Be? | A To-Be without an owner does not survive the build (Before Starting) | A named owner on the map |
+| Where is the map versioned? | Unversioned maps drift from what was built (Gotcha 1) | The handoff JSON committed with the build |
+
+A proper map gives the build team one actor, one tier and one cited decision-tree branch per step, where "just doing it" leaves them to guess the sad paths and the approvals.
 
 ## Core Concepts
 
@@ -117,7 +131,7 @@ A To-Be map that documents only happy paths is incomplete. The build team will i
 
 Every To-Be step must carry exactly one automation tier in square brackets at the end of the step label. The allowed values are:
 
-- `[FLOW]` — a record-triggered, screen, or autolaunched Flow per `automation-selection.md` Q2/Q4/Q5.
+- `[FLOW]` — a record-triggered Flow per `automation-selection.md` Q2/Q4/Q5/Q16, a screen Flow per Q8/Q9, or a schedule-triggered Flow per Q10.
 - `[APEX]` — Apex trigger, service class, batch, or queueable per `automation-selection.md` Q3/Q6/Q10.
 - `[APPROVAL]` — a Salesforce Approval Process per the cheat sheet in `automation-selection.md`.
 - `[PLATFORM_EVENT]` — Platform Event publish or CDC subscriber per `automation-selection.md` Q11/Q12.
@@ -160,7 +174,7 @@ The canonical handoff payload that downstream agents (`/build-flow`, `/build-age
       "actor": "Salesforce Platform",
       "description": "Validate credit limit on Account before activation",
       "automation_tier": "FLOW",
-      "decision_tree_branch": "automation-selection.md Q2 → Before-save record-triggered Flow",
+      "decision_tree_branch": "automation-selection.md Q16 → Before-save record-triggered Flow with a Custom Error element",
       "recommended_agents": ["build-flow"]
     }
   ],
@@ -243,7 +257,7 @@ This shape is enforced by `scripts/check_process_map.py`.
 | Stakeholder wants every step automated | Push back with the manual residue concept | Some steps stay manual on purpose; the map must say so explicitly |
 | Process spans more than 30 steps | Split into sub-processes with named handoff points | Maps over 30 steps lose readability and cannot be validated |
 | External system can fail mid-process | Add an exception path with timeout / fallback | Happy-path-only maps fail at build when the dev asks "what if it times out?" |
-| Step requires regulatory sign-off | Tag as `[APPROVAL]`, not `[FLOW]` | Approval Process gives auditability; Flow alone does not |
+| Step requires regulatory sign-off | Tag as `[APPROVAL]`, not `[FLOW]` | Approval runs are recorded as `ProcessInstance` records used for approval history (obj 264 L228343-228344); UNVERIFIED (2026-10-21) that a Flow-built approval has no equivalent record |
 
 ---
 
@@ -274,7 +288,7 @@ Run through these before marking the process map complete:
 - [ ] Every integration handshake has a timeout / fallback exception path
 - [ ] Manual residue table is populated and signed off by the process owner
 - [ ] Open questions log is empty (or every item has a named owner and target date)
-- [ ] Handoff JSON validates against `scripts/check_process_map.py`
+- [ ] Handoff JSON validates: `python3 skills/admin/process-flow-as-is-to-be/scripts/check_process_map.py --map <file>` (or `--manifest-dir <dir>`) exits 0
 - [ ] Number of lanes is between 4 and 7; otherwise scope is split
 
 ---
@@ -284,9 +298,9 @@ Run through these before marking the process map complete:
 Non-obvious platform behaviors that cause real production problems:
 
 1. **The "Salesforce Platform" lane is not one thing — it covers Flow, Apex, validation rules, sharing, assignment rules, and approval processes** — Mapping every automated step into a single platform lane loses the tier distinction. Use the `[FLOW]` / `[APEX]` / `[APPROVAL]` annotations to preserve it. The build team needs to know which sub-tool to reach for.
-2. **A process map with no `[APPROVAL]` tier is suspicious** — Most non-trivial business processes have at least one approval step (financial threshold, manager sign-off, regulatory review). Maps that show every approval as a `[FLOW]` typically miss the audit-trail and approver-history features the Approval Process gives for free.
+2. **A process map with no `[APPROVAL]` tier is suspicious** — Most non-trivial business processes have at least one approval step (financial threshold, manager sign-off, regulatory review). Maps that show every approval as a `[FLOW]` typically miss what an Approval Process records and offers: `ProcessInstance` approval history (obj 264 L228343-228344), submitter recall (`allowRecall`, api_meta 264 L25137) and multi-approver rules (`whenMultipleApprovers` Unanimous / FirstResponse, api_meta 264 L25409-25414).
 3. **Integration steps must be paired with `integration-pattern-selection.md`** — Tagging a step `[INTEGRATION]` is not enough. The choice between REST callout, Bulk API, Platform Event, CDC, Pub/Sub, Salesforce Connect, and MuleSoft is itself a decision that the integration tree resolves. Skipping that resolution leaves the build team to guess.
-4. **Backward branches in a decision diamond are silently allowed unless documented** — If a decision diamond's "No" branch loops back to an earlier step (a rework loop), the platform will not warn that this creates a potential infinite loop. The map must call out rework loops explicitly so the build team adds a circuit-breaker (e.g., a max-attempts counter on the record).
+4. **Backward branches in a decision diamond are silently allowed unless documented** — If a decision diamond's "No" branch loops back to an earlier step (a rework loop), nothing in the map warns that this creates a potential infinite loop. A loop inside one save is capped for Apex at a total trigger stack depth of 16 (apexdev 264 L19762), but a rework loop that spans separate saves meets no such limit. The map must call out rework loops explicitly so the build team adds a circuit-breaker (e.g., a max-attempts counter on the record).
 5. **Customer-facing steps that depend on email or portal action are not "automated" steps** — A step like "customer signs DocuSign" is the customer's action, not Salesforce's. It belongs in the Customer lane with no automation tier. Tagging it `[INTEGRATION]` because DocuSign is integrated is wrong — the integration is the callout, not the signing.
 6. **Process maps drift during build unless versioned** — The most common failure: the As-Is map gets written, the team starts building, the To-Be evolves in conversation, and three weeks later nobody can find the version that drove the build. Commit the JSON handoff to source control alongside the build artifacts.
 
@@ -308,12 +322,12 @@ Non-obvious platform behaviors that cause real production problems:
 
 ## Related Skills
 
-- requirements-gathering-for-sf — broader user-story-driven discovery; this skill produces the process-map artifact that requirements gathering references
-- sales-process-mapping — sales-stage-specific variant; use when the process is opportunity stage progression
-- fundraising-process-mapping — nonprofit donor stewardship variant
-- fsl-scheduling-policies — FSL appointment scheduling variant
-- persona-and-journey-mapping-sf — UI-side user journey companion; pair with this skill to cover both process and journey perspectives
-- approval-processes — consumed by `[APPROVAL]`-tagged steps in the To-Be
+- admin/requirements-gathering-for-sf — broader user-story-driven discovery; this skill produces the process-map artifact that requirements gathering references
+- admin/sales-process-mapping — sales-stage-specific variant; use when the process is opportunity stage progression
+- admin/fundraising-process-mapping — nonprofit donor stewardship variant
+- admin/fsl-scheduling-policies — FSL appointment scheduling variant
+- admin/persona-and-journey-mapping-sf — UI-side user journey companion; pair with this skill to cover both process and journey perspectives
+- admin/approval-processes — consumed by `[APPROVAL]`-tagged steps in the To-Be
 - flow/record-triggered-flow-patterns — consumed by `[FLOW]`-tagged steps
 
 ## Related Decision Trees

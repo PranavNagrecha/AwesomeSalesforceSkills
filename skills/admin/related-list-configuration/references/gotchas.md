@@ -2,9 +2,11 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
+UNVERIFIED (2026-10-21), applies to this file: whether "Enhanced Related Lists" is a separate component or a list-type setting, the 10-column cap and View All showing more (Gotcha 1), silent sort fallback and the unsortable-type list (Gotcha 2), blank-cell rendering of FLS-hidden fields (Gotcha 3), per-user column-width reset on a component swap (Gotcha 6), the ~4 mobile columns (Gotcha 7) and Quick Links counts (Gotcha 8) are Salesforce Help or field reports; the Metadata API documents `RelatedListItem` with no column cap and one `sortField` (api_meta 264 L85859, L85868), and field permissions govern related lists (secguide 262 L621).
+
 ---
 
-## Gotcha 1: Classic related lists silently drop the 11th column
+## Gotcha 1: Classic related lists silently drop the 11th column (UNVERIFIED cap)
 
 **What happens.** An admin adds an 11th or 12th field to a related list on a Page Layout. The layout editor accepts it without warning. End users never see those columns — only the first 10 render. The columns appear in View All (which is the full-page related list grid and supports more), so the admin testing via View All concludes "it works" while end users on the inline view see something different.
 
@@ -14,7 +16,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 2: Cross-object formulas and long text fields silently fall back to default sort
+## Gotcha 2: Cross-object formulas and long text fields silently fall back to default sort (UNVERIFIED)
 
 **What happens.** An admin sets a related list's sort field to a cross-object formula (e.g., `Account.Owner.Name` on the Contact related list) or to a long text area. The field picker accepts the choice. At render, the related list uses default sort instead — no error, no warning — because the platform cannot index those field types for related-list sorting.
 
@@ -24,7 +26,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 3: FLS-hidden fields render as blank cells, not access-denied
+## Gotcha 3: FLS-hidden fields render as blank cells, not access-denied (rendering UNVERIFIED)
 
 **What happens.** A field is on the related list's column set, but FLS hides it from the running user's Profile. The cell renders as empty space (an apparently blank column for that record). Users report "the data is missing" or "the field is broken." Admins debug the layout, the data, and the related list before discovering it is an FLS issue.
 
@@ -40,7 +42,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs.** Any object with > 1 record type backed by > 1 Page Layout, where changes are made unilaterally to one layout.
 
-**How to avoid.** Document the intent in each Page Layout's description field (e.g., "Sales record-type layout — Opportunities related list is mandatory here"). Periodically diff related-list configurations across layouts during an audit. Treat layout B as a peer that needs the same review whenever layout A changes.
+**How to avoid.** The Layout metadata type has no description field (field table api_meta 264 L85051-85153), so record the intent in the layout name, the change record, or the config workbook (e.g., "Sales record-type layout — Opportunities related list is mandatory here"). Periodically diff related-list configurations across layouts during an audit — `check_related_list_configuration.py` reports every divergence. Treat layout B as a peer that needs the same review whenever layout A changes.
 
 ---
 
@@ -50,11 +52,11 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **When it occurs.** Any time a related list's visibility is controlled at the Lightning App Builder layer instead of at the Page Layout layer.
 
-**How to avoid.** Prefer per-record-type Page Layouts to express related-list divergence; this puts the intent where layout-editing admins look. When App Builder visibility filters are the only practical option, leave a comment in the Page Layout description naming the visibility-filter source.
+**How to avoid.** Prefer per-record-type Page Layouts to express related-list divergence; this puts the intent where layout-editing admins look. When App Builder visibility filters are the only practical option, record the visibility-filter source outside the layout (Layout has no description field, api_meta 264 L85051-85153) — in the FlexiPage's own `description` ("The optional description text of the Lightning page", api_meta 264 L69437) or the change record.
 
 ---
 
-## Gotcha 6: Enhanced Related Lists per-user column-width preferences are wiped on component swap
+## Gotcha 6: Enhanced Related Lists per-user column-width preferences are wiped on component swap (UNVERIFIED)
 
 **What happens.** Users have been using a related list for months and have set per-user column widths (drag-to-resize). The admin swaps the component from classic `Related List - Single` to `Enhanced Related Lists` (or vice versa) for that relationship. All per-user width preferences are reset to defaults. Users notice and complain.
 
@@ -64,7 +66,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 7: Mobile App applies the same Page Layout but renders ~4 columns inline
+## Gotcha 7: Mobile App applies the same Page Layout but renders ~4 columns inline (UNVERIFIED count)
 
 **What happens.** The configured related list has 10 columns on desktop. On the Salesforce Mobile App, only the first 3–4 columns render inline; the rest are accessible by tapping the row to drill into the record. Users on mobile report "the related list has no useful info" while desktop users see it fine. The admin tests on desktop and concludes the configuration works.
 
@@ -74,7 +76,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ---
 
-## Gotcha 8: `Related Lists - Quick Links` does not honor Enhanced Related Lists filters
+## Gotcha 8: `Related Lists - Quick Links` does not honor Enhanced Related Lists filters (UNVERIFIED)
 
 **What happens.** An admin sets up `Enhanced Related Lists` with a default user filter on Cases (e.g., Open Cases). They also add the `Related Lists - Quick Links` component at the top of the page so users can jump to each list. The Quick Links count shown next to "Cases (47)" reflects the **unfiltered** count, not the filtered Enhanced view count. Users click through, expecting 47, and see 12.
 

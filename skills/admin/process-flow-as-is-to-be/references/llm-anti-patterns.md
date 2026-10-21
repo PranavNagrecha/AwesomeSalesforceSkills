@@ -54,7 +54,8 @@ does not differentiate by role.
 For every automated step, walk standards/decision-trees/automation-selection.md
 top-to-bottom. Stop at the first branch that resolves the technology choice.
 Cite the branch in the annotation: e.g.,
-  "Validate credit limit [FLOW] — automation-selection.md Q2"
+  "Validate credit limit [FLOW] — automation-selection.md Q16 → Before-save
+   Flow with a Custom Error (the rule reads the related Account)"
   "Process 100k orders nightly [APEX] — automation-selection.md Q10"
   "Manager sign-off [APPROVAL] — automation-selection.md cheat sheet"
 ```
@@ -65,9 +66,9 @@ Cite the branch in the annotation: e.g.,
 
 ## Anti-Pattern 4: Missing approval-process candidates
 
-**What the LLM generates:** Approval steps are buried inside a `[FLOW]` annotation as a "decision element". The Approval Process tier is never used. The map loses the auditability and approver-history features.
+**What the LLM generates:** Approval steps are buried inside a `[FLOW]` annotation as a "decision element". The Approval Process tier is never used. The built Flow writes no `ProcessInstance` record, so approval history reports (obj 264 L228343-228344) never see the decision. UNVERIFIED (2026-10-21): that a Flow-built approval has no equivalent audit record of its own.
 
-**Why it happens:** LLMs treat approvals as a logical branch (if/else) rather than a distinct platform feature. The Approval Process is a dedicated tool with its own metadata type (`ApprovalProcess`) and its own UX (the Approval History related list, mass approval, recall).
+**Why it happens:** LLMs treat approvals as a logical branch (if/else) rather than a distinct platform feature. The Approval Process is a dedicated tool with its own metadata type (`ApprovalProcess`, api_meta 264 L25107), submitter recall (`allowRecall`, L25137) and approval history recorded as `ProcessInstance` records (obj 264 L228343-228344). UNVERIFIED (2026-10-21): the mass-approval UX — Help-only.
 
 **Correct pattern:**
 
@@ -121,7 +122,7 @@ For every integration step:
   4. Document the retry policy and idempotency key
 ```
 
-**Detection hint:** Any `[INTEGRATION]` step without a timeout / fallback exception path is incomplete. The `check_process_map.py` checker flags this.
+**Detection hint:** Any `[INTEGRATION]` step without a timeout / fallback exception path is incomplete. The `check_process_map.py` checker flags a map with `INTEGRATION` steps and no fault branch anywhere; it does not check each handshake separately.
 
 ---
 
@@ -135,7 +136,7 @@ For every integration step:
 
 ```
 Decompose multi-action steps into atomic units, one tier per unit:
-  Step A: Validate credit [FLOW] — automation-selection.md Q2
+  Step A: Validate credit [FLOW] — automation-selection.md Q16
   Step B: Create payment authorization in Stripe [INTEGRATION:REST]
           — integration-pattern-selection.md REST callout branch
   Step C: Update Order with auth result [FLOW] — automation-selection.md Q4

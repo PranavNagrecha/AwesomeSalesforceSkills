@@ -17,7 +17,8 @@ Use this template when configuring Remote Site Settings or CSP Trusted Sites.
 
 **Correct control to configure:**
 - Apex callout → Remote Site Settings
-- Lightning component resource → CSP Trusted Sites
+- Lightning component resource → Trusted URL (`CspTrustedSite`, formerly CSP Trusted Sites)
+- Apex callout to `callout:<NamedCredential>` → no Remote Site Setting needed (apexdev 264 L34761)
 - Both → Both must be configured separately
 
 ## Remote Site Settings Configuration
@@ -26,9 +27,9 @@ Use this template when configuring Remote Site Settings or CSP Trusted Sites.
 
 | Field | Value |
 |---|---|
-| Remote Site Name | (alphanumeric, no spaces) |
+| Remote Site Name | (letters and underscores, starts with a letter, no double or trailing underscore) |
 | Remote Site URL | (exact URL with protocol: https://...) |
-| Disable Protocol Security | [ ] true (only for HTTP or self-signed certs)  [ ] false (standard) |
+| Disable Protocol Security | [ ] false (standard)  [ ] true (lets code pass data between HTTPS and HTTP sessions; needs security sign-off — not a certificate switch) |
 | Active | [ ] true |
 | Description | (integration name and purpose) |
 
@@ -41,9 +42,9 @@ Use this template when configuring Remote Site Settings or CSP Trusted Sites.
 |---|---|
 | Site Name | |
 | Site URL | |
-| Directives | [ ] connect-src  [ ] script-src  [ ] img-src  [ ] other |
+| Directives | [ ] isApplicableToConnectSrc  [ ] FontSrc  [ ] FrameSrc  [ ] ImgSrc  [ ] MediaSrc  [ ] StyleSrc (there is no script-src flag) |
 
-- [ ] CSP Trusted Site added in org
+- [ ] Trusted URL added in org
 - [ ] Lightning component resource loading tested
 
 ## Deployment Package Checklist
@@ -51,10 +52,11 @@ Use this template when configuring Remote Site Settings or CSP Trusted Sites.
 **Deployment method:** [ ] Change Set  [ ] SFDX/sf CLI  [ ] Manual
 
 For Change Set:
-- [ ] Remote Site Setting added to Change Set (Component Type: Remote Site Setting)
+- [ ] Remote Site Setting added to Change Set explicitly (UNVERIFIED (2026-10-21): the Component Type picker label and whether Change Sets ever add it as an Apex dependency are Help-only)
 
 For SFDX:
-- [ ] `remoteSiteSettings/` folder included in deployment package
+- [ ] `remoteSiteSettings/<Name>.remoteSite` files included in deployment package
+- [ ] `check_remote_site_settings.py --manifest-dir <dir>` run clean
 - [ ] `RemoteSiteSetting` metadata type in `package.xml`
 
 ## Notes

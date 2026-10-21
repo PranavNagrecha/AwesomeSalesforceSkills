@@ -27,7 +27,7 @@ Answer these before proceeding. Do not skip — the correct fix depends on the a
 | Is API access available in this org? | |
 | Edition (for dynamic dashboard limits) | |
 
-**Most common wrong assumption:** Practitioners often believe the 2,000-row limit is a data limit, not a display limit. Confirm whether the user needs more than 2,000 rows before recommending the async API path.
+**Most common wrong assumption:** that an API run returns more than 2,000 rows. The Reports and Dashboards REST API "returns up to the first 2,000 report rows", sync or async (REST API 262, Requirements and Limitations). Confirm whether the user needs more than 2,000 rows; if so, plan a Bulk API 2.0 query or filter-windowed runs.
 
 ---
 
@@ -37,10 +37,10 @@ Check each item and mark the likely root cause:
 
 - [ ] **No selective filter** — report has no date range, owner, or record type filter on a large object
 - [ ] **CRT complexity** — custom report type spans 3–4 objects; outer joins may be inflating row counts
-- [ ] **Dashboard component overload** — dashboard has more than 20 components, multiplying refresh queries
-- [ ] **Row limit misunderstanding** — user needs all rows but is exporting via UI (2,000-row cap applies)
-- [ ] **Subscription timeout** — subscription fails because report times out at subscriber's sharing scope
-- [ ] **Refresh schedule** — dashboard scheduled refresh is less than 24 hours (platform minimum is 24hr)
+- [ ] **Dashboard component overload** — dashboard has more than 20 components (Help-only guidance, UNVERIFIED)
+- [ ] **Row limit misunderstanding** — user needs all rows from a report or an API run (the API returns only the first 2,000)
+- [ ] **Subscription timeout** — subscription fails at the subscriber's data scope (run-as behaviour UNVERIFIED)
+- [ ] **Refresh schedule** — expected cadence vs what the org's scheduler allows (24-hour minimum UNVERIFIED)
 
 ---
 
@@ -49,7 +49,7 @@ Check each item and mark the likely root cause:
 **Pattern selected:** (choose one)
 
 - [ ] Selective Filter Layer — add date range / owner / record type filter
-- [ ] Async Analytics API — provide polling pattern for full result set
+- [ ] Full extract — Bulk API 2.0 query job, or filter windows under 2,000 rows each
 - [ ] Report Type Simplification — reduce CRT to fewer objects
 - [ ] Dashboard Optimization — reduce components, adjust refresh schedule
 - [ ] Combination of the above (describe below)
@@ -82,15 +82,16 @@ Check each item and mark the likely root cause:
 
 ---
 
-## Async API Pattern (if applicable)
+## Async API Pattern (if applicable — long runs, not more rows)
+
+Each run still returns at most the first 2,000 report rows; size each filter window below that.
 
 **Report ID:** (the 18-character Report ID from the URL)
 
-**Request body:**
+**Request body (POST `/services/data/vXX.0/analytics/reports/{reportId}/instances`):**
 
 ```json
 {
-  "includeDetails": true,
   "reportMetadata": {
     "reportFilters": [
       {
@@ -103,11 +104,11 @@ Check each item and mark the likely root cause:
 }
 ```
 
-**Polling endpoint:** `GET /services/data/v60.0/analytics/reports/{reportId}/instances/{instanceId}`
+**Polling endpoint:** `GET /services/data/vXX.0/analytics/reports/{reportId}/instances/{instanceId}`
 
-**Expected status flow:** `Running` → `Success` (or `Error` — add error handling)
+**Expected status flow:** `New` → `Running` → `Success` (or `Error` — add error handling)
 
-**Row count validation:** (compare against a COUNT summary report before processing)
+**Row count validation:** (compare against a COUNT() query; a window that returns exactly 2,000 rows is truncated — split it)
 
 ---
 
@@ -115,7 +116,7 @@ Check each item and mark the likely root cause:
 
 | Item | Current State | Target State |
 |---|---|---|
-| Component count | | 20 or fewer |
+| Component count | | 20 or fewer (Help-only guidance) |
 | Refresh schedule | | Off-peak window |
 | Running user setting | | Confirm security intent |
 | Split recommendation | | |
@@ -124,13 +125,13 @@ Check each item and mark the likely root cause:
 
 ## Checklist
 
-- [ ] At least one selective filter applied to every report on an object with more than 500K records
+- [ ] At least one selective filter on an indexed field for every report on a large object (500K is a rule of thumb)
 - [ ] Custom report type spans no more objects than needed by the active field set
-- [ ] Reports requiring more than 2,000 rows use Analytics API async execution
-- [ ] Dashboard component count is 20 or fewer per dashboard
+- [ ] Requirements over 2,000 rows use a Bulk API 2.0 query or sub-2,000-row filter windows, not "the async API"
+- [ ] Dashboard component count reviewed (20-component guidance is Help-only)
 - [ ] Dashboard refresh scheduled during off-peak hours if automated
 - [ ] Required filters documented in the report description
-- [ ] Async API polling code includes error handling for `Error` and `Running` states
+- [ ] Async API polling code handles `New`, `Running`, `Success` and `Error`
 - [ ] Solution tested at subscriber's access level (not only as admin)
 
 ---

@@ -26,7 +26,9 @@ The third tradeoff is **decision-tree literalism vs domain judgement**. The `aut
 - Salesforce Well-Architected Overview — https://architect.salesforce.com/docs/architect/well-architected/guide/overview.html — for the pillar definitions referenced above
 - Salesforce Architects: Business Process Mapping — https://architect.salesforce.com/decision-guides — guidance on swim-lane and process-mapping conventions in the Salesforce context
 - Trailhead: Business Process Mapping module — https://trailhead.salesforce.com/content/learn/modules/business-process-mapping — canonical introduction to swim-lane mapping for Salesforce projects
-- Salesforce Help: Approval Processes — https://help.salesforce.com/s/articleView?id=sf.approvals_overview.htm — for the `[APPROVAL]` tier semantics and audit-trail features
+- Salesforce Help: Approval Processes — https://help.salesforce.com/s/articleView?id=sf.approvals_overview.htm — for the `[APPROVAL]` tier semantics (not corpus)
+- Object Reference — `ProcessInstance`, "an instance of a single, end-to-end approval process", used "to create approval history reports" (obj 264 L228343-228344) — grounds the audit-trail claim for `[APPROVAL]`
+- Metadata API Developer Guide — `ApprovalProcess` type (api_meta 264 L25107), `allowRecall` (L25137), `emailTemplate` (L25167-25168), `whenMultipleApprovers` Unanimous / FirstResponse (L25409-25414) — grounds the recall and multi-approver claims in gotchas.md Gotcha 8
 - Object Reference — https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_concepts.htm — for the standard objects referenced in process maps
 - Metadata API Developer Guide — https://developer.salesforce.com/docs/atlas.en-us.api_meta.meta/api_meta/meta_intro.htm — for the metadata types implied by automation-tier annotations (Flow, ApprovalProcess, ApexClass, PlatformEventChannel)
 - BPMN 2.0 Specification (OMG) — https://www.omg.org/spec/BPMN/2.0/ — for the swim-lane, decision diamond, and parallel-gateway conventions adopted in this skill

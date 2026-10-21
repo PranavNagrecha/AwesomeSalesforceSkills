@@ -35,6 +35,8 @@ RecordType.DeveloperName or $RecordType.DeveloperName; comparisons
 survive label changes and translation.
 ```
 
+`RecordType.Name` is the UI label (obj 264 L247039); translations live in `RecordTypeLocalization` (obj 264 L247090). UNVERIFIED (2026-10-21): the `$RecordType` formula merge field is Help-only.
+
 **Detection hint:** SOQL `WHERE RecordType.Name = ...` or formulas referencing `$RecordType.Name`.
 
 ---
@@ -48,10 +50,14 @@ survive label changes and translation.
 **Correct pattern:**
 
 ```
-Resolve on the client with getObjectInfo wire, or return DeveloperName
-from Apex and look up on the client. Never ship an ID string from
-Apex unless it was resolved by Schema.describe in the same transaction.
+Return the Id from Apex, resolved by getRecordTypeInfosByDeveloperName()
+in the same transaction. Do NOT "look up by developerName on the client":
+getObjectInfo's recordTypeInfos is keyed by record type Id and each entry
+has available, defaultRecordTypeMapping, master, name, recordTypeId —
+no developerName (UI API Developer Guide 262, Record Type Info).
 ```
+
+Matching on `name` instead is the label, which can be translated (same page).
 
 **Detection hint:** `@AuraEnabled` method returning a string literal that looks like a record-type ID.
 
@@ -66,7 +72,8 @@ Apex unless it was resolved by Schema.describe in the same transaction.
 **Correct pattern:**
 
 ```
-Static initializers run per transaction, but the hard-coded value
+Static variables persist only within a single transaction
+(apexdev 264 L3747), but the hard-coded value
 baked into the class is the same everywhere. Resolve via describe in
 a static initializer or lazy-init method:
 
@@ -91,5 +98,7 @@ picklist UI gives name). In formulas, use DeveloperName. List views
 persist the internal Id but show the name — still okay for list
 views; but formulas and validation rules must use DeveloperName.
 ```
+
+UNVERIFIED (2026-10-21): how list views and reports store a record-type filter (Id or name) — a grep of api_meta 264 for a record-type filter value on ListView or Report found none.
 
 **Detection hint:** Formula metadata with `RecordTypeId = "012..."`.

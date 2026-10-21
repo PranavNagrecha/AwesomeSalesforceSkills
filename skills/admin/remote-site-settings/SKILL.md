@@ -28,9 +28,9 @@ outputs:
   - "Change Set inclusion steps for Remote Site Settings"
   - "Metadata API RemoteSiteSetting deployment configuration"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-12
+updated: 2026-10-21
 ---
 
 # Remote Site Settings and CSP Trusted Sites
@@ -44,41 +44,53 @@ This skill activates when a practitioner needs to configure external endpoint ac
 Gather this context before working on anything in this domain:
 
 - **Server-side vs. browser-side**: Remote Site Settings and CSP Trusted Sites are completely separate security controls for completely different scenarios. Remote Site Settings gate server-side Apex callouts. CSP Trusted Sites gate browser-side resource loading in Lightning components. Adding a URL to the wrong control does nothing.
-- **Most critical misconception**: Adding an endpoint to CSP Trusted Sites does NOT fix a failing Apex Http.send() callout. Apex callouts are server-side — they are gated exclusively by Remote Site Settings, not CSP. This is the most common misdirection in Salesforce integration troubleshooting.
-- **Change Set gotcha**: Remote Site Settings are deployable Metadata API components (type `RemoteSiteSetting`) but are NOT automatically included in Change Sets by default. Omitting them is the most common cause of Apex callout failures immediately after a production deployment.
+- **Most critical misconception**: Adding an endpoint to CSP Trusted Sites does NOT fix a failing Apex Http.send() callout. Apex callouts are server-side — a raw-URL callout needs the site registered in Remote Site Settings, and a callout whose endpoint is a named credential needs no Remote Site Setting (apexdev 264 L34758-34762); CSP plays no part.
+- **Change Set gotcha**: Remote Site Settings are deployable Metadata API components (type `RemoteSiteSetting`, api_meta 264 L106496) and must travel with the Apex that calls them. UNVERIFIED (2026-10-21): that Change Sets do not add them automatically as dependencies of Apex — Change Set behaviour is Help-only.
 
 ---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Does the failing call run in Apex on the server or in the browser (LWC/Aura `fetch`)? | Apex callouts need a Remote Site Setting (apexdev 264 L34758); browser loads need a Trusted URL (api_meta 264 L41578-41580) — Gotcha 1 | The one control that fixes the failure |
+| Does the Apex use a named credential (`callout:Name/...`) as the endpoint? | Then no Remote Site Setting is needed (apexdev 264 L34761) — Anti-pattern 5 | No redundant allow-list entry |
+| What exact URL, including scheme, does the code call? | Matching rules (prefix, scheme) are not in the corpus — Gotcha 3 | A URL copied from the code, not typed from memory |
+| Does the code send data between an HTTPS session and an HTTP site? | That is what `disableProtocolSecurity` allows (api_meta 264 L106516-106521) — Anti-pattern 4 | `false` unless the security implication is accepted in writing |
+| How is it deployed: Change Set, `sf project deploy`, or a managed package? | Change Set auto-inclusion is UNVERIFIED (Gotcha 2); in a managed package the Remote Site Name is not editable after install (pkg2 264 L14572) | The setting listed explicitly in the deploy |
+| Which browser resource type does the LWC load (fetch, font, image, frame, style)? | Trusted URLs have one `isApplicableTo…` flag per type, and no script-src flag (api_meta 264 L41687-41727) | The exact flag to set |
+| Is the setting meant to be active in every org it is deployed to? | `disableProtocolSecurity`, `isActive` and `url` are Required fields (api_meta 264 L106516, L106542-106545) | Metadata that deploys and is switched on |
+
+A proper configuration names the one gate the call path needs and deploys it with the code, where "just doing it" adds URLs to whichever allow-list someone remembers until the error stops.
 
 ## Core Concepts
 
 ### Remote Site Settings — Server-Side Apex Callout Gate
 
-Remote Site Settings (Setup > Security > Remote Site Settings) are a platform-level allowlist that governs which external URLs Salesforce Apex code can call via `Http.send()`. Every external URL that an Apex class calls must have a matching Remote Site Setting registered, or the callout is denied at the platform level with a `CalloutException: Unauthorized endpoint` error.
+Remote Site Settings (from Setup, enter Remote Site Settings in the Quick Find box, apexdev 264 L34765) are the allow-list for external sites: "Before any Visualforce page, Apex callout, or JavaScript code using XmlHttpRequest in an s-control or custom button can call an external site, that site must be registered in the Remote Site Settings page, or the call fails" (api_meta 264 L106497-106498). UNVERIFIED (2026-10-21): the exact error text (commonly quoted as `CalloutException: Unauthorized endpoint, please check Setup>Security>Remote Site Settings`) — the guides say only that the callout fails.
 
 Key characteristics:
-- Applied per org — not per user or per profile.
-- URL matching is prefix-based: a Remote Site Setting for `https://api.example.com` covers all paths under that domain.
-- Protocol matters: `https://api.example.com` and `http://api.example.com` are different entries.
-- Remote Site Settings are metadata (type `RemoteSiteSetting`) and can be deployed via Metadata API, Change Sets, or SFDX.
-- Remote Site Settings are NOT included in Change Sets by default — they must be manually added.
+- Applied per org — the type has no user or profile field (fields `description`, `disableProtocolSecurity`, `fullName`, `isActive`, `url`, api_meta 264 L106513-106545).
+- UNVERIFIED (2026-10-21): that URL matching is prefix-based (one entry for `https://api.example.com` covers every path) and that `http://` and `https://` need separate entries; the guide's own sample registers a URL with a path, `https://www.maptestsite.net/mapping1` (api_meta 264 L106556).
+- Remote Site Settings are metadata (type `RemoteSiteSetting`, available in API 19.0 and later, api_meta 264 L106508) and deploy through the Metadata API or `sf project deploy`; Change Set inclusion is UNVERIFIED (see Before Starting).
 
-### CSP Trusted Sites — Browser-Side Lightning Component Gate
+### Trusted URLs (formerly CSP Trusted Sites) — Browser-Side Lightning Component Gate
 
-CSP Trusted Sites (Setup > Security > CSP Trusted Sites) configure the Content Security Policy header returned by Salesforce to the user's browser. CSP controls what external resources (scripts, styles, images, fonts, connections) Lightning components can load or call from the user's browser session.
+`CspTrustedSite` "Represents a trusted URL"; each component's CSP directives let "Lightning components, third-party APIs, and WebSocket connections" access a resource type from the URL; "In API version 58.0 and earlier ... [they] were referred to as CSP Trusted Sites" (api_meta 264 L41578-41582).
 
 Key characteristics:
-- Applied per org at the browser level.
-- Different directives control different resource types: `connect-src` for fetch/XHR, `script-src` for JavaScript, `img-src` for images.
-- CSP Trusted Sites have NO effect on server-side Apex callouts (`Http.send()`).
-- A Lightning component making an XHR/fetch call to an external API from the browser needs a CSP Trusted Site. An Apex class making the same call from the server needs a Remote Site Setting.
+- Scoped by `context` (All, Communities, LEX, VisualForce, ...; api_meta 264 L41618-41644).
+- One flag per resource type: `isApplicableToConnectSrc` (fetch/XHR, "load URLs using script interfaces"), `isApplicableToFontSrc`, `isApplicableToFrameSrc`, `isApplicableToImgSrc`, `isApplicableToMediaSrc`, `isApplicableToStyleSrc` (api_meta 264 L41687-41722). There is **no script-src flag** — the field table ends at `mobileExtension` (L41727).
+- Trusted URLs do not register a site for Apex callouts — only the Remote Site Settings page or a named credential does (apexdev 264 L34758-34762).
+- A Lightning component making an XHR/fetch call to an external API from the browser needs a Trusted URL with `isApplicableToConnectSrc`. An Apex class making the same call from the server needs a Remote Site Setting.
 
 ### Metadata API Deployment
 
-Remote Site Settings are deployed as `RemoteSiteSetting` metadata type:
+Remote Site Settings are deployed as `RemoteSiteSetting` metadata type, stored in `remoteSiteSettings/` with the extension `.remoteSite`, file name = the setting's unique name (api_meta 264 L106503-106504):
 
 ```xml
-<!-- RemoteSiteSetting: ExternalPaymentGateway.remoteSite -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- remoteSiteSettings/ExternalPaymentGateway.remoteSite -->
 <RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Payment gateway endpoint for Apex callouts</description>
     <disableProtocolSecurity>false</disableProtocolSecurity>
@@ -87,7 +99,8 @@ Remote Site Settings are deployed as `RemoteSiteSetting` metadata type:
 </RemoteSiteSetting>
 ```
 
-Deploy via `sf project deploy start` or include in Change Set (must add explicitly in the "Add" tab under Remote Site Settings component type).
+
+Deploy via `sf project deploy start`. UNVERIFIED (2026-10-21): the Change Set UI path (Add → Component Type "Remote Site Setting") is Help-only.
 
 ---
 
@@ -95,27 +108,27 @@ Deploy via `sf project deploy start` or include in Change Set (must add explicit
 
 ### Fixing a Failing Apex Callout
 
-**When to use:** An Apex class using `Http.send()` throws `CalloutException: Unauthorized endpoint, please check Setup>Security>Remote Site Settings`.
+**When to use:** An Apex class using `Http.send()` to a raw URL fails because the site is not registered (apexdev 264 L34758-34759; the exact exception text is UNVERIFIED, see Core Concepts).
 
 **How it works:**
-1. Identify the exact URL being called in the Apex code (including protocol and domain).
-2. Navigate to Setup > Security > Remote Site Settings.
-3. Click New Remote Site.
-4. Enter a name (alphanumeric, no spaces), the URL (e.g., `https://api.example.com`), and optionally a description.
-5. Check "Disable Protocol Security" only if the external service uses HTTP (not HTTPS) — leave unchecked for HTTPS.
+1. Identify the exact URL being called in the Apex code (including scheme and domain).
+2. From Setup, enter Remote Site Settings in the Quick Find box, then select Remote Site Settings (apexdev 264 L34765).
+3. Click New Remote Site (L34766).
+4. Enter a name (letters and underscores, starting with a letter, api_meta 264 L106523-106526), the URL, and optionally a description (apexdev 264 L34767-34769).
+5. Leave "Disable Protocol Security" unchecked. When true, "code within Salesforce can pass data from an HTTPS session to an HTTP session, and vice versa. Only set to true if you understand the security implications" (api_meta 264 L106516-106521). It is not a certificate-validation switch.
 6. Save and test the Apex callout.
 
 ### Including Remote Site Settings in a Change Set
 
 **When to use:** Deploying Apex code that makes callouts from sandbox to production via Change Set.
 
-**How it works:**
+**How it works (UNVERIFIED (2026-10-21): Change Set UI steps and dependency behaviour are Help-only):**
 1. In the Change Set, click Add.
 2. Under Component Type, select "Remote Site Setting."
 3. Add each required Remote Site Setting.
 4. Deploy the Change Set — the Remote Site Setting will be created in the target org.
 
-If Remote Site Settings are not in the Change Set, the Apex code deploys successfully but callouts immediately fail in production with `Unauthorized endpoint` errors.
+If the setting is not deployed with the code, the Apex deploys but the callout fails in the target org, because the site is not registered there (apexdev 264 L34758-34759).
 
 ---
 
@@ -123,12 +136,12 @@ If Remote Site Settings are not in the Change Set, the Apex code deploys success
 
 | Situation | Correct Control | Why |
 |---|---|---|
-| Apex Http.send() failing with Unauthorized endpoint | Remote Site Setting | Apex callouts are server-side; only Remote Site Settings gate them |
-| Lightning component fetch/XHR failing (browser error) | CSP Trusted Site | Browser-side resource loading is gated by CSP, not Remote Site Settings |
-| Both Apex and Lightning need to call the same endpoint | BOTH Remote Site Setting AND CSP Trusted Site | Server-side and browser-side are separate gates |
-| Apex callout working in sandbox, failing in production | Add Remote Site Setting to Change Set | Remote Site Settings not included in Change Sets by default |
-| Need to disable HTTPS certificate validation | disableProtocolSecurity: true in metadata | Only for non-HTTPS or self-signed cert scenarios; security risk |
-| Using Named Credentials for callouts | Not applicable — Named Credentials manage their own URL allowlist | Named Credentials replace Remote Site Settings for the configured endpoint |
+| Apex `Http.send()` to a raw URL fails as unregistered | Remote Site Setting | "Before any Apex callout can call an external site, that site must be registered in the Remote Site Settings page" (apexdev 264 L34758) |
+| Lightning component fetch/XHR failing (browser error) | Trusted URL (`CspTrustedSite`) with `isApplicableToConnectSrc` | Browser-side loading is gated by CSP directives (api_meta 264 L41578-41580, L41687) |
+| Both Apex and Lightning need to call the same endpoint | BOTH Remote Site Setting AND Trusted URL | Server-side and browser-side are separate gates |
+| Apex callout working in sandbox, failing in production | Deploy the Remote Site Setting with the code | The target org has no registration for the site; Change Set auto-inclusion is UNVERIFIED |
+| Code must exchange data between an HTTPS session and an HTTP site | `disableProtocolSecurity: true`, only with a written security sign-off | That is what the field allows (api_meta 264 L106516-106521); it does not disable certificate validation |
+| Using Named Credentials for callouts | No Remote Site Setting for that endpoint | "If the callout specifies a named credential as the endpoint, you don't need to configure remote site settings" (apexdev 264 L34761) |
 
 ---
 
@@ -137,11 +150,11 @@ If Remote Site Settings are not in the Change Set, the Apex code deploys success
 Step-by-step instructions for an AI agent or practitioner working on this task:
 
 1. **Identify the error type** — Determine whether the failing call is from Apex server-side code (`Http.send()`) or from a Lightning component in the user's browser (fetch, XHR, img.src). The error source determines which control to configure.
-2. **For Apex callout failures** — Navigate to Setup > Security > Remote Site Settings. Verify the calling URL is registered. If not, add a new Remote Site Setting with the exact protocol and domain.
-3. **For Lightning component resource failures** — Navigate to Setup > Security > CSP Trusted Sites. Add a new trusted site entry for the external URL with the appropriate directive (connect-src for XHR/fetch, script-src for scripts).
-4. **For Change Set deployments** — In the Change Set, explicitly add each Remote Site Setting under component type "Remote Site Setting" before uploading. Do not assume metadata deployment of Apex automatically includes the Remote Site Settings it depends on.
-5. **For Metadata API / SFDX deployments** — Include `RemoteSiteSetting` metadata files in the deployment package. The file name must match the Remote Site Setting name in the org.
-6. **Test the callout** — After adding the Remote Site Setting, test the Apex callout (via anonymous Apex or the relevant trigger/class). Confirm no `CalloutException: Unauthorized endpoint` error.
+2. **For Apex callout failures** — If the endpoint is `callout:<NamedCredential>`, no Remote Site Setting is needed (apexdev 264 L34761). Otherwise open Remote Site Settings from Quick Find, verify the URL is registered, and add it copied from the code.
+3. **For Lightning component resource failures** — Add a Trusted URL (`CspTrustedSite`) for the external URL with the flag for the resource type (`isApplicableToConnectSrc` for XHR/fetch; there is no script-src flag, api_meta 264 L41687-41727).
+4. **For Change Set deployments** — Add each Remote Site Setting explicitly before uploading; do not rely on dependency detection (UNVERIFIED either way).
+5. **For Metadata API / SFDX deployments** — Include `remoteSiteSettings/<Name>.remoteSite` files; the file name matches the setting's unique name (api_meta 264 L106503-106504). Run `python3 skills/admin/remote-site-settings/scripts/check_remote_site_settings.py --manifest-dir force-app` before deploying.
+6. **Test the callout** — After adding the Remote Site Setting, test the Apex callout (via anonymous Apex or the relevant trigger/class) and confirm it no longer fails as unregistered.
 7. **Document the dependency** — Add a comment near the Apex callout code indicating which Remote Site Setting is required. This prevents future Change Set deployments from omitting it.
 
 ---
@@ -150,10 +163,11 @@ Step-by-step instructions for an AI agent or practitioner working on this task:
 
 Run through these before marking work in this area complete:
 
-- [ ] Remote Site Setting added for every external URL called via Apex Http.send()
-- [ ] CSP Trusted Site added for every external URL accessed by Lightning components in the browser
+- [ ] Remote Site Setting added for every external URL called via Apex Http.send() without a named credential
+- [ ] Trusted URL added, with the right `isApplicableTo…` flag, for every external URL accessed by Lightning components in the browser
 - [ ] Remote Site Settings explicitly included in any Change Set that includes Apex code using them
 - [ ] Remote Site Setting metadata files included in Metadata API / SFDX deployment packages
+- [ ] `disableProtocolSecurity` is `false`, or its HTTPS-to-HTTP data flow has a security sign-off
 - [ ] Apex callout tested successfully after configuration
 - [ ] Named Credentials evaluated as an alternative (preferred over Remote Site Settings for credential management)
 
@@ -163,9 +177,10 @@ Run through these before marking work in this area complete:
 
 Non-obvious platform behaviors that cause real production problems:
 
-1. **Adding a URL to CSP Trusted Sites does not fix a failing Apex callout** — Apex `Http.send()` is a server-side call. CSP controls browser-side resource loading. They are completely separate. A CSP Trusted Site entry for an endpoint does nothing to unblock an Apex callout to the same endpoint. This is the single most common misdirection in Salesforce integration troubleshooting, confirmed by the number of support cases and community posts following this path.
-2. **Remote Site Settings not included in Change Sets by default** — When assembling a Change Set that includes Apex classes making external callouts, the Remote Site Settings those classes depend on must be explicitly added as a separate component type. The Change Set tool does not automatically detect or include them as a dependency. This is the most common cause of Apex callout failures in production immediately after a Change Set deployment.
-3. **Protocol in URL matters — http:// and https:// are separate entries** — A Remote Site Setting for `https://api.example.com` does not cover `http://api.example.com`, and vice versa. If the Apex code uses HTTPS but the Remote Site Setting was created with HTTP (or the URL was entered without the correct protocol), the callout fails. Always verify the exact protocol in the callout URL matches the Remote Site Setting.
+1. **Adding a URL to Trusted URLs (CSP Trusted Sites) does not fix a failing Apex callout** — Apex `Http.send()` is a server-side call; only the Remote Site Settings page or a named credential registers a site for it (apexdev 264 L34758-34762). Trusted URLs set CSP directives for Lightning components, third-party APIs and WebSocket connections (api_meta 264 L41579-41580).
+2. **Change Sets and Remote Site Settings** — the Remote Site Settings that callout classes depend on must reach the target org, or the callout fails there. UNVERIFIED (2026-10-21): that the Change Set tool never adds them as dependencies automatically.
+3. **`disableProtocolSecurity` is about HTTP/HTTPS session crossing, not certificates** — api_meta 264 L106516-106521. UNVERIFIED (2026-10-21): that `http://` and `https://` URLs need separate entries (references/gotchas.md Gotcha 3).
+4. **Packaged settings are not updated on upgrade** — for a managed package, "Component Is Updated During Package Upgrade: No" and the Remote Site Name is not editable by developer or subscriber (pkg2 264 L14550, L14572).
 
 ---
 
@@ -173,14 +188,16 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Remote Site Setting configuration | Setup > Security > Remote Site Settings entry for the external endpoint |
-| CSP Trusted Site configuration | Setup > Security > CSP Trusted Sites entry for browser-side access |
-| RemoteSiteSetting metadata XML | Deployable metadata file for SFDX/Change Set deployment |
+| Remote Site Setting configuration | Remote Site Settings entry (Setup Quick Find) for the external endpoint |
+| Trusted URL configuration | `CspTrustedSite` entry for browser-side access |
+| RemoteSiteSetting metadata XML | Deployable `.remoteSite` file for SFDX / Metadata API deployment |
 | Change Set inclusion guide | Steps to add Remote Site Settings to a Change Set explicitly |
 
 ---
 
 ## Related Skills
 
-- integration-admin-connected-apps — Configure connected apps for OAuth-based integration authentication
-- integration-user-management — Set up the integration user whose callouts will use these settings
+- `admin/integration-admin-connected-apps` — Configure connected apps for OAuth-based integration authentication
+- `admin/integration-user-management` — Set up the integration user whose callouts will use these settings
+- `integration/named-credentials-setup` — endpoint plus auth in one definition, no Remote Site Setting needed
+- `security/csp-and-trusted-urls` — browser-side Trusted URL design

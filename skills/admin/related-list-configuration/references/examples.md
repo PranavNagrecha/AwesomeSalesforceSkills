@@ -1,5 +1,7 @@
 # Examples — Related List Configuration
 
+UNVERIFIED (2026-10-21), applies to this file: whether "Enhanced Related Lists" is a separate component or a list-type setting, the 10-column cap and silent drop, the 4 mobile columns, "only one entry per relationship" on a layout, the Enhanced-list properties and per-user filter persistence are Salesforce Help or field reports, not corpus facts. Grounded: `RelatedListItem` carries `fields`, `sortField` and `sortOrder` (Asc/Desc) (api_meta 264 L85859-85873); layout assignment is per profile and optional record type (L100702-100705); Layout has no description field (L85051-85153).
+
 ---
 
 ## Example 1: Reducing a Bloated Account → Contacts Related List
@@ -77,9 +79,10 @@ Page Layouts:
     Related lists: Contacts, Opportunities, Cases, Activity History
   - Account_Service_Layout     → assigned to Service_Account record type
     Related lists: Contacts, Cases, Activity History, Service Contracts
-    Description (editable on the layout): "INTENTIONAL: Opportunities related
-      list removed for Service record type. Do not add back without re-confirming
-      data-visibility with the service ops lead."
+    Change record / config workbook (Layout has no description field):
+      "INTENTIONAL: Opportunities related list removed for Service record
+      type. Do not add back without re-confirming data-visibility with the
+      service ops lead."
 
 Page Layout Assignment matrix (Setup → Account → Page Layouts → Page Layout Assignment):
   - All Profiles × Sales_Account   → Account_Sales_Layout
@@ -88,7 +91,7 @@ Page Layout Assignment matrix (Setup → Account → Page Layouts → Page Layou
 
 The Lightning record page can be **one** record page for both record types — no visibility-filter contortions are needed. The Related Lists component just renders whatever the resolved Page Layout dictates.
 
-**Why this works.** The intent is encoded where the next admin will see it: in the Page Layout description and in the explicit per-record-type layout. The Lightning App Builder stays simple. There is no hidden visibility-filter logic to discover.
+**Why this works.** The intent is encoded where the next admin will see it: in the explicit per-record-type layout, routed by each profile's `layoutAssignments` (api_meta 264 L100702-100705), and in the change record. The Lightning App Builder stays simple. There is no hidden visibility-filter logic to discover.
 
 ---
 

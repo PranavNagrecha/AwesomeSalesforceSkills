@@ -18,7 +18,7 @@ Non-obvious problems that show up in real Salesforce process-mapping engagements
 
 **When it occurs:** Every time. This is the single most common failure mode in process mapping.
 
-**How to avoid:** Every decision diamond must have ≥2 outgoing branches with conditions labelled. Every integration handshake must have a timeout / fallback path. Every approval step must have a rejection path. The `check_process_map.py` checker enforces this on the JSON.
+**How to avoid:** Every decision diamond must have ≥2 outgoing branches with conditions labelled. Every integration handshake must have a timeout / fallback path. Every approval step must have a rejection path. The `check_process_map.py` checker enforces the first two on the JSON (≥2 labelled branches per decision; a fault-keyword branch when any `INTEGRATION` step exists); it does not check approval rejection paths — review those by hand.
 
 ---
 
@@ -74,8 +74,8 @@ Non-obvious problems that show up in real Salesforce process-mapping engagements
 
 ## Gotcha 8: Every approval shown as a Flow
 
-**What happens:** Approval steps get tagged `[FLOW]` because the team has a Flow bias. The build implements a Flow with a decision element that routes to an "Update Approver" path. There is no audit trail of who approved, no approver history, no recall mechanism.
+**What happens:** Approval steps get tagged `[FLOW]` because the team has a Flow bias. The build implements a Flow with a decision element that routes to an "Update Approver" path. No `ProcessInstance` record is written, so approval history reports built on that object (obj 264 L228343-228344) do not see the decision, and there is no `allowRecall` recall (api_meta 264 L25137). UNVERIFIED (2026-10-21): whether a custom Flow history record could stand in for that audit trail.
 
 **When it occurs:** Teams with strong Flow expertise and weak Approval Process expertise.
 
-**How to avoid:** Tag approval steps as `[APPROVAL]`, not `[FLOW]`. Approval Process gives free audit trail, approver history, recall, parallel and sequential approver chains, and email/in-app notifications. A Flow that mimics this loses the audit features. The trade-off: Approval Process is less flexible for branching logic. Mix the two — `[APPROVAL]` for the sign-off step, `[FLOW]` for the post-approval actions.
+**How to avoid:** Tag approval steps as `[APPROVAL]`, not `[FLOW]`. An Approval Process records each run as a `ProcessInstance` used for approval history (obj 264 L228343-228344), lets submitters recall requests (`allowRecall`, api_meta 264 L25137), handles several approvers per step as Unanimous or FirstResponse (`whenMultipleApprovers`, L25409-25414), and sends request emails from `emailTemplate` (L25167-25168). UNVERIFIED (2026-10-21): that a Flow that mimics this loses all of the audit features, and the in-app notification behaviour. The trade-off: Approval Process is less flexible for branching logic. Mix the two — `[APPROVAL]` for the sign-off step, `[FLOW]` for the post-approval actions.

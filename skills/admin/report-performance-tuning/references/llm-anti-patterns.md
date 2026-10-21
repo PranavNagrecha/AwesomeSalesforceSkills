@@ -3,28 +3,31 @@
 Common mistakes AI coding assistants make when generating or advising on Report Performance Tuning.
 These patterns help the consuming agent self-check its own output.
 
-## Anti-Pattern 1: Advising Users to Use the Synchronous Analytics API to Bypass the Row Limit
+## Anti-Pattern 1: Advising Users to Use the Analytics API (Sync or Async) to Bypass the Row Limit
 
-**What the LLM generates:** Instructions like "call `GET /analytics/reports/{reportId}` via the API to get all rows without the 2,000 limit."
+**What the LLM generates:** Instructions like "call `GET /analytics/reports/{reportId}` via the API to get all rows without the 2,000 limit", or "use the async `/instances` endpoint to bypass the 2,000-row display limit".
 
-**Why it happens:** LLMs conflate "using the API" with "bypassing UI limits." They know the row limit is a display constraint and incorrectly assume any API call bypasses it. The synchronous endpoint is the more prominently documented one, so it appears in training data more often than the async pattern.
+**Why it happens:** LLMs conflate "using the API" with "bypassing UI limits", and async with "bigger". Earlier versions of this very skill made the async claim.
 
 **Correct pattern:**
 
 ```
-Use the ASYNC endpoint to bypass the 2,000-row display limit:
+Neither endpoint returns more than 2,000 rows:
+"The API returns up to the first 2,000 report rows. You can narrow
+results using filters." (Reports and Dashboards REST API 262,
+Requirements and Limitations; same sentence in apexdev 264 L33689)
 
-POST /services/data/v60.0/analytics/reports/{reportId}/instances
-Body: { "includeDetails": true }
+Async (POST .../analytics/reports/{reportId}/instances, then poll
+GET .../instances/{instanceId} until status is Success or Error) is for
+long runs: no 2-minute API timeout, results kept 24 hours (Run Reports
+Synchronously or Asynchronously, same guide).
 
-Then poll:
-GET /services/data/v60.0/analytics/reports/{reportId}/instances/{instanceId}
-
-The synchronous GET /analytics/reports/{reportId} also caps at 2,000 rows
-and does NOT bypass the limit.
+For every row: a Bulk API 2.0 query job on the object
+(api_asynch 264 L136-137), or filter windows that each return
+fewer than 2,000 rows.
 ```
 
-**Detection hint:** Look for `GET /analytics/reports/{id}` being recommended as the solution for row-limit bypass. If the suggested solution does not include `/instances`, it will not return more than 2,000 rows.
+**Detection hint:** Any sentence that says an Analytics API endpoint — sync or `/instances` — returns "all rows" or "bypasses" the 2,000-row limit.
 
 ---
 
@@ -42,8 +45,8 @@ on large objects to return "all data." This causes a full table scan and leads
 to timeouts.
 
 To retrieve all records:
-- Use the async Analytics API with a chunked date range filter
-- Or query the object directly via SOQL Bulk API with appropriate WHERE clauses
+- Query the object directly with a Bulk API 2.0 query job (api_asynch 264 L136-137)
+- Or run the report in date-range chunks that each return fewer than 2,000 rows
 - Provide multiple saved reports with pre-set date ranges for different windows
 ```
 
@@ -55,7 +58,7 @@ To retrieve all records:
 
 **What the LLM generates:** A recommendation to switch a dynamic dashboard from "run as logged-in user" to "run as specified user" to make refreshes faster, on the basis that a single cached query is faster than per-user queries.
 
-**Why it happens:** LLMs correctly know that "run as specified user" caches a single query result rather than generating per-user results, and they interpret this as a performance improvement. They do not surface the security implication: all viewers then see the specified user's data slice, which typically has broader access than individual viewers should have.
+**Why it happens:** LLMs assume that "run as specified user" computes one result instead of per-user results (UNVERIFIED (2026-10-21) as a performance claim), and treat that as an optimization. They do not surface the security implication: with `dashboardType` `SpecifiedUser`, "All users see data at the access level of one specific running user ... regardless of their own security settings" (api_meta 264 L50170-50174).
 
 **Correct pattern:**
 
@@ -65,7 +68,7 @@ performance optimization.
 
 Correct performance fixes for slow dynamic dashboards:
 - Add selective filters to the underlying report components
-- Reduce total component count (aim for 20 or fewer per dashboard)
+- Reduce total component count (the "20 or fewer" target is Help-only, UNVERIFIED)
 - Schedule refreshes during off-peak hours
 - Split into multiple focused dashboards
 
@@ -87,9 +90,10 @@ and the security implications are understood and accepted.
 
 ```
 Standard Reports & Dashboards (this skill):
-- 2,000 row display limit in UI
-- Analytics API async endpoint for full results
-- Performance governed by SOQL query optimizer and index selectivity
+- The REST API returns up to the first 2,000 report rows, sync or async
+- Bulk API 2.0 query for full extracts
+- Performance governed by the query optimizer and index selectivity
+  (ldv 264 L225-226)
 
 CRM Analytics / Tableau CRM (separate skill):
 - Different query engine (SAQL)
@@ -108,7 +112,7 @@ or vice versa.
 
 **What the LLM generates:** When a subscription is not delivering email, advice to rebuild the report, add more filters, or check the subscription schedule — without investigating whether the failure is caused by the report timing out at the subscriber's sharing access level.
 
-**Why it happens:** LLMs default to diagnosing the report itself (the more commonly documented failure mode) and do not model the execution context: subscriptions run as the subscriber, not the report owner or admin. They miss that debugging as the admin shows a passing report, masking the real failure.
+**Why it happens:** LLMs default to diagnosing the report itself and do not model the execution context. UNVERIFIED (2026-10-21): that subscriptions run as the subscriber rather than the report owner — Help-only; test with the subscriber's access either way, because debugging as the admin can mask the real failure.
 
 **Correct pattern:**
 
@@ -136,21 +140,19 @@ When a report subscription is not delivering:
 
 **What the LLM generates:** Instructions to download a report as CSV from the Lightning Report UI for use in compliance exports, system integrations, or data reconciliation processes.
 
-**Why it happens:** The UI export is the most visible and intuitive export path. LLMs recommend it because it is well-documented and matches the surface-level request ("export the report data"). They do not track the 2,000-row truncation risk or that the export gives no indication when truncation occurs.
+**Why it happens:** The UI export is the most visible and intuitive export path, and it matches the surface-level request ("export the report data"). UNVERIFIED (2026-10-21): whether a UI export truncates at 2,000 rows — Help-only; the earlier "4% of a 50,000-row export" figure depended on it.
 
 **Correct pattern:**
 
 ```
 For any export used in compliance, integration, or audit contexts:
-- Use Analytics API async execution (POST .../instances with includeDetails: true)
-- Validate row count against a COUNT() summary report before processing
-- Never rely on UI CSV export for datasets that may exceed 2,000 rows
-
-The UI export provides no warning when it truncates at 2,000 rows.
-A 50,000-row compliance export downloaded via the UI silently contains only 4% of the data.
+- Use a Bulk API 2.0 query job on the object (api_asynch 264 L136-137)
+- Do NOT use the Analytics API for it: sync and async both return only
+  the first 2,000 report rows (REST API 262, Requirements and Limitations)
+- Validate the row count against a COUNT() query before processing
 ```
 
-**Detection hint:** Recommendations to "export as CSV from the report" for integration or compliance use cases without mention of the 2,000-row cap should be flagged.
+**Detection hint:** Recommendations to "export as CSV from the report" or to "use the async Analytics API" for complete integration or compliance extracts should be flagged.
 
 ---
 
@@ -163,10 +165,12 @@ A 50,000-row compliance export downloaded via the UI silently contains only 4% o
 **Correct pattern:**
 
 ```
-Report builder allocations, to check before proposing any report spec:
+Report builder allocations (Help-only, UNVERIFIED 2026-10-21), to check
+before proposing any report spec:
 
   Field filters           20      (10 in the legacy report wizard)
-  Cross filters           3       (up to 5 subfilters each)
+  Cross filters           3       (up to 5 subfilters each — the 5 is
+                                   grounded: api_meta 264 L107813-107814)
   Summary formulas        5       (hard-coded; joined reports get 10 per
                                    block, 50 per report)
 
@@ -177,11 +181,13 @@ Analytics API processing limit — a separate cap from the allocations above:
 
 Exceeding the column cap is a hard refusal at run time, not slowness: the
 API returns HTTP 400 "Only a report with fewer than 100 columns can be
-run." For a >100-column extract, do not propose a report at all — use
+run." (The limits page says "up to 100", apexdev 264 L33681 — the sources
+disagree at exactly 100; stay at 99 or fewer.) For a >100-column extract, do not propose a report at all — use
 Bulk API 2.0 query against the object directly.
 
-See gotchas.md Gotcha 6 for the full error text, and Gotcha 7 for why
-filter logic never covers a cross filter.
+See gotchas.md Gotcha 6 for the full error text, and Gotcha 7 for filter
+logic and cross filters (that filter logic never covers a cross filter is
+UNVERIFIED 2026-10-21, Help-only).
 ```
 
-**Detection hint:** Count the columns in any generated report spec. If the response proposes a wide extract, or writes filter logic that references a cross filter by number, it is describing a report the Analytics API will refuse to run.
+**Detection hint:** Count the columns in any generated report spec. If the response proposes a wide extract (100 or more columns), it is describing a report the Analytics API will refuse to run. Filter logic that references a cross filter by number is suspect too (UNVERIFIED, see Gotcha 7), but no corpus line says the API refuses it.

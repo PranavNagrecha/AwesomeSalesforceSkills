@@ -71,7 +71,7 @@ flowchart LR
 
 | Step ID | Actor | Description | Tier | Decision-Tree Branch | Recommended Agent |
 |---|---|---|---|---|---|
-| tobe-001 | Salesforce Platform | Validate on save | `[FLOW]` | automation-selection.md Q2 → Before-save Flow | /build-flow |
+| tobe-001 | Salesforce Platform | Validate on save against related-record data | `[FLOW]` | automation-selection.md Q16 → Before-save Flow with a Custom Error | /build-flow |
 | tobe-002 | Salesforce Platform | Publish OrderActivated event | `[PLATFORM_EVENT]` | automation-selection.md Q12 → Platform Event | /build-flow (subscriber) |
 | tobe-003 | Salesforce Platform | Receive fulfillment confirmation | `[INTEGRATION:REST]` | automation-selection.md Q11 → REST API + Apex endpoint | /build-agentforce-action |
 
@@ -123,9 +123,9 @@ This JSON is the canonical machine-readable output. It must validate against `sc
     {
       "step_id": "tobe-001",
       "actor": "Salesforce Platform",
-      "description": "Validate order on save",
+      "description": "Validate order on save against the Account credit limit",
       "automation_tier": "FLOW",
-      "decision_tree_branch": "automation-selection.md Q2 → Before-save record-triggered Flow",
+      "decision_tree_branch": "automation-selection.md Q16 → Before-save record-triggered Flow with a Custom Error element",
       "recommended_agents": ["build-flow"]
     },
     {
@@ -164,7 +164,7 @@ This JSON is the canonical machine-readable output. It must validate against `sc
 ## Tier Enum (do not invent values)
 
 ```
-FLOW            — record-triggered, screen, or autolaunched Flow
+FLOW            — record-triggered (Q2/Q4/Q5/Q16), screen (Q8/Q9) or schedule-triggered (Q10) Flow
 APEX            — Apex trigger, service, batch, or queueable
 APPROVAL        — Salesforce Approval Process
 PLATFORM_EVENT  — Platform Event publish or CDC subscriber
@@ -181,13 +181,15 @@ After filling this template, run:
 
 ```bash
 python3 scripts/check_process_map.py --map path/to/process-map.json
+# or every *.json under a directory:
+python3 scripts/check_process_map.py --manifest-dir path/to/maps --strict
 ```
 
-The checker enforces:
+The checker reports (ERROR exits 1; WARN exits 0 unless `--strict`):
 
-- Every `to_be_steps[].automation_tier` is in the enum
-- Every decision in `exception_paths` has ≥2 branches
-- Every actor in `as_is_steps` and `to_be_steps` is declared in `scope.actors`
-- Every actor declared in `scope.actors` appears in either `as_is_steps` or `to_be_steps`
-- Every `MANUAL` step has a `reason` in `manual_residue`
-- Every integration handshake has at least one timeout / fallback branch
+- ERROR: a `to_be_steps[].automation_tier` outside the enum, or missing
+- ERROR: a decision in `exception_paths` with fewer than 2 branches, or a branch with no `condition`
+- ERROR: an actor used in steps but not declared in `scope.actors`
+- WARN: an actor declared in `scope.actors` that no step uses
+- WARN: a `MANUAL` step with no `manual_residue` row; ERROR: a residue row with no `reason`
+- WARN: `INTEGRATION` steps exist but no `exception_paths` branch names a fault (timeout / retry / fail / fallback) or targets an integration step — it checks the map as a whole, not each handshake

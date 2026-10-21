@@ -2,6 +2,8 @@
 
 Use this template when configuring or auditing related lists on a record page.
 
+UNVERIFIED (2026-10-21), applies to this file: whether "Enhanced Related Lists" is a separate Lightning App Builder component or a list-type setting on `Related Lists` / `Related List - Single`, the 10-column cap, the mobile column count, and that column choice cannot be made in Lightning App Builder (the "not Lightning App Builder" checklist line) — Salesforce Help only.
+
 ## Scope
 
 **Skill:** `related-list-configuration`
@@ -19,7 +21,7 @@ Use this template when configuring or auditing related lists on a record page.
   - Layout B:
 - **Current sort field + direction:**
 - **FLS notes for the affected fields:**
-- **Org has Enhanced Related Lists enabled?** (yes/no — Spring '24+ feature)
+- **Org uses the Enhanced list type?** (yes/no — release date UNVERIFIED)
 
 ## Approach
 
@@ -38,25 +40,25 @@ Use this template when configuring or auditing related lists on a record page.
 
 ## Plan
 
-1. Edit Page Layout `<name>`: columns → [list, ≤10 for classic], sort field → `<field>` (`Asc`/`Desc`).
+1. Edit Page Layout `<name>`: columns → [list, ≤10 per Help (UNVERIFIED cap)], sort field → `<field>` (`Asc`/`Desc`).
 2. (If per-record-type divergence) Edit Page Layout `<name>`: ...
-3. Update Page Layout description to document any intentional divergence.
+3. Record any intentional divergence in the change record (Layout metadata has no description field).
 4. (If component change) Update Lightning record page in App Builder: swap to `<component>`.
-5. Verify: impersonate user from each affected (Profile × Record Type) combination.
-6. Verify mobile: first 4 columns are the customer-facing ones.
+5. Run `check_related_list_configuration.py --manifest-dir force-app/main/default`; impersonate a user from each affected (Profile × Record Type) combination.
+6. Verify mobile: the first columns are the customer-facing ones (mobile column count UNVERIFIED).
 
 ## Review Checklist
 
 - [ ] Edited the Page Layout that the affected (Profile × Record Type) resolves to (not Lightning App Builder)
-- [ ] No classic related list exceeds 10 columns
-- [ ] Sort field is a sortable, directly stored scalar (not a cross-object formula, long text, base64, encrypted text)
+- [ ] No classic related list exceeds 10 columns (Help-only cap, UNVERIFIED)
+- [ ] Sort field is a directly stored scalar on the child (unsortable-type list UNVERIFIED)
 - [ ] If Enhanced Related Lists, the filter / mass-action features are actually used
-- [ ] Per-record-type divergence is documented in the layout description
-- [ ] Mobile column order verified (top 4 are user-critical)
-- [ ] FLS for each column is consistent with intent (no surprise blank cells)
-- [ ] Search Filter Fields on the parent object include the columns users will type into the lookup dialog
-- [ ] Affected users notified if the component swap reset per-user column-width preferences
+- [ ] Per-record-type divergence is recorded in the change record (no Layout description field)
+- [ ] Mobile column order verified (most user-critical first)
+- [ ] FLS for each column is consistent with intent (field permissions govern related lists, secguide 262 L621)
+- [ ] `lookupDialogsAdditionalFields` / `lookupFilterFields` / `searchFilterFields` on the parent's search layouts cover what users need
+- [ ] Affected users warned that a component swap may reset per-user column widths (UNVERIFIED)
 
 ## Notes / Deviations
 
-(Record any deviations from the standard pattern and why — e.g., "kept 11-column related list because the org accepts the silent drop for the seasonal-promo field that admins remove each quarter").
+(Record any deviations from the standard pattern and why — e.g., "kept an 11-column related list because the org accepts that the seasonal-promo field may not render inline").

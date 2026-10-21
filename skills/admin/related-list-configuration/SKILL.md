@@ -29,23 +29,26 @@ inputs:
   - "Lightning record page layout being edited (Standard, custom record type-scoped, or a Pinned page)"
   - "record type matrix if related lists differ per record type"
   - "which fields the user population actually needs visible (inline) vs. behind the View All click"
-  - "whether the org has rolled out Enhanced Related Lists (Spring '24+) or is on classic Related Lists"
+  - "whether the org has rolled out Enhanced Related Lists (release date UNVERIFIED) or is on classic Related Lists"
 outputs:
-  - "per-related-list column selection (≤10 fields, ordered) with FLS impact noted"
+  - "per-related-list column selection (≤10 fields per Help, cap UNVERIFIED; ordered) with FLS impact noted"
   - "sort field + sort direction for the related list"
   - "decision on which Lightning component to use (Related Lists / Related Lists - Single / Related Lists - Quick Links / Enhanced Related Lists)"
   - "per-record-type related-list assignment plan if applicable"
-  - "Search Filter Fields configuration for related lists exposed through Lightning Pages and the lookup dialog"
+  - "lookup dialog, lookup filter and search filter field lists (SearchLayouts) checked for the lookups users run from the related list"
   - "checklist confirming FLS, sharing, and mobile-app parity hold for the configuration"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-21
+updated: 2026-10-21
 ---
+
 
 # Related List Configuration
 
-Activate when an admin is configuring, auditing, or troubleshooting a related list on a Salesforce record — what columns appear, in what order, with what sort, and which Lightning App Builder component is used to host it. This is a Page Layout + Lightning Page Builder concern; the related list rendering is driven by the **page layout** that the user's Profile + Record Type combination resolves to, even on a Lightning record page that uses the new related-list components. Getting this wrong silently changes which fields users see and which they don't.
+Activate when an admin is configuring, auditing, or troubleshooting a related list on a Salesforce record — what columns appear, in what order, with what sort, and which Lightning App Builder component is used to host it. This is a Page Layout + Lightning Page Builder concern: a Page Layout carries `relatedLists`, "listed in the order they appear in the user interface" (api_meta 264 L85113-85114), and the layout a user gets comes from the profile's `layoutAssignments`, optionally per record type (api_meta 264 L100698-100705). Getting this wrong silently changes which fields users see and which they don't.
+
+UNVERIFIED (2026-10-21), applies to this file wherever it appears: the 10-column cap, the rows-shown counts (10 or 30), the "Spring '24" date and feature list for Enhanced Related Lists, the mobile ~4-column rendering, FLS-hidden fields rendering as blank cells, unsortable sort fields falling back silently, per-user column-width reset on a component swap, Quick Links counts, and the render-cost figures — all are Salesforce Help or field experience; no corpus guide documents them.
 
 ---
 
@@ -53,48 +56,51 @@ Activate when an admin is configuring, auditing, or troubleshooting a related li
 
 Gather this context before changing any related-list setting:
 
-- **Page layout assignment matrix.** Related list columns live on the Page Layout, not on the Lightning page. A user with a different Profile + Record Type lands on a different Page Layout and sees different related-list columns even on the same Lightning record page. Confirm which (Profile × Record Type) combinations route to the layout you're editing.
-- **Component choice on the Lightning page.** The Lightning Record Page can render related lists via the `Related Lists` component (classic, all related lists from the layout), `Related List - Single` (one related list, custom title, no related-list quick-links bar), `Related Lists - Quick Links` (linked label list only, no row data), or `Enhanced Related Lists` (Spring '24+; per-list filter, sort, and mass actions). Each has different feature coverage and performance profile.
-- **The 10-field cap.** A classic related list shows up to **10 columns** inline. The 11th field is silently dropped. The Enhanced Related Lists component raises the practical limit but still bumps against display-width constraints. Always confirm the user actually needs every field they ask for inline; the rest belong behind View All.
-- **Spring '24 Enhanced Related Lists.** Filtering and mass-action support requires the Enhanced Related Lists component. Switching from the classic Related Lists component to Enhanced is org-level reversible but resets per-user column-width preferences.
-- **FLS and sharing.** Related list columns honor Field-Level Security: a field hidden by FLS appears as a blank cell, not an access-denied error, which makes incorrect FLS look like a layout bug. Sharing filters the rows: a related list never reveals records the running user can't access via OWD + sharing rules + manual share + role hierarchy.
-- **Mobile parity.** The Salesforce Mobile App applies the **same** related-list configuration as desktop but enforces tighter column counts (typically the first 4 columns render inline). Order matters — put the most important columns first.
+- **Page layout assignment matrix.** Related list columns live on the Page Layout's `RelatedListItem.fields` (api_meta 264 L85859). A user whose profile + record type resolves to a different layout (`ProfileLayoutAssignments.layout` / `recordType`, api_meta 264 L100702-100705) sees different related-list columns even on the same Lightning record page. Confirm which (Profile × Record Type) combinations route to the layout you're editing.
+- **Component choice on the Lightning page.** The record page renders related lists via `Related Lists` (all related lists from the layout; in metadata `force:relatedListContainer`, api_meta 264 L70339-70342), `Related List - Single`, `Related Lists - Quick Links`, or an Enhanced list view of them. UNVERIFIED (2026-10-21): the feature split between these (filter, mass actions, quick-links bar) — Help-only.
+- **The 10-field cap (UNVERIFIED).** Help gives up to 10 columns per related list; the Metadata API field documents no cap (api_meta 264 L85859). Always confirm the user actually needs every field they ask for inline; the rest belong behind View All.
+- **FLS and sharing.** "Field permissions control the visibility of fields in any part of the app, including related lists" (secguide 262 L621). UNVERIFIED (2026-10-21): that a hidden field renders as a blank cell rather than an error. Sharing decides which rows the user can see.
+- **Mobile parity (UNVERIFIED).** The mobile app is reported to render only the first ~4 columns inline. Order matters — put the most important columns first.
 
 ---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which (Profile × Record Type) combinations must see this related list? | Columns come from the layout the profile's `layoutAssignments` resolve to (api_meta 264 L100702-100705) — Gotcha 4 | The exact layouts to edit, not one of several |
+| Which columns are needed inline, in what order? | The 10-column cap is Help-only (UNVERIFIED) and mobile shows ~4 — Gotchas 1 and 7 | A ranked list of at most 10, the top 4 user-critical |
+| What should the default sort be, and is that field directly stored on the child? | `sortField`/`sortOrder` (Asc/Desc) are the configured default (api_meta 264 L85868-85873); unsortable-field fallback is UNVERIFIED — Gotcha 2 | A stored, sortable field and direction |
+| Do users need to filter or mass-act inside the list? | Those features are Help-only and Enhanced-list only (UNVERIFIED) — Pattern 2; Gotcha 8 | Whether an Enhanced list is worth its cost |
+| Should any record type not see this list at all? | A visibility filter hides the component, not the layout entry — Gotcha 5 | Per-record-type layouts instead of filters |
+| Can every user who sees the list read every column field? | Field permissions govern related lists (secguide 262 L621) — Gotcha 3 | FLS fixed before the layout is blamed |
+| Is the list paired with a Quick Links bar? | Quick Links counts vs filtered views is UNVERIFIED — Gotcha 8 | A note to users or no Quick Links |
+
+A proper configuration puts each column, sort and per-record-type decision in the layout the users actually resolve to, where "just doing it" edits whichever layout opened first and leaves the other record types drifting.
 
 ## Core Concepts
 
 ### Page Layout owns the related-list contract
 
-A "related list" on any page-layout-driven surface is defined inside the Page Layout XML at `<relatedLists>`. The entry carries `relatedList`, an optional `sortField` / `sortOrder`, a list of `fields` (up to 10 for classic), and a list of `customButtons` exposed at the top of the list. The Lightning record page does not store the column definitions — it stores only the **choice** of component (classic Related Lists vs. Related Lists - Single vs. Enhanced Related Lists) and which related list (by relationship name) that component should render.
+A related list on a page-layout-driven surface is a `RelatedListItem` inside the Layout: `relatedList` (Required, the list's name), `fields`, `sortField`, `sortOrder`, `customButtons`, `excludeButtons` and `quickActions` (api_meta 264 L85851-85873). Retrieved standard fields use aliases — "the Fax, Mobile, and Home Phone fields are retrieved as Phone2, Phone3, and Phone4" (L85860-85862). The Lightning record page stores the component choice; the guide's FlexiPage sample shows `force:relatedListContainer` with only a `relatedListComponentOverride` property (api_meta 264 L70339-70342). UNVERIFIED (2026-10-21): that no Lightning related-list component can carry its own column list.
 
-The implication: editing a related list's columns is a Page Layout edit, not a Lightning App Builder edit, even when the resulting record page is 100% Lightning App Builder. Forgetting this routes admins to the wrong tool.
+The implication: editing a related list's columns is a Page Layout edit, not a Lightning App Builder edit, even when the resulting record page is 100% Lightning App Builder.
 
 ### Sort field + sort direction
 
-Each related list has one sort field and one direction. Sort defaults to the parent-relationship-defined order (typically CreatedDate DESC) when not specified. Sort field must be a sortable field type — long text areas, encrypted text, formula fields that reference cross-object lookups, and base64 fields cannot sort. Picking an unsortable field silently falls back to default sort with no error.
+Each `RelatedListItem` has one configured `sortField`; "If the sortField is set, the sortOrder field determines the sort order" — `Asc` or `Desc` (api_meta 264 L85868-85873). Separately, `UserInterfaceSettings.multiColumnSortRL` lets users sort related lists by multiple columns, default true, API 63.0+ (api_meta 264 L131893-131895). UNVERIFIED (2026-10-21): the default order when no sort field is set, which field types cannot sort, and silent fallback on an unsortable field.
 
-The sort field shown when the user clicks **View All** can differ from the inline sort if the user manually re-sorts the View All grid, but the configured default sort always re-applies on first render.
+### Enhanced Related Lists (UNVERIFIED feature set)
 
-### Enhanced Related Lists (Spring '24+)
-
-The Enhanced Related Lists component on a Lightning record page adds:
-
-- inline per-column filtering (resembling list view filtering)
-- mass actions on selected rows
-- inline column resizing and reordering (per user, persisted in user preferences)
-- display of up to 30 rows inline (vs. the classic 5–10) before pagination
-- support for displaying related lists as separate components on the page (one component per related list, not the all-in-one Related Lists block)
-
-The cost: Enhanced Related Lists components are heavier on initial render than `Related List - Single`. On record pages with more than ~6 enhanced related lists visible above the fold, defer some to a tab to avoid First-Paint regressions.
+Help describes an Enhanced list type that adds per-column filtering, mass actions on selected rows, per-user column resizing, and more rows inline before pagination. UNVERIFIED (2026-10-21): every item in that list, the release it arrived in, the row counts (this skill's frontmatter says 10, older text said 30), and the render cost of many Enhanced lists above the fold. None of these is in the Metadata API, Object Reference or LWC corpus.
 
 ### Per-record-type related lists
 
-When an object has multiple record types, each record type can route to a different Page Layout via the Page Layout Assignment matrix (Setup → Object Manager → Object → Page Layouts → Page Layout Assignment). Because the related-list contract lives on the Page Layout, this means **different record types see different related lists, with different columns and sort orders**. This is a feature when intentional (e.g., a Service Request record type doesn't need the Opportunities related list) and a bug when accidental (admins forget to update layout B after editing layout A).
+When an object has multiple record types, each profile × record type pair can route to a different layout (`ProfileLayoutAssignments`, api_meta 264 L100698-100705). Because the related-list contract lives on the Layout, **different record types can see different related lists, with different columns and sort orders**. This is a feature when intentional and a bug when accidental (admins forget to update layout B after editing layout A). The Layout type has no description field (field table api_meta 264 L85051-85153), so record intent in the layout name or the change record, not "in the layout description".
 
-### Search Filter Fields (lookup dialog parity)
+### Search layouts (lookup dialog parity)
 
-The Search Filter Fields on the parent object's Search Layout control which columns appear in the lookup dialog when a user is selecting a record. These are configured separately from the related list itself, in the Search Layouts area. A user can be unable to find a record in the lookup dialog because the field they're searching by isn't in the Search Filter Fields list — even when the related list happily displays it.
+The parent object's `SearchLayouts` carry three different lists: `lookupDialogsAdditionalFields` — "The list of fields displayed in a lookup dialog" (api_meta 264 L47528); `lookupFilterFields` — fields that "can be used to filter enhanced lookups" (L47550-47552); and `searchFilterFields` — fields that "can be used to filter a search for the object" (L47574-47575). They are configured separately from the related list. A user can fail to find a record in a lookup because the column or filter they expect is not in the matching list, even when the related list displays it.
 
 ---
 
@@ -102,25 +108,25 @@ The Search Filter Fields on the parent object's Search Layout control which colu
 
 ### Pattern 1: Classic Related Lists block on a small Lightning record page
 
-**When to use:** The record page has 4–8 related lists, all relevant to most users, and the org has not yet adopted the Enhanced Related Lists component.
+**When to use:** The record page has 4–8 related lists, all relevant to most users, and no list needs filtering.
 
 **How it works:**
-1. Edit the Page Layout. Add the related lists in priority order (top = most important). For each, set the columns (≤10), sort field, and sort direction.
-2. On the Lightning record page in Lightning App Builder, add the **Related Lists** component (singular, all-in-one) below the Activity timeline or on a dedicated tab.
-3. The component renders all related lists from the page layout in the order configured.
+1. Edit the Page Layout. Add the related lists in priority order — the array order is the UI order (api_meta 264 L85113-85114). For each, set the columns (≤10, UNVERIFIED cap), sort field, and sort direction.
+2. On the Lightning record page in Lightning App Builder, add the **Related Lists** component below the Activity timeline or on a dedicated tab.
+3. The component renders the related lists from the page layout in the order configured.
 
-**Why not the alternative:** Using `Related List - Single` × 8 instead requires 8 separate component placements and 8 separate filter/sort decisions, with no consolidated quick-links bar. The all-in-one block is the right default until a related list needs its own dedicated component (e.g., it lives on a different tab from the others).
+**Why not the alternative:** Using `Related List - Single` × 8 instead requires 8 separate component placements. The all-in-one block is the right default until a related list needs its own dedicated component (e.g., it lives on a different tab from the others).
 
-### Pattern 2: Enhanced Related Lists for the one related list that needs filtering
+### Pattern 2: An Enhanced list for the one related list that needs filtering
 
 **When to use:** Users frequently scroll a long related list looking for the subset that matters (e.g., open vs. closed Cases under an Account).
 
-**How it works:**
-1. On the Lightning record page, replace `Related Lists` (or `Related List - Single` for that one list) with the **Enhanced Related Lists** component.
-2. Choose the relationship to display. The component reads the same column / sort definition from the underlying Page Layout — there is no separate column picker in App Builder.
-3. Enable the filter and mass-action options the users need. Tell users to use the inline filter chip to filter by Status / Stage / Owner.
+**How it works (UNVERIFIED (2026-10-21): Help-only component properties):**
+1. On the Lightning record page, host that one list in a `Related List - Single` set to the Enhanced list type.
+2. Choose the relationship to display; columns and sort come from the Page Layout.
+3. Enable the filter and mass-action options the users need.
 
-**Why not the alternative:** Building a custom list view tab on the record page (`Related List - Single` + custom List View component) duplicates configuration and breaks when the user's Page Layout assignment changes. Enhanced Related Lists tracks the Page Layout source automatically.
+**Why not the alternative:** Building a custom list view tab on the record page duplicates configuration and breaks when the user's Page Layout assignment changes.
 
 ### Pattern 3: Per-record-type related-list divergence
 
@@ -129,10 +135,10 @@ The Search Filter Fields on the parent object's Search Layout control which colu
 **How it works:**
 1. Maintain one Page Layout per record type (do not share a layout across divergent record types).
 2. Configure related lists per layout in the intentional shape.
-3. Confirm the Page Layout Assignment matrix routes each (Profile × Record Type) combination correctly — this is the silent failure point.
-4. Document the divergence in the layout description so the next admin doesn't accidentally re-sync the layouts.
+3. Confirm each profile's `layoutAssignments` route every (Profile × Record Type) combination correctly (api_meta 264 L100702-100705) — this is the silent failure point.
+4. Record the divergence where the next admin will look — the layout name, the change record, or the config workbook (the Layout type has no description field).
 
-**Why not the alternative:** Sharing one layout across record types and using component-level visibility filters in App Builder to hide related lists works for the visible row data but does not hide the related-list **block** on the underlying Page Layout — admins editing the layout later may add columns assuming all record types see them.
+**Why not the alternative:** Sharing one layout across record types and using component-level visibility filters in App Builder hides the component at runtime but leaves the related list on the underlying Page Layout — admins editing the layout later may add columns assuming all record types see them.
 
 ---
 
@@ -140,14 +146,14 @@ The Search Filter Fields on the parent object's Search Layout control which colu
 
 | Situation | Recommended Approach | Reason |
 |---|---|---|
-| Standard record page with several related lists, mostly read | Classic `Related Lists` component, one block | One place to edit, lowest render cost |
-| One related list users need to filter / mass-act on | `Enhanced Related Lists` for that list only | Filter + mass actions require Enhanced; keep others classic to limit page weight |
-| Related list with > 10 columns requested inline | Push secondary columns behind **View All**, keep 10 max inline | Classic related lists silently drop column 11+; inline width also breaks UX |
-| Two record types need different related-list sets | Separate Page Layouts per record type, distinct Page Layout Assignment | Component visibility filters on App Builder don't hide the underlying related-list block from layout-editing admins |
-| Related list needs to live on a dedicated tab in App Builder | `Related List - Single` on the tab | Single component lets you title and place independently; the all-in-one `Related Lists` block can't be split |
-| Org wants users to discover related lists fast (top of page) | `Related Lists - Quick Links` near the top + full related lists on a tab | Quick Links is anchor-only; pairs with full lists for the click-through |
-| Sort field is a formula referencing another object | Pick a directly stored field on the child instead | Cross-object formulas are not sortable; configuration silently falls back to default sort |
-| Mobile users complain related list looks empty on phone | Reorder columns: most important first, max 4 visible inline on mobile | Mobile applies the same layout but renders fewer columns above the fold |
+| Standard record page with several related lists, mostly read | Classic `Related Lists` component, one block | One place to edit |
+| One related list users need to filter / mass-act on | Enhanced list type for that list only | Filter + mass actions are Enhanced-only per Help (UNVERIFIED); keep others classic |
+| Related list with > 10 columns requested inline | Push secondary columns behind **View All**, keep 10 max inline | Help's 10-column cap (UNVERIFIED); inline width also breaks UX |
+| Two record types need different related-list sets | Separate Page Layouts per record type, distinct `layoutAssignments` | Component visibility filters don't remove the related list from the layout |
+| Related list needs to live on a dedicated tab in App Builder | `Related List - Single` on the tab | Single component lets you place it independently |
+| Org wants users to discover related lists fast (top of page) | `Related Lists - Quick Links` near the top + full related lists on a tab | Quick Links is anchor-style (UNVERIFIED, Help-only) |
+| Sort field is a formula referencing another object | Pick a directly stored field on the child instead | Cross-object sort behaviour is UNVERIFIED; a stored field avoids the question |
+| Mobile users complain related list looks empty on phone | Reorder columns: most important first | Mobile shows fewer columns inline (UNVERIFIED ~4) |
 
 ---
 
@@ -155,13 +161,13 @@ The Search Filter Fields on the parent object's Search Layout control which colu
 
 Step-by-step instructions for an AI agent or practitioner working on a related-list configuration request:
 
-1. Identify the **Page Layout** that the affected user's (Profile, Record Type) combination resolves to — not the Lightning record page. Confirm by reading the Page Layout Assignment matrix in Setup → Object Manager → <Object> → Page Layouts.
-2. Inventory the related list in question on that Page Layout: relationship name, current columns (order + count), sort field, sort direction, custom buttons. Note any field hidden by FLS for the affected user — those show as blank cells.
-3. Decide the Lightning component for hosting: classic `Related Lists` (all-in-one), `Related List - Single`, `Related Lists - Quick Links`, or `Enhanced Related Lists`. Apply the decision table above.
-4. Apply the column / sort / filter changes on the Page Layout (max 10 fields for classic; choose a sortable field). If using Enhanced Related Lists, confirm filter and mass-action behavior in the App Builder component properties.
-5. If different record types need different shapes, mirror the changes onto the divergent Page Layout(s) or document the intentional divergence in the layout description.
-6. Validate by impersonating a user from each affected (Profile × Record Type) combination — confirm column visibility, sort default, View All behavior, and mobile parity.
-7. Capture the configuration in the related-list-configuration template (see `templates/`) so the next admin reading the change knows the intent.
+1. Identify the **Page Layout** that the affected user's (Profile, Record Type) combination resolves to — not the Lightning record page. Read the profile's `layoutAssignments` (api_meta 264 L100702-100705) or the Page Layout Assignment screen.
+2. Inventory the related list on that Page Layout: `relatedList`, `fields` (order + count), `sortField`, `sortOrder`, `customButtons`. Expect standard-field aliases such as `Phone2` in retrieved XML (api_meta 264 L85860-85862).
+3. Decide the Lightning component for hosting with the decision table above.
+4. Apply the column / sort changes on the Page Layout (≤10 fields, Help-only cap; a directly stored sort field).
+5. If different record types need different shapes, mirror the changes onto the divergent Page Layout(s) or record the intentional divergence outside the layout.
+6. Run `python3 skills/admin/related-list-configuration/scripts/check_related_list_configuration.py --manifest-dir force-app/main/default` (add `--strict` in CI), then validate by impersonating a user from each affected (Profile × Record Type) combination — column visibility, sort default, View All, mobile.
+7. Capture the configuration in `templates/related-list-configuration-template.md` so the next admin knows the intent.
 
 ---
 
@@ -170,27 +176,27 @@ Step-by-step instructions for an AI agent or practitioner working on a related-l
 Run through these before marking related-list configuration work complete:
 
 - [ ] The Page Layout edited is the one that the affected (Profile × Record Type) resolves to
-- [ ] No related list has more than 10 columns configured (classic); secondary columns are behind View All
-- [ ] Sort field is a sortable field type (not a long text area, base64, or cross-object formula)
-- [ ] If Enhanced Related Lists is used, the filter + mass-action behaviors actually meet the user's need (otherwise the extra page weight is unjustified)
-- [ ] Per-record-type divergence is intentional and documented in the layout description, not an accidental drift
-- [ ] Search Filter Fields on the parent object's Search Layout include the fields users will type into the lookup dialog
-- [ ] Mobile order is verified — the 4 most important columns are first
-- [ ] FLS for the affected fields is consistent with the visibility intent (otherwise blank cells will look like a layout bug)
+- [ ] No related list has more than 10 columns configured (Help-only cap, UNVERIFIED); secondary columns are behind View All
+- [ ] Sort field is a directly stored field on the child (unsortable-type list UNVERIFIED)
+- [ ] If an Enhanced list is used, the filter + mass-action behaviors actually meet the user's need
+- [ ] Per-record-type divergence is intentional and recorded outside the layout (Layout has no description field)
+- [ ] The parent object's `lookupDialogsAdditionalFields` / `lookupFilterFields` / `searchFilterFields` include what users need in lookups and searches
+- [ ] Mobile order is verified — the most important columns are first
+- [ ] FLS for the affected fields is consistent with the visibility intent (secguide 262 L621)
 
 ---
 
 ## Salesforce-Specific Gotchas
 
-Non-obvious platform behaviors that cause real production problems:
+Non-obvious platform behaviors that cause real production problems (UNVERIFIED items per the note at the top):
 
-1. **Classic related list silently drops the 11th column** — adding a 12th field doesn't error; it doesn't appear. Users report "field is missing" and admins waste hours debugging FLS before realizing the cap.
-2. **Cross-object formula fields can't be the sort field** — the picker accepts them, but at render the sort falls back to default with no warning. The same is true of base64 and long-text-area fields.
-3. **Field hidden by FLS appears as a blank cell** — not "no access." This is indistinguishable from a layout bug at a glance and is the #1 source of "column is broken" tickets.
-4. **Lightning App Builder visibility filter hides the component, not the Page Layout block** — admins assume the related list is "removed" but the next admin opening the Page Layout sees it and may edit it under that assumption.
-5. **Enhanced Related Lists initial render cost is non-trivial** — placing 6+ Enhanced components above the fold has been measured to add hundreds of milliseconds to First Paint on slow networks. Defer to a tab where possible.
-6. **Per-record-type related lists diverge silently after a Page Layout clone** — admins clone Layout A → Layout B for a new record type, then later add a related list to A only. Layout B drifts. There is no built-in drift detector; only manual review catches it.
-7. **Salesforce Mobile App ignores the inline-column count beyond ~4** — the column order on the Page Layout dictates what mobile users see. Putting an "internal" field in position 1 means the customer-facing fields fall off the mobile view.
+1. **Columns past the 10th may not render (UNVERIFIED cap)** — the Metadata API accepts any `fields` list (api_meta 264 L85859); the cap is Help-only.
+2. **Cross-object formula sort fields (UNVERIFIED fallback)** — the configured sort is one `sortField` (api_meta 264 L85868); what happens on an unsortable type is Help-only.
+3. **FLS governs related-list columns** — "including related lists" (secguide 262 L621); the blank-cell rendering is UNVERIFIED.
+4. **Lightning App Builder visibility filter hides the component, not the Page Layout entry** — the next admin opening the Page Layout sees the related list and may edit it under the wrong assumption.
+5. **Enhanced list render cost (UNVERIFIED)** — no corpus guide measures it; defer heavy lists to a tab and measure.
+6. **Per-record-type related lists diverge silently after a Page Layout clone** — admins clone Layout A → Layout B, then later add a related list to A only. There is no description field on Layout to warn them (api_meta 264 L85051-85153); the checker reports the divergence.
+7. **Mobile shows fewer columns (UNVERIFIED ~4)** — the column order on the Page Layout (api_meta 264 L85113-85114) dictates what mobile users see first.
 
 ---
 
@@ -198,11 +204,11 @@ Non-obvious platform behaviors that cause real production problems:
 
 | Artifact | Description |
 |---|---|
-| Related-list configuration table | One row per (Page Layout × related list) with: columns (ordered), sort field, sort direction, Enhanced/classic component choice, per-record-type divergence note |
-| Component placement plan | Lightning record page → which Lightning component (`Related Lists` / `Related List - Single` / `Enhanced Related Lists` / `Related Lists - Quick Links`) hosts each related list, with rationale |
+| Related-list configuration table | One row per (Page Layout × related list) with: columns (ordered), sort field, sort direction, Enhanced/classic choice, per-record-type divergence note |
+| Component placement plan | Lightning record page → which component (`Related Lists` / `Related List - Single` / Enhanced list type / `Related Lists - Quick Links`) hosts each related list, with rationale |
 | Page Layout Assignment confirmation | Profile × Record Type → Page Layout matrix snapshot for the affected layouts |
-| FLS impact note | Fields on the configured related lists that are hidden by FLS for any affected Profile, with intent (blank cell is intentional vs. needs FLS grant) |
-| Mobile parity note | Confirmation that the first 4 columns of each related list are the ones mobile users need most |
+| FLS impact note | Fields on the configured related lists that field permissions hide for any affected Profile, with intent |
+| Mobile parity note | Confirmation that the first columns of each related list are the ones mobile users need most |
 
 ---
 
@@ -211,6 +217,6 @@ Non-obvious platform behaviors that cause real production problems:
 - `admin/record-types-and-page-layouts` — Page Layout creation and the Page Layout Assignment matrix that drives which related-list set a user sees
 - `admin/lightning-page-performance-tuning` — Tradeoff between Related List - Single vs. all-in-one when First Paint matters; use alongside this skill when the page is heavy
 - `admin/global-search-configuration` — Search Layouts and lookup-dialog column choice, which interact with related-list lookups
-- `admin/list-views-and-compact-layouts` — Compact layout drives the row tooltip / highlights panel and Mobile App card; related-list configuration drives the inline columns
-- `admin/dynamic-forms-migration` — Dynamic Forms removes fields from the layout but **does not** remove related lists from it — relevant when migrating record pages
+- `admin/list-views-and-compact-layouts` — Compact layout drives the highlights panel and Mobile App card; related-list configuration drives the inline columns
+- `admin/dynamic-forms-migration` — Dynamic Forms moves fields off the layout but **does not** remove related lists from it — relevant when migrating record pages
 - `admin/fsl-sla-configuration-requirements` — FSL-specific WorkOrderMilestone-on-Work-Order configuration, which is a specialized case of related-list setup

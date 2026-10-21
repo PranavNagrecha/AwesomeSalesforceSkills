@@ -917,6 +917,11 @@ releases:
     - admin/omni-channel-routing-setup
     - admin/omnistudio-admin-configuration
     - admin/persona-and-journey-mapping-sf
+    - admin/process-flow-as-is-to-be
+    - admin/record-type-id-management
+    - admin/related-list-configuration
+    - admin/remote-site-settings
+    - admin/report-performance-tuning
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'

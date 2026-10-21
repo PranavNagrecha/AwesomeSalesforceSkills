@@ -45,7 +45,7 @@ flowchart LR
   end
   subgraph SF[Salesforce Platform]
     P1["Create Lead from MAP webhook [INTEGRATION:REST]"]
-    P2["Apply territory & assignment rules [FLOW]"]
+    P2["Apply assignment rules [OPEN]"]
     P3["Carry MAP qualification into Lead fields [INTEGRATION:REST]"]
     P4["Auto-link campaign on conversion [APEX]"]
   end
@@ -58,11 +58,11 @@ flowchart LR
   C1 --> M1 --> P1 --> P2 --> P3 --> S1 --> A1 --> P4
 ```
 
-**Automation candidates (3 of them):**
+**Automation candidates (2 built, plus 1 `[OPEN]` routed to the open questions log as native configuration):**
 
 | Step | Tier | Decision-Tree Branch | Recommended Agent |
 |---|---|---|---|
-| Apply territory & assignment rules | `[FLOW]` | automation-selection.md Q2 → Before-save record-triggered Flow on Lead | /build-flow |
+| Apply assignment rules | `[OPEN]` — native rule engine, no enum tier | automation-selection.md Q2 (field is OwnerId on a Lead) → Q13 → Assignment Rules (`admin/assignment-rules`); configuration, not a built Flow | /design-lead-routing |
 | Carry MAP qualification into Lead fields | `[INTEGRATION:REST]` | automation-selection.md Q11 → REST API + Apex custom endpoint | /build-agentforce-action (paired with object-designer for Lead field design) |
 | Auto-link campaign on conversion | `[APEX]` | automation-selection.md Q3 → Apex (needs custom logic on standard Lead.convertLead) | /refactor-apex (or trigger-consolidator if a Lead trigger exists) |
 

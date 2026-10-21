@@ -1,18 +1,44 @@
 #!/usr/bin/env python3
 """Checker script for Report Performance Tuning skill.
 
-Parses Salesforce report metadata XML files (retrieved via sfdx/sf CLI or
-Metadata API) and flags common performance anti-patterns documented in
-references/gotchas.md.
+Parses Salesforce Report, ReportType and Dashboard metadata (retrieved via
+sf CLI or Metadata API) and flags the performance anti-patterns documented
+in references/gotchas.md.
 
 Uses stdlib only — no pip dependencies.
 
 Usage:
     python3 check_report_performance_tuning.py [--help]
-    python3 check_report_performance_tuning.py --manifest-dir path/to/metadata
+    python3 check_report_performance_tuning.py --manifest-dir path/to/metadata [--strict]
 
-The script looks for *.report-meta.xml files under the manifest directory,
-typically at: force-app/main/default/reports/**/*.report-meta.xml
+Files scanned (recursively): *.report-meta.xml, *.reportType-meta.xml,
+*.dashboard-meta.xml (and the .report / .reportType / .dashboard forms).
+
+Severity (Metadata API Developer Guide 264 unless noted):
+  ERROR  a file that does not parse as XML
+  ERROR  a Report missing a Required field: name, reportType (api_meta L106776, L106795)
+  ERROR  a ReportType missing a Required field: baseObject, deployed, label
+         (api_meta L108421, L108453, L108475)
+  WARN   no selective filter: no filter/criteriaItems on a date / owner / record
+         type column, no timeFrameFilter (L107791-107801), and a scope that is
+         absent or starts with "All" (scope values e.g. MyAccounts / AllAccounts,
+         L106822-106829)
+  WARN   100 or more columns (detail columns + summaries + custom summary
+         formulas) — the REST API error text refuses a report that is not
+         "fewer than 100 columns" (Reports and Dashboards REST API 262, Report
+         Error Codes), though the limits say "up to 100" (apexdev 264 L33681)
+  WARN   more than 20 field filters / 3 cross filters / 5 custom summary
+         formulas (50 for joined) — report-builder allocations that are
+         Help-only (UNVERIFIED 2026-10-21)
+  WARN   a custom report type joining 4 objects (the documented maximum,
+         L108487) or using an outer join (L108493-108495)
+  WARN   a joined report (check every block has a selective filter)
+  WARN   a dashboard with more than 20 components (Help-only guidance,
+         UNVERIFIED) or dashboardType SpecifiedUser (every viewer sees the
+         running user's data, L50170-50174)
+
+Exit codes: ERROR findings and a missing --manifest-dir exit 1; WARN findings
+exit 0 unless --strict; an empty directory prints one WARN and exits 0.
 """
 
 from __future__ import annotations
@@ -22,15 +48,8 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-# Salesforce Metadata API namespace for report files
 _NS = "http://soap.sforce.com/2006/04/metadata"
 
-# Fields that provide high selectivity on large standard objects.
-# Reports lacking at least one of these on large objects are at risk.
 SELECTIVE_FILTER_FIELDS = {
     "CLOSE_DATE",
     "CREATED_DATE",
@@ -43,303 +62,212 @@ SELECTIVE_FILTER_FIELDS = {
     "RECORDTYPEID",
 }
 
-# The Analytics API cannot process a report with 100 or more columns; it
-# rejects the run with HTTP 400: "Only a report with fewer than 100 columns can
-# be run. The columns are fields specified as detail columns, summaries, or
-# custom summary formulas. Remove unneeded columns from the report and try
-# again." This is an API processing limit, not a report builder allocation.
 MAX_REPORT_COLUMNS = 100
-
-# Report builder allocations, flagged as hard failures when exceeded.
 MAX_FIELD_FILTERS = 20
 MAX_CROSS_FILTERS = 3
 MAX_REPORT_FORMULAS = 5
-# Joined reports get a larger custom summary formula allowance: 10 per block,
-# 50 per report.
 MAX_JOINED_REPORT_FORMULAS = 50
-
-# Dashboard refresh minimum is 24 hours; we flag anything less.
-MIN_DASHBOARD_REFRESH_HOURS = 24
-
-# Component count above this threshold warrants a warning.
+MAX_CRT_OBJECTS = 4
 DASHBOARD_COMPONENT_WARN_THRESHOLD = 20
 
+REPORT_SUFFIXES = (".report-meta.xml", ".report")
+REPORT_TYPE_SUFFIXES = (".reportType-meta.xml", ".reportType")
+DASHBOARD_SUFFIXES = (".dashboard-meta.xml", ".dashboard")
 
-# ---------------------------------------------------------------------------
-# Report XML helpers
-# ---------------------------------------------------------------------------
 
 def _tag(name: str) -> str:
-    """Return a namespace-qualified tag name."""
     return f"{{{_NS}}}{name}"
 
 
-def _iter_filter_items(root: ET.Element):
-    """Yield each report-level field-filter element in the report XML.
+def _files(root: Path, suffixes: tuple[str, ...]) -> list[Path]:
+    return sorted(p for p in root.rglob("*") if p.is_file() and p.name.endswith(suffixes))
 
-    The Report metadata type nests filter conditions as ``filter/criteriaItems``
-    (see the Metadata API Report reference). ``crossFilters`` carries its
-    subfilters under the *same* ``criteriaItems`` element name, so the search is
-    scoped to ``filter`` rather than walking the whole document — otherwise up
-    to 15 cross filter subfilters inflate the field filter count.
-    """
+
+def _stem(path: Path, suffixes: tuple[str, ...]) -> str:
+    for s in suffixes:
+        if path.name.endswith(s):
+            return path.name[: -len(s)]
+    return path.stem
+
+
+def _top_text(root: ET.Element, name: str) -> str:
+    elem = root.find(_tag(name))
+    return (elem.text or "").strip() if elem is not None else ""
+
+
+def _iter_filter_items(root: ET.Element):
+    """Field filters live under filter/criteriaItems; crossFilters reuse the
+    criteriaItems name for subfilters, so the search is scoped to <filter>."""
     for filt in root.iter(_tag("filter")):
         yield from filt.findall(_tag("criteriaItems"))
 
 
 def _has_selective_filter(root: ET.Element) -> bool:
-    """Return True if the report XML contains at least one selective filter."""
     for criteria in _iter_filter_items(root):
-        column = criteria.findtext(_tag("column"), default="").upper()
-        if column in SELECTIVE_FILTER_FIELDS:
+        column = (criteria.findtext(_tag("column"), default="") or "").upper()
+        if column.split(".")[-1] in SELECTIVE_FILTER_FIELDS:
             return True
-    # Also check top-level scope filter (e.g. mine, team)
-    scope = root.findtext(_tag("scope"), default="").upper()
-    if scope in {"MINE", "TEAM", "ROLEANDSUB", "QUEUE"}:
+    tff = root.find(_tag("timeFrameFilter"))
+    if tff is not None:
+        interval = (tff.findtext(_tag("interval"), default="") or "").strip().upper()
+        has_dates = bool(tff.findtext(_tag("startDate")) or tff.findtext(_tag("endDate")))
+        if interval and (interval != "INTERVAL_CUSTOM" or has_dates):
+            return True
+    scope = _top_text(root, "scope").lower()
+    if scope and not scope.startswith("all") and scope != "organization":
         return True
     return False
 
 
-def _count_crt_objects(root: ET.Element) -> int:
-    """Count the number of objects referenced in a custom report type."""
-    type_refs = list(root.iter(_tag("reportTypeColumnItems")))
-    if type_refs:
-        return len(type_refs)
-    # Fall back: count objectType elements
-    return len(list(root.iter(_tag("objectType"))))
-
-
 def _count_columns(root: ET.Element) -> int:
-    """Count columns as the Analytics API counts them toward the 100 cap.
-
-    Per the platform error message, the cap sums three categories: detail
-    columns (``columns``), summaries (each ``aggregateTypes`` entry toggled on
-    a column), and custom summary formulas (``aggregates``). All three are real
-    Report metadata elements; see the Metadata API Report reference.
-    """
-    detail_columns = len(list(root.iter(_tag("columns"))))
-    summaries = len(list(root.iter(_tag("aggregateTypes"))))
-    custom_summary_formulas = len(list(root.iter(_tag("aggregates"))))
-    return detail_columns + summaries + custom_summary_formulas
+    """Detail columns + summaries (aggregateTypes) + custom summary formulas (aggregates)."""
+    return (
+        len(list(root.iter(_tag("columns"))))
+        + len(list(root.iter(_tag("aggregateTypes"))))
+        + len(list(root.iter(_tag("aggregates"))))
+    )
 
 
-def _has_outer_joins(root: ET.Element) -> bool:
-    """Return True if any relationship in the report uses outer join behavior."""
-    for rel in root.iter(_tag("reportTypeToFieldItem")):
-        join_type = rel.findtext(_tag("joinType"), default="").upper()
-        if join_type in {"OUTER", "FULL_OUTER"}:
-            return True
-    return False
-
-
-# ---------------------------------------------------------------------------
-# Main checkers
-# ---------------------------------------------------------------------------
-
-def check_report_files(manifest_dir: Path) -> list[str]:
-    """Scan report metadata XML files for performance anti-patterns."""
-    issues: list[str] = []
-
-    report_files = list(manifest_dir.rglob("*.report-meta.xml"))
-    if not report_files:
-        # Not an error — the manifest may not include reports.
-        return issues
-
-    for report_path in report_files:
-        report_name = report_path.stem.replace(".report-meta", "")
+def check_reports(manifest_dir: Path, errors: list[str], warns: list[str]) -> None:
+    for path in _files(manifest_dir, REPORT_SUFFIXES):
+        name = _stem(path, REPORT_SUFFIXES)
         try:
-            tree = ET.parse(report_path)
+            root = ET.parse(path).getroot()
         except ET.ParseError as exc:
-            issues.append(f"{report_name}: XML parse error — {exc}")
+            errors.append(f"{name}: XML parse error — {exc}")
             continue
+        for required in ("name", "reportType"):
+            if not _top_text(root, required):
+                errors.append(f"{name}: Required Report field <{required}> is missing or empty")
+        fmt = _top_text(root, "format").upper()
 
-        root = tree.getroot()
-
-        # Check 1: Report type
-        report_type = root.findtext(_tag("reportType"), default="")
-        format_ = root.findtext(_tag("format"), default="")
-
-        # Check 2: Missing selective filter
         if not _has_selective_filter(root):
-            issues.append(
-                f"{report_name}: No selective filter detected (date range, owner, or "
-                f"record type). Reports on large objects without selective filters "
-                f"perform a full table scan and may time out. "
-                f"Add a date range, Owner, or Record Type filter."
+            warns.append(
+                f"{name}: no selective filter (date/owner/record type criteria, timeFrameFilter, or an "
+                f"owner scope). Without a selective indexed filter the optimizer performs a full scan."
             )
-
-        # Check 3: Column cap — an Analytics API refusal, not a slowdown.
         column_count = _count_columns(root)
         if column_count >= MAX_REPORT_COLUMNS:
-            issues.append(
-                f"{report_name}: Report has ~{column_count} columns "
-                f"(detail columns + summaries + custom summary formulas). "
-                f"The Analytics API cannot process a report with "
-                f"{MAX_REPORT_COLUMNS} or more columns — it returns HTTP 400: "
-                f"'Only a report with fewer than {MAX_REPORT_COLUMNS} columns can "
-                f"be run.' Remove unneeded columns, or extract the fields via "
-                f"Bulk API 2.0 query instead of a report."
+            warns.append(
+                f"{name}: ~{column_count} columns (detail columns + summaries + custom summary formulas). "
+                f"The REST API error text reads 'Only a report with fewer than {MAX_REPORT_COLUMNS} columns can be "
+                f"run' (the limits page says 'up to {MAX_REPORT_COLUMNS}'); stay at {MAX_REPORT_COLUMNS - 1} or fewer."
             )
-
-        # Check 4: Report builder allocations
         filter_count = len(list(_iter_filter_items(root)))
         if filter_count > MAX_FIELD_FILTERS:
-            issues.append(
-                f"{report_name}: {filter_count} field filters exceeds the report "
-                f"builder cap of {MAX_FIELD_FILTERS} (10 in the legacy report wizard)."
+            warns.append(
+                f"{name}: {filter_count} field filters — over the {MAX_FIELD_FILTERS} report-builder "
+                f"allocation Help gives (UNVERIFIED)."
             )
-
-        cross_filter_count = len(list(root.iter(_tag("crossFilters"))))
-        if cross_filter_count > MAX_CROSS_FILTERS:
-            issues.append(
-                f"{report_name}: {cross_filter_count} cross filters exceeds the cap "
-                f"of {MAX_CROSS_FILTERS} per report (up to 5 subfilters each)."
+        cross_count = len(list(root.iter(_tag("crossFilters"))))
+        if cross_count > MAX_CROSS_FILTERS:
+            warns.append(
+                f"{name}: {cross_count} cross filters — over the {MAX_CROSS_FILTERS} per report Help gives "
+                f"(UNVERIFIED)."
             )
-
-        formula_cap = (
-            MAX_JOINED_REPORT_FORMULAS
-            if format_.upper() == "JOINED"
-            else MAX_REPORT_FORMULAS
-        )
+        formula_cap = MAX_JOINED_REPORT_FORMULAS if fmt == "JOINED" else MAX_REPORT_FORMULAS
         formula_count = len(list(root.iter(_tag("aggregates"))))
         if formula_count > formula_cap:
-            issues.append(
-                f"{report_name}: {formula_count} custom summary formulas exceeds "
-                f"the cap of {formula_cap} for this report format. The limit is "
-                f"hard-coded and cannot be raised by Salesforce Support."
+            warns.append(
+                f"{name}: {formula_count} custom summary formulas — over the {formula_cap} Help gives for "
+                f"this format (UNVERIFIED)."
             )
-
-        # Check 5: CRT with many objects
-        # report type name is the API name of the report type; standard types
-        # do not start with a namespace or custom suffix. CRT names are set by
-        # the admin and do not follow a reliable pattern, but we can check
-        # object count from the XML structure.
-        obj_count = _count_crt_objects(root)
-        if obj_count >= 4:
-            issues.append(
-                f"{report_name}: Report type spans {obj_count} objects. "
-                f"Custom report types spanning 4+ objects add significant join "
-                f"overhead on large datasets. Verify that all objects contribute "
-                f"actively used fields; remove unused objects from the CRT."
-            )
-
-        # Check 6: Outer join on high-cardinality path
-        if _has_outer_joins(root):
-            issues.append(
-                f"{report_name}: Outer join (with-or-without) detected in report type. "
-                f"Outer joins on high-volume child objects can multiply row counts "
-                f"unexpectedly, causing timeouts. Change to inner join unless outer "
-                f"join behavior is explicitly required."
-            )
-
-        # Check 7: Joined reports have extra overhead
-        if format_.upper() == "JOINED":
-            issues.append(
-                f"{report_name}: Joined report format detected. Joined reports run "
-                f"multiple sub-reports and combine them client-side. They have higher "
-                f"overhead than tabular or summary formats. Ensure all blocks have "
-                f"selective filters."
-            )
-
-    return issues
+        if fmt == "JOINED":
+            warns.append(f"{name}: joined report — confirm every block has a selective filter.")
 
 
-def check_dashboard_files(manifest_dir: Path) -> list[str]:
-    """Scan dashboard metadata XML files for performance anti-patterns."""
-    issues: list[str] = []
+def _join_depth(elem: ET.Element) -> int:
+    depth = 0
+    node = elem.find(_tag("join"))
+    while node is not None:
+        depth += 1
+        node = node.find(_tag("join"))
+    return depth
 
-    dashboard_files = list(manifest_dir.rglob("*.dashboard-meta.xml"))
-    if not dashboard_files:
-        return issues
 
-    for dash_path in dashboard_files:
-        dash_name = dash_path.stem.replace(".dashboard-meta", "")
+def check_report_types(manifest_dir: Path, errors: list[str], warns: list[str]) -> None:
+    for path in _files(manifest_dir, REPORT_TYPE_SUFFIXES):
+        name = _stem(path, REPORT_TYPE_SUFFIXES)
         try:
-            tree = ET.parse(dash_path)
+            root = ET.parse(path).getroot()
         except ET.ParseError as exc:
-            issues.append(f"{dash_name}: XML parse error — {exc}")
+            errors.append(f"{name}: XML parse error — {exc}")
             continue
-
-        root = tree.getroot()
-
-        # Check 1: Component count
-        components = list(root.iter(_tag("dashboardGridComponents")))
-        if not components:
-            # Try alternate element name used in older metadata format
-            components = list(root.iter(_tag("components")))
-        component_count = len(components)
-        if component_count > DASHBOARD_COMPONENT_WARN_THRESHOLD:
-            issues.append(
-                f"{dash_name}: Dashboard has {component_count} components "
-                f"(threshold: {DASHBOARD_COMPONENT_WARN_THRESHOLD}). Each component "
-                f"runs an independent report query on refresh. Consider splitting into "
-                f"multiple focused dashboards."
+        for required in ("baseObject", "deployed", "label"):
+            if not _top_text(root, required):
+                errors.append(f"{name}: Required ReportType field <{required}> is missing or empty")
+        objects = 1 + _join_depth(root)
+        if objects >= MAX_CRT_OBJECTS:
+            warns.append(
+                f"{name}: custom report type joins {objects} objects (the documented maximum is "
+                f"{MAX_CRT_OBJECTS}); remove objects that contribute no displayed fields."
+            )
+        if any((j.findtext(_tag("outerJoin")) or "").strip().lower() == "true" for j in root.iter(_tag("join"))):
+            warns.append(
+                f"{name}: outer join ('with or without') — it returns rows with no match in the joined "
+                f"object; use an inner join unless those rows are required."
             )
 
-        # Check 2: Running user — flag "run as specified user" for awareness
-        running_user = root.findtext(_tag("runningUser"), default="")
-        if running_user and running_user.strip():
-            issues.append(
-                f"{dash_name}: Dashboard runs as specified user '{running_user}'. "
-                f"Verify that this sharing scope is intentional — all viewers will "
-                f"see this user's data, which may be broader than intended."
+
+def check_dashboards(manifest_dir: Path, errors: list[str], warns: list[str]) -> None:
+    for path in _files(manifest_dir, DASHBOARD_SUFFIXES):
+        name = _stem(path, DASHBOARD_SUFFIXES)
+        try:
+            root = ET.parse(path).getroot()
+        except ET.ParseError as exc:
+            errors.append(f"{name}: XML parse error — {exc}")
+            continue
+        components = list(root.iter(_tag("dashboardGridComponents"))) or list(root.iter(_tag("components")))
+        if len(components) > DASHBOARD_COMPONENT_WARN_THRESHOLD:
+            warns.append(
+                f"{name}: {len(components)} components (Help-only guidance of "
+                f"{DASHBOARD_COMPONENT_WARN_THRESHOLD}, UNVERIFIED); consider splitting the dashboard."
+            )
+        if _top_text(root, "dashboardType") == "SpecifiedUser":
+            warns.append(
+                f"{name}: dashboardType SpecifiedUser — every viewer sees data at the running user's "
+                f"access level; confirm that scope is intended."
             )
 
-    return issues
-
-
-def check_report_performance_tuning(manifest_dir: Path) -> list[str]:
-    """Run all performance checks and return a combined issue list."""
-    issues: list[str] = []
-
-    if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
-        return issues
-
-    issues.extend(check_report_files(manifest_dir))
-    issues.extend(check_dashboard_files(manifest_dir))
-
-    return issues
-
-
-# ---------------------------------------------------------------------------
-# CLI entry point
-# ---------------------------------------------------------------------------
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=(
-            "Check Salesforce report and dashboard metadata for performance "
-            "anti-patterns documented in the report-performance-tuning skill."
-        ),
+        description="Check Salesforce report, report type and dashboard metadata for performance anti-patterns.",
     )
     parser.add_argument(
         "--manifest-dir",
         default=".",
-        help=(
-            "Root directory of the Salesforce metadata. "
-            "The script searches recursively for *.report-meta.xml and "
-            "*.dashboard-meta.xml files. "
-            "Default: current directory."
-        ),
+        help="Root directory of the Salesforce metadata (searched recursively). Default: current directory.",
     )
+    parser.add_argument("--strict", action="store_true", help="Exit 1 when any WARN is reported.")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir)
-    issues = check_report_performance_tuning(manifest_dir)
-
-    if not issues:
-        print("No performance issues found in report or dashboard metadata.")
+    if not manifest_dir.is_dir():
+        print(f"ERROR: manifest directory not found: {manifest_dir}")
+        return 1
+    if not any(_files(manifest_dir, s) for s in (REPORT_SUFFIXES, REPORT_TYPE_SUFFIXES, DASHBOARD_SUFFIXES)):
+        print(f"WARN: no report, report type or dashboard metadata under {manifest_dir}; nothing was checked.")
         return 0
 
-    for issue in issues:
-        print(f"ISSUE: {issue}")
+    errors: list[str] = []
+    warns: list[str] = []
+    check_reports(manifest_dir, errors, warns)
+    check_report_types(manifest_dir, errors, warns)
+    check_dashboards(manifest_dir, errors, warns)
 
-    print(f"\n{len(issues)} issue(s) found.")
-    return 1
+    for e in errors:
+        print(f"ERROR: {e}")
+    for w in warns:
+        print(f"WARN: {w}")
+    if not errors and not warns:
+        print("No performance issues found in report or dashboard metadata.")
+    if errors:
+        return 1
+    return 1 if (warns and args.strict) else 0
 
 
 if __name__ == "__main__":

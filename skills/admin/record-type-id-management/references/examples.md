@@ -2,9 +2,9 @@
 
 ## Example 1: Replacing hard-coded record-type IDs with a cached resolver
 
-**Context:** A five-year-old org has `012` string literals scattered across trigger handlers, batch classes, and an `@AuraEnabled` controller. A sandbox refresh has just re-issued every record-type Id, and the nightly batch is failing.
+**Context:** A five-year-old org has `012` string literals scattered across trigger handlers, batch classes, and an `@AuraEnabled` controller. The record types were deployed into a new org, which generated its own Ids (an Id is "unique within your org's data", obj 264 L2290), and the nightly batch is failing there.
 
-**Problem:** Record-type Ids are org-specific. The literal that resolved in the source org resolves to nothing in the refreshed sandbox, so branch conditions silently fall through instead of erroring — the batch "succeeds" while stamping the wrong record type on 40,000 rows.
+**Problem:** Record-type Ids are org-specific. The literal that resolved in the source org resolves to nothing in the new org, so branch conditions silently fall through instead of erroring — the batch "succeeds" while stamping the wrong record type on 40,000 rows.
 
 **Solution:**
 
@@ -49,7 +49,7 @@ public with sharing class RecordTypes {
 
 Call sites become `RecordTypes.idFor(Account.SObjectType, 'Business_Account')`.
 
-**Why it works:** The Id is derived at runtime from the DeveloperName, which the Metadata API guarantees is the component key (`fullName`). `selectableFor` applies the two filters the describe maps do not apply for you — `isAvailable()`, documented as "Returns true if this record type is available to the current user," and `isActive()` — because `getRecordTypeInfos*` returns every record type regardless of the running user's access.
+**Why it works:** The Id is derived at runtime from the DeveloperName, the API name the deploy carries as the component's `fullName` (api_meta 264 L47382; obj 264 L246998). `selectableFor` applies the filters the describe maps do not apply for you — `isAvailable()`, documented as "Returns true if this record type is available to the current user" (apexref 262 L193867), and `isActive()` — because `getRecordTypeInfos*` includes record types the running user cannot access (apexref 262 L192544).
 
 ---
 
@@ -57,7 +57,7 @@ Call sites become `RecordTypes.idFor(Account.SObjectType, 'Business_Account')`.
 
 **Context:** A new `Bulk_Orders` record type on Opportunity, deployed via source format, referenced from a validation rule.
 
-**Problem:** Hand-authored `RecordType` files commonly prefix `fullName` with the object name, and validation rules commonly compare `RecordTypeId` to a literal — both fail on deploy to a second org.
+**Problem:** Hand-authored `RecordType` files commonly object-prefix the `businessProcess` value, and validation rules commonly compare `RecordTypeId` to a literal — the first breaks the deploy, the second breaks in any org with a different Id.
 
 **Solution:**
 
@@ -110,7 +110,7 @@ And the `package.xml` member — the one place the object prefix *is* required:
 </types>
 ```
 
-**Why it works:** `fullName` is bare inside the component ("As the record type is already defined within the object, don't prefix the object name") and qualified inside `package.xml`. The validation rule compares `$RecordType.DeveloperName` to a string, so it carries between orgs unchanged; a `RecordTypeId = "012..."` comparison would not. Retrieve the record type from an org rather than hand-authoring the `picklistValues` block: the encoding Salesforce uses for picklist `fullName` values inside record-type metadata is not documented on this page, and guessing it is how multi-word picklist entries turn into deploy failures.
+**Why it works:** `businessProcess` is the bare process name, as the guide requires for Opportunity record types ("As the record type is already defined within the object, don't prefix the object name", api_meta 264 L47367-47373), and the `package.xml` member is object-qualified, as in the guide's sample `<members>Opportunity.Test_Record_Type</members>` (api_meta 264 L97295). The bare `<fullName>Bulk_Orders</fullName>` matches the guide's declarative sample, where a record type defined inside its object carries `<fullName>My_First_Recordtype</fullName>` (api_meta 264 L47474); the guide's Java API sample, by contrast, sets an object-qualified `fullName` (`ExpenseReport__c.Edit`, api_meta 264 L47429). The validation rule compares `$RecordType.DeveloperName` (UNVERIFIED, Help-only merge field) to a string, so it carries no Id; a `RecordTypeId = "012..."` comparison would not survive an org with a different Id. Retrieve the record type from an org rather than hand-authoring the `picklistValues` block: the encoding Salesforce uses for picklist `fullName` values inside record-type metadata is not documented on this page, and guessing it is how multi-word picklist entries turn into deploy failures.
 
 ---
 
@@ -118,6 +118,6 @@ And the `package.xml` member — the one place the object prefix *is* required:
 
 **What practitioners do:** Resolve the record type with a SOQL query against the `RecordType` object, usually filtered on `Name`, often inside a `for` loop over trigger records.
 
-**What goes wrong:** Two failures at once. The query consumes one of the 100 SOQL queries per synchronous transaction, so a 200-record trigger throws `System.LimitException: Too many SOQL queries: 101`. And `Name` is the translated label, so the filter returns zero rows for any user running in another language — producing `System.QueryException: List has no rows for assignment to SObject`.
+**What goes wrong:** Two failures at once. The query counts against the 100 SOQL queries per synchronous transaction (apexdev 264 L19747), so a loop over a 200-record trigger exceeds it. And `Name` is the record type's UI label (obj 264 L247039); when the filter matches no row, assigning the result to a single sObject throws a QueryException, "List has no rows for assignment to SObject" (apexdev 264 L40308-40312). UNVERIFIED (2026-10-21): that a `Name` filter matches the translated label for users in another language.
 
-**Correct approach:** Resolve through `Schema` describe, which costs no query at all, and key on DeveloperName. If you genuinely need the `RecordType` sObject (for example to read a custom description into a UI), query it once outside the loop into a `Map<String, RecordType>` keyed by `DeveloperName`, and filter `WHERE SobjectType = 'Account' AND IsActive = true`.
+**Correct approach:** Resolve through `Schema` describe, which is a method call rather than a SOQL query, and key on DeveloperName. If you genuinely need the `RecordType` sObject (for example to read a custom description into a UI), query it once outside the loop into a `Map<String, RecordType>` keyed by `DeveloperName`, and filter `WHERE SobjectType = 'Account' AND IsActive = true`.
