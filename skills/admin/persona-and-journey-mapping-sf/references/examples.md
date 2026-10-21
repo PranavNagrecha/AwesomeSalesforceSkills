@@ -12,8 +12,10 @@ visits per day from a phone between meetings, then triage the queue at night
 on a laptop.
 
 **Problem (without anchored persona):** prior persona work assumed reps were
-"50/50 mobile vs desktop" — actual measurement from EventLogFile UriEvent
-showed 70% mobile, 30% desktop. Record page redesign had been built for
+"50/50 mobile vs desktop" — actual measurement from `LightningUsageByAppTypeMetrics`
+(production, 30 days) showed 70% mobile, 30% desktop. (Earlier text named
+EventLogFile UriEvent, which records Salesforce Classic only — platform_events
+264 L28315-28317 — and cannot produce a mobile split.) Record page redesign had been built for
 desktop-density. Reps were tab-switching mid-visit because Visit Type required
 manual entry on mobile.
 
@@ -62,9 +64,9 @@ manual entry on mobile.
 }
 ```
 
-**Why it works:** the `mobile_pct` is measured (UriEvent), the `friction` tag
+**Why it works:** the `mobile_pct` is measured (`LightningUsageByAppTypeMetrics`, object_reference 264 L170407, L170436), the `friction` tag
 is in the fixed enum (`data_input`), the journey ends at the next task (not
-"save"), and the friction routes cleanly to record-page-auditor with a
+"save"), and the friction routes cleanly to the record-page audit (`agents/audit-router`, domain `lightning_record_page`) with a
 concrete intervention (default Visit Type from territory).
 
 ---
@@ -120,7 +122,7 @@ desk. Mobile usage near zero except for after-hours email triage.
 ```
 
 **Why it works:** Dynamic Forms with a role-based visibility rule cuts the
-SDR-visible page to 3 sections; routes to `lightning-record-page-auditor`.
+SDR-visible page to 3 sections; routes to `agents/audit-router` (domain `lightning_record_page`; the old `lightning-record-page-auditor` is deprecated).
 
 ---
 
@@ -175,7 +177,7 @@ dashboard consumption (queue depth, SLA breach risk).
 ```
 
 **Why it works:** `search` friction routes cleanly to
-`list-view-and-search-layout-auditor` with a concrete intervention (filter
+`agents/audit-router` (domain `list_view_search_layout`, replacing the deprecated `list-view-and-search-layout-auditor`) with a concrete intervention (filter
 KB Search results by Case Reason).
 
 ---

@@ -1,9 +1,11 @@
 # Well-Architected Notes — Mobile Publisher
 
+UNVERIFIED (2026-10-21): the shell-maintenance, native-module, distribution and branding-scope claims in the pillar and tradeoff notes below are Help-only; only the push-credential and packaging facts carry corpus lines.
+
 ## Relevant Pillars
 
 - **Operational Excellence** — Mobile Publisher apps require ongoing maintenance: native shell upgrades resubmitted to the stores, push certificate rotation, OS-version policy review, account-deletion compliance. Treating Mobile Publisher as a launch-only project (rather than an operational obligation) is the highest-cost mistake.
-- **Security** — Push credentials (APN AuthKey, FCM service-account JSON) are sensitive. The Apple Developer + Google Play developer accounts hold the legal authority for the app. SSO/IdP configuration on the source experience must consider mobile review constraints (reviewer can't complete enterprise MFA).
+- **Security** — Push credentials (APNs `.p8` key or `.p12` certificate, Firebase service-account private key) are sensitive — the platform keeps them out of packages and source control (pkg2_dev 264 L9467-9469). The Apple Developer + Google Play developer accounts hold the legal authority for the app. SSO/IdP configuration on the source experience must consider mobile review constraints (reviewer can't complete enterprise MFA).
 
 ## Architectural Tradeoffs
 
@@ -13,12 +15,19 @@
 
 ## Anti-Patterns
 
-1. **Treating native-shell upgrades as optional** — Salesforce's support window for older shells is finite. Skipping cycles invites store-side notices and eventual app removal. Schedule resubmissions as recurring operational work.
+1. **Treating native-shell upgrades as optional** — Salesforce's support window for older shells is finite. Skipping cycles invites store-side notices and eventual app removal (UNVERIFIED (2026-10-21): Help-only support window; no corpus line). Schedule resubmissions as recurring operational work.
 2. **Ignoring developer-account ownership** — Apps published under the wrong legal entity (e.g. system integrator's account instead of customer's) become impossible to migrate cleanly. Verify ownership at procurement, not at submission.
 3. **Skipping the test track** — Production submission without a full TestFlight + Play Internal Testing pass surfaces push, deep-link, and login bugs in the worst possible place: the App Store reviewer's hands. Test on real devices first.
 
 ## Official Sources Used
 
+- Metadata API Developer Guide (Winter '27), `ExtlClntAppApplePushConfig` — iOS push takes a `.p8` key (`signingKey`, `keyIdentifier`, `teamIdentifier`) or a `.p12` certificate (`certificate`, `password`), and a Required `environment` of Production or Sandbox: api_meta 264 L68468-68471, L68480-68483.
+- Metadata API Developer Guide (Winter '27), `ExtlClntAppAndroidPushConfig` — Android push takes Required `fcmProject` and `serviceAccount` (Base64 Admin SDK private key, max 8,000 characters); no server-key field: api_meta 264 L68456-68462.
+- Metadata API Developer Guide (Winter '27), `ExtlClntAppPushSettings` — pilot or beta type, API 64.0+: api_meta 264 L68370, L68394.
+- Second-Generation Managed Packaging Developer Guide (Winter '27) — APNS and Firebase credentials "can't be packaged or added to source control": pkg2_dev 264 L9467-9469.
+- Object Reference (Winter '27), `MobileDeviceAppRegistration.DeviceSystemToken` — the token APNs or FCM uses to reach a device: object_reference 264 L186403-186410.
+- Object Reference (Winter '27), `CustomBrandAsset` — branding applies to an Experience Cloud site or to an org using the Salesforce mobile app: object_reference 264 L87781-87782.
+- UNVERIFIED (2026-10-21): the Help and store-policy links below were not fetchable or are outside the corpus; they are kept as pointers, not as grounding.
 - Mobile Publisher product documentation — https://help.salesforce.com/s/articleView?id=sf.branded_apps_overview.htm — overview, capabilities, prerequisites.
 - Experience Cloud Mobile Publisher Configuration — https://help.salesforce.com/s/articleView?id=sf.branded_apps_setup.htm — branding, push, identity setup.
 - Field Service Mobile Publisher — https://help.salesforce.com/s/articleView?id=sf.fs_mp_overview.htm — Field Service variant capabilities and limits.

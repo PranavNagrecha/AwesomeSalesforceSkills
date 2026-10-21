@@ -1,6 +1,6 @@
 # Metadata Examples — Omni-Channel Routing
 
-Deployable shapes for the six Omni-Channel metadata types, taken from the Metadata API Developer Guide (v62 PDF). All six are available only when Omni-Channel is enabled in the org (API 44.0+; `Skill` 28.0+), and all support the `*` wildcard except where noted.
+Deployable shapes for the six Omni-Channel metadata types, re-checked against the Metadata API Developer Guide (Winter '27, api_meta 264). Five are available only when Omni-Channel is enabled in the org, API 44.0+ (`ServiceChannel` L110537-110541, `QueueRoutingConfig` L102624-102628, `PresenceUserConfig`, `PresenceDeclineReason`, `ServicePresenceStatus`). `Skill` is API 28.0+ and carries no Omni-Channel access rule — the guide describes it as a skill "used for field service or to route chats to agents in Chat" (L134210-134211, L134220). All support the `*` wildcard except where noted.
 
 ## Where the files live and the deploy order
 
@@ -9,7 +9,7 @@ Deployable shapes for the six Omni-Channel metadata types, taken from the Metada
 | 1 | Service channel | `ServiceChannel` | `serviceChannels/Case_Channel.serviceChannel-meta.xml` | Presence statuses reference channels |
 | 2 | Presence status | `ServicePresenceStatus` | `servicePresenceStatuses/Available_Cases.servicePresenceStatus-meta.xml` | Presence configurations reference statuses |
 | 3 | Decline reason | `PresenceDeclineReason` | `presenceDeclineReasons/Incorrect_Queue.presenceDeclineReason-meta.xml` | Referenced by presence configurations |
-| 4 | Presence configuration | `PresenceUserConfig` | `presenceUserConfigs/Tier_1_Agents.presenceUserConfig-meta.xml` | Assigns capacity and statuses to users/profiles |
+| 4 | Presence configuration | `PresenceUserConfig` | `presenceUserConfigs/Tier_1_Agents.presenceUserConfig-meta.xml` | Assigns capacity and decline/timeout behaviour to users/profiles; names statuses only in `presenceStatusOnDecline` / `presenceStatusOnPushTimeout` |
 | 5 | Skill (skills-based only) | `Skill` | `skills/Billing.skill-meta.xml` | Referenced by routing configurations and rules |
 | 6 | Routing configuration | `QueueRoutingConfig` | `queueRoutingConfigs/Case_Routing_Least_Active.queueRoutingConfig-meta.xml` | Referenced by the queue |
 | 7 | Queue | `Queue` | `queues/Tier_1_Support.queue-meta.xml` with `<queueRoutingConfig>` | Ties routing to the pool (`admin/queues-and-public-groups`) |
@@ -31,7 +31,8 @@ Deployable shapes for the six Omni-Channel metadata types, taken from the Metada
 - `label` and `relatedEntityType` are required. `relatedEntityType` is the object API name.
 - `capacityModel` (65.0+) is `STATUS_BASED` (capacity held until the work is closed or reassigned) or `TAB_BASED` (released when the console tab closes).
 - `secondaryRoutingPriorityField` (47.0+) breaks ties inside a routing priority by a field on the work item.
-- The After Conversation Work fields (`hasAfterConvoWorkTimer`, `afterConvoMaxTime`, `hasAcwExtensionEnabled`, `acwExtensionDuration`, `maxExtensions`) apply only to Messaging and Voice channels.
+- The After Conversation Work fields (`hasAfterConvoWorkTimer`, `afterConvoWorkMaxTime`, `hasAcwExtensionEnabled`, `acwExtensionDuration`, `maxExtensions`) apply only to Messaging and Voice channels (api_meta 264 L110559-110563). Earlier text spelled the second field `afterConvoMaxTime`; the guide's name is `afterConvoWorkMaxTime`.
+- `ServiceChannel` has no capacity-weight field; the weight is set on the routing configuration (§ 6).
 
 ## 2. Presence status and 3. decline reason
 
@@ -82,7 +83,8 @@ A status with no `channels` is treated as Away. `channel` is the service channel
 
 - `capacity` is required and is the agent's total work units. A Case whose routing configuration weighs 2 lets this agent hold 3 cases.
 - `enableAutoAccept` and `enableDecline` are mutually exclusive; decline options only apply with `enableDecline` = `true`.
-- `assignments` is how agents get into Omni-Channel at all. An agent in no presence configuration shows Available and receives nothing (SKILL.md, Presence Statuses).
+- `assignments` takes profiles or users (api_meta 264 L99781-99783), not permission sets. UNVERIFIED (2026-10-21): that an agent in no presence configuration shows Available and receives nothing.
+- The configuration lists no statuses or channels; channels sit on `ServicePresenceStatus` (§ 2).
 - `interruptibleCapacity` (57.0+) only applies when the Interruptible Capacity feature is enabled.
 
 ## 5. Skill (skills-based routing)
@@ -104,7 +106,7 @@ A status with no `channels` is treated as Away. `channel` is the service channel
 </Skill>
 ```
 
-Skill **levels**, Service Resources, and the skills-based routing rules that pick skills from work-item fields are records, not metadata; create them after deploy (SKILL.md, Skills-Based Routing). The `Skill` type also serves Chat and Field Service.
+Skill **levels**, Service Resources, and the skills-based routing rules that pick skills from work-item fields are records, not metadata; create them after deploy (SKILL.md, Skills-Based Routing). The `Skill` type also serves Chat and Field Service, and its `assignments` block "specifies how skills are assigned to Chat users" (api_meta 264 L134225-134226) — Omni-Channel agents get skills through `ServiceResourceSkill` records instead. `skillType` is API 58.0+.
 
 ## 6. Routing configuration
 
@@ -123,8 +125,8 @@ Skill **levels**, Service Resources, and the skills-based routing rules that pic
 ```
 
 - `routingModel` is `LEAST_ACTIVE`, `MOST_AVAILABLE`, or `EXTERNAL_ROUTING`; `routingPriority` is required and lower numbers route first.
-- Use `capacityWeight` **or** `capacityPercentage`, not both; Voice must consume the whole capacity.
-- `pushTimeout` in seconds; `0` means push timeout is off. Pair it with `presenceStatusOnPushTimeout` on the presence configuration or the timed-out agent keeps receiving work (gotchas #5).
+- Use `capacityWeight` **or** `capacityPercentage`, not both (UNVERIFIED (2026-10-21): the either-or rule is not stated in the guide); Voice must consume the whole capacity — `capacityPercentage` 100 / the entire `capacityWeight` (api_meta 264 L102640-102642, L102660).
+- `pushTimeout` in seconds; `0` means push timeout is off (L102698-102699). Pair it with `presenceStatusOnPushTimeout` on the presence configuration (L99845-99846); UNVERIFIED (2026-10-21): that without it the timed-out agent keeps receiving work (gotchas #5).
 - `queueOverflowAssignee` / `userOverflowAssignee` receive work nobody can take.
 - Skills-based: set `isAttributeBased` to `true` and list default skills under `QueueRoutingConfigSkill/skill`; `dropAdditionalSkillsTimeout` relaxes additional skills after N seconds.
 - The guide's own sample also shows `pausedCapacityWeight` (64.0+, status-based capacity with Enhanced Omni-Channel only).
@@ -141,8 +143,10 @@ Skill **levels**, Service Resources, and the skills-based routing rules that pic
     <types><members>*</members><name>Skill</name></types>
     <types><members>*</members><name>QueueRoutingConfig</name></types>
     <types><members>Tier_1_Support</members><name>Queue</name></types>
-    <version>62.0</version>
+    <version>65.0</version>
 </Package>
 ```
+
+The manifest version must be at least 65.0 because the channel sample carries `capacityModel`, "available in API version 65.0 and later" (api_meta 264 L110568-110573); earlier text deployed it at 62.0.
 
 Verify after deploy: every case queue has a routing configuration (`SELECT DeveloperName, QueueRoutingConfigId FROM Group WHERE Type = 'Queue'`), and at least one agent in the presence configuration can select a status that includes the Case channel.

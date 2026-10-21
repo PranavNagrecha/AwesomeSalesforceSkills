@@ -19,6 +19,8 @@
 
 ## Official Sources Used
 
+- Security Implementation Guide (Summer '26) — restriction rules are available only for custom objects, external objects, contracts, events, quotes, tasks, time sheets and time sheet entries, which is why Example 2's REG-004 targets a custom object, not Case: secguide 262 L4117-4118.
+- UNVERIFIED (2026-10-21): the DSDM and SAFe links below are third-party framework pages outside the corpus; the 60% Must cap and the WSJF scale rest on them, not on a Salesforce guide.
 - DSDM Agile Project Framework — MoSCoW Prioritisation — https://www.agilebusiness.org/dsdm-project-framework/moscow-prioririsation.html
 - Scaled Agile Framework (SAFe) — WSJF — https://framework.scaledagile.com/wsjf
 - Salesforce Architects — Well-Architected: Operationally Excellent — https://architect.salesforce.com/well-architected/trusted/operationally-excellent

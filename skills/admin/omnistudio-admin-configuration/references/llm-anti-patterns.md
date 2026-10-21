@@ -2,6 +2,8 @@
 
 Common mistakes AI coding assistants make when generating or advising on OmniStudio admin configuration. These patterns help the consuming agent self-check its own output.
 
+UNVERIFIED (2026-10-21): the OmniStudio Settings toggles, namespace values, `OmniStudioPSL`, the community custom permission, the sandbox-refresh behaviour and the Enhanced Runtime Performance facts in this file are Help-only — no corpus guide documents them, and `ConnectAPI.OmniDesignerConnect` is absent from the Apex Reference (apexref 262). Grounded: a permission set tied to a license can be assigned only to users holding it (secguide 262 L1999-2004); "OmniStudio Admin" also appears as a permission set *license* name (api_meta 264 L56731-56732).
+
 ## Anti-Pattern 1: Treating Permission Set Assignment as the Only Required Step
 
 **What the LLM generates:** "Assign the OmniStudio Admin permission set to your builders and OmniStudio User to your consumers — that's all you need to set up OmniStudio access."
@@ -11,7 +13,8 @@ Common mistakes AI coding assistants make when generating or advising on OmniStu
 **Correct pattern:**
 
 ```
-Step 1: Assign OmniStudioPSL Permission Set License to the user account.
+Step 1: Assign the OmniStudio Permission Set License (Help: OmniStudioPSL —
+        unverified name; read the org's license list) to the user account.
 Step 2: Confirm PSL is active for the user.
 Step 3: Assign OmniStudio Admin (builders) or OmniStudio User (consumers).
 Step 4: Verify the user can access the OmniStudio app tab.

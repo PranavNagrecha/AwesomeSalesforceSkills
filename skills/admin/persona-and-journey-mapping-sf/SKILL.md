@@ -32,11 +32,11 @@ outputs:
   - "persona records (canonical schema) anchored to PSG + record types + list views + dashboards + automation + mobile/desktop posture"
   - "per-task journey maps with steps, frequency, friction points tagged from a fixed taxonomy, and desired outcome"
   - "a friction-to-fix backlog: which friction points need UI work (Dynamic Forms, Quick Actions, page redesign, list view tuning) vs automation (Flow, validation rule, assignment rule)"
-  - "handoff JSON consumed by lightning-record-page-auditor, list-view-and-search-layout-auditor, path-designer, and UAT test design"
+  - "handoff JSON consumed by audit-router (lightning_record_page, list_view_search_layout domains), path-designer, and UAT test design"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-21
 ---
 
 # Persona And Journey Mapping (Salesforce-Anchored)
@@ -60,13 +60,39 @@ Gather this context before producing any persona artifact:
   pieces.
 - The **primary record types** each role touches and the **list views** they live
   in. These are observable, not invented.
-- **Mobile vs desktop usage**, ideally measured (Lightning Usage app, login
-  history, EventLogFile UriEvent / LightningPerformance) — never assumed.
+- **Mobile vs desktop usage**, ideally measured — never assumed. The split
+  comes from `LightningUsageByAppTypeMetrics`, whose `AppExperience` is
+  "Lightning Experience or Salesforce Mobile" (object_reference 264 L170407,
+  L170436; not available in sandbox orgs, L170415), and from the EventLogFile
+  Lightning Performance event type, which covers Lightning Experience and the
+  Salesforce mobile app (L123289-123291) and tags each event's
+  `DEVICE_PLATFORM` form as DESKTOP, PHONE or TABLET (L123389-123396). The
+  metrics object counts *users* per app (L170407), so a user on both surfaces
+  is in both counts; use the event form for a share of activity. Not from `UriEvent`: it detects
+  record operations "in Salesforce Classic only" (platform_events 264
+  L28315-28317), and `LightningUriEvent` covers "Lightning Experience only"
+  (L20567-20568). Earlier text named "EventLogFile UriEvent" as the source.
 - **Dashboards** the role consumes daily/weekly. If a dashboard is named in a
   persona but does not exist in the org, it is a hallucination — flag it.
 - The **automation** that fires for the role (record-triggered Flow, validation
   rules, assignment rules, approval processes, Agentforce topics) — captured by
   metadata, not memory.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| Which Permission Set Group does each role get, existing or planned? | Gotcha 1: a persona with no PSG anchor is a job title | A persona you can audit against the org |
+| Where does the mobile/desktop split come from? | Gotcha 2: an assumed split builds the wrong record page; `UriEvent` is Classic-only (platform_events 264 L28315-28317) | A named source such as `LightningUsageByAppTypeMetrics` and a date window |
+| What goes wrong on this task, not just how it goes right? | Gotcha 3: happy-path-only journeys hide the friction | Exception steps with friction tags |
+| What does the persona do right after saving? | Gotcha 4: journeys that end at save miss the mode switch | A `next_task` on every journey |
+| Which real users does each persona describe today? | Gotcha 5: personas drift into fiction | Headcounts and a re-check date per release |
+| Can any two personas merge? | Gotcha 6: more than 7 personas in a phase is noise | A list of at most 7 |
+| Do the named dashboards and list views exist, and are they shared? | Gotcha 7: invented artifacts; "Visible only to me" list views are not in Metadata API (api_meta 264 L46523-46524) | Anchors copied from the org |
+
+Mapping with these answers gives each downstream audit a persona tied to real PSGs, record types and measured usage, instead of a slide of stereotypes.
 
 ---
 
@@ -86,7 +112,11 @@ configuration decision.
 Salesforce mobile (the Salesforce app) and Lightning Experience desktop are
 different products with different UX rules: mobile favors Compact Layouts,
 mobile-only Quick Actions, and brief related-list summaries; desktop favors
-Dynamic Forms, multi-tab record pages, and dense related lists. The
+Dynamic Forms, multi-tab record pages, and dense related lists. (A compact
+layout shows a record's key fields "in the Salesforce mobile app, Lightning
+Experience, and in the Outlook and Gmail integrations" — api_meta 264
+L45323-45324 — so it serves both surfaces; the weighting above is this
+skill's design heuristic.) The
 mobile_pct / desktop_pct split — **measured, not guessed** — is what tells you
 which surface to optimize. A 70% mobile field rep persona and a 95% desktop
 SDR persona need very different record pages even on the same object.
@@ -152,7 +182,7 @@ deliverable nobody reads and a friction list nobody can route.
 | Situation | Recommended Approach | Reason |
 |---|---|---|
 | Asked for personas with no PSG roadmap yet | Flag the gap. Do not write personas; write a PSG sketch first. | Personas without PSG anchors cannot be audited or kept current. |
-| Asked to map mobile vs desktop and no measurement exists | Flag the gap. Pull from Lightning Usage app or EventLogFile, then resume. | Inventing mobile_pct corrupts every downstream UX decision. |
+| Asked to map mobile vs desktop and no measurement exists | Flag the gap. Pull from `LightningUsageByAppTypeMetrics` (production only) or EventLogFile Lightning Performance, then resume. | Inventing mobile_pct corrupts every downstream UX decision. |
 | Persona task ends at "record saved" | Extend it — what task does the persona do next, on what surface? | A journey that ends at save misses the most common friction (mode switch to next task). |
 | 9+ personas in a single phase | Reduce to ≤7 by merging adjacent personas. | More than 7 personas is noise; signal-to-decision ratio collapses. |
 | Persona references a dashboard nobody can find in the org | Remove or replace with a real dashboard | Hallucinated artifacts make the persona untrustworthy. |
@@ -174,14 +204,19 @@ deliverable nobody reads and a friction list nobody can route.
    taxonomy, and the next task the persona transitions to.
 4. **Flag friction that needs UI work.** `cognitive_load`, `click_count`, and
    `mode_switch` typically route to record-page redesign, Quick Actions, Path,
-   or Dynamic Forms — handed off to `lightning-record-page-auditor`.
+   or Dynamic Forms — handed off to `agents/audit-router` with
+   `--domain lightning_record_page` (the old `lightning-record-page-auditor`
+   is deprecated in its favour).
 5. **Flag friction that needs automation.** `data_input` and some `click_count`
    friction routes to Flow, defaults, validation rules, or assignment rules —
    handed off to the automation agents.
 6. **Hand off to downstream agents.** Emit the handoff JSON: persona id, anchor
    artifacts, friction backlog, and target agents
-   (`lightning-record-page-auditor`, `list-view-and-search-layout-auditor`,
-   `path-designer`, plus UAT test design which runs each case as a persona).
+   (`lightning-record-page-auditor`, `list-view-and-search-layout-auditor` —
+   both now served by `agents/audit-router` domains `lightning_record_page` and
+   `list_view_search_layout` — `path-designer`, plus UAT test design which runs
+   each case as a persona). Validate the files first with
+   `python3 skills/admin/persona-and-journey-mapping-sf/scripts/check_persona.py --manifest-dir <dir>`.
 7. **Revisit per release.** Personas drift as PSGs and record types change;
    re-run the anchor check every release train.
 
@@ -242,7 +277,7 @@ deliverable nobody reads and a friction list nobody can route.
       "persona_id": "outside_sales_rep",
       "task": "Log a customer visit between meetings",
       "friction_tag": "data_input",
-      "recommended_target": "lightning-record-page-auditor",
+      "recommended_target": "audit-router:lightning_record_page",
       "recommended_intervention": "Default Visit Type from territory; review mobile compact layout"
     }
   ]
@@ -267,8 +302,8 @@ deliverable nobody reads and a friction list nobody can route.
 ## Salesforce-Specific Gotchas
 
 1. **PSG drift after release.** PSGs change between releases as new objects ship; re-run anchor checks every release train or personas go stale silently.
-2. **Mobile usage measurement gaps.** Lightning Usage app shows desktop-only by default; you must enable Mobile App usage and EventLogFile UriEvent to get the real split.
-3. **List view personalization invisible to admins.** Users create personal list views the admin never sees; persona list-view anchors should bias to shared list views or you misread the journey.
+2. **Mobile usage measurement gaps.** The Lightning usage metrics do record both surfaces — `LightningUsageByAppTypeMetrics.AppExperience` is "Lightning Experience or Salesforce Mobile" (object_reference 264 L170436) — but the object is not available in sandbox orgs (L170415), and `UriEvent` is Classic-only (platform_events 264 L28315-28317), so a sandbox pull or a UriEvent pull gives no mobile split. Earlier text said the Lightning Usage app is desktop-only by default and that UriEvent fixes it; UNVERIFIED (2026-10-21): the app's default view and any "enable Mobile App usage" setting.
+3. **List view personalization invisible to admins.** Users create personal list views the admin never sees — "Visible only to me" list views "aren't accessible in Metadata API" and each belongs to one user (api_meta 264 L46523-46524); persona list-view anchors should bias to shared list views or you misread the journey.
 
 ---
 
@@ -288,6 +323,6 @@ deliverable nobody reads and a friction list nobody can route.
 - `admin/stakeholder-raci-for-sf-projects` — Use for stakeholder authority and decision rights, not user-facing persona work.
 - `admin/process-flow-as-is-to-be` — Use for system-side process flows; this skill stays user-facing.
 - `admin/lightning-app-builder-advanced` — Use for the actual record page build once friction is identified.
-- `agents/lightning-record-page-auditor` — Downstream audit agent that consumes per-persona record page friction.
-- `agents/list-view-and-search-layout-auditor` — Downstream agent for `search` and list-view friction.
+- `agents/audit-router` (`--domain lightning_record_page`) — Downstream audit that consumes per-persona record page friction; replaces the deprecated `agents/lightning-record-page-auditor`.
+- `agents/audit-router` (`--domain list_view_search_layout`) — Downstream audit for `search` and list-view friction; replaces the deprecated `agents/list-view-and-search-layout-auditor`.
 - `agents/path-designer` — Downstream agent for per-record-type path design driven by journey stages.

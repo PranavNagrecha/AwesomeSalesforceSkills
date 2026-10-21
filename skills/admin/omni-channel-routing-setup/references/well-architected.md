@@ -1,5 +1,7 @@
 # Well-Architected Notes — Omni-Channel Routing Setup
 
+UNVERIFIED (2026-10-21): that unmatched or Service-Resource-less work "sits unrouted" / "in queue indefinitely" (Reliability pillar, the silent-fallback tradeoff, anti-pattern 2) is Help-only, as in gotchas.md Gotcha 2; the guide documents the `dropAdditionalSkillsTimeout` relief valve (api_meta 264 L102662-102667).
+
 ## Relevant Pillars
 
 - **Reliability** — Omni-Channel routing is a real-time customer-facing system. Misconfigured routing rules or missing Service Resources cause work items to sit unrouted, directly impacting customer wait times and SLA compliance. Reliability in this context means: routing chains are complete, no queue is left without a Routing Configuration, and fallback paths exist for all routing failure scenarios.
@@ -18,16 +20,24 @@ Skills-Based Routing moves skill matching into the routing engine itself. This i
 
 Least Active equalizes the number of open items per agent — it does not account for item weight or agent capacity. Most Available uses the remaining capacity percentage, which accounts for channel weight differences. For single-channel deployments with uniform work items, Least Active is adequate. For multi-channel deployments where work items vary in effort, Most Available better reflects actual agent workload and prevents overloading agents who have a heavy case open alongside several chats.
 
+UNVERIFIED (2026-10-21): both definitions and the two recommendations drawn from them are Help-only; the corpus defines these names only for legacy chat buttons (object_reference 264 L173933-173939), where Most Available is the largest gap between capacity and active chats.
+
 ## Anti-Patterns
 
 1. **One Queue for All Work Types** — Placing all work items into a single queue and using a single Routing Configuration removes the ability to prioritize by work type. A high-priority escalation competes equally with a low-priority routine inquiry. As volume grows, this pattern creates unpredictable wait time distributions. The correct approach is separate queues per priority tier with Routing Configuration priority levels set accordingly.
 
 2. **Skipping Fallback Routing Rules in Skills-Based Deployments** — Deploying Skills-Based Routing without fallback criteria means any work item that does not match a routing rule criteria sits in queue indefinitely without alerting supervisors. This silently degrades SLAs for edge cases (null field values, new product lines not yet covered by rules). Every Skills-Based Routing deployment should include a catch-all fallback routing rule entry and a queue monitor alert for items exceeding the expected wait threshold.
 
-3. **Managing Routing via Apex Triggers Instead of Native Routing Configuration** — Some teams use Apex triggers to set Case.OwnerId directly to a user, bypassing Omni-Channel entirely. This prevents Omni-Channel from managing capacity, tracking agent availability, or providing Omni-Channel Supervisor visibility. Routing logic belongs in Routing Configurations and Skills-Based Routing Rules — not in trigger code.
+3. **Managing Routing via Apex Triggers Instead of Native Routing Configuration** — Some teams use Apex triggers to set Case.OwnerId directly to a user, bypassing Omni-Channel entirely. This prevents Omni-Channel from managing capacity, tracking agent availability, or providing Omni-Channel Supervisor visibility (UNVERIFIED (2026-10-21): Help-only reasoning). Routing logic belongs in Routing Configurations and Skills-Based Routing Rules — not in trigger code.
 
 ## Official Sources Used
 
+- Metadata API Developer Guide (Winter '27), QueueRoutingConfig — `routingModel` enum LEAST_ACTIVE / MOST_AVAILABLE / EXTERNAL_ROUTING, `isAttributeBased` for skills-based, lower `routingPriority` first, `pushTimeout` 0 = off, `capacityWeight` worked example: api_meta 264 L102656-102660, L102674-102675, L102698-102699, L102706-102715.
+- Metadata API Developer Guide (Winter '27), ServicePresenceStatus and PresenceUserConfig — channels live on the status (none = Away); capacity (Required) and profile/user assignments live on the presence configuration: api_meta 264 L110740-110742, L99781-99786.
+- Metadata API Developer Guide (Winter '27), OmniChannelSettings — `enableOmniChannel` and `enableOmniSkillsRouting` are separate, both default false: api_meta 264 L126598-126606.
+- Object Reference (Winter '27), ServiceResourceSkill and SkillRequirement — skill levels 0–99.99; multi-skill work routes to an agent with all required skills: object_reference 264 L263398, L273515, L273563-273565.
+- Metadata API Developer Guide (Winter '27), Queue — one `queueRoutingConfig` name per queue: api_meta 264 L102437-102438.
+- UNVERIFIED (2026-10-21): the help.salesforce.com links below could not be fetched; they are pointers, not grounding.
 - Omni-Channel Overview — https://help.salesforce.com/s/articleView?id=sf.omnichannel_intro.htm
 - Routing Model Options for Omni-Channel — https://help.salesforce.com/s/articleView?id=sf.omnichannel_routing_model_options.htm
 - Skills-Based Routing — https://help.salesforce.com/s/articleView?id=sf.omnichannel_skills_based_routing.htm

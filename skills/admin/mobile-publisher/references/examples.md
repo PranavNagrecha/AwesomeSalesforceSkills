@@ -1,5 +1,7 @@
 # Examples — Mobile Publisher
 
+UNVERIFIED (2026-10-21): Mobile Publisher SKUs, enterprise distribution and the store asset sizes used below are Help-only or store policy, not in the corpus. The push-credential shapes are grounded on api_meta 264 L68456-68471.
+
 ## Example 1: Branded partner-portal app for a wholesale distributor
 
 **Context:** A wholesale distributor runs a partner Experience Cloud site where ~3,000 dealers place orders, look up inventory, and submit warranty claims. They want a branded mobile app — own logo, own brand on the App Store — so dealers don't see "Salesforce" branding and the app feels like a first-party tool. Login uses SSO to the dealer's existing account on the company's IdP.
@@ -10,7 +12,7 @@
 
 1. Procure Mobile Publisher (Experience Cloud) license tied to the partner site.
 2. Asset bundle: app icon (1024×1024 iOS no-alpha, 512×512 Android, 432×432 adaptive layers), splash variants, primary/accent hex colors matching brand guidelines.
-3. Push: customer's Apple Developer team generates an APN Auth Key (`.p8`) — Key ID + Team ID + bundle ID `com.distributor.dealer` configured in Mobile Publisher Settings. FCM service account JSON for Android.
+3. Push: customer's Apple Developer team generates an APNs private key (`.p8`) — key ID + team ID + bundle ID `com.distributor.dealer`, `environment` = `Production` (api_meta 264 L68469, L68480-68483). For Android, the Firebase project ID and the service account's Base64 Admin SDK private key (api_meta 264 L68456-68461).
 4. Identity: SSO via Experience Cloud Login flow + the customer's IdP. App Store reviewer credentials = a sandbox dealer account with a 6-digit code that bypasses the IdP MFA challenge for the duration of review.
 5. Account-deletion path added to Experience Cloud as a Lightning page — surfaces "Delete my account" with a 30-day soft-delete and confirmation email.
 6. TestFlight + Play Internal Testing distribution to 5 inhouse testers + 5 dealer testers. Push and deep-link verified end-to-end.
@@ -29,11 +31,11 @@
 **Solution:**
 
 1. Procure Mobile Publisher (Field Service) license — distinct from Experience Cloud Mobile Publisher SKU.
-2. Confirm all required FSL features (offline data, photo upload, scheduled work order assignment) are enabled in the underlying FSL configuration *before* engaging Mobile Publisher. Mobile Publisher inherits feature flags; disabling something in FSL disables it in the branded app too.
+2. Confirm all required FSL features (offline data, photo upload, scheduled work order assignment) are enabled in the underlying FSL configuration *before* engaging Mobile Publisher. Mobile Publisher inherits feature flags; disabling something in FSL disables it in the branded app too (UNVERIFIED (2026-10-21): Help-only).
 3. Asset bundle and store listing as Example 1.
 4. Distribution model: enterprise distribution via Apple Developer Enterprise Program. Reasoning: the app is for employees only, not the public, so Apple's enterprise program (private to the company) avoids the App Store review process entirely.
 5. MDM rollout: app pushed to managed iPads via Intune. No app-store search; no public store listing.
-6. Push: APN Auth Key + FCM as Example 1, but signed under the Enterprise certificate.
+6. Push: APNs key + Firebase credentials as Example 1, but signed under the Enterprise certificate.
 
 **Why it works:** Field Service Mobile Publisher is the right SKU because the source experience is FSL Mobile, not Experience Cloud. Enterprise distribution avoids the App Store review process that's irrelevant for an employee-only app. The branding satisfies the recruiting / culture goal without rebuilding the FSL flow.
 
@@ -48,7 +50,7 @@
 **Solution:**
 
 - Use the standard Salesforce Mobile App. Customize through Lightning App Builder, mobile navigation, and quick actions.
-- For branding inside the app, use App Manager to set the app brand color and logo on the loading screen.
+- For branding inside the app, use App Manager to set the app brand color and logo on the loading screen. Branding records (`CustomBrandAsset`) can apply to "an org using the Salesforce mobile app" (object_reference 264 L87781-87782); UNVERIFIED (2026-10-21): the App Manager path and the loading-screen placement.
 - Skip Mobile Publisher entirely; the SKU cost and operational burden (resubmission cadence, push certificates, store listings) is not justified for an internal-only audience.
 
 **Why it works:** The mobile-app surface area for internal reps is identical to standard Salesforce Mobile. Mobile Publisher's value is *external-facing branding and store presence*, neither of which applies here.

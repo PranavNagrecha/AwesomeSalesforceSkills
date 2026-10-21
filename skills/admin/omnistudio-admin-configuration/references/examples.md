@@ -1,5 +1,7 @@
 # Examples — OmniStudio Admin Configuration
 
+UNVERIFIED (2026-10-21): the OmniStudio Settings values, `OmniStudioPSL`, the "OmniStudio Community User" custom permission and the activation-error behaviour in these examples are Help-only; no corpus guide documents them. The license-before-permission-set order is grounded (secguide 262 L1999-2004).
+
 ## Example 1: Enabling Standard Runtime in a Greenfield Org
 
 **Context:** A new Salesforce org has been provisioned with an Industries Cloud license that includes OmniStudio. No Vlocity managed package is installed. The admin needs to configure OmniStudio before the first OmniScript can be authored.
@@ -14,8 +16,9 @@ Setup > OmniStudio Settings
   Runtime Namespace:            omnistudio
   Disable Managed Package Runtime: ENABLED (no managed package is present)
 
-User provisioning order (required):
-  1. Assign OmniStudioPSL Permission Set License to the user
+User provisioning order (required; license first, secguide 262 L1999-2004):
+  1. Assign the OmniStudio Permission Set License to the user
+     (Help names it OmniStudioPSL; read the org's license list)
   2. Assign OmniStudio Admin permission set to the builder user
   3. Assign OmniStudio User permission set to consumer users
 

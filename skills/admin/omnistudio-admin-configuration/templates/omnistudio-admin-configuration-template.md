@@ -2,6 +2,8 @@
 
 Use this template when configuring OmniStudio at the org level or troubleshooting runtime, namespace, or permission issues.
 
+UNVERIFIED (2026-10-21): the OmniStudio Settings toggles, the Runtime Namespace values, the license types, `OmniStudioPSL` and the community consumer permission named below are Help-only; confirm each against the org (Installed Packages, the license list) before filling the tables.
+
 ## Scope
 
 **Skill:** `omnistudio-admin-configuration`
@@ -47,7 +49,7 @@ List all user populations and their required assignments.
 | Experience Cloud community users | Required | OmniStudio User | Required (custom PS) |
 | Guest users (if applicable) | Required (check licensing) | OmniStudio User | Required (custom PS) |
 
-**Notes on provisioning order:** PSL must be assigned before any permission set. Bulk provisioning scripts must sequence PSL assignment first.
+**Notes on provisioning order:** PSL must be assigned before any permission set that depends on it — such a permission set can be assigned only to users who hold the license (secguide 262 L1999-2004). Bulk provisioning scripts must sequence PSL assignment first.
 
 ---
 

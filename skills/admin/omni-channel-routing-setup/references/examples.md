@@ -17,8 +17,8 @@ Step 2 — Create Service Channel for Case
   Setup > Omni-Channel > Service Channels > New
   Name: Cases
   Salesforce Object: Case
-  Units of Capacity: 5
-  Save.
+  Capacity Model: Status-based or Tab-based
+  Save.   (no capacity field here — the weight is set in Step 3)
 
 Step 3 — Create Routing Configuration
   Setup > Omni-Channel > Routing Configurations > New
@@ -38,9 +38,9 @@ Step 5 — Create Presence Configuration
   Setup > Omni-Channel > Presence Configurations > New
   Name: Support Agent Presence
   Capacity: 10
-  Add Service Channel: Cases
   Save.
-  Assign to Profile: Support Agent Profile (or via Permission Set)
+  Assign to Profile: Support Agent Profile (or to named users;
+  presence configurations take profiles or users, not permission sets)
 
 Step 6 — Create Presence Status
   Setup > Omni-Channel > Presence Statuses > New
@@ -48,8 +48,10 @@ Step 6 — Create Presence Status
   Status Options: Online
   Channels: Cases (Service Channel)
   Save.
+  Grant access: add the status to the agents' profile or a permission set
 
-Step 7 — Create Service Resources for each agent
+Step 7 — Create Service Resources for each agent (needed for skills-based
+  routing; UNVERIFIED (2026-10-21) for a queue-based-only setup)
   Setup > Service Resources > New
   Name: Agent Full Name
   User: (select user)
@@ -58,7 +60,7 @@ Step 7 — Create Service Resources for each agent
   Save. Repeat for all 10 agents.
 ```
 
-**Why it works:** Each step adds one required piece of the routing chain. When an agent logs into Omni-Channel and selects "Available", the Presence Configuration links to the Case Service Channel, the Routing Configuration connects to the queue, and the routing engine can now push cases to the agent using the Least Active algorithm. Capacity enforcement limits each agent to 2 open cases (2 × 5 = 10 capacity units used).
+**Why it works:** Each step adds one required piece of the routing chain. When an agent logs into Omni-Channel and selects "Available", the status names the Case Service Channel (api_meta 264 L110740-110742), the agent's Presence Configuration gives them capacity 10 (L99785-99786), the Routing Configuration connects to the queue, and the routing engine can now push cases to the agent using the Least Active algorithm. Capacity enforcement limits each agent to 2 open cases (2 × 5 = 10 capacity units used).
 
 ---
 
@@ -92,15 +94,16 @@ Step 4 — Create Service Resources for all agents
 Step 5 — Assign Service Resource Skills
   Open Service Resource record for Agent A (CRM specialist)
   Related List: Skills > New Skill
-    Skill: CRM Support, Skill Level: 5 (expert)
+    Skill: CRM Support, Skill Level: 50 (expert; levels range 0-99.99)
   Open Service Resource record for Agent B (ERP + CRM generalist)
-    Skill: CRM Support, Skill Level: 3
-    Skill: ERP Support, Skill Level: 3
+    Skill: CRM Support, Skill Level: 30
+    Skill: ERP Support, Skill Level: 30
 
-Step 6 — Create Routing Configuration (Skills-Based)
+Step 6 — Create Routing Configuration (skills-based)
   Name: Product Skills Routing
   Routing Priority: 1
-  Routing Model: Skills-Based
+  Routing Model: Least Active
+  Skills-based (isAttributeBased): true
   Units of Capacity: 5
   Push Timeout: 30 seconds
   Save.
@@ -125,7 +128,7 @@ Step 7 — Create Skills-Based Routing Rules
   Save.
 ```
 
-**Why it works:** When a Case with Product_Line__c = "ERP" enters the queue, the routing engine evaluates the Skills-Based Routing Rules, identifies that ERP Support skill is required, and finds the Service Resource with that skill who has available capacity. Agent A (CRM only) is skipped. Agent B (CRM + ERP) is eligible and receives the case. Manual reassignment overhead drops to near zero.
+**Why it works:** When a Case with Product_Line__c = "ERP" enters the queue, the routing engine evaluates the Skills-Based Routing Rules, identifies that ERP Support skill is required, and finds the Service Resource with that skill who has available capacity. Agent A (CRM only) is skipped. Agent B (CRM + ERP) is eligible and receives the case. Manual reassignment overhead drops to near zero. Corrections in this version: skill levels range 0–99.99 (object_reference 264 L263398), not 1–5; and "Skills-Based" is not a routing-model value — the configuration keeps Least Active and sets `isAttributeBased` (api_meta 264 L102674-102675, L102706-102710).
 
 ---
 
@@ -133,7 +136,7 @@ Step 7 — Create Skills-Based Routing Rules
 
 **What practitioners do:** Administrators try to assign two different Routing Configurations to the same queue — one for normal cases and one for priority cases — assuming the routing engine will pick the right one per case.
 
-**What goes wrong:** A queue can only have one Routing Configuration. The second assignment overwrites the first silently in Setup. The admin thinks both rules are active, but only the last-saved Routing Configuration applies. All cases route the same way regardless of priority, and the priority configuration is lost.
+**What goes wrong:** A queue can only have one Routing Configuration (`Queue.queueRoutingConfig` is a single name, api_meta 264 L102437-102438). The second assignment overwrites the first silently in Setup (UNVERIFIED (2026-10-21): the silent overwrite is Help-only behaviour). The admin thinks both rules are active, but only the last-saved Routing Configuration applies. All cases route the same way regardless of priority, and the priority configuration is lost.
 
 **Correct approach:** Create separate queues for each routing behavior. Use assignment rules, Flow, or Apex to place cases into the correct queue based on priority criteria before they enter Omni-Channel routing. Each queue has its own Routing Configuration with the appropriate priority level and routing model.
 

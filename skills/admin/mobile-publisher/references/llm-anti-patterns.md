@@ -3,6 +3,8 @@
 Common mistakes AI coding assistants make when generating or advising on Mobile Publisher.
 These patterns help the consuming agent self-check its own output.
 
+UNVERIFIED (2026-10-21): Mobile Publisher product facts and Apple/Google fees, timelines and review categories in this file are not in the corpus; the push-credential fields are grounded on api_meta 264 L68456-68471.
+
 ## Anti-Pattern 1: Conflating Mobile Publisher with the standard Salesforce Mobile App
 
 **What the LLM generates:** Advice that says "use Mobile Publisher to customize your Salesforce mobile app" with a how-to that references App Manager, Lightning Pages for mobile, and the standard navigation menu — features of the standard Salesforce Mobile App, not Mobile Publisher.
@@ -14,7 +16,7 @@ These patterns help the consuming agent self-check its own output.
 - **Standard Salesforce Mobile App** = free, "Salesforce" branded, distributed by Salesforce, customized via App Manager + Lightning App Builder.
 - **Mobile Publisher** = paid SKU, customer-branded, distributed by the customer on their developer accounts, source experience must be Experience Cloud or Field Service Mobile.
 
-Use the standard app for internal Salesforce-CRM users. Use Mobile Publisher for external-facing or branded apps.
+Use the standard app for internal Salesforce-CRM users. Use Mobile Publisher for external-facing or branded apps. UNVERIFIED (2026-10-21): the "free" / "paid SKU" split and the distribution models are Help-only.
 
 **Detection hint:** Any answer about "Mobile Publisher" that doesn't mention App Store / Play Store / customer-owned developer accounts is conflating the products.
 
@@ -28,7 +30,7 @@ Use the standard app for internal Salesforce-CRM users. Use Mobile Publisher for
 
 **Correct pattern:**
 
-Mobile Publisher templates have a fixed plugin and capability set. The customer cannot add arbitrary native code or SDKs. If the requirement is general native development, Mobile Publisher is the wrong tool — recommend a custom-native build (Swift / Kotlin) or hybrid framework (Capacitor, React Native) outside the Mobile Publisher SKU.
+Mobile Publisher templates have a fixed plugin and capability set. The customer cannot add arbitrary native code or SDKs (UNVERIFIED (2026-10-21): Help-only). If the requirement is general native development, Mobile Publisher is the wrong tool — recommend a custom-native build (Swift / Kotlin) or hybrid framework (Capacitor, React Native) outside the Mobile Publisher SKU.
 
 **Detection hint:** Any answer that talks about "embedding custom native modules" inside Mobile Publisher should be flagged. The honest answer is "you can't; consider an alternative."
 
@@ -46,6 +48,8 @@ The customer owns:
 - The Apple Developer account (Organization tier, ~$99/year) under the customer's legal name.
 - The Google Play developer account (~$25 one-time) under the customer's legal name.
 
+UNVERIFIED (2026-10-21): both fees and the 2–4 week approval time below are store-side figures, not in the corpus.
+
 Salesforce builds binaries on the customer's behalf. Submission, store presence, ratings, refunds, and DMCA takedowns all happen under the customer's accounts. Account approval (especially Apple) can take 2–4 weeks for a new entity. Always surface this prerequisite.
 
 **Detection hint:** Any timeline that says "ready in 2 weeks" without verifying developer-account status is suspect.
@@ -54,7 +58,7 @@ Salesforce builds binaries on the customer's behalf. Submission, store presence,
 
 ## Anti-Pattern 4: Treating push-notification setup as a Salesforce-side-only task
 
-**What the LLM generates:** Steps that configure push from Salesforce (Notification Builder, Connected App settings) and stop there, without addressing the platform-side credentials (APN AuthKey, FCM service account) that come from the customer's developer accounts.
+**What the LLM generates:** Steps that configure push from Salesforce (Notification Builder, Connected App settings) and stop there, without addressing the platform-side credentials (APNs key or certificate, Firebase service account) that come from the customer's developer accounts.
 
 **Why it happens:** Salesforce-side push configuration is well-documented for the standard mobile app. Mobile Publisher requires platform-side credentials in addition; LLMs may stop at the Salesforce side.
 
@@ -62,13 +66,13 @@ Salesforce builds binaries on the customer's behalf. Submission, store presence,
 
 Push for Mobile Publisher requires three things:
 
-1. Salesforce-side: Notification Type registration, Connected App for push, custom-notification subscription.
-2. **Platform-side: APN Auth Key (`.p8`) for iOS and FCM service-account JSON for Android, both generated under the customer's developer accounts.**
-3. Mobile Publisher Settings configured with the bundle ID, Team ID, Key ID (iOS), and FCM credentials (Android).
+1. Salesforce-side: a custom notification type with its Required `mobile` delivery channel set to true (`CustomNotificationType.mobile`, api_meta 264 L43964), plus the app's push configuration.
+2. **Platform-side: an APNs `.p8` private key or `.p12` TLS certificate for iOS, and the Firebase project ID plus the service account's Base64 Admin SDK private key for Android, all from the customer's developer accounts (api_meta 264 L68456-68461, L68468-68471). The platform's Android type has no "server key" field.**
+3. Mobile Publisher Settings configured with the bundle ID, team ID, key ID (iOS), and Firebase credentials (Android). UNVERIFIED (2026-10-21): the Mobile Publisher Settings page and its field names are Help-only.
 
-Without (2), notifications fail silently — Salesforce believes they were sent.
+Without (2), notifications fail silently — Salesforce believes they were sent (UNVERIFIED (2026-10-21): field observation).
 
-**Detection hint:** A push setup answer that doesn't mention APN AuthKey / FCM service-account JSON is incomplete.
+**Detection hint:** A push setup answer that doesn't mention the APNs key or certificate and the Firebase service-account key is incomplete; one that offers an FCM "server key" contradicts the platform type.
 
 ---
 
@@ -80,7 +84,7 @@ Without (2), notifications fail silently — Salesforce believes they were sent.
 
 **Correct pattern:**
 
-The top rejection categories for Mobile Publisher apps:
+The top rejection categories for Mobile Publisher apps (UNVERIFIED (2026-10-21): store review categories, not in the corpus):
 
 - App Completeness (login flow unclear to reviewer): provide a fallback test account.
 - Data Collection / Privacy: have a public privacy policy URL; the in-app account-deletion flow is mandatory.

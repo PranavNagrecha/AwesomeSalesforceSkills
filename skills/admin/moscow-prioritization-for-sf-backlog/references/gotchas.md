@@ -10,7 +10,7 @@ Non-obvious failure modes that derail prioritization on Salesforce projects.
 
 **When it occurs:** When the session is run as a survey ("does this matter?") rather than a negotiation ("what fails if we don't ship this?"). Common when the sponsor is absent and the BA cannot push back on stakeholders.
 
-**How to avoid:** Enforce the DSDM ~60% rule — Must items account for at most ~60% of total effort in the release. If the tagging exceeds this, stop and re-tag. The skill's checker script flags this.
+**How to avoid:** Enforce the skill's ~60% rule — Must items account for at most ~60% of total effort in the release (UNVERIFIED (2026-10-21): the attribution of this figure to DSDM is a framework claim outside the corpus). If the tagging exceeds this, stop and re-tag. The skill's checker script flags this.
 
 ---
 

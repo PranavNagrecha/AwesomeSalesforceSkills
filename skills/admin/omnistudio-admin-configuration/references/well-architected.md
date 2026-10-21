@@ -1,5 +1,7 @@
 # Well-Architected Notes — OmniStudio Admin Configuration
 
+UNVERIFIED (2026-10-21): the irreversibility, no-validation-on-save, sandbox-refresh, community-custom-permission, "direction Salesforce is investing in" and Enhanced Runtime Performance claims below are Help-only; see Official Sources Used.
+
 ## Relevant Pillars
 
 - **Security** — Permission set and PSL assignment directly controls who can author and consume OmniStudio components. Over-provisioning `OmniStudio Admin` to non-builder users violates least privilege and creates an unnecessary authoring attack surface. Community user access requires an explicitly enabled custom permission, not just a standard permission set assignment.
@@ -12,7 +14,7 @@
 
 **Enhanced Runtime Performance — performance and least privilege bought together:** Enabling the setting removes the Apex hop ("in-platform capabilities instead of through Apex calls") and simultaneously makes all components execute in user mode. Those arrive as one decision, which is architecturally sound — a component should not read more than its user can — but it converts a latency improvement into an access-review project, and the cost lands on whichever persona has the narrowest permission set, usually Experience Cloud and guest users. The tradeoff is not whether user mode is correct; it is whether the org has an accurate inventory of what its components touch. Orgs without one should stage the change in a sandbox, as Salesforce directs, rather than defer it.
 
-**Centralized vs. delegated permission management:** Assigning OmniStudio permissions through profiles (legacy) versus permission sets (recommended) versus permission set groups (best practice for complex orgs) has operational tradeoffs. Permission set groups allow bundling the PSL and permission sets into a single assignable unit, reducing provisioning errors. However, they require careful governance so that the community consumer permission is not inadvertently bundled into groups assigned to internal users.
+**Centralized vs. delegated permission management:** Assigning OmniStudio permissions through profiles (legacy) versus permission sets (recommended) versus permission set groups (best practice for complex orgs) has operational tradeoffs. Permission set groups bundle permission sets (plus muting permission sets) into a single assignable unit, reducing provisioning errors; they carry no license, so the PSL is still assigned to each user first (api_meta 264 L97996, L98039-98044). Earlier text said a group bundles the PSL too. However, they require careful governance so that the community consumer permission is not inadvertently bundled into groups assigned to internal users.
 
 ## Anti-Patterns
 
@@ -24,6 +26,11 @@
 
 ## Official Sources Used
 
+- Security Implementation Guide (Summer '26) — a permission set that needs a user or permission set license can be assigned only to users who hold it, which is why license assignment precedes permission set assignment: secguide 262 L1999-2004.
+- Salesforce DX Developer Guide (Winter '27) — OmniStudio licensing is split into runtime, designer and metadata features (`OmnistudioRuntime`, `OmnistudioDesigner`, `OmnistudioMetadata`) and add-on licenses such as `OmniStudioRuntimeCCAddon`: sfdx_dev 264 L8554-8571, L6929.
+- Metadata API Developer Guide (Winter '27) — "OmniStudio Admin" named as a permission set license: api_meta 264 L56731-56732.
+- Salesforce DX Developer Guide (Winter '27) — OmniStudio component metadata types `OmniDataTransform`, `OmniIntegrationProcedure`, `OmniScript`, `OmniUiCard`: sfdx_dev 264 L16493-16496.
+- UNVERIFIED (2026-10-21): the Salesforce Help topics below are outside the corpus and cannot be re-fetched (help.salesforce.com); the two marked "verified 2026-08-14" were read by an earlier pass. They are the only source for the OmniStudio Settings toggles, Runtime Namespace, `OmniStudioPSL` and Enhanced Runtime Performance claims.
 - Salesforce Help: OmniStudio Settings — https://help.salesforce.com/s/articleView?id=sf.os_omnistudio_settings.htm
 - Salesforce Help: OmniStudio Permission Sets and Licenses — https://help.salesforce.com/s/articleView?id=sf.os_permission_sets_and_licenses.htm
 - Salesforce Help: Standard OmniStudio Content and Runtime — https://help.salesforce.com/s/articleView?id=sf.os_standard_content_and_runtime.htm

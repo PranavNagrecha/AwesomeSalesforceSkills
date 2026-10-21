@@ -27,31 +27,39 @@ Record the answers to the Before Starting questions from SKILL.md here before pr
 
 ## Routing Configuration Plan
 
-| Queue Name | Routing Model | Priority | Capacity Units | Push Timeout |
-|---|---|---|---|---|
-| (queue 1) | Least Active / Most Available / Skills-Based | 1 | 5 | 30s |
-| (queue 2) | | | | |
-| (queue 3) | | | | |
+| Queue Name | Routing Model | Skills-based (isAttributeBased) | Priority | Capacity Weight | Push Timeout |
+|---|---|---|---|---|---|
+| (queue 1) | Least Active / Most Available | false / true | 1 | 5 | 30s |
+| (queue 2) | | | | | |
+| (queue 3) | | | | | |
+
+Capacity weight is a routing-configuration field; the service channel has none.
 
 ---
 
 ## Service Channel Plan
 
-| Object | Service Channel Name | Capacity Weight | Notes |
+| Object | Service Channel Name | Capacity Model (status / tab) | Notes |
 |---|---|---|---|
-| Case | Cases | 5 | |
-| Chat Transcript | Chats | 3 | |
+| Case | Cases | Status-based | |
+| Chat Transcript | Chats | Tab-based | |
 | (custom object) | | | |
 
 ---
 
-## Presence Configuration Plan
+## Presence Status Plan (channels; access via Profile or Permission Set)
 
-| Status Name | Status Type | Service Channels | Capacity Ceiling | Assigned To (Profile/PermSet) |
-|---|---|---|---|---|
-| Available | Online | Cases, Chats | 10 | Support Agent Profile |
-| Available - Cases Only | Online | Cases | 10 | |
-| Break | Busy | none | — | |
+| Status Name | Service Channels | Status Access Granted To |
+|---|---|---|
+| Available | Cases, Chats | Support Agent Profile |
+| Available - Cases Only | Cases | |
+| Break | none (treated as Away) | |
+
+## Presence Configuration Plan (capacity; assigned to Profiles or Users)
+
+| Configuration Name | Capacity Ceiling | Assigned To (Profile / User) |
+|---|---|---|
+| Support Agent - Full Capacity (10) | 10 | Support Agent Profile |
 
 ---
 
@@ -59,8 +67,10 @@ Record the answers to the Before Starting questions from SKILL.md here before pr
 
 | Agent Name | Skill 1 | Level | Skill 2 | Level | Skill 3 | Level |
 |---|---|---|---|---|---|---|
-| (Agent A) | Product CRM Support | 5 | | | | |
-| (Agent B) | Product CRM Support | 3 | Product ERP Support | 3 | | |
+| (Agent A) | Product CRM Support | 50 | | | | |
+| (Agent B) | Product CRM Support | 30 | Product ERP Support | 30 | | |
+
+Skill levels range 0–99.99; record the team's convention here.
 
 ---
 
@@ -81,9 +91,9 @@ Copy from SKILL.md Review Checklist and tick as completed:
 - [ ] Omni-Channel enabled; Skills-Based Routing enabled if needed
 - [ ] Service Channel exists for every object type being routed
 - [ ] Routing Configuration created and assigned for every queue
-- [ ] Presence Statuses and Configurations created with correct channel assignments
-- [ ] Agents assigned to Presence Configurations via Profile or Permission Set
-- [ ] Service Resource records created for every routing agent
+- [ ] Presence Statuses created with correct channels; Presence Configurations with the capacity ceiling
+- [ ] Agents assigned to Presence Configurations by Profile or User; status access granted by Profile or Permission Set
+- [ ] Service Resource records created for every skills-based routing agent
 - [ ] Service Resource Skills assigned (skills-based only)
 - [ ] Skills-Based Routing Rules validated (skills-based only)
 - [ ] End-to-end routing tested in sandbox

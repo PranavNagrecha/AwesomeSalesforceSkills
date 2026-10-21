@@ -8,13 +8,18 @@ Validates a prioritized-backlog file (JSON or CSV) against the canonical schema:
   - every W row has a non-empty rationale
   - sum(Must effort days) <= supplied capacity
   - sum(Must + Should effort days) <= 0.8 * capacity (warn-only)
-  - Must rows account for <= 60% of total effort (warn-only, DSDM rule)
+  - Must rows account for <= 60% of total effort (warn-only; the skill's rule —
+    the DSDM attribution is unverified, see SKILL.md)
+
+Exit codes: 1 on any ERROR finding, on a missing --backlog / --manifest-dir path,
+or on a WARN under --strict; 0 otherwise. An empty --manifest-dir prints one WARN
+and exits 0. Capacity rules run only when --capacity is given.
 
 Stdlib only. No pip dependencies.
 
 Usage:
     python3 check_moscow_prioritization_for_sf_backlog.py --backlog backlog.json --capacity 30
-    python3 check_moscow_prioritization_for_sf_backlog.py --backlog backlog.csv  --capacity 30
+    python3 check_moscow_prioritization_for_sf_backlog.py --manifest-dir backlogs/ --capacity 30 [--strict]
 """
 
 from __future__ import annotations
@@ -37,17 +42,22 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Validate a MoSCoW-prioritized Salesforce backlog file.",
     )
-    parser.add_argument(
+    src = parser.add_mutually_exclusive_group(required=True)
+    src.add_argument(
         "--backlog",
-        required=True,
         help="Path to the prioritized backlog file (.json or .csv).",
+    )
+    src.add_argument(
+        "--manifest-dir",
+        help="Directory scanned recursively for *.json / *.csv backlog files.",
     )
     parser.add_argument(
         "--capacity",
         type=float,
-        required=True,
-        help="Team capacity for the target horizon, in person-days.",
+        default=None,
+        help="Team capacity for the target horizon, in person-days (capacity rules skipped when absent).",
     )
+    parser.add_argument("--strict", action="store_true", help="Treat WARN findings as failures (exit 1).")
     parser.add_argument(
         "--effort-map",
         default=None,
@@ -155,6 +165,14 @@ def check_rows(rows: list[dict], capacity: float, effort_days: dict[str, float])
                 elif moscow == "S":
                     should_days += days
 
+    if capacity is None:
+        if total_days > 0 and (must_days / total_days) > 0.60:
+            warnings.append(
+                f"Must rows are {must_days / total_days:.0%} of total effort — exceeds the skill's ~60% "
+                f"rule; the rubric has likely degraded into a wishlist"
+            )
+        return errors, warnings
+
     # Capacity error: Must alone may not exceed capacity
     if must_days > capacity:
         errors.append(
@@ -170,11 +188,11 @@ def check_rows(rows: list[dict], capacity: float, effort_days: dict[str, float])
             f"({soft_cap:.1f}d) — leaves no slack for estimate misses"
         )
 
-    # DSDM 60% rule: warn if Must dominates the backlog
+    # The skill's 60% rule: warn if Must dominates the backlog
     if total_days > 0 and (must_days / total_days) > 0.60:
         warnings.append(
-            f"Must rows are {must_days / total_days:.0%} of total effort — exceeds DSDM ~60% "
-            f"guidance; the rubric has likely degraded into a wishlist"
+            f"Must rows are {must_days / total_days:.0%} of total effort — exceeds the skill's ~60% "
+            f"rule; the rubric has likely degraded into a wishlist"
         )
 
     return errors, warnings
@@ -182,25 +200,46 @@ def check_rows(rows: list[dict], capacity: float, effort_days: dict[str, float])
 
 def main() -> int:
     args = parse_args()
-    backlog_path = Path(args.backlog)
+    if args.manifest_dir is not None:
+        root = Path(args.manifest_dir)
+        if not root.is_dir():
+            print(f"ERROR: manifest directory not found: {root}")
+            sys.exit(1)
+        paths = sorted(p for p in root.rglob("*") if p.suffix.lower() in {".json", ".csv"})
+        if not paths:
+            print(f"WARN: no .json or .csv backlog files under {root} — nothing to check")
+            return 0
+    else:
+        paths = [Path(args.backlog)]
 
+    errors: list[str] = []
+    warnings: list[str] = []
+    total_rows = 0
     try:
-        rows = load_rows(backlog_path)
         effort_days = load_effort_map(args.effort_map)
     except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
-        print(f"ERROR: {exc}", file=sys.stderr)
-        return 2
-
-    errors, warnings = check_rows(rows, args.capacity, effort_days)
+        print(f"ERROR: {exc}")
+        return 1
+    for path in paths:
+        try:
+            rows = load_rows(path)
+        except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
+            errors.append(f"{path}: {exc}")
+            continue
+        total_rows += len(rows)
+        e, w = check_rows(rows, args.capacity, effort_days)
+        errors.extend(f"{path.name}: {x}" for x in e)
+        warnings.extend(f"{path.name}: {x}" for x in w)
 
     for w in warnings:
-        print(f"WARN: {w}", file=sys.stderr)
+        print(f"WARN: {w}")
     for e in errors:
-        print(f"ERROR: {e}", file=sys.stderr)
+        print(f"ERROR: {e}")
 
-    if errors:
+    if errors or (args.strict and warnings):
         return 1
-    print(f"OK: {len(rows)} row(s) validated against capacity {args.capacity:.1f}d.")
+    cap = f"capacity {args.capacity:.1f}d" if args.capacity is not None else "no capacity (capacity rules skipped)"
+    print(f"OK: {total_rows} row(s) validated against {cap}.")
     return 0
 
 

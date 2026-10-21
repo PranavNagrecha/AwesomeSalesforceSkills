@@ -912,6 +912,11 @@ releases:
     - admin/knowledge-classic-to-lightning
     - admin/lightning-bolt-template-authoring
     - admin/lightning-experience-transition
+    - admin/mobile-publisher
+    - admin/moscow-prioritization-for-sf-backlog
+    - admin/omni-channel-routing-setup
+    - admin/omnistudio-admin-configuration
+    - admin/persona-and-journey-mapping-sf
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'

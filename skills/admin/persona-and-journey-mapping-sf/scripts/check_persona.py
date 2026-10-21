@@ -18,9 +18,13 @@ Checks:
   * No persona is orphaned (every persona is referenced by ≥1 journey).
   * Persona count is ≤ 7.
 
+Exit codes: ERROR findings (invalid JSON, a friction tag or surface outside the
+enum, a wrong container type) and a missing path exit 1; WARN findings exit 0
+unless --strict; a directory with no JSON prints one WARN and exits 0.
+
 Usage:
     python3 check_persona.py path/to/handoff.json
-    python3 check_persona.py path/to/dir/        # walks .json files
+    python3 check_persona.py --manifest-dir path/to/dir/ [--strict]   # walks .json files
     python3 check_persona.py --self-test
 """
 
@@ -143,7 +147,7 @@ def check_journey(journey: dict[str, Any], idx: int, persona_ids: set[str]) -> l
                     f"{label}: step {s_idx} uses surface='system' — "
                     "system events do not belong in a journey, route to process-flow-as-is-to-be"
                 )
-            step_text = (step.get("step") or "").lower()
+            step_text = str(step.get("step") or "").lower()
             for kw in SYSTEM_KEYWORDS:
                 if kw in step_text:
                     issues.append(
@@ -319,7 +323,21 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Run an internal self-test on synthetic payloads and exit.",
     )
+    parser.add_argument(
+        "--manifest-dir",
+        help="Directory (or file) of persona/journey JSON; same as the positional target.",
+    )
+    parser.add_argument("--strict", action="store_true", help="Treat WARN findings as failures (exit 1).")
     return parser.parse_args()
+
+
+# Schema breaks (invalid enum value, wrong container type) are ERROR; every other
+# finding is a WARN that exits 0 unless --strict.
+_ERROR_MARKERS = ("not in enum", "unknown surface", "must be a list", "must be an object")
+
+
+def _severity(issue: str) -> str:
+    return "ERROR" if any(m in issue for m in _ERROR_MARKERS) else "WARN"
 
 
 def main() -> int:
@@ -328,39 +346,47 @@ def main() -> int:
     if args.self_test:
         return self_test()
 
-    if not args.target:
-        print("ERROR: provide a target path or --self-test", file=sys.stderr)
-        return 2
+    raw = args.manifest_dir or args.target
+    if not raw:
+        print("ERROR: provide a target path, --manifest-dir, or --self-test")
+        sys.exit(1)
 
-    target = Path(args.target)
+    target = Path(raw)
+    if not target.exists():
+        print(f"ERROR: path not found: {target}")
+        sys.exit(1)
     paths = gather_paths(target)
     if not paths:
-        print(f"ERROR: no JSON files found at {target}", file=sys.stderr)
-        return 2
+        print(f"WARN: no JSON files found at {target} — nothing to check")
+        return 0
 
-    total_issues = 0
+    errors = warns = 0
     for path in paths:
         try:
             payload = load_artifact(path)
         except ValueError as exc:
-            print(f"ERROR: {exc}", file=sys.stderr)
-            total_issues += 1
+            print(f"ERROR: {exc}")
+            errors += 1
             continue
 
         issues = check_artifact(payload)
         if issues:
             print(f"--- {path}")
             for issue in issues:
-                print(f"  WARN: {issue}", file=sys.stderr)
-            total_issues += len(issues)
+                sev = _severity(issue)
+                print(f"  {sev}: {issue}")
+                if sev == "ERROR":
+                    errors += 1
+                else:
+                    warns += 1
         else:
             print(f"OK: {path}")
 
-    if total_issues:
-        print(f"\n{total_issues} issue(s) found.", file=sys.stderr)
+    if errors or (args.strict and warns):
+        print(f"\n{errors} error(s), {warns} warning(s).")
         return 1
 
-    print("All artifacts pass.")
+    print(f"All artifacts pass ({warns} warning(s)).")
     return 0
 
 

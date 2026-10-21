@@ -49,15 +49,17 @@ defer. Plausibility is not measurement.
 ```json
 "mobile_pct": 70,
 "desktop_pct": 30,
-"posture_source": "EventLogFile UriEvent, 30-day window, 2026-03-01 to 2026-03-31"
+"posture_source": "LightningUsageByAppTypeMetrics (production), 30-day window, 2026-03-01 to 2026-03-31"
 ```
+
+Do not cite `UriEvent` as the source: it detects record operations "in Salesforce Classic only" (platform_events 264 L28315-28317), so it cannot split mobile from desktop. `LightningUsageByAppTypeMetrics.AppExperience` distinguishes Lightning Experience from Salesforce Mobile (object_reference 264 L170436) and is not available in sandboxes (L170415).
 
 If measurement is unavailable, return:
 
 ```json
 "mobile_pct": null,
 "desktop_pct": null,
-"posture_source": "UNAVAILABLE — request Lightning Usage app enablement before persona finalization"
+"posture_source": "UNAVAILABLE — request a production pull of Lightning usage metrics before persona finalization"
 ```
 
 **Detection hint:** `mobile_pct` populated with no `posture_source` adjacent

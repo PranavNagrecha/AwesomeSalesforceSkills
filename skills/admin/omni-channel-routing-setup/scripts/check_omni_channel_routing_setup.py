@@ -2,7 +2,7 @@
 """Checker script for the Omni-Channel Routing Setup skill.
 
 Validates the six Omni-Channel metadata types against the shapes documented in
-``references/metadata-examples.md`` (Metadata API Developer Guide v62), and —
+``references/metadata-examples.md`` (Metadata API Developer Guide, api_meta 264), and —
 the part a per-file lint cannot do — checks that they refer to each other.
 An Omni-Channel package is only ever correct as a set: a channel with no
 routing configuration, or a routing configuration with nobody who can go
@@ -22,7 +22,9 @@ unless ``--strict`` is passed, which makes WARN findings exit 1 too.
 
 ERROR (exit 1)
   E1  A ServiceChannel with no QueueRoutingConfig anywhere in the manifest.
-      Work items enter the channel and never reach a queue.
+      No queue in the package can push the channel's work (the type has no
+      channel field, so this is a package-level check, not a per-channel link).
+      Kept as ERROR because build-loop gates use it (case-onboarding example).
   E2  A ServiceChannel that no ServicePresenceStatus names under <channels>,
       when the manifest DOES hold presence statuses. No agent can select a
       status that receives its work. (When the manifest holds no presence
@@ -40,8 +42,8 @@ ERROR (exit 1)
 
 WARN (printed, exit 0)
   W0  No Omni-Channel metadata found under --manifest-dir.
-  W1  <pushTimeout> missing or 0. 0 is documented as "push timeout off", which
-      is a decision, not a default — a declined item then blocks capacity.
+  W1  <pushTimeout> missing or 0. 0 is documented as "push timeout off"
+      (api_meta 264 L102698-102699), which is a decision, not a default.
   W2  A ServicePresenceStatus with no <channels>: the guide says it is treated
       as Away. Legitimate for a real Away status, a bug for a working one.
   W3  A PresenceUserConfig with no <assignments>: nobody uses it.
@@ -51,7 +53,7 @@ WARN (printed, exit 0)
       separately. Re-run over the tree that carries
       servicePresenceStatuses/ to turn this back into a real E2 check.
   W5  An Apex trigger that looks like it sets Case.OwnerId directly, which
-      bypasses Omni-Channel capacity enforcement.
+      skips the queue's routing configuration.
 
 INFO (printed, exit 0)
   I1  A <presenceStatusOnPushTimeout> or <presenceStatusOnDecline> naming a
@@ -254,8 +256,8 @@ def check_service_channels(
                 Finding(
                     "ERROR", "E1", channel.where,
                     f"ServiceChannel '{name}': this manifest contains no "
-                    "QueueRoutingConfig. Work items enter the channel and never reach a "
-                    "queue. Deploy the routing configuration with the channel "
+                    "QueueRoutingConfig, so no queue in the package can push this "
+                    "channel's work. Deploy the routing configuration with the channel "
                     "(references/metadata-examples.md § 6).",
                 )
             )
@@ -332,10 +334,9 @@ def check_routing_configurations(
             findings.append(
                 Finding(
                     "WARN", "W1", config.where,
-                    f"QueueRoutingConfig '{name}': pushTimeout is {shown}. A work item an "
-                    "agent never accepts then holds their capacity indefinitely. Set a "
-                    "timeout and pair it with <presenceStatusOnPushTimeout>, or record "
-                    "that off is deliberate.",
+                    f"QueueRoutingConfig '{name}': pushTimeout is {shown}, so an "
+                    "unanswered push never times out. Set a timeout and pair it with "
+                    "<presenceStatusOnPushTimeout>, or record that off is deliberate.",
                 )
             )
 
@@ -439,9 +440,9 @@ def check_for_apex_routing_triggers(manifest_dir: Path) -> list[Finding]:
             findings.append(
                 Finding(
                     "WARN", "W5", trigger_path.name,
-                    "may set Case.OwnerId directly to a User for routing. That bypasses "
-                    "Omni-Channel capacity enforcement and availability checks. Route "
-                    "through a queue with a routing configuration instead.",
+                    "may set Case.OwnerId directly to a User for routing, which skips "
+                    "the queue's routing configuration. Route through a queue with a "
+                    "routing configuration instead.",
                 )
             )
 

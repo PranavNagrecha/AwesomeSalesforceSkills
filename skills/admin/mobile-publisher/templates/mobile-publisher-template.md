@@ -2,6 +2,8 @@
 
 Use this template when planning a Mobile Publisher build, submission, or maintenance cycle.
 
+UNVERIFIED (2026-10-21): the two templates, the shell release schedule and the Approach checks are Help-only; the push fields and the `nativeConfig.json` update flags are grounded (api_meta 264 L68456-68504, L62894-62917).
+
 ## Scope
 
 **Skill:** `mobile-publisher`
@@ -25,6 +27,8 @@ Use this template when planning a Mobile Publisher build, submission, or mainten
 
 ## Branding Asset Checklist
 
+UNVERIFIED (2026-10-21): the sizes, name lengths and deletion/privacy requirements in this checklist are Apple and Google policy, not in the corpus; re-check the current store guidelines.
+
 - [ ] App icon iOS 1024×1024 PNG (no alpha channel)
 - [ ] App icon Android 512×512 PNG
 - [ ] Android adaptive icon foreground 432×432
@@ -37,13 +41,16 @@ Use this template when planning a Mobile Publisher build, submission, or mainten
 
 ## Push Configuration
 
-- [ ] APN AuthKey (`.p8`) generated under customer's Apple Developer account
-- [ ] APN Key ID + Team ID + bundle ID configured in Mobile Publisher Settings
-- [ ] FCM service-account JSON generated under customer's Firebase / Google Cloud project
+- [ ] APNs `.p8` private key (or `.p12` TLS certificate + password) generated under customer's Apple Developer account
+- [ ] Key ID + team ID + bundle ID and APNs `environment` (Production or Sandbox) entered in the push configuration
+- [ ] Firebase project ID + service-account Admin SDK private key (Base64) from the customer's Firebase project
+- [ ] Credentials entered in each org that holds its own push configuration — they cannot be packaged or kept in source control; a retrieved record keeps only `pushConfigLink`
 - [ ] Test push delivered end-to-end through TestFlight + Play Internal Testing
 - [ ] Synthetic monitor in place to alert on delivery failures post-launch
 
 ## Submission Checklist
+
+UNVERIFIED (2026-10-21): the reviewer-account, privacy-questionnaire and screenshot requirements below are store policy.
 
 - [ ] Fallback test account provisioned with bypassed MFA for App Store reviewer
 - [ ] Reviewer credentials documented in App Store submission notes
@@ -56,8 +63,8 @@ Use this template when planning a Mobile Publisher build, submission, or mainten
 
 - [ ] Resubmission cadence aligned with Salesforce native shell release schedule
 - [ ] Owner named per store for submission, push-cert renewal, and OS-version policy
-- [ ] Force-update flag tested in non-production
-- [ ] TestFlight expiration tracker in place (90-day reminder)
+- [ ] `enableAppUpdate` / `forceAppUpdate` in the site's `nativeConfig.json` tested in non-production
+- [ ] TestFlight expiration tracker in place (90-day reminder; UNVERIFIED (2026-10-21): Apple policy)
 
 ## Notes
 

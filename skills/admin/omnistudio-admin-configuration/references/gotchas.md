@@ -2,6 +2,8 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems in this domain.
 
+UNVERIFIED (2026-10-21): Gotchas 1, 2, 4, 5 and 6 describe OmniStudio Settings behaviour that no corpus guide documents (api_meta 264 has no OmniStudio settings type); they rest on Salesforce Help. Gotcha 3's ordering rule is grounded (secguide 262 L1999-2004); its license name is not.
+
 ## Gotcha 1: Enabling Standard Runtime Is Irreversible Per Component
 
 **What happens:** Once a component (OmniScript, DataRaptor, FlexCard, or Integration Procedure) is opened and saved in the Standard OmniStudio designer, it is permanently converted to the native runtime path. There is no UI or API option to revert it to Managed Package Runtime. If the org still has other components on Managed Package Runtime, those two sets of components must now coexist in a mixed state.
@@ -26,7 +28,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** When a bulk user provisioning script or Data Loader job assigns the `OmniStudio Admin` or `OmniStudio User` permission set before the `OmniStudioPSL` Permission Set License has been assigned to the user, the assignment either silently fails or produces a generic license error. The user shows the permission set in their profile but cannot access OmniStudio functionality. Debugging is difficult because the user record appears correctly configured at the permission set level.
 
-**When it occurs:** In bulk provisioning scripts, automated onboarding flows, or any scenario where PSL and permission set assignments are made in parallel or out of order.
+**When it occurs:** In bulk provisioning scripts, automated onboarding flows, or any scenario where PSL and permission set assignments are made in parallel or out of order. The Security Guide states the rule: some permissions "require users to have a specific user license or permission set license before you can grant them in permission sets", and such a permission set can be assigned only to users who hold the license (secguide 262 L1999-2004). UNVERIFIED (2026-10-21): the `OmniStudioPSL` name and the "silently fails" outcome.
 
 **How to avoid:** Structure all provisioning workflows to assign the `OmniStudioPSL` Permission Set License in a first pass, then assign permission sets in a second pass after confirming PSL assignment. In Flows or Apex provisioning logic, add an explicit check that the PSL is present before attempting permission set assignment. Never assume PSL and permission set assignment can be parallelized safely.
 

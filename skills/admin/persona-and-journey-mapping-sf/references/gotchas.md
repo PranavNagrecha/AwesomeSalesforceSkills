@@ -28,12 +28,18 @@ record page is built for it, and the actual measurement (after launch) is
 85/15. Reps abandon the mobile flow. UAT didn't catch it because UAT was
 desktop-only.
 
-**When it occurs:** when Lightning Usage app is left at default settings (no
-mobile session reporting), or when EventLogFile UriEvent is not enabled.
+**When it occurs:** when nobody pulls a measurement, when it is pulled in a
+sandbox (`LightningUsageByAppTypeMetrics` is "Not available in sandbox orgs",
+object_reference 264 L170415), or when it is pulled from `UriEvent`, which
+detects record operations "in Salesforce Classic only" (platform_events 264
+L28315-28317). Earlier text blamed default Lightning Usage app settings and a
+disabled UriEvent; UNVERIFIED (2026-10-21): the app's default view.
 
-**How to avoid:** before publishing personas, pull the real split from
-Lightning Usage app (after enabling Mobile App usage) or EventLogFile
-UriEvent / LightningPerformance. The persona schema requires
+**How to avoid:** before publishing personas, pull the real split in
+production from `LightningUsageByAppTypeMetrics` (`AppExperience` =
+Lightning Experience or Salesforce Mobile, L170436) or from the EventLogFile
+Lightning Performance event type, which covers Lightning Experience and the
+Salesforce mobile app (L123289-123291). The persona schema requires
 `mobile_pct + desktop_pct ≈ 100` and the source of measurement should be
 named in adjacent prose.
 

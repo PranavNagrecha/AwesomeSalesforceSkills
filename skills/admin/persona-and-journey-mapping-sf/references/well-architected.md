@@ -19,9 +19,12 @@
   (per PSG) → easier maintenance, but risk of one persona masking two distinct
   user populations. Cap at ≤7 per phase; merge personas that share a PSG and
   primary-task profile.
-- **Mobile/desktop precision vs. measurement cost.** Lightning Usage app +
-  EventLogFile gives a real split, but requires Event Monitoring license and
-  effort to enable. Surveys give a cheap split but a noisy one. Prefer
+- **Mobile/desktop precision vs. measurement cost.** Lightning usage metrics
+  (`LightningUsageByAppTypeMetrics`, production only — object_reference 264
+  L170415) + EventLogFile give a real split, but EventLogFile requires Event
+  Monitoring and effort to enable (UNVERIFIED (2026-10-21): the corpus states
+  the Shield / Event Monitoring add-on requirement for Real-Time Event
+  Monitoring, secguide 262 L5424-5425, not for every EventLogFile type). Surveys give a cheap split but a noisy one. Prefer
   measured data; if surveys are the only option, mark `mobile_pct` as a soft
   estimate so downstream UX decisions are weighted accordingly.
 - **Friction enum vs. open tagging.** A fixed five-value enum sacrifices
@@ -44,6 +47,11 @@
 
 ## Official Sources Used
 
+- Object Reference (Winter '27), LightningUsageByAppTypeMetrics — `AppExperience` is "Lightning Experience or Salesforce Mobile"; not available in sandbox orgs; the measured source for `mobile_pct`: object_reference 264 L170407, L170415, L170436.
+- Platform Events Developer Guide (Winter '27), UriEvent / LightningUriEvent — UriEvent covers "Salesforce Classic only", LightningUriEvent "Lightning Experience only", so neither gives a mobile split: platform_events 264 L28315-28317, L20567-20568.
+- Object Reference (Winter '27), EventLogFile Lightning Performance event type — covers Lightning Experience and Salesforce mobile app performance: object_reference 264 L123289-123291.
+- Metadata API Developer Guide (Winter '27), ListView — "Visible only to me" list views are not accessible in Metadata API (Gotcha 3 in SKILL.md): api_meta 264 L46523-46524.
+- Metadata API Developer Guide (Winter '27), CompactLayout — shown in the Salesforce mobile app and Lightning Experience: api_meta 264 L45323-45324.
 - Salesforce Help — Lightning Usage App: https://help.salesforce.com/s/articleView?id=sf.lightning_usage_app.htm
 - Salesforce Help — Event Monitoring & EventLogFile: https://help.salesforce.com/s/articleView?id=sf.event_monitoring_setup.htm
 - Salesforce Help — Salesforce Mobile App Overview: https://help.salesforce.com/s/articleView?id=sf.salesforce_app_intro.htm

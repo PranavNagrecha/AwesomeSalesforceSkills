@@ -21,7 +21,7 @@ dashboards:                                    # ≥1 entry, dashboard developer
   - <<Dashboard_DeveloperName>>
 mobile_pct: <<int 0-100>>                      # measured, not guessed
 desktop_pct: <<int 0-100>>                     # mobile_pct + desktop_pct must ≈ 100
-posture_source: <<measurement source>>         # e.g. "EventLogFile UriEvent 30d"
+posture_source: <<measurement source>>         # e.g. "LightningUsageByAppTypeMetrics 30d (production)"; not UriEvent (Classic only)
 automation_touched:                            # Flow/VR/Assignment/Approval that fires for them
   - <<Flow:DeveloperName>>
   - <<ValidationRule:Object.DeveloperName>>
@@ -116,7 +116,7 @@ Any other tag is invalid. Capture extra detail in `note`, never invent a sixth t
       "persona_id": "<<...>>",
       "task": "<<...>>",
       "friction_tag": "<<enum value>>",
-      "recommended_target": "lightning-record-page-auditor | list-view-and-search-layout-auditor | path-designer | flow-builder | audit-validation-rules",
+      "recommended_target": "audit-router:lightning_record_page | audit-router:list_view_search_layout | path-designer | flow-builder | audit-router:validation_rule",
       "recommended_intervention": "<<specific config change>>"
     }
   ]

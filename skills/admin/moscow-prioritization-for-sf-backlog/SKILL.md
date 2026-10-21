@@ -31,9 +31,9 @@ outputs:
   - "Won't list with each row tagged Won't-this-release vs Won't-ever and rationale"
   - "WSJF tie-break worksheet for items where MoSCoW alone produced ties"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-10-21
 ---
 
 # MoSCoW Prioritization for Salesforce Backlog
@@ -53,6 +53,22 @@ Gather this context before running a prioritization session:
 
 ---
 
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| If we ship none of the Musts, what exactly fails? | Gotcha 1: a session run as a survey tags nearly everything Must | A failure statement per Must, and a Must share under the skill's ~60% rule |
+| Is this Won't for this release, or Won't ever? | Gotcha 2: a single Won't tag ferments in the backlog | A `moscow_subtag` on every W row and an archive list |
+| What is each Must's effort tier, in the team's unit? | Gotcha 3: Must without effort hides that the commit cannot fit | Capacity math the sponsor can check |
+| What do Cost of Delay scores of 1 and 13 mean for this team? | Gotcha 4: unanchored WSJF scores diverge and settle nothing | Written anchors for each WSJF component |
+| Is the budget owner in this session? | Gotcha 5: an absent sponsor overturns the output later | A committed list instead of a provisional one |
+| How often will the backlog be re-groomed, and what may break the lock? | Gotcha 6: re-prioritizing every sprint burns capacity | A cadence and a short exception list |
+| Which regulation, clause and date makes this Must? | Gotcha 7: regulatory Musts are never re-checked when the date moves | A citation in the rationale that can be re-validated at each grooming |
+
+A prioritization run with these answers produces a commit the team can defend line by line, instead of a tagged wishlist that slips in the first week.
+
+---
+
 ## Core Concepts
 
 ### The MoSCoW Rubric
@@ -66,6 +82,8 @@ MoSCoW comes from DSDM/Agile Project Framework and forces every backlog item int
 | **Could have (C)** | Nice to have. Polish, reporting refinements, minor UX upgrades | Stretch goals only — fill slack, never commit | Buffer that absorbs estimate misses on Musts/Shoulds |
 | **Won't have — this release (W)** | Agreed-out for current horizon; candidate for a future release | n/a | Goes back to backlog tagged for re-grooming |
 | **Won't have — ever (W)** | Permanently out of scope (regulatory, architectural, strategic) | n/a | Archive with documented rationale — do not let it ferment |
+
+UNVERIFIED (2026-10-21): the DSDM origin of MoSCoW and the "≤ ~60% Must effort" figure attributed to DSDM canon are third-party framework claims outside the Salesforce corpus; treat the 60% and 80% caps as this skill's rules, not as a cited standard.
 
 The most common MoSCoW failure mode is everything-is-Must. If the backlog has more than ~60% Must by effort, the rubric has degraded into a wishlist and the prioritization session has not actually happened.
 
@@ -103,7 +121,7 @@ WSJF = Cost of Delay / Job Size
 Cost of Delay = User-Business Value + Time Criticality + Risk Reduction / Opportunity Enablement
 ```
 
-Each component is scored on the modified Fibonacci 1, 2, 3, 5, 8, 13. Job Size uses the same scale (or the team's existing effort points). Sort descending: highest WSJF wins the slot.
+Each component is scored on the modified Fibonacci 1, 2, 3, 5, 8, 13. Job Size uses the same scale (or the team's existing effort points). Sort descending: highest WSJF wins the slot. UNVERIFIED (2026-10-21): the formula and the scoring scale are SAFe's, outside the Salesforce corpus.
 
 WSJF is a tie-break, not a replacement for MoSCoW. Do not rank the entire backlog by WSJF — the cognitive cost is high and the comparative scoring degrades quickly past 15–20 items.
 
@@ -141,7 +159,7 @@ If Must alone exceeds capacity, the prioritization is invalid: either capacity m
 
 **How it works:**
 1. Pull only the tied cluster into a worksheet (typically 5–15 rows).
-2. For each row, score: User-Business Value (1–13), Time Criticality (1–13), Risk Reduction / Opportunity Enablement (1–13), Job Size (1–13).
+2. For each row, score: User-Business Value (1–13), Time Criticality (1–13), Risk Reduction / Opportunity Enablement (1–13), Job Size (1–13) — the SAFe scale (UNVERIFIED (2026-10-21): outside the corpus).
 3. Compute WSJF = (UBV + TC + RR/OE) / JS.
 4. Sort descending. The top items take the available slots; the rest become Should-have for the next horizon.
 5. Persist the score in the row's `wsjf_score` column so the rationale is auditable.
@@ -173,7 +191,7 @@ Step-by-step instructions for an AI agent or practitioner activating this skill:
 3. **Attach effort tier** — assign S / M / L / XL to every M and S row. Flag XL items for splitting before they are committed.
 4. **Attach value tier** — assign 1–5 to every M and S row, validated with the sponsor.
 5. **WSJF tie-break** — for any cluster of Musts that exceeds sprint capacity, score Cost of Delay / Job Size and persist `wsjf_score`.
-6. **Commit Must to the current sprint or release** — verify Sum(Must effort) ≤ capacity and Sum(Must+Should) ≤ ~80% of capacity. Set `release_target` for every committed row.
+6. **Commit Must to the current sprint or release** — verify Sum(Must effort) ≤ capacity and Sum(Must+Should) ≤ ~80% of capacity with `python3 skills/admin/moscow-prioritization-for-sf-backlog/scripts/check_moscow_prioritization_for_sf_backlog.py --backlog backlog.json --capacity <days>` (ERROR on a bad tag or Must over capacity; WARN on the 80% and 60% caps). Set `release_target` for every committed row.
 7. **Re-prioritize at backlog grooming** — refresh tags only at the agreed grooming cadence (typically every two sprints). Avoid mid-sprint churn.
 
 ---
@@ -230,7 +248,7 @@ Non-obvious behaviours that cause real prioritization failures on Salesforce pro
 
 1. **Regulatory Musts that aren't actually Must** — "Compliance wants it" is not the same as "the regulator will fine us if we don't ship by date X". Force a citation: which regulation, which clause, which deadline. Otherwise it goes Should.
 2. **Won't-this-release ferments into Won't-ever silently** — A row tagged Won't-this-release for four consecutive grooming cycles is no longer being deferred; it is being declined. Surface it for a real archive decision.
-3. **Capacity inflated by counting full FTEs** — A two-week sprint with five admins ≠ 50 admin-days. Subtract leave, support rotation, ceremonies, code review, and UAT participation. Real capacity is typically 50–60% of nominal.
+3. **Capacity inflated by counting full FTEs** — A two-week sprint with five admins ≠ 50 admin-days. Subtract leave, support rotation, ceremonies, code review, and UAT participation. Real capacity is typically 50–60% of nominal (UNVERIFIED (2026-10-21): a practitioner heuristic, not a cited figure).
 4. **MoSCoW without effort hides infeasibility** — A backlog of 80 Musts feels confident until the team realizes Must alone is 200 days of work for a 40-day sprint. Always pair MoSCoW with effort.
 5. **Mid-sprint re-prioritization** — Stakeholders frequently ask to swap a Must in once a sprint starts. The cost of churn (context switching, partial work abandoned, retests) is almost always higher than the cost of waiting one sprint.
 

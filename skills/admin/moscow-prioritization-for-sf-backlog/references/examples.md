@@ -49,7 +49,7 @@ Three worked backlogs. Each shows the canonical handoff JSON schema and the rati
   {"story_id":"REG-001","moscow":"M","moscow_subtag":null,"effort":"L","value":5,"wsjf_score":null,"release_target":"2026-Q3","rationale":"Field history tracking on regulated objects — regulator order paragraph 4.2"},
   {"story_id":"REG-002","moscow":"M","moscow_subtag":null,"effort":"M","value":5,"wsjf_score":null,"release_target":"2026-Q3","rationale":"Setup Audit Trail export pipeline — paragraph 4.3"},
   {"story_id":"REG-003","moscow":"M","moscow_subtag":null,"effort":"M","value":5,"wsjf_score":null,"release_target":"2026-Q3","rationale":"Login history retention — paragraph 4.5"},
-  {"story_id":"REG-004","moscow":"M","moscow_subtag":null,"effort":"L","value":5,"wsjf_score":7.0,"release_target":"2026-Q3","rationale":"Restriction Rules on regulated cases — WSJF tie-break vs REG-005 (CoD 14 / Job Size 2)"},
+  {"story_id":"REG-004","moscow":"M","moscow_subtag":null,"effort":"L","value":5,"wsjf_score":7.0,"release_target":"2026-Q3","rationale":"Restriction Rules on the regulated Complaint__c custom object — WSJF tie-break vs REG-005 (CoD 14 / Job Size 2)"},
   {"story_id":"REG-005","moscow":"M","moscow_subtag":null,"effort":"L","value":5,"wsjf_score":4.3,"release_target":"2026-Q4","rationale":"Sharing rule rebuild — WSJF 4.3 lost the tie-break to REG-004; deferred one quarter"},
   {"story_id":"REG-006","moscow":"S","moscow_subtag":null,"effort":"M","value":4,"wsjf_score":null,"release_target":"2026-Q3","rationale":"Compliance dashboard — regulator pleased, not required"},
   {"story_id":"REG-007","moscow":"S","moscow_subtag":null,"effort":"S","value":4,"wsjf_score":null,"release_target":"2026-Q3","rationale":"Daily compliance digest email"},
@@ -57,6 +57,10 @@ Three worked backlogs. Each shows the canonical handoff JSON schema and the rati
   {"story_id":"REG-009","moscow":"W","moscow_subtag":"won't-ever","effort":"M","value":1,"wsjf_score":null,"release_target":"archived","rationale":"Custom UI overlay on regulated objects — violates auditability"}
 ]
 ```
+
+**Platform check:** REG-004 earlier read "Restriction Rules on regulated cases". Case is not a supported object — restriction rules "are available for custom objects, external objects, contracts, events, quotes, tasks, time sheets, and time sheet entries" (secguide 262 L4117-4118) — so the row now targets a custom object. Size a story only after confirming the feature supports its object.
+
+**Checker note:** at the default effort map this excerpt is ~81% Must by effort, so the checker WARNs on the 60% rule. For a regulator-ordered release that is expected; record the sponsor's acceptance in the rationale instead of re-tagging.
 
 **Why it works:** Each Must row cites the specific clause of the regulator's order in the rationale — no hand-waving. The WSJF tie-break (REG-004 vs REG-005) is recorded with a numeric score so the deferral is auditable. The Should items are honest about what they buy: regulator goodwill, not compliance.
 
