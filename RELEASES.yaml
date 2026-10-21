@@ -817,7 +817,11 @@ releases:
       (leftover tokens, marker corpus-grep, cite resolution) made mandatory for writers and reviewers. Trial batch 8 (Opus,
       5 skills, sweep): 4.0/skill. Decision: continue Opus writers at 5 skills with sweep; re-measure over batches 9-10; the
       output KPI (probes with audited skills) stays 10/10 in both runs, so writer defects are cost the reviewer absorbs, not
-      end quality.'
+      end quality. PAUSED by owner 2026-10-21 at 108/679 landed (503 contradicted claims fixed, 16 batches; ledger evals/measurement/audit-ledger.jsonl).
+      Two batches WRITTEN, UNREVIEWED, committed only in their worktrees: batch 17 (agentforce x5) worktree-agent-a029f88ea9d46cfc9
+      @1802e9209 base 57b7366b1; batch 18 (agentforce x5) worktree-agent-af67a0b8164fdc2e6 @<see git log> base 35b710399.
+      Resume = dispatch an Opus reviewer on each worktree (brief Reviewer brief), integrate, then continue from worklist line
+      119 (derive per notes). Probes for batches 11-16 not yet run.'
     done_skills:
     - admin/configuration-workbook-authoring
     - admin/fit-gap-analysis-against-org
