@@ -2,13 +2,15 @@
 
 Non-obvious Salesforce platform behaviors that cause real production problems during a Classic-to-Lightning rollout.
 
+UNVERIFIED (2026-10-20) (file-level): the runtime behaviours in Gotchas 1–7 (silent JS buttons, preference precedence, Console translation, package parity, VF frame behaviour, Readiness Check scope, LEX rendering deltas) and the permission names are Help-only or field experience; metadata and object facts carry their cite.
+
 ## Gotcha 1: JavaScript Buttons Fail Silently In LEX
 
 **What happens:** Click a JavaScript button on a record page in Lightning Experience and nothing happens — no error toast, no console error, no progress indicator. The button is still rendered on the page layout (so users see and click it) but the `OnClickJavaScript` is not executed in the LEX runtime.
 
 **When it bites you:** Mid-wave. Users in the new cohort encounter a button they used yesterday, click it, see no result, click again, then eventually switch back to Classic to "make it work." Switch-back rate spikes for that page in `LightningExitByPageMetrics`.
 
-**How to handle:** Audit `WebLink` `linkType = 'javascript'` before any wave that touches the host object. For each button, ship a Quick Action, headless flow, or LWC replacement, then **remove the JavaScript button from the page layout** so users can't click the dead control. The button can still exist as metadata for rollback safety; it just must not be on a layout the wave's users see.
+**How to handle:** Audit `WebLink` metadata with `linkType` `javascript` (api_meta 264 L47926-47931; the click handler is `openType` `onClickJavaScript`, L47938-47944) before any wave that touches the host object. For each button, ship a Quick Action, headless flow, or LWC replacement, then **remove the JavaScript button from the page layout** so users can't click the dead control. The button can still exist as metadata for rollback safety; it just must not be on a layout the wave's users see.
 
 ---
 
@@ -16,9 +18,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems du
 
 **What happens:** You enable "Lightning Experience User" in a profile and disable Classic UI access. Users in that profile who had previously clicked "Switch to Salesforce Classic" land in Classic on next login anyway, hit a "your profile doesn't allow Classic" message in some cases, or — depending on the org config — silently work in Classic with the per-user preference still dominant.
 
-**When it bites you:** Adoption dashboards lie. `LightningUsageByAppTypeMetrics` shows the rollout completed; spot checks show users in Classic.
+**When it bites you:** Adoption dashboards lie. `LightningUsageByAppTypeMetrics` (users on Lightning Experience and mobile, obj 264 L170406-170407) shows the rollout completed; spot checks show users in Classic.
 
-**How to handle:** Use the **Lightning Experience Hides Classic Switcher** permission set (or its equivalent) for the cohort. It overrides the per-user preference. Alternatively, run a one-time User-record DML to set `UserPreferencesLightningExperiencePreferred = true` for the cohort; the permission-set approach is auditable and reversible.
+**How to handle:** Use the switcher-hiding permission set (or its equivalent) for the cohort. Alternatively, run a one-time User-record DML to set `UserPreferencesLightningExperiencePreferred = true` for the cohort — the field is updateable and "redirects the user to the Lightning Experience interface" (obj 264 L299363-299369). Org-wide, `enableLexEndUsersNoSwitching` removes the switcher for every user (api_meta 264 L124742-124756).
 
 ---
 
@@ -28,7 +30,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems du
 
 **When it bites you:** Service teams that depend on console muscle memory. The Readiness Check flags Console-based assets but does not migrate them. The team assumes "Lightning Console" is just "Console with new chrome" — it is not. It is a separately configured app with its own metadata.
 
-**How to handle:** Treat Console rebuild as its own asset-triage track. For each Classic Console app, define a Lightning Console app with primary tabs (record-driven), subtabs (record-relationship-driven), utility bar items (Open CTI, Macros, History), and a CSS-tweaked compact layout. Pilot with 2–3 reps before rolling to the full team.
+**How to handle:** Treat Console rebuild as its own asset-triage track. A `CustomApplication`'s `uiType` is `Aloha` (Classic) or `Lightning` and is "Not updateable" (api_meta 264 L41933-41937), so a new app is required. For each Classic Console app, define a Lightning Console app with primary tabs (record-driven), subtabs (record-relationship-driven), utility bar items (Open CTI, Macros, History), and a CSS-tweaked compact layout. Pilot with 2–3 reps before rolling to the full team.
 
 ---
 

@@ -907,6 +907,11 @@ releases:
     - admin/experience-cloud-cms-content
     - admin/experience-cloud-moderation
     - admin/experience-cloud-seo-settings
+    - admin/flow-orchestration-admin
+    - admin/global-search-configuration
+    - admin/knowledge-classic-to-lightning
+    - admin/lightning-bolt-template-authoring
+    - admin/lightning-experience-transition
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'

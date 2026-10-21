@@ -2,6 +2,8 @@
 
 Use this template when planning a Knowledge Classic to Lightning Knowledge migration.
 
+UNVERIFIED (2026-10-20) (file-level): Migration Tool log behaviour, approval-process recreation and Service Console component behaviour below are Help-only.
+
 ---
 
 ## Scope
@@ -17,9 +19,13 @@ Use this template when planning a Knowledge Classic to Lightning Knowledge migra
 ## Inventory
 
 ```sql
-SELECT ArticleType, COUNT(Id) FROM KnowledgeArticleVersion WHERE PublishStatus='Online' AND IsLatestVersion=true GROUP BY ArticleType;
-SELECT Language, COUNT(Id) FROM KnowledgeArticleVersion WHERE IsLatestVersion=true GROUP BY Language;
-SELECT DataCategoryGroupName, DataCategoryName, COUNT(Id) FROM KnowledgeArticleVersion WHERE IsLatestVersion=true GROUP BY DataCategoryGroupName, DataCategoryName;
+-- Classic: PublishStatus or Id is required in WHERE (Lightning, API 47.0+: optional,
+-- L163435-163436); ArticleType is Filter-only; category
+-- fields live on <Type>__DataCategorySelection and are not groupable (obj 264
+-- L163280-163281, L163041-163048, L38769-38800). Repeat per type / status.
+SELECT COUNT(Id) FROM KnowledgeArticleVersion WHERE PublishStatus='Online' AND IsLatestVersion=true AND ArticleType='FAQ__kav';
+SELECT Language, COUNT(Id) FROM KnowledgeArticleVersion WHERE PublishStatus='Online' GROUP BY Language;
+SELECT ParentId, DataCategoryGroupName, DataCategoryName FROM FAQ__DataCategorySelection;
 ```
 
 | Article Type | Online | Draft | Translations |
@@ -66,7 +72,7 @@ SELECT DataCategoryGroupName, DataCategoryName, COUNT(Id) FROM KnowledgeArticleV
 
 | Consumer | Reference Pattern | Update Required |
 |---|---|---|
-| Apex code | `__kav` sObject reference | grep + replace + deploy |
+| Apex code | `__kav` sObject reference | remove triggers + rewrite + deploy BEFORE the Tool runs (apexdev 264 L16013-16014) |
 | Quick Actions | URL or relationship to article-type | Setup edit |
 | Reports | Report Type | New Report Types on Knowledge__kav |
 | Service Console | Knowledge Component config | App Builder edit |
@@ -95,8 +101,8 @@ SELECT DataCategoryGroupName, DataCategoryName, COUNT(Id) FROM KnowledgeArticleV
 - [ ] Publication state distribution matches (Online / Draft / Archived)
 - [ ] Channel visibility flags preserved (`IsVisibleIn*`)
 - [ ] Approval processes recreated per record type
-- [ ] All `__kav` Apex references updated and deployed
+- [ ] All `__kav` Apex references updated and deployed before migration; no triggers left on article types
 - [ ] Quick Actions audited for `__kav` substring; updated
 - [ ] Service Console Knowledge Component active and showing migrated articles
-- [ ] Phased channel cutover scheduled and rollback plan documented
-- [ ] Migration audit log persisted with classic→lightning ID mapping
+- [ ] Phased channel cutover scheduled (surface by surface; the article-type objects are gone after a multi-type migration)
+- [ ] Migration audit log persisted with classic→lightning ID mapping (`MigratedToFromArticleVersion`, obj 264 L162069-162076)

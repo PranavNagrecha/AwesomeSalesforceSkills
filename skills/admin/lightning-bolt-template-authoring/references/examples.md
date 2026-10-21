@@ -2,6 +2,8 @@
 
 Worked examples covering the full lifecycle. Each example assumes the source Experience site is already built and stable; the work being done is wrapping it as a redistributable Bolt.
 
+UNVERIFIED (2026-10-20) (file-level): Experience Builder and Setup UI paths, the AppExchange listing flow, and the fork-at-instantiation behaviour below are Help-only. Metadata shapes follow api_meta 264 L86523-86685 (`LightningBolt`) and L76580-76633 (`FlowCategory`).
+
 ---
 
 ## Example 1 — Full export workflow for an LWR partner portal
@@ -28,10 +30,11 @@ After save, confirm in `Setup → All Sites → New Community → Use existing t
 ```bash
 sf project retrieve start \
   --metadata "LightningBolt:Acme_Partner_Portal_Bolt" \
-  --metadata "ExperienceBundle:Acme_Partner_Portal" \
-  --metadata "Theme:Acme_Theme" \
+  --metadata "CommunityTemplateDefinition:Acme_Partner_Portal" \
+  --metadata "CommunityThemeDefinition:Acme_Theme" \
+  --metadata "FlowCategory:Partner_Login_Flows" \
   --metadata "Flow" \
-  --metadata "CustomApplication"
+  --metadata "CustomApplication:Acme_Partner_Internal"
 ```
 
 The retrieved tree:
@@ -40,14 +43,12 @@ The retrieved tree:
 force-app/main/default/
 ├── lightningBolts/
 │   └── Acme_Partner_Portal_Bolt.lightningBolt-meta.xml
-├── experiences/
-│   └── Acme_Partner_Portal/   # the ExperienceBundle directory
-│       ├── config/
-│       ├── routes/
-│       ├── themes/
-│       └── views/
-├── themes/
-│   └── Acme_Theme.theme-meta.xml
+├── communityTemplateDefinitions/
+│   └── Acme_Partner_Portal.communityTemplateDefinition-meta.xml
+├── communityThemeDefinitions/
+│   └── Acme_Theme.communityThemeDefinition-meta.xml
+├── flowCategories/
+│   └── Partner_Login_Flows.flowCategory-meta.xml
 ├── flows/
 │   └── Acme_Partner_Login.flow-meta.xml
 └── applications/
@@ -59,19 +60,35 @@ force-app/main/default/
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <LightningBolt xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>LWR-based partner portal with deal-registration, lead, and asset management pages, branded for Acme partners.</description>
-    <flowCategories>Partner_Login_Flows</flowCategories>
-    <flowCategories>Partner_Approval_Flows</flowCategories>
-    <images>partner_portal_thumb</images>
-    <industries>Manufacturing</industries>
-    <industries>Distribution</industries>
-    <summary>Acme partner portal starter — LWR template with deal registration and lead conversion flows.</summary>
-    <templateApi>webruntime</templateApi>
-    <versionNumber>1.0</versionNumber>
+    <category>Manufacturing</category>
+    <lightningBoltFeatures>
+        <description>Deal registration, lead and asset pages for Acme partners.</description>
+        <order>1</order>
+        <title>Partner deal registration</title>
+    </lightningBoltFeatures>
+    <lightningBoltImages>
+        <image>partner_portal_thumb</image>
+        <order>1</order>
+    </lightningBoltImages>
+    <lightningBoltItems>
+        <name>Acme_Partner_Portal</name>
+        <type>CommunityTemplateDefinition</type>
+    </lightningBoltItems>
+    <lightningBoltItems>
+        <name>Acme_Partner_Internal</name>
+        <type>CustomApplication</type>
+    </lightningBoltItems>
+    <lightningBoltItems>
+        <name>Partner_Login_Flows</name>
+        <type>FlowCategory</type>
+    </lightningBoltItems>
+    <masterLabel>Acme Partner Portal</masterLabel>
+    <publisher>Acme Corp</publisher>
+    <summary>Acme partner portal starter: LWR template with deal registration and lead conversion flows.</summary>
 </LightningBolt>
 ```
 
-`templateApi = webruntime` because the source site is LWR. If it were a Customer Service / Partner Central template, it would be `aura`.
+`category` takes one `LightningBoltCategory` value (`Manufacturing` here); `partner_portal_thumb` is a ContentAsset developer name (api_meta 264 L86545-86607). There is no `templateApi` or `versionNumber` element.
 
 **Step 4 — Deploy to each target org.**
 
@@ -115,53 +132,53 @@ The **two-Bolt** approach is the typical answer. Steps:
 1. In the source org, *clone* the existing partner portal site (`Setup → All Sites → New → Use existing template → Acme_Partner_Portal_Bolt`). Name the clone `Acme_HC_Partner_Portal`.
 2. In Experience Builder for the clone, customize: replace the deal-registration page with a Knowledge component, swap industry-specific terminology in page titles, point the theme at healthcare brand tokens.
 3. Re-run `Settings → Developer → Export as a Template` for the clone, naming the new template `Acme_HC_Partner_Portal_Bolt`.
-4. Edit the new `LightningBolt-meta.xml`:
+4. Edit the new `.lightningBolt` file (excerpt; `category` takes one value and `HealthcareLifeSciences` is the listed one, api_meta 264 L86562):
 
 ```xml
-<industries>Healthcare</industries>
-<industries>Healthcare Provider</industries>
-<summary>Acme healthcare partner portal — Knowledge-centric LWR starter for HC providers.</summary>
-<versionNumber>1.0</versionNumber>
+<LightningBolt xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: features, images and items omitted -->
+    <category>HealthcareLifeSciences</category>
+    <masterLabel>Acme HC Partner Portal</masterLabel>
+    <publisher>Acme Corp</publisher>
+    <summary>Acme healthcare partner portal: Knowledge-centric LWR starter for HC providers.</summary>
+</LightningBolt>
 ```
 
 5. Deploy / list the new Bolt alongside the original Manufacturing Bolt. Target orgs now see two starter templates and pick the right one for their vertical.
 
-**Note:** Both Bolts pull from the same `Theme` if you want consistent base branding, or from separate `Theme` records if the brand tokens differ enough. If they share a theme, an update to that theme retroactively affects only *new* instantiations from either Bolt — existing sites are forks and unaffected.
+**Note:** Both Bolts' templates can use the same `CommunityThemeDefinition` if you want consistent base branding, or separate ones if the brand tokens differ enough. If they share a theme, an update to that theme retroactively affects only *new* instantiations from either Bolt — existing sites are forks and unaffected.
 
 ---
 
 ## Example 3 — Dealing with included Flow categories
 
-**Scenario:** The Bolt's `LightningBolt.flowCategories` lists `Partner_Login_Flows`. The source org has three flows in that category: `Partner_SSO_Login`, `Partner_Self_Register`, `Partner_Password_Reset`. After a Bolt deployment to a target org, the admin reports the SSO Login flow runs but the Self-Register flow throws "Flow not found" at runtime.
+**Scenario:** The Bolt's `lightningBoltItems` includes the `FlowCategory` `Partner_Login_Flows`. The source org has three flows in that category: `Partner_SSO_Login`, `Partner_Self_Register`, `Partner_Password_Reset`. After a Bolt deployment to a target org, the admin reports the SSO Login flow runs but the Self-Register flow throws "Flow not found" at runtime.
 
 **Diagnosis:**
 
-`flowCategories` ships the *category reference*, and Salesforce includes flows *that are members of that category at retrieve time*. Two ways the contract breaks:
+Flows join a Bolt only through a category; the `FlowCategory` component lists its members in `flowCategoryItems/flow` (api_meta 264 L76581-76610). Two ways the contract breaks:
 
-1. A flow was renamed in the source org *after* the Bolt was retrieved but before deploy. The Bolt still references the old name; the deploy fails or runs with a stale flow definition.
-2. A flow's `processMetadataValues` were modified to point at a different category, removing it from `Partner_Login_Flows` but leaving the flow file in the retrieved package. The Bolt's category list looks complete but the flow no longer answers when the category is queried at runtime.
+1. A flow was renamed in the source org *after* the category was retrieved. The `FlowCategory` still lists the old name.
+2. The `FlowCategory` lists `Partner_Self_Register`, but that flow's file was never retrieved, so the deploy carries the category without the flow.
 
 **Fix:**
 
 ```bash
-# 1. Verify which flows are actually in the category in the source org
-sf data query --query "SELECT MasterLabel, ProcessType, Status FROM FlowDefinitionView WHERE Category = 'Partner_Login_Flows'" --target-org source-dev
+# 1. List the flows the category declares
+grep -o "<flow>[^<]*</flow>" force-app/main/default/flowCategories/Partner_Login_Flows.flowCategory-meta.xml
 
 # 2. Confirm those exact flows are in the retrieved force-app/main/default/flows/ tree
 ls force-app/main/default/flows/
-
-# 3. Open each flow's XML and verify the <processMetadataValues> includes the matching category
-grep -l "Partner_Login_Flows" force-app/main/default/flows/*.flow-meta.xml
 ```
 
 For each missing flow:
 
-- If the flow is in the file system but not in the category — fix the `processMetadataValues` block in the flow XML.
+- If the flow is in the file system but not in the category — add a `flowCategoryItems` entry to the `FlowCategory`.
 - If the flow is missing from the file system — re-retrieve it explicitly (`sf project retrieve start --metadata Flow:Partner_Self_Register`).
 
-After the fix, redeploy the bundle. The skill's bundled checker (`scripts/check_lightning_bolt_template_authoring.py`) reports flow categories that exist in `LightningBolt-meta.xml` but have zero matching flows in the package — run it before every Bolt deploy.
+After the fix, redeploy the bundle. The skill's bundled checker (`scripts/check_lightning_bolt_template_authoring.py`) reports `FlowCategory` items with no category file and listed flows with no flow file — run it before every Bolt deploy.
 
-**Subtle gotcha:** Flow versions vs flow definitions. The Bolt carries the *active* flow version at retrieve time. If the source org later activates a new flow version, the Bolt does not pick that up unless re-retrieved. Versioning the Bolt should be coupled with re-retrieving the flow set.
+**Subtle gotcha:** Flow versions vs flow definitions. From API 44.0 the retrieved `Flow` file is the *latest* version of each flow, with status `Active` only if that version is active (api_meta 264 L75918-75919, L75927-75928) — not necessarily the version running in the source org. If the source org later activates a different version, the Bolt does not pick that up unless re-retrieved. Versioning the Bolt should be coupled with re-retrieving the flow set.
 
 ---
 
@@ -175,7 +192,7 @@ After the fix, redeploy the bundle. The skill's bundled checker (`scripts/check_
 2. Set up an AppExchange Partner Business Org (separate from the development org). The Business Org is what hosts AppExchange listings and is where the Bolt listing is owned.
 3. Deploy the `LightningBolt` + dependencies into the Business Org (so the listing flow can find it).
 4. In the Partner Business Org, navigate to AppExchange Publishing Console (or the Partner Console as named in the current release) → New Listing → "Lightning Bolt Solution" listing type. The Bolt listing flow is distinct from the managed-package listing flow:
-   - No security review required for Bolts that contain only `ExperienceBundle` + `Theme` + `flowCategories` + `customApps` + `images`. Security review IS required if the Bolt is bundled with a managed package containing Apex / custom objects (then the *package* is reviewed, the Bolt itself is not).
+   - No security review required for Bolts whose items are only a template, custom apps and flow categories. Security review IS required if the Bolt is bundled with a managed package containing Apex / custom objects (then the *package* is reviewed, the Bolt itself is not).
    - Listing visibility can be set to "Private" — only the partners you explicitly grant access to can install. This is how partner-only distribution works without going public.
 5. Submit. After listing approval (typically days, not weeks for Bolts because of no security review), the Bolt appears in the partners' AppExchange under their vendor listings.
 6. Each partner installs from AppExchange. The Bolt then appears in their `Setup → All Sites → New → Use existing template`.
@@ -205,14 +222,17 @@ For a small number of partners (≤3) where direct relationships exist, direct d
 ```bash
 sf project retrieve start \
   --metadata "LightningBolt:Acme_Partner_Portal_Bolt" \
-  --metadata "ExperienceBundle:Acme_Partner_Portal"
+  --metadata "CommunityTemplateDefinition:Acme_Partner_Portal" \
+  --metadata "CommunityThemeDefinition:Acme_Theme"
 ```
 
-4. Bump the `versionNumber` in the `LightningBolt-meta.xml`:
+4. Record v2.0 — `LightningBolt` has no version element (api_meta 264 L86543-86585), so cut a new managed package version if the Bolt is packaged (the component "Is Updated During Package Upgrade", pkg2_dev 264 L11923) and state the version in the `summary`:
 
 ```xml
-<versionNumber>2.0</versionNumber>
-<description>v2.0 — improved deal registration with lead-source attribution and ABM integration hooks.</description>
+<LightningBolt xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- excerpt: other elements unchanged -->
+    <summary>v2.0: deal registration with lead-source attribution and ABM hooks.</summary>
+</LightningBolt>
 ```
 
 5. Deploy the updated Bolt to each target org (or re-publish the AppExchange listing).

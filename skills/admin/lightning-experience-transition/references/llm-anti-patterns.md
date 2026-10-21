@@ -3,6 +3,8 @@
 Common mistakes AI coding assistants make when generating or advising on Lightning Experience Transition.
 These patterns help the consuming agent self-check its own output.
 
+UNVERIFIED (2026-10-20) (file-level): the "Lightning Experience User" and "Hides Classic Switcher" permission names, "Lightning Ready" badge semantics and the preference-over-profile precedence are Help-only.
+
 ## Anti-Pattern 1: Recommending The Org-Wide Switch As The First Step
 
 **What the LLM generates:** "To migrate to Lightning Experience, navigate to Setup → Lightning Experience Transition Assistant and turn Lightning Experience on as the only experience for the org."
@@ -47,13 +49,14 @@ For each managed package:
 
 **What the LLM generates:** "To force users into LEX, remove the 'Lightning Experience User' permission from the Classic profile and re-add it to the LEX profile."
 
-**Why it happens:** Profile-permission manipulation is a common LLM-trained pattern for permission rollouts. The model doesn't know about `UserPreferencesLightningExperiencePreferred` — a per-user boolean that overrides profile-level rollout.
+**Why it happens:** Profile-permission manipulation is a common LLM-trained pattern for permission rollouts. The model doesn't know about `UserPreferencesLightningExperiencePreferred` — a per-user, updateable boolean that "redirects the user to the Lightning Experience interface" when true (obj 264 L299363-299369).
 
 **Correct pattern:**
 
 ```
-1. Assign the "Lightning Experience Hides Classic Switcher" permission set to the cohort.
-   This both forces LEX and removes the switch-back link from the user menu.
+1. Remove the switcher for the cohort (switcher-hiding permission set) or the
+   whole org (LightningExperienceSettings enableLexEndUsersNoSwitching,
+   api_meta 264 L124742-124756).
 2. Optionally run a one-time User-record DML to reset
    UserPreferencesLightningExperiencePreferred = true for any user with
    a sticky Classic preference.
@@ -97,19 +100,24 @@ DO NOT translate JavaScript → Apex line-for-line. Re-design for Lightning prim
 **Correct pattern:**
 
 ```sql
--- Daily monitor query during a wave
-SELECT
-  PageType,
-  AppType,
-  TotalCount,
-  ExitsCount,
-  (ExitsCount * 100.0 / NULLIF(TotalCount, 0)) AS SwitchBackPct
+-- Daily monitor during a wave (production only: these objects are
+-- "Not available in sandbox orgs", obj 264 L170640, L170523).
+-- LightningExitByPageMetrics fields: MetricsDate, PageName, RecordCount,
+-- UserId (L170645-170670) - there is no PageType, AppType or ExitsCount.
+SELECT PageName, SUM(RecordCount) exits
 FROM LightningExitByPageMetrics
-WHERE MetricsDate = LAST_N_DAYS:1
-ORDER BY SwitchBackPct DESC NULLS LAST
+WHERE MetricsDate = LAST_N_DAYS:7
+GROUP BY PageName
+ORDER BY SUM(RecordCount) DESC
 LIMIT 20
+
+-- Page views for the same pages (TotalCount, L170547-170552)
+SELECT PageName, SUM(TotalCount) views
+FROM LightningUsageByPageMetrics
+WHERE MetricsDate = LAST_N_DAYS:7
+GROUP BY PageName
 ```
 
-Pair with a threshold (e.g., switch-back rate < 5% sustained for 7 days) before promoting the next wave.
+Divide exits by views per page outside SOQL, and pair with a threshold (e.g., switch-back rate < 5% sustained for 7 days) before promoting the next wave.
 
 **Detection hint:** If the answer mentions "monitor the help desk" or "watch for user complaints" without naming `LightningExitByPageMetrics` or `LightningUsageByAppTypeMetrics`, the program lacks objective telemetry.

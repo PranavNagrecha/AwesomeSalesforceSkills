@@ -2,33 +2,32 @@
 
 ## Example 1: Pre-Migration Inventory
 
+In Classic Knowledge every article query needs a `PublishStatus` or `Id` filter in WHERE (obj 264 L163280-163281), so run one query per status; once Lightning Knowledge is enabled, an API 47.0+ query with no `PublishStatus` filter returns draft, published and archived articles (L163435-163436). `ArticleType` is Filter-only (L163041-163048) and `Language` is groupable (L163190-163193). Category selections live on the per-type `<ArticleType>__DataCategorySelection` object, whose group and category fields are Create-only — not filterable or groupable — so aggregate them offline (L38769-38800).
+
 ```sql
--- Article Types and their published article counts (Classic)
-SELECT ArticleType, COUNT(Id) cnt
+-- Published article count for one Article Type (repeat per type)
+SELECT COUNT(Id) cnt
 FROM KnowledgeArticleVersion
 WHERE PublishStatus = 'Online' AND IsLatestVersion = true
-GROUP BY ArticleType
+  AND ArticleType = 'FAQ__kav'
 
--- Per-language article distribution
-SELECT Language, PublishStatus, COUNT(Id) cnt
+-- Per-language distribution: repeat with 'Draft' and 'Archived'
+-- (for Archived also add IsLatestVersion = false, L163283-163284)
+SELECT Language, COUNT(Id) cnt
 FROM KnowledgeArticleVersion
-WHERE IsLatestVersion = true
-GROUP BY Language, PublishStatus
+WHERE PublishStatus = 'Online'
+GROUP BY Language
 
--- Data category usage
-SELECT DataCategoryGroupName, DataCategoryName, COUNT(Id) cnt
-FROM KnowledgeArticleVersion
-WHERE IsLatestVersion = true
-GROUP BY DataCategoryGroupName, DataCategoryName
+-- Data category assignments for the FAQ article type (count offline)
+SELECT ParentId, DataCategoryGroupName, DataCategoryName
+FROM FAQ__DataCategorySelection
 
--- Channel exposure summary
-SELECT
-    SUM(CASE WHEN IsVisibleInPkb=true THEN 1 ELSE 0 END) public_count,
-    SUM(CASE WHEN IsVisibleInCsp=true THEN 1 ELSE 0 END) customer_count,
-    SUM(CASE WHEN IsVisibleInPrm=true THEN 1 ELSE 0 END) partner_count,
-    SUM(CASE WHEN IsVisibleInApp=true THEN 1 ELSE 0 END) internal_count
+-- Channel exposure: one count per flag (repeat for IsVisibleInCsp,
+-- IsVisibleInPrm, IsVisibleInApp)
+SELECT COUNT(Id) public_count
 FROM KnowledgeArticleVersion
 WHERE PublishStatus = 'Online' AND IsLatestVersion = true
+  AND IsVisibleInPkb = true
 ```
 
 ---
@@ -59,7 +58,7 @@ public with sharing class KnowledgePreNormalization {
 }
 ```
 
-**Critical:** This must run BEFORE the Migration Tool. Once Lightning Knowledge is enabled and migration runs, the Classic Article Types' field structure can no longer be modified.
+**Critical:** This must run BEFORE the Migration Tool. A multi-type migration deletes the article-type KAV objects (apexdev 264 L16013-16014), and "when Lightning Knowledge is enabled, you can't add an article type" (pkg2_dev 264 L4591-4592). UNVERIFIED (2026-10-20): the Tool's field-mapping screen behaviour.
 
 ---
 
@@ -106,7 +105,7 @@ public class FaqLookupService {
 }
 ```
 
-**What changed:** sObject reference (`FAQ__kav` → `Knowledge__kav`) and added `RecordType.DeveloperName` filter.
+**What changed:** sObject reference (`FAQ__kav` → `Knowledge__kav`) and added `RecordType.DeveloperName` filter. Deploy this BEFORE the Tool runs: the `FAQ__kav` object is deleted during a multi-type migration (apexdev 264 L16013-16014).
 
 ---
 
@@ -137,14 +136,16 @@ public class KnowledgePublishHelper {
 }
 ```
 
-**Why:** Direct `INSERT Knowledge__kav (PublishStatus='Online')` is not supported. Use the `KbManagement.PublishingService` Apex namespace.
+**Why:** `PublishStatus` has no Create or Update property (obj 264 L162102-162105), so direct `INSERT Knowledge__kav (PublishStatus='Online')` is not supported. Use the `KbManagement.PublishingService` Apex namespace (signatures: apexref 262 L162906, L163226, L163289).
 
 ---
 
 ## Example 5: Visibility Verification Across User Roles
 
 ```apex
-@IsTest
+// SeeAllData=true: tests saved at API 24.0+ cannot see pre-existing org data
+// such as migrated articles otherwise (apexdev 264 L5858-5860).
+@IsTest(SeeAllData=true)
 public class KnowledgeVisibilityRegression {
 
     @IsTest
@@ -190,23 +191,22 @@ public class KnowledgeVisibilityRegression {
 
 ```text
 Week 0: Migration Tool runs in Sandbox; full validation
-Week 1: Migration Tool runs in Production; channels disabled in Lightning
+Week 1: Migration Tool runs in Production (article-type KAV objects are
+        deleted in a multi-type org - apexdev 264 L16013-16014)
 Week 2 (Internal cutover):
-    - Enable Internal channel in Lightning Knowledge Settings
-    - Disable Internal channel in Classic Knowledge Settings
+    - Point internal surfaces (Service Console, Articles tab) at Knowledge__kav
     - Service agents now see Lightning Knowledge in Service Console
     - Validate: agent can search, view, attach articles to Cases
 Week 4 (Communities cutover):
     - Update Community Builder pages: Knowledge tab references Knowledge__kav
-    - Enable Customer (Csp) channel in Lightning
-    - Disable Csp channel in Classic
+    - Confirm IsVisibleInCsp values match the pre-migration baseline
     - Validate: Community user can search, view, file feedback on articles
 Week 6 (Public Knowledge Base cutover):
     - Verify Public KB site templates reference Knowledge__kav
-    - Enable Pkb channel in Lightning
-    - Disable Pkb channel in Classic
+    - Confirm IsVisibleInPkb values match the pre-migration baseline
     - Validate: anonymous browser can search and view articles via PKB URL
-Week 8: Decommission decision: retain Classic Article Types as read-only OR drop entirely
+Week 8: Close-out audit: old-to-new IDs via MigratedToFromArticleVersion
+        (obj 264 L162069-162076); no Classic article types remain to retain
 ```
 
 ---
@@ -222,10 +222,10 @@ Fields:
     - Lightning_Knowledge_Id__c (Text 18)
     - Lightning_Record_Type__c (Text)
     - Migration_Date__c (Datetime)
-    - Migration_Status__c (Picklist: Migrated, Failed, Skipped, Retained_Classic)
+    - Migration_Status__c (Picklist: Migrated, Failed, Skipped)
     - Failure_Reason__c (LongTextArea 1000)
     - Verification_Status__c (Picklist: Pending, Verified, Mismatch)
     - Notes__c (LongTextArea)
 ```
 
-The Migration Tool's log can be exported and loaded into this object for ongoing reconciliation. Reports run off this object: success rate per Article Type, failure reasons grouped, verification status by language.
+Seed `Lightning_Knowledge_Id__c` from `Knowledge__kav.MigratedToFromArticleVersion` (obj 264 L162069-162076). UNVERIFIED (2026-10-20): that the Migration Tool's log can be exported. Reports run off this object: success rate per Article Type, failure reasons grouped, verification status by language.

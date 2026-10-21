@@ -21,7 +21,7 @@ Use this template when scoping or running a Classic-to-Lightning transition prog
 - [ ] Readiness Check PDF archived to: ____________________
 - [ ] Asset counts captured (baseline):
   - Visualforce pages: ___
-  - JavaScript buttons (`WebLink linkType=javascript`): ___
+  - JavaScript buttons (`WebLink` `linkType` `javascript`, api_meta 264 L47926-47931): ___
   - S-Controls: ___
   - Classic email templates: ___
   - Classic Knowledge articles: ___
@@ -69,14 +69,17 @@ For every asset surfaced by the Readiness Check, fill in:
 Daily monitor query during each active wave:
 
 ```sql
-SELECT
-  PageType, AppType, TotalCount, ExitsCount,
-  (ExitsCount * 100.0 / NULLIF(TotalCount, 0)) AS SwitchBackPct
+-- Production only ("Not available in sandbox orgs", obj 264 L170640).
+-- Fields: MetricsDate, PageName, RecordCount, UserId (L170645-170670).
+SELECT PageName, SUM(RecordCount) exits
 FROM LightningExitByPageMetrics
-WHERE MetricsDate = LAST_N_DAYS:1
-ORDER BY SwitchBackPct DESC NULLS LAST
+WHERE MetricsDate = LAST_N_DAYS:7
+GROUP BY PageName
+ORDER BY SUM(RecordCount) DESC
 LIMIT 20
 ```
+
+Divide by `SUM(TotalCount)` per `PageName` from `LightningUsageByPageMetrics` to get the switch-back rate.
 
 - [ ] Daily monitor running for the active wave
 - [ ] Threshold-breach alert routed to: ____________________
@@ -87,10 +90,10 @@ LIMIT 20
 ## Phase 4 — Cutover
 
 - [ ] All waves are at telemetry green for 14+ days
-- [ ] "Hides Classic Switcher" permission set assigned to all production users
-- [ ] User-record DML run (or permission set covers it): `UserPreferencesLightningExperiencePreferred = true` for the cohort
-- [ ] Optional: org-wide "Make Lightning Experience the only experience" toggle flipped (one-way)
-- [ ] Audit-log evidence captured (LoginHistory + Setup audit trail) for compliance
+- [ ] Switcher-hiding permission set assigned to all production users (UNVERIFIED (2026-10-20): permission name is Help-only)
+- [ ] User-record DML run: `UserPreferencesLightningExperiencePreferred = true` for the cohort (updateable, obj 264 L299363-299369)
+- [ ] Optional: `LightningExperienceSettings.enableLexEndUsersNoSwitching` set to true (api_meta 264 L124742-124756; UNVERIFIED (2026-10-20): that it is one-way)
+- [ ] Audit-log evidence captured (Setup audit trail + Lightning usage metrics extracts) for compliance
 - [ ] Program artifacts archived to: ____________________
 
 ---

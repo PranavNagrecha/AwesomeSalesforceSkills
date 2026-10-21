@@ -28,7 +28,7 @@ Each wave's permission set assignment is gated on a deployment that ships the wa
 
 **Context:** An org ran a profile-level "remove Classic UI access" flip a year ago, but a subsequent audit found 240 users still landing in Classic at login — they had clicked "Switch to Salesforce Classic" before the flip and the per-user preference (`UserPreferencesLightningExperiencePreferred = false`) survived.
 
-**Problem:** A profile-level rollout does **not** reset the per-user preference. Once a user has set the preference, profile changes do not override it. The "LEX adoption" dashboard reported 100% rollout but 240 users were still working in Classic, with no way to know without sampling `LoginHistory`.
+**Problem:** A profile-level rollout does **not** reset the per-user preference. Once a user has set the preference, profile changes do not override it (UNVERIFIED (2026-10-20): precedence is Help-only). The "LEX adoption" dashboard reported 100% rollout but 240 users were still working in Classic, with no way to know without querying the preference field per user (UNVERIFIED (2026-10-20): that `LoginHistory` distinguishes LEX from Classic sessions).
 
 **Solution:**
 
@@ -42,14 +42,14 @@ WHERE IsActive = true
   AND UserPreferencesLightningExperiencePreferred = false
 ```
 
-Use the **Lightning Experience Hides Classic Switcher** permission set as the durable fix. Assigning it both removes the switcher from the user menu (so the preference cannot be re-set) and forces the user into LEX on next login regardless of preference.
+Reset `UserPreferencesLightningExperiencePreferred` to `true` by DML — the field is Create/Filter/Update (obj 264 L299363-299369) — and remove the switcher so it cannot be set back: org-wide with `enableLexEndUsersNoSwitching` (api_meta 264 L124742-124756) or per cohort with the switcher-hiding permission set (UNVERIFIED (2026-10-20): the permission name and its precedence over the preference are Help-only).
 
 ```bash
 # After the permission-set deployment, verify on next-day login
 sf data query --query "SELECT Id FROM User WHERE UserPreferencesLightningExperiencePreferred = false AND IsActive = true" --target-org prod
 ```
 
-**Why it works:** The permission set is the platform-supported way to override user preference. Once it's assigned to the cohort, the switch-back trap is closed without requiring DML on the User object (which can hit governance friction in regulated orgs).
+**Why it works:** The DML fixes today's preference; removing the switcher stops users setting it back.
 
 ---
 
@@ -59,4 +59,4 @@ sf data query --query "SELECT Id FROM User WHERE UserPreferencesLightningExperie
 
 **What goes wrong:** 30 of those VF pages have not been viewed in the last 12 months — they are dead assets surfaced because they exist, not because they are used. Six months are spent rebuilding pages that no user will visit. Real-blocker pages (the 8 VF pages on related lists viewed daily) get the same priority as the dead ones and ship later than they should.
 
-**Correct approach:** Cross-reference the Readiness Check inventory with usage data — `EventLogFile` `URI` events for the last 12 months, or audit log VF page hits — before scoping the migration. Triage every VF page into Replace, Rebuild, Retain, or Retire **before** assigning resources. Most legacy orgs will retire 30–50% of flagged Visualforce assets without the user noticing.
+**Correct approach:** Cross-reference the Readiness Check inventory with usage data — `EventLogFile` Visualforce Request events ("details of Visualforce requests") or URI events (obj 264 L113602-113605) — before scoping the migration. Triage every VF page into Replace, Rebuild, Retain, or Retire **before** assigning resources. Expect a meaningful share of flagged Visualforce assets to retire without the user noticing (UNVERIFIED (2026-10-20): no corpus line gives a retirement rate; the old "30–50%" figure is field lore).

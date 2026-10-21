@@ -1,6 +1,8 @@
 # LLM Anti-Patterns — Lightning Bolt Template Authoring
 
-Mistakes AI assistants commonly make when an admin asks for help with Lightning Bolt distribution. Each pattern is grounded in a real misalignment between common training-set framing and Salesforce-specific Bolt semantics.
+Mistakes AI assistants commonly make when an admin asks for help with Lightning Bolt distribution.
+
+UNVERIFIED (2026-10-20) (file-level): AppExchange listing flow, security-review scope and the fork-at-instantiation model are Help-only; `LightningBolt` field facts cite api_meta 264 L86523-86633.
 
 ---
 
@@ -11,7 +13,7 @@ Mistakes AI assistants commonly make when an admin asks for help with Lightning 
 **Why it's wrong:**
 
 - Managed packages and Lightning Bolts are different shapes for different problems. A Bolt distributes an Experience site as a *template*; a managed package distributes *behavior* (Apex, custom objects, LWC).
-- An `ExperienceBundle` *can* technically be included in a managed package, but it ships as locked metadata — subscriber-org admins cannot edit the resulting site, which defeats the purpose of a redistributable site template.
+- Packaged site components are locked — a packaged `CommunityTemplateDefinition` and `CommunityThemeDefinition` are editable only by the package developer (pkg2_dev 264 L4762-4763, L4816-4817) — which defeats the purpose of a redistributable site template.
 - A Bolt cannot include Apex / custom objects / fields. Lumping them into "create a managed package containing the bundle and Apex" mixes two artifacts that work together as Bolt + companion package, not as one package.
 
 **What to do instead:**
@@ -28,7 +30,7 @@ Mistakes AI assistants commonly make when an admin asks for help with Lightning 
 
 **Why it's wrong:**
 
-- Bolts cannot carry custom objects, fields, Apex, validation rules, or any data-model metadata. There is nothing in the `LightningBolt` metadata reference that supports CRUD-bearing components.
+- Bolts cannot carry custom objects, fields, Apex, validation rules, or any data-model metadata: `lightningBoltItems` types are only `CommunityTemplateDefinition`, `CustomApplication` and `FlowCategory` (api_meta 264 L86629-86633).
 - "App on AppExchange" is the use case for a managed (2GP) package, not a Bolt. The misuse here is confusion between two different AppExchange listing types.
 
 **What to do instead:**
@@ -44,30 +46,30 @@ Mistakes AI assistants commonly make when an admin asks for help with Lightning 
 
 **Why it's wrong:**
 
-- A Bolt explicitly excludes data, CMS content, files, and Apex / custom objects / fields. The platform documentation is unambiguous on this point.
+- None of data, CMS content, files, Apex, custom objects or fields is a Bolt item type (api_meta 264 L86629-86633).
 - Customers installing the Bolt and instantiating a site will see broken hero banners (no CMS), missing component data (no records), and (if any custom-object pages were referenced) errors at render time.
 
 **What to do instead:**
 
-- Be explicit about what a Bolt contains: `ExperienceBundle`, `Theme` / `BrandingSet`, listed `flowCategories` (and the flows in them), `customApps`, `images`, `industries`. Nothing else.
+- Be explicit about what a Bolt contains: `lightningBoltItems` (`CommunityTemplateDefinition` with its `CommunityThemeDefinition`, `CustomApplication`, `FlowCategory` and the flows it lists), `lightningBoltFeatures`, `lightningBoltImages`, `category`, `masterLabel`, `publisher`, `summary`. Nothing else.
 - When advising on a Bolt build, walk through the dependency map: what data needs to ship separately, what CMS content needs migration, what objects/Apex need a companion package.
 
 ---
 
-## Anti-Pattern 4: Treating `versionNumber` like a managed package version
+## Anti-Pattern 4: Inventing a `versionNumber` on LightningBolt
 
-**What the LLM generates:** "Bump `versionNumber` to 2.0 and your existing customer installs will pick up the new version automatically. Mark old versions as deprecated to force upgrade."
+**What the LLM generates:** "Bump `<versionNumber>` to 2.0 in the LightningBolt file and your existing customer installs will pick up the new version automatically. Mark old versions as deprecated to force upgrade."
 
 **Why it's wrong:**
 
-- `LightningBolt.versionNumber` is a free-form label, not a semantic-versioning upgrade contract. It doesn't establish a relationship between Bolt versions on the platform side.
+- `LightningBolt` has no `versionNumber` (or `templateApi`, `industries`, `flowCategories`) element (api_meta 264 L86543-86585). Versioning comes from a managed package, where the Bolt "Is Updated During Package Upgrade: Yes" (pkg2_dev 264 L11923).
 - Existing instantiated sites are forks. They have no link back to the Bolt. Re-deploying a higher-versioned Bolt to a target org makes the new template available for *future* `New Site` operations, but does not modify any already-created site.
 - "Mark old versions as deprecated to force upgrade" — there is no platform mechanism for this on Bolts.
 
 **What to do instead:**
 
 - Communicate clearly: a Bolt is a starter, not an upgradable artifact. Existing sites do not auto-update.
-- Use `versionNumber` for human-readable labeling and listing display. Pair Bolt updates with operational communication to downstream admins about manual change application.
+- Record the version in the package version or the `summary`. Pair Bolt updates with operational communication to downstream admins about manual change application.
 - If true upgrade semantics matter for some part of the deliverable, layer that part into a managed package and ship Bolt + package together.
 
 ---
@@ -84,7 +86,7 @@ Mistakes AI assistants commonly make when an admin asks for help with Lightning 
 
 **What to do instead:**
 
-- Match the distribution channel to the audience: known internal orgs ≤3 → direct deploy; known internal multi-BU 4+ → unmanaged or unlocked package wrapping the Bolt; external partners or customers → AppExchange Bolt listing.
+- Match the distribution channel to the audience: known internal orgs ≤3 → direct deploy; known internal multi-BU 4+ → a managed package wrapping the Bolt (1GP/2GP, pkg2_dev 264 L11920-11921; unmanaged or unlocked packaging is unverified); external partners or customers → AppExchange listing.
 - For Bolts without Apex / custom objects, AppExchange listing skips security review, so the latency objection is overstated for pure-Bolt artifacts. Reconsider AppExchange even for medium-size distributions if the audit-trail and self-serve-install benefits matter.
 
 ---
@@ -110,7 +112,7 @@ Mistakes AI assistants commonly make when an admin asks for help with Lightning 
 
 - Use relative paths (`/partners/registration`) for in-site navigation.
 - For external links that vary by tenant, parameterize via custom metadata or custom labels that the target-org admin sets at install time, and document that requirement in the Bolt's installation guide.
-- Run the bundled checker (`scripts/check_lightning_bolt_template_authoring.py`), which scans `ExperienceBundle` JSON and `NavigationMenu` XML for `https://` URLs and `00[0-9a-zA-Z]{15,18}` record-ID patterns and flags them for review.
+- Run the bundled checker (`scripts/check_lightning_bolt_template_authoring.py`), which scans `ExperienceBundle` JSON and `NavigationMenu` XML for `https://` URLs and record-ID-shaped values and flags them for review.
 
 ---
 
@@ -120,10 +122,10 @@ Mistakes AI assistants commonly make when an admin asks for help with Lightning 
 
 **Why it's wrong:**
 
-- Enhanced CMS lives in `ManagedContentType`, `ManagedContent`, and `ContentVersion` — separate metadata types that are not bundled by `LightningBolt`. The community references them by ID/name, but the actual content nodes do not move.
+- Enhanced CMS lives in the `ManagedContentType` metadata type and `ManagedContent` / `ContentVersion` records (api_meta 264 L89063; obj 264 L180276, L79202) — none is a `LightningBolt` item type. The community references them by ID/name, but the actual content nodes do not move.
 - After Bolt instantiation, CMS-driven components render as "Content not found" until the target-org admin authors or migrates equivalent content.
 
 **What to do instead:**
 
 - Be explicit: CMS content is NOT in the Bolt. List the CMS workspaces and key content nodes the Bolt references in the installation guide so target-org admins know what they need to author or migrate before / after instantiation.
-- For static branding assets that don't need editorial workflow, recommend storing them as `staticresources` instead of CMS content. Static resources DO ship with metadata deploys and survive a Bolt distribution cleanly.
+- For static branding assets that don't need editorial workflow, recommend storing them as `staticresources` instead of CMS content. Static resources ship with metadata deploys; a template can reference them (`enableExtendedCleanUpOnDelete` names StaticResource among a template's references, api_meta 264 L36604-36608), but they are not a Bolt item type — deploy them with the template.

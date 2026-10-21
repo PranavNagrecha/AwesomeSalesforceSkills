@@ -2,13 +2,15 @@
 
 Common mistakes AI coding assistants make when generating or advising on Knowledge migration.
 
+UNVERIFIED (2026-10-20) (file-level): claims about what the Migration Tool does (coverage, 1:1 mapping, single run, channel flags) and that enablement is irreversible are Help-only.
+
 ## Anti-Pattern 1: Recommending Direct Production Migration Without Sandbox Validation
 
 **What the LLM generates:** A migration plan that goes straight to production: "Enable Lightning Knowledge in Setup, run the Migration Tool, validate."
 
 **Why it happens:** The Migration Tool is the official Salesforce mechanism, so the model assumes it's safe in production.
 
-**Correct pattern:** Sandbox first — always. Lightning Knowledge enablement is irreversible without article deletion. Use a Full Copy or Partial sandbox to test the entire migration including downstream consumer rewiring. Only after sandbox sign-off should the same plan run in production. The model must include this gate explicitly.
+**Correct pattern:** Sandbox first — always. Lightning Knowledge enablement is treated as irreversible without article deletion (UNVERIFIED (2026-10-20)), and a multi-type migration deletes the article-type KAV objects (apexdev 264 L16013-16014). Use a Full Copy or Partial sandbox to test the entire migration including downstream consumer rewiring. Only after sandbox sign-off should the same plan run in production. The model must include this gate explicitly.
 
 ## Anti-Pattern 2: Inserting Translations as Standalone Records
 
@@ -27,7 +29,7 @@ for (Translation tr : translations) {
 
 **Why it happens:** The model treats each translation as an independent article record.
 
-**Correct pattern:** Translations must share `KnowledgeArticleId` with the master language. Insert the master version first, capture its `KnowledgeArticleId`, then insert each translation referencing the same `KnowledgeArticleId` with a different `Language`. Without this, the language-switcher UI is broken and Salesforce treats translations as orphan articles.
+**Correct pattern:** Keep translations linked to their source: `MasterVersionId` holds "the ID of the source article" (obj 264 L162066) and `KnowledgeArticleId` is the version-independent article ID (L162038-162039); neither has a Create property (obj 264 L162023-162026, L162061-162064), so create the translation with `KbManagement.PublishingService.submitForTranslation(articleId, language, assigneeId, dueDate)`, which returns the draft translation's ID (apexref 262 L163396-163398). UNVERIFIED (2026-10-20): that a translation inserted with its own `KnowledgeArticleId` breaks the language switcher.
 
 ## Anti-Pattern 3: Setting `PublishStatus='Online'` via Direct DML
 
@@ -44,7 +46,7 @@ insert article;
 
 **Why it happens:** PublishStatus is a writable field; setting it directly looks correct.
 
-**Correct pattern:** Insert in `Draft` state. Then call `KbManagement.PublishingService.publishArticle(articleId, false)` to publish. Publishing involves more than the field — it triggers visibility flag propagation, channel updates, and search index sync. Direct DML does not trigger these side effects.
+**Correct pattern:** `PublishStatus` has no Create or Update property (obj 264 L162102-162105), so leave it unset; then call `KbManagement.PublishingService.publishArticle(articleId, false)` to publish (apexref 262 L163284-163289).
 
 ## Anti-Pattern 4: Skipping the `RecordType.DeveloperName` Filter in Migrated SOQL
 
@@ -52,7 +54,7 @@ insert article;
 
 **Why it happens:** Mechanical sObject substitution.
 
-**Correct pattern:** Classic Article Types map to record types on `Knowledge__kav`. Queries that previously returned only FAQ articles now return ALL articles (FAQs, HowTos, TechnicalNotes, etc.). Add `WHERE RecordType.DeveloperName = 'FAQ'` to preserve the original semantics.
+**Correct pattern:** Classic Article Types map to record types on `Knowledge__kav` (obj 264 L163386-163388). Queries that previously returned only FAQ articles now return ALL articles (FAQs, HowTos, TechnicalNotes, etc.). Add `WHERE RecordType.DeveloperName = 'FAQ'` to preserve the original semantics.
 
 ## Anti-Pattern 5: Treating "One Object Now" as "Layouts Are Global"
 
@@ -68,7 +70,7 @@ insert article;
 
 **Why it happens:** "Internal" is the most-used channel; the others are forgotten.
 
-**Correct pattern:** Map all four flags explicitly. Even if the org doesn't currently use all channels, future channel activation requires the flag history to be intact. The Migration Tool maps all four; custom code must do the same.
+**Correct pattern:** Map all four flags explicitly (obj 264 L161993-162021). Even if the org doesn't currently use all channels, future channel activation requires the flag history to be intact; custom code must map every flag.
 
 ## Anti-Pattern 7: Recommending Article Type-by-Article Type Sequential Migration
 
@@ -84,7 +86,7 @@ insert article;
 
 **Why it happens:** Approval processes feel like a separate admin concern.
 
-**Correct pattern:** Approval processes attached to Classic Article Type sObjects do NOT port. Recreate them on `Knowledge__kav` with `RecordType.DeveloperName = 'X'` entry criteria per former Article Type's process. Without this, draft articles cannot be submitted for approval — the publishing workflow is broken.
+**Correct pattern:** Approval processes attached to Classic Article Type sObjects do NOT port — the objects are deleted during a multi-type migration (apexdev 264 L16013-16014). Recreate them on `Knowledge__kav` with `RecordType.DeveloperName = 'X'` entry criteria per former Article Type's process. Without this, draft articles cannot be submitted for approval — the publishing workflow is broken.
 
 ## Anti-Pattern 9: Recommending Full Custom Migration When the Tool Would Suffice
 
@@ -92,7 +94,7 @@ insert article;
 
 **Why it happens:** The model defaults to "build a custom solution" without checking the official tool's coverage.
 
-**Correct pattern:** Default to the Salesforce Lightning Knowledge Migration Tool. It handles versions, translations, data categories, publication state, and channel flags correctly. Custom migration is justified only for: pre-normalization (renaming fields before migration), Article Type consolidation, or non-standard schema cases. The Tool runs in 90% of orgs without custom code.
+**Correct pattern:** Default to the Salesforce Lightning Knowledge Migration Tool. It handles versions, translations, data categories, publication state, and channel flags correctly. Custom migration is justified only for: pre-normalization (renaming fields before migration), Article Type consolidation, or non-standard schema cases. (UNVERIFIED (2026-10-20): any coverage percentage for the Tool.)
 
 ## Anti-Pattern 10: Forgetting to Audit Quick Actions for `__kav` References
 
@@ -100,4 +102,4 @@ insert article;
 
 **Why it happens:** Quick Actions are admin-configured, not code; they're often missed in code-grep audits.
 
-**Correct pattern:** Quick Actions on Cases (and other objects) often had "Insert Article" or related actions that referenced article-type sObjects. Audit Setup → Object Manager → Case → Buttons, Links, and Actions for any action whose URL or relationship contains `__kav`. Update to `Knowledge__kav`. Without this, "Insert Article" buttons silently break post-migration.
+**Correct pattern:** Quick Actions on Cases (and other objects) often had "Insert Article" or related actions that referenced article-type sObjects. Audit Setup → Object Manager → Case → Buttons, Links, and Actions for any action whose URL or relationship contains `__kav`. Update to `Knowledge__kav` before migration — the article-type KAV objects are deleted during it (apexdev 264 L16013-16014). Without this, "Insert Article" buttons silently break post-migration.

@@ -13,38 +13,38 @@ Common mistakes AI coding assistants make when generating or advising on global 
 **Correct pattern:**
 
 ```
-Setup → Search Settings        = Lookup Auto-Completion, Drop-Down List size,
-                                 Sidebar Search, Single Search Result for Single Match.
+Setup → Search Settings        = per-object Lookup Auto-Completion and results
+                                 per page, Sidebar Search, Single Search Result
+                                 shortcut (SearchSettings, api_meta 264 L129086-129249).
 Setup → Einstein Search → Settings = Personalization signals (Activity, Location, Ownership,
                                      Specialization), Natural Language Search toggle,
                                      Promoted Search Terms.
 ```
 
-**Detection hint:** If output references "Einstein Search Settings" for Lookup Auto-Completion or Drop-Down List size, the page is wrong. If output references "Search Settings" for Promoted Search Terms or NLS, the page is wrong.
+**Detection hint:** If output references "Einstein Search Settings" for Lookup Auto-Completion, the page is wrong. UNVERIFIED (2026-10-20): the Einstein Search page contents listed above are Help-only. In metadata the split does not exist: `enableEinsteinSearchNaturalLanguage` and `enableEinsteinSearchPersonalization` are fields of the same `SearchSettings` type as the lookup settings (api_meta 264 L129127-129136), so an answer that deploys the NLS toggle in `Search.settings` is right.
 
 ---
 
 ## Anti-Pattern 2: Assuming Search Layout Slots Are Linked
 
-**What the LLM generates:** "Edit the Search Results layout for Account to add Industry. This will also update the Lookup Dialog when users search for an Account from a Case." Or: "After updating the Default Layout, the columns will appear in both Lightning and Classic search."
+**What the LLM generates:** "Edit the Search Results layout for Account to add Industry. This will also update the Lookup Dialog when users search for an Account from a Case." Or: "Edit the default layout and every profile will see the new columns."
 
-**Why it happens:** LLMs apply DRY-like assumptions to repeated UI nodes. The five Search Layout slots have similar names and similar configuration UIs, so the LLM presumes a single source-of-truth model.
+**Why it happens:** LLMs apply DRY-like assumptions to repeated UI nodes. The SearchLayouts lists have similar names and similar configuration UIs, so the LLM presumes a single source-of-truth model.
 
 **Correct pattern:**
 
 ```
-Search Layout slots are independent:
-  - Default Layout (Lightning global search)
-  - Search Results (Classic global search)
-  - Lookup Dialog (lookup pickers)
-  - Lookup Phone Dialog (telephony lookup)
-  - Tab (object Tab default columns)
-
-Each slot is stored as a separate <SearchLayout> entry in CustomObject metadata.
-Each must be configured independently.
+SearchLayouts lists are separate fields (api_meta 264 L47518-47595):
+  - searchResultsAdditionalFields       (default search results)
+  - lookupDialogsAdditionalFields       (lookup dialog)
+  - lookupPhoneDialogsAdditionalFields  (softphone lookup)
+  - customTabListAdditionalFields       (recent records on the tab)
+  - searchFilterFields                  (search filters)
+profileSearchLayouts (on CustomObject) overrides the default
+search results per profile (L47265-47266, L44503-44506).
 ```
 
-**Detection hint:** Any statement like "updating Search Results will also update Lookup Dialog" or "Lightning will inherit from Classic Search Results" is wrong. Slots are independent.
+**Detection hint:** Any statement like "updating Search Results will also update Lookup Dialog", or a `<customSearchLayout>` element (not a SearchLayouts field), is wrong.
 
 ---
 
@@ -52,12 +52,13 @@ Each must be configured independently.
 
 **What the LLM generates:** "Create a Synonym Group: `VIP, Priority` to help sales reps find tier-1 accounts in global search."
 
-**Why it happens:** LLMs frame solutions in the context of the user's stated problem (Accounts) and assume scope can be limited to that context. The model does not surface that Synonym Groups apply org-wide — across every searchable object.
+**Why it happens:** LLMs frame solutions in the context of the user's stated problem (Accounts) and assume scope can be limited to that context. `SynonymGroup` has no object field (api_meta 264 L136400-136410). UNVERIFIED (2026-10-20): that a group applies to every searchable object, as listed below.
 
 **Correct pattern:**
 
 ```
-Synonym Group "VIP, Priority" will affect search on EVERY object:
+Synonym Group "VIP, Priority" can affect search on every object
+(UNVERIFIED (2026-10-20): org-wide reach; SynonymGroup has no object field):
   - Accounts (intended)
   - Cases (where "Priority" is a different concept)
   - Knowledge articles
@@ -85,21 +86,20 @@ Before creating the group:
 **Correct pattern:**
 
 ```
-Three gates, all default off:
-  1. Setup → External Data Sources → <source> → Allow Search
+Gates (new external objects start with search off, api_meta 264 L44352):
+  1. Setup → External Data Sources → <source> → Enable Search
+     (searchEnabled in customConfiguration - Cross-Org AND OData
+     2.0/4.0 both have it, api_meta 264 L13818-13850)
   2. Setup → External Objects → <object>      → Allow Search
-  3. Adapter supports SOSL on external data:
-       - OData 2.0     → supported
-       - OData 4.0     → supported
-       - Cross-Org     → NOT supported
-       - Custom Apex   → only if the developer implemented SOSL
-                          in the apex adapter — rare
+     (enableSearch; a sync resets it to the data source's setting)
+  3. Custom Apex adapter → declares the SEARCH capability
+     (apexref 262 L151747-151751)
 
 Validation (Developer Console):
   FIND 'term' IN ALL FIELDS RETURNING Inventory_Item__x(Id, Name)
 ```
 
-**Detection hint:** Any external-object search advice that mentions fewer than two of the three gates is incomplete. Cross-Org adapter advice that claims search works without qualification is incorrect.
+**Detection hint:** Any external-object search advice that mentions only one gate is incomplete. Advice that the Cross-Org adapter cannot be searched is incorrect — it has an Enable Search parameter (api_meta 264 L13826).
 
 ---
 
@@ -115,17 +115,19 @@ Validation (Developer Console):
 After any change to:
   - Search Layouts
   - Synonym Groups
-  - External Object / Data Source Allow Search flags
+  - External object Allow Search / data source Enable Search flags
 
-Wait ~15 minutes before validation. Index lag is typically 2–5 minutes
-for small orgs and small changes; up to ~15 minutes for large orgs
-or post-bulk-load. Do NOT conclude the change is broken before the wait.
+Wait at least 15 minutes before validating record changes: a created or
+updated record "could take about 15 minutes or more" to become
+searchable (ldv 264 L160-162). Do NOT conclude the change is broken
+before the wait. UNVERIFIED (2026-10-20): that layout and synonym
+changes wait on the same lag.
 
 If the change still has not taken effect after 30 minutes:
   - Confirm the configuration was actually saved (Setup audit trail).
   - Confirm the user testing has the FLS and sharing access required.
   - Confirm the field being searched is indexable
-    (rich text and encrypted fields are not).
+    (UNVERIFIED (2026-10-20): which field types are not).
 ```
 
 **Detection hint:** Any test plan that "validates the change immediately after saving" without a wait window is at risk of false-negative results.

@@ -10,7 +10,7 @@ Use this template when working on tasks in this area.
 
 ## Context Gathered
 
-TODO: Record the answers to the Before Starting questions from SKILL.md here.
+Record the answers to the Questions to Ask Before Configuring table in SKILL.md here.
 
 - Setting / configuration:
 - Known constraints:
@@ -18,15 +18,18 @@ TODO: Record the answers to the Before Starting questions from SKILL.md here.
 
 ## Approach
 
-TODO: Which pattern from SKILL.md applies? Why?
+Which distribution shape from Core Concept 1 applies (Bolt, managed package, unlocked package, site clone), and why?
 
 ## Checklist
 
 Copy the review checklist from SKILL.md and tick items as you complete them.
 
-- [ ] TODO
-- [ ] TODO
+- [ ] `LightningBolt` has `category`, `masterLabel`, `publisher`, `summary`
+- [ ] Every `lightningBoltItems` entry resolves (template + its theme definition, custom app, flow category)
+- [ ] Every flow a `FlowCategory` lists is in the deploy
+- [ ] Custom objects, Apex and CMS content shipped separately and documented
+- [ ] `check_lightning_bolt_template_authoring.py` run with no ERROR
 
 ## Notes
 
-TODO: Record any deviations from the standard pattern and why.
+Record any deviations from the standard pattern and why.

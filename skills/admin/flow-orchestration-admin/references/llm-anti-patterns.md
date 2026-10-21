@@ -11,9 +11,10 @@ Common mistakes AI coding assistants make when configuring Flow Orchestration.
 **Correct pattern:**
 
 ```
-Parallel steps with independent actors = Flow Orchestration Stage with
-multiple parallel Interactive Steps. Approval Process steps run in series
-and cannot branch.
+Independent actors doing different work = Flow Orchestration Stage with
+several Interactive Steps, each running its own screen flow. An Approval
+Process step routes ONE approve-or-reject request to up to 25 approvers
+(Unanimous or FirstResponse; api_meta 264 L25404-25414).
 ```
 
 **Detection hint:** An Approval Process with three "unanimous required" steps that the business describes as "happening at the same time."
@@ -22,9 +23,9 @@ and cannot branch.
 
 ## Anti-Pattern 2: Heavy logic inside Evaluation Flows
 
-**What the LLM generates:** A 15-element autolaunched flow with SOQL, loops, and decision branches as the Stage's evaluation flow.
+**What the LLM generates:** A 15-element `EvaluationFlow` with SOQL, loops, and decision branches as the Stage's evaluation flow.
 
-**Why it happens:** Evaluation Flows look like regular flows; the cost of running them repeatedly is not obvious.
+**Why it happens:** Evaluation Flows look like regular flows; the cost of running them repeatedly is not obvious. UNVERIFIED (2026-10-20): how often an evaluation flow is re-run is not stated on any corpus line; the flow's only read output is `isOrchestrationConditionMet` (api_meta 264 L70783-70787).
 
 **Correct pattern:**
 
@@ -47,12 +48,14 @@ reads a field and returns true/false.
 **Correct pattern:**
 
 ```
-Every Interactive Step assigns to a specific user, queue, or evaluated
-field. Unassigned work items get lost in the global list; users never
-see them.
+Every Interactive Step lists `assignees` - a User, Group, or Queue
+(api_meta 264 L74763-74764, L74889-74894) - by value or by resource
+reference. `assignees` is not marked Required, so the metadata deploys
+without one. UNVERIFIED (2026-10-20): where an unassigned work item
+surfaces in the UI.
 ```
 
-**Detection hint:** A Flow Orchestration metadata XML with an Interactive Step missing assignee fields.
+**Detection hint:** A `stageSteps` entry with `<actionType>stepInteractive</actionType>` and no `<assignees>` element.
 
 ---
 
@@ -65,9 +68,11 @@ see them.
 **Correct pattern:**
 
 ```
-Use a Platform Event from the external system. The Background Step waits
-on the event. The external system publishes on completion; orchestration
-resumes. No polling, lower cost, tighter coupling to the real event.
+Publish FlowOrchestrationEvent from the external system on completion
+(create(); OrchestrationInstanceId, StepInstanceId, StepStatus -
+platform_events 264 L12625, L12662-12698). The event "notifies subscribers
+that a paused instance of an orchestration is ready to be resumed"
+(L12611-12613). No polling job to operate.
 ```
 
 **Detection hint:** Scheduled Apex that advances orchestrations by updating records or invoking orchestration APIs.
@@ -88,7 +93,7 @@ migrate). Deploy the new orchestration alongside the old. Only delete
 old metadata after the monitoring view confirms zero active instances.
 ```
 
-**Detection hint:** A retirement plan that deletes Orchestration metadata on the same change window as go-live.
+**Detection hint:** A retirement plan that deletes Orchestration metadata on the same change window as go-live. UNVERIFIED (2026-10-20): the effect of deleting an orchestration with running instances is not in the corpus; draining first is the safe default.
 
 ---
 
@@ -104,7 +109,7 @@ old metadata after the monitoring view confirms zero active instances.
 /lightning/o/FlowOrchestrationInstance/list
 ```
 
-That is the object list view. `/lightning/setup/OrchestrationRuns/home` is not a Setup node.
+That is the object list view. `/lightning/setup/OrchestrationRuns/home` is not a Setup node. UNVERIFIED (2026-10-20): both URLs are Help-only UI facts.
 
 **Detection hint:** Any URL containing `setup/OrchestrationRuns`.
 
@@ -116,6 +121,6 @@ That is the object list view. `/lightning/setup/OrchestrationRuns/home` is not a
 
 **Why it happens:** One control name covers more than one run state, so a single instruction looks complete.
 
-**Correct pattern:** Name the state first — a run stalled on an unclaimed work item, a run that errored in a step, and a run paused waiting on something outside Salesforce are three different situations with three different operator actions, and only the last is resumed by publishing a `FlowOrchestrationEvent`. Read the exact resume semantics for each state off the Orchestration Runs detail view in the target org and write them down; do not state them from memory in a runbook someone will follow at 2am.
+**Correct pattern:** Name the state first — a run stalled on an unclaimed work item, a run that errored in a step, and a run paused waiting on something outside Salesforce are three different situations with three different operator actions, and only the last needs a manually published `FlowOrchestrationEvent` (the platform publishes one itself when an interactive step's screen flow completes, platform_events 264 L12614-12615). Read the exact resume semantics for each state off the Orchestration Runs detail view in the target org and write them down; do not state them from memory in a runbook someone will follow at 2am.
 
 **Detection hint:** A single "resume" procedure that does not name the run's current status.
