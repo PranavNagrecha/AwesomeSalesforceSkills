@@ -33,6 +33,15 @@ Exit codes:
     0  no ERROR findings (WARN/INFO may still be printed)
     1  at least one ERROR finding, or the manifest directory is unusable
        (with --strict, also exits 1 on WARN)
+
+Severity (audit 2026-10-21): ERROR is kept for parse failures, a missing
+path, a fabricated type, an invalid enforcementType, a missing Required field
+and a targetEntity outside the Scoping object list — all grounded in
+api_meta 264 L108625-108706. Criteria-language rules (SOQL operator,
+AND/OR, Owner typing, person-account fields, Event.IsGroupEvent, edition
+caps) are WARN: their scoping-rule premises come from the Scoping Rules
+Developer Guide, which is not in the audit corpus (UNVERIFIED 2026-10-21).
+An empty directory is one WARN, exit 0.
 """
 
 from __future__ import annotations
@@ -48,9 +57,10 @@ SF_NS = "http://soap.sforce.com/2006/04/metadata"
 NS = {"sf": SF_NS}
 
 # Objects on which a scoping rule (enforcementType Scoping) is supported.
-# Source: Scoping Rules Developer Guide — "custom objects and the account,
-# case, contact, event, lead, opportunity, and task standard objects."
-# Custom objects are matched separately by the __c / __x suffix.
+# Source: api_meta 264 L108693-108701 — "If enforcementType is set to Scoping,
+# custom objects and these objects are supported": Account, Case, Contact,
+# Event, Lead, Opportunity, Task. Custom objects are matched by the __c
+# suffix. External objects (__x) are on the Restrict list only (L108675-108676).
 SCOPING_STANDARD_OBJECTS = {
     "Account",
     "Case",
@@ -64,6 +74,8 @@ SCOPING_STANDARD_OBJECTS = {
 # Objects that support restriction rules but NOT scoping rules. Naming one of
 # these in a Scoping rule is the classic cross-contamination between the two
 # features that share the RestrictionRule metadata type.
+VALID_ENFORCEMENT_TYPES = {"FieldRestrict", "Restrict", "Scoping"}  # api_meta 264 L108663-108666
+
 RESTRICTION_ONLY_OBJECTS = {
     "Contract",
     "Quote",
@@ -83,7 +95,8 @@ REQUIRED_RULE_FIELDS = (
     "version",
 )
 
-# Person-account fields are not supported in scoping rule criteria. Standard
+# Person-account fields are not supported in scoping rule criteria
+# (UNVERIFIED 2026-10-21: Scoping Rules Developer Guide only). Standard
 # person-account fields are PascalCase with no __c suffix (PersonDepartment,
 # PersonLeadSource); a custom field called Person<Something>__c is a different
 # thing and must not be flagged, hence the negative lookahead.
@@ -98,7 +111,8 @@ USER_VAR_RE = re.compile(r"\$User\.([A-Za-z0-9_]+)")
 
 # Objects that can't be queried inside a SOQL operator, even when the rule's
 # targetEntity is otherwise scopeable. Source: Considerations for Scoping Rules
-# — "These objects aren't supported in the SOQL operator". Event and Task are on
+# (UNVERIFIED 2026-10-21: not in the audit corpus) — "These objects aren't
+# supported in the SOQL operator". Event and Task are on
 # BOTH the scoping-supported list and this one.
 SOQL_OPERATOR_BARRED_OBJECTS = {
     "activityhistory",
@@ -113,13 +127,15 @@ SOQL_OPERATOR_BARRED_OBJECTS = {
 FROM_OBJECT_RE = re.compile(r"\bFROM\s+([A-Za-z0-9_]+)", re.IGNORECASE)
 
 # Outside the SOQL operator the criteria language has one operator. Source:
-# Considerations for Scoping Rules — "Unless you use SOQL, scoping rules support
-# only the EQUALS operator. The AND and OR operators aren't supported."
+# Considerations for Scoping Rules (UNVERIFIED 2026-10-21) — "Unless you use
+# SOQL, scoping rules support only the EQUALS operator. The AND and OR operators
+# aren't supported." secguide 262 L4356 states the same for restriction rules.
 BOOLEAN_OPERATOR_RE = re.compile(r"(?<=\s)(AND|OR)(?=\s)")
 QUOTED_LITERAL_RE = re.compile(r"'[^']*'|\"[^\"]*\"")
 
-# `Owner` is polymorphic and must be typed. Queues aren't supported in scoping
-# rules, so the only correct typing here is Owner:User.
+# `Owner` is polymorphic and must be typed. Queues aren't supported in
+# restriction rules, so specify Owner:User (secguide 262 L4363-4365); the same
+# for scoping rules is UNVERIFIED (2026-10-21).
 UNTYPED_OWNER_RE = re.compile(r"(?<![:\w])Owner\.")
 
 # Org-specific key prefixes that do not survive a promotion unchanged.
@@ -132,8 +148,9 @@ ID_PREFIX_MEANING = {
 }
 
 # Edition caps on ACTIVE scoping rules per object. Source: Considerations for
-# Scoping Rules — two per object in Developer editions, five per object in
-# Performance and Unlimited editions.
+# Scoping Rules (UNVERIFIED 2026-10-21: not in the audit corpus) — two per
+# object in Developer editions, five per object in Performance and Unlimited
+# editions. secguide 262 L4118-4119 gives 2 / 5 for restriction rules.
 CAP_DEVELOPER = 2
 CAP_PERFORMANCE_UNLIMITED = 5
 
@@ -283,7 +300,7 @@ def check_soql_operator(criteria: str, rel_path: Path, root: Path) -> list:
     if selects and everythings == 0:
         findings.append(
             Finding(
-                ERROR,
+                WARN,
                 where,
                 f"recordFilter has {selects} SELECT statement(s) and no USING SCOPE "
                 "EVERYTHING. The SELECT statement must include it.",
@@ -311,7 +328,7 @@ def check_soql_operator(criteria: str, rel_path: Path, root: Path) -> list:
         if lowered in SOQL_OPERATOR_BARRED_OBJECTS or lowered.endswith("tag"):
             findings.append(
                 Finding(
-                    ERROR,
+                    WARN,
                     where,
                     f"recordFilter queries {obj} inside a SOQL operator. "
                     "ActivityHistory, Attachments, Event, EventAttendee, Note, "
@@ -325,7 +342,7 @@ def check_soql_operator(criteria: str, rel_path: Path, root: Path) -> list:
         if scope.upper() != "EVERYTHING":
             findings.append(
                 Finding(
-                    ERROR,
+                    WARN,
                     where,
                     f"recordFilter uses USING SCOPE {scope}. EVERYTHING is the only "
                     "valid scope clause syntax for scoping rules.",
@@ -336,7 +353,7 @@ def check_soql_operator(criteria: str, rel_path: Path, root: Path) -> list:
         if variable != "Id":
             findings.append(
                 Finding(
-                    ERROR,
+                    WARN,
                     where,
                     f"recordFilter uses $User.{variable} inside a SOQL operator. Only "
                     "$User.Id is supported there (other $User fields are fine in a "
@@ -361,11 +378,11 @@ def check_criteria(rule_path: Path, root: Path, record_filter: str, user_criteri
         if UNTYPED_OWNER_RE.search(criteria):
             findings.append(
                 Finding(
-                    ERROR,
+                    WARN,
                     where,
                     f"{label} contains an untyped 'Owner.' reference. Owner is "
                     "polymorphic and must be typed; queues aren't supported in "
-                    "scoping rules, so write Owner:User.",
+                    "restriction rules, so write Owner:User.",
                 )
             )
 
@@ -376,7 +393,7 @@ def check_criteria(rule_path: Path, root: Path, record_filter: str, user_criteri
             for operator in set(BOOLEAN_OPERATOR_RE.findall(bare)):
                 findings.append(
                     Finding(
-                        ERROR,
+                        WARN,
                         where,
                         f"{label} uses the {operator} operator. Unless you use the "
                         "SOQL operator, scoping rules support only EQUALS — AND and "
@@ -388,7 +405,7 @@ def check_criteria(rule_path: Path, root: Path, record_filter: str, user_criteri
         for field in PERSON_ACCOUNT_FIELD_RE.findall(criteria):
             findings.append(
                 Finding(
-                    ERROR,
+                    WARN,
                     where,
                     f"{label} references {field}. IsPersonAccount fields on the "
                     "account object are not supported in scoping rule criteria.",
@@ -438,6 +455,26 @@ def check_rule_file(rule_path: Path, root: Path) -> tuple:
         return findings, "", False
 
     enforcement = _text(element, "enforcementType")
+    if not enforcement:
+        findings.append(
+            Finding(
+                ERROR,
+                where,
+                "required RestrictionRule field <enforcementType> is missing or empty "
+                "(api_meta 264 L108662-108666).",
+            )
+        )
+        return findings, "", False
+    if enforcement not in VALID_ENFORCEMENT_TYPES:
+        findings.append(
+            Finding(
+                ERROR,
+                where,
+                f"enforcementType '{enforcement}' is not a valid value; use "
+                "FieldRestrict, Restrict or Scoping (api_meta 264 L108663-108666).",
+            )
+        )
+        return findings, "", False
     if enforcement != "Scoping":
         # A Restrict / FieldRestrict rule is a different feature; only report the
         # per-object-per-user interaction, which is this skill's concern.
@@ -473,9 +510,9 @@ def check_rule_file(rule_path: Path, root: Path) -> tuple:
 
     target = _text(element, "targetEntity")
     if target:
-        is_custom = target.endswith("__c") or target.endswith("__x")
+        is_custom = target.endswith("__c")
         if not is_custom and target not in SCOPING_STANDARD_OBJECTS:
-            if target in RESTRICTION_ONLY_OBJECTS:
+            if target in RESTRICTION_ONLY_OBJECTS or target.endswith("__x"):
                 findings.append(
                     Finding(
                         ERROR,
@@ -503,10 +540,10 @@ def check_rule_file(rule_path: Path, root: Path) -> tuple:
     if target == "Event" and "IsGroupEvent" in (record_filter + user_criteria):
         findings.append(
             Finding(
-                ERROR,
+                WARN,
                 where,
                 "criteria reference Event.IsGroupEvent. Salesforce states not to "
-                "create rules on that field.",
+                "create rules on that field (secguide 262 L4358, restriction rules).",
             )
         )
 
@@ -532,7 +569,7 @@ def check_edition_caps(active_by_entity: dict, cap: int, edition: str) -> list:
         if len(paths) > cap:
             findings.append(
                 Finding(
-                    ERROR,
+                    WARN,
                     ", ".join(sorted(paths)),
                     f"{len(paths)} active scoping rules on {entity}, above the "
                     f"{edition}-edition cap of {cap} per object.",
@@ -545,8 +582,8 @@ def check_edition_caps(active_by_entity: dict, cap: int, edition: str) -> list:
                     ", ".join(sorted(paths)),
                     f"{len(paths)} active scoping rules on {entity}. Confirm their "
                     "userCriteria are disjoint — only one scoping or restriction rule "
-                    "per object per user is supported, and overlap produces "
-                    "unpredictable behaviour rather than an error.",
+                    "per object per user is supported, and on overlap only one of the "
+                    "active rules is observed (secguide 262 L4155-4157).",
                 )
             )
     return findings
@@ -601,7 +638,7 @@ def check_scoping_rules(manifest_dir: Path, edition: str) -> list:
     if not rule_files:
         findings.append(
             Finding(
-                INFO,
+                WARN,
                 str(manifest_dir),
                 "no .rule files found. Scoping rules built in Object Manager and never "
                 "retrieved into source are invisible to this check — retrieve the "

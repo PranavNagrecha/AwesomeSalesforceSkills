@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Heuristically validate a learner-facing Salesforce brief."""
+"""Heuristically validate a learner-facing Salesforce brief.
+
+Contract (audit 2026-10-21): --input <file> or --manifest-dir <dir of .md
+briefs>. A missing path is ERROR, exit 1. Structural findings are WARN, exit 0
+unless --strict. An empty directory prints one WARN, exit 0.
+"""
 
 from __future__ import annotations
 
@@ -27,7 +32,10 @@ REQUIRED_HEADINGS = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check a Salesforce learning brief.")
-    parser.add_argument("--input", required=True)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--input", help="One learning-brief markdown file.")
+    group.add_argument("--manifest-dir", help="Directory of learning-brief .md files.")
+    parser.add_argument("--strict", action="store_true", help="Exit 1 on WARN findings.")
     return parser.parse_args()
 
 
@@ -80,17 +88,23 @@ def check(text: str) -> list[str]:
 
 def main() -> int:
     args = parse_args()
-    path = Path(args.input)
-    if not path.is_file():
-        print(f"ERROR: not found: {path}")
-        return 2
-    issues = check(path.read_text(encoding="utf-8", errors="replace"))
-    if issues:
+    target = Path(args.input or args.manifest_dir)
+    if args.input and not target.is_file() or args.manifest_dir and not target.is_dir():
+        print(f"ERROR: not found: {target}")
+        sys.exit(1)
+    files = [target] if args.input else sorted(target.rglob("*.md"))
+    if not files:
+        print(f"WARN: {target}: no learning-brief .md files found.")
+        return 1 if args.strict else 0
+    warns = 0
+    for path in files:
+        issues = check(path.read_text(encoding="utf-8", errors="replace"))
         for issue in issues:
-            print(f"ISSUE: {issue}")
-        return 1
-    print(f"PASS: learning brief is structurally complete: {path}")
-    return 0
+            print(f"WARN: {path}: {issue}")
+        warns += len(issues)
+        if not issues:
+            print(f"PASS: learning brief is structurally complete: {path}")
+    return 1 if (warns and args.strict) else 0
 
 
 if __name__ == "__main__":

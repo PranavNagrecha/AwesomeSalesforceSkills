@@ -128,8 +128,8 @@ Use this template when designing or documenting a report or dashboard in Salesfo
 |---------|-------|
 | Dashboard name | |
 | Running user type | (Run as logged-in user / Run as specified user: ___) |
-| Edition required | (Enterprise for dynamic / Professional for static) |
-| Refresh schedule | (Auto 24h / On demand only for dynamic) |
+| Edition required | (Enterprise for dynamic / Professional for static — UNVERIFIED (2026-10-21): Help only) |
+| Refresh schedule | (Auto 24h / On demand only for dynamic — UNVERIFIED (2026-10-21): Help only) |
 | Folder | |
 
 ### Components
@@ -165,8 +165,8 @@ Use this template when designing or documenting a report or dashboard in Salesfo
 |---------|-------|
 | Frequency | (Daily / Weekly / Monthly) |
 | Recipients | (List names or roles — confirm all are active employees) |
-| Running user | (Defaults to whoever creates the subscription, NOT the report owner — whose data do recipients receive? Naming anyone else requires "Subscribe to Reports: Set Running User") |
-| Condition | (Send always / Send when condition is met: ___ — up to 5 conditions) |
+| Running user | (Defaults to whoever creates the subscription, NOT the report owner — whose data do recipients receive? Naming anyone else requires "Subscribe to Reports: Set Running User" — UNVERIFIED (2026-10-21): Help only) |
+| Condition | (Send always / Send when condition is met: ___ — up to 5 conditions, UNVERIFIED (2026-10-21): Help only) |
 
 ---
 
@@ -181,10 +181,10 @@ Run through these before marking complete:
 - [ ] Dashboard filters tested against all components — confirmed which are and are not affected
 - [ ] Report and dashboard assigned to a shared folder (not private)
 - [ ] Subscription recipients are current, active employees
-- [ ] No tabular report driving a Metric or Chart dashboard component without a row limit
-- [ ] Joined report block count is ≤ 5 and column count per block is ≤ 100
-- [ ] Bucket field "Other" category reviewed — blank values accounted for
-- [ ] Dashboard does not exceed 20 source report components
+- [ ] No tabular report driving a Metric or Chart dashboard component without a row limit (UNVERIFIED (2026-10-21): Help only)
+- [ ] Joined report block count is ≤ 5 and column count per block is ≤ 100 (UNVERIFIED (2026-10-21): Help only)
+- [ ] Bucket field "Other" category reviewed — blank values accounted for (`otherBucketLabel`, `nullTreatment`: api_meta 264 L107009-107012)
+- [ ] Dashboard does not exceed 20 source report components (UNVERIFIED (2026-10-21): Help only)
 
 ---
 

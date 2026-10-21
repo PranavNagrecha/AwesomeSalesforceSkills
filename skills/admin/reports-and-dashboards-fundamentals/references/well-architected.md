@@ -8,14 +8,14 @@ Reports and dashboards are a primary path through which users access aggregated 
 
 - Default to "Run as logged-in user" (dynamic dashboard) to ensure record-level security is enforced per viewer.
 - Audit static dashboard running users: any running user with elevated sharing access creates an implicit data elevation path.
-- Report subscriptions send one running user's data to every recipient. That running user defaults to whoever created the subscription — not the report owner — and redirecting it requires **Subscribe to Reports: Set Running User**. Treat subscription delivery as a broadcast, never as personalized data, and audit holders of that permission alongside dashboard running users.
+- Report subscriptions send one running user's data to every recipient. That running user defaults to whoever created the subscription — not the report owner — and redirecting it requires **Subscribe to Reports: Set Running User** (UNVERIFIED (2026-10-21): Salesforce Help only). Treat subscription delivery as a broadcast, never as personalized data, and audit holders of that permission alongside dashboard running users.
 - Folder permissions are the access control layer for reports and dashboards. A report in a public folder is visible to all users who have access to that folder. Review folder sharing before deploying sensitive reports.
 
 ### Operational Excellence
 
 Reports and dashboards degrade without governance. An org accumulates private reports, stale dashboards, and broken subscriptions over time:
 
-- Reports in private folders are invisible to the team and are effectively lost when the creator leaves.
+- Reports in private folders are invisible to the team. They are not lost when the creator leaves, but recovering them takes the "Manage All Private Reports and Dashboards" permission and the `allPrivate` query scope (object_reference 264 L249222-249226) — clean them up before that becomes the only path.
 - Dashboard last-refresh timestamps older than 30 days indicate abandoned dashboards consuming storage.
 - Hard-coded date filters become stale silently — no error, just wrong data.
 - Broken subscriptions continue to attempt delivery and generate bounce errors.
@@ -37,20 +37,20 @@ A dashboard with the wrong component type for its data degrades decision quality
 
 - Reports on objects with millions of records can be slow or timeout if filters are too broad. Always apply at least one selective filter (date range, owner, record type) to limit the scan.
 - Cross-filters add join operations to the query — use them sparingly.
-- Joined reports execute multiple queries — each block is a separate report execution. Joining 5 blocks on a large org can be slow.
+- Joined reports execute multiple queries — each block is a separate report execution (UNVERIFIED (2026-10-21): not in the corpus; `block` is "each block in a joined report where every block can be of a different report type", api_meta 264 L106662-106663). Joining 5 blocks on a large org can be slow.
 - Dashboard refresh is bounded by the slowest source report. A dashboard with one slow report delays all component updates.
 
 ### Reliability
 
 - Relative date filters are more reliable than absolute date filters — they do not require manual updates and do not silently become stale.
 - CRT field layouts should be kept lean — the fewer fields in the layout, the less risk of breaking field references when objects are modified.
-- Summary formulas that reference PREVGROUPVAL or PARENTGROUPVAL break silently if the grouping level they reference is removed from the report. Test formulas after any structural report change.
+- Summary formulas that reference PREVGROUPVAL or PARENTGROUPVAL break silently if the grouping level they reference is removed from the report (UNVERIFIED (2026-10-21): not in the corpus). Test formulas after any structural report change.
 
 ---
 
 ## Architectural Tradeoffs
 
-**Dynamic vs Static Dashboard**: Dynamic dashboards enforce record-level security per viewer but cannot be scheduled or subscribed to. Static dashboards can be scheduled but introduce data-elevation risk if the running user has broad access. The correct choice depends on whether viewers should see personalized or shared data, and whether scheduled delivery is required.
+**Dynamic vs Static Dashboard**: Dynamic dashboards enforce record-level security per viewer (`LoggedInUser`, api_meta 264 L50185-50186) but cannot be scheduled or subscribed to (UNVERIFIED (2026-10-21): Help only). Static dashboards can be scheduled but introduce data-elevation risk if the running user has broad access. The correct choice depends on whether viewers should see personalized or shared data, and whether scheduled delivery is required.
 
 **Summary Report vs Matrix Report**: Summary reports are simpler to build and maintain. Matrix reports support crosstab analysis but are harder to interpret with many grouping levels. Prefer Summary unless a true two-axis comparison (rows AND columns grouped) is the core business need.
 
@@ -71,6 +71,19 @@ A dashboard with the wrong component type for its data degrades decision quality
 ---
 
 ## Official Sources Used
+
+Corpus cites (audit 2026-10-21):
+
+- api_meta 264 L50170-50186 — `Dashboard.dashboardType`: `SpecifiedUser` shows one running user's access to everyone, `LoggedInUser` shows each viewer their own access (static vs dynamic dashboards)
+- api_meta 264 L50229-50232 — a missing or invalid `runningUser` is replaced with the deploying user on deploy
+- api_meta 264 L50437-50439 — each report-based component needs a dashboard filter column for a dashboard filter to apply
+- api_meta 264 L107385-107391, L106746, L106765-106766 — the four report formats and the grouping maxima (2 across; 2 down for matrix, 3 for summary)
+- api_meta 264 L108486-108489, L108493-108494, L108453-108454 — CRT: four objects maximum, no inner join after an outer join, `outerJoin` per leg, `deployed` controls availability
+- api_meta 264 L107009-107012 — bucket `nullTreatment` and the `otherBucketLabel` container
+- apexdev 264 L33689 — the Reports and Dashboards API returns up to the first 2,000 report rows (why the API is not a full-extract path)
+- object_reference 264 L249222-249226 — `allPrivate` scope reaches reports in all users' private folders with "Manage All Private Reports and Dashboards"
+
+The Help URLs below are not in the audit corpus; Help-only figures carry UNVERIFIED (2026-10-21) where they appear.
 
 - Salesforce Help: Reports and Dashboards Overview — https://help.salesforce.com/s/articleView?id=sf.reports_dashboards.htm
 - Salesforce Help: Get Started with Reports — https://help.salesforce.com/s/articleView?id=sf.reports_intro.htm

@@ -26,6 +26,8 @@ They meet at exactly one value: USING SCOPE scopingRule, which asks a query
 to honour whatever scoping rule the admin activated on that object.
 ```
 
+UNVERIFIED (2026-10-21): the `USING SCOPE` value list and the `scopingRule` value come from the SOQL and SOSL Reference, which is not in the corpus (object_reference 264 lists per-object "Supported Query Scopes", e.g. Report at L249220-249242, with no `scopingRule`).
+
 **Detection hint:** If the user's words include "rule", "create", "Setup", "Object Manager", "deploy", "admin", or "default view", they want the Setup feature — a SOQL snippet is the wrong artefact. If the user's words include "query", "SELECT", "Apex", "selector", or "WHERE", they want the clause.
 
 ---
@@ -39,8 +41,8 @@ to honour whatever scoping rule the admin activated on that object.
 **Correct pattern:**
 
 ```xml
-<!-- force-app/main/default/restrictionRules/SR_Department_A_Contacts.rule-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/restrictionRules/SR_Department_A_Contacts.rule-meta.xml -->
 <RestrictionRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <active>true</active>
     <description>View contacts from Department A.</description>
@@ -60,7 +62,7 @@ to honour whatever scoping rule the admin activated on that object.
 </types>
 ```
 
-Root element `RestrictionRule`. Folder `restrictionRules`. Suffix `.rule`. `enforcementType` is the only thing that makes it a scoping rule.
+Root element `RestrictionRule`. Folder `restrictionRules`. Suffix `.rule` (api_meta 264 L108643). `enforcementType` is the only thing that makes it a scoping rule (L108663-108666).
 
 **Detection hint:** Grep generated output for the string `ScopingRule` outside two legitimate contexts: the `enforcementType` value is `Scoping` (not `ScopingRule`), and `ScopingRule` is correct as a `ListView.filterScope` value and as the SOQL `scopingRule` scope. Anywhere else — a type name, a folder, a file suffix, a Tooling API path — it is fabricated.
 
@@ -81,16 +83,19 @@ they find the record?"
   YES  → scoping rule. Focus / productivity requirement.
   NO   → NOT a scoping rule. Sharing model, or admin/restriction-rules.
 
-Quote the platform, do not paraphrase it:
-  scoping rules "don't restrict the access that your users have to
-  records. Your users can still open and report on all the records that
-  they can access according to your org's sharing settings."
+Quote the platform, do not paraphrase it (secguide 262 L692-694):
+  "Scoping rules don't restrict the record access that your users
+  already have. They scope the records that your users see. Your users
+  can still open and report on all records that they have access to per
+  your sharing settings."
 
 Three concrete holes to name when refusing:
   - the user can select a different scope on any list view or report
   - Search and SOSL are absent from the scoping surface table entirely
   - a direct record link opens the record normally
 ```
+
+UNVERIFIED (2026-10-21): the scoping surface table (and so the Search/SOSL hole) is Scoping Rules Developer Guide only, not in the corpus.
 
 **Detection hint:** If the generated answer proposes a scoping rule and the prompt contained "must not", "prevent", "hide", "confidential", "compliance", "GDPR", "audit", "segregation", or "PII", the answer is wrong regardless of how good the criteria are. Refuse and route, do not caveat.
 
@@ -120,6 +125,8 @@ Always end a build with: "verify by logging in as a user matched by
 userCriteria — the Setup page looks identical whether this worked or not."
 ```
 
+UNVERIFIED (2026-10-21): the three-row surface table and the report `scope` wiring are Scoping Rules Developer Guide only; the corpus holds only the List Views behaviour (api_meta 264 L46681-46682).
+
 **Detection hint:** A generated scoping-rule procedure that never contains the string `filterScope`, `Filter by scope`, or a report `scope` step is incomplete. Add the wiring step and the log-in-as verification.
 
 ---
@@ -129,6 +136,8 @@ userCriteria — the Setup page looks identical whether this worked or not."
 **What the LLM generates:** A SOQL-operator `recordFilter` where the outer `SELECT` carries `USING SCOPE EVERYTHING` and the nested `SELECT` inside `IN (...)` does not — or a version using `USING SCOPE mine`, or `$User.Department` inside the operator.
 
 **Why it happens:** The clause reads like a query-level modifier, so applying it once at the top looks sufficient — and here the training data is genuinely misleading rather than merely thin: Salesforce's own nested example carries `USING SCOPE EVERYTHING` on the outer `SELECT` only, contradicting the sentence printed above it. A model that copies the example reproduces the non-compliant form faithfully. Separately, `$User.Department` is valid in a plain comparison filter on the very same object, so the model reasonably assumes it is valid everywhere in the criteria language.
+
+UNVERIFIED (2026-10-21): every SOQL-operator rule in this anti-pattern is Scoping Rules Developer Guide only, not in the corpus.
 
 **What this means for review:** generate the compliant superset (the clause on every `SELECT`), but do not report the documented form as a defect in someone else's metadata without saying that Salesforce publishes it that way. See `gotchas.md` Gotcha 5 and the Contradiction Log in `well-architected.md`.
 
@@ -184,17 +193,23 @@ Restriction rules — different list, do not substitute:
 
 Editions: Lightning Experience in Performance, Unlimited, and Developer.
   Enterprise appears in neither scoping-rule list. It DOES appear in the
-  restriction-rule caps — do not carry it across.
+  restriction-rule caps (secguide 262 L4118-4119) — do not carry it across.
 
 Active rules per object:
   two in Developer editions; five in Performance and Unlimited editions.
-  Plus: "Create only one scoping or restriction rule per object per user."
+  Plus: "Create only one restriction or scoping rule per object per user."
+  (secguide 262 L4334-4335)
 
 Operators — do not upgrade this:
   "Unless you use SOQL, scoping rules support only the EQUALS operator.
   The AND and OR operators aren't supported."
   Multi-value equality is comma-separated on the right-hand side; that is
   the whole of it. Null and blank values aren't supported either.
+```
+
+UNVERIFIED (2026-10-21): the scoping-rule edition list, the 2 / 5 caps, the EQUALS-only quote and the null/blank rule are Scoping Rules Developer Guide only; the object lists are api_meta 264 L108675-108701.
+
+```text
 
 If a number is not on this list, do not state it. There is no published
 character limit for recordFilter, no published org-wide rule total, and
@@ -214,8 +229,9 @@ no published data-volume threshold at which Salesforce disables a rule.
 **Correct pattern:**
 
 ```text
-description  — documented as REQUIRED on RestrictionRule. Do not trim it.
-active       — optional, and defaults to FALSE.
+description  — documented as REQUIRED on RestrictionRule (api_meta 264
+               L108660). Do not trim it.
+active       — optional, and defaults to FALSE (L108657-108658).
 
 So the two most common "my rule does nothing" causes are:
   1. active was never set (deployed inactive)
@@ -239,15 +255,16 @@ remap window and can apply a wrong-population rule to production users.
 **Correct pattern:**
 
 ```text
-Owner is polymorphic, so the reference must be typed. Salesforce's own
-example: the Owner field on an event "can contain a user or a queue, but
-queues aren't supported in scoping rules" — so the type to name is User.
-Do not generate Owner:Group as an alternative.
+Owner is polymorphic, so the reference must be typed. The Security
+Guide's example: the Owner field on an Event "can contain a user or a
+queue, but queues aren't supported in restriction rules. So it's
+necessary to specify Owner:User" (secguide 262 L4363-4365) — so the type
+to name is User. Do not generate Owner:Group as an alternative.
   WRONG:  Agent__c.Owner.ManagerId=001xx000003HNy7
   RIGHT:  Agent__c.Owner:User.ManagerId=001xx000003HNy7
 
 Dot-notation lookups are limited to ONE level — "one lookup level from
-the targetEntity", e.g. Owner.UserRoleId.
+the targetEntity", e.g. Owner:User.UserRoleId (typed, per the rule above).
 
 Only EQUALS: "Unless you use SOQL, scoping rules support only the EQUALS
 operator. The AND and OR operators aren't supported." A generated
@@ -264,7 +281,7 @@ Not supported:
   null or blank values in record criteria
 
 And explicitly warned against:
-  "Don't create rules on Event.IsGroupEvent"
+  "Don't create rules on Event.IsGroupEvent" (secguide 262 L4358)
 
 Multiple values are comma-delimited; a value containing a comma must be
 double-quoted, because "double-quotes specify that the value inside the
@@ -272,4 +289,6 @@ quotes isn't considered a delimiter":
   Name__c='Tom, Anita, "Torres, Jia"'   → three values, not four
 ```
 
-**Detection hint:** In any generated `recordFilter` or `userCriteria`, flag a bare `Owner.` (it must be typed, and for scoping rules that means `Owner:User.` — queues aren't supported), count the dots in each lookup path (more than one level is invalid), flag any IsPersonAccount field name (`PersonDepartment`, `PersonLeadSource`, and the rest of the list on the Account page), and check that any literal string value containing a comma is double-quoted.
+UNVERIFIED (2026-10-21) for scoping rules: the one-level dot-notation limit, the EQUALS-only quote, the IsPersonAccount exclusion and the null/blank rule are Scoping Rules Developer Guide only. The data types (secguide 262 L4343-4352), comma values and double quotes (L4244-4245, L4354), and `Event.IsGroupEvent` (L4358) are stated for restriction rules.
+
+**Detection hint:** In any generated `recordFilter` or `userCriteria`, flag a bare `Owner.` (it must be typed, and that means `Owner:User.` — queues aren't supported, secguide 262 L4363-4365), count the dots in each lookup path (more than one level is invalid), flag any IsPersonAccount field name (`PersonDepartment`, `PersonLeadSource`, and the rest of the list on the Account page), and check that any literal string value containing a comma is double-quoted.

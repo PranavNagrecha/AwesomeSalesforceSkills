@@ -117,7 +117,7 @@ Three worked examples covering: (a) a sales-rep mobile story with declarative im
   "recommended_agents": ["object-designer", "flow-builder", "permission-set-architect"],
   "recommended_skills": ["integration/named-credentials", "apex/queueable-callouts", "flow/record-triggered-flow-patterns"],
   "dependencies": ["US-FIN-070 (NetSuite Named Credential exists)", "US-FIN-071 (NetSuite_Invoice_Id__c field exists)"],
-  "notes": "Apex Queueable + callout required (governor limits on synchronous callouts in record-triggered flow). The story does NOT prescribe Apex — the build agent decides per integration-pattern-selection.md."
+  "notes": "Apex Queueable + callout required (callouts must be made asynchronously from a trigger - apexdev 264 L15104-15106). The story does NOT prescribe Apex — the build agent decides per integration-pattern-selection.md."
 }
 ```
 

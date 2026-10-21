@@ -8,7 +8,7 @@ Common mistakes AI assistants make when generating or advising on Salesforce Rep
 
 **What the LLM generates:** "Since you need data from both Accounts and Opportunities, create a Joined Report with one block for Accounts and one block for Opportunities."
 
-**Why it happens:** LLMs pattern-match "two objects" to "joined report" because the name suggests combining data. Joined reports are rarely the right answer and carry hard limits: 5 blocks, 100 columns per block, 10 custom summary formulas per block (50 per report), 10 cross-block formulas. Bucketed fields, cross filters, and conditional highlighting are unavailable in a joined report *at all*. On dashboards the rule inverts what models usually assert: a joined report's **chart** can be a widget, the full report cannot, and "You can't filter data on a joined report in dashboard view or add a filter to a dashboard that only has joined reports."
+**Why it happens:** LLMs pattern-match "two objects" to "joined report" because the name suggests combining data. Joined reports are rarely the right answer and carry hard limits: 5 blocks, 100 columns per block, 10 custom summary formulas per block (50 per report), 10 cross-block formulas. Bucketed fields, cross filters, and conditional highlighting are unavailable in a joined report *at all*. On dashboards the rule inverts what models usually assert: a joined report's **chart** can be a widget, the full report cannot, and "You can't filter data on a joined report in dashboard view or add a filter to a dashboard that only has joined reports." UNVERIFIED (2026-10-21): these joined-report limits and the quote are Salesforce Help only, not in the corpus.
 
 **Correct pattern:**
 
@@ -59,13 +59,15 @@ and document it explicitly in the report description.
 **Correct pattern:**
 
 ```
-"Run as logged-in user" (dynamic dashboard) = each viewer sees
-exactly what their own sharing access permits — the only secure
-option for multi-audience dashboards.
+"Run as logged-in user" (dynamic dashboard, dashboardType
+LoggedInUser) = each viewer sees data "according to his or her own
+access level" (api_meta 264 L50185-50186) — the only secure option for
+multi-audience dashboards.
 
-"Run as specified user" = all viewers see the specified user's
-complete data access — use only when all viewers are explicitly
-permitted to see that user's full data slice.
+"Run as specified user" (SpecifiedUser) = "All users see data at the
+access level of one specific running user" (L50172-50175) — use only
+when all viewers are explicitly permitted to see that user's full data
+slice.
 
 The running user is not an ownership filter. It is a sharing
 access proxy. Choose dynamic dashboards for personalized views.
@@ -79,23 +81,24 @@ access proxy. Choose dynamic dashboards for personalized views.
 
 **What the LLM generates:** "The report returned 2,000 records, so your dataset has 2,000 accounts matching the criteria."
 
-**Why it happens:** The report builder UI shows up to 2,000 rows. LLMs reading or reasoning about report output often treat the displayed row count as the complete result. The actual underlying dataset may be much larger.
+**Why it happens:** The report builder UI shows up to 2,000 rows (UNVERIFIED (2026-10-21): Help only). LLMs reading or reasoning about report output often treat the displayed row count as the complete result. The actual underlying dataset may be much larger.
 
 **Correct pattern:**
 
 ```
-The 2,000-row limit is a display constraint, not a query limit.
+The 2,000-row builder view is a display constraint, not the data set.
 To retrieve the full dataset:
-- Export the report to CSV (no row limit on export)
-- Use the Analytics REST API: GET /analytics/reports/{reportId}
-  with includeDetails=true
-- Use Apex Reports.ReportManager.runReport() for programmatic access
-- The row count shown in the report header reflects the true total;
-  the grid truncates at 2,000
+- Export the report to CSV
+- Do NOT rely on the Reports and Dashboards API or Apex
+  Reports.ReportManager.runReport() for a full extract: "The API
+  returns up to the first 2,000 report rows" (apexdev 264 L33689)
+- For a complete extract, query the records with SOQL or Bulk API
 
 Always note: if a report shows exactly 2,000 rows, assume there
 may be more records and export to verify.
 ```
+
+UNVERIFIED (2026-10-21): the export having no row limit is Help only.
 
 **Detection hint:** Any response that uses "the report shows 2,000 records" as a definitive count without mentioning the export or the display limit is suspect.
 
@@ -121,9 +124,10 @@ Before creating a Custom Report Type:
    b. The standard type uses the wrong join semantics (inner vs outer)
       that cannot be corrected in the report itself
 
-CRTs require admin creation time, a 24-hour appearance delay for
-end users in some orgs, and ongoing field-layout maintenance.
-Treat them as a last resort, not a first response.
+CRTs require admin creation time, a Deployed status before users
+can see them (`deployed`, api_meta 264 L108453-108454), and ongoing
+field-layout maintenance. Treat them as a last resort, not a first
+response.
 ```
 
 **Detection hint:** Any suggestion to "create a Custom Report Type" when the objects involved are standard Salesforce objects (Accounts, Contacts, Opportunities, Cases) should trigger a check of standard report types first.
@@ -134,7 +138,7 @@ Treat them as a last resort, not a first response.
 
 **What the LLM generates:** "Send the report subscription to all sales reps — each rep will receive their own deals because Salesforce will run the report for each recipient."
 
-**Why it happens:** LLMs reason by analogy to systems where reports are personalized per recipient. Salesforce report subscriptions do not work this way.
+**Why it happens:** LLMs reason by analogy to systems where reports are personalized per recipient. Salesforce report subscriptions do not work this way. UNVERIFIED (2026-10-21): the subscription running-user default and the Subscribe to Reports permission names below are Salesforce Help only, not in the corpus.
 
 **Correct pattern:**
 

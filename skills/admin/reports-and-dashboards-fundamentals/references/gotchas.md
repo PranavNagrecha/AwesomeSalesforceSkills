@@ -6,6 +6,8 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: Tabular Reports Cannot Drive Metric or Chart Dashboard Components Without a Row Limit
 
+UNVERIFIED (2026-10-21): the claim in this heading and the quoted error text are not in the corpus (Help only). The corpus defines Tabular as "Lists data with no sorting or subtotals" (api_meta 264 L107389) and `rowLimit` as the maximum rows returned (L106809-106810).
+
 **What happens:** An admin adds a Tabular report as the source for a Metric or Bar Chart dashboard component. Salesforce either shows an error ("Source report is not compatible with this component") or displays no data. The admin assumes the report is broken.
 
 **When it occurs:** Tabular reports return raw rows with no aggregation. Dashboard Metric and Chart components require an aggregated value (a sum, count, or grouped subtotal). Without aggregation, there is nothing for the component to display. The only exception is the Table component, which can display rows from a Tabular report — but only if a row limit is set.
@@ -18,7 +20,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** An admin adds a "Close Date" filter to a dashboard. Some components update when the filter is changed; others do not move. The admin assumes those components are broken or ignores the discrepancy. Stakeholders trust data that is not actually filtered.
 
-**When it occurs:** A dashboard filter only affects components whose source report contains a filter on the same field AND whose filter is mapped to the dashboard filter. If a source report does not have a Close Date filter at all, or if the dashboard filter is not explicitly mapped to that report's filter, the component ignores the dashboard filter entirely. There is no visual indicator on the dashboard that a given component is not affected by a filter.
+**When it occurs:** "Each report-based component must have a dashboard filter column that defines the column that the filter applies to" (`dashboardFilterColumns`, api_meta 264 L50437-50439). If a source report does not have the field at all, or the component has no filter column mapped to it, the component ignores the dashboard filter entirely. There is no visual indicator on the dashboard that a given component is not affected by a filter (UNVERIFIED (2026-10-21): not in the corpus).
 
 **How to avoid:** After adding a dashboard filter, test every component individually by applying the filter and verifying each component's row count or values change as expected. Document which components are and are not affected by each filter in the dashboard description. Consider adding a footer note to the dashboard or using a Text component to flag this explicitly.
 
@@ -26,15 +28,19 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 3: Custom Report Type Joins Are Set at CRT Creation — Changing Them Requires a New CRT
 
+UNVERIFIED (2026-10-21): the claim in this heading — that a CRT's join type cannot be changed — is not in the corpus. The corpus says the primary object "can't" be edited "after initial creation" (`baseObject`, api_meta 264 L108421-108423) and that every leg carries a Required `outerJoin` flag (L108493-108494); it states no lock on the join type.
+
 **What happens:** A CRT was created with an inner join ("must have related records") on the Activities leg. Reports built on this CRT silently exclude any parent record with no activities. The admin adds filters and changes sort orders trying to find the "missing" records. The records are not missing — they were excluded by the CRT join type.
 
 **When it occurs:** Whenever a CRT is built with "A records must have related B records" on any leg. Common examples: Accounts must have Contacts, Opportunities must have Opportunity Line Items, Campaigns must have Campaign Members. Any parent record without a matching child is excluded from every report built on that CRT.
 
-**How to avoid:** When creating a CRT, default to "may or may not have related records" (outer join) on every leg unless the business requirement explicitly requires excluding parentless records. If an existing CRT has the wrong join type, you cannot change it — you must create a new CRT with the correct join semantics and migrate reports to the new type.
+**How to avoid:** When creating a CRT, default to "may or may not have related records" (outer join) on every leg unless the business requirement explicitly requires excluding parentless records. If an existing CRT has the wrong join type, plan for a new CRT with the correct join semantics and migrate reports to it (UNVERIFIED (2026-10-21) that the join cannot be edited in place — test in a sandbox first). Note also that "an inner join isn't allowed if there has been an outer join earlier in the join sequence" (api_meta 264 L108487-108489).
 
 ---
 
 ## Gotcha 4: Each Subscription Has Its Own Running User — Defaulting to Whoever Created It, Not the Report Owner
+
+UNVERIFIED (2026-10-21): the claim in this heading, the Subscribe to Reports permission names and every subscription ceiling below (15,000 rows, 30 columns, 3 MB, 5 conditions, 15 / 7 per user, 500 per hour) are Salesforce Help only — not in the corpus. The corpus has only `Dashboard.numSubscriptions` (api_meta 264 L50220-50221).
 
 **What happens:** An admin sets up a report subscription and adds 20 recipients. All 20 receive the same rows — the rows visible to *that subscription's* running user, which defaults to the admin who created it. A rep in the Eastern region receives Western-region deals because the admin has View All Data. The team expected Salesforce to re-run the report once per recipient. It does not.
 
@@ -46,11 +52,13 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 5: The 2,000-Row Display Limit Is Not the Same as the Export Limit
 
+UNVERIFIED (2026-10-21): the claim in this heading — a 2,000-row builder display limit separate from export — is Help only. The corpus 2,000-row figure is the Reports and Dashboards API's: "The API returns up to the first 2,000 report rows. You can narrow results using filters" (apexdev 264 L33689).
+
 **What happens:** A report shown in the browser is truncated at 2,000 rows. An analyst concludes the data set is small and builds decisions on that sample. They do not know that the actual result set contains 14,000 rows.
 
 **When it occurs:** The Salesforce report builder and dashboard UI display a maximum of 2,000 rows for performance reasons. There is no visual warning that says "results truncated." The row count shown at the bottom reflects all rows found, but the visible rows in the grid stop at 2,000.
 
-**How to avoid:** For any analysis that might exceed 2,000 rows, always export to CSV or use the Analytics API / Apex `Reports.ReportManager.runReport()` to retrieve the full dataset. Treat the 2,000-row UI view as a preview, not a complete result. For dashboard Table components, the 2,000-row limit applies per component — if more records are needed, consider Apex or a CRM Analytics dataset instead.
+**How to avoid:** For any analysis that might exceed 2,000 rows, export to CSV. Do not reach for the Analytics API or Apex `Reports.ReportManager.runReport()` to get the full dataset — that API "returns up to the first 2,000 report rows" too (apexdev 264 L33689); narrow with filters or move the extraction to SOQL / Bulk API. Treat the 2,000-row UI view as a preview, not a complete result. For dashboard Table components, the 2,000-row limit applies per component (UNVERIFIED (2026-10-21): Help only) — if more records are needed, consider Apex or a CRM Analytics dataset instead.
 
 ---
 
@@ -58,13 +66,15 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** A bucket field is defined with three ranges: Small (0–10k), Mid (10k–100k), Enterprise (100k+). A report includes opportunities with a blank Amount field. Those records appear in the report under an unlabeled "other" bucket that the admin did not define. Totals do not add up to the expected numbers.
 
-**When it occurs:** Bucket fields have an implicit "Other" category that captures any value not matched by the defined ranges, including null/blank values. If the field being bucketed can be blank (e.g., Amount is not required), blank records will silently fall into "Other" unless the admin explicitly defines a bucket for blanks.
+**When it occurs:** Bucket fields have an "Other" container for unbucketed values (`otherBucketLabel`, "The label of the container for unbucketed values", api_meta 264 L107012). For numeric buckets, `nullTreatment` "Specifies whether empty values are treated as zeros (z) or not (n)" (L107009-107010). If the field being bucketed can be blank (e.g., Amount is not required), blank records will silently fall outside your named ranges unless blank handling is set.
 
-**How to avoid:** When creating a bucket field on a non-required field, always check the "Treat blank values as zeros" option if the field is numeric, or explicitly add a bucket for blank values. Review the "Other" bucket count in the preview to determine whether blank records are being captured there.
+**How to avoid:** When creating a bucket field on a non-required field, always check the "Treat blank values as zeros" option (`nullTreatment` = `z`) if the field is numeric, or explicitly add a bucket for blank values. Review the "Other" bucket count in the preview to determine whether blank records are being captured there.
 
 ---
 
 ## Gotcha 7: A Report Referenced by Any Dashboard Cannot Be Deleted
+
+UNVERIFIED (2026-10-21): the claim in this heading, the HTTP 403 error text and the Recycle Bin behaviour are from the Analytics REST API guide and Help, neither in the corpus.
 
 **What happens:** A cleanup plan says "delete every report not run in 12 months." The deletes fail partway through. In the UI the action is blocked; through the Analytics REST API it returns HTTP 403 with `The report can't be deleted because there are one or more dashboards referencing it.` The team treats a designed guard rail as an unexpected outage and stops the cleanup.
 
@@ -75,6 +85,8 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 ---
 
 ## Gotcha 8: Folder Names Are Unique Across Reports AND Dashboards, and Subfolders Need Their Own Permission
+
+UNVERIFIED (2026-10-21): the claims in this heading, the 3-level subfolder ceiling and the folder permission names are Salesforce Help only, not in the corpus.
 
 **What happens:** An admin building out a folder tree tries to create a dashboard folder named "Sales Ops" alongside an existing *report* folder of the same name, and the save fails. Later, a delegated admin with full access to every report in the tree still cannot create the subfolders the design calls for.
 

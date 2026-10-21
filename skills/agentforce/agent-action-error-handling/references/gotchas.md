@@ -16,10 +16,10 @@ onward every answer is about the wrong record — silently, with no error.
 **When it occurs:** any `for` loop that conditionally `add`s to the output, and
 every loop that lets an exception escape mid-iteration.
 
-**The documented rule:** *"The inputs and outputs must match on both the size and
-the order"*, and methods *"must return the same number of results as inputs
-received, even when errors occur."*
-— [InvocableMethod Annotation](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm)
+**The documented rule:** *"the Inputs and Outputs must match on both the size
+and the order"* (apexdev 264 L5510-5512), and *"The execution of the invocable
+method must run and return the same number of results as inputs received even if
+errors occur"* (L5372-5373).
 
 **How to avoid:** pre-size the output list with `null` placeholders and assign by
 index, never `add`. Then assert it in the test:
@@ -34,16 +34,17 @@ Assert.areEqual(requests.size(), responses.size(),
 ## 2. `LimitException` is uncatchable — your `catch (Exception e)` never runs
 
 **What happens:** the action does DML inside the per-request loop. A bulk
-invocation of 200 requests blows the 150-statement DML limit. The transaction
+invocation of 200 requests blows the 150-statement DML limit (apexdev 264
+L19757). The transaction
 dies, the planner receives a raw framework failure, and the carefully designed
 envelope is never constructed.
 
 **When it occurs:** per-row DML or per-row SOQL inside the invocable loop. It is
 invisible in single-request testing, which is how every action is first tested.
 
-**The behaviour:** governor limit exceptions extend `System.LimitException`,
-which cannot be caught by `catch (Exception e)` in the normal way — the
-transaction is terminated. No amount of defensive `try/catch` inside the loop
+**The behaviour:** the runtime throws `System.LimitException` when a governor
+limit is exceeded, and it "can't be caught" — "catch blocks, as well as finally
+blocks if any, aren't executed" (apexdev 264 L40116-40123). No amount of defensive `try/catch` inside the loop
 recovers it.
 
 **How to avoid:** the two-phase shape in `references/examples.md` Example 1 —
@@ -54,6 +55,10 @@ exercises the 200-record path that a hand-written test never does.
 ---
 
 ## 3. `AuraHandledException` is meaningless outside the Aura/LWC stack
+
+UNVERIFIED (2026-10-21): the claim in this heading — that the planner receives a
+generic failure instead of the `AuraHandledException` message — is not in the
+corpus; `AuraHandledException` does not appear in apexdev 264.
 
 **What happens:** an action is copied from an LWC controller and keeps
 `throw new AuraHandledException('Case not found')`. The message the user was
@@ -73,13 +78,15 @@ contract for the planner. Grep for `AuraHandledException` in any class carrying
 ## 4. One `@InvocableMethod` per class — the "add a second entry point" refactor fails at compile time
 
 **What happens:** a developer adds `closeCase` and `reopenCase` to one class,
-both annotated. Compilation fails.
+both annotated. Compilation fails (UNVERIFIED (2026-10-21): the "fails at
+compile time" claim in this heading — the corpus states the rule, not when it
+is enforced).
 
-**The documented rule:** the method must be `static` and `public` or `global`,
-must live in an outer class (not an inner class), and *"only one invocable
-method per class"* is permitted. The only annotation that can coexist with
-`@InvocableMethod` is `@Deprecated`.
-— [InvocableMethod Annotation](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm)
+**The documented rule:** "The invocable method must be static and public or
+global, and its class must be an outer class", and "Only one method in a class
+can have the InvocableMethod annotation" (apexdev 264 L5475-5476). "The only
+annotation that can be used with the InvocableMethod annotation is Deprecated"
+(L5484).
 
 **How to avoid:** one class per action, which matches the design rule in
 `templates/agentforce/README.md` — one action is one verb. If two operations
@@ -95,9 +102,9 @@ invocable wrapper.
 at runtime when the action is invoked.
 
 **The documented rule:** `@InvocableVariable` fields of type `List<List<sObject>>`
-are not supported in user-defined classes and cause runtime errors;
-`List<List<sObject>>` is valid only as a direct `@InvocableMethod` return type.
-— [InvocableMethod Annotation](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm)
+"are not supported in user-defined Apex classes and cause a runtime error. Use
+List<List<sObject>> only as a direct @InvocableMethod return type" (apexdev 264
+L5494-5496).
 
 **How to avoid:** for a variable-length result set, return a serialised JSON
 string plus a count, or flatten to `List<sObject>` with a grouping key. Prefer
@@ -117,7 +124,10 @@ resp.userMessage = 'Sorry: ' + e.getMessage();
 The customer is shown
 `FIELD_CUSTOM_VALIDATION_EXCEPTION, Close date must be after Won date: [CloseDate]`.
 Worse, if the org has a validation rule whose error text quotes a field value,
-that value — potentially PII — is now in the conversation transcript.
+that value — potentially PII — is now in the conversation transcript
+(UNVERIFIED (2026-10-21): field interpolation in validation-rule messages is not
+in the corpus; `errorMessage` is "255 characters or less", api_meta 264
+L47780-47781).
 
 **When it occurs:** the single most common shortcut in generated action code.
 
@@ -129,7 +139,7 @@ separately via `templates/apex/ApplicationLogger.cls`. The reviewer's test:
 
 There is a secondary reason beyond disclosure: message text varies by locale and
 by release, so any subagent instruction (called a topic instruction before April
-2026) that pattern-matches on it is fragile in a way that branching on
+2026 — rename date UNVERIFIED (2026-10-21), see SKILL.md) that pattern-matches on it is fragile in a way that branching on
 `reasonCode` is not.
 
 ---
@@ -140,9 +150,10 @@ by release, so any subagent instruction (called a topic instruction before April
 in English, in this release, for this error. It stops working when the org
 enables a translation, or when Salesforce rewords the message.
 
-**How to avoid:** `Database.Error.getStatusCode()` returns a `StatusCode` enum —
-a stable, comparable platform contract. For `DmlException`, use
-`e.getDmlType(0)`. Both survive localisation and rewording; string matching does
+**How to avoid:** `Database.Error.getStatusCode()` returns a `StatusCode` enum
+(apexref 262 L148710-148719) — a stable, comparable platform contract. For
+`DmlException`, use `e.getDmlType(0)`, which "Returns the value of the
+System.StatusCode enum" (apexref 262 L215147). Both survive localisation and rewording; string matching does
 not.
 
 ---
@@ -222,7 +233,8 @@ Database.upsert(c, Case.Idempotency_Key__c, false, AccessLevel.USER_MODE);
 ```
 
 A unique External Id field makes the second call a no-op update rather than a
-duplicate insert. For a timeout on a callout, the same principle applies at the
+duplicate insert (`upsert(recordToUpsert, externalIdField, allOrNone,
+accessLevel)`, apexref 262 L210008). For a timeout on a callout, the same principle applies at the
 upstream API: send an idempotency key header, or classify the timeout as
 non-retryable and accept the manual reconciliation.
 
@@ -238,7 +250,11 @@ debugs the subagent instructions for a week.
 **The documented behaviour:** *"The descriptions in both `@InvocableMethod` and
 `@InvocableVariable` are important because they allow your agent to understand
 how to use the action"*, and the instruction fields in Agentforce Builder are
-pre-filled from those descriptions.
+pre-filled from those descriptions. UNVERIFIED (2026-10-21): both statements are
+from the Agentforce workshop, not the corpus. The corpus says the method
+description "appears as the action description in Flow Builder" (apexdev 264
+L5460) and `GenAiFunction.description` is "A description explaining the general
+purpose and domain of the action" (api_meta 264 L78897-78900).
 — [Agentforce Workshop: Apex Actions](https://developer.salesforce.com/agentforce-workshop/agents/4-apex-actions). The quoted sentence is from the workshop, not from [Create Custom Actions Using Apex InvocableMethod](https://developer.salesforce.com/docs/ai/agentforce/guide/agent-invocablemethod.html) — that guide page shows `description` only inside its code sample and never states why it matters. Both pages are worth reading; only one carries this claim.
 
 **How to avoid:** write the description as the sentence you would say to a

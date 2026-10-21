@@ -28,9 +28,10 @@ It has no representation of the planner as a *consumer that reads return values
 as reasoning input*.
 
 **Correct pattern:** every failure is a `Response` in the slot belonging to that
-`Request`. The method signature promises one output per input and the platform
-enforces it; an exception breaks that promise for every request in the batch,
-not just the failing one.
+`Request`. The guide requires one output per input "even if errors occur"
+(apexdev 264 L5372-5373); an exception breaks that promise for every request in
+the batch, not just the failing one (UNVERIFIED (2026-10-21): the whole-batch
+consequence is not stated in the corpus).
 
 **Detection hint:** any `throw` statement inside a class carrying
 `@InvocableMethod`, other than in a private helper whose caller catches it. Make
@@ -43,6 +44,8 @@ it a lint rule.
 **What the LLM generates:**
 
 ```apex
+try {
+    // ...
 } catch (Exception e) {
     resp.success = false;
     resp.errorMessage = e.getMessage();
@@ -91,8 +94,8 @@ can act: *whose problem is this* (`status`: USER_ERROR vs SYSTEM_ERROR) and
 instructions on. A boolean cannot express the 2×2.
 
 **Detection hint:** a Response class with a boolean and a string and nothing
-else. If the subagent instructions (called topic instructions before April 2026)
-cannot be written as a branch table over the response, the response is
+else. If the subagent instructions (called topic instructions before April 2026 —
+rename date UNVERIFIED (2026-10-21), see SKILL.md) cannot be written as a branch table over the response, the response is
 under-specified.
 
 ---
@@ -143,7 +146,8 @@ the Agentforce documentation reinforce the shape.
 
 **Correct pattern:** two phases — validate and collect, then one bulk
 `Database.update(records, false, AccessLevel.USER_MODE)` and map results back by
-index. The `allOrNone = false` flag is what preserves per-request outcomes.
+index. The `allOrNone = false` flag is what preserves per-request outcomes
+(`update(recordsToUpdate, allOrNone, accessLevel)`, apexref 262 L209804).
 
 **Detection hint:** any DML or SOQL statement lexically inside a `for` loop in
 an invocable class. This is also the anti-pattern most likely to pass all tests
@@ -166,7 +170,8 @@ in training data. Agent actions look like the same problem shape.
 
 **Correct pattern:** `AuraHandledException` sanitises a message for a JavaScript
 client. There is no analogous contract with the planner; it sees a framework
-failure. Return `USER_ERROR / NO_ACCESS` with an authored `userMessage`.
+failure (UNVERIFIED (2026-10-21): not in the corpus). Return `USER_ERROR /
+NO_ACCESS` with an authored `userMessage`.
 
 **Detection hint:** `AuraHandledException` + `@InvocableMethod` in the same file.
 
@@ -180,8 +185,10 @@ do not exist — `AgentActionException`, `@InvocableMethod(errorHandler='...')`,
 `GenAiPlannerBundle`, or a `retryPolicy` attribute on a subagent.
 
 **Why it happens:** this is the highest-risk failure mode in the Agentforce
-domain. The product was renamed (Einstein Copilot → Agentforce), the metadata
-types changed shape (`GenAiPlanner` → `GenAiPlannerBundle`), and the surrounding
+domain. The product was renamed (Einstein Copilot → Agentforce — UNVERIFIED
+(2026-10-21): not in the corpus), the metadata types changed shape
+("GenAiPlannerBundle replaces GenAiPlanner in API version 64.0 and later",
+api_meta 264 L79332-79333), and the surrounding
 ecosystem — Flow, REST, Platform Events — supplies dozens of plausible
 neighbouring names to interpolate from. The result is well-formed code for an
 API that never shipped.
@@ -192,8 +199,8 @@ typed response class and subagent instructions written in English. There is no
 platform-level retry policy, no error-handler hook, and no exception type
 specific to agents. The real Agentforce metadata types are `AiAuthoringBundle`,
 `Bot`, `BotVersion`, `ConversationVariable`, `GenAiFunction`,
-`GenAiPlannerBundle`, and `GenAiPlugin`
-([Agentforce Metadata Types](https://developer.salesforce.com/docs/ai/agentforce/references/agents-metadata-tooling/agents-metadata.html)).
+`GenAiPlannerBundle`, and `GenAiPlugin` — each has its own Metadata API entry
+(api_meta 264 L18485, L29775, L31015, L32277, L78861, L79719, L80307).
 
 **Detection hint:** any identifier containing "Agentforce" or "Agent" that is
 being used as an Apex type or annotation attribute. Verify against the Apex

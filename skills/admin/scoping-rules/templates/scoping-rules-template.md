@@ -26,19 +26,21 @@ Answer this before opening Setup. It is the only question that can invalidate th
 
 > This sets the records you land on by default. It does not remove access. Any affected user can switch scope on a list view or report, and a direct link to an excluded record will still open normally. Global search is not scoped.
 
+(Access retained: secguide 262 L692-694. "Global search is not scoped" rests on the Scoping Rules Developer Guide surface table — UNVERIFIED (2026-10-21).)
+
 ---
 
 ## 2. Feasibility gate
 
 | Check | Value | Pass? |
 |---|---|---|
-| Target object | [REPLACE: object API name] | Must be a custom object, or Account, Case, Contact, Event, Lead, Opportunity, or Task |
-| Org edition | [REPLACE: edition] | Performance, Unlimited, or Developer |
-| Interface | — | Lightning Experience only |
+| Target object | [REPLACE: object API name] | Must be a custom object, or Account, Case, Contact, Event, Lead, Opportunity, or Task (api_meta 264 L108693-108701) |
+| Org edition | [REPLACE: edition] | Performance, Unlimited, or Developer (UNVERIFIED (2026-10-21): Scoping Rules Developer Guide only) |
+| Interface | — | Lightning Experience only (UNVERIFIED (2026-10-21): Scoping Rules Developer Guide banner; the corpus says only that list views apply the rule in Lightning Experience when Filter by scope is selected, api_meta 264 L46681-46682) |
 | Acting identity holds **Manage Sharing** | [REPLACE: yes/no] | Required to create or manage |
 | Reviewers hold **View Setup and Configuration** + **View Restriction and Scoping Rules** | [REPLACE: yes/no] | Required to view |
-| Active scoping rules already on this object | [REPLACE: count] | Cap is 2 (Developer) / 5 (Performance, Unlimited) |
-| Restriction rules already on this object | [REPLACE: count and their userCriteria] | One scoping *or* restriction rule per object per user |
+| Active scoping rules already on this object | [REPLACE: count] | Cap is 2 (Developer) / 5 (Performance, Unlimited) — UNVERIFIED (2026-10-21) for scoping rules |
+| Restriction rules already on this object | [REPLACE: count and their userCriteria] | One scoping *or* restriction rule per object per user (secguide 262 L4334-4335) |
 
 If any row fails, stop and record why: [REPLACE: reason, or "all pass"]
 
@@ -61,9 +63,9 @@ If any row fails, stop and record why: [REPLACE: reason, or "all pass"]
 **Build path** — determined by the criteria, not by preference:
 
 - [ ] A single EQUALS comparison → Object Manager is available (Setup → Object Manager → the object → Scoping Rules → New)
-- [ ] Needs a `SOQL(...)` operator → **API only.** Object Manager cannot express this.
+- [ ] Needs a `SOQL(...)` operator → **API only.** Object Manager cannot express this. (UNVERIFIED (2026-10-21): Scoping Rules Developer Guide only.)
 
-**Criteria validation:**
+**Criteria validation** (UNVERIFIED (2026-10-21) for scoping rules: the EQUALS-only, IsPersonAccount, null/blank and one-level items are Scoping Rules Developer Guide only; data types, comma/double-quote, `Owner:User` and `Event.IsGroupEvent` are stated for restriction rules in secguide 262 L4244-4245, L4343-4365):
 
 - [ ] Every referenced field is one of: boolean, date, dateTime, double, int, reference, string, time, single picklist value
 - [ ] Exactly one EQUALS comparison — no `AND`, no `OR`, no `>`/`<`/`LIKE`/`!=` (they do not exist outside the SOQL operator)
@@ -74,7 +76,7 @@ If any row fails, stop and record why: [REPLACE: reason, or "all pass"]
 - [ ] Any literal value containing a comma is double-quoted
 - [ ] Not a rule on `Event.IsGroupEvent`
 
-**If using the SOQL operator, additionally:**
+**If using the SOQL operator, additionally** (UNVERIFIED (2026-10-21): every SOQL-operator rule is Scoping Rules Developer Guide only):
 
 - [ ] Every `SELECT`, including every nested `SELECT`, carries `USING SCOPE EVERYTHING` (the documented nested example omits it on the inner query — write the compliant superset and verify in a sandbox; see `gotchas.md` Gotcha 5)
 - [ ] The subquery does not run `FROM` ActivityHistory, Attachment, Event, EventAttendee, Note, OpenActivity, a tag object, or Task — those are barred from the SOQL operator even when the target entity is scopeable
@@ -89,8 +91,8 @@ If any row fails, stop and record why: [REPLACE: reason, or "all pass"]
 ## 4. Deployable artefact
 
 ```xml
-<!-- force-app/main/default/restrictionRules/[REPLACE: Rule_API_Name].rule-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/restrictionRules/[REPLACE: Rule_API_Name].rule-meta.xml -->
 <RestrictionRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <active>false</active>
     <description>[REPLACE: documented as a required field — do not omit]</description>
@@ -140,7 +142,7 @@ Every role, profile, record type or user ID in the criteria is org-specific and 
 
 ## 6. Surface wiring
 
-**The rule changes nothing a user sees until this section is done.** List views and reports honour a scoping rule only when **Filter by scope** is selected.
+**The rule changes nothing a user sees until this section is done.** List views honour a scoping rule only when **Filter by scope** is selected (api_meta 264 L46681-46682); reports likewise and the report `scope` value are UNVERIFIED (2026-10-21).
 
 | Surface | API name | Change | Done |
 |---|---|---|---|
@@ -148,9 +150,9 @@ Every role, profile, record type or user ID in the criteria is org-specific and 
 | Report | [REPLACE: Report fullName] | set the `scope` field | [ ] |
 
 - [ ] Every list view the affected users start their day in is listed above
-- [ ] This list is stored with the rule, because removal requires unwinding these **before** the rule is disabled — "after a scoping rule is disabled, the list views and reports aren't functional nor modifiable" — and no Setup page enumerates them
+- [ ] This list is stored with the rule, because removal requires unwinding these **before** the rule is disabled — "after a scoping rule is disabled, the list views and reports aren't functional nor modifiable" (UNVERIFIED (2026-10-21): Scoping Rules Developer Guide only) — and no Setup page enumerates them
 
-**User-switchable scope** (optional): if users need to move between scopes themselves, the documented approach is a Flow in the Lightning Utility Bar that writes the user-side attribute the `recordFilter` compares against.
+**User-switchable scope** (optional): if users need to move between scopes themselves, the documented approach (UNVERIFIED (2026-10-21): Scoping Rules Developer Guide only) is a Flow in the Lightning Utility Bar that writes the user-side attribute the `recordFilter` compares against.
 
 - [ ] Not needed
 - [ ] Flow: [REPLACE: flow API name] writing [REPLACE: User field]
@@ -163,16 +165,16 @@ Run every check. The Setup page looks identical whether the rule works or not, s
 
 - [ ] Deployed inactive, IDs remapped, then activated
 - [ ] Logged in as a user matched by `userCriteria`: the wired list view returns the reduced set
-- [ ] Logged in as a user matched by `userCriteria`: `SELECT COUNT() FROM [object]` returns the reduced count, and `SELECT COUNT() FROM [object] USING SCOPE everything` returns the full count — proving access is intact
+- [ ] Logged in as a user matched by `userCriteria`: `SELECT COUNT() FROM [object]` returns the reduced count, and `SELECT COUNT() FROM [object] USING SCOPE everything` returns the full count — proving access is intact (SOQL default-on scoping UNVERIFIED (2026-10-21))
 - [ ] Logged in as a user **not** matched by `userCriteria`: nothing changed for them
 - [ ] Confirmed no user is matched by two scoping or restriction rules on this object
-- [ ] Duplicate rules on this object reviewed — scope narrows potential duplicates shown, even when *Bypass sharing rules* is on
+- [ ] Duplicate rules on this object reviewed — scope narrows potential duplicates shown, even when *Bypass sharing rules* is on (UNVERIFIED (2026-10-21): Scoping Rules Developer Guide only)
 - [ ] Performance measured in a full sandbox at production data volume, not a scratch org or developer sandbox
 - [ ] Checker run: `python3 skills/admin/scoping-rules/scripts/check_scoping_rules.py --manifest-dir <metadata-dir>`
 
 **Rollback plan** (reverse order — this is not optional):
 
-1. Delete or re-point every list view and report in section 6 that has **Filter by scope** selected. Salesforce's instruction is *delete*, and this must happen while the rule is still enabled — afterwards they are neither functional nor modifiable
+1. Delete or re-point every list view and report in section 6 that has **Filter by scope** selected. Salesforce's instruction is *delete*, and this must happen while the rule is still enabled — afterwards they are neither functional nor modifiable (UNVERIFIED (2026-10-21): Scoping Rules Developer Guide only)
 2. Then set `active` to `false` on the rule
 3. Then delete the rule if it is not coming back
 
@@ -182,4 +184,4 @@ Run every check. The Setup page looks identical whether the rule works or not, s
 
 **Deviations from the standard pattern and why:** [REPLACE: or "none"]
 
-**Open risks:** [REPLACE: e.g. rule may be disabled by Salesforce if the object grows past current volume — monitoring owner and check cadence]
+**Open risks:** [REPLACE: e.g. rule may be disabled by Salesforce if the object grows past current volume (UNVERIFIED (2026-10-21): Scoping Rules Developer Guide only) — monitoring owner and check cadence]

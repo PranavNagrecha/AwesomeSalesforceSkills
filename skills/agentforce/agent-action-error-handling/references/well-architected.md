@@ -14,16 +14,17 @@ consumes turns, latency, and tokens until the conversation is abandoned.
 Two properties make the envelope reliable:
 
 - **Total.** Every code path returns a `Response`. Nothing throws past the
-  invocable boundary, because the platform requires one output per input
-  ([InvocableMethod
-  Annotation](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm)).
+  invocable boundary, because the platform requires one output per input "even
+  if errors occur" (apexdev 264 L5372-5373, L5510-5512).
 - **Decidable.** Every field the subagent instructions (called topic
-  instructions before April 2026) branch on is a stable enum
+  instructions before April 2026 — rename date UNVERIFIED (2026-10-21), see
+  SKILL.md) branch on is a stable enum
   string, never free text. Localisation, rewording, and tone edits then cannot
   change routing.
 
 The uncatchable-exception boundary is where reliability is actually won or lost.
-`LimitException` terminates the transaction regardless of your `catch`, so
+`LimitException` terminates the transaction regardless of your `catch` (catch
+and finally blocks "aren't executed", apexdev 264 L40116-40123), so
 bulk-safety is an error-handling requirement rather than a separate performance
 concern. An action that is not bulk-safe has an error path you cannot implement.
 
@@ -31,7 +32,9 @@ concern. An action that is not bulk-safe has an error path you cannot implement.
 
 Raw platform errors are a disclosure channel. `DmlException` messages embed
 field API names, record Ids, and — when a validation rule's error text
-interpolates a field — actual data values. Piped into a user-visible field, they
+interpolates a field — actual data values (UNVERIFIED (2026-10-21): message
+contents are not specified in the corpus; `DmlException` exposes the failed
+fields, record Id and "user message" per row, apexref 262 L215133-215142). Piped into a user-visible field, they
 land in a conversation transcript that may be stored, exported, and reviewed by
 people with no entitlement to the underlying record.
 
@@ -124,9 +127,10 @@ action's design notes so a channel expansion re-opens it.
 
 ## Anti-Patterns
 
-1. **Throwing from an invocable.** Breaks the size-and-order contract for the
-   entire batch, not just the failing request, and gives the planner a framework
-   error it cannot reason about.
+1. **Throwing from an invocable.** Breaks the one-result-per-input contract
+   (apexdev 264 L5372-5373) — for the entire batch, not just the failing request
+   (UNVERIFIED (2026-10-21): the whole-batch consequence is not stated in the
+   corpus) — and gives the planner a framework error it cannot reason about.
 
 2. **`getMessage()` as `userMessage`.** A disclosure channel and a routing
    fragility in one line. Message text is localised and rewritten between
@@ -169,6 +173,15 @@ action's design notes so a channel expansion re-opens it.
 ---
 
 ## Official Sources Used
+
+- apexdev 264 L5372-5373, L5510-5512 — one result per input, same size and order, even if errors occur; wrap failures in a result object
+- apexdev 264 L5475-5476, L5484, L5494-5496 — static public/global in an outer class; one invocable method per class; only `@Deprecated` alongside; no `List<List<sObject>>` in `@InvocableVariable`
+- apexdev 264 L40116-40123, L19757 — `System.LimitException` can't be caught; 150 DML statements per transaction
+- apexdev 264 L5461-5462, L27275-27285 — `callout=true` and how screen flows use it for transaction control
+- apexref 262 L148710-148719, L215147, L149985-149988 — `Database.Error.getStatusCode()`, `DmlException.getDmlType()`, SaveResult order matches input order
+- api_meta 264 L79332-79333, L80307-80308, L78861-78862 — `GenAiPlannerBundle` replaces `GenAiPlanner` at API 64.0; `GenAiPlugin` is an agent topic; `GenAiFunction` is an agent action
+
+The URL entries below are not in the audit corpus.
 
 - InvocableMethod Annotation (Apex Developer Guide) — https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm
 - Create Custom Actions Using Apex InvocableMethod (Agentforce Developer Guide) — https://developer.salesforce.com/docs/ai/agentforce/guide/agent-invocablemethod.html

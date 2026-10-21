@@ -30,9 +30,9 @@ outputs:
   - "Explicit list of unsupported or context-dependent claims not taught as fact"
 dependencies:
   - architect/salesforce-learning-research
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-09-01
+updated: 2026-10-21
 ---
 
 # Salesforce Learning Brief
@@ -51,6 +51,22 @@ A valid input must provide:
 - visible gaps, contradictions, and claims that must not be taught as fact.
 
 When evidence is missing, do not fill the lesson from memory. Route to `architect/salesforce-learning-research`, remain explicitly source-bounded, or return a partial brief whose unsupported sections are marked.
+
+---
+
+## Questions to Ask Before Configuring
+
+| Ask | Why it matters | What a good answer adds |
+|---|---|---|
+| "Who is the learner, at what level, and what should they be able to do afterward?" | A broad objective hides adjacent scope ("Learning objectives can hide adjacent scope" in `references/gotchas.md`) | One measurable outcome and a list of deferred topics |
+| "Which research packet backs this lesson, and does every numeric limit and date map to a claim ID?" | A source list at the end is not citation mapping ("A citation list is not citation mapping") | Claim IDs or nearby citations for every load-bearing statement |
+| "Which release, edition, permission and scale qualifiers must survive simplification?" | Dropping qualifiers makes a lesson easy to read and wrong to apply ("Beginner-friendly can become fact-hostile") | A short list of caveats the brief must keep at every level |
+| "Does the outcome depend on a UI path or CLI flag, and which tool version?" | Procedures change faster than concepts ("Procedures decay faster than concepts") | A dated procedure tied to a tool version and a verification command |
+| "Which object, field or package names in the example are illustrative?" | Learners reuse illustrative names as prescriptions ("Examples are sticky") | Every sample name labelled illustrative, with what would change the approach |
+| "Which misconception should the knowledge check expose?" | Recall questions test the wrong thing ("Knowledge checks can test the wrong thing") | Changed-constraint questions with answer reasoning |
+| "Where can the learner practise safely, and when must they stop?" | A practice task can imply production authority ("Practice tasks can create authority risk") | A named non-production environment, acceptance checks and a stop condition |
+
+A proper brief adds what a quick explanation skips: claims the learner can trace, caveats that survive simplification, and practice that cannot touch production.
 
 ---
 

@@ -23,8 +23,8 @@ Setup → Object Manager → Contact → Scoping Rules → New
 The equivalent deployable file, for a source-tracked org:
 
 ```xml
-<!-- force-app/main/default/restrictionRules/SR_Department_A_Contacts.rule-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/restrictionRules/SR_Department_A_Contacts.rule-meta.xml -->
 <RestrictionRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <active>true</active>
     <description>View contacts from Department A.</description>
@@ -52,8 +52,8 @@ sf project deploy start --metadata RestrictionRule:SR_Department_A_Contacts
 Step 4 — wire the surfaces. This is the step that makes the rule visible; without it nothing changes for any user. Set `filterScope` on the Contact list view the consultants land on:
 
 ```xml
-<!-- force-app/main/default/objects/Contact/listViews/All_Active_Contacts.listView-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/objects/Contact/listViews/All_Active_Contacts.listView-meta.xml -->
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>All_Active_Contacts</fullName>
     <columns>NAME</columns>
@@ -75,13 +75,17 @@ SELECT COUNT() FROM Contact
 SELECT COUNT() FROM Contact USING SCOPE everything
 ```
 
+UNVERIFIED (2026-10-21): that an unqualified SOQL query is scoped by default when a rule is active comes from the Scoping Rules Developer Guide and the SOQL reference, neither in the corpus — run both queries and compare before relying on step 5 as proof.
+
 **Why it works:** `$User.Department` is evaluated per running user, so one rule covers every practice and follows a consultant who transfers — no per-department artefact exists to maintain. The two counts in step 5 are the proof that this is a focus control and not an access control: the same user, in the same session, reaches all 400,000 records by asking for them. That is the intended behaviour, and it is why this design would be unacceptable if the requirement had been confidentiality.
 
-**Source:** `recordFilter` and `userCriteria` strings are the documented Contact-department example; the `filterScope` value `ScopingRule` and its Lightning-only, opt-in behaviour are from the ListView metadata type reference. See `well-architected.md` for URLs.
+**Source:** `recordFilter` and `userCriteria` strings are the documented Contact-department scoping sample (api_meta 264 L108725-108736); the `filterScope` value `ScopingRule` and its Lightning-only, opt-in behaviour are from the ListView metadata type reference (api_meta 264 L46681-46682).
 
 ---
 
 ## Example 2: Accounts Default to the Banker's Current Branch (SOQL Operator)
+
+UNVERIFIED (2026-10-21), whole example: the SOQL operator, its `USING SCOPE EVERYTHING` rule, the right-to-disable statement and the utility-bar Flow pattern are Scoping Rules Developer Guide only, not in the corpus.
 
 **Context:** A retail bank runs Financial Services Cloud. Bankers are assigned to a branch through `Banker.CurrentBranchId`, and accounts are linked to branches through the `BranchUnitCustomer` junction. A banker covering the Leeds branch should open Salesforce and see Leeds accounts, but must retain access to every account in the region for cover and escalation.
 
@@ -101,8 +105,8 @@ If this is slow here it will be slow on every list view render, and an inefficie
 Step 2 — wrap it in the SOQL operator. What follows is Salesforce's published rule, reproduced exactly — and note that its nested `SELECT` does *not* carry `USING SCOPE EVERYTHING`, even though the same guide states that nested `SELECT` statements must. Deploy the compliant form (the clause on both) unless you have verified the documented form works in your org; see `gotchas.md` Gotcha 5:
 
 ```xml
-<!-- force-app/main/default/restrictionRules/BranchRuleOnAccount.rule-meta.xml -->
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- force-app/main/default/restrictionRules/BranchRuleOnAccount.rule-meta.xml -->
 <RestrictionRule xmlns="http://soap.sforce.com/2006/04/metadata">
   <active>true</active>
   <description>Scoping rule where users can scope account records by the user's current branch</description>
@@ -159,15 +163,15 @@ recordFilter:  Name__c='Tom, Anita, "Torres, Jia"'
 userCriteria:  $User.IsActive=true
 ```
 
-Salesforce's rule is that "double-quotes specify that the value inside the quotes isn't considered a delimiter". Without them the second filter matches four values (`Tom`, `Anita`, `Torres`, `Jia`) instead of three.
+"Comma-separated ID or string values are supported in the Record Criteria field" (secguide 262 L4354, restriction rules). The Scoping Rules Developer Guide adds that "double-quotes specify that the value inside the quotes isn't considered a delimiter" — the corpus states the same behaviour for restriction rules, "To include a single value that contains a comma, surround the value with double quotes" (secguide 262 L4244-4245); UNVERIFIED (2026-10-21) for scoping rules. Without them the second filter matches four values (`Tom`, `Anita`, `Torres`, `Jia`) instead of three.
 
-Note `Owner:User` in the first filter. `Owner` is polymorphic — Salesforce's example is that an event's Owner "can contain a user or a queue, but queues aren't supported in scoping rules" — so the reference must be typed to User. `Agent__c.Owner.ManagerId` is not valid; `Agent__c.Owner:User.ManagerId` is. The path also sits at the one-level dot-notation limit ("one lookup level from the `targetEntity`").
+Note `Owner:User` in the first filter. `Owner` is polymorphic — the Security Guide's example is that an event's Owner field "can contain a user or a queue, but queues aren't supported in restriction rules. So it's necessary to specify Owner:User" (secguide 262 L4363-4365) — so the reference must be typed to User. `Agent__c.Owner.ManagerId` is not valid; `Agent__c.Owner:User.ManagerId` is. The path also sits at the one-level dot-notation limit ("one lookup level from the `targetEntity`" — UNVERIFIED (2026-10-21): Scoping Rules Developer Guide only).
 
-What you cannot do here is add a second condition. Outside the SOQL operator, "scoping rules support only the EQUALS operator. The AND and OR operators aren't supported" — the comma list is multi-value equality on one field, not a way to combine fields. A requirement spanning two fields needs a precomputed field to match against, or the API path.
+What you cannot do here is add a second condition. Outside the SOQL operator, "scoping rules support only the EQUALS operator. The AND and OR operators aren't supported" (UNVERIFIED (2026-10-21) for scoping rules; secguide 262 L4356 for restriction rules) — the comma list is multi-value equality on one field, not a way to combine fields. A requirement spanning two fields needs a precomputed field to match against, or the API path.
 
 **Why it works:** Both filters stay inside the supported data types (reference and string) and inside the one-level lookup limit, and the quoting makes the delimiter explicit rather than relying on the parser to guess.
 
-**Source:** both criteria strings are the documented multiple-values examples; the `Owner:User` typing requirement and the one-level dot-notation limit are from the Considerations page. See `well-architected.md` for URLs.
+**Source:** both criteria strings are the Scoping Rules Developer Guide's multiple-values examples (not in the corpus); the `Owner:User` typing requirement is secguide 262 L4363-4365.
 
 ---
 
@@ -175,14 +179,14 @@ What you cannot do here is add a second condition. Outside the SOQL operator, "s
 
 **Context:** An insurance org has a claims team and a special investigations unit. Legal asks that ordinary claims handlers not see claims flagged for investigation. An admin, told to "restrict what handlers see on Claim", finds Scoping Rules in Object Manager on the custom `Claim__c` object, builds `Under_Investigation__c = false` as the record criterion with the claims-handler role as the user criterion, activates it, sets `filterScope` on the team list view, and reports the control as delivered. The list view now shows no investigated claims. It demos correctly.
 
-**What goes wrong:** Nothing, for about a month. Then a handler receives an email with a claim link, clicks it, and opens an investigated claim. Another handler builds a personal report without selecting **Filter by scope** and gets the full set. A third runs a global search and finds every investigated claim, because Search does not appear in the scoping surface table at all — it appears in the *restriction* rule surface list ("Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, SOSL"), which is a different feature. Nothing was breached in the platform's terms: the sharing model always granted these users access, and the documentation says so explicitly — scoping rules "don't restrict the access that your users have to records. Your users can still open and report on all the records that they can access according to your org's sharing settings." The control was never a control. The audit finding lands on the admin.
+**What goes wrong:** Nothing, for about a month. Then a handler receives an email with a claim link, clicks it, and opens an investigated claim. Another handler builds a personal report without selecting **Filter by scope** and gets the full set. A third runs a global search and finds every investigated claim, because Search does not appear in the scoping surface table at all (UNVERIFIED (2026-10-21): that table is Scoping Rules Developer Guide only) — it appears in the *restriction* rule surface list ("Links, List Views, Lookups, Records, Related Lists, Reports, Search, SOQL, SOSL", secguide 262 L4120-4136), which is a different feature. Nothing was breached in the platform's terms: the sharing model always granted these users access, and the documentation says so explicitly — "Scoping rules don't restrict the record access that your users already have … Your users can still open and report on all records that they have access to per your sharing settings" (secguide 262 L692-694). The control was never a control. The audit finding lands on the admin.
 
 **How to recover:**
 
-1. Do not disable the scoping rule first. "To disable a scoping rule, first delete the list views and reports that have **Filter by scope** selected. After a scoping rule is disabled, the list views and reports aren't functional nor modifiable." Deal with the surfaces while they are still editable.
-2. Classify the requirement correctly. "Must not see" is an access requirement, so the answer is the sharing model and `admin/restriction-rules`. Confirm `Claim__c` is a custom object, which is on the restriction-supported list.
-3. Expect the criteria to be less expressive on the way over: "restriction rules support only the EQUALS operator", formulas are not supported, and null or blank values in criteria are not supported. A scoping criterion may not translate one-for-one.
-4. Know the remaining holes before you promise enforcement: restriction rules "aren't applied for code executed in System Mode", and users with View All Records or View All Data see everything regardless. Neither is a reason to keep the scoping rule; both are things Legal needs to hear.
+1. Do not disable the scoping rule first. "To disable a scoping rule, first delete the list views and reports that have **Filter by scope** selected. After a scoping rule is disabled, the list views and reports aren't functional nor modifiable." (UNVERIFIED (2026-10-21): Scoping Rules Developer Guide only.) Deal with the surfaces while they are still editable.
+2. Classify the requirement correctly. "Must not see" is an access requirement, so the answer is the sharing model and `admin/restriction-rules`. Confirm `Claim__c` is a custom object, which is on the restriction-supported list (api_meta 264 L108675-108676).
+3. Expect the criteria to be less expressive on the way over: "Restriction rules support only the EQUALS operator" and "The use of formulas isn't supported" (secguide 262 L4356-4357); null or blank values in criteria are not supported (UNVERIFIED (2026-10-21) for restriction rules). A scoping criterion may not translate one-for-one.
+4. Know the remaining holes before you promise enforcement: "Restriction rules aren't applied for code executed in System Mode", and users with View All or View All Data (or Modify All / Modify All Data) see everything regardless (secguide 262 L4314-4316). Neither is a reason to keep the scoping rule; both are things Legal needs to hear.
 5. Record the classification decision in writing so the next person does not repeat it.
 
 **The generalisable lesson:** the two features share a metadata type, a Setup neighbourhood and most of a vocabulary, and exactly one of them is a security control. If a stakeholder would be upset that a user *could* see a record, a scoping rule is the wrong artefact no matter how convincing the list view looks.

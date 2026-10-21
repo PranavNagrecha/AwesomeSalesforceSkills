@@ -3,10 +3,10 @@
 Four worked examples. The platform constraint underneath all of them is a single
 documented rule from the `@InvocableMethod` reference:
 
-> The inputs and outputs *"must match on both the size and the order"*, and
-> methods *"must return the same number of results as inputs received, even when
-> errors occur."*
-> — [InvocableMethod Annotation](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm)
+> *"the Inputs and Outputs must match on both the size and the order"* (apexdev
+> 264 L5510-5512), and *"The execution of the invocable method must run and
+> return the same number of results as inputs received even if errors occur"*
+> (apexdev 264 L5372-5373).
 
 An error is therefore not an exception you throw. It is a **value you return in
 the slot that belongs to the failing request**. Everything else in this skill
@@ -145,9 +145,9 @@ public with sharing class CloseCaseAction {
             cases.add(toUpdate.get(i));
         }
 
-        // allOrNone = false: one bad row must not fail the other four.
-        // Database.update returns results in input order, so results[n]
-        // corresponds to indexes[n].
+        // allOrNone = false: one bad row must not fail the other four
+        // (apexref 262 L209824-209827). SaveResult[i] matches input[i]
+        // (apexref 262 L149985-149988), so results[n] corresponds to indexes[n].
         List<Database.SaveResult> results = Database.update(cases, false, AccessLevel.USER_MODE);
 
         for (Integer n = 0; n < results.size(); n++) {
@@ -240,7 +240,7 @@ public with sharing class CloseCaseAction {
 
 A typed envelope with no matching instructions is dead weight — the planner sees
 JSON and improvises. Add one rule per outcome class in the subagent instructions
-(called topic instructions before April 2026;
+(called topic instructions before April 2026 — rename date UNVERIFIED (2026-10-21), see SKILL.md;
 `templates/agentforce/AgentTopic_Template.md` has the section shape):
 
 ```text
@@ -283,7 +283,8 @@ Two properties make this work:
 ### Context
 
 An action checks order status against an external ERP through a Named
-Credential. `callout=true` is required on the annotation.
+Credential. The guide says "If the method calls to an external system, add
+callout=true" (apexdev 264 L5461-5462).
 
 ### Problem
 
@@ -408,9 +409,16 @@ the agent should say what is wrong and ask again. A 503 means nobody in the
 conversation can fix it. Classifying by locus-of-control is what turns the
 envelope into useful routing instead of a relabelled stack trace.
 
-Note the annotation carries `callout=true`. Without it the callout fails at
-runtime, and `HttpClient` in `templates/apex/HttpClient.cls` is the canonical
-place to put retry and timeout policy shared across actions.
+Note the annotation carries `callout=true`. Its documented role is transaction
+control, not permission to call out: screen flows use the modifier "to determine
+whether the action can be executed safely in the current transaction" and, with
+uncommitted work and Transaction Control set to let the flow decide, commit and
+start a new transaction before the call; with `callout=false`, or from a
+non-screen flow, the action runs in the current transaction (apexdev 264
+L27275-27285). (Corrected 2026-10-21: an earlier version said the callout "fails
+at runtime" without the modifier — the corpus does not say that.)
+`HttpClient` in `templates/apex/HttpClient.cls` is the canonical place to put
+retry and timeout policy shared across actions.
 
 ---
 

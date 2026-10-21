@@ -2,7 +2,7 @@
 
 Three worked stories at three sizes, each carrying the INVEST check, the Given/When/Then criteria, the metadata artefacts a build agent turns the story into, and the actual `check_invest.py` run. The point of this file is the traceability: the story's own `Then` text and the deployed metadata's user-facing text are the same string, not two independent descriptions that can drift apart.
 
-Metadata field names and their sources are cited to the Metadata API Developer Guide dump (`api_meta L<n>`); where a claim about run-time ordering or file-size limits matters to the story, it is cited the same way rather than asserted from memory.
+Metadata field names and their sources are cited to the Winter '27 Metadata API Developer Guide dump (`api_meta 264 L<n>`; re-pointed from the 262 line numbers on 2026-10-21); where a claim about run-time ordering or file-size limits matters to the story, it is cited the same way rather than asserted from memory.
 
 ---
 
@@ -75,9 +75,9 @@ Metadata field names and their sources are cited to the Metadata API Developer G
 
 | Metadata type | Field | Value the story implies | Source |
 |---|---|---|---|
-| `ValidationRule` (declared inside the object's `CustomObject` metadata) | `errorConditionFormula` | `AND(ISPICKVAL(StageName, "Closed Won"), ISBLANK(Amount))` | api_meta L45385 (field is required) |
-| `ValidationRule` | `errorMessage` | The story's `Then` text, verbatim, and ≤255 characters | api_meta L45402 |
-| `ValidationRule` | `active` | `true` | api_meta L45380 (field), sample definition at L45418 |
+| `ValidationRule` (declared inside the object's `CustomObject` metadata) | `errorConditionFormula` | `AND(ISPICKVAL(StageName, "Closed Won"), ISBLANK(Amount))` | api_meta 264 L47772 (field is required) |
+| `ValidationRule` | `errorMessage` | The story's `Then` text, verbatim, and ≤255 characters | api_meta 264 L47780-47781 |
+| `ValidationRule` | `active` | `true` | api_meta 264 L47767 (field), sample definition at L47796 |
 
 ```xml
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -171,11 +171,11 @@ Note the checker does not, and cannot, know whether `AND(ISPICKVAL(...))` is the
 
 | Metadata type | Field | Value the story implies | Source |
 |---|---|---|---|
-| `PermissionSet` | `label` | "Escalation Edit" (required, ≤80 characters) | api_meta L94824 |
-| `PermissionSet` | `description` | ≤255 characters | api_meta L94788 |
-| `PermissionSet` → `fieldPermissions[]` | `field`, `editable`, `readable` | One entry per field named in the AC (`Escalation__c.Status__c`, `Escalation__c.Resolution_Notes__c`), `editable=true` | api_meta L94802, L95040, L95043 |
-| `PermissionSet` → `objectPermissions[]` | `object`, `allowRead`, `allowEdit` | `Escalation__c`, both `true` (Create/Delete stay `false` per Notes) | api_meta L94836, L95069–L95081, L95102 |
-| `PermissionSetGroup` | `label`, `permissionSets` | Groups the permission set above so it can be assigned/revoked as one unit | api_meta L95360–L95362 (sample definition) |
+| `PermissionSet` | `label` | "Escalation Edit" (required, ≤80 characters) | api_meta 264 L97525 |
+| `PermissionSet` | `description` | ≤255 characters | api_meta 264 L97489 |
+| `PermissionSet` → `fieldPermissions[]` | `field`, `editable`, `readable` | One entry per field named in the AC (`Escalation__c.Status__c`, `Escalation__c.Resolution_Notes__c`), `editable=true` | api_meta 264 L97503, L97741, L97744, L97749 |
+| `PermissionSet` → `objectPermissions[]` | `object`, `allowRead`, `allowEdit` | `Escalation__c`, both `true` (Create/Delete stay `false` per Notes) | api_meta 264 L97537, L97778, L97782, L97803 |
+| `PermissionSetGroup` | `label`, `permissionSets` | Groups the permission set above so it can be assigned/revoked as one unit | api_meta 264 L98061–L98063 (sample definition) |
 
 ```xml
 <PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -294,9 +294,9 @@ Summary: 1/1 stories passed (0 ERROR, 0 WARN).
 
 | Metadata type | Field | Value the story implies | Source |
 |---|---|---|---|
-| `Flow` | `triggerType` | `RecordAfterSave` — the Task is a side effect created once the Case commits | api_meta L72524 |
-| `Flow` | `recordTriggerType` | `CreateAndUpdate` — the AC covers both a brand-new Case and an existing one whose Priority changes | api_meta L72452 |
-| `Flow` | `triggerOrder` | An explicit integer, 1–2,000, coordinated with the two existing Case flows (Gotcha 13) rather than left to the org default | api_meta L68438 |
+| `Flow` | `triggerType` | `RecordAfterSave` — the Task is a side effect created once the Case commits | api_meta 264 L75261-75262 |
+| `Flow` | `recordTriggerType` | `CreateAndUpdate` — the AC covers both a brand-new Case and an existing one whose Priority changes | api_meta 264 L75189-75190 |
+| `Flow` | `triggerOrder` | An explicit integer, 1–2,000, coordinated with the two existing Case flows (Gotcha 13) rather than left unset | api_meta 264 L70977-70980 |
 | `Flow` (object scope) | object | `Case` | story text |
 
 No Flow XML is shown here — a Flow's decision/assignment element graph is exactly the kind of implementation detail the story must not prescribe (INVEST-Negotiable), and inventing a plausible-looking element structure would be worse than naming just the three fields a build agent actually needs before opening Flow Builder.

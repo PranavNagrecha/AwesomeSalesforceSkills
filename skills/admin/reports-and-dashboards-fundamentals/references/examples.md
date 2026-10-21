@@ -16,7 +16,7 @@
 2. Add summary fields: SUM(Amount) labeled "Total Pipeline" and COUNT(Id) labeled "Opportunity Count."
 3. Add a Summary Formula for Average Deal Size: `Amount:SUM / RowCount`
 4. Save to the Sales Operations shared folder.
-5. Create a new Dashboard. Set Running User to **"Run as logged-in user"** (this makes it dynamic).
+5. Create a new Dashboard. Set Running User to **"Run as logged-in user"** (this makes it dynamic — `dashboardType` `LoggedInUser`, api_meta 264 L50185-50186).
 6. Add a Bar Chart component: Stage on X-axis, SUM(Amount) on Y-axis, sourced from the Summary report.
 7. Add a Metric component showing total pipeline SUM(Amount).
 8. Add a Table component showing open opportunities sorted by Amount descending (from a Tabular report with row limit 10).
@@ -24,7 +24,7 @@
 
 **Why it works:** Dynamic dashboards execute the source reports as the viewing user, so each manager's sharing access is applied at query time. A manager in the Western region sees only Western region records they own or can access via the role hierarchy. No data leakage occurs. The relative date filter keeps the dashboard accurate every quarter without manual updates.
 
-**Limit to know:** Enterprise orgs support a maximum of 5 simultaneous dynamic dashboard running users. If your org needs more than 5 simultaneous personalized views, upgrade to Unlimited or consider CRM Analytics.
+**Limit to know:** Enterprise orgs support a maximum of 5 simultaneous dynamic dashboard running users. If your org needs more than 5 simultaneous personalized views, upgrade to Unlimited or consider CRM Analytics. UNVERIFIED (2026-10-21): the 5-user Enterprise cap is Salesforce Help only, not in the corpus.
 
 ---
 
@@ -32,7 +32,7 @@
 
 **Context:** A sales manager wants a report showing all Accounts, along with the date of their most recent activity (Task or Event), to identify accounts that have gone cold. No standard Salesforce report type covers Accounts + Activities with the fields needed.
 
-**Problem:** The standard "Activities with Accounts" report type shows one row per activity. The manager gets hundreds of rows per account and cannot see the most recent activity date at a glance. "Accounts with Activities" does not exist as a standard type.
+**Problem:** The standard "Activities with Accounts" report type shows one row per activity. The manager gets hundreds of rows per account and cannot see the most recent activity date at a glance. "Accounts with Activities" does not exist as a standard type (UNVERIFIED (2026-10-21): standard report type names are not in the corpus).
 
 **Solution:**
 
@@ -65,10 +65,10 @@
 2. **Block 1**: Report type = "Opportunities." Filters: Stage = Closed Won, Close Date = Current FQ. Group by Opportunity Owner. Summary field: SUM(Amount) labeled "Closed Won."
 3. **Block 2**: Report type = "Quotas with Users" (a custom CRT or standard if available). Filters: Quota Period = Current FQ. Group by Quota Owner. Summary field: SUM(Quota Amount) labeled "Quota."
 4. Set the common grouping field to Owner Name across both blocks (this is how joined report blocks align rows).
-5. Add a Summary Formula across blocks: Attainment % = `[Opportunities]Amount:SUM / [Quotas]QuotaAmount__c:SUM`
+5. Add a Summary Formula across blocks: Attainment % = `[Opportunities]Amount:SUM / [Quotas]QuotaAmount__c:SUM` (a "cross-block formula, which is available with joined reports", api_meta 264 L106937-106938)
 6. Add a chart to the joined report, then place **that chart** on the leadership dashboard as a widget. The full joined report cannot be added as a dashboard widget, and a dashboard whose widgets are all joined-report charts cannot be filtered at all — so plan any period switching as separate dashboards, not as a dashboard filter.
 
-**Limits to know:** Maximum 5 blocks per joined report, 100 columns per block, 10 custom summary formulas per block and 50 across the report, and 10 cross-block formulas (step 5 spends one). Bucketed fields, cross filters, and conditional highlighting are unavailable inside a joined report entirely — the coverage-tier bucket from Example 2 cannot be reused here.
+**Limits to know:** Maximum 5 blocks per joined report, 100 columns per block, 10 custom summary formulas per block and 50 across the report, and 10 cross-block formulas (step 5 spends one). Bucketed fields, cross filters, and conditional highlighting are unavailable inside a joined report entirely — the coverage-tier bucket from Example 2 cannot be reused here. UNVERIFIED (2026-10-21): every figure in this paragraph, and the step 6 dashboard rule, is Salesforce Help only, not in the corpus.
 
 **Why it works:** The joined report treats each block as an independent data source aligned on the common grouping. Reps with quota but no closed deals still appear (block 2 contributes the row); reps with deals but no quota entry also appear (block 1 contributes). The cross-block summary formula surfaces attainment percentage without requiring a custom formula field on either object.
 

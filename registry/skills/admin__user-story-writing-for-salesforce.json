@@ -77,6 +77,7 @@
     "69dc1e3659a059fb9481",
     "6b6996a839ac8a79e4bc",
     "6d995c74f1b56f14ba73",
+    "6f29b827477570ef6fef",
     "6f8f47805e65d2d401d9",
     "7007507eb7af7aa5c35f",
     "7777148841f14a409b1a",
@@ -159,7 +160,7 @@
     "fd1f3f7da09d9ed6d09e",
     "feae78ddf52ba4a24753"
   ],
-  "content_hash": "e3545f1d4b7f10ae9e1b42f6c4c543dd4fd8edc004dc3b95f1ce1632da8bdf05",
+  "content_hash": "3492b2bfd3b6d64436c90ffdb8ff52264b7d175959dbc292bf56518b35b12249",
   "dependencies": [],
   "description": "Use this skill when authoring INVEST-compliant Salesforce user stories from gathered requirements: shaping the As-A/I-Want/So-That stem, writing Given-When-Then acceptance criteria, sizing complexity (S/M/L/XL), splitting stories that are too large for a sprint, and emitting handoff metadata that names the next downstream agent. Trigger keywords: user story, INVEST, story splitting, story sizing, As-A I-Want So-That, story handoff, recommended_agents, backlog item shape. NOT for requirements elicitation or stakeholder interviews (use admin/requirements-gathering-for-sf). NOT for the Given-When-Then technique itself in depth (use admin/acceptance-criteria-given-when-then). NOT for UAT test case design (use admin/uat-test-case-design). NOT for backlog prioritization (use admin/moscow-prioritization-for-sf-backlog).",
   "file_location": "skills/admin/user-story-writing-for-salesforce",
@@ -210,7 +211,7 @@
     "skills/admin/user-story-writing-for-salesforce/templates/story-shape.md",
     "skills/admin/user-story-writing-for-salesforce/templates/user-story-writing-for-salesforce-template.md"
   ],
-  "updated": "2026-09-12",
+  "updated": "2026-10-21",
   "vector_embedding": null,
-  "version": "1.1.0"
+  "version": "1.1.1"
 }

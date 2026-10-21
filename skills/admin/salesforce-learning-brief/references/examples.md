@@ -8,7 +8,7 @@ The knowledge check should change one constraint: "The requirement now creates a
 
 ## Developer variant
 
-For an LWC TypeScript migration brief, assume the learner knows JavaScript. Skip a general TypeScript tutorial. Teach project configuration, source-to-compiled output, Lightning base-component types, migration sequencing, test/static-analysis implications, and how to avoid overwriting hand-authored JavaScript.
+For an LWC TypeScript migration brief, assume the learner knows JavaScript. Skip a general TypeScript tutorial. Teach project configuration, source-to-compiled output, Lightning base-component types (UNVERIFIED (2026-10-21): LWC TypeScript support is not in the corpus — take it from the research packet), migration sequencing, test/static-analysis implications, and how to avoid overwriting hand-authored JavaScript.
 
 ## Architect variant
 
@@ -24,6 +24,8 @@ When edition availability is not supported by the research packet, keep the conc
 ### Decision point: before-save or after-save?
 
 Use before-save when the requirement changes fields on the triggering record and does not need related-record DML. Use after-save when the requirement creates the related Task in this exercise.
+
+**Evidence for this fragment:** `RecordBeforeSave` "triggers an autolaunched flow to make more updates to that record before it's saved" and `RecordAfterSave` "starts after a record is saved" (api_meta 264 L75261-75268). That before-save cannot create related records is UNVERIFIED (2026-10-21) in the corpus — cite the research packet's claim for it.
 
 **Illustrative assumption:** `Case.Priority` and a related `Task` are available in the scratch exercise org.
 **Expected result:** one Task is created only when the entry criteria are met.

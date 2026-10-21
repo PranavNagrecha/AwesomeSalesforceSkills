@@ -128,9 +128,9 @@ Non-obvious pitfalls when writing Salesforce user stories. These mistakes pass c
 
 **What happens:** A new record-triggered story ships cleanly in isolation, then fires in a different order than an existing flow on the same object once both are live — a field the new story depends on hasn't been set yet by the other automation, or vice versa. Nobody sees it until production, because sandbox testing only ever exercised the new story alone.
 
-**When it occurs:** The BA (and the build agent after them) treated the object as a blank slate. Salesforce record-triggered flows on the same object and the same save event actually run in an explicit sequence — `triggerOrder`, an integer from 1 to 2,000 set on the flow (api_meta L68438) — so a second flow added without checking what's already there is entering a race whether anyone names it or not.
+**When it occurs:** The BA (and the build agent after them) treated the object as a blank slate. Salesforce record-triggered flows on the same object can carry an explicit run order — `triggerOrder`, "The run order of a record-triggered flow, from 1 to 2,000", API 54.0+ (api_meta 264 L70977-70980) — and the corpus points to Salesforce Help for how flows without one are sequenced (UNVERIFIED (2026-10-21)), so a second flow added without checking what's already there is entering a race whether anyone names it or not.
 
-**How to avoid:** Ask what automation already exists on the object before drafting. If the story is adding a second flow (or a validation rule, or a trigger) that touches the same save event as something already live, say so explicitly in `dependencies[]` or `notes` so the build agent sets `triggerOrder` deliberately instead of accepting whatever default the org assigns.
+**How to avoid:** Ask what automation already exists on the object before drafting. If the story is adding a second flow (or a validation rule, or a trigger) that touches the same save event as something already live, say so explicitly in `dependencies[]` or `notes` so the build agent sets `triggerOrder` deliberately instead of leaving it unset.
 
 ---
 

@@ -922,6 +922,11 @@ releases:
     - admin/related-list-configuration
     - admin/remote-site-settings
     - admin/report-performance-tuning
+    - admin/reports-and-dashboards-fundamentals
+    - admin/salesforce-learning-brief
+    - admin/scoping-rules
+    - admin/user-story-writing-for-salesforce
+    - agentforce/agent-action-error-handling
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'
