@@ -7,10 +7,9 @@ You do not need it to use the library.
 How the pieces fit together, what a human writes, what a script generates, and
 what path a question takes from "user asks" to "skill answers".
 
-Every number and file:line citation on this page was re-verified against this
-checkout on **2026-08-15**. Where a figure moves with the corpus, the command
-that produced it is printed next to it — re-run it rather than trusting the
-number.
+Most measurements and file:line citations on this page date from 2026-08-15 and
+some have drifted since. Where a figure moves with the corpus, the command that
+produced it is printed next to it — re-run it rather than trusting the number.
 
 ## Start here: only one retrieval mechanism ships
 
@@ -73,25 +72,17 @@ A skill library is only useful if the model can find the right page. The naive
 way to make that happen is to put every skill's name and description in front of
 the model at session start. At this corpus size that is not affordable.
 
-Measured with `python3 scripts/build_plugin.py --measure` on 2026-08-15:
+`python3 scripts/build_plugin.py --measure` prints what loads up front — the
+router skills, the slash commands and the run-time agent loaders (`tier1_tokens`)
+against its budget (`budget_tier1_tokens`) — and the cost of the alternative, a
+flat export of every skill description (`flat_export_tokens`). The flat export is
+the design this architecture exists to avoid; everything below — the router
+tier, the per-domain rosters, the 220-character gloss budget — is downstream of
+that comparison.
 
-| what is loaded up front | components | tokens |
-|---|---:|---:|
-| Router skills | 12 | 1,921.0 |
-| Slash commands | 67 | 1,412.0 |
-| Run-time agents | 48 | 2,157.2 |
-| **Total loaded before the user types anything** (`tier1_tokens`) | | **5,490** |
-| Budget (`budget_tier1_tokens`) | | 6,000 |
-| *Alternative:* a flat export of every skill description | 1,027 | **138,694** |
-| Ratio | | **3.96%** |
-
-139k tokens of catalogue, spent before the first question, is the design this
-architecture exists to avoid. Everything below — the router tier, the per-domain
-rosters, the 220-character gloss budget — is downstream of that number.
-
-That table measures a **plugin** install, where all three component types load;
-`plugin.json` points `commands` at the tracked `commands/` directory, so the
-1,412 command tokens are real there. A plain clone is cheaper: Claude Code reads
+That measure describes a **plugin** install, where all three component types
+load; `plugin.json` points `commands` at the tracked `commands/` directory, so
+the command tokens are real there. A plain clone is cheaper: Claude Code reads
 slash commands from `.claude/commands/`, which is gitignored, so until
 `scripts/bootstrap.py` writes it those tokens are not spent.
 
@@ -100,15 +91,10 @@ $ git check-ignore -v .claude/commands/
 .gitignore:131:.claude/*	.claude/commands/
 ```
 
-The token model is an **estimate, calibrated** — not a meter reading:
-`0.25 * (len(qualified_name) + len(description)) + 0.25 per component`. It was
-calibrated on 2026-08-07 against Claude Code 2.1.209 using nine probe plugins
-installed from a local-path marketplace into a throwaway `CLAUDE_CONFIG_DIR`,
-read back with `claude plugin details`; the full-replica probe predicted 6,117.8
-against a measured 6,118. `--measure` carries that provenance in its
-`measured_reference` block *along with its own caveat*: the replica predates the
-2026-08-07 gloss rework, so re-run the probe before calling the current figure
-validated.
+The token model is an **estimate**, not a meter reading:
+`0.25 * (len(qualified_name) + len(description)) + 0.25 per component`, last
+calibrated against Claude Code on 2026-08-07. `--measure` records that
+calibration in its `measured_reference` block.
 
 ---
 
@@ -126,13 +112,13 @@ Tracked in git, present the moment `git clone` finishes:
 | `.claude/skills/salesforce/SKILL.md` | 1 | `git ls-files .claude/skills` | The top-level entry router |
 | `.claude/skills/salesforce-<domain>/SKILL.md` | 11 | same | One domain router each |
 | `.claude/skills/salesforce-<domain>/references/skill-index.md` | 11 | same | The rosters — one gloss per package |
-| `.claude/agents/*.md` | 48 | `git ls-files .claude/agents \| wc -l` | Run-time agent loaders (plugin-scoped) |
-| `agents/<id>.md` | 48 | `git ls-files agents/ \| grep -c '^agents/[^/]*\.md$'` | Byte-identical project-scoped copies of the same loaders |
-| `commands/*.md` | 67 | `git ls-files 'commands/*.md' \| wc -l` | Slash-command specs, loaded by the plugin from here |
-| `skills/<domain>/<slug>/` | 1,027 | `git ls-files 'skills/*/*/SKILL.md' \| wc -l` | The packages themselves |
+| `.claude/agents/*.md` | 70 | `git ls-files .claude/agents \| wc -l` | Run-time agent loaders (plugin-scoped) |
+| `agents/<id>.md` | 70 | `git ls-files agents/ \| grep -c '^agents/[^/]*\.md$'` | Byte-identical project-scoped copies of the same loaders |
+| `commands/*.md` | 94 | `git ls-files 'commands/*.md' \| wc -l` | Slash-command specs, loaded by the plugin from here |
+| `skills/<domain>/<slug>/` | 1,040 | `git ls-files 'skills/*/*/SKILL.md' \| wc -l` | The packages themselves |
 
-The rosters sum to exactly 1,027 glosses — admin 253, apex 158, architect 104,
-data 101, lwc 82, devops 70, flow 63, integration 61, agentforce 53, security 48,
+The rosters carry one gloss per package — admin 261, apex 159, architect 106,
+data 101, lwc 83, devops 70, flow 63, integration 61, agentforce 53, security 49,
 omnistudio 34 (`registry/skills.json`, `domain_counts`).
 
 Two things are **not** in a clone: `.claude/commands/` (gitignored, written by
@@ -145,7 +131,7 @@ page). **A fresh clone has no FTS5 index and no embeddings.**
 flowchart TD
     Q["User asks a Salesforce question"]
 
-    Q --> T0["Tier 0 — loaded at session start<br/>the description: frontmatter of<br/>12 routers + 67 commands + 48 agents<br/>~5,490 tokens, no bodies"]
+    Q --> T0["Tier 0 — loaded at session start<br/>the description: frontmatter of<br/>12 routers + slash commands + agent loaders<br/>no bodies"]
 
     T0 --> ENTRY[".claude/skills/salesforce/SKILL.md<br/>entry router: domain table,<br/>the three mechanisms, hand-off rule"]
 
@@ -163,14 +149,14 @@ flowchart TD
     RTR -.->|"request straddles<br/>two technologies"| DT["standards/decision-trees/*.md<br/>read BEFORE the skill, cite the branch"]
     DT -.-> SCAN
 
-    PKG --> ANS["Answer, grounded in the package<br/>+ templates/ + the cited tree branch"]
+    PKG --> ANS["Answer, drawn from the package<br/>+ templates/ + the cited tree branch"]
 ```
 
 ### The four tiers in words
 
 **Tier 0 — the descriptions, and only the descriptions.** What the host loads at
-session start is the `description:` frontmatter of the 12 router skills, the 67
-commands and the 48 agent loaders. No bodies. Each router description is a
+session start is the `description:` frontmatter of the 12 router skills, the
+slash commands and the run-time agent loaders. No bodies. Each router description is a
 deliberately engineered artifact doing three jobs at once: it states the domain's
 scope, it lists trigger vocabulary in the phrasings a user actually types, and it
 carries explicit negative routing. Verbatim, from
@@ -204,7 +190,7 @@ domain with a one-line gloss, generated from `registry/skills.json` by
 that is where routing precision is won or lost.
 
 Crucially, Claude reads **one** roster, not eleven. An apex question costs the
-apex roster's 158 glosses, not the corpus's 1,027.
+apex roster's 159 glosses, not the corpus's 1,040.
 
 **Tier 3 — the package.** The router sends the model to
 `skills/<domain>/<slug>/SKILL.md` plus `references/gotchas.md` and
@@ -295,7 +281,7 @@ and when even the first clause overflows it re-attaches the `use <target>` tail
 resolve. `_clip_words()` (`:881`) is the word-boundary fallback.
 
 **Checking whether a term reaches the surface.**
-`scripts/check_gloss_coverage.py` (added this session) answers the question that
+`scripts/check_gloss_coverage.py` answers the question that
 silently sank previous content waves: *did the vocabulary we just wrote actually
 land in the shipped roster?*
 
@@ -340,7 +326,10 @@ uncovered."* Mechanism 1 is the floor, not the ceiling.
 Router accuracy — which of the 12 routers gets opened — improved **88.3% →
 96.1%** across the 2026-08-14 rewrite of the router descriptions, over 154
 held-out queries. That metric is label-independent, and the wave did rewrite the
-router descriptions, so the causal story holds.
+router descriptions, so the causal story holds. It measures only the domain
+pick. There is no current package-level number for this path; the nearest
+package-level measure is keyword search (mechanism 3) on the same 154 held-out
+queries, **Hit@1 0.41, Hit@3 0.50** (2026-10-20, `scripts/release_gate.sh`).
 
 The *package-level* headline first published from the same harness **is
 retracted, and its figures should not be repeated.** Two independent defects
@@ -360,17 +349,12 @@ Read it before citing any routing number.
 
 This benchmark does not run in CI. It needs live agents to do the routing, so
 there is no cheap way to gate it on a pull request. What *is* gated is drift in
-the artifacts the path depends on:
-
-```console
-$ python3 scripts/build_plugin.py --check
-OK: 121 plugin artifact(s) match a fresh build — no drift
-```
-
-Those 121 are 23 files under `.claude/skills/`, 48 under `.claude/agents/`, the
-48 byte-identical `agents/<id>.md` project-scoped copies, and the two manifests
-in `.claude-plugin/`. A roster can never silently fall behind
-`registry/skills.json`.
+the artifacts the path depends on: `python3 scripts/build_plugin.py --check`
+(run by `.github/workflows/validate.yml`) compares the 23 files under
+`.claude/skills/`, the agent loaders under `.claude/agents/`, their
+byte-identical `agents/<id>.md` copies and the two manifests in
+`.claude-plugin/` against a fresh build, so a roster cannot silently fall
+behind `registry/skills.json`.
 
 ---
 
@@ -381,16 +365,16 @@ generated and must never be hand-edited.
 
 | Path | What it is | Written by | Read by |
 |---|---|---|---|
-| `skills/` | The corpus. One directory per skill: a `SKILL.md` with YAML frontmatter, plus `references/` (examples, gotchas, Well-Architected notes, LLM anti-patterns), optional `templates/` and `scripts/`. 1,027 packages, all five required files present in every one. | Human | The sync engine, agents, every retrieval surface |
+| `skills/` | The corpus. One directory per skill: a `SKILL.md` with YAML frontmatter, plus `references/` (examples, gotchas, Well-Architected notes, LLM anti-patterns), optional `templates/` and `scripts/`. 1,040 packages. | Human | The sync engine, agents, every retrieval surface |
 | `.claude/skills/` | The router tier: 1 entry router, 11 domain routers, 11 generated rosters. This is mechanism 1's entire footprint. | **Generated** by `scripts/build_plugin.py` | Claude Code, directly, at session start |
-| `agents/` | Instruction files (`AGENT.md`) any agentic tool can follow — 76 of them: 48 active run-time, 14 build-time, 14 deprecated stubs. Each declares its skill, template and probe dependencies in frontmatter and cites them in Mandatory Reads. | Human (the flat `agents/<id>.md` loaders are generated) | Runtime tools; `scripts/validate_repo.py` checks structure and citation resolution |
-| `commands/` | 67 slash-command specs. Thin wrappers that collect inputs and hand off to one `AGENT.md`. The plugin loads them from here; `scripts/install_local_commands.py` also copies them to the gitignored `.claude/commands/` for plain clones. | Human | Claude Code and equivalents |
+| `agents/` | Instruction files (`AGENT.md`) any agentic tool can follow — 99 of them: 70 active run-time (7 stable, 8 beta, 55 experimental), 15 build-time, 14 deprecated. Each declares its skill, template and probe dependencies in frontmatter and cites them in Mandatory Reads. | Human (the flat `agents/<id>.md` loaders are generated) | Runtime tools; `scripts/validate_repo.py` checks structure and citation resolution |
+| `commands/` | 94 slash-command specs. Thin wrappers that collect inputs and hand off to one `AGENT.md`. The plugin loads them from here; `scripts/install_local_commands.py` also copies them to the gitignored `.claude/commands/` for plain clones. | Human | Claude Code and equivalents |
 | `templates/` | 73 tracked files of canonical cross-skill building blocks — the one `TriggerHandler`, `ApplicationLogger`, `SecurityUtils`, `TestDataFactory`, LWC skeleton, Flow fault path, Agentforce action shell. Skills link to these instead of inlining their own copies. | Human | Skills, agents, consuming projects |
 | `standards/decision-trees/` | Routing logic consulted *before* a technology is chosen. Seven trees: automation selection, flow pattern, Agentforce capability, async tier, integration pattern, sharing mechanism, performance tuning. | Human | Agents and skills; cited by branch |
-| `registry/` | Normalised machine-readable records: `registry/skills.json` (the whole corpus as one document, `skill_count: 1027`), `registry/skills/` (one JSON per skill), `registry/knowledge-map.json`, `registry/export_manifest.json`. Source of truth for the rosters and the count lint. | **Generated** | The MCP server, export targets, `build_plugin.py`, the count lint |
+| `registry/` | Normalised machine-readable records: `registry/skills.json` (the whole corpus as one document, `skill_count: 1040`), `registry/skills/` (one JSON per skill), `registry/knowledge-map.json`, `registry/export_manifest.json`. Source of truth for the rosters and the count lint. | **Generated** | The MCP server, export targets, `build_plugin.py`, the count lint |
 | `vector_index/` | Mechanism 2/3 artifacts: `chunks.jsonl` (chunk text), `lexical.sqlite` (FTS5), `skill_embeddings.jsonl` (one vector per skill), plus `manifest.json` and the query fixtures. **Everything except the manifest and the two fixture files is gitignored** — nothing large here ships. | **Generated** | The two search surfaces only |
 | `evals/` | Output-quality tests. Golden P0 cases with assertions, rubrics and reference answers under `evals/golden/`; the retrieval and routing harnesses under `evals/measurement/`. | Human | Structure lints in CI; the scoring is manual |
-| `mcp/sfskills-mcp` | The MCP server: 50 tools over the corpus plus live-org metadata and read-only SOQL (`check_doc_counts.py` prints the live count). Version 0.5.0 in-tree; 0.4.10 is the newest PyPI release (checked 2026-10-03). | Human | MCP clients |
+| `mcp/sfskills-mcp` | The MCP server: 50 tools over the corpus plus live-org metadata and read-only SOQL (`check_doc_counts.py` prints the live count). Version 0.5.1 (`mcp/sfskills-mcp/pyproject.toml`), also the release on PyPI. The PyPI data bundle is lexical-only. | Human | MCP clients |
 
 Two more directories are pure code: `pipelines/` holds the libraries (chunking,
 lexical index, ranking, validators, sync engine) and `scripts/` holds the CLI
@@ -440,7 +424,7 @@ flowchart TD
 
     OUT1 --> READ["Agent or human opens the skill package<br/>e.g. skills/apex/recursive-trigger-prevention/SKILL.md"]
     OUT2 --> READ
-    READ --> ANS["Answer, grounded in<br/>templates/ + standards/decision-trees/"]
+    READ --> ANS["Answer, drawn from the package<br/>+ templates/ + standards/decision-trees/"]
 ```
 
 ### The five stages in words
@@ -513,36 +497,20 @@ nor on by default. Both surfaces additionally skip embedding the query when no
 vector file loaded (`scripts/search_knowledge.py:318-319`), so turning the flag
 on cannot cost an install that has nothing to compare against.
 
-Installed, they are worth measuring rather than guessing. Measured on this
-checkout on **2026-08-15**, over the 154 hand-written held-out queries:
+The current lexical number, which is what CI and a PyPI install get: **Hit@1
+0.41, Hit@3 0.50** on the 154 held-out queries (2026-10-20, the defaults in
+`scripts/release_gate.sh`). Skill vectors added a small amount on top when last
+measured (2026-08-15: +1.3pp Hit@1, +5.2pp Hit@3). Re-measure rather than
+quoting either:
 
 ```console
 $ python3 evals/measurement/run_heldout.py --json               # embeddings on
 $ python3 evals/measurement/run_heldout.py --no-embeddings --json
 ```
 
-| retrieval config | Hit@1 | Hit@3 | Coverage: NONE |
-|---|---:|---:|---:|
-| lexical-only | 39.0% | 48.7% | 0.0% |
-| + `fastembed` skill vectors | **40.3%** | **53.9%** | 0.0% |
-
-+1.3pp Hit@1, +5.2pp Hit@3. An earlier re-measurement in this repo concluded
-embeddings bought nothing measurable; that conclusion does not survive the
-held-out set and is withdrawn. The 0% NONE rate is itself a change worth noting —
-a 2026-07-31 measurement on realistic phrasings recorded 23.3% NONE. The comment
-block in `config/retrieval-config.yaml` quotes earlier runs of the same 154
-queries (36.4/44.2 → 37.0/48.7 on 2026-08-13; 39.6/48.1 → 40.9/53.9 on
-2026-08-14). The delta keeps its shape; the absolute numbers move with the
-corpus. **Re-run rather than quoting any of them.**
-
-Cost, on this checkout (`ls -la vector_index/`, `du -sh vector_index/`,
-2026-08-15): `skill_embeddings.jsonl` is 5.0 MB — 1,027 vectors, one per skill,
-built by `python3 scripts/build_skill_embeddings.py` — on top of a 127 MB
-`chunks.jsonl` and a 169 MB `lexical.sqlite`, 301 MB for the directory. The
-~535 MB figure that has appeared in this repo's docs describes
-`embeddings.jsonl`, the chunk-level file, which the current pipeline does not
-build and nothing loads (`vector_index/manifest.json` records
-`"embedding_count": 0`).
+`skill_embeddings.jsonl` holds one vector per skill (about 5 MB), built by
+`python3 scripts/build_skill_embeddings.py`. The chunk-level
+`embeddings.jsonl` is not built by the current pipeline and nothing loads it.
 
 **4. Skill aggregation.** `aggregate_skill_scores`
 (`pipelines/ranking.py:141`) collapses chunk hits into skill hits. Each skill
@@ -602,11 +570,9 @@ plainly: **the MCP server does not call `scripts/search_knowledge.py`.**
 and `rerank_results` from `pipelines` directly (`:186`) and runs its own shorter
 pipeline.
 
-Two implementations of the same idea is a standing drift risk, and they *have*
-drifted — until 2026-07-31 the MCP module set `has_coverage = bool(results)` and
-never applied a threshold. That is closed: both now build the gated list with the
-identical predicate, reading the same `config/retrieval-config.yaml`. What
-remains different:
+Two implementations of the same idea is a standing drift risk, and they have
+drifted before. Both now build the gated list with the identical predicate,
+reading the same `config/retrieval-config.yaml`. What remains different:
 
 | | CLI (`scripts/search_knowledge.py`) | MCP (`sfskills_mcp.skills.search_skill`) |
 |---|---|---|
@@ -684,7 +650,7 @@ flowchart LR
     DG --> DOC["docs/SKILLS.md"]
 
     REG --> BP["scripts/build_plugin.py"]
-    BP --> RTRS[".claude/skills/ routers + 11 rosters<br/>+ 48 agent loaders x2<br/>+ 2 manifests = 121 artifacts"]
+    BP --> RTRS[".claude/skills/ routers + 11 rosters<br/>+ agent loaders x2<br/>+ 2 manifests"]
 
     REG --> V["scripts/validate_repo.py"]
     LX --> V
@@ -696,12 +662,12 @@ flowchart LR
     V --> ERR["exit 1 - list of gate failures"]
 ```
 
-- `python3 scripts/skill_sync.py --all` rebuilds everything;
-  `--skill skills/<domain>/<name>` scopes it to one package; `--skip-embeddings`
-  is what the pre-commit hook uses to stay fast.
+- `python3 scripts/skill_sync.py --all --skip-embeddings` rebuilds everything
+  except the vectors (without the flag it starts a multi-hour embedding encode);
+  `--skill skills/<domain>/<name>` scopes it to one package.
 - `python3 scripts/build_plugin.py` regenerates the mechanism-1 tier from
-  `registry/skills.json`. `--check` is the drift gate (121 artifacts);
-  `--measure` prints the token budget. Both are read-only.
+  `registry/skills.json`. `--check` is the drift gate; `--measure` prints the
+  token budget. Both are read-only.
 - `python3 scripts/validate_repo.py` is the gate. Its full checklist, with file
   and line citations, is generated into
   [../standards/validation-gates.md](../standards/validation-gates.md). It
@@ -710,7 +676,9 @@ flowchart LR
 - `python3 scripts/check_doc_counts.py` is a narrower lint that derives every
   corpus-scale number from `registry/skills.json` and the agent frontmatter, then
   asserts the docs quoting those numbers still agree. A clean run prints:
-  `Doc counts consistent: 1027 skills, 48 active runtime + 14 build + 14 deprecated = 76 agents, 38 MCP tools.`
+  `Doc counts consistent: 1040 skills, 70 active runtime + 15 build + 14 deprecated = 99 agents, 50 MCP tools.`
+  It checks about twenty labelled counts in five files; it does not check
+  anything under `docs/`.
 - `python3 scripts/check_gloss_coverage.py <term> [--domain <d>]` answers the
   narrower question of whether a *term* survives into the shipped roster.
 
@@ -728,16 +696,21 @@ between targets is contracted in [multi-ai-parity.md](multi-ai-parity.md).
 
 ## Verification layers
 
-Six layers, with honestly different strength:
+Eight layers, with honestly different strength. None of them checks that a
+skill's claims are true; that is the claims audit (108 of the 679 never-audited
+skills done, 503 contradicted claims corrected, 571 not audited, paused —
+`RELEASES.yaml` R3-06).
 
 | Layer | What it proves | Runs where |
 |---|---|---|
 | Structural validation (`scripts/validate_repo.py`) | Frontmatter present, required files present, citations resolve, generated artifacts current | Pre-commit hook and CI, 4 shards |
-| Query fixtures (1,356) | A curated query still returns its expected skill in the top `top_k` (default 3) | CI, inside the skill shards |
-| Doc-count lint (`scripts/check_doc_counts.py`) | Every headline number in the docs matches the registry | CI |
-| Plugin drift (`scripts/build_plugin.py --check`) | The 121 mechanism-1 artifacts match a fresh build | Manual and pre-ship |
-| Org-backed harnesses | Probe SOQL executes, referenced fields and objects exist, agent dependencies resolve. See [validation/README.md](validation/README.md) | Manual and cron, against a real org |
+| Query fixtures (`vector_index/query-fixtures.json`) | A curated query still returns its expected skill in the top `top_k` (default 3). The fixtures paraphrase indexed text, so they measure the easy case | CI, inside the skill shards |
+| Doc-count lint (`scripts/check_doc_counts.py`) | The labelled headline counts in five files match the registry | CI |
+| Plugin drift (`scripts/build_plugin.py --check`) | The mechanism-1 artifacts match a fresh build | CI (`validate.yml`) |
+| Skill checkers (`skills/*/*/scripts/check_*.py`) | Each compiles and answers `--help` (validator); the build loop runs the cited ones per step. Run together over one real example project on 2026-11-19, 83% of 118 sampled findings were false and 3% useful, so a finding is a prompt to look, not a verdict. Until that day `scripts/run_all_checkers.py` actually ran 85 of the 1,065 checkers | Build-loop step gates; not a CI linter |
+| Org-backed harnesses | Probe SOQL executes, referenced fields and objects exist, agent dependencies resolve. See [validation/README.md](validation/README.md) | Manual only, against a real org |
 | Golden evals (`evals/golden/`) | *Structure* of the P0 cases. Not their output quality | Structure lint in CI; scoring is manual |
+| Knowledge-lift harness (`evals/scripts/run_lift.py`) | Whether loading a skill changes answers: 30 golden cases plus 20 + 10 fact probes, audited skills only ([../evals/README.md](../evals/README.md)) | Manual, costs API calls |
 
 What CI actually gates, verified against `.github/workflows/`. Gates are named by
 **job** (and step where the job runs several) — line numbers in these files have
@@ -747,7 +720,7 @@ gone stale before:
 |---|---|---|
 | `validate_repo.py --skills-only`, 4 shards | yes | `validate.yml` → `validate-skills` → *validate shard N* |
 | `validate_repo.py --agents`, Linux + macOS | yes | `validate.yml` → `validate-agents` → *validate agents* |
-| Query fixtures (1,356) | yes, inside the skill shards | `validate.yml` → `validate-skills` |
+| Query fixtures | yes, inside the skill shards | `validate.yml` → `validate-skills` |
 | Golden eval **structure** lint | yes | `validate.yml` → `evals` → *golden eval structure (evals/golden/)* |
 | Agent eval **structure** lint | yes | `validate.yml` → `evals` → *agent eval structure (evals/agents/)* |
 | Export determinism, cross-OS | yes | `validate.yml` → `export-parity-matrix`; also `pr-lint.yml` → `export-manifest-check` |
@@ -767,15 +740,14 @@ The fixture gate runs, but neither the held-out retrieval thresholds nor the
 model-routing benchmark does.
 
 Coverage shape matters as much as the gate list. There are golden evals for 10 of
-1,027 packages — 1.0%, spread across 4 of 11 domains (apex 4, integration 3, lwc
-2, flow 1). `admin` is the largest domain at 253 skills and has none, as do
+1,040 packages, spread across 4 of 11 domains (apex 4, integration 3, lwc
+2, flow 1). `admin` is the largest domain at 261 skills and has none, as do
 `data`, `security`, `devops`, `architect`, `agentforce` and `omnistudio`.
 
 A softer gate worth knowing: a skill no run-time agent cites is a **WARN**, not
-an error (`scripts/validate_repo.py:475`, inside `_check_orphan_skills` at
-`:425`). On this checkout 509 of the 1,027 packages are cited by at least one
-agent's `dependencies.skills:` block, 518 are not, and 54 carry the explicit
-`runtime_orphan: true` opt-out.
+an error (`_check_orphan_skills` in `scripts/validate_repo.py`). About half the
+packages are cited by no agent, and 56 carry the explicit
+`runtime_orphan: true` opt-out (`grep -rl "runtime_orphan: true" skills/*/*/SKILL.md`).
 
 ---
 
@@ -783,11 +755,12 @@ agent's `dependencies.skills:` block, 518 are not, and 54 carry the explicit
 
 Edit freely: `skills/`, `agents/*/AGENT.md`, `commands/`, `templates/`,
 `standards/`, `knowledge/`, `evals/`, `pipelines/`, `scripts/`,
-`mcp/sfskills-mcp`, `config/retrieval-config.yaml`, `BACKLOG.yaml`.
+`mcp/sfskills-mcp`, `config/retrieval-config.yaml`, and `RELEASES.yaml` (through
+`scripts/release_plan.py`; `BACKLOG.yaml` is a frozen skill-request queue).
 
 Never hand-edit: `registry/`, `vector_index/`, `.claude/skills/`,
 `.claude/agents/`, `agents/<id>.md` (the flat loaders), `docs/SKILLS.md`,
 `docs/queue-progress.md`, `standards/validation-gates.md`. The drift checks in
 `scripts/validate_repo.py` and `scripts/build_plugin.py --check` will catch you,
-and the fix is always to rerun `python3 scripts/skill_sync.py --all` or
+and the fix is always to rerun `python3 scripts/skill_sync.py --all --skip-embeddings` or
 `python3 scripts/build_plugin.py` rather than to patch the artifact.

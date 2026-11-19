@@ -3,8 +3,7 @@
 > **Deprecation notice:** this command is now an alias. It invokes
 > [`audit-router`](../agents/audit-router/AGENT.md) with `--domain=sharing`
 > and emits this deprecation notice. Switch to `/audit-router` at your
-> convenience; the alias ships until the removal window declared in
-> `docs/MIGRATION.md` (Wave 7).
+> convenience. The alias still ships (redirect table: `agents/_shared/RUNTIME_VS_BUILD.md`).
 
 ## Canonical form
 
@@ -21,4 +20,4 @@ Rule table preserved in [`classifiers/sharing.md`](../agents/_shared/harnesses/a
 ## See also
 
 - [`/audit-router`](./audit-router.md) — canonical router entry point
-- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)
+- [`agents/_shared/RUNTIME_VS_BUILD.md`](../agents/_shared/RUNTIME_VS_BUILD.md#deprecated-slash-command-redirects) — deprecated-command redirect table

@@ -1,7 +1,7 @@
 # /request-skill — Report a Missing Skill
 
 Use this when you know a skill is missing but don't want to build it yourself.
-Takes 4 questions, checks existing coverage, and adds a TODO row to `MASTER_QUEUE.md`.
+Takes 4 questions, checks existing coverage, and adds the request to the release plan (`RELEASES.yaml`) with `scripts/release_plan.py add`. `/add-to-backlog` does the same for any ask.
 
 ---
 
@@ -52,7 +52,8 @@ Continue.
 
 Map role → domain:
 ```
-Admin / BA / Architect role → admin
+Admin / BA role → admin
+Architect role → architect
 Developer role → most specific: apex / lwc / flow / integration / devops
 Data role → data
 OmniStudio topics → omnistudio
@@ -92,46 +93,33 @@ The "NOT for..." is mandatory. Without it, the skill will be rejected by the Val
 
 ---
 
-## Step 5 — Add to MASTER_QUEUE.md
+## Step 5 — Add it to the release plan
 
-Find the correct section in `MASTER_QUEUE.md`:
-- Phase 1 = Core Platform
-- Phase 2 = Sales Cloud
-- Phase 3 = Service Cloud
-- (etc. — match the cloud from question 3)
+Confirm the flags with `python3 scripts/release_plan.py add --help`, then:
 
-Find the table for the correct role within that phase.
-
-Add the row:
-```markdown
-| TODO | <skill-name> | <description from Step 4> | Requested by user |
+```bash
+python3 scripts/release_plan.py add --size S --title "<domain>/<skill-name>" \
+  "<description from Step 4> (requested by user)"
 ```
 
-If the phase section doesn't exist yet (the cloud hasn't been researched):
-Add to the relevant Research table instead:
-```markdown
-| TODO | <skill-name> | <description> | Requested — skip research gate for this skill |
-```
+The script slots the ask into a release by size. Run `python3 -m pytest tests/test_releases.py -q` afterwards; if it fails, report that and do not commit.
 
 ---
 
 ## Step 6 — Confirm with the user
 
-Report back:
+Report back the item id and release that `release_plan.py add` printed:
 ```
-✓ Skill request added to queue: <domain>/<skill-name>
-  Phase: <phase number> — <cloud name>
-  Role: <role>
-  Queue position: approximately #N in the build queue
+✓ Skill request added to the release plan: <domain>/<skill-name>
+  Item: <id>   Release: <version>
+```
 
-The Orchestrator will pick this up on the next run.
-Track it in MASTER_QUEUE.md under [Phase] → [Role] table.
-```
+`/start-building` works the plan; `python3 scripts/release_plan.py status` shows where it stands.
 
 ---
 
 ## What This Command Does NOT Do
 
 - It does not build the skill. Building goes through Content Researcher → Role Agent → Validator.
-- It does not guarantee a build timeline — the queue runs at its own pace.
+- It does not guarantee a build timeline — the release plan sets the order.
 - It does not accept requests for skills that already exist — check first, always.

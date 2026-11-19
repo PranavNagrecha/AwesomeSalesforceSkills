@@ -12,7 +12,7 @@ The repo contains:
 - generated local retrieval artifacts under `vector_index/`
 - repo-native authoring, sync, and validation tooling under `scripts/` and `pipelines/`
 
-The goal is to keep new skill creation deterministic, searchable, and self-maintaining.
+The goal is to keep new skill creation repeatable and searchable.
 
 ## Two Ways In — Pick One Before Reading Further
 
@@ -47,7 +47,7 @@ Before creating or materially revising a skill:
 
 1. Search local coverage first:
    - `python3 scripts/search_knowledge.py "<topic>"`
-2. Run the semantic-duplicate audit so you don't ship the 927th near-clone:
+2. Run the semantic-duplicate audit so you don't ship a near-clone:
    - `python3 scripts/audit_duplicates.py --domain <domain>`
    - Review the top of `docs/reports/duplicate-candidates.md`.
 3. Read the relevant official Salesforce docs from `standards/official-salesforce-sources.md`.
@@ -56,8 +56,10 @@ Before creating or materially revising a skill:
 After any skill add or skill update:
 
 1. Run:
-   - `python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name>`
-   - or `python3 scripts/skill_sync.py --all`
+   - `python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name> --skip-embeddings`
+   - or `python3 scripts/skill_sync.py --all --skip-embeddings`
+   - Always pass `--skip-embeddings`: without it the sync re-encodes every
+     retrieval chunk, a pass of about three hours.
 2. Run:
    - `python3 scripts/validate_repo.py`
 3. Commit:
@@ -66,7 +68,8 @@ After any skill add or skill update:
    - generated files in `vector_index/`
    - generated `docs/SKILLS.md`
    - generated `standards/validation-gates.md` (if validator source changed)
-   - generated `docs/queue-progress.md` (if `BACKLOG.yaml` changed)
+   - `RELEASES.yaml`, if the work was a release-plan item (change it only
+     through `python3 scripts/release_plan.py`, never by hand)
 
 The full list of validator gates with file:line citations lives in
 `standards/validation-gates.md` — read it instead of grepping validator code.
@@ -109,8 +112,8 @@ It enforces the same gates as the manual workflow above, plus a license wall
 - `docs/reports/duplicate-candidates.md`: generated report of near-duplicate skills — regenerate with `python3 scripts/audit_duplicates.py`
 - `docs/reports/skill-depth.md`: generated depth scoreboard (12 agentic-coding signals per skill, lowest first = worklist) — regenerate with `python3 scripts/score_skill_depth.py --out docs/reports/skill-depth.md`
 - `standards/validation-gates.md`: generated index of every gate the validators enforce — read this when you want to know what `validate_repo.py` will check
-- `BACKLOG.yaml`: machine-readable queue of pending / researched / blocked / duplicate skill entries (the row data formerly inside `MASTER_QUEUE.md`)
-- `docs/queue-progress.md`: generated dashboard for `BACKLOG.yaml` — status counts, drift, next-pick
+- `RELEASES.yaml`: the release plan — every planned item, its size and status. Read and change it only through `python3 scripts/release_plan.py` (`status`, `next`, `add`, `set-status`); add an ask with `/add-to-backlog`, run the loop with `/start-building`
+- `BACKLOG.yaml`: a frozen skill-request queue kept for history; new work goes into `RELEASES.yaml`
 
 ## Bootstrap
 
@@ -181,7 +184,7 @@ updated: YYYY-MM-DD
 ### Required
 
 ```bash
-python3 scripts/skill_sync.py --all
+python3 scripts/skill_sync.py --all --skip-embeddings
 python3 scripts/validate_repo.py
 python3 scripts/search_knowledge.py "query"
 ```
@@ -191,11 +194,15 @@ python3 scripts/search_knowledge.py "query"
 ```bash
 python3 scripts/build_registry.py
 python3 scripts/build_knowledge.py
-python3 scripts/build_index.py
-python3 scripts/generate_docs.py
+python3 scripts/build_index.py      # starts the ~3-hour embedding pass, even with --help
+python3 scripts/generate_docs.py    # runs the full sync, embeddings included, even with --help
 python3 scripts/import_knowledge.py --source /path/to/local/markdown
 python3 scripts/install_hooks.py
 ```
+
+`skill_sync.py --all --skip-embeddings` already writes `docs/SKILLS.md`; do not
+run `build_index.py` or `generate_docs.py` unless you mean to start the
+embedding pass.
 
 ## Agent Expectations
 
@@ -205,7 +212,7 @@ Must:
 - search local knowledge first
 - check official docs
 - scaffold a compliant skill package
-- run `skill_sync.py`
+- run `skill_sync.py --skip-embeddings`
 - run `validate_repo.py`
 - report generated artifact updates
 
@@ -221,7 +228,7 @@ Must:
 
 These are user-facing agents that USE the library to do real Salesforce work — they do not build the library. The full roster is documented in [`agents/_shared/RUNTIME_VS_BUILD.md`](./agents/_shared/RUNTIME_VS_BUILD.md) and source-mapped in [`agents/_shared/SKILL_MAP.md`](./agents/_shared/SKILL_MAP.md).
 
-Of the 70 active run-time agents, 15 are proven (7 `stable` agents graded end to end, plus the 8 Tier 4 build-loop agents at `beta`, exercised by the committed scenarios under `examples/builds/`) and 55 are `experimental`: unproven, slash commands still work. `RUNTIME_VS_BUILD.md` lists the two sets separately; the tier lists below name every agent in a tier regardless of status.
+Of the 70 active run-time agents, 15 have some evidence: 7 `stable` agents each graded once on a real input (mixed grades), and 8 `beta` Tier 4 build-loop agents exercised by five maintainer-run example builds under `examples/builds/`. The other 55 are `experimental` and ungraded; their slash commands still work. `RUNTIME_VS_BUILD.md` lists the sets separately; the tier lists below name every agent in a tier regardless of status.
 
 The roster:
 - **Developer + architecture (28)** — `/refactor-apex`, `/consolidate-triggers`, `/gen-tests`, `/optimize-soql`, `/scan-security`, `/analyze-flow`, `/plan-bulk-migration`, `/build-lwc`, `/audit-lwc`, `/debug-lwc`, `/score-deployment`, `/triage-deployment`, `/triage-apex-tests`, `/build-agentforce-action`, `/build-apex`, `/build-changeset`, `/design-flow-orchestrator`, `/automation-migration-router`, `/why-cant-user`, `/plan-metadata-change`, `/profile-automation`, `/review-release-readiness`, `/review-security-posture`, `/triage-integration`, `/reconcile-data-load`, `/assess-org-health`, `/review-agentforce-agent`, `/compare-orgs`.
@@ -229,7 +236,7 @@ The roster:
 - **Strategic — Tier 2 (9)** — `/review-data-model`, `/catalog-integrations`, `/map-csv-to-object`, `/modernize-email-templates`, `/audit-router`, `/run-fit-gap`, `/draft-stories`, `/decide-salesforce`, `/learn-salesforce`.
 - **Vertical + governance — Tier 3 (11)** — `/design-omni-channel`, `/design-knowledge-taxonomy`, `/design-sales-stages`, `/design-lead-routing`, `/design-sandbox-strategy`, `/plan-release-train`, `/assess-waf`, `/review-agentforce-action`, `/migrate-profile-to-permset`, `/diff-users`, `/design-omnistudio`.
 - **Orchestration — Tier 4 (8)** — `status: beta`; implements the requirement-to-build loop in `standards/build-orchestration.md`: `/clarify-requirements`, `/plan-build`, `/verify-plan`, `/run-build-step`, `/test-build-step`, `/keep-build-docs`, `/verify-milestone`, plus `/build-metadata` — the org-free builder that turns one declarative step into deploy-ready metadata. See "Build Orchestration Layer" below.
-- **Deprecated (14)** — single-mode auditors/governors consolidated into `/audit-router` (Wave 3b); their slash commands redirect: `/audit-sharing`, `/audit-record-page`, `/audit-record-types`, `/govern-picklists`, `/audit-reports`, `/audit-validation-rules`, `/audit-case-escalation`, `/govern-prompt-library`, `/detect-drift`, plus 5 earlier stubs (`/audit-list-views`, `/audit-actions`, `/audit-identity-and-session`, `/govern-field-history`, `/audit-report-folder-sharing`).
+- **Deprecated (14)** — single-mode auditors/governors consolidated into `/audit-router`. Nine of their slash commands still exist and redirect: `/audit-sharing`, `/audit-record-page`, `/audit-record-types`, `/govern-picklists`, `/audit-reports`, `/audit-validation-rules`, `/audit-case-escalation`, `/govern-prompt-library`, `/detect-drift`. The other five commands were removed; the full table is in `agents/_shared/RUNTIME_VS_BUILD.md`.
 
 Must:
 - follow `agents/_shared/AGENT_CONTRACT.md` — the 8-section AGENT.md shape, including the mandatory **Process Observations** block that flags healthy / concerning / ambiguous patterns seen while executing
@@ -282,8 +289,8 @@ resolved the choice. See `standards/decision-trees/README.md`.
 
 ## Build Orchestration Layer
 
-Turns one clarified requirement into a deployable Salesforce build through the
-seven Orchestration — Tier 4 agents (`status: beta`), each one stage of the
+Turns one clarified requirement into a design-only Salesforce build, which a
+human validates and deploys, through the eight Orchestration — Tier 4 agents (`status: beta`), each one stage of the
 loop with a human gate between stages: `/clarify-requirements` (answer) →
 `/plan-build` → `/verify-plan` → gate → `/run-build-step` per step,
 `/test-build-step`, `/keep-build-docs` → `/verify-milestone` → gate, repeating
@@ -296,7 +303,7 @@ before touching any of these agents. No agent in this layer deploys to an org
 or approves a gate; each stops and prints the next command for a human to run.
 A complete worked example — requirement → 97 clarifications → plan v5 (verified
 after five rounds) → all five milestones built, tested, documented, verified, and
-mock-deployed with `--dry-run` (every org finding fed back into a skill), thirteen
+mock-deployed with `--dry-run` (org findings fed back into skills where they could be; `examples/builds/README.md` lists the ones still open), thirteen
 gates signed, build status `done` — is committed under
 `examples/builds/case-onboarding/` (start with its `README.md`). The same loop at
 its smallest tier — a one-line ask → 13 clarifications → 1 step → `RUN.md` → two

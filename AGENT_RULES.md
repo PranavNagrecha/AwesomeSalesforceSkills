@@ -11,7 +11,7 @@ retrieval artifacts, and generated docs are synchronized — and
 
 Exit code is the contract. `validate_repo.py` exits non-zero on **ERROR** only.
 WARNs print and do not fail the build; the corpus carries hundreds of them by
-design (176 in shard 0 of 4 as of this writing). "Fix every warning" is not a
+design. "Fix every warning" is not a
 shippable instruction here — read the WARN, decide, and move on.
 
 ## Authoritative Sources
@@ -89,12 +89,10 @@ The scaffold creates the full package with pre-filled TODO markers and
 pre-seeded official sources. You fill the TODOs; you do not design the
 structure.
 
-> **Known defect (report, don't route around):** `scripts/new_skill.py` accepts
-> `experience` and `servicecloud` as domains, but `ALLOWED_CATEGORIES` in
-> `pipelines/validators.py` has only the 11 real domains. A skill scaffolded
-> into either will fail validation with `invalid category`. The 11 valid
-> domains are `admin`, `agentforce`, `apex`, `architect`, `data`, `devops`,
-> `flow`, `integration`, `lwc`, `omnistudio`, `security`.
+The 11 valid domains are `admin`, `agentforce`, `apex`, `architect`, `data`,
+`devops`, `flow`, `integration`, `lwc`, `omnistudio`, `security`
+(`new_skill.py` takes its choices from `ALLOWED_CATEGORIES` in
+`pipelines/validators.py`).
 
 ### Step 3 — Fill all TODOs
 
@@ -118,7 +116,7 @@ before sync succeeds:
 ### Step 4 — Sync (validates first, hard stop on errors)
 
 ```bash
-python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name>
+python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name> --skip-embeddings
 ```
 
 Validation runs before any artifact is written. Sync will not produce artifacts
@@ -129,7 +127,9 @@ For a repo-wide rebuild, use `--all --skip-embeddings`. `embeddings.enabled` is
 chunk-level encode — the config records ~2:20 for a first-time build on an
 M-series CPU, and `.githooks/pre-commit` records ~3 hours when the content-hash
 cache is cold. Rebuild embeddings deliberately with
-`python3 scripts/build_index.py`, not as a side effect of syncing.
+`python3 scripts/build_index.py`, not as a side effect of syncing. Both
+`build_index.py` and `scripts/generate_docs.py` start the embedding pass even
+when given `--help`.
 
 ### Step 5 — Add a query fixture and validate
 
@@ -160,7 +160,7 @@ Two separate gates apply, both **ERROR**:
 | Flag | What it does | When to use |
 |---|---|---|
 | `--skills-only` | Skill validation only. The default when no class flag is set. | Normal skill work. |
-| `--agents` | AGENT.md structural + citation gate only. Measured 0.4 s for all 76 agents. | After editing an `AGENT.md`. |
+| `--agents` | AGENT.md structural + citation gate only. About a second for all agents. | After editing an `AGENT.md`. |
 | `--all` | Both. | Pre-release sweep. |
 | `--changed-only` | Only skills/agents in the current git diff (staged + unstaged + untracked); drift check still runs. | Pre-commit hook. Fastest path on small changes. |
 | `--shard N/M` | The N-th bucket of skills partitioned by stable hash mod M (0-indexed). | CI matrix jobs (`.github/workflows/validate.yml`). |
@@ -207,7 +207,7 @@ the agent would be wrong without this skill, the skill does not belong there.
    Idempotent.
 
 3. **Update `agents/_shared/SKILL_MAP.md`** when the wired agent has an entry
-   there (Wave A/B/C tier agents). Developer-tier agents (apex-refactorer,
+   there (the Tier 1–3 agents). Developer-tier agents (apex-refactorer,
    lwc-builder, soql-optimizer, and so on) are tracked only in their own
    AGENT.md.
 
@@ -244,7 +244,8 @@ Commit all of:
 - `vector_index/query-fixtures.json` and `manifest.json` (the other files there
   are gitignored)
 - generated `docs/SKILLS.md`
-- generated `docs/queue-progress.md` if `BACKLOG.yaml` changed
+- `RELEASES.yaml` if the work was a release-plan item (changed only through
+  `scripts/release_plan.py`)
 - generated `standards/validation-gates.md` if validator source changed
 - modified files under `agents/` and `agents/_shared/SKILL_MAP.md` from step 6
 
@@ -285,7 +286,7 @@ skill descriptions or triggers.
 ## Shared Templates
 
 Canonical cross-skill code scaffolds live under `templates/` at the repo root
-(73 files):
+(see `templates/README.md` for the layout):
 
 - `templates/apex/` — `TriggerHandler`, `TriggerControl`, `BaseDomain`,
   `BaseService`, `BaseSelector`, `ApplicationLogger`, `SecurityUtils`,
@@ -391,23 +392,25 @@ separately in `vector_index/query-fixtures.json`; do not duplicate.
 
 ## Run-time Agents
 
-76 `AGENT.md` files live under `agents/`, in three classes. The class and
+99 `AGENT.md` files live under `agents/`, in three classes. The class and
 status come from frontmatter (`class:`, `status:`), which is the canonical
 source — `scripts/check_doc_counts.py` derives every quoted count from it.
 
-1. **Build-time (15)** — `orchestrator`, `task-mapper`, `content-researcher`,
-   the 6 skill-builders (`admin`, `dev`, `devops`, `data`, `architect`,
-   `security`), `code-reviewer`, `validator`, `currency-monitor`,
-   `org-assessor`, `release-planner`. These produce the library.
+1. **Build-time (15)** — `orchestrator`, `backlog-intake`, `task-mapper`,
+   `content-researcher`, the 6 skill-builders (`admin`, `dev`, `devops`,
+   `data`, `architect`, `security`), `code-reviewer`, `validator`,
+   `currency-monitor`, `org-assessor`, `release-planner`. These produce the
+   library. All carry `status: stable` in frontmatter without graded runs.
 
-   > There is no `/run-queue` command. `commands/run-queue.md` was deleted on
-   > 2026-05-08 in commit `014a069b3` ("infra: P0 FTS5 sanitizer fix + remove 6
-   > deprecated commands"). `agents/_shared/AGENT_CONTRACT.md`,
-   > `agents/_shared/RUNTIME_VS_BUILD.md`, and `agents/orchestrator/AGENT.md`
-   > still name it as an entry point — that is wrong. Invoke build agents by
-   > reading their `AGENT.md` directly, or via `/new-skill` and `/add-skill`.
+   > There is no `/run-queue` command. Run the release loop with
+   > `/start-building` (`orchestrator`), add an ask with `/add-to-backlog`
+   > (`backlog-intake`), and build one skill with `/new-skill` or `/add-skill`.
+   > The build-time row of `agents/_shared/AGENT_CONTRACT.md` still names
+   > `/run-queue`; that is wrong.
 
-2. **Run-time (70)** — four tiers:
+2. **Run-time (70)** — 7 `stable` (each graded once on a real input, mixed
+   grades), 8 `beta` (the Tier 4 agents, exercised by five maintainer-run
+   example builds), 55 `experimental` (ungraded). Five tiers:
    - **Developer + architecture (28):** `apex-refactorer`,
      `trigger-consolidator`, `test-class-generator`, `soql-optimizer`,
      `security-scanner`, `flow-analyzer`, `bulk-migration-planner`,
@@ -431,7 +434,8 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
    - **Strategic — Tier 2 (9):** `data-model-reviewer`,
      `integration-catalog-builder`, `csv-to-object-mapper`,
      `email-template-modernizer`, `audit-router`, `fit-gap-analyzer`,
-     `story-drafter`.
+     `story-drafter`, `salesforce-decision-facilitator`,
+     `salesforce-learning-guide`.
    - **Vertical + governance — Tier 3 (11):** `omni-channel-routing-designer`,
      `knowledge-article-taxonomy-agent`, `sales-stage-designer`,
      `lead-routing-rules-designer`, `sandbox-strategy-designer`,
@@ -449,7 +453,7 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
    as an ERROR at `pipelines/agent_validators.py:661`.
 
 3. **Deprecated (14)** — single-mode auditors and governors consolidated into
-   `audit-router` during Wave 3b. Their AGENT.md files remain for reference:
+   `audit-router`. Their AGENT.md files remain for reference:
    `case-escalation-auditor`,
    `field-audit-trail-and-history-tracking-governor`,
    `lightning-record-page-auditor`, `list-view-and-search-layout-auditor`,
@@ -459,7 +463,7 @@ source — `scripts/check_doc_counts.py` derives every quoted count from it.
    `report-and-dashboard-auditor`,
    `reports-and-dashboards-folder-sharing-auditor`, `sharing-audit-agent`,
    `validation-rule-auditor`. Nine of their slash-command aliases still ship;
-   see `docs/MIGRATION.md` for which.
+   the redirect table in `agents/_shared/RUNTIME_VS_BUILD.md` says which.
 
 The single source of truth for what an AGENT.md must contain is
 `agents/_shared/AGENT_CONTRACT.md`. The full roster lives in
@@ -504,18 +508,21 @@ agent to its verified source skills, templates, and decision trees is
   output is fine; silently invoking one is not.
 
 **Contract vs. reality — `search_skill`:**
-`AGENT_CONTRACT.md` line 132 requires skill resolution through the MCP
-`search_skill` tool. That is not what the shipped path does.
+Rule 1 of "Rules every agent follows" in `AGENT_CONTRACT.md` ("Skill-first,
+never freestyle") requires skill resolution through the MCP `search_skill`
+tool. That is not what the shipped path does.
 `.claude-plugin/plugin.json` declares `skills` and `commands` and no
 `mcpServers`, and there is no `.mcp.json`, so a plugin install has no MCP
-server. Only `audit-router`, `automation-migration-router`, and
-`release-planner` mention `search_skill` at all, and the two routers gate a
+server. Only five AGENT.md files mention `search_skill` at all
+(`audit-router`, `automation-migration-router`, `release-planner`,
+`salesforce-decision-facilitator`, `salesforce-learning-guide`), and the two
+routers gate a
 `REFUSAL_NEEDS_HUMAN_REVIEW` on it — a refusal a plugin-only caller cannot
 evaluate. Citation resolution is already enforced statically at PR time by
 `_validate_citations`; prefer that as the real guarantee, and do not write new
 runtime gates that assume MCP.
 
-**Rules for the MCP server (39 tools):**
+**Rules for the MCP server (50 tools):**
 
 - The MCP server never executes an agent. Tools that expose agent context
   (`list_agents`, `get_agent`, `suggest_agent`) return instructions and the
@@ -531,8 +538,8 @@ runtime gates that assume MCP.
   `mcp/sfskills-mcp/tests/test_meta_freshness.py` scans `src/` for stale
   literals (`686+`, `twenty-three tools`, `registers twenty-three`,
   `_RUNTIME_AGENTS`) to keep them extinct.
-- Every tool carries `mcp.types.ToolAnnotations`. Today: 13 `_ANN_REPO_ONLY`,
-  24 `_ANN_ORG_READ`, 1 `_ANN_ENVELOPE`. `readOnlyHint=True` on everything
+- Every tool carries `mcp.types.ToolAnnotations`. Today: 23 `_ANN_REPO_ONLY`,
+  26 `_ANN_ORG_READ`, 1 `_ANN_ENVELOPE`. `readOnlyHint=True` on everything
   except `emit_envelope` (which writes paired JSON+MD into
   `docs/reports/<agent>/<run_id>`); `destructiveHint=False` on all;
   `openWorldHint=True` for org-touching tools and `False` for repo-only ones.
@@ -669,7 +676,7 @@ Every skill must be grounded in official Salesforce documentation.
 
 ## Rules For Editing Generated Artifacts
 
-- Do not hand-edit `registry/`, `docs/SKILLS.md`, `docs/queue-progress.md`,
+- Do not hand-edit `registry/`, `docs/SKILLS.md`, `docs/agents.md`,
   `standards/validation-gates.md`, `.claude/skills/**/references/skill-index.md`,
   or the gitignored retrieval artifacts in `vector_index/`.
 - Regenerate through `python3 scripts/skill_sync.py --all --skip-embeddings`.

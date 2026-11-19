@@ -3,8 +3,9 @@
 Model Context Protocol server that hands any MCP-capable AI coding assistant
 three things at once:
 
-1. The full **SfSkills** library (1,040 Salesforce skills, source-grounded,
-   role-tagged, versioned) — via `search_skill` and `get_skill`.
+1. The full **SfSkills** library (1,040 Salesforce skills; a claims audit
+   against the official guides is in progress and most packages have not been
+   audited yet) — via `search_skill` and `get_skill`.
 2. **Live metadata from your actual Salesforce org** — via `describe_org`,
    `list_custom_objects`, `list_flows_on_object`, `list_validation_rules`,
    `list_permission_sets`, `describe_permission_set`, `list_record_types`,
@@ -14,7 +15,8 @@ three things at once:
    strategic, vertical/governance, and orchestration tiers, plus 15 build-time agents and
    14 deprecation stubs that redirect via `list_deprecated_redirects`) that
    compose the skill library + live-org tools into concrete deliverables —
-   via `list_agents` and `get_agent`.
+   via `list_agents` and `get_agent`. 7 run-time agents are `stable`, 8 `beta`
+   and 55 `experimental` (ungraded); see the agents section below.
 
 > **Counts are live.** The numbers above reflect the registry at the time of
 > writing; the server itself reads `registry/skills.json` and the AGENT.md
@@ -41,30 +43,13 @@ doesn't know whether:
   exactly what you're about to ask the agent to invent.
 
 This MCP server closes both gaps using the Salesforce CLI for org access
-(so no secrets touch the server) and the SfSkills FTS5 index + fastembed
-semantic embeddings for retrieval (no API keys required — both run locally).
+(so no secrets touch the server) and the SfSkills lexical FTS5 index for
+retrieval (no API keys; runs locally). The PyPI data bundle is lexical-only;
+embeddings exist only in a checkout with `fastembed` installed and enabled.
 
-### Retrieval quality (v0.4.2 benchmark, 2026-05-09)
-
-Measured against three audits with different ground-truth shapes. The
-secondary corpora (agents, templates, decision-trees) had no measured
-baseline before v0.4.2; the slug-aware scorer rewrite added in this
-release lifts them dramatically.
-
-| Audit                                | Hit@1 | Hit@3 |
-| ------------------------------------ | ----: | ----: |
-| Author-curated triggers (1,285 Q)    |  98.6%|  100.0%|
-| Synthetic NL skills (1,418 Q)        |  74.5%|   87.8%|
-| Realistic-user smoke (71 Q)          |  81.7%|   94.4%|
-| Agents NL (247 Q)                    |  95.5%|   98.0%|
-| Templates NL (195 Q)                 |  88.7%|  100.0%|
-| Decision-trees NL (34 Q)             |  82.4%|   97.1%|
-
-The NL Hit@1 number on skills is dragged down by labeling artifacts in
-the synthetic generator (multiple skills can legitimately answer one
-fixture query). The realistic-user smoke — hand-crafted queries with
-unambiguous expected answers — better reflects real-world quality at
-81.7% Hit@1 / 94.4% Hit@3.
+Held-out lexical retrieval (154 queries, 2026-10-20): Hit@1 0.41, Hit@3
+0.50. That is the number for `search_skill` on queries the index was not
+tuned on.
 
 ---
 
@@ -127,99 +112,19 @@ All 50 tools, listed from the `@mcp.tool` registrations in `server.py`: 23 run o
 
 ### Run-time agents reachable via `get_agent`
 
-Tier sizes below count the 70 active runtime agents. Fourteen single-mode
-auditors/governors were retired in Wave 3b and now redirect via
-`list_deprecated_redirects` (`audit-router` absorbs them); `list_agents(kind="runtime")`
-returns the active set shown here.
+`list_agents(kind="runtime")` returns the 70 active run-time agents. By tier:
+Developer + architecture (28), Admin accelerators — Tier 1 (14),
+Strategic — Tier 2 (9), Vertical + governance — Tier 3 (11), and
+Orchestration — Tier 4 (8), the requirement-to-build loop in
+`standards/build-orchestration.md`.
 
-Developer + architecture tier (28):
-
-| Agent name                 | What it returns |
-| -------------------------- | --------------- |
-| `apex-refactorer`          | Refactor an Apex class onto canonical `templates/apex/` patterns + a test class |
-| `trigger-consolidator`     | Collapse N triggers on one sObject into the `TriggerHandler` framework |
-| `test-class-generator`     | Bulk-safe ≥85% coverage test class using `TestDataFactory` + `BulkTestPattern` |
-| `soql-optimizer`           | Ranked SOQL findings with before/after fixes |
-| `security-scanner`         | CRUD/FLS + sharing + hardcoded-secret audit |
-| `flow-analyzer`            | Flow-vs-Apex routing + bulkification review |
-| `bulk-migration-planner`   | Bulk API 2.0 / PE / Pub-Sub / REST / Connect plan from volume + latency |
-| `lwc-auditor`              | A11y + performance + security audit of an LWC bundle |
-| `deployment-risk-scorer`   | HIGH/MEDIUM/LOW risk score + breaking-change list |
-| `deployment-failure-triager` | Evidence-grounded diagnosis of an existing deploy job or CLI JSON fixture |
-| `apex-test-failure-triager` | Evidence-grounded diagnosis of an existing Apex test run or CLI JSON fixture |
-| `agentforce-builder`       | Full Agentforce action scaffold: Apex + topic + test + eval || `lwc-builder`              | Full LWC bundle (js/html/css/meta/tests) + optional Apex controller |
-| `lwc-debugger`             | Ranked hypotheses + diagnostic probes + proposed fix for a live LWC failure |
-| `apex-builder`             | Apex class(es) built from requirements + test class |
-| `changeset-builder`        | Change set manifest + deployment checklist |
-| `flow-orchestrator-designer` | Flow Orchestrator design + stage / step map |
-| `automation-migration-router` | WFR/PB automation inventory → Flow migration plan |
-| `access-path-explainer` | Why a user can or cannot perform an operation (layer-by-layer) |
-| `change-impact-planner` | Impact of a proposed metadata change |
-| `automation-transaction-profiler` | Automation that runs for an object operation |
-| `release-readiness-reviewer` | Release-scope go/no-go from evidence |
-| `security-posture-reviewer` | Scoped security posture findings |
-| `integration-incident-triager` | Integration incident classification |
-| `data-migration-reconciler` | Data-load reconciliation without writes |
-| `org-health-assessor-v2` | Org health roadmap from a snapshot |
-| `agentforce-quality-engineer` | Agentforce agent quality review |
-| `multi-org-drift-analyzer` | Compare two explicit org snapshots |
-
-Admin accelerators — Tier 1 (14):
-
-| Agent name                   | What it returns |
-| ---------------------------- | --------------- |
-| `field-impact-analyzer`      | Blast-radius report before renaming / deleting a field |
-| `object-designer`            | Setup-ready sObject design from a business concept |
-| `permission-set-architect`   | Profile-less PS / PSG / Muting design per persona |
-| `flow-builder`               | Flow design from requirements + automation-tree routing || `data-loader-pre-flight`     | Go/no-go checklist for a Data Loader / Bulk API load |
-| `duplicate-rule-designer`    | Matching + Duplicate Rules + post-load hygiene |
-| `assignment-and-auto-response-rules-designer` | Assignment rule + auto-response rule design |
-| `business-hours-and-holidays-configurator` | Business hours + holiday set configuration plan |
-| `config-workbook-author`     | Configuration workbook (object / field / automation inventory) |
-| `custom-metadata-and-settings-designer` | CMDT / Custom Settings design + Apex usage patterns |
-| `entitlement-and-milestone-designer` | Entitlement process + milestone design |
-| `experience-cloud-admin-designer` | Experience Cloud site design (member, guest, CMS) |
-| `path-designer`              | Path + guidance + key fields design per object / stage |
-| `process-flow-mapper`        | Business process → Salesforce automation map |
-
-Strategic — Tier 2 (9):
-
-| Agent name                                 | What it returns |
-| ------------------------------------------ | --------------- || `data-model-reviewer`                      | Data-model domain review (rollups, XID, growth) |
-| `integration-catalog-builder`              | Integration catalog + posture scorecard || `csv-to-object-mapper`                     | CSV → sObject mapping + VR collision report |
-| `email-template-modernizer`                | Template classification + migration plan |
-| `audit-router`                             | Routes to appropriate single-mode auditor or runs multi-mode audit |
-| `fit-gap-analyzer`                         | Fit / gap analysis: requirements vs org configuration |
-| `story-drafter`                            | User stories with Given/When/Then acceptance criteria |
-
-Vertical + governance — Tier 3 (11):
-
-| Agent name                            | What it returns |
-| ------------------------------------- | --------------- |
-| `omni-channel-routing-designer`       | Queue + routing + presence design with capacity math |
-| `knowledge-article-taxonomy-agent`    | Data categories + article types + channel-audience plan |
-| `sales-stage-designer`                | Opportunity stage ladder + forecast + VR gates |
-| `lead-routing-rules-designer`         | Source × geo × product routing matrix + SLAs || `sandbox-strategy-designer`           | Environment ladder + pools + refresh calendar |
-| `release-train-planner`               | Package + branching + CI/CD + release calendar |
-| `waf-assessor`                        | Well-Architected scorecard + remediation backlog |
-| `agentforce-action-reviewer`          | Per-action A–F scorecard + guardrails gap list || `profile-to-permset-migrator`         | Profile → Permission Set migration plan + PS / PSG design |
-| `user-access-diff`                    | Side-by-side access comparison report between users |
-| `omnistudio-designer`                 | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit |
-
-Orchestration — Tier 4 (8, `status: beta`):
-
-| Agent name                | What it returns |
-| -------------------------- | --------------- |
-| `requirements-clarifier`   | Question set + proposed defaults, written to `plan.json` / `CLARIFICATIONS.md` (gate G1) |
-| `build-planner`            | Scope, decisions, milestones and steps written to `plan.json` (gate G2 pending) |
-| `plan-verifier`            | Per-step executability / grounding / testability verdicts; plan `verified` or `plan-rejected` (gate G2) |
-| `build-step-runner`        | One step's artefacts + run envelope; step moved to `built` or `blocked` |
-| `step-tester`              | Machine-readable test result; step moved to `tested` or `failed` |
-| `build-doc-keeper`         | Re-rendered `PLAN.md`, decisions log, workbook + traceability rows; step moved to `documented` |
-| `milestone-verifier`       | Milestone acceptance report + manual-test checklist (gate G3) |
-| `metadata-builder`         | Deploy-ready metadata XML + `package.xml` fragment + deploy-order note for one declarative step |
-
-Implements the requirement-to-build loop in `standards/build-orchestration.md`; none of these deploys or approves a gate.
+By status: 7 are `stable` (each graded once on one real input, with mixed
+grades), 8 are `beta` (the Tier-4 loop, exercised by five maintainer-run
+example builds), and 55 are `experimental` (ungraded). Treat an experimental
+agent's output as a draft. The roster with each agent's status is
+[`agents/_shared/RUNTIME_VS_BUILD.md`](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/blob/main/agents/_shared/RUNTIME_VS_BUILD.md).
+Fourteen retired agents redirect via `list_deprecated_redirects` to
+`audit-router`. No agent deploys or approves a gate.
 
 ### `validate_against_org` routing
 
@@ -242,7 +147,7 @@ rest of the response.
 ## Prompts
 
 Every wrapper file in [`commands/`](../../commands/) is exposed as an MCP
-Prompt (~68 prompts as of this writing). Type `/refactor-apex`,
+Prompt. Type `/refactor-apex`,
 `/audit-router`, `/build-apex`, etc. in any MCP-capable client and the
 wrapper loads — Claude Code, Cursor, Cline, Claude Desktop all support this.
 
@@ -301,8 +206,8 @@ Two paths:
 ### Path A — PyPI (recommended for end users)
 
 ```bash
-pip install sfskills-mcp           # ~50 KB wheel
-sfskills-mcp-init                  # one-time data download (~160 MB → ~/.cache/sfskills-mcp/)
+pip install sfskills-mcp           # wheel of about 100 KB
+sfskills-mcp-init                  # one-time data download (about 116 MB compressed for mcp-v0.5.1) → ~/.cache/sfskills-mcp/
 sfskills-mcp                       # serves stdio
 ```
 
@@ -311,7 +216,7 @@ templates, and decision trees from the latest GitHub Release into
 `~/.cache/sfskills-mcp/`. Override the cache location with
 `SFSKILLS_CACHE_DIR=/some/path` if your home directory is read-only.
 
-Pin a release: `sfskills-mcp-init --release mcp-v0.4.0`. Re-download:
+Pin a release: `sfskills-mcp-init --release mcp-v0.5.1`. Re-download:
 `sfskills-mcp-init --force`.
 
 ### Path B — Editable install from a checkout (developer / contributor)
@@ -346,7 +251,6 @@ its own keyring-backed auth store.
 | | Version | Notes |
 |---|---|---|
 | **Minimum** | `2.0.0` | The unified `sf` CLI (post-`sfdx` rename). Earlier `sfdx`-prefixed builds will not work — the server invokes `sf data query` and `sf data query --use-tooling-api`. |
-| **Tested floor (v0.4.4 QA)** | `2.103.7` | Pre-prod regression suite passes against this version on a real Education-Cloud sandbox. |
 | **Recommended** | latest stable | Keep `sf` current — Salesforce ships frequent bug-fix releases. Run `sf update` periodically. |
 
 Check your version: `sf --version`
@@ -386,31 +290,13 @@ sfskills-mcp
 
 ## Connect it to your AI client
 
-Quick recipe for the most common clients below. **Every other client we
-support — Claude Desktop, Zed, Cline, Continue, Cody, Codex CLI, Gemini CLI,
-Goose, LibreChat, Open WebUI, JetBrains AI Assistant, 5ire, and the generic
-stdio transport — is covered in [docs/CONNECT.md](./docs/CONNECT.md)**, along
-with troubleshooting and the security model.
+Claude Code, after a PyPI install:
 
-### Cursor
-
-`~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project-scoped):
-
-```json
-{
-  "mcpServers": {
-    "sfskills": {
-      "command": "python3",
-      "args": ["-m", "sfskills_mcp"],
-      "env": {
-        "SFSKILLS_REPO_ROOT": "/absolute/path/to/AwesomeSalesforceSkills"
-      }
-    }
-  }
-}
+```bash
+claude mcp add sfskills -- sfskills-mcp
 ```
 
-### Claude Code
+From a checkout:
 
 ```bash
 claude mcp add sfskills \
@@ -418,41 +304,9 @@ claude mcp add sfskills \
   -- python3 -m sfskills_mcp
 ```
 
-### Windsurf
-
-`~/.codeium/windsurf/mcp_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "sfskills": {
-      "command": "python3",
-      "args": ["-m", "sfskills_mcp"],
-      "env": { "SFSKILLS_REPO_ROOT": "/absolute/path/to/AwesomeSalesforceSkills" }
-    }
-  }
-}
-```
-
-### VS Code (GitHub Copilot Agent)
-
-`.vscode/mcp.json` in your workspace:
-
-```json
-{
-  "servers": {
-    "sfskills": {
-      "type": "stdio",
-      "command": "python3",
-      "args": ["-m", "sfskills_mcp"],
-      "env": { "SFSKILLS_REPO_ROOT": "/absolute/path/to/AwesomeSalesforceSkills" }
-    }
-  }
-}
-```
-
-**For the full recipe matrix (15+ clients), per-client pitfalls, and
-troubleshooting, read [docs/CONNECT.md](./docs/CONNECT.md).**
+Every other client (Cursor, Windsurf, VS Code, Claude Desktop, Zed, Cline,
+Continue, Codex CLI, Gemini CLI, Goose and the generic stdio transport), with
+per-client pitfalls and troubleshooting, is in [docs/CONNECT.md](./docs/CONNECT.md).
 
 ---
 
@@ -508,28 +362,6 @@ python3 -m pip install -e '.[dev]'
 The `sf` CLI is stubbed in tests via `SFSKILLS_SF_BIN`, so CI runs hermetically
 without Salesforce CLI installed.
 
-### Layout
-
-```
-mcp/sfskills-mcp/
-├── pyproject.toml
-├── requirements.txt
-├── README.md
-├── docs/
-│   └── CONNECT.md       # per-client setup for every MCP-capable AI tool
-├── src/sfskills_mcp/
-│   ├── __init__.py
-│   ├── __main__.py      # python -m sfskills_mcp entrypoint
-│   ├── server.py        # FastMCP wiring
-│   ├── paths.py         # repo-root resolution
-│   ├── skills.py        # search_skill, get_skill
-│   ├── sf_cli.py        # sf subprocess wrapper
-│   └── org.py           # describe_org, list_custom_objects, list_flows_on_object, validate_against_org
-└── tests/
-    ├── test_skills.py
-    └── test_sf_cli.py
-```
-
 ---
 
 ## Design notes
@@ -538,18 +370,19 @@ mcp/sfskills-mcp/
   inherits the CLI's keyring-backed auth. Access tokens, refresh tokens, and
   other credentials in `describe_org` / `list_orgs` / `list_named_credentials`
   output are **fully masked** — the `access_token_preview` field renders as
-  `"***"`. (Earlier docs claimed a prefix/suffix preview; the implementation
-  was hardened in v0.4.3 to drop all token bytes after a live-test leak.)
-- **Read-only.** No tool performs DML, deploys metadata, or runs apex. The
-  full operation surface is `sobject describe`, `sobject list`, `data query`,
-  `org display`, and `org list`.
+  `"***"`.
+- **Read-only.** Every org call is a read through `sf` (describes, SOQL and
+  Tooling queries, `org display` / `org list`, and reports on existing deploy
+  jobs and Apex test runs); no tool performs DML, deploys, or runs Apex.
 - **Failures are data, not exceptions.** Every tool returns
   `{"error": ..., ...}` rather than raising when the CLI or registry
   misbehaves, so MCP clients can surface actionable messages to the user
   without the server crashing mid-conversation.
-- **Retrieval reuses the repo's own FTS5 index** (`vector_index/lexical.sqlite`)
-  and the ranking logic in `pipelines/ranking.py`, so MCP search results match
-  `scripts/search_knowledge.py` exactly.
+- **Retrieval uses the repo's own FTS5 index** (`vector_index/lexical.sqlite`)
+  through a separate implementation of the `scripts/search_knowledge.py`
+  pipeline. On a checkout, CI checks that both return the same skills for 154
+  held-out queries (`evals/measurement/check_cli_mcp_parity.py --heldout`); a
+  PyPI install is lexical-only and is not covered by that check.
 - **Namespace-tolerant skill ids.** `apex/trigger-framework` and
   `apex__trigger-framework` both resolve; the latter matches the on-disk
   filename convention.
@@ -558,4 +391,5 @@ mcp/sfskills-mcp/
 
 ## License
 
-Same as the parent repository.
+Same as the parent repository: PolyForm Small Business License 1.0.0
+(source-available, not open source).

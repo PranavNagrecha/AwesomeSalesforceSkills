@@ -12,7 +12,7 @@ deprecated_in_favor_of: audit-router
 ---
 # Org Drift Detector — DEPRECATED (Wave 3b-2)
 
-Replaced by [`audit-router`](../audit-router/AGENT.md) with `--domain=org_drift`. The full rule set (library-prescribed patterns probed against the org, gap / bloat / fork / orphan / stale-skill classification, security-gap P0 escalation, Named-Credential-vs-Remote-Site drift) is preserved verbatim in [`classifiers/org_drift.md`](../_shared/harnesses/audit_harness/classifiers/org_drift.md). Legacy alias `/detect-drift` ships until Wave 7's `docs/MIGRATION.md` removal window.
+Replaced by [`audit-router`](../audit-router/AGENT.md) with `--domain=org_drift`. The full rule set (library-prescribed patterns probed against the org, gap / bloat / fork / orphan / stale-skill classification, security-gap P0 escalation, Named-Credential-vs-Remote-Site drift) is preserved verbatim in [`classifiers/org_drift.md`](../_shared/harnesses/audit_harness/classifiers/org_drift.md). Legacy alias `/detect-drift` still ships (redirect table: `agents/_shared/RUNTIME_VS_BUILD.md`).
 
 ## Plan
 

@@ -4,7 +4,7 @@ Every builder agent can be invoked two ways. The matrix below tells you **what y
 
 ## Why this exists
 
-The Cursor 2026-04-19 review (see `feedback/FEEDBACK_LOG.md`) flagged that users can't tell at a glance which guarantees they get from which path. This doc closes that gap.
+An external review (Cursor, 2026-04-19) flagged that users can't tell at a glance which guarantees they get from which path. This doc closes that gap.
 
 ## Two invocation paths
 
@@ -61,7 +61,7 @@ The most commonly-cited gaps when users skip the harness:
 
 ## Where to add next
 
-(per `feedback/FEEDBACK_LOG.md#2026-04-19`)
+(from the 2026-04-19 external review)
 
 - Wire the automation-graph probe as an **optional** Gate B.5 in `flow-builder` and `apex-builder`. Status: probe doc shipped 2026-04-19; plugin wiring DEFERRED until real-user signal on thresholds.
 - Extend the limit-smell pattern to `apex-builder`: SOQL-in-loop, DML-in-loop, missing `Database.setSavepoint()` on multi-object transactions. Status: DEFERRED (next sprint).

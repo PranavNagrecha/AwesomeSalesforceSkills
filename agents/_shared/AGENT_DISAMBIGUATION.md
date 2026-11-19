@@ -2,7 +2,7 @@
 
 **When two agents sound like they do the same thing, this doc tells you which one is right.**
 
-Sourced from the Cursor 2026-04-19 review, which flagged these specific pairs as confusable during informal invocation. Logged at `feedback/FEEDBACK_LOG.md#2026-04-19-cursor-invocation-review`.
+Sourced from an external review (Cursor, 2026-04-19), which flagged these specific pairs as confusable during informal invocation.
 
 **For AI assistants:** if the user's request matches both sides of any pair below, **ask a clarifying question** before routing — do not guess.
 
@@ -111,7 +111,7 @@ Typing `@<old-agent>` lands on a deprecation stub. **Redirect immediately**; do 
 | `quick-action-and-global-action-auditor` | `audit-router --domain=quick_action` |
 | `sharing-audit-agent` | `audit-router --domain=sharing` |
 | `field-audit-trail-and-history-tracking-governor` | `audit-router --domain=field_audit_trail_history_tracking` |
-Full migration map with preserved rule-by-rule equivalence: `docs/MIGRATION.md`.
+Deprecated-command redirect table: `agents/_shared/RUNTIME_VS_BUILD.md`.
 
 ---
 
@@ -123,4 +123,4 @@ When `list_agents` returns the roster, the AI consuming it should:
 2. Not pick a deprecated agent — prefer the canonical replacement from this doc.
 3. When the user's request matches multiple agents on Axes 1–5, ask one clarifying question before `get_agent`.
 
-A future `list_deprecated_redirects` MCP tool (tracked in `docs/agent-invocation-modes.md`) will automate step 2.
+The MCP tool `list_deprecated_redirects` automates step 2.

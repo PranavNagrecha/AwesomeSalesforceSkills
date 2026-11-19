@@ -1,6 +1,6 @@
 # SfSkills: Salesforce skills for AI coding assistants
 
-Grounded Salesforce skill packages, run-time agents, a requirement-to-build loop and an MCP server for Claude Code, Cursor, Codex and any MCP client.
+Salesforce skill packages, run-time agents, a requirement-to-build loop and an MCP server for Claude Code, Cursor, Codex and any MCP client.
 
 [![validate](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/validate.yml)
 [![pr-lint](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml/badge.svg)](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/actions/workflows/pr-lint.yml)
@@ -8,12 +8,14 @@ Grounded Salesforce skill packages, run-time agents, a requirement-to-build loop
 [![PyPI: sfskills-mcp](https://img.shields.io/pypi/v/sfskills-mcp?label=sfskills-mcp)](https://pypi.org/project/sfskills-mcp/)
 [![License: PolyForm Small Business 1.0.0](https://img.shields.io/badge/license-PolyForm_Small_Business_1.0.0-orange.svg)](./LICENSE)
 
-SfSkills makes an AI coding assistant work on Salesforce the way a senior practitioner does. It is a
+SfSkills gives an AI coding assistant Salesforce reference packages to read before it answers. It is a
 library of 1,040 skill packages covering Apex, LWC, Flow, Agentforce, OmniStudio, integration, data,
 security, DevOps and declarative admin work; 70 run-time agents you call as slash commands in Claude
-Code; a beta loop that turns one business requirement into a verified, deploy-ready build; and an MCP
-server that gives any MCP client the same library plus read-only probes of your org. Nothing in this
-repository deploys to an org.
+Code (7 stable, 8 beta, 55 experimental); a beta loop that turns one business requirement into a
+planned, checked, design-only build that a human validates and deploys; and an MCP server that gives
+any MCP client the same library plus read-only probes of your org. Nothing in this repository deploys
+to an org. Most skill packages have not been claims-audited yet; see
+[What is checked, and what is not](#what-is-checked-and-what-is-not).
 
 ## Contents
 
@@ -21,7 +23,7 @@ repository deploys to an org.
 - [Sixty-second start](#sixty-second-start)
 - [What a session looks like](#what-a-session-looks-like)
 - [What's in it](#whats-in-it)
-- [Why you can trust the output](#why-you-can-trust-the-output)
+- [What is checked, and what is not](#what-is-checked-and-what-is-not)
 - [Limits](#limits)
 - [Docs](#docs)
 - [Contributing](#contributing)
@@ -40,20 +42,25 @@ before configuring) plus four reference files and a checker script:
   ([example](skills/apex/mixed-dml-and-setup-objects/references/llm-anti-patterns.md))
 - `references/well-architected.md`: the Well-Architected mapping and the official Salesforce sources
   the package rests on
-- `scripts/`: a standard-library Python checker for the package's known failure modes
+- `scripts/`: a standard-library Python checker, used as a step gate in the build loop (see
+  [What is checked](#what-is-checked-and-what-is-not) for how often its findings are right)
 
-An assistant that has read the package refuses the specific wrong pattern and can say which document
-each claim comes from. In Claude Code only the 12 router skills, the slash commands and the agent
+On small probe sets, a model answered fact questions correctly more often with an audited skill loaded
+(`RELEASES.yaml`, 1.5.0 `decision_memo`). 108 of the 679 older skills that had never been audited have
+now been claims-audited; the rest have not. In Claude Code only the 12 router skills, the slash commands and the agent
 loaders load at session start, about 7,000 tokens, and the model opens the one package it needs; a
 flat list of every skill description would cost about 149,000 (both estimated by
 `python3 scripts/build_plugin.py --measure`).
 
 **2. Run-time agents.** 70 playbooks under `agents/<name>/AGENT.md`, each behind a slash command:
-`/refactor-apex`, `/build-lwc`, `/build-flow`, `/score-deployment`, `/why-cant-user` and 65 more. An
-agent reads every skill on its Mandatory Reads list before writing anything, cites each skill,
-template and decision-tree branch it used, returns a HIGH/MEDIUM/LOW confidence score and a Process
-Observations block about your org, and never deploys or edits files outside the paths you give it
-([`agents/_shared/AGENT_CONTRACT.md`](agents/_shared/AGENT_CONTRACT.md)).
+`/refactor-apex`, `/build-lwc`, `/build-flow`, `/score-deployment`, `/why-cant-user` and 65 more. The
+contract ([`agents/_shared/AGENT_CONTRACT.md`](agents/_shared/AGENT_CONTRACT.md)) tells an agent to
+read every skill on its Mandatory Reads list before writing anything, cite each skill, template and
+decision-tree branch it used, return a HIGH/MEDIUM/LOW confidence score and a Process Observations
+block, and never deploy or edit files outside the paths you give it. Status: 7 are `stable` (each
+graded once on one real input, with mixed grades), 8 are `beta` (the build loop, exercised by five
+maintainer-run example builds), and 55 are `experimental` (ungraded)
+([`agents/_shared/RUNTIME_VS_BUILD.md`](agents/_shared/RUNTIME_VS_BUILD.md)).
 
 **3. The requirement-to-build loop (beta).** One business ask goes through eight Tier-4 agents with a
 human gate between stages. The clarifier asks every question the cited skills say must be asked, each
@@ -192,8 +199,8 @@ of a run that took about 170 (`reports/drivers-log.md`).
 
 ## What's in it
 
-**1,040 skills · 99 agents (70 run-time, 14 build-time, 14 deprecated redirect stubs) · 92 slash
-commands · 50 MCP tools · 7 decision trees.**
+**1,040 skills · 99 agents (70 run-time, 15 build-time, 14 deprecated) · 94 slash commands · 50 MCP
+tools · 7 decision trees.**
 
 ### Skills by domain
 
@@ -219,8 +226,10 @@ automation, flow pattern, Agentforce capability, async, integration pattern, sha
 
 ### Agents by tier
 
-**Run-time (70)** agents do Salesforce work in your codebase or org. **Build-time (15)** agents
-maintain the library. Fourteen more are deprecated stubs whose commands redirect to `/audit-router`.
+**Run-time (70)** agents do Salesforce work in your codebase or org: 7 stable, 8 beta, 55
+experimental (ungraded). **Build-time (15)** agents maintain the library. Fourteen more are
+deprecated; nine of their commands still redirect to `/audit-router`. The table lists every tier
+regardless of status.
 
 | Tier | Example commands |
 |---|---|
@@ -248,25 +257,35 @@ scrubbed to `[REDACTED]` (`mcp/sfskills-mcp/tests/test_sf_cli_redaction.py`).
 ### In this release
 
 - [x] 1,040 skills across 11 domains, each with `SKILL.md`, four reference files and a checker script
-- [x] 70 run-time agents, eight of them the beta requirement-to-build loop
+- [x] 70 run-time agents: 7 stable, 8 beta (the requirement-to-build loop), 55 experimental
 - [x] Five end-to-end build scenarios under `examples/builds/`
 - [x] Golden evals for 10 flagship skills (3 P0 cases each)
 - [x] Claude Code plugin 1.4.0 and sfskills-mcp 0.5.1
 
-## Why you can trust the output
+## What is checked, and what is not
 
-- **Grounding.** Every package's `references/well-architected.md` has an `## Official Sources Used`
-  section, and `pipelines/validators.py` fails the build when one is missing. Sources are ranked in
-  four tiers by [`standards/source-hierarchy.md`](standards/source-hierarchy.md): official Salesforce
-  documentation first, and a lower tier never overrides a higher one on platform behaviour. The
-  official pages per domain are in
-  [`standards/official-salesforce-sources.md`](standards/official-salesforce-sources.md). A claim
-  that could not be checked against a fetched page carries an inline `UNVERIFIED (YYYY-MM-DD)` marker
-  instead of passing as fact.
+- **Claims audit (paused).** A claim-by-claim audit against the official Salesforce guides has covered
+  108 of the 679 skills that had never been audited and corrected 503 contradicted claims in them,
+  about 4.7 per skill. The other 571 have not been audited; at that rate, expect wrong claims in them
+  that carry no marker. Every package's `references/well-architected.md` lists the `## Official Sources Used`
+  (`pipelines/validators.py` fails the build when the section is missing), but a listed source is not
+  evidence that each claim matches it. About 2,300 claims carry an inline `UNVERIFIED (YYYY-MM-DD)`
+  marker where an author flagged them; an unmarked claim is not thereby checked. Source ranking:
+  [`standards/source-hierarchy.md`](standards/source-hierarchy.md); official pages per domain:
+  [`standards/official-salesforce-sources.md`](standards/official-salesforce-sources.md).
+- **Knowledge lift.** Measured, real, and small-sample: on the 30 golden cases the answer with the
+  skill loaded scored higher 22 times and lower 6 times (2 ties; mean +0.25 on a 1–5 rubric); on
+  20 + 10 Winter '27 fact probes, correct answers rose from 0% to 100% and from 50% to 100% with an
+  audited skill loaded. The golden cases cover 10 skills and the probes cover audited skills only
+  (`RELEASES.yaml`, 1.5.0 `decision_memo`; [`evals/README.md`](evals/README.md)).
 - **Checkers.** Every package ships a standard-library Python script under `scripts/`, usually
-  `check_<name>.py`, that inspects a project's metadata or source for that package's failure modes.
-  `scripts/validate_repo.py` compiles each one and runs its `--help`. The build loop runs the cited
-  checkers verbatim against every step and records each exit code in `tests/<step>/results.json`.
+  `check_<name>.py`. The build loop runs the cited checkers against every step and records each exit
+  code in `tests/<step>/results.json`; `scripts/validate_repo.py` compiles each one and runs its
+  `--help`. When all 1,065 were run together over one real example project on 2026-11-19, 83% of 118
+  sampled findings were false and 3% useful. They are not a linter: treat a finding as a prompt to
+  look, not a verdict.
+- **Agents.** 7 run-time agents are `stable` (each graded once on one real input, with mixed grades),
+  8 are `beta` (exercised by five maintainer-run example builds) and 55 are `experimental` (ungraded).
 - **Validators.** `python3 scripts/validate_repo.py` checks frontmatter, package shape, citations,
   agent contracts and the counts in this README (`scripts/check_doc_counts.py`); every gate is listed
   in [`standards/validation-gates.md`](standards/validation-gates.md). On every push and pull request
@@ -290,9 +309,16 @@ scrubbed to `[REDACTED]` (`mcp/sfskills-mcp/tests/test_sf_cli_redaction.py`).
   find "delete", so natural-language phrasing can miss. In Claude Code, which package opens is a
   model decision over router descriptions and rosters, and it can pick a neighbour. Name the domain
   ("this is a sharing question") or run `scripts/search_knowledge.py`.
-- **Grounded, not fully verified.** Where an official page could not be fetched while authoring, the
-  claim carries an `UNVERIFIED (YYYY-MM-DD)` marker; `grep -rl "UNVERIFIED" skills/` lists every
-  file that has one. Check those claims before relying on them.
+- **Routing is not measured at package level.** The shipped path is a model choosing from a roster of skill
+  descriptions; no embeddings ship. Held-out lexical retrieval scores Hit@1 0.41 and Hit@3 0.50 on
+  154 queries (2026-10-20), and there is no package-level accuracy number for the model-routing path.
+- **Most skills are not claims-audited.** 108 audited, 571 older skills not audited, and the audit is
+  paused. Expect unmarked wrong claims in unaudited packages. `grep -rl "UNVERIFIED" skills/`
+  lists the files where an author flagged a claim; check any claim before relying on it.
+- **55 of the 70 run-time agents are experimental.** They have never been graded. The 7 stable ones
+  were each graded on one input.
+- **Checker findings are mostly false.** 83% of 118 sampled findings were false and 3% useful in a
+  run over one real project (2026-11-19).
 - **The build loop is beta.** All eight Tier-4 agents are `status: beta`. Every worked example is
   design-only, and its gates were signed by someone standing in for the requester.
 - **Org access is read-only; mock deploy is always `--dry-run`.** Validate-only compiles and checks

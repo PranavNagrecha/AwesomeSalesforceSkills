@@ -1,8 +1,45 @@
 # Changelog
 
-All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The project uses semantic versioning keyed to the Salesforce release cadence (minor bumps per Spring/Summer/Winter release).
+All notable changes to SfSkills are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The plugin takes a minor version per release, on a roughly two-week cadence planned in `RELEASES.yaml`; `sfskills-mcp` is versioned separately.
 
 ## [Unreleased]
+
+### Claim corrections
+
+- **Claims audit (R3-06), paused by the owner at 108 of 679.** Each skill that had never been audited
+  was checked claim by claim against the Winter '27 guides by a writer and an adversarial reviewer:
+  108 skills, 503 contradicted claims corrected (about 4.7 per skill), one ledger line per batch in
+  `evals/measurement/audit-ledger.jsonl`. 571 skills remain unaudited. `scripts/audit_sweep.py` checks
+  for old wording that survived a correction.
+- **Winter '27 (API 68.0) wave.** `standards/release-delta-winter27.md` lists what changed since
+  Summer '26; 18 skills were corrected in the recipe test (R2-26) and 64 more in the scale-out (R3-05),
+  among them the heap limit change, Flow `runInMode` and the DevOps Center rename.
+
+### Agents
+
+- **Roster demoted to what was proven (R2-02).** Run-time agents: 7 `stable` (each graded once on one
+  real input, mixed grades; the 1.3.0 entry below called 62 stable), 8 `beta` (the build loop,
+  exercised by the example builds), 55 `experimental` (ungraded). Slash commands still work.
+
+### Measurements
+
+- **Checkers are not a linter (R2-05, refuted).** Run together over the `tier2-webhook` example on
+  2026-11-19, 83% of 118 sampled findings were false, 14% true but noise, 3% useful. The checkers stay
+  per-skill step gates; no CI linter or GitHub Action was built.
+- Knowledge-lift probes: 20 Winter '27 facts 0% → 100% correct with the corrected skill loaded, 10 more 50% → 100%.
+
+### Tooling
+
+- `scripts/run_all_checkers.py` actually runs the checkers: it had passed one argument name to all
+  1,065, so 980 exited on a usage error and were counted as findings. Ten checkers brought back to
+  the exit/severity contract.
+
+### Removed
+
+- Dead documentation trees and the tooling that only served them: `framework/`, `docs/product-v2/`,
+  `feedback/`, `qa/`, `MASTER_QUEUE.md`, `docs/MIGRATION.md`,
+  `docs/worked-example-trigger-consolidation.md`, `docs/source-integrations/README.md`,
+  `scripts/validate_framework.py` and its chain. Front-door docs now state what is and is not checked.
 
 ## [Plugin 1.4.0] — 2026-10-20 — depth gate for new skills, release loop, first knowledge-lift measurement
 
@@ -33,8 +70,8 @@ fabrications removed** — roughly half of them introduced by the writers and ca
 (e.g. skinny tables hold 200 columns, not 100; `emptyRecycleBin` takes 10,000 records per call; scheduled
 jobs are not copied on sandbox refresh; `setClientCertificateName` exists; `OrgSnapshot`, not
 `ScratchOrgSnapshot`; `siteDotComSites/` is the real directory). About 25 fail-open checker paths closed.
-Questions tables: 273 → 309 skills. Claims no fetchable doc supports now carry an inline `UNVERIFIED`
-marker instead of being asserted (2,162 → 2,219 markers — the count rose because audited claims were marked).
+Questions tables: 273 → 309 skills. In these 40 skills, claims no fetchable doc supports now carry an
+inline `UNVERIFIED` marker instead of being asserted; other skills were not reviewed (2,162 → 2,219 markers — the count rose because audited claims were marked).
 
 ### Measurement: does loading a skill change the answer?
 

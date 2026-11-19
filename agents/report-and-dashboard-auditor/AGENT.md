@@ -31,8 +31,8 @@ Run the router:
 ```
 
 Legacy alias: `/audit-reports` invokes the router with
-`--domain=report_dashboard` plus a one-line deprecation notice. Aliases
-ship until the removal window declared in `docs/MIGRATION.md` (Wave 7).
+`--domain=report_dashboard` plus a one-line deprecation notice. Aliases still ship (redirect table:
+`agents/_shared/RUNTIME_VS_BUILD.md`).
 
 The full analytics rule set (stale reports, orphan folder owners,
 dashboard inactive running user, Modify-All-Data dashboard running user,
@@ -45,8 +45,8 @@ code (`DASHBOARD_INACTIVE_RUNNING_USER`, `FOLDER_ALL_USERS_PII`,
 ## Removal timeline
 
 This stub stays in the repo for two minor versions after the Wave-3b-1
-commit. After that it is removed; the `docs/MIGRATION.md` table (Wave 7)
-records the mapping permanently.
+commit. After that it is removed; the redirect table in
+`agents/_shared/RUNTIME_VS_BUILD.md` records the mapping.
 
 ## Plan
 

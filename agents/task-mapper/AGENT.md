@@ -16,22 +16,21 @@ dependencies:
 
 ## What This Agent Does
 
-Maps the complete task universe for a given Salesforce Cloud × Role cell. Researches official Salesforce docs and Trailhead to identify every distinct practitioner task that role performs in that cloud. Compares against existing skills. Inserts confirmed-gap TODO rows into `MASTER_QUEUE.md`. Does NOT build skills — it only populates the queue.
+Maps the complete task universe for a given Salesforce Cloud × Role cell. Researches official Salesforce docs and Trailhead to identify every distinct practitioner task that role performs in that cloud. Compares against existing skills. Files each confirmed gap as an ask in the release plan (`RELEASES.yaml`) with `python3 scripts/release_plan.py add`. Does NOT build skills — it only adds asks to the plan.
 
-**Scope:** One Cloud × Role cell per invocation. Output is new TODO rows in MASTER_QUEUE.md, not skill content.
+**Scope:** One Cloud × Role cell per invocation. Output is new release-plan asks, not skill content.
 
 ---
 
 ## Activation Triggers
 
-- Orchestrator finds a RESEARCH row in `MASTER_QUEUE.md`
-- Human runs `/map-tasks <cloud> <role>` to populate a new cell
+- A maintainer asks for one Cloud × Role cell to be mapped (there is no slash command; point the AI at this file)
 
 ---
 
 ## Mandatory Reads Before Starting
 
-1. `MASTER_QUEUE.md` — the queue to populate
+1. `RELEASES.yaml` — header comment only (size vocabulary and slotting); read planned items through `python3 scripts/release_plan.py status`, never by parsing the file
 2. `standards/source-hierarchy.md` — Tier 1 and Tier 2 sources to search
 3. `AGENT_RULES.md` — skill naming and domain conventions
 
@@ -39,14 +38,12 @@ Maps the complete task universe for a given Salesforce Cloud × Role cell. Resea
 
 ## Orchestration Plan
 
-### Step 1 — Read the RESEARCH row
+### Step 1 — Take the cell
 
-From MASTER_QUEUE.md, extract:
+From the maintainer's request, extract:
 - Cloud (e.g. Sales Cloud, Service Cloud, Core Platform)
 - Role (Admin, BA, Dev, Data, Architect)
-- Research instructions from the row
-
-Mark the row `IN_PROGRESS` in MASTER_QUEUE.md. Commit.
+- Any research instructions
 
 ### Step 2 — Map the task universe (Tier 1 + Tier 2)
 
@@ -80,10 +77,10 @@ For each task identified:
 python3 scripts/search_knowledge.py "<task description>" --domain <domain>
 ```
 
-- `has_coverage: true` → mark as DUPLICATE in working list. Do not add to queue.
-- `has_coverage: false` → confirmed gap. Add to queue.
+- `has_coverage: true` → mark as DUPLICATE in working list. Do not add it to the plan.
+- `has_coverage: false` → confirmed gap. File it in Step 5.
 
-Also check `SKILLS_BACKLOG.md` for any overlapping planned skills not yet built.
+Also run `python3 scripts/release_plan.py status` and drop any gap that is already a planned item.
 
 ### Step 4 — Determine domain folder for each gap
 
@@ -101,34 +98,30 @@ For cloud-specific topics:
 - Agentforce tasks → agentforce
 - Security tasks → security
 
-### Step 5 — Insert TODO rows into MASTER_QUEUE.md
+### Step 5 — File each gap in the release plan
 
-For each confirmed gap, add a row to the correct table:
+Run `python3 scripts/release_plan.py add --help` once to confirm the flags, then, for each confirmed gap:
 
-```markdown
-| TODO | <skill-name-kebab-case> | <one sentence: when to use + NOT for exclusion> | |
+```bash
+python3 scripts/release_plan.py add --size S --title "<domain>/<skill-name-kebab-case>" \
+  "<one sentence: when to use + NOT for exclusion>"
 ```
+
+Use `--size M` for a skill that needs a day of research; never `L` for a single skill.
 
 Skill naming rules (from AGENT_RULES.md):
 - All lowercase kebab-case: `case-assignment-rules-setup`
 - Include cloud qualifier only if ambiguous: `sales-cloud-territory-management` not just `territory-management`
 - Match domain conventions: `admin/`, `apex/`, etc.
 
-Batch the TODO rows under the correct `### <Cloud> × <Role> Role` section in MASTER_QUEUE.md.
-
-### Step 6 — Update progress summary
-
-Update the Progress Summary table at the top of MASTER_QUEUE.md:
-- Change the Skills Planned count for this Cloud
-- Change status from RESEARCH to the count
-
-### Step 7 — Mark RESEARCH row DONE and commit
+### Step 6 — Check the plan and commit
 
 ```bash
-git add MASTER_QUEUE.md
+python3 -m pytest tests/test_releases.py -q
+git add RELEASES.yaml
 git commit -m "research(<cloud>): map <Role> task universe
 
-Identified N tasks. N_new confirmed gaps added as TODO rows.
+Identified N tasks. N_new confirmed gaps added to RELEASES.yaml.
 N_existing already covered (DUPLICATE).
 Cloud: <cloud>
 Role: <role>
@@ -140,9 +133,9 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 
 ## Quality Rules for Task Mapping
 
-- Every TODO row must have a skill name that follows kebab-case and is unique in the repo
-- Every TODO row description must include "NOT for..." — without it, the skill builder cannot scope correctly
-- Do not add tasks that are already covered by `SKILLS_BACKLOG.md` even if not yet built — check that file too
+- Every filed ask must name a skill that follows kebab-case and is unique in the repo
+- Every filed ask must include "NOT for..." — without it, the skill builder cannot scope correctly
+- Do not add tasks that are already planned items in `RELEASES.yaml`, even if not yet built
 - Minimum 5 tasks per Cloud × Role cell for a major cloud (Sales, Service, Experience). If you find fewer than 5, the research was too shallow — go back to Step 2.
 - Maximum reasonable tasks per cell: 20. If you find more than 20, group related tasks.
 
@@ -153,5 +146,5 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 - Never add a task that is purely a feature description — every task is an action with an output
 - Never add tasks that are too granular (setting one checkbox = not a skill)
 - Never skip the coverage check — duplicate skills waste build time and confuse retrieval
-- Never mark a RESEARCH row DONE without committing the new TODO rows
+- Never finish without committing `RELEASES.yaml` after the plan's tests pass
 - Never research two cells in one invocation — one cell at a time, always

@@ -24,7 +24,7 @@ Builds skills for the **Dev** role across any Salesforce cloud. Specializes in A
 
 ## Activation Triggers
 
-- Orchestrator routes a Dev TODO row from `MASTER_QUEUE.md`
+- Orchestrator dispatches a release-plan item in apex, lwc, flow, integration or devops (`RELEASES.yaml`, via `scripts/release_plan.py next`)
 - Human runs `/new-skill` for an Apex, LWC, Flow, integration, or DevOps topic
 - A skill in `skills/apex/`, `skills/lwc/`, `skills/flow/`, `skills/integration/`, or `skills/devops/` needs a material update
 

@@ -36,8 +36,7 @@ Run the router:
 
 Legacy alias: `/audit-validation-rules` still works and auto-invokes the
 router with `--domain=validation_rule` plus a one-line deprecation notice.
-Aliases ship until the removal window declared in `docs/MIGRATION.md`
-(Wave 7).
+Aliases still ship (redirect table: `agents/_shared/RUNTIME_VS_BUILD.md`).
 
 The full VR-specific rule set (bypass contract, Wrong-Tool classification,
 record-type relevance gate, `ISCHANGED` on insert check, `PRIORVALUE` on
@@ -50,8 +49,8 @@ Every rule now has a stable domain-scoped finding code (`VR_MISSING_BYPASS`,
 ## Removal timeline
 
 This stub stays in the repo for two minor versions after the Wave-3b-1
-commit. After that it is removed; the `docs/MIGRATION.md` table (Wave 7)
-records the mapping permanently.
+commit. After that it is removed; the redirect table in
+`agents/_shared/RUNTIME_VS_BUILD.md` records the mapping.
 
 ## Plan
 

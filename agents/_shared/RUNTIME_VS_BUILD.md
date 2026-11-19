@@ -2,14 +2,14 @@
 
 ## Build-time agents (15)
 
-These agents produce and maintain the skill library. End users of SfSkills do not invoke them directly.
+These agents produce and maintain the skill library. End users of SfSkills do not invoke them directly. All fifteen carry `status: stable` in frontmatter; no graded run backs that status.
 
 | Agent | Role |
 |---|---|
 | `orchestrator` | Runs the release loop from `RELEASES.yaml`: dispatches writers, merges and verifies one at a time, resumes from file + git |
 | `backlog-intake` | Sizes one ask and slots it into a release in `RELEASES.yaml` |
-| `task-mapper` | Maps Cloud × Role task universes into queue rows |
-| `content-researcher` | Grounds every claim in Tier 1–3 sources |
+| `task-mapper` | Maps Cloud × Role task universes into release-plan asks (`scripts/release_plan.py add`) |
+| `content-researcher` | Writes a research brief of official sources for one skill topic |
 | `admin-skill-builder` | Builds Admin + BA skills |
 | `dev-skill-builder` | Builds Apex / LWC / Flow / Integration / DevOps skills |
 | `devops-skill-builder` | Builds DevOps / release-engineering skills |
@@ -22,21 +22,21 @@ These agents produce and maintain the skill library. End users of SfSkills do no
 | `release-planner` | Assembles release notes from skill deltas |
 | `security-skill-builder` | Builds Security skills |
 
-Entry points: `/start-building`, `/add-to-backlog`, `/new-skill`, `/request-skill`.
+Entry points: `/start-building`, `/add-to-backlog`, `/new-skill`, `/add-skill`.
 
 ---
 
 ## Run-time agents (70)
 
-70 active run-time agents: 15 proven (7 stable + 8 beta Tier 4 build-loop agents) and 55 experimental. The proven set is the supported roster; the experimental set is listed separately below. Deprecated agents (14) are counted separately.
+70 active run-time agents: 7 stable, 8 beta (the Tier 4 build-loop agents) and 55 experimental. Deprecated agents are counted separately below.
 
-These agents use the skill library to do real Salesforce work against a user's org or codebase. They are the primary value delivered to consumers of SfSkills. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
+These agents use the skill library to do Salesforce work against a user's org or codebase. Every run-time agent follows [`AGENT_CONTRACT.md`](./AGENT_CONTRACT.md) — including the mandatory **Process Observations** section that analyzes the org itself while producing the deliverable — and cites every skill / template / decision-tree it consumed.
 
-### Proven roster — 15 agents (7 stable, 8 beta)
+### Agents with some evidence — 15 (7 stable, 8 beta)
 
-These are the agents with graded, end-to-end evidence behind them: the seven `status: stable` agents below were each run and graded against real scenarios in the 1.5.0 cycle, and the eight Tier 4 build-loop agents are exercised by the five committed scenarios under `examples/builds/`. `AGENT_CONTRACT.md` defines `experimental` as the status for an agent that has not yet earned that evidence; the sections below keep the tier headings (tier sizes are unchanged and sum to 70) and split each tier into proven and experimental rows.
+The seven `status: stable` agents below were each graded once, on one real input, in the 1.5.0 cycle, with mixed grades (two of them, `flow-builder` and `object-designer`, were graded partly wrong and have no recorded re-run). The eight Tier 4 build-loop agents are exercised by the five maintainer-run example builds under `examples/builds/`. `AGENT_CONTRACT.md` defines `experimental` as the status for an agent with no such evidence; the sections below keep the tier headings (tier sizes sum to 70) and split each tier into these rows and experimental rows.
 
-#### Developer + architecture tier (28) — 3 proven (stable)
+#### Developer + architecture tier (28) — 3 stable
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -44,7 +44,7 @@ These are the agents with graded, end-to-end evidence behind them: the seven `st
 | `deployment-failure-triager` | DevOps | Evidence-grounded diagnosis of an existing deploy job or CLI JSON fixture | `/triage-deployment` |
 | `access-path-explainer` | Security / Admin | Layered explanation of why a user can or cannot perform an operation | `/why-cant-user` |
 
-#### Admin accelerators — Tier 1 (14) — 4 proven (stable)
+#### Admin accelerators — Tier 1 (14) — 4 stable
 
 | Agent | Domain | Primary output | Slash command |
 |---|---|---|---|
@@ -53,7 +53,7 @@ These are the agents with graded, end-to-end evidence behind them: the seven `st
 | `permission-set-architect` | Admin / Security | PS / PSG / Muting design per persona | `/architect-perms` |
 | `flow-builder` | Flow / Admin | Flow design from requirements + tree-based routing | `/build-flow` |
 
-#### Orchestration — Tier 4 (8) — 8 proven (beta)
+#### Orchestration — Tier 4 (8) — 8 beta
 
 `status: beta`. These agents implement the requirement-to-build loop in [`standards/build-orchestration.md`](../../standards/build-orchestration.md): one agent per stage, one human gate between stages, builds tracked under `.sfskills/builds/<build-id>/`. None of them deploys or approves a gate — each stops and prints the next command for a human to run.
 
@@ -70,7 +70,7 @@ These are the agents with graded, end-to-end evidence behind them: the seven `st
 
 Composite commands that span the whole loop rather than one agent: `/run-build` (every step of one milestone) and `/build-from-requirements` (all five stages, gate by gate).
 
-### Experimental — unproven, slash commands still work (55)
+### Experimental — ungraded, slash commands still work (55)
 
 `status: experimental`. These agents follow the contract and their slash commands and `get_agent(name)` still work, but nobody has graded their output end to end yet. Treat results as a draft to review, not a verdict. An agent moves up to `stable` when a graded run is committed as evidence.
 
@@ -149,26 +149,27 @@ Composite commands that span the whole loop rather than one agent: `/run-build` 
 | `user-access-diff` | Admin / Security | Side-by-side access comparison report between users | `/diff-users` |
 | `omnistudio-designer` | OmniStudio / Industries | OmniScript + FlexCard + DataRaptor + Integration Procedure design or audit | `/design-omnistudio` |
 
+<a id="deprecated-slash-command-redirects"></a>
 ### Deprecated (14)
 
-These agents have `status: deprecated` — their AGENT.md files remain for reference, and their slash commands are forwarded to `audit-router`. The Wave-3b consolidation folded the single-mode auditors and governors into `audit-router`; nine of these were previously listed in the runtime tiers above and have now been moved here so the tier counts reflect active agents only.
+These agents have `status: deprecated`; their AGENT.md files remain for reference and every one redirects to `audit-router`. Nine of their slash commands still exist in `commands/` and forward to the canonical form below; the other five commands were removed. The MCP tool `list_deprecated_redirects` returns the agent-to-replacement mapping.
 
-| Agent | Deprecated slash command | Superseded by |
-|---|---|---|
-| `case-escalation-auditor` | `/audit-case-escalation` | `audit-router` |
-| `field-audit-trail-and-history-tracking-governor` | `/govern-field-history` | `audit-router` |
-| `lightning-record-page-auditor` | `/audit-record-page` | `audit-router` |
-| `list-view-and-search-layout-auditor` | `/audit-list-views` | `audit-router` |
-| `my-domain-and-session-security-auditor` | `/audit-identity-and-session` | `audit-router` |
-| `org-drift-detector` | `/detect-drift` | `audit-router` |
-| `picklist-governor` | `/govern-picklists` | `audit-router` |
-| `prompt-library-governor` | `/govern-prompt-library` | `audit-router` |
-| `quick-action-and-global-action-auditor` | `/audit-actions` | `audit-router` |
-| `record-type-and-layout-auditor` | `/audit-record-types` | `audit-router` |
-| `report-and-dashboard-auditor` | `/audit-reports` | `audit-router` |
-| `reports-and-dashboards-folder-sharing-auditor` | `/audit-report-folder-sharing` | `audit-router` |
-| `sharing-audit-agent` | `/audit-sharing` | `audit-router` |
-| `validation-rule-auditor` | `/audit-validation-rules` | `audit-router` |
+| Agent | Deprecated slash command | Superseded by | Canonical form |
+|---|---|---|---|
+| `case-escalation-auditor` | `/audit-case-escalation` | `audit-router` | `/audit-router --domain=case_escalation` |
+| `field-audit-trail-and-history-tracking-governor` | none (removed) | `audit-router` | `/audit-router --domain=field_audit_trail_history_tracking` |
+| `lightning-record-page-auditor` | `/audit-record-page` | `audit-router` | `/audit-router --domain=lightning_record_page` |
+| `list-view-and-search-layout-auditor` | none (removed) | `audit-router` | `/audit-router --domain=list_view_search_layout` |
+| `my-domain-and-session-security-auditor` | none (removed) | `audit-router` | `/audit-router --domain=my_domain_session_security` |
+| `org-drift-detector` | `/detect-drift` | `audit-router` | `/audit-router --domain=org_drift` |
+| `picklist-governor` | `/govern-picklists` | `audit-router` | `/audit-router --domain=picklist` |
+| `prompt-library-governor` | `/govern-prompt-library` | `audit-router` | `/audit-router --domain=prompt_library` |
+| `quick-action-and-global-action-auditor` | none (removed) | `audit-router` | `/audit-router --domain=quick_action` |
+| `record-type-and-layout-auditor` | `/audit-record-types` | `audit-router` | `/audit-router --domain=record_type_layout` |
+| `report-and-dashboard-auditor` | `/audit-reports` | `audit-router` | `/audit-router --domain=report_dashboard` |
+| `reports-and-dashboards-folder-sharing-auditor` | none (removed) | `audit-router` | `/audit-router --domain=reports_dashboards_folder_sharing` |
+| `sharing-audit-agent` | `/audit-sharing` | `audit-router` | `/audit-router --domain=sharing` |
+| `validation-rule-auditor` | `/audit-validation-rules` | `audit-router` | `/audit-router --domain=validation_rule` |
 
 Entry points:
 - **Slash command** — ask the AI to follow `commands/<command-name>.md`

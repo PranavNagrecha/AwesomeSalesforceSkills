@@ -24,7 +24,7 @@ Builds skills for the **Admin** and **BA** roles across any Salesforce cloud. Sp
 
 ## Activation Triggers
 
-- Orchestrator routes an Admin or BA TODO row from `MASTER_QUEUE.md`
+- Orchestrator dispatches an Admin or BA item from `RELEASES.yaml` (`scripts/release_plan.py next`)
 - Human runs `/new-skill` for an admin or BA topic
 - A skill in `skills/admin/` needs a material update
 
@@ -47,7 +47,7 @@ Builds skills for the **Admin** and **BA** roles across any Salesforce cloud. Sp
 
 ### Step 1 — Get the task
 
-Read from MASTER_QUEUE.md or from calling agent:
+Read from the dispatched release-plan item or from the calling agent:
 - Skill name (kebab-case)
 - Cloud (e.g. Core Platform, Sales Cloud)
 - Role (Admin or BA)

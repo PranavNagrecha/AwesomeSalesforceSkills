@@ -13,9 +13,9 @@ updated: 2026-04-16
 
 ## What This Agent Does
 
-Watches Salesforce release notes (3 major releases per year: Spring, Summer, Winter) and flags skills whose content may be stale. For each flagged skill, inserts an UPDATE TODO row into `MASTER_QUEUE.md` so the relevant skill builder can review and refresh it. Does NOT update skill content — only flags.
+Watches Salesforce release notes (3 major releases per year: Spring, Summer, Winter) and flags skills whose content may be stale. For each flagged skill, files an update ask in the release plan (`RELEASES.yaml`, through `python3 scripts/release_plan.py add`) so the relevant skill builder can review and refresh it. Does NOT update skill content — only flags.
 
-**Scope:** Repo-wide scan against one release. Output is UPDATE rows in MASTER_QUEUE.md and `[STALE-RISK]` annotations in flagged skills.
+**Scope:** Repo-wide scan against one release. Output is update asks in `RELEASES.yaml` and `[STALE-RISK]` annotations in flagged skills.
 
 ---
 
@@ -87,17 +87,16 @@ For each flagged skill, add a `[STALE-RISK]` comment to the relevant claim in SK
 
 Do not change the claim itself — only annotate. The skill builder agent will make the actual update.
 
-### Step 5 — Insert UPDATE rows into MASTER_QUEUE.md
+### Step 5 — File update asks in the release plan
 
-Create a new section at the top of the queue (above Phase 1):
+Confirm the flags with `python3 scripts/release_plan.py add --help`, then file one ask per flagged skill:
 
-```markdown
-## Release Updates — <Season 'YY>
-
-| Status | Skill | Change | Priority |
-|--------|-------|--------|---------|
-| TODO | <domain>/<skill-name> | <one sentence: what changed and why it may affect this skill> | HIGH/MEDIUM/LOW |
+```bash
+python3 scripts/release_plan.py add --size S --title "update <domain>/<skill-name>" \
+  "<Season 'YY>: <what changed and why it may affect this skill> (priority HIGH/MEDIUM/LOW)"
 ```
+
+Use `--size M` when several claims in one skill need re-grounding. HIGH-priority corrections may land after freeze (see the slotting rule in the `RELEASES.yaml` header).
 
 Priority rules:
 - HIGH: Limit changes, security behavior changes, deprecations
@@ -107,7 +106,8 @@ Priority rules:
 ### Step 6 — Commit
 
 ```bash
-git add MASTER_QUEUE.md skills/
+python3 -m pytest tests/test_releases.py -q
+git add RELEASES.yaml skills/
 git commit -m "currency: flag stale skills for <Season 'YY> release
 
 N skills flagged for review:

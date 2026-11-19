@@ -21,14 +21,13 @@ it properly, run it day to day, and finally change it.
 |---|---|---|
 | [../README.md](../README.md) | Both | What is this and why would I want it? |
 | [getting-started.md](getting-started.md) | Consumer | Install to first useful answer, for the three real entry points: Claude Code checkout, MCP server, plain export to another tool. |
-| [worked-example-trigger-consolidation.md](worked-example-trigger-consolidation.md) | Consumer | One complete Salesforce task, start to finish, with the real command output. |
 
 ## 2. Concepts
 
 | Doc | Audience | What it answers |
 |---|---|---|
 | [architecture.md](architecture.md) | Both | How skills, agents, commands, templates, decision trees, registry, index, evals and the MCP server fit together, and which of the three retrieval mechanisms each accuracy figure describes. |
-| [agent-invocation-modes.md](agent-invocation-modes.md) | Consumer | The ways to invoke an agent, and why MCP is the canonical channel for production use. |
+| [agent-invocation-modes.md](agent-invocation-modes.md) | Consumer | The ways to invoke an agent. |
 | [glossary.md](glossary.md) | Both | This repo's own vocabulary: mechanism 1/2/3, gloss, roster, tier, coverage gate, envelope. |
 | [../evals/measurement/README-model-routing.md](../evals/measurement/README-model-routing.md) | Both | How the shipped routing path is benchmarked, and the retraction of the "79.2% → 92.2% Hit@1" headline. Read before citing any routing number. |
 
@@ -86,7 +85,6 @@ The worked examples, each a folder with its own `README.md`:
 | [multi-ai-parity.md](multi-ai-parity.md) | Consumer | Which export targets are first-class and what each one loses. |
 | [troubleshooting.md](troubleshooting.md) | Both | Symptom to cause to fix, for the failure modes a fresh clone actually hits. |
 | [faq.md](faq.md) | Both | Do I need an org? Why is search slow? Why do the CLI and MCP disagree? |
-| [MIGRATION.md](MIGRATION.md) | Both | Which agents were retired in the Wave 3 consolidation, what replaced them, and the state of each redirect. |
 | [validation/README.md](validation/README.md) | Both | How the library verifies itself against a live org: three re-runnable harnesses. The harnesses ship; their reports do not. |
 | [../SECURITY.md](../SECURITY.md) | Both | Threat model, secret handling, and how to report a vulnerability. |
 | [../CHANGELOG.md](../CHANGELOG.md) | Both | What changed, when. |
@@ -101,10 +99,11 @@ The worked examples, each a folder with its own `README.md`:
 | [../AGENTS.md](../AGENTS.md) | Contributor | The agent-facing entry point (the `AGENTS.md` convention). |
 | [../standards/skill-authoring-style.md](../standards/skill-authoring-style.md) | Contributor | How a skill package is written: voice, section shapes, Questions to Ask Before Configuring. |
 | [../standards/validation-gates.md](../standards/validation-gates.md) | Contributor | Every gate `validate_repo.py` enforces, with file and line citations. Generated. |
-| [../standards/official-salesforce-sources.md](../standards/official-salesforce-sources.md) | Contributor | The official Salesforce documentation a skill's claims must be grounded in. |
+| [../standards/official-salesforce-sources.md](../standards/official-salesforce-sources.md) | Contributor | The official Salesforce documentation a skill's claims are checked against. |
 | [../agents/_shared/AGENT_CONTRACT.md](../agents/_shared/AGENT_CONTRACT.md) | Contributor | The 8-section shape every AGENT.md must have. |
 | [../evals/README.md](../evals/README.md) | Contributor | Golden P0 output-quality cases for the flagship skills. |
-| [../commands/onboard-source.md](../commands/onboard-source.md) and [source-integrations/README.md](source-integrations/README.md) | Contributor | Onboarding an external skill source, and the licence and chain-of-title record each one leaves. |
+| [../commands/onboard-source.md](../commands/onboard-source.md) | Contributor | Onboarding an external skill source under the licence rules. |
+| [../RELEASES.yaml](../RELEASES.yaml) | Contributor | The release plan: every planned item, its status and evidence. Add an ask with `/add-to-backlog` or `python3 scripts/release_plan.py add`; pick up work with `/start-building`. |
 
 ### Generated artifacts: never hand-edit
 
@@ -112,9 +111,9 @@ Regenerate with the command in the third column. Only some of these are gated.
 
 | Doc | What it is | Regenerate with | Drift gated? |
 |---|---|---|---|
-| [SKILLS.md](SKILLS.md) | The skill catalog | `scripts/skill_sync.py --all` (via `scripts/generate_docs.py`) | Yes. `validate_repo.py` recomputes it through `pipelines/sync_engine.py` and errors on any difference. |
+| [SKILLS.md](SKILLS.md) | The skill catalog | `scripts/skill_sync.py --all --skip-embeddings` | Yes. `validate_repo.py` recomputes it through `pipelines/sync_engine.py` and errors on any difference. |
 | [agents.md](agents.md) | The agent roster | `scripts/generate_agent_roster.py` | Only by hand: `--check` exists, and no workflow or hook runs it. |
-| [queue-progress.md](queue-progress.md) | Backlog dashboard: status counts, drift, next pick | `scripts/generate_queue_dashboard.py` | Yes, when `BACKLOG.yaml` produces a dashboard. |
+| [queue-progress.md](queue-progress.md) | Dashboard for the frozen `BACKLOG.yaml` skill-request queue | `scripts/generate_queue_dashboard.py` | Yes, when `BACKLOG.yaml` produces a dashboard. |
 | `docs/reports/duplicate-candidates.md` | Near-duplicate skill pairs | `scripts/audit_duplicates.py` | No. `docs/reports/` is gitignored, so it exists only after you run the script. |
 
 Outside `docs/`, `registry/`, `vector_index/chunks.jsonl`,
@@ -124,9 +123,9 @@ under `.claude/` (routers, rosters, agent loaders) are generated by
 `scripts/build_plugin.py` and checked in CI by `scripts/build_plugin.py --check`
 (`.github/workflows/validate.yml`).
 
-The queue itself is hand-authored: [../BACKLOG.yaml](../BACKLOG.yaml) holds the
-rows, and [../MASTER_QUEUE.md](../MASTER_QUEUE.md) is the workflow contract for
-claiming one. `queue-progress.md` is derived from the first.
+Planned work lives in [../RELEASES.yaml](../RELEASES.yaml), edited through
+`scripts/release_plan.py`. [../BACKLOG.yaml](../BACKLOG.yaml) is a frozen
+skill-request queue kept for its history; `queue-progress.md` is derived from it.
 
 ---
 
@@ -141,9 +140,8 @@ claiming one. `queue-progress.md` is derived from the first.
 
 ## Not indexed
 
-- `docs/product-v2/` and `docs/source-integrations/2026-09-01-public-skill-source-audit.md`
-  are historical: dated records of earlier work sessions, kept for provenance,
-  not maintained as documentation.
+- `docs/source-integrations/2026-09-01-public-skill-source-audit.md` is a dated
+  record of one earlier work session, kept for provenance, not maintained.
 - `docs/reports/` and everything under `docs/validation/` except its README are
   gitignored run output: per-agent reports, validation runs, dated one-off
   analyses. They describe the tree as it was when they ran.

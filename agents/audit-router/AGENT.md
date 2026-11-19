@@ -61,7 +61,7 @@ Dispatches one of the audit domains in the [`audit_harness`](../_shared/harnesse
 ## Invocation
 
 - **Direct read** — "Follow `agents/audit-router/AGENT.md` with domain=validation_rule for Opportunity"
-- **Slash command** — [`/audit-router`](../../commands/audit-router.md). Legacy aliases for all 15 retired auditors (e.g. `/audit-validation-rules`, `/govern-picklists`, `/audit-approvals`, `/audit-record-types`, `/audit-reports`, `/audit-case-escalation`, `/audit-record-page`, `/audit-list-views`, `/audit-actions`, `/audit-report-folder-sharing`, `/govern-field-history`, `/audit-sharing`, `/detect-drift`, `/audit-identity-and-session`, `/govern-prompt-library`) each invoke the router with a preset `--domain` and emit a one-line deprecation notice. Aliases ship until the removal window declared in `docs/MIGRATION.md` (Wave 7).
+- **Slash command** — [`/audit-router`](../../commands/audit-router.md). Nine legacy aliases of retired auditors still ship (`/audit-validation-rules`, `/govern-picklists`, `/audit-record-types`, `/audit-reports`, `/audit-case-escalation`, `/audit-record-page`, `/audit-sharing`, `/detect-drift`, `/govern-prompt-library`); each invokes the router with a preset `--domain` and emits a one-line deprecation notice. The other aliases were removed; the redirect table is in `agents/_shared/RUNTIME_VS_BUILD.md`.
 - **MCP** — `get_agent("audit-router")`
 
 ---

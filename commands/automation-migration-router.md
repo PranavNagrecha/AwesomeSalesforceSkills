@@ -20,11 +20,11 @@ Invoke the [automation-migration-router](../agents/automation-migration-router/A
 
 Routes one of four source automation types into the matching migration dispatch, returning an inventory, target design (Flow or Orchestrator), parallel-run validation plan, and rollback plan. See [`agents/automation-migration-router/AGENT.md`](../agents/automation-migration-router/AGENT.md) for the full contract.
 
-## Legacy alias commands
+## Removed alias commands
 
-These four aliases invoke the same router with a preset `--source-type` and emit a one-line deprecation notice. They ship until the removal window declared in `docs/MIGRATION.md` (Wave 7).
+The four per-source commands below were removed. Use the router with the matching `--source-type`:
 
-| Alias | Equivalent to |
+| Removed command | Use instead |
 |---|---|
 | `/migrate-wfr-to-flow` | `/automation-migration-router --source-type wf_rule ...` |
 | `/migrate-pb-to-flow` | `/automation-migration-router --source-type process_builder ...` |

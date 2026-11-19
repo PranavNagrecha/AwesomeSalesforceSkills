@@ -24,7 +24,7 @@ Builds skills for the **Architect** role across any Salesforce cloud. Specialize
 
 ## Activation Triggers
 
-- Orchestrator routes an Architect TODO row from `MASTER_QUEUE.md`
+- Orchestrator dispatches an architect-domain item from the release plan in `RELEASES.yaml`
 - Human runs `/new-skill` for an architecture pattern, solution design, or platform strategy topic
 - An architect-tagged skill needs a material update after a Salesforce release
 

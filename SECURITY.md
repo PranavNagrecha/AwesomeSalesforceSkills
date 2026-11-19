@@ -16,11 +16,9 @@ project asks contributors to follow.
   This keeps the report private while a fix is prepared and lets us credit you
   on disclosure. If GitHub tells you private reporting is not enabled on the
   repository, fall back to the next option and say so in your message.
-- **Fallback:** start a private thread via [GitHub
-  Discussions](https://github.com/PranavNagrecha/AwesomeSalesforceSkills/discussions)
-  or contact the maintainer through their GitHub profile
-  ([@PranavNagrecha](https://github.com/PranavNagrecha)). Put `SECURITY` in the
-  subject and do not include exploit detail in a public thread.
+- **Fallback:** email the maintainer at the address in
+  [`LICENSING.md`](LICENSING.md). Put `SECURITY` in the subject. GitHub
+  Discussions has no private threads, so do not post exploit detail there.
 
 This is a single-maintainer project. We aim to acknowledge within 72 hours and
 to triage within 7 days, and we will agree a disclosure timeline with you based
@@ -70,7 +68,7 @@ review has to catch).
 ### Credential redaction in `sf` CLI output — enforced
 
 `mcp/sfskills-mcp/src/sfskills_mcp/sf_cli.py` scrubs credential-shaped strings
-at two layers, and `tests/test_sf_cli_redaction.py` pins the behavior as a
+at two layers, and `mcp/sfskills-mcp/tests/test_sf_cli_redaction.py` pins the behavior as a
 regression guard. The comment block in `sf_cli.py` records why: `sf org
 display` prepended a warning line, `json.loads` failed, and the error path
 returned raw stdout — which contained the access token.
@@ -93,20 +91,20 @@ Replacement value is the literal `[REDACTED]`. Any new code path that surfaces
   `MERGE`) and `;`, and bounds rows at `MAX_TOOLING_QUERY_ROWS` (2000).
   Detection looks at statement tokens rather than string-literal content, so
   `WHERE Name = 'foo INSERT bar'` still runs.
-  `tests/test_tooling_query_blocklist.py` covers this.
+  `mcp/sfskills-mcp/tests/test_tooling_query_blocklist.py` covers this.
 
 ### MCP tool surface — enforced
 
-The server registers **38 tools**. By annotation profile
+The server registers **50 tools**. By annotation profile
 (`mcp.types.ToolAnnotations`, set in `server.py`):
 
 | Profile | Count | `readOnlyHint` | `openWorldHint` |
 |---|---|---|---|
-| `_ANN_REPO_ONLY` | 13 | `True` | `False` |
-| `_ANN_ORG_READ` | 24 | `True` | `True` |
+| `_ANN_REPO_ONLY` | 23 | `True` | `False` |
+| `_ANN_ORG_READ` | 26 | `True` | `True` |
 | `_ANN_ENVELOPE` | 1 | `False` | `False` |
 
-- **No tool writes to the org.** All 24 org-touching tools — the `list_*` /
+- **No tool writes to the org.** All 26 org-touching tools — the `list_*` /
   `describe_*` / `get_apex_*` / `get_lwc_*` readers, `tooling_query`,
   `validate_against_org`, and every `probe_*` — issue SOQL or Tooling API reads
   only.
@@ -119,7 +117,7 @@ The server registers **38 tools**. By annotation profile
   `sf org login` session; it never stores or transmits tokens.
 - **Errors return structured dicts, not exceptions**, so a stack trace cannot
   carry a token out.
-- `tests/test_tool_annotations.py` asserts every tool carries a profile, so a
+- `mcp/sfskills-mcp/tests/test_tool_annotations.py` asserts every tool carries a profile, so a
   new tool cannot ship un-annotated.
 
 Any MCP tool PR that writes to the org, stores credentials, or interpolates

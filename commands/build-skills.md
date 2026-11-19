@@ -197,7 +197,7 @@ Agents historically produce these recoverable issues. Auto-fix before validate:
   ```
 - **Missing tags block** — If the frontmatter has triggers but no tags, insert a tags block. Tags should match the skill's slug + 3-5 related concepts.
 - **Missing template file** — If `templates/` is empty, create a minimal `<slug>-template.md` with a starter pattern.
-- **`runtime_orphan_reason` field** — The schema doesn't accept this field. If `--runtime-orphan --orphan-reason` was used, the reason is recorded in `MASTER_QUEUE` notes; remove the field from the SKILL.md frontmatter.
+- **`runtime_orphan_reason` field** — The schema doesn't accept this field. If `--runtime-orphan --orphan-reason` was used, record the reason in the run report instead; remove the field from the SKILL.md frontmatter.
 - **Missing query fixture** — Add a fixture entry to `vector_index/query-fixtures.json` with the strongest natural-language phrasing for the skill.
 
 ---

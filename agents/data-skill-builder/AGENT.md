@@ -24,7 +24,7 @@ Builds skills for the **Data** role across any Salesforce cloud. Specializes in 
 
 ## Activation Triggers
 
-- Orchestrator routes a Data TODO row from `MASTER_QUEUE.md`
+- A `RELEASES.yaml` item in the data domain is dispatched by the orchestrator
 - Human runs `/new-skill` for a data modeling, migration, SOQL, or data quality topic
 - A skill in `skills/data/` needs a material update
 

@@ -26,7 +26,7 @@ coverage for every query **and still exits 0** — so step 1 of the add-a-skill
 flow silently passes when it should not.
 
 `python3 scripts/bootstrap.py --verify-only` re-checks in under a second and
-prints whether retrieval and the 67 slash commands are live. Bootstrap writes
+prints whether retrieval and the slash commands are live. Bootstrap writes
 no tracked files and makes no network calls.
 
 Optional but recommended:
@@ -37,9 +37,8 @@ python3 scripts/install_hooks.py
 
 Installs a fast `pre-commit` (changed-only sync + validate) and a `pre-push`
 that runs the full four-shard skill sweep. **The pre-push hook takes several
-minutes** on the 1,027-skill corpus as measured — a single shard measured at
-1 m 58 s, and the hook runs four sequentially. Use `git push --no-verify` on WIP
-branches; CI still gates merge.
+minutes**: each shard takes minutes on the full corpus, and the hook runs four
+sequentially. Use `git push --no-verify` on WIP branches; CI still gates merge.
 
 ---
 
@@ -48,18 +47,17 @@ branches; CI still gates merge.
 **Gate 1 — Structural (automated)**
 
 ```bash
-python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name>
+python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name> --skip-embeddings
 python3 scripts/validate_repo.py
 ```
 
 `validate_repo.py` must exit 0. It exits non-zero on **ERROR** only. WARNs
-print and do not block — the corpus carries hundreds of them by design (176 in
-one of four shards). Read them, decide, move on; do not treat "zero warnings"
+print and do not block — the corpus carries hundreds of them by design. Read them, decide, move on; do not treat "zero warnings"
 as the bar, because nobody can hit it.
 
 The complete gate list, with severity and a link to the source line for each,
-is generated at [`standards/validation-gates.md`](standards/validation-gates.md)
-(74 gates: 57 ERROR, 14 WARN). Read that instead of grepping validator code.
+is generated at [`standards/validation-gates.md`](standards/validation-gates.md).
+Read that instead of grepping validator code.
 Do not hand-edit it.
 
 **Gate 2 — Quality (checklist)**
@@ -67,7 +65,9 @@ Do not hand-edit it.
 Read `standards/skill-content-contract.md`. Your skill must pass all five
 gates:
 
-1. Every factual claim has a source tag (`[T1]`, `[T2]`, `[T3: name]`)
+1. Every factual claim is sourced the way the corpus does it (see
+   [Sourcing](#sourcing) below): a corpus line citation, an official URL in
+   `## Official Sources Used`, or an inline `UNVERIFIED` marker
 2. Content depth — examples, gotchas, templates meet the per-file minimums
 3. Agent usability — an AI can follow it without asking for clarification
 4. No undocumented contradictions with other skills
@@ -101,20 +101,16 @@ It writes `docs/reports/duplicate-candidates.md`; add `--json` to inspect
 without rewriting the report. The threshold lives in
 `config/retrieval-config.yaml` → `duplicate_threshold.score` (0.50 today).
 
-Also check the queue — `docs/SKILLS.md` for what is built, and `BACKLOG.yaml`
-for what is planned:
+Also check what is built (`docs/SKILLS.md`) and what is planned
+(`RELEASES.yaml`, read through the script):
 
 ```bash
-python3 scripts/queue_reader.py --summary
-python3 scripts/queue_reader.py --next --status TODO,RESEARCHED
+python3 scripts/release_plan.py status
 ```
 
-`BACKLOG.yaml` holds 646 entries and is the authoritative queue.
-`MASTER_QUEUE.md` no longer contains rows — they moved to `BACKLOG.yaml` on
-2026-05-01 and the markdown file is now a pointer plus workflow notes.
-
-If your topic is in the queue as `TODO`, it is planned but not built. You can
-build it.
+If your topic is a planned item that nobody has started, you can build it.
+`BACKLOG.yaml` is a frozen skill-request queue kept for history; do not add
+to it.
 
 ### Step 2 — Pick the domain
 
@@ -141,21 +137,30 @@ Architect skills go in `skills/architect/`, **not** `skills/admin/`.
 Roles are not encoded in the folder structure. State the audience in the
 `description` and `triggers` frontmatter instead.
 
-> `scripts/new_skill.py` also accepts `experience` and `servicecloud` as
-> domains. Do not use them — `ALLOWED_CATEGORIES` in
-> `pipelines/validators.py` has only the 11 above, so a skill scaffolded there
-> fails validation with `invalid category`.
-
 ### Step 3 — Research before writing (mandatory)
 
-Read `standards/source-hierarchy.md`. For every factual claim:
+Read `standards/source-hierarchy.md`. Do not write from memory. Every
+behavior claim needs a source.
 
-- Find it in Tier 1 (official Salesforce docs) first
-- If not in Tier 1, find it in Tier 2 (Trailhead, Architects blog)
-- If only in Tier 3 (expert community), tag it explicitly
-- Tier 4 belongs in research notes, never in shipped skill content
+#### Sourcing
 
-Do not write from memory. Every behavior claim needs a source.
+This is what the corpus actually does. `standards/skill-content-contract.md`
+describes `[T1]`-style source tags; shipped skills almost never use them.
+
+- **Official Sources Used.** `references/well-architected.md` carries a
+  `## Official Sources Used` section listing the official Salesforce pages
+  the package relies on. The validator ERRORs when it is missing or empty.
+- **Corpus line citations.** A specific claim (a limit, an API name, a
+  metadata element) cites the official guide it came from by short name,
+  release and line in the text extracted from Salesforce's release PDF, for
+  example `` `apexdev 264 L19780` ``. `standards/skill-writer-brief.md` lists
+  the guides and how to fetch them.
+- **Inline `UNVERIFIED` markers.** A claim you could not ground in a fetched
+  official page carries `UNVERIFIED (YYYY-MM-DD): <why>` written beside the
+  claim itself, not in a footnote or another file.
+
+Older skills that were never claims-audited have none of the last two, and
+some of their claims are wrong. Do not treat an unmarked claim as checked.
 
 ### Step 4 — Scaffold
 
@@ -189,7 +194,8 @@ Per-file minimums, from `standards/skill-content-contract.md`:
 - A `## Recommended Workflow` section, 3–7 numbered directive steps (WARN if
   absent)
 - Body references `references/gotchas.md` at least once
-- Every factual claim carries a source tag or URL
+- Every factual claim carries a corpus line citation or URL, or an inline
+  `UNVERIFIED` marker
 
 **references/examples.md**
 - 2+ complete examples: Scenario, Problem, Solution, Why it works, Source
@@ -213,7 +219,8 @@ Per-file minimums, from `standards/skill-content-contract.md`:
   pattern, a detection hint
 
 **scripts/check_*.py**
-- Real logic, not an always-pass stub
+- Real logic, not an always-pass stub. A WARN catches very short checkers;
+  review must catch the rest — stub checkers have shipped before
 - Stdlib only, Python 3.8+, exit 0 pass / 1 fail with a readable message
 
 **templates/\<skill-name\>-template.md**
@@ -230,7 +237,7 @@ list is unenforced.
 ### Step 6 — Sync and validate
 
 ```bash
-python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name>
+python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name> --skip-embeddings
 python3 scripts/validate_repo.py
 ```
 
@@ -240,7 +247,8 @@ For a repo-wide rebuild use `--all --skip-embeddings`. `embeddings.enabled` is
 `true` in `config/retrieval-config.yaml`, so a bare `--all` attempts a
 chunk-level encode — the config records ~2:20 for a first build on an M-series
 CPU, and `.githooks/pre-commit` records ~3 hours when the cache is cold.
-Rebuild embeddings deliberately with `python3 scripts/build_index.py`.
+Rebuild embeddings deliberately with `python3 scripts/build_index.py`; it and
+`scripts/generate_docs.py` start that pass even when given `--help`.
 
 ### Step 7 — Add a query fixture
 
@@ -287,7 +295,7 @@ list is the binding one:
 - `python3 scripts/validate_repo.py` exits 0
 - If you touched `mcp/sfskills-mcp/`:
   `python3 -m unittest discover -s mcp/sfskills-mcp/tests` exits 0
-- `skill_sync.py --skill …` ran clean and the registry diff is included
+- `skill_sync.py --skill … --skip-embeddings` ran clean and the registry diff is included
 - No `/Users/<author>/` paths or other identifying information
 - Frontmatter complete on every new SKILL.md / AGENT.md
 
@@ -302,14 +310,14 @@ is.
 
 | Type | What to do |
 |------|-----------|
-| **Wrong factual claim** | Find the correct Tier 1 source, update the claim, add or update the source tag |
+| **Wrong factual claim** | Find the correct official source, update the claim, and cite it (see [Sourcing](#sourcing)) |
 | **Missing content** | Add it following the content-depth requirements above |
 | **Stale after a release** | See [Flag Stale Content](#flag-stale-content) |
 
 ### Step 2 — Edit the skill files
 
 Edit only files under `skills/<domain>/<skill-name>/`. Never hand-edit
-`registry/`, `docs/SKILLS.md`, `docs/queue-progress.md`,
+`registry/`, `docs/SKILLS.md`, `docs/agents.md`,
 `standards/validation-gates.md`, `.claude/skills/**/references/skill-index.md`,
 or the gitignored artifacts in `vector_index/` — they are generated.
 `vector_index/query-fixtures.json` is the one tracked, hand-edited exception.
@@ -317,20 +325,24 @@ or the gitignored artifacts in `vector_index/` — they are generated.
 ### Step 3 — Run both gates
 
 ```bash
-python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name>
+python3 scripts/skill_sync.py --skill skills/<domain>/<skill-name> --skip-embeddings
 python3 scripts/validate_repo.py
 ```
 
-### Step 4 — Update the `updated` frontmatter date
+### Step 4 — Update `updated` and bump `version`
 
-If you changed factual content (not just formatting), set `updated:` to today.
-That signals the content was verified, not just reformatted.
+If you changed content (not just formatting), set `updated:` to today and bump
+`version` by one patch level (`1.0.0` → `1.0.1`). `updated:` records an edit;
+it is not evidence that anything was verified. Bump the version with it:
+`validate_repo.py` treats a skill at `version: 1.0.0` with `updated:` on or
+after 2026-10-19 as a new skill and holds it to the new-skill depth bar
+(`pipelines/validators.py`, `DEPTH_NEW_SKILL_CUTOFF`).
 
 ### Step 5 — Open a PR
 
 Title: `fix(<domain>): update <skill-name> — <what changed>`
 
-Say what was wrong, what the correct behavior is, and the Tier 1 source that
+Say what was wrong, what the correct behavior is, and the official source that
 confirms the fix.
 
 ---
@@ -350,30 +362,27 @@ composing a title by hand — it applies the
 Include the role, the cloud, the task the skill covers, and why existing skills
 do not cover it (say what `search_knowledge.py` returned).
 
-### Option 2 — Add a queue entry
+### Option 2 — Add it to the release plan
 
-```bash
-python3 scripts/queue_reader.py --summary
+In Claude Code:
+
+```
+/add-to-backlog <one sentence: the task the skill covers and who it is for>
 ```
 
-`BACKLOG.yaml` is the machine-readable queue and is written through
-`scripts/queue_reader.py`, not by hand. Its entries carry
-`id`, `status`, `skill`, `summary`, `notes`, and a structured `history` list.
-Statuses: `TODO`, `RESEARCHED`, `RESEARCH`, `IN_PROGRESS`, `DONE`,
-`DUPLICATE`, `BLOCKED`, `UPDATE`, `SHIPPABLE`.
+Without Claude Code, the same thing from a shell (`--help` lists the flags):
+
+```bash
+python3 scripts/release_plan.py add --size S "<ask>"
+```
+
+Both size the ask (S, M or L) and slot it into a release in `RELEASES.yaml`.
 
 Naming rules for the proposed skill:
 
 - lowercase kebab-case: `case-assignment-rules-setup`
 - must belong to one of the 11 domain folders
 - the description must include "NOT for..." or it will be rejected downstream
-
-> **The `/request-skill` slash command is currently out of date.** Its steps 5
-> and 6 instruct the caller to add a table row to `MASTER_QUEUE.md` and report
-> a "Phase" number — those tables were removed in the 2026-05-01 migration. Use
-> the GitHub template or `queue_reader.py` until the command is fixed. Its step
-> 3 also maps the Architect role to the `admin` domain, which contradicts the
-> `architect` folder.
 
 ---
 
@@ -391,9 +400,8 @@ If you spot a stale claim:
 
 There is a `currency-monitor` build-time agent
 (`agents/currency-monitor/AGENT.md`) that scans skills against release notes
-and flags candidates. Note that its output step still describes inserting
-`UPDATE` rows into `MASTER_QUEUE.md`; record the result in `BACKLOG.yaml` via
-`queue_reader.py --set-status UPDATE` instead.
+and files each stale candidate into the release plan with
+`python3 scripts/release_plan.py add`.
 
 ---
 
@@ -418,7 +426,7 @@ Agents run the same gates as manual contributions. Nothing bypasses
 
 | Reason | Fix |
 |--------|-----|
-| Factual claim with no source | Add `[T1: url]` or `[T2: source]` |
+| Factual claim with no source | Cite it (see [Sourcing](#sourcing)) or mark it `UNVERIFIED` inline |
 | `validate_repo.py` exits non-zero | Fix every ERROR |
 | SKILL.md body under 300 words | Expand — stubs are not skills |
 | `description` has no "NOT for..." | Add an explicit scope exclusion |
@@ -428,7 +436,7 @@ Agents run the same gates as manual contributions. Nothing bypasses
 | No query fixture, or the fixture misses the top *k* | Add or retune it |
 | examples.md has fewer than 2 complete examples | Add them |
 | gotchas.md has fewer than 3 entries | Add them |
-| `scripts/check_*.py` is a stub | Implement real validation logic |
+| `scripts/check_*.py` is a stub (review catches this; no gate does reliably) | Implement real validation logic |
 | Skill duplicates an existing one | Extend the existing skill instead |
 | Generated artifacts are stale | `skill_sync.py --all --skip-embeddings` |
 | Any unresolved `TODO:` marker | Fill them all |
@@ -439,8 +447,8 @@ Agents run the same gates as manual contributions. Nothing bypasses
 ## Skill Authoring Principles
 
 1. **Every claim needs a source.** Training data is not a source. If you cannot
-   find it in official Salesforce docs or a named Tier 2–3 source, do not
-   assert it.
+   find it in official Salesforce docs, do not assert it, or mark it
+   `UNVERIFIED` beside the claim.
 
 2. **Write for the AI, not the human.** The primary reader is an AI agent using
    this skill to help a practitioner. Every decision branch must be explicit.

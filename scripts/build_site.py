@@ -621,10 +621,10 @@ def main() -> int:
     )
     stat = lambda n, label: f'<li><span class="n">{n:,}</span><br>{label}</li>'
     intro = (
-        f"{total:,} skill packages, {counts['active_runtime']} run-time agents and an MCP server that make an AI coding "
-        "assistant behave like a senior Salesforce practitioner: it knows the platform's non-obvious "
-        "failure modes, refuses the wrong code an LLM reliably produces, and grounds every claim in "
-        "official Salesforce documentation."
+        f"{total:,} skill packages, {counts['active_runtime']} run-time agents and an MCP server that give an AI "
+        "coding assistant Salesforce reference material to read before it answers: the platform's non-obvious "
+        "failure modes and the wrong code an LLM tends to produce. A claims audit against official Salesforce "
+        "guides is in progress and most packages have not been audited yet."
     )
     body = f"""
 <h1>{SITE_NAME}: {TAGLINE}</h1>
@@ -636,9 +636,10 @@ def main() -> int:
 {stat(counts["mcp_tools"], "MCP tools")}
 </ul>
 <h2 id="what">What it is</h2>
-<p>Each skill is a reviewed package (<code>SKILL.md</code> plus references, templates and checkers) covering one
+<p>Each skill is a package (<code>SKILL.md</code> plus references, templates and a checker) covering one
 Salesforce topic: when to use it, the questions to ask first, the workflow, and the mistakes AI assistants make there.
-Run-time agents apply those skills to real work and never deploy to an org. The MCP server lets the assistant ask your
+Many packages contain claims nobody has checked yet; see the README's "What is checked, and what is not".
+Run-time agents apply those skills to real work and never deploy to an org; most are experimental. The MCP server lets the assistant ask your
 actual org what already exists.</p>
 <p>It is source-available under the PolyForm Small Business License 1.0.0: free for organisations under 100 people and
 USD 1M revenue. See <a href="{REPO_URL}/blob/main/LICENSING.md">LICENSING.md</a>.</p>

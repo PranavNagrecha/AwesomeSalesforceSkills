@@ -24,7 +24,7 @@ Builds skills for the **DevOps / Release Engineering** role across any Salesforc
 
 ## Activation Triggers
 
-- Orchestrator routes a DevOps TODO row from `MASTER_QUEUE.md`
+- Orchestrator hands over a DevOps item from the release plan (`RELEASES.yaml`)
 - Human runs `/new-skill` for a DevOps topic
 - A skill in `skills/devops/` needs a material update
 
@@ -47,7 +47,7 @@ Builds skills for the **DevOps / Release Engineering** role across any Salesforc
 
 ### Step 1 — Get the task
 
-Read from MASTER_QUEUE.md or from calling agent:
+Take these from the `RELEASES.yaml` item you were handed, or from the calling agent:
 - Skill name (kebab-case)
 - Cloud (often "Core Platform" for most DevOps; may be cloud-specific for Industries Cloud packaging etc.)
 - Role (DevOps)

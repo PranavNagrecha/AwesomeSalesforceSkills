@@ -185,4 +185,4 @@ automation_graph:
 
 ## Provenance
 
-Introduced by feedback entry `feedback/FEEDBACK_LOG.md#2026-04-19` (Cursor review of flow-builder, item P1). Lightweight landing intentionally — no hard-gate refusal until we have real-user signal on overlap thresholds.
+Introduced after an external review of flow-builder (Cursor, 2026-04-19, item P1). Lightweight landing intentionally — no hard-gate refusal until we have real-user signal on overlap thresholds.

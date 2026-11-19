@@ -16,7 +16,7 @@ The two subagent loader sets are byte-identical by construction: one
 different mechanisms and neither substitutes for the other — see
 ``PLUGIN_AGENT_SCAN_DIR`` below.
 
-Why a tiered layout: the 1,027 skill packages carry ~536 KB of name +
+Why a tiered layout: the the skill packages carry ~536 KB of name +
 description text. Claude Agent Skills load every skill's name + description
 up front, so a flat export would spend ~134k tokens before the user types.
 The routers cost ~1.3k. Tier 2 stays exactly where it is and is reached on
@@ -1450,7 +1450,7 @@ def _inventory_phrase(
     manifest never claims a component the plugin cannot deliver.
     `--audit-install` is the gate.
     """
-    parts = [f"{registry['skill_count']:,} grounded Salesforce skill packages"]
+    parts = [f"{registry['skill_count']:,} Salesforce skill packages"]
     if shipped:
         parts.append(f"{len(shipped)} run-time agents")
     parts.append(f"{len(commands)} slash commands")

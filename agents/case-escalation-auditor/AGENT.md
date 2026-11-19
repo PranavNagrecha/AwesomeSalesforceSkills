@@ -12,7 +12,7 @@ deprecated_in_favor_of: audit-router
 ---
 # Case Escalation Auditor — DEPRECATED (Wave 3b-2)
 
-Replaced by [`audit-router`](../audit-router/AGENT.md) with `--domain=case_escalation`. The full rule set (missing assignment defaults, black-hole queues, expired entitlements, milestone violation rates, business-hour overlap, stale escalation targets) is preserved verbatim in [`classifiers/case_escalation.md`](../_shared/harnesses/audit_harness/classifiers/case_escalation.md). Legacy alias `/audit-case-escalation` ships until Wave 7's `docs/MIGRATION.md` removal window.
+Replaced by [`audit-router`](../audit-router/AGENT.md) with `--domain=case_escalation`. The full rule set (missing assignment defaults, black-hole queues, expired entitlements, milestone violation rates, business-hour overlap, stale escalation targets) is preserved verbatim in [`classifiers/case_escalation.md`](../_shared/harnesses/audit_harness/classifiers/case_escalation.md). Legacy alias `/audit-case-escalation` still ships (redirect table: `agents/_shared/RUNTIME_VS_BUILD.md`).
 
 ## Plan
 

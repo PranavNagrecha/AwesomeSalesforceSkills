@@ -3,8 +3,8 @@
 > **Deprecation notice:** this command is now an alias. It invokes the
 > [`audit-router`](../agents/audit-router/AGENT.md) with
 > `--domain=record_type_layout` and emits this deprecation notice. Switch
-> to the canonical `/audit-router` form at your convenience; the alias
-> ships until the removal window declared in `docs/MIGRATION.md` (Wave 7).
+> to the canonical `/audit-router` form at your convenience. The alias
+> still ships (redirect table: `agents/_shared/RUNTIME_VS_BUILD.md`).
 
 ## Canonical form
 
@@ -36,4 +36,4 @@ for the rationale.
 
 - [`/audit-router`](./audit-router.md) — canonical router entry point
 - [`agents/audit-router/AGENT.md`](../agents/audit-router/AGENT.md) — router contract
-- [`docs/MIGRATION.md`](../docs/MIGRATION.md) — removal timeline (authored in Wave 7)
+- [`agents/_shared/RUNTIME_VS_BUILD.md`](../agents/_shared/RUNTIME_VS_BUILD.md#deprecated-slash-command-redirects) — deprecated-command redirect table

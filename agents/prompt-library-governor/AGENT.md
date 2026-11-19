@@ -12,7 +12,7 @@ deprecated_in_favor_of: audit-router
 ---
 # Prompt Library Governor — DEPRECATED (Wave 3b-2)
 
-Replaced by [`audit-router`](../audit-router/AGENT.md) with `--domain=prompt_library`. The full rule set (duplicate-cluster detection, grounding citation checks, Trust Layer masking for PII, data-residency vs model-choice, owner + version hygiene, stale templates, no-eval tests, model-choice documentation) is preserved verbatim in [`classifiers/prompt_library.md`](../_shared/harnesses/audit_harness/classifiers/prompt_library.md). Legacy alias `/govern-prompt-library` ships until Wave 7's `docs/MIGRATION.md` removal window.
+Replaced by [`audit-router`](../audit-router/AGENT.md) with `--domain=prompt_library`. The full rule set (duplicate-cluster detection, grounding citation checks, Trust Layer masking for PII, data-residency vs model-choice, owner + version hygiene, stale templates, no-eval tests, model-choice documentation) is preserved verbatim in [`classifiers/prompt_library.md`](../_shared/harnesses/audit_harness/classifiers/prompt_library.md). Legacy alias `/govern-prompt-library` still ships (redirect table: `agents/_shared/RUNTIME_VS_BUILD.md`).
 
 ## Plan
 

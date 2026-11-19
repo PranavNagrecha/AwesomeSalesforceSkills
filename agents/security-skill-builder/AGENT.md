@@ -24,7 +24,7 @@ Builds skills for the **Security / Compliance / IAM** role across any Salesforce
 
 ## Activation Triggers
 
-- Orchestrator routes a Security TODO row from `MASTER_QUEUE.md`
+- Orchestrator passes a security-domain release-plan item (`RELEASES.yaml`, read via `scripts/release_plan.py`)
 - Human runs `/new-skill` for a security / compliance / IAM topic
 - A skill in `skills/security/` needs a material update
 
@@ -47,7 +47,7 @@ Builds skills for the **Security / Compliance / IAM** role across any Salesforce
 
 ### Step 1 — Get the task
 
-Read from MASTER_QUEUE.md or from calling agent:
+From the release-plan item (or the calling agent), collect:
 - Skill name (kebab-case)
 - Cloud (usually "Core Platform"; may be specific for Public Sector / FSL / Health Cloud compliance shapes)
 - Role (Security)

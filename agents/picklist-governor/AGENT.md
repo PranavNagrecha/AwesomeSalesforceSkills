@@ -31,8 +31,8 @@ Run the router:
 ```
 
 Legacy alias: `/govern-picklists` still works and auto-invokes the router
-with `--domain=picklist` plus a one-line deprecation notice. Aliases ship
-until the removal window declared in `docs/MIGRATION.md` (Wave 7).
+with `--domain=picklist` plus a one-line deprecation notice. Aliases still ship (redirect table:
+`agents/_shared/RUNTIME_VS_BUILD.md`).
 
 The full picklist rule set (GVS adoption, restricted-flag, inactive-value
 drift, label/API drift, translation coverage, deep dependency chains,
@@ -43,8 +43,8 @@ the classifier. Every rule now has a stable domain-scoped finding code
 ## Removal timeline
 
 This stub stays in the repo for two minor versions after the Wave-3b-1
-commit. After that it is removed; the `docs/MIGRATION.md` table (Wave 7)
-records the mapping permanently.
+commit. After that it is removed; the redirect table in
+`agents/_shared/RUNTIME_VS_BUILD.md` records the mapping.
 
 ## Plan
 

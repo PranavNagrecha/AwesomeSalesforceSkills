@@ -10,7 +10,7 @@ Read the builder AGENT.md alongside this file: the AGENT.md holds what makes tha
 
 Every skill-builder activates on one of:
 
-- Orchestrator routes a `TODO` / `RESEARCHED` / `RESEARCH` row in `MASTER_QUEUE.md` whose domain matches the builder.
+- The orchestrator dispatches a `RELEASES.yaml` item (read through `python3 scripts/release_plan.py next`) whose domain matches the builder.
 - A human runs `/new-skill` for a topic the builder owns.
 - A skill under `skills/<domain>/` needs a material update.
 
@@ -34,7 +34,7 @@ Builder-specific additions (naming conventions, code review checklist, WAF mappi
 
 ### Step 1 — Get the task
 
-Read from `MASTER_QUEUE.md` (or the calling agent) the task row with these fields at minimum: skill name (kebab-case), domain, cloud, role, short description. If the row is missing any of these, refuse per `REFUSAL_MISSING_INPUT`.
+Read from the release-plan item the orchestrator dispatched (or from the calling agent) these fields at minimum: skill name (kebab-case), domain, cloud, role, short description. If the item is missing any of these, refuse per `REFUSAL_MISSING_INPUT`.
 
 ### Step 2 — Check for existing coverage
 

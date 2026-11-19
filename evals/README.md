@@ -21,8 +21,10 @@ evals/
 │   ├── lwc__wire-service-patterns.md
 │   ├── lwc__lwc-imperative-apex.md
 │   └── flow__flow-bulkification.md
+├── measurement/            ← retrieval, routing and knowledge-lift results
 └── scripts/
-    └── run_evals.py        ← CLI that loads an eval file and grades output
+    ├── run_evals.py        ← CLI that loads an eval file and grades output
+    └── run_lift.py         ← knowledge-lift test: each case with and without the skill loaded
 ```
 
 ## What's covered today
@@ -42,14 +44,36 @@ evals/
 
 10 flagship skills, 30 P0 cases. Every case comes with a reference answer.
 
-## Why these ten first
+## Why these ten
 
-They are the **10 skills most likely to be retrieved** for Apex-heavy,
-integration-heavy, and LWC-heavy builder queries, and the 10 whose
-wrong answers cause the most expensive production bugs (governor-limit
-blowups, credential leaks, unbulked automation, missing FLS).
+They were picked by judgement as common Apex, integration, LWC and Flow
+builder topics where a wrong answer is costly (governor limits, credentials,
+bulkification, FLS). Neither retrieval frequency nor bug cost was measured.
+There is no expansion plan; `framework.md` § "Adding a new eval" describes how
+to add one.
 
-The roadmap for expanding to the rest of the repo is in `framework.md`.
+## Knowledge lift on these 30 cases
+
+`evals/scripts/run_lift.py` answers every case twice with the same model, once
+with the skill package in the prompt and once without, and a separate grader
+model scores both blind against the rubric (R1-12 in `RELEASES.yaml`, run
+2026-10-19; Sonnet answers, Opus grader; baseline
+`evals/measurement/lift-baseline-2026-10-19.json`):
+
+| Result | Value |
+|---|---|
+| Skill-loaded answer scored higher | 22 of 30 |
+| Skill-loaded answer scored lower | 6 of 30 |
+| Tie | 2 of 30 |
+| Mean rubric delta (1–5 scale) | +0.253 |
+| MUST-assertion violations | 107 without the skill, 91 with it |
+
+Limits: one run of 30 cases over 10 skills in 4 domains; one grader model;
+`async-apex` scored lower with its skill loaded (−0.27). It shows that a skill's
+text reaches the answer, not that the other packages would help. The same
+harness with `--probes` measured fact probes on audited skills (20 Winter '27
+probes: 0% → 100% correct; 10 more: 50% → 100%), recorded in the 1.5.0
+`decision_memo` in `RELEASES.yaml`.
 
 ## Running an eval
 
@@ -73,8 +97,9 @@ the rubric scoring guide can act as grader.
 
 1. When you create or materially change a skill, add/update its eval.
 2. Before merge, `--structure` must pass.
-3. Before a release, the full grader run must pass P0 gates.
-4. Failing evals block release — see `framework.md` "When an eval fails".
+3. A full grader run is optional: `scripts/release_gate.sh` grades the golden
+   evals only when `RELEASE_GRADER=1` is set. Nothing in CI scores answers
+   against the rubric. See `framework.md` "When an eval fails".
 
 ## Relationship to other repo concepts
 
@@ -87,5 +112,5 @@ the rubric scoring guide can act as grader.
 | `standards/decision-trees/` | Routing | "Did we pick the right tool?" |
 | `templates/` | Idioms | "Is the implementation canonical?" |
 
-Evals sit at the intersection of all of these — they are where "did the
-system work end-to-end?" is answered.
+Evals check output for 10 skills only; they do not answer whether the
+system works end to end.

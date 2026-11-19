@@ -3,9 +3,9 @@
 **Who this is for:** someone taking one run-time agent into another project
 without carrying the whole library.
 
-How to take one run-time agent into another project without carrying the whole
-library. Every command below was executed as written on 2026-08-15 against a
-fresh `git clone --depth 1` of this repository.
+Most run-time agents are `status: experimental` (ungraded); check an agent's
+status in [`agents/_shared/RUNTIME_VS_BUILD.md`](../agents/_shared/RUNTIME_VS_BUILD.md)
+before you depend on it.
 
 ---
 
@@ -42,8 +42,7 @@ real query; the substitution table is in that skill.)
 ### Option A — MCP server (recommended for live use)
 
 Run the SfSkills MCP server. It holds the whole library, and any MCP-capable
-client can call `get_agent("user-access-diff")` — one of its 38 tools — without
-copying any files.
+client can call `get_agent("user-access-diff")` without copying any files.
 
 ```bash
 # In an SfSkills checkout
@@ -67,7 +66,7 @@ claude mcp add sfskills \
 `claude mcp list` must report `✔ Connected`. Registering bare `python3` adds
 cleanly and then fails to connect — see
 [troubleshooting.md](./troubleshooting.md#mcp-server-added-successfully-but-never-connects).
-Full per-client wiring for 18 clients is in
+Full per-client wiring is in
 [`mcp/sfskills-mcp/docs/CONNECT.md`](../mcp/sfskills-mcp/docs/CONNECT.md).
 
 `get_agent` returns `{name, kind, path, summary, markdown, slash_command_hint}` —
@@ -90,30 +89,27 @@ copy that tree into your project.
 python3 scripts/export_agent_bundle.py --agent user-access-diff --rewrite-paths --out ./my-export
 ```
 
-```text
-✓ user-access-diff: 73 file(s) bundled → my-export/user-access-diff
-  paths rewritten bundle-relative
-```
+It prints the number of files bundled and the output path.
 
 The exporter is stdlib-only and needs no bootstrap. Flags:
 
 | Flag | Effect |
 |---|---|
 | `--agent <id>` | Bundle one agent. Mutually exclusive with `--all-runtime`. |
-| `--all-runtime` | Bundle every non-deprecated run-time agent. **Currently broken — see the known failure below.** |
+| `--all-runtime` | Bundle every non-deprecated run-time agent. |
 | `--out <dir>` | Output directory. Default `exports/agent-bundles`. |
 | `--rewrite-paths` | Rewrite `AGENT.md` citations to bundle-relative form and set `dependency_path_mode: bundle-relative`. Recommended for drop-in installs; skip it if the consumer already knows how to resolve `agents/_shared/*` paths. |
 
-The `user-access-diff` bundle, verbatim from `find`:
+The `user-access-diff` bundle looks like this:
 
 ```text
 my-export/user-access-diff/
 ├── AGENT.md                                 the agent, paths bundle-relative
 ├── INSTALL.md
 ├── probes/
-│   ├── user-access-comparison.md            9 numbered SOQL sections
+│   ├── user-access-comparison.md
 │   └── permission-set-assignment-shape.md
-├── skills/                                  8 complete packages, not just SKILL.md
+├── skills/                                  complete packages, not just SKILL.md
 │   ├── admin/agent-output-formats/
 │   ├── admin/custom-permissions/
 │   ├── admin/mass-transfer-ownership/
@@ -135,9 +131,10 @@ my-export/user-access-diff/
 └── codex-prompts/diff-users.md
 ```
 
-73 files, 560 KB. Each cited skill arrives as the whole package — `SKILL.md`
-plus `references/`, `scripts/` and `templates/` — not just the entry file. Bundle
-size scales with the agent: `flow-builder` exports 342 files.
+Each cited skill arrives as the whole package — `SKILL.md` plus `references/`,
+`scripts/` and `templates/` — not just the entry file. Bundle size scales with
+the agent's dependency list. Template dependencies that are directories (for
+example `templates/apex`) are copied recursively.
 
 Drop the folder into your project:
 
@@ -158,31 +155,6 @@ whichever tool your project uses, the command is already there.
 
 **Cons:** manual update when the source agent changes; regenerate on a schedule.
 
-#### Known failure: 9 of 76 agents cannot be exported today
-
-`export_agent_bundle.py` copies each `dependencies.templates` entry with
-`shutil.copyfile`, which cannot copy a directory. Nine agents declare a template
-*directory* rather than a file and therefore crash with exit 1:
-
-```text
-$ python3 scripts/export_agent_bundle.py --agent apex-builder --out ./x
-IsADirectoryError: [Errno 21] Is a directory: '/…/templates/apex'
-$ echo $?
-1
-```
-
-Measured by exporting every agent one at a time: **67 succeed, 9 fail.** The
-nine are `apex-builder`, `apex-refactorer`,
-`custom-metadata-and-settings-designer`, `lwc-auditor`, `lwc-builder`,
-`lwc-debugger`, `sandbox-strategy-designer`, `test-class-generator` and
-`trigger-consolidator` — every agent whose frontmatter lists a directory such as
-`apex/`, `apex/tests/`, `apex/cmdt/` or `lwc/patterns/`.
-
-`--all-runtime` hits the first of them and aborts the whole run, leaving a
-partial output directory. Until the exporter learns `copytree`, use Option A or
-Option C for those nine, or hand-copy the named template directories into a
-bundle produced for a different agent.
-
 ---
 
 ### Option C — Git subtree
@@ -199,16 +171,15 @@ git subtree add --prefix=vendor/sfskills \
 Then reference `vendor/sfskills/agents/user-access-diff/AGENT.md` from your
 project's agent config.
 
-**Pros:** git-tracked updates; the full library is always available; unaffected
-by the exporter bug above.
+**Pros:** git-tracked updates; the full library is always available.
 
-**Cons:** the tracked tree is 87 MB across 9,324 files, almost all of it unused
-by any single agent, and the fetch pays a ~407 MiB pack. Updates need conflict
-resolution.
+**Cons:** you vendor the whole repository, almost all of it unused by any single
+agent, and the first fetch is large. Updates need conflict resolution. Check the
+size before you commit to it:
 
 ```bash
-git ls-files | wc -l                        # 9324
-git count-objects -vH | grep size-pack      # size-pack: 406.68 MiB
+git ls-files | wc -l
+git count-objects -vH | grep size-pack
 ```
 
 ---
@@ -219,9 +190,8 @@ git count-objects -vH | grep size-pack      # size-pack: 406.68 MiB
 |---|---|
 | Building on a client with MCP support | **A** |
 | One specific agent, one project, no MCP | **B** |
-| One of the 9 agents the exporter cannot bundle | **A** or **C** |
 | Multiple projects want consistent library updates | **A** (one central server) or **C** |
-| Airgapped / offline / locked-down | **B**, or **C** if the agent is one of the 9 |
+| Airgapped / offline / locked-down | **B** or **C** |
 
 ---
 
@@ -275,9 +245,8 @@ prose **and** this block. Parity is enforced —
 `scripts/check_agent_citation_parity.py` runs standalone and is also called from
 `scripts/validate_repo.py`:
 
-```text
-$ python3 scripts/check_agent_citation_parity.py
-Checked 76 agent(s); 0 error(s).
+```bash
+python3 scripts/check_agent_citation_parity.py   # prints "Checked N agent(s); 0 error(s)." when clean
 ```
 
 If you are authoring a new agent, run

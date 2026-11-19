@@ -213,7 +213,7 @@ def get_invocation_modes() -> dict[str, Any]:
 
     The ``canonical_channel`` field names the channel the library
     recommends for production use — currently MCP itself. That steer is
-    deliberate; the library is doubling down on MCP adoption.
+    deliberate; MCP is one of several invocation channels.
     """
     doc_path = paths.repo_root() / "docs" / "agent-invocation-modes.md"
     if not doc_path.exists():

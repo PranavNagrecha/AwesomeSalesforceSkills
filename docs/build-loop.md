@@ -5,7 +5,9 @@ who wants to see what the requirement-to-build loop does before running it.
 If you are changing the loop's agents or tooling, read the contract,
 [`standards/build-orchestration.md`](../standards/build-orchestration.md), instead.
 
-The loop takes one requirement and produces a deploy-ready build. Along the way
+The loop takes one requirement and produces a design-only build: metadata and
+code a human validates and deploys. Three of the five examples below were run
+through check-only (`--dry-run`) deploys in a developer org. Along the way
 it asks the questions the skills say must be asked, plans, tries to refute its
 own plan, then builds and tests each step and has every milestone verified. A
 human signs a gate between stages. It never deploys. This page walks through
@@ -42,9 +44,12 @@ reaches:
 | `feature` | 1 milestone, up to 5 steps | clarifications, plan, milestone (+ step gates) | traceability required, workbook optional |
 | `project` | 2–6 milestones | the full set | workbook, traceability, decisions |
 
-The guarantees stay the same at every tier. Every cited skill is read and its
-questions harvested, every checker runs verbatim, every agent run leaves an
-envelope, and a human decides every gate.
+The process stays the same at every tier. Every cited skill is read and its
+questions harvested, every cited checker runs verbatim, every agent run leaves
+an envelope, and a human decides every gate. A checker passing is weak
+evidence: run together over one real example project (2026-11-19), 83% of 118
+sampled checker findings were false and 3% useful (`RELEASES.yaml`, R2-05), and
+a skill a checker relies on may itself contain unaudited claims.
 
 ## 1. One ask, one step: `opp-amount-lock`
 

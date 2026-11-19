@@ -3,10 +3,8 @@
 **Who this is for:** anyone whose install, search or MCP connection misbehaves.
 Find the symptom, read the cause, apply the fix.
 
-Symptom, cause, fix. Every entry below is a failure actually hit while walking
-this repository's own documented paths. Everything was re-executed on
-2026-08-15 (macOS 26.5, Apple silicon, Python 3.14.4, Claude Code 2.1.209);
-entries whose numbers move are dated where the measurement matters.
+Every entry below is a failure hit while walking this repository's own
+documented paths.
 
 The first three entries are failures of the path that ships — the model-driven
 roster scan, which needs no index and is what a clone or plugin install
@@ -21,7 +19,7 @@ keyword-search layer, which only exists after you run
 **Symptom.** You asked about record visibility and Claude opened an Apex
 package. Or it opened a plausible neighbour — `security/mfa-enforcement-patterns`
 when you wanted `security/mfa-enforcement-strategy`. The answer is confident and
-grounded in a real package; it is just the wrong one.
+drawn from a real package; it is just the wrong one.
 
 **Cause.** The shipped path has **no coverage gate**. Mechanisms 2 and 3 score
 candidates against a threshold and can print `Coverage: NONE`. A model scanning
@@ -51,14 +49,7 @@ of the two is "correct" is sometimes a judgement call.
 
 3. **Open the roster yourself** and paste the right skill id back. Rosters are
    plain markdown at `.claude/skills/salesforce-<domain>/references/skill-index.md`,
-   one per domain. Across the eleven they carry exactly 1,027 gloss entries —
-   one per skill package — spread over rather more lines than that, because each
-   file also has a heading and blank lines:
-
-   ```bash
-   grep -c '^- ' .claude/skills/*/references/skill-index.md | \
-     awk -F: '{s+=$2} END {print s" gloss entries"}'      # 1027 gloss entries
-   ```
+   one per domain, with one gloss entry per skill package.
 
 4. **Get a second opinion from search**, if you have run bootstrap:
 
@@ -76,7 +67,8 @@ skill's `description:` frontmatter becomes its gloss by way of
 `registry/skills.json`, so a package that is routinely missed usually has a
 description that does not carry the phrasings people type. Editing a description
 is editing routing behaviour; rerun `python3 scripts/skill_sync.py --skill
-skills/<domain>/<slug>` and `python3 scripts/build_plugin.py` afterwards.
+skills/<domain>/<slug> --skip-embeddings` and `python3 scripts/build_plugin.py`
+afterwards.
 
 ---
 
@@ -180,22 +172,11 @@ python3 scripts/bootstrap.py          # installs commands and builds the index
 python3 scripts/install_local_commands.py   # commands only
 ```
 
-```text
-$ python3 scripts/install_local_commands.py
-installed 67 commands to .claude/commands/  (added=67 updated=0 removed=0)
-Note: Claude Code loads slash commands at session start. Restart your CLI for new commands to register.
-```
-
-The leading number is `len(src_names)` — a live count of `commands/*.md`, **67**
-on this checkout — not a constant, so compare it against `ls commands/*.md | wc
--l` rather than against any number written in a doc. On a first install the
-counters read `added=67 updated=0`; on a re-run they read `added=0 updated=67`,
-because the installer rewrites unconditionally. Restart the CLI afterwards;
-Claude Code loads slash commands at session start. Re-run the script after
-pulling new commands or after one is retired — it also deletes stale entries.
-
-`.claude/commands/` is byte-identical to `commands/` when it is current
-(`cmp` clean on all 67 files), so there is nothing to reconcile by hand.
+The installer prints `installed N commands to .claude/commands/` with
+`added` / `updated` / `removed` counters; `N` should equal
+`ls commands/*.md | wc -l`. Restart the CLI afterwards; Claude Code loads slash
+commands at session start. Re-run the script after pulling new commands or after
+one is retired — it also deletes stale entries.
 
 ---
 
@@ -219,22 +200,12 @@ No chunks listed at all, and the exit code is 0.
 
 **Cause.** There is no search index, and this means *"nothing built"*, not
 *"empty library"*. `git ls-files vector_index` returns exactly three files —
-`manifest.json`, `query-fixtures.json` and `query-variants.json`. The rest is
-gitignored because it totals 310 MB after a build: `chunks.jsonl` at 134 MB and
-`lexical.sqlite` at 177 MB.
+`manifest.json`, `query-fixtures.json` and `query-variants.json`. The index
+files (`chunks.jsonl`, `lexical.sqlite`) are gitignored because of their size.
 
-The failure is silent because the lexical helper returns an empty list rather
-than raising when the SQLite file is absent — verified directly:
-
-```text
-$ python3 -c "
-from pipelines.lexical_index import search_index
-from pathlib import Path
-print(search_index(Path('/tmp/no-such-index.sqlite'), 'trigger recursion', None, 30))"
-[]
-```
-
-So the whole pipeline runs, finds nothing, gates on nothing, and exits
+The failure is silent because the lexical helper
+(`pipelines.lexical_index.search_index`) returns an empty list rather than
+raising when the SQLite file is absent. So the whole pipeline runs, finds nothing, gates on nothing, and exits
 successfully.
 
 **Fix**
@@ -243,30 +214,16 @@ successfully.
 python3 scripts/bootstrap.py
 ```
 
-About 9 s cold on the reference machine, 7 s warm. Then re-run the search: a
-working result names at least one skill under `Top skills:` with a score.
+It takes seconds. Then re-run the search: a working result names at least one
+skill under `Top skills:` with a score.
 
 Use `bootstrap.py` rather than `scripts/build_index.py`. Both reach a working
 index; bootstrap also installs the slash commands, has a real `--help` and
 `--verify-only`, and never invokes an encoder. `build_index.py` has no argument
-parsing at all, and what it does to your working tree depends on whether an
-embedding backend is installed:
-
-```text
-$ ./.venv/bin/python scripts/build_index.py      # no fastembed installed
-[embed] WARNING: fastembed package is not installed but config has backend=fastembed. …
-Index build complete. Files touched: 0
-$ git status --porcelain | grep -v '^??' | wc -l
-       0
-```
-
-With an encoder available it instead rewrites `vector_embedding` across all
-1,027 `registry/skills/*.json` records plus `registry/skills.json` and
-`vector_index/manifest.json` — **1,029 modified tracked files** — and with the
-real `fastembed` backend it encodes every chunk first, which is hours rather
-than seconds. Earlier revisions of this page asserted the 1,029-file outcome for
-"a fresh clone with no embedding backend installed", which is exactly the case
-where the count is zero.
+parsing at all. Without an embedding backend it is a no-op on tracked files;
+with one it encodes every chunk (hours) and rewrites `vector_embedding` into
+every `registry/skills/*.json` record, roughly one modified tracked file per
+skill.
 
 To check the index rather than infer it, run `python3 scripts/bootstrap.py
 --verify-only`. Unlike `search_knowledge.py` it exits non-zero and says which
@@ -303,41 +260,14 @@ $ echo $?
 
 **Cause.** The PyPI wheel deliberately ships without the corpus and expects to
 fetch it from a GitHub Release asset named `sfskills-data.tar.gz`, so a 404
-means the latest release has no such asset. Releases `mcp-v0.4.7` through
-`mcp-v0.4.10` all carry it (checked 2026-10-03), so today a 404 points at a
-release cut without the asset — see
+means the latest release has no such asset — a release cut without it. See
 [installing.md §6](installing.md#6-cutting-a-github-release-maintainer-only)
 step 6.
 
-(historical, fixed in 0.4.8) On 2026-08-15 no release existed at all:
-
-```text
-$ gh api repos/PranavNagrecha/AwesomeSalesforceSkills/releases --jq 'length'
-0
-```
-
-(historical, fixed in 0.4.8) **A second failure hid behind the first.**
-`pip install sfskills-mcp` installed but did not import, because the
-then-published 0.4.6 wheel declared an unbounded `mcp>=1.4.0` floor and pip
-resolved `mcp 2.0.0`:
-
-```text
-$ pip install sfskills-mcp
-Successfully installed … mcp-2.0.0 … sfskills-mcp-0.4.6 …
-$ python -c "import sfskills_mcp.server"
-  File ".../sfskills_mcp/server.py", line 64, in <module>
-    from mcp.server.fastmcp import Context, FastMCP
-ModuleNotFoundError: No module named 'mcp.server.fastmcp'
-$ pip install 'mcp>=1.7.0,<2.0'
-Successfully installed … mcp-1.29.0 …
-$ python -c "import sfskills_mcp.server; print('import OK')"
-import OK
-```
-
-That wheel was also stale: it installed as 0.4.6 and reported
-`sfskills_mcp.__version__ == 0.4.4`. PyPI's newest release, 0.4.10, pins
-`mcp>=1.7.0,<2.0`, so `pip install -U sfskills-mcp` replaces an old 0.4.6
-install.
+If instead `pip install sfskills-mcp` installs but `import sfskills_mcp.server`
+fails with `ModuleNotFoundError: No module named 'mcp.server.fastmcp'`, pip
+resolved mcp 2.x; run `pip install 'mcp>=1.7.0,<2.0'` or upgrade
+`sfskills-mcp`, whose current releases pin that range.
 
 **Fix.** If the latest release is missing the asset, or you want the server to
 serve your own checkout, use a repository checkout as the data root.
@@ -431,19 +361,8 @@ print(json.dumps(meta.health(), indent=2))
 "
 ```
 
-A healthy response, measured on a clone that had been bootstrapped:
-
-```json
-{
-  "server_version": "0.4.8",
-  "mcp_sdk_version": "1.29.0",
-  "repo_root": "/abs/path/to/AwesomeSalesforceSkills",
-  "registry": { "path": "registry/skills.json", "skill_count": 1034, "built_at": "…" },
-  "lexical_index": { "path": "vector_index/lexical.sqlite", "byte_size": 176865280, "built_at": "…" },
-  "agents": { "runtime": 48, "build": 14, "deprecated": 14, "unknown": 0, "total": 76 }
-}
-```
-
+It returns `server_version`, `mcp_sdk_version`, `repo_root`, `registry` (with
+`skill_count`), `lexical_index` (with `byte_size`), `agents` and `sf_cli`.
 `repo_root` must be your checkout, `registry.skill_count` must be non-zero, and
 `lexical_index.byte_size` must be present. If `skill_count` is 0 or the lexical
 index block is missing, the root resolved but the index was never built — go back
@@ -455,25 +374,22 @@ to `python3 scripts/bootstrap.py`.
 
 **Symptom.** You append `--help` to `scripts/build_index.py` expecting usage
 text. Instead a full index rebuild begins. The same happens with
-`scripts/install_local_commands.py`, which performs the install:
+`scripts/generate_docs.py` (it runs the full sync, embeddings included) and with
+`scripts/install_local_commands.py`, which performs the install and prints
+`installed N commands to .claude/commands/ …`.
 
-```text
-$ python3 scripts/install_local_commands.py --help
-installed 67 commands to .claude/commands/  (added=0 updated=67 removed=0)
-```
-
-**Cause.** Neither script uses `argparse`; both have a bare `main()` that ignores
-`sys.argv` entirely. `grep -c argparse scripts/build_index.py
-scripts/install_local_commands.py` returns 0 for both. There is no flag parsing
+**Cause.** None of the three uses `argparse`; each has a bare `main()` that
+ignores `sys.argv` entirely. `grep -c argparse scripts/build_index.py
+scripts/generate_docs.py scripts/install_local_commands.py` returns 0 for all
+three. There is no flag parsing
 to intercept `--help`.
 
-**Fix.** Read the module docstring instead — both files document their usage at
-the top. The normal way to build or rebuild is `python3 scripts/bootstrap.py`,
+**Fix.** Read the module docstring instead. The normal way to build or rebuild is `python3 scripts/bootstrap.py`,
 which does have full `argparse` and a real `--help`; `python3
 scripts/skill_sync.py --all` also has one and is the right tool after editing a
-skill. Add `--skip-embeddings` there unless you specifically want vectors
-rebuilt: `--all --skip-embeddings` measured 7.8 s on a fresh clone, while the
-plain form re-encodes.
+skill. Always add `--skip-embeddings` there: without it the sync re-encodes
+every chunk, a pass of hours. `scripts/generate_docs.py` also starts that pass
+even on `--help`.
 
 If you need to interrupt a rebuild you started by accident, Ctrl-C is safe: the
 sync is re-runnable and the lexical index rebuilds from scratch when its source
@@ -506,13 +422,7 @@ So if you see a disagreement, it is one of these:
   by design. Run `python3 evals/measurement/check_cli_mcp_parity.py` — it
   compares the gated skill list from both surfaces and names any query where they
   disagree. Add `--heldout` for all 154 held-out queries; CI runs that form on
-  every pull request (`.github/workflows/tests.yml:131`).
-
-  ```text
-  $ python3 evals/measurement/check_cli_mcp_parity.py
-  CLI/MCP retrieval parity: 15/15 queries agree
-  OK: both surfaces return the same gated skill list for every query.
-  ```
+  every pull request (`.github/workflows/tests.yml`).
 
 **Fix.** When either surface denies coverage:
 
@@ -522,10 +432,9 @@ So if you see a disagreement, it is one of these:
 2. Re-ask using the platform's own vocabulary. Symptom phrasing
    (`"three triggers on Account one fires twice"`) routes differently from jargon
    phrasing (`"trigger recursion"`), and the difference is large — it is the main
-   reason mechanism-3 held-out Hit@1 sits at 40.3% while the curated fixtures,
-   which paraphrase indexed `triggers:` text, sit at 98.4%. Both measured
-   2026-08-15 with `evals/measurement/run_heldout.py`; the fixture run adds
-   `--queries vector_index/query-fixtures.json --use-domain`.
+   reason held-out lexical retrieval is Hit@1 0.41 / Hit@3 0.50 (154 queries,
+   2026-10-20) while the curated fixtures, which paraphrase indexed `triggers:`
+   text, score near 100%. Re-measure with `evals/measurement/run_heldout.py`.
 3. Fall back to the roster. `Coverage: NONE` from mechanism 3 is not evidence of
    a gap; open `.claude/skills/salesforce-<domain>/references/skill-index.md` and
    scan.
@@ -546,24 +455,7 @@ into `pipelines/lexical_index.search_index`, which calls `tokenize_query` before
 touching FTS5; that helper replaces every non-bareword character with a space
 and rebuilds the query as `token* OR token*`. The CLI's own
 `_sanitize_query_for_fts5` in `scripts/search_knowledge.py` is now a second layer
-rather than the only one, so the MCP path is covered too. Measured 2026-08-15:
-
-```text
-$ python3 -c "…; from sfskills_mcp import skills; …"
-'100% test coverage'           -> has_coverage=True n_skills=2
-'salesforce + slack'           -> has_coverage=True n_skills=1
-'apex *ngFor'                  -> has_coverage=True n_skills=1
-'trigger recursion'            -> has_coverage=True n_skills=1
-
-$ python3 scripts/search_knowledge.py "100% test coverage"
-Query: 100% test coverage
-
-Top skills:
-- agentforce/agent-testing-and-evaluation (1.933)
-- devops/continuous-integration-testing (1.033)
-```
-
-Earlier revisions of this page said the MCP path raises. If you are on an older
+rather than the only one, so the MCP path is covered too. If you are on an older
 `sfskills-mcp` and do see an `OperationalError`, strip punctuation client-side
 and upgrade.
 
@@ -573,24 +465,9 @@ and upgrade.
 
 **Symptom.** A query takes tens of seconds, or minutes.
 
-**Cause.** This page previously documented a **13 s to 29 s** warm band as
-normal, and it no longer is. Measured 2026-08-15 with `/usr/bin/time -l` on a
-checkout carrying `skill_embeddings.jsonl` and `fastembed` 0.8.0:
-
-| query | wall clock | peak RSS |
-|---|---:|---:|
-| `trigger recursion` | 0.62 s | 373 MB |
-| `how do I stop a flow from hitting SOQL limits` | 0.84 s | 371 MB |
-| `permission set groups` | 0.56 s | 377 MB |
-
-On a plain lexical-only clone the same first query answered in 0.15 s. Commit
-`d8c95d5de` removed two loads that dominated the old figure:
-`build_search_context` was calling `load_embeddings()` unconditionally, ignoring
-`embeddings.enabled` and pulling in roughly 2 GB that was then never read, and it
-materialised all of `chunks.jsonl` so one consumer could read
-`official_source_ids`, a field only 30 chunks populate.
-
-So a multi-second query today is a real symptom, not variance. Likely causes, in
+**Cause.** A warm query should answer in well under a second, a little more with
+`fastembed` skill vectors loaded. A multi-second query is a real symptom, not
+variance. Likely causes, in
 order:
 
 - **Something else is competing for I/O.** A concurrent `scripts/skill_sync.py`
@@ -612,14 +489,9 @@ milliseconds once the process is warm.
 
 **Symptom**
 
-```text
-ERROR CLAUDE.md: active_runtime is 47 in doc but canonical is 48 (pattern /Run-time agents \((\d+)\)/)
-ERROR CLAUDE.md: runtime tiers sum to 47 (16+14+7+10) but active-runtime total is 48
-```
-
-The file names vary with whatever is stale. That exact pair came from a run where
-`agents/omnistudio-designer/` had just been added, which also named
-`AGENT_RULES.md` and `mcp/sfskills-mcp/README.md` for the same reason.
+Lines of the form `ERROR <file>: active_runtime is N in doc but canonical is M
+(pattern /…/)`, or `runtime tiers sum to N (…) but active-runtime total is M`.
+The file names vary with whatever is stale.
 
 **Cause.** The lint derives every corpus-scale number from `registry/skills.json`
 and the `class:` / `status:` frontmatter of each `AGENT.md`, then asserts the docs
@@ -636,12 +508,9 @@ sum to the new total, then re-run:
 python3 scripts/check_doc_counts.py
 ```
 
-A clean run prints one line beginning `Doc counts consistent:` and exits 0. On
-2026-08-15 that line read:
-
-```text
-Doc counts consistent: 1027 skills, 48 active runtime + 14 build + 14 deprecated = 76 agents, 38 MCP tools.
-```
+A clean run prints one line beginning `Doc counts consistent:` and exits 0.
+`--fix` rewrites the drifted counts it has a canonical source for; it does not
+touch tier breakdowns.
 
 ---
 

@@ -13,8 +13,8 @@ Edit those sources, not this file.
 |---|---|---|
 | `orchestrator` | stable | Runs the release loop from `RELEASES.yaml`: dispatches writers, merges and verifies one at a time, resumes from file + git |
 | `backlog-intake` | stable | Sizes one ask and slots it into a release in `RELEASES.yaml` |
-| `task-mapper` | stable | Maps Cloud × Role task universes into queue rows |
-| `content-researcher` | stable | Grounds every claim in Tier 1–3 sources |
+| `task-mapper` | stable | Maps Cloud × Role task universes into release-plan asks (`scripts/release_plan.py add`) |
+| `content-researcher` | stable | Writes a research brief of official sources for one skill topic |
 | `admin-skill-builder` | stable | Builds Admin + BA skills |
 | `dev-skill-builder` | stable | Builds Apex / LWC / Flow / Integration / DevOps skills |
 | `devops-skill-builder` | stable | Builds DevOps / release-engineering skills |
@@ -127,17 +127,17 @@ Edit those sources, not this file.
 | Agent | Deprecated slash command | Superseded by |
 |---|---|---|
 | `case-escalation-auditor` | `/audit-case-escalation` | `audit-router` |
-| `field-audit-trail-and-history-tracking-governor` | `/govern-field-history` | `audit-router` |
+| `field-audit-trail-and-history-tracking-governor` | `none (removed)` | `audit-router` |
 | `lightning-record-page-auditor` | `/audit-record-page` | `audit-router` |
-| `list-view-and-search-layout-auditor` | `/audit-list-views` | `audit-router` |
-| `my-domain-and-session-security-auditor` | `/audit-identity-and-session` | `audit-router` |
+| `list-view-and-search-layout-auditor` | `none (removed)` | `audit-router` |
+| `my-domain-and-session-security-auditor` | `none (removed)` | `audit-router` |
 | `org-drift-detector` | `/detect-drift` | `audit-router` |
 | `picklist-governor` | `/govern-picklists` | `audit-router` |
 | `prompt-library-governor` | `/govern-prompt-library` | `audit-router` |
-| `quick-action-and-global-action-auditor` | `/audit-actions` | `audit-router` |
+| `quick-action-and-global-action-auditor` | `none (removed)` | `audit-router` |
 | `record-type-and-layout-auditor` | `/audit-record-types` | `audit-router` |
 | `report-and-dashboard-auditor` | `/audit-reports` | `audit-router` |
-| `reports-and-dashboards-folder-sharing-auditor` | `/audit-report-folder-sharing` | `audit-router` |
+| `reports-and-dashboards-folder-sharing-auditor` | `none (removed)` | `audit-router` |
 | `sharing-audit-agent` | `/audit-sharing` | `audit-router` |
 | `validation-rule-auditor` | `/audit-validation-rules` | `audit-router` |
 

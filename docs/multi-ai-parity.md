@@ -16,14 +16,10 @@ best-effort subset.
 [`.github/workflows/validate.yml`](../.github/workflows/validate.yml) (job
 `export-parity-matrix`, Linux **and** macOS).
 
-Verified against this checkout on 2026-08-15.
-
-> **Known drift at time of writing.** `registry/export_manifest.json` records
-> 1,007 skills per target while the corpus holds 1,027, and
-> `python3 scripts/export_skills.py --check` currently exits non-zero with
-> `+20 new skill(s)` on every target. The baseline needs regenerating with
-> `python3 scripts/export_skills.py --all --manifest`. Nothing below is wrong
-> about the *contract*; the committed baseline is simply behind the tree.
+When `python3 scripts/export_skills.py --check` exits non-zero with
+`+N new skill(s)` on every target, the committed baseline
+(`registry/export_manifest.json`) is behind the tree; regenerate it with
+`python3 scripts/export_skills.py --all --manifest`.
 
 ## Tier structure
 
@@ -66,8 +62,8 @@ may cause subset behavior.
   `.windsurf/workflows/*.md` for slash commands. Workflows are capped at
   **12,000 characters** (`WINDSURF_WORKFLOW_MAX_CHARS`,
   `scripts/export_skills.py:85`); oversized commands are **skipped with a printed
-  warning**, not truncated. Two of the 67 commands currently exceed it —
-  `build-skills.md` (13,661 chars) and `onboard-source.md` (13,864).
+  warning**, not truncated. `build-from-requirements.md`, `build-skills.md`
+  and `onboard-source.md` currently exceed it.
 - **Aider** (`--target aider`) — single `CONVENTIONS.md` concatenation. Cannot
   represent per-skill routing; skills are compressed into one file. Aider has no
   user-extensible slash surface (`SLASH_COMMAND_DEST["aider"] is None`), so
@@ -87,7 +83,7 @@ For first-class targets (claude + cursor + mcp):
 1. **Set parity.** `registry/export_manifest.json` → `targets.claude.skills` has
    the same KEYS (skill IDs) as `targets.cursor.skills` and
    `targets.mcp.skills`. Enforced by `assert_first_class_parity()`
-   (`scripts/export_skills.py:910`), called from both the `--manifest` and
+   (`scripts/export_skills.py`), called from both the `--manifest` and
    `--check` paths.
 2. **Content fidelity.** Each skill's content is the same, modulo the per-target
    wrapper (Cursor adds `.mdc` frontmatter; MCP adds the registry JSON
@@ -177,7 +173,7 @@ exports/claude/
       trigger-framework/
         SKILL.md
         ...
-  .claude/commands/          # all 67 slash commands, mirrored
+  .claude/commands/          # every slash command, mirrored
 ```
 
 Claude Code and MCP clients read SKILL.md directly. No wrapper transformation.
@@ -194,7 +190,7 @@ exports/cursor/
       apex-trigger-framework.mdc
       flow-fault-handling.mdc
       ...
-    commands/                # the 67 slash commands, so they appear in Cursor's / menu
+    commands/                # every slash command, so they appear in Cursor's / menu
 ```
 
 Each `.mdc` file has YAML frontmatter — `description:` (the skill description's
@@ -243,8 +239,8 @@ each applies.
 
 **Why both exist:** the eight-platform exports under `exports/<target>/` are for
 library-wide distribution. Per-agent bundles are for single-agent install — the
-case where a team wants `user-access-diff` in their project without the other 75
-agents (76 total: 48 active run-time, 14 build-time, 14 deprecated). The parity
+case where a team wants `user-access-diff` in their project without the other
+agents. The parity
 contract applies to both surfaces: first-class targets get identical skill
 content; agent bundles carry their declared dependencies with byte-for-byte
 fidelity.
@@ -273,14 +269,14 @@ exports/aider/
 ```
 
 Aider's model treats conventions as one large context. There is no per-skill
-activation; the whole file is provided on every Aider invocation. On the last
-full local build `CONVENTIONS.md` measured **17 MB** — at 1,027 skills this is
-context pressure, not a working configuration. Use a narrow `--domain` or
+activation; the whole file is provided on every Aider invocation. For the full
+corpus that file runs to megabytes — context pressure, not a working
+configuration. Use a narrow `--domain` or
 `--skill` filter when exporting for Aider in a specific project.
 
 ### Augment (`exports/augment/`)
 
-`.augment/rules/*.md` for skills, `.augment/commands/*.md` for the 67 slash
+`.augment/rules/*.md` for skills, `.augment/commands/*.md` for the slash
 commands.
 
 ## Regenerating exports locally
@@ -293,9 +289,8 @@ python3 scripts/export_skills.py --target cursor   # or whichever target
 # Copy the generated exports/<target>/ into your project
 ```
 
-`exports/` is gitignored (`.gitignore:54`) so each consumer builds their own —
-the last full local build of all eight targets measured **255 MB**
-(`du -sh exports/`), and that figure scales with the corpus. The committed
+`exports/` is gitignored so each consumer builds their own; a full build of all
+eight targets runs to hundreds of megabytes. The committed
 `registry/export_manifest.json` is what makes the build reproducible.
 
 ## Version-compatibility commitments
@@ -323,7 +318,8 @@ the last full local build of all eight targets measured **255 MB**
 
 ### What changes between major versions
 
-- Deprecated agents removed (per [`docs/MIGRATION.md`](./MIGRATION.md) timeline).
+- Deprecated agents removed (the current stubs and their redirects are listed in
+  [`agents/_shared/RUNTIME_VS_BUILD.md`](../agents/_shared/RUNTIME_VS_BUILD.md#deprecated-slash-command-redirects)).
 - Schema breaking changes possible (flagged in CHANGELOG.md with explicit
   migration steps).
 - Finding codes with `_V2` suffixes become canonical; pre-V2 codes removed.
@@ -362,32 +358,10 @@ differed between `/Users/…` and `/home/runner/…`.
 
 ## FAQ
 
-### Why PolyForm Small Business instead of an open-source license?
+### Licensing questions (free use, commercial use, forks)
 
-SfSkills is source-available, not open source. Everything here is readable and
-forkable, but free *use* is conditional: companies under 100 people and under
-USD 1M in prior-year revenue pay nothing, and larger organisations need a
-commercial licence. The intent is that individuals and small consultancies keep
-full access while enterprise use funds the work.
-
-Like Apache 2.0, PolyForm Small Business grants a patent licence alongside the
-copyright grant, so that protection is not lost in the move. What is lost is OSI
-approval — if an OSI-approved licence is a hard procurement requirement on your
-side, this project will not satisfy it. See [`LICENSING.md`](../LICENSING.md).
-
-### Can I ship SfSkills as part of a commercial product?
-
-Only under a commercial licence. Embedding any part of SfSkills in a product or
-service you distribute is outside the free grant regardless of your company's
-size, because the free grant covers use "for the benefit of your company", not
-redistribution inside something you sell. Email <pranav.nagrecha11@gmail.com>.
-
-### We forked it under Apache-2.0 before the change. Where does that leave us?
-
-Exactly where you were. The grant you received cannot be withdrawn, so the copy
-you already have stays under Apache-2.0 forever, as do `sfskills-mcp` 0.4.6 and
-0.4.7 from PyPI under MIT. The new licence governs releases from 2026-08-15
-onward — pulling those is what brings you under it.
+See [`LICENSING.md`](../LICENSING.md); it is the single source for who uses
+SfSkills free and who needs a commercial licence.
 
 ### Can I rename skills in my fork?
 
@@ -412,8 +386,7 @@ The PR that caused the failure is blocked. Three typical resolutions:
 
 1. **The manifest is stale** — run
    `python3 scripts/export_skills.py --all --manifest` locally and commit the
-   regenerated manifest. This is the common case, and it is the state the tree
-   is in as of this writing.
+   regenerated manifest. This is the common case.
 2. **The change broke determinism** — investigate `scripts/export_skills.py` for
    non-deterministic ordering or timestamp leaks.
 3. **The change broke set parity** (a skill exists in claude but not cursor) —
@@ -424,7 +397,7 @@ The PR that caused the failure is blocked. Three typical resolutions:
 - [LICENSE](../LICENSE) — PolyForm Small Business 1.0.0 (source-available).
 - [LICENSING.md](../LICENSING.md) — who uses it free, who needs to buy.
 - [architecture.md](architecture.md) — what ships versus what has to be built locally.
-- [MIGRATION.md](./MIGRATION.md) — deprecation timeline + retired-agent mapping.
+- [RUNTIME_VS_BUILD.md](../agents/_shared/RUNTIME_VS_BUILD.md) — agent roster, statuses and deprecated-command redirects.
 - [CONTRIBUTING.md](../CONTRIBUTING.md) — how to contribute skills + agents.
 - [SECURITY.md](../SECURITY.md) — disclosure process.
 - [CHANGELOG.md](../CHANGELOG.md) — release notes.

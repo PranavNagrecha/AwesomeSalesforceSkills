@@ -54,7 +54,7 @@ python3 --version  # expect 3.10 or newer
 
 **2. Install `sfskills-mcp`.**
 
-Option A — **Editable from a clone (recommended today — this is the path that works):**
+Option A — **Editable from a clone:**
 
 ```bash
 git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
@@ -75,24 +75,14 @@ your client config (every client section below shows where it goes).
 Option B — **PyPI:**
 
 ```bash
-pip install sfskills-mcp           # ~50 KB wheel
+pip install sfskills-mcp           # wheel of about 100 KB
 sfskills-mcp-init                  # one-time data fetch into ~/.cache/sfskills-mcp/
 ```
 
-> **`sfskills-mcp-init` currently fails with HTTP 404** (verified 2026-08-01).
-> It downloads its data bundle from
-> `https://github.com/PranavNagrecha/AwesomeSalesforceSkills/releases/latest/download/sfskills-data.tar.gz`,
-> and the repository has **zero published GitHub releases**, so that URL 404s
-> and the command exits 1. Until a release is cut, use Option A.
-> Maintainers: the diagnosis and the exact release-cutting runbook are in
-> [`docs/installing.md`](../../../docs/installing.md#6-cutting-a-github-release-maintainer-only).
->
-> Separately, if you installed `sfskills-mcp` from PyPI before 2026-08-01 you
-> also need `pip install 'mcp>=1.7.0,<2.0'` — see the
-> `No module named 'mcp.server.fastmcp'` entry under Troubleshooting.
-
-Once `sfskills-mcp-init` works, the server resolves its repo root
-automatically from the cache — no `SFSKILLS_REPO_ROOT` needed in your client
+`sfskills-mcp-init` downloads the data bundle from the latest GitHub Release
+(pin one with `--release mcp-v0.5.1`). The bundle holds the lexical index only;
+there are no embeddings in a PyPI install. After it runs, the server resolves
+its repo root automatically from the cache — no `SFSKILLS_REPO_ROOT` needed in your client
 config. Override the cache location with `SFSKILLS_CACHE_DIR=/some/path` if
 your home directory is read-only.
 
@@ -137,6 +127,8 @@ Call it `<SFSKILLS_REPO_ROOT>` for the rest of this doc.
 | -------------------- | ---------- | ------------------------------------------------------------------------------------------- |
 | `SFSKILLS_REPO_ROOT` | Recommended | Absolute path to the SfSkills checkout. Auto-detected when the server is installed inside the repo; always set it when configuring a client. |
 | `SFSKILLS_SF_BIN`    | Optional   | Absolute path to the `sf` binary. Defaults to whatever `sf` is on the shell's PATH. Set this when your AI client launches without inheriting your shell PATH (common on macOS GUI apps). |
+| `SFSKILLS_CACHE_DIR` | Optional   | Where `sfskills-mcp-init` stores the data bundle (default `~/.cache/sfskills-mcp/`). |
+| `SFSKILLS_TIMEOUT_SECONDS` | Optional | Timeout for each `sf` subprocess call (default 90). |
 
 **Finding your `sf` binary path** (for `SFSKILLS_SF_BIN`):
 
@@ -676,23 +668,14 @@ server dies at import time. Fix:
 python3 -m pip install 'mcp>=1.7.0,<2.0'
 ```
 
-`sfskills-mcp` **0.4.6 and earlier** declared the dependency with a floor of
-1.4.0 and no upper bound, so any `pip install sfskills-mcp` after mcp 2.0.0
-shipped picks up the broken version. Those installs need the downgrade above
-by hand; the pin is fixed in `pyproject.toml` for subsequent releases.
-
-That old floor was wrong at the bottom end too: mcp 1.4.0, 1.5.0 and 1.6.0
-all fail with
+`pyproject.toml` pins `mcp>=1.7.0,<2.0`; mcp 1.6.0 and earlier fail with
 `ImportError: cannot import name 'ToolAnnotations' from 'mcp.types'`.
-The measured working range is 1.7.0 through 1.29.0.
 
 ### `sfskills-mcp-init: HTTP 404 fetching .../sfskills-data.tar.gz`
 
-Expected as of 2026-08-01: the repository has no published GitHub release, so
-`releases/latest/download/sfskills-data.tar.gz` does not exist. `sfskills-mcp`
-itself is fine — only its data-bundle download is broken.
-
-Workaround — use the clone (Option A under Prerequisites):
+The release you asked for has no data bundle (bundles start at `mcp-v0.4.7`),
+or GitHub could not be reached. Re-run with `--release mcp-v0.5.1`, or use the
+clone (Option A under Prerequisites):
 
 ```bash
 git clone https://github.com/PranavNagrecha/AwesomeSalesforceSkills.git
@@ -704,9 +687,8 @@ python3 scripts/bootstrap.py
 then set `SFSKILLS_REPO_ROOT` to that checkout in your client config instead
 of relying on the cache.
 
-Maintainers: [`docs/installing.md`](../../../docs/installing.md#6-cutting-a-github-release-maintainer-only)
-carries the diagnosis and the exact release-cutting steps. Cutting the release
-is the repository owner's call.
+Maintainers: the release runbook is in
+[`docs/installing.md`](../../../docs/installing.md#6-cutting-a-github-release-maintainer-only).
 
 ### `sf command timed out after 90s`
 
@@ -735,8 +717,7 @@ to hit.
 
 They can't, by design — `describe_org` fully masks the `accessToken` field
 (the response carries `access_token_preview: "***"`, with no token bytes),
-and no other tool includes the token in its output. Hardened in v0.4.3
-after a live-test leak; earlier builds used a `prefix…suffix` preview.
+and no other tool includes the token in its output.
 
 ---
 
@@ -746,9 +727,9 @@ after a live-test leak; earlier builds used a `prefix…suffix` preview.
 | -------------------------- | ----------------------------------------------------------------------------------------------- |
 | **Credentials**            | Never in-process. All org calls shell out to `sf`, which uses its own keyring-backed auth store. |
 | **Access tokens**          | Fully masked in tool outputs. `describe_org` returns `access_token_preview: "***"` (no token bytes); `list_orgs` and `list_named_credentials` drop credential fields entirely. |
-| **Destructive operations** | None. Every tool is read-only (`sobject describe`, `sobject list`, `data query`, `org display`, `org list`). The server never writes metadata, runs apex, or executes DML. |
+| **Destructive operations** | None. Every org call is a read through `sf` (describes, SOQL and Tooling queries, `org display` / `org list`, reports on existing deploy jobs and Apex test runs). The server never writes metadata, runs Apex, or executes DML. The one tool that writes, `emit_envelope`, writes report files under `docs/reports/`, not to the org. |
 | **Network scope**          | Only `sf`-initiated calls to the Salesforce instance the user is already authenticated to. The server itself opens no sockets. |
-| **Secrets in env**         | `SFSKILLS_REPO_ROOT` and `SFSKILLS_SF_BIN` are the only env vars read. Neither is a secret.    |
+| **Secrets in env**         | The server reads `SFSKILLS_REPO_ROOT`, `SFSKILLS_SF_BIN`, `SFSKILLS_CACHE_DIR` and `SFSKILLS_TIMEOUT_SECONDS`. None is a secret. |
 
 If you ever want to gate tool calls behind per-invocation approval (e.g. to
 prevent an agent from running `data query` on a production org without your

@@ -33,14 +33,14 @@ See `docs/installing.md`.
    editing SKILL.md content.
 4. Use `python3 scripts/search_knowledge.py` before creating a new skill or
    claiming a coverage gap.
-5. Run `python3 scripts/skill_sync.py` and `python3 scripts/validate_repo.py`
-   after skill changes.
+5. Run `python3 scripts/skill_sync.py ... --skip-embeddings` and
+   `python3 scripts/validate_repo.py` after skill changes.
 6. Never hand-edit generated files.
 
 ### What "generated" means, precisely
 
 Do not hand-edit: everything under `registry/`, `docs/SKILLS.md`,
-`docs/queue-progress.md`, `standards/validation-gates.md`,
+`docs/agents.md`, `standards/validation-gates.md`,
 `.claude/skills/**/references/skill-index.md`, and the retrieval artifacts
 `vector_index/chunks.jsonl` / `lexical.sqlite` / `*embeddings.jsonl` (all
 gitignored).
@@ -63,7 +63,7 @@ engine — leave it alone.
 
 | Command | When |
 |---|---|
-| `python3 scripts/skill_sync.py --skill skills/<domain>/<name>` | After editing one skill. Validates that skill first, then writes artifacts. |
+| `python3 scripts/skill_sync.py --skill skills/<domain>/<name> --skip-embeddings` | After editing one skill. Validates that skill first, then writes artifacts. |
 | `python3 scripts/skill_sync.py --all --skip-embeddings` | Repo-wide rebuild during normal work. |
 | `python3 scripts/skill_sync.py --all` | Only when you intend to rebuild embeddings. |
 
@@ -73,12 +73,14 @@ cost: "First-time build is ~2:20 on M-series CPU", and `.githooks/pre-commit`
 notes the full encode "takes ~3 hours" when the content-hash cache is cold.
 That is why the pre-commit hook passes `--skip-embeddings` and why you should
 too, unless rebuilding embeddings is the point. Rebuild them deliberately with
-`python3 scripts/build_index.py`.
+`python3 scripts/build_index.py`. Both `build_index.py` and
+`scripts/generate_docs.py` start that pass even when given `--help`.
 
 ## Working on agents (not skills)
 
-Agents live under `agents/<slug>/AGENT.md`. There are 88 of them —
-60 active run-time, 14 build-time, 14 deprecated run-time stubs — plus
+Agents live under `agents/<slug>/AGENT.md`. There are 99 of them —
+70 active run-time (7 stable, 8 beta, 55 experimental), 15 build-time,
+14 deprecated run-time stubs — plus
 `agents/_shared/`, which is shared material, not an agent. Before editing or
 adding one:
 
@@ -96,18 +98,19 @@ After editing any `AGENT.md`:
 python3 scripts/validate_repo.py --agents
 ```
 
-Measured at 0.4 s across all 76 agents. `--skills-only` (the default) is the
+It takes about a second. `--skills-only` (the default) is the
 slow half: a full skill pass is roughly 2 minutes per quarter-shard. `--all`
 runs both.
 
 ### Known gap in the agent contract — do not paper over it
 
-`AGENT_CONTRACT.md` line 132 tells every agent to resolve skills through the
-MCP `search_skill` tool ("Skill-first, never freestyle"). In practice:
+Rule 1 of "Rules every agent follows" in `AGENT_CONTRACT.md` ("Skill-first,
+never freestyle") tells every agent to resolve skills through the MCP
+`search_skill` tool. In practice:
 
-- Only 3 of 76 `AGENT.md` files mention `search_skill` at all
-  (`audit-router`, `automation-migration-router`, `release-planner`), and none
-  of the other 45 active run-time agents issues it.
+- Only 5 of the 99 `AGENT.md` files mention `search_skill` at all
+  (`audit-router`, `automation-migration-router`, `release-planner`,
+  `salesforce-decision-facilitator`, `salesforce-learning-guide`).
 - `.claude-plugin/plugin.json` ships `skills` and `commands` only. It declares
   no `mcpServers`, and there is no `.mcp.json` in the repo, so installing the
   plugin does **not** wire the MCP server. Most users do not have
@@ -140,48 +143,29 @@ This sets `core.hooksPath` to `.githooks/` and installs two hooks:
   cross-cutting drift (stale registries, schema-enum drift, missing query
   fixtures) that `--changed-only` cannot see.
 
-**The pre-push hook is slow.** Its own banner says "~10–20s"; measured on this
-corpus (1,027 skills) a single shard is 1 m 58 s, so the four sequential shards
-are roughly 8 minutes. Budget for that, or push with `--no-verify` on WIP
-branches — CI still gates merge.
+**The pre-push hook is slow.** Its own banner says "~10–20s"; each shard takes
+minutes on the full corpus, and the four run sequentially. Budget for that, or
+push with `--no-verify` on WIP branches — CI still gates merge.
 
 `install_hooks.py` takes no arguments and performs the install when run, so
 there is no `--help` to inspect; it is idempotent.
 
-## Reading / updating the skill queue
+## Planned work: the release plan
 
-`BACKLOG.yaml` is the authoritative machine-readable queue (646 entries), the
-row data that used to live inside `MASTER_QUEUE.md` before the 2026-05-01
-migration. Do not hand-edit it — use:
+`RELEASES.yaml` is the plan: each release, its items, their size and status.
+Read and change it only through the script, never by hand:
 
 ```bash
-python3 scripts/queue_reader.py --summary
-python3 scripts/queue_reader.py --next --status TODO,RESEARCHED
-python3 scripts/queue_reader.py --set-status IN_PROGRESS \
-  --id <entry-id> --actor "<agent-name>@<host>"
+python3 scripts/release_plan.py status                     # current release and its items
+python3 scripts/release_plan.py next                       # next actionable item
+python3 scripts/release_plan.py add --size S|M|L "<ask>"   # inbox an ask and slot it by size
 ```
 
-Recognised statuses (`scripts/queue_reader.py` `STATUSES`): `TODO`,
-`RESEARCHED`, `RESEARCH`, `IN_PROGRESS`, `DONE`, `DUPLICATE`, `BLOCKED`,
-`UPDATE`, `SHIPPABLE`. `DONE` is accepted for transitional updates but the
-dashboard ignores it — the filesystem under `skills/` is authoritative for
-"is this skill built?".
-
-The generated dashboard at `docs/queue-progress.md` shows status counts, drift
-between queue and disk, oldest TODO, and the next 10 picks. It regenerates on
-every `skill_sync.py` run.
-
-`MASTER_QUEUE.md` is now a short prose intro plus queue-specific agent
-workflow. The pre-migration table is recoverable from git
-(`git show 5824c4801^:MASTER_QUEUE.md`) and reproducible via
-`scripts/_migrations/migrate_queue_to_yaml.py`.
-
-**Stale pointers to be aware of:** nine build-time agents still describe
-reading or writing TODO rows in `MASTER_QUEUE.md` (`grep -l MASTER_QUEUE
-agents/*/AGENT.md` → the 6 skill-builders plus `orchestrator`, `task-mapper`,
-`currency-monitor`), and `commands/request-skill.md` step 5 still tells the
-caller to add a table row there. Those tables no longer exist. Route queue
-reads and writes through `queue_reader.py`.
+In Claude Code, `/add-to-backlog` adds an ask (it runs the `backlog-intake`
+agent) and `/start-building` runs the release loop (the `orchestrator` agent),
+which resumes from `RELEASES.yaml` and git. `BACKLOG.yaml` is a frozen
+skill-request queue kept for history; do not add to it. `MASTER_QUEUE.md` no
+longer exists.
 
 ## Changing skill descriptions? Check the shipped roster
 
@@ -207,7 +191,7 @@ python3 evals/agents/scripts/run_agent_evals.py \
   --file <fixture.yaml> --grade --envelope <produced-envelope.json>
 ```
 
-`--structure` lints all 53 fixtures. The runner makes no network or model
+`--structure` lints every fixture. The runner makes no network or model
 calls: the agent runs in the caller's model and you hand the envelope it
 produced to `--grade`. The only flags are `--structure`, `--file`, `--grade`,
 `--envelope`. Fixture format lives in `evals/agents/framework.md`.

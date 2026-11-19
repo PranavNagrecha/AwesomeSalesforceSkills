@@ -32,15 +32,21 @@ Note: `quick-action-and-global-action-auditor` had a `design` mode that is NOT p
 
 ## Legacy alias commands
 
-Each alias invokes the router with a preset `--domain` and emits a one-line deprecation notice. Aliases ship until the removal window declared in `docs/MIGRATION.md` (Wave 7).
+Each alias invokes the router with a preset `--domain` and emits a one-line deprecation notice. Nine aliases still ship:
 
 | Alias | Equivalent to |
 |---|---|
 | `/audit-validation-rules` | `/audit-router --domain validation_rule ...` |
 | `/govern-picklists` | `/audit-router --domain picklist ...` |
-| `/audit-approvals` | `/audit-router --domain approval_process ...` |
 | `/audit-record-types` | `/audit-router --domain record_type_layout ...` |
 | `/audit-reports` | `/audit-router --domain report_dashboard ...` |
+| `/audit-case-escalation` | `/audit-router --domain case_escalation ...` |
+| `/audit-record-page` | `/audit-router --domain lightning_record_page ...` |
+| `/audit-sharing` | `/audit-router --domain sharing ...` |
+| `/detect-drift` | `/audit-router --domain org_drift ...` |
+| `/govern-prompt-library` | `/audit-router --domain prompt_library ...` |
+
+The full agent-to-command table, including the removed aliases, is in [`agents/_shared/RUNTIME_VS_BUILD.md`](../agents/_shared/RUNTIME_VS_BUILD.md#deprecated-slash-command-redirects).
 
 ## What it does
 

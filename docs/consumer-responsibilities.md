@@ -3,7 +3,7 @@
 **Who this is for:** authors of a tool or AI client that runs SfSkills run-time
 agents and must persist their reports and envelopes.
 
-**Status:** Wave 10 canonical doc. Defines what a consuming AI (Claude Code,
+Defines what a consuming AI (Claude Code,
 Cursor, an MCP client, Aider, Windsurf, anything else) MUST do when running a
 run-time agent from this library.
 
@@ -153,7 +153,7 @@ file.
 ### 4. Classify every dimension — no silent drops
 
 For multi-dimensional agents (those declaring `multi_dimensional: true` in
-frontmatter — 13 of the 48 run-time agents do), every dimension the agent COULD
+frontmatter — 15 of the 70 active run-time agents do), every dimension the agent COULD
 cover must appear in either `dimensions_compared` or `dimensions_skipped`.
 
 Partial coverage is not full coverage. `dimensions_skipped[].state` is a
@@ -179,10 +179,9 @@ section — it enumerates them. `user-access-diff`, for example, names 14.
 The canonical data surface for every agent is:
 
 - its declared probe recipes, under
-  [`agents/_shared/probes/`](../agents/_shared/probes/) (6 recipes plus a
-  README today), and
+  [`agents/_shared/probes/`](../agents/_shared/probes/), and
 - the MCP tool set registered in
-  `mcp/sfskills-mcp/src/sfskills_mcp/server.py` (38 tools).
+  `mcp/sfskills-mcp/src/sfskills_mcp/server.py`.
 
 Do NOT:
 
