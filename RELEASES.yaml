@@ -1127,7 +1127,12 @@ releases:
       with config/corpus.sha256, keep-awake running, tree clean and pushed, hourly wake armed'
     size: S
     owner_model: fable
-    status: todo
+    status: done
+    evidence: '2026-11-19: plan reviewed (adversarial Opus reviewer, 10 blockers folded in, 056f4aa25); orchestrator playbook
+      reads release rules; release_plan.py --release; corpus at .sfskills/corpus with config/corpus.sha256 (15 files OK);
+      caffeinate running; hourly in-session wake armed (job 5a7c1a5e, expires 2026-11-26); owner told to plug in power, keep
+      the lid open, disable auto-updates and leave the session open. Release gate on the cleaned tree: steps 1-6 pass, step
+      7 fails by one held-out query (see V-02 notes)'
   - id: V-01
     title: 'Safety net and baseline before anything is deleted: annotated tags pre-revamp-2026-11-19 on origin/main and on
       the release/1.5.0 head plus branch archive/pre-revamp, all pushed. Record every ''before'' number in measured.before:
@@ -1148,6 +1153,10 @@ releases:
     size: M
     owner_model: fable
     status: todo
+    notes: 'Gate run 2026-11-19 16:20 on 1464fe7ef + plan: steps 1-6 PASS, step 7 FAIL - held-out Hit@3 0.4935 < floor 0.4999
+      (exactly one of 154 queries fell out of the top 3; skills were not edited today except the six R2-39..44 fixes, so find
+      the flipped query by diffing per-query results against main 450bcdeaf). Fix first: ONE add-only trigger on the expected
+      skill, never re-point the label, never lower the floor. Steps 8-10 not reached.'
   - id: V-03
     title: 'Skill status and ship set as one stdlib script with tests (scripts/skill_status.py -> registry/skill-status.json
       and config/ship-set.yaml). Status per skill: audited (full claims audit: R1-07, R3-06, V-06; holds only while the skill''s
