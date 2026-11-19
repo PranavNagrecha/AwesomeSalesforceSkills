@@ -189,7 +189,7 @@ Read the class's `apiVersion` from its `.cls-meta.xml` before scoring any row he
 | Check | Signal | Severity |
 |---|---|---|
 | **soql-security-enforced-removed** | `WITH SECURITY_ENFORCED` on a class at API 67.0+ — the clause was removed in 67.0 and the class does not compile | P0 |
-| **soql-security-enforced-legacy** | `WITH SECURITY_ENFORCED` on a class at API 57.0–66.0 — compiles, but checks only the `SELECT` list, mishandles polymorphic fields, and reports one violation rather than all. Migrate to `WITH USER_MODE` | P2 |
+| **soql-security-enforced-legacy** | `WITH SECURITY_ENFORCED` on a class at API 57.0–66.0 — compiles, but is the legacy construct; user mode additionally supports polymorphic fields, processes every clause including `WHERE`, and finds all FLS errors (Apex Dev Guide 264 L12155-L12159). Migrate to `WITH USER_MODE` | P2 |
 | **soql-no-security** | Class below API 67.0, query lacks `WITH USER_MODE` / `AccessLevel.USER_MODE`, and no `Security.stripInaccessible(...).getRecords()` applied to the result | P1 |
 | **soql-system-mode-unjustified** | `WITH SYSTEM_MODE` / `AccessLevel.SYSTEM_MODE` without `// reason:` comment. At API 67.0+ this is the explicit opt-out of the default and always needs a justification | P1 |
 | **soql-all-rows-unjustified** | `ALL ROWS` keyword without `// reason:` (returns soft-deleted records — privacy implications) | P1 |

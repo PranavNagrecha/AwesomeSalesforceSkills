@@ -10,7 +10,7 @@ Non-obvious Salesforce platform behaviors that ruin loads even when the batch si
 
 **When it occurs:** any time you load >100K records of a Private OWD SObject in an org with a non-trivial role hierarchy. Worst on Account, Opportunity, Contact (because they own the implicit-share fan-out for child objects too).
 
-**How to avoid:** enable **Defer Sharing Calculations** before the load (Setup → Sharing Settings → Defer Sharing Calculations). Run the load. Re-enable sharing calculations during a controlled window. Communicate the async tail explicitly in the runbook — "load lands at T+1h, sharing recalc completes at T+5h, reports usable at T+5h" — so business stakeholders do not declare success at T+1h.
+**How to avoid:** enable **Defer Sharing Calculations** before the load, if the feature is enabled for the org (off by default; Salesforce Customer Support enables it, api_meta.txt L130657-130659; UNVERIFIED (2026-11-19): the Setup path is not in the guides; the Metadata API route is SharingSettings `deferGroupMembership` / `deferSharingRules`, api_meta.txt L130652-130687). Run the load. Resume sharing calculations during a controlled window, then manually start a full sharing rule recalculation (security guide 262 L3532-3534). Communicate the async tail explicitly in the runbook — "load lands at T+1h, sharing recalc completes at T+5h, reports usable at T+5h" — so business stakeholders do not declare success at T+1h.
 
 ---
 
@@ -76,7 +76,7 @@ Non-obvious Salesforce platform behaviors that ruin loads even when the batch si
 
 ## Gotcha 8: Defer Sharing Calculations does not defer EVERYTHING
 
-**What happens:** "Defer Sharing Calculations" is enabled, the load runs, the visible job finishes — but the org is still slow because account-team shares, opportunity-team shares, territory shares, and manual shares were created synchronously despite the defer setting. The defer flag covers **group-membership recalc and sharing-rule recalc**, but not all implicit-share creation paths.
+**What happens:** "Defer Sharing Calculations" is enabled, the load runs, the visible job finishes — but the org is still slow because account-team shares, opportunity-team shares, territory shares, and manual shares were created synchronously despite the defer setting. The defer flag covers **group-membership recalc and sharing-rule recalc**, but not all implicit-share creation paths. UNVERIFIED (2026-11-19): the guides in the corpus name only group membership and sharing rule calculation (LDV guide L598-599); that team, territory, and manual shares are created synchronously is not stated there.
 
 **When it occurs:** loads against Account/Opportunity in orgs with active Account Teams, Opportunity Teams, or Territory Management 2.0. Loads that include explicit `*Share` row inserts (manual shares).
 

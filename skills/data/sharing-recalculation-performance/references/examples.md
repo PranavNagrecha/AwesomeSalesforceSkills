@@ -14,7 +14,7 @@
    - Set Loan_Application__c OWD: Public Read/Write → Private
    - Set Credit_File__c OWD: Public Read/Write → Private
    - Set Collateral__c OWD: Public Read/Write → Private
-3. Setup > Defer Sharing Calculations > disable (un-check)
+3. Resume sharing calculation (UNVERIFIED (2026-11-19): the Setup path is not in the guides; the Metadata API route is SharingSettings deferGroupMembership / deferSharingRules set back to false, api_meta.txt L130652-130687)
    then manually initiate a full sharing rule recalculation: after deferral "you
    must resume sharing rule calculations and manually initiate a full sharing rule
    recalculation" (secguide 262 L3533-3534).

@@ -4,7 +4,7 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 ## Gotcha 1: JavaScript Is Completely Ignored by the Flying Saucer Renderer
 
-**What happens:** Any JavaScript in the Visualforce page — inline scripts, `<script src>` references, or `<apex:remoteAction>` calls — is silently skipped. The PDF is generated from the static HTML produced by server-side rendering only. Dynamic content driven by JS (populated tables, charts, lazy-loaded sections) is absent in the PDF with no error or warning.
+**What happens:** Any JavaScript in the Visualforce page — inline scripts, `<script src>` references, or JavaScript remoting calls (`Visualforce.remoting.Manager.invokeAction` / `{!$RemoteAction.Controller.method}` against an `@RemoteAction` method) — does not run (the Visualforce guide: "PDF rendering doesn't support JavaScript-rendered content", salesforce_pages_developers_guide.txt L4527). The PDF is generated from the static HTML produced by server-side rendering only. Dynamic content driven by JS (populated tables, charts, lazy-loaded sections) is absent in the PDF with no error or warning.
 
 **When it occurs:** Any time a VF page that works correctly in the browser (where JS executes) is viewed with `renderAs="pdf"`. The browser preview looks fine; the PDF is broken.
 

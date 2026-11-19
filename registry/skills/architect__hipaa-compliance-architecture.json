@@ -95,6 +95,7 @@
     "c055a448a083944207ba",
     "c0b4686720c9c8fae153",
     "c56729bef4ecf2871c56",
+    "c5f0eb65334fd8d6cc2c",
     "c6aa5dd0fe0f9a65a677",
     "c9beb7afa9f5b365b9e8",
     "ca86a13fd7f8ceff89c2",
@@ -124,7 +125,7 @@
     "fbd513f9546f00e47f6a",
     "fe4f1710330673cd993e"
   ],
-  "content_hash": "446670f01cf7c27e771454e0d364645552a95ada74d38971b6c6892063d818d5",
+  "content_hash": "2c399cdda95096b7f8a8ad0f35abe83db1bd9148f155889ef934570780980106",
   "dependencies": [],
   "description": "Use this skill to design HIPAA-compliant Salesforce org architectures for healthcare organizations storing or processing Protected Health Information (PHI). Trigger keywords: HIPAA BAA, PHI storage, Shield encryption, Health Cloud compliance, HIPAA technical safeguards, covered entity Salesforce architecture. NOT for minimum-necessary access design \u2014 use admin/hipaa-workflow-design. NOT for non-healthcare org security review \u2014 use architect/security-architecture-review.",
   "file_location": "skills/architect/hipaa-compliance-architecture",
@@ -175,7 +176,7 @@
   "templates": [
     "skills/architect/hipaa-compliance-architecture/templates/hipaa-compliance-architecture-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-11-19",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

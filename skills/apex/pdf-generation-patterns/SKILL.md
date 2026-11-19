@@ -36,9 +36,9 @@ outputs:
   - "Queueable Apex class calling PageReference.getContentAsPDF(), null-checking the blob, and inserting ContentVersion + ContentDocumentLink"
   - "LWC-to-VF wrapper wiring if LWC-initiated PDF generation is required"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-06
+updated: 2026-11-19
 ---
 
 # PDF Generation Patterns

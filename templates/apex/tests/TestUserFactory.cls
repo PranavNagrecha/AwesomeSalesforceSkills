@@ -10,6 +10,19 @@
  *         // Test what the record looks like through this user's sharing + FLS.
  *     }
  *
+ * Mixed DML: PermissionSetAssignment is a setup sObject, and DML on a setup
+ * sObject cannot share a transaction with DML on non-setup sObjects such as
+ * Account (Apex Developer Guide, "sObjects That Can't Be Used Together in DML
+ * Operations"). In a test, the guide permits the mix when the setup-object
+ * DML is enclosed in a System.runAs block ("Mixed DML Operations in Test
+ * Methods"), so assignPermissionSets inserts the assignments inside
+ * System.runAs of the current user. The caller can therefore insert Accounts
+ * etc. before or after calling this factory without a mixed DML error. The User
+ * insert itself is allowed outside the block because buildUser leaves
+ * UserRoleId null (the guide allows inserting a user with a null role in a
+ * transaction with other sObjects at API 15.0 and later). Do not add a UserRoleId
+ * to buildUser without moving that insert into a runAs block too.
+ *
  * Rules:
  *  - Always bulk-insert users when making more than one.
  *  - Unique username prefix prevents conflicts across parallel test runs.
@@ -69,6 +82,11 @@ public class TestUserFactory {
                 psas.add(new PermissionSetAssignment(AssigneeId = uid, PermissionSetId = ps.Id));
             }
         }
-        insert psas;
+        // Setup-object DML: fenced in runAs of the current user so a test can go
+        // on to insert non-setup records in the same transaction.
+        User currentUser = [SELECT Id FROM User WHERE Id = :UserInfo.getUserId() WITH SYSTEM_MODE];
+        System.runAs(currentUser) {
+            insert psas;
+        }
     }
 }

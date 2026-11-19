@@ -139,7 +139,7 @@ Inventory of all fields containing or potentially containing PII or sensitive da
 | Item | Status | Notes |
 |---|---|---|
 | Shield Field Audit Trail enabled on required objects | Done / Pending / N/A | |
-| Retention policy set to required duration (up to 10 years) in Field Audit Trail settings | Done / Pending / N/A | |
+| HistoryRetentionPolicy set (archiveAfterMonths 1-18; archiveRetentionYears recorded as the manual-deletion reminder) and a deletion step scheduled in the runbook | Done / Pending / N/A | |
 | `FieldHistoryArchive` queryable for all Shield-tracked objects | Done / Pending / N/A | |
 | Shield Platform Encryption enabled on designated PII fields | Done / Pending / N/A | |
 | Encrypted fields verified to not be used in: formulas, roll-ups, default values | Done / Pending / N/A | |

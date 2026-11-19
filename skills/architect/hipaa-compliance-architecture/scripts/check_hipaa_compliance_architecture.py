@@ -301,7 +301,7 @@ BAA_SCOPE_QUESTIONS = [
         "WARN: SPE is a paid add-on. Verify licensing before relying on encryption controls.",
     ),
     (
-        "Is Field Audit Trail configured with 10-year retention on all PHI fields?",
+        "Is Field Audit Trail configured (HistoryRetentionPolicy deployed, archive kept until the required retention period ends) on all PHI fields?",
         "WARN: Standard Field History Tracking retains only 18 months — insufficient for HIPAA.",
     ),
     (

@@ -81,16 +81,18 @@ Opportunity).
 
 ```xml
 <!-- Opportunity.object-meta.xml -->
-<HistoryRetentionPolicy>
+<historyRetentionPolicy>
     <archiveAfterMonths>18</archiveAfterMonths>
     <archiveRetentionYears>7</archiveRetentionYears>
     <description>SOX retention on contract financial fields</description>
-</HistoryRetentionPolicy>
+</historyRetentionPolicy>
 ```
 
 After 18 months, history rows move from `OpportunityHistory` (queryable
-in Reports) to `FieldHistoryArchive` (queryable via SOQL). After 7
-years they're deleted.
+in Reports) to `FieldHistoryArchive` (queryable via SOQL). They are not
+deleted automatically: `archiveRetentionYears` is a reminder for manual
+deletion (api_meta.txt L46348-46351), so schedule the deletion at the 7-year
+mark and do not delete earlier.
 
 **Storage projection.** Estimate based on history-row-per-edit volume.
 History rows in `FieldHistoryArchive` are billed differently from

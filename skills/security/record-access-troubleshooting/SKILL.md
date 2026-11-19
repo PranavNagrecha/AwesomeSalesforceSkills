@@ -30,7 +30,7 @@ outputs:
 dependencies: []
 version: 1.1.1
 author: Pranav Nagrecha
-updated: 2026-10-20
+updated: 2026-11-19
 ---
 
 # Record Access Troubleshooting
@@ -98,7 +98,7 @@ reason a diagnostic query fails to compile.
 | Share object | `AccountShare`, `OpportunityShare`, `CaseShare` — append `Share`, no underscores | `Project__Share` — replace the `__c` suffix with `__Share` |
 | Parent lookup field | `AccountId`, `OpportunityId`, `CaseId` — `<Object>Id` | `ParentId` |
 | Access level field | `AccountAccessLevel`, `OpportunityAccessLevel` — `<Object>AccessLevel` | `AccessLevel` |
-| Custom Apex sharing reason | **Not available** | Available |
+| Custom Apex sharing reason | Only at API 68.0+ on an eligible object (has a share object, OWD Private or Public Read-Only, not the detail side of a master-detail) | Available (API 14.0+) |
 
 ```
 -- Standard object
@@ -108,9 +108,12 @@ SELECT UserOrGroupId, AccountAccessLevel, RowCause FROM AccountShare WHERE Accou
 SELECT UserOrGroupId, AccessLevel, RowCause FROM Project__Share WHERE ParentId = 'a01...'
 ```
 
-`RowCause` values: Owner, Manual, Rule, Team, Implicit, and — **on custom objects only** —
-a declared Apex sharing reason. The Apex Developer Guide states plainly: "Apex sharing reasons
-and Apex managed sharing recalculation are only available for custom objects."
+`RowCause` values: Owner, Manual, Rule, Team, Implicit, and a declared Apex sharing reason —
+always on custom objects, and on standard objects only at API 68.0 and later when the object has
+its own share object and an OWD of Private or Public Read-Only (api_meta.txt L47644-47653). The 264 Apex guide still
+prints "only available for custom objects" at L12613 and L13057; the Metadata API reference is the newer
+text. See `apex-managed-sharing-patterns` and `standards/release-delta-winter27.md`. On API 67.0 or earlier,
+standard-object shares carry only the built-in causes.
 `Account__Share` does not exist in any org.
 
 ## Common Patterns

@@ -85,7 +85,7 @@ Only after BAA confirmation: proceed with technical architecture design.
 
 ## Anti-Pattern 4: Treating Shield as a Standard Feature Included in All Editions
 
-**What the LLM generates:** "Enable Shield Platform Encryption in your org by going to Setup > Platform Encryption. You'll also want to turn on Field Audit Trail for the 10-year retention."
+**What the LLM generates:** "Enable Shield Platform Encryption in your org by going to Setup > Platform Encryption. You'll also want to turn on Field Audit Trail for the 10-year retention." (The guides document no 10-year maximum or setting; archived field history is kept until you delete it.)
 
 **Why it happens:** LLMs present Shield as a setup step rather than a separately licensed product. Training data on Shield implementation focuses on the configuration procedure, not on licensing prerequisites. The paid add-on requirement is often not stated in technical how-to content.
 

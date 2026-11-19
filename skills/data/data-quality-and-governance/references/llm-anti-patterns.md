@@ -72,7 +72,7 @@ Validation rule design for multi-channel orgs:
 
 **What the LLM generates:** "Enable Field History Tracking on all PII fields to maintain a GDPR audit trail" without noting that standard Field History Tracking retains data for only 18 months, which may not satisfy compliance requirements.
 
-**Why it happens:** Field History Tracking is free and easy to enable. LLMs recommend it as a compliance solution without distinguishing it from Shield Field Audit Trail (paid, up to 10-year retention).
+**Why it happens:** Field History Tracking is free and easy to enable. LLMs recommend it as a compliance solution without distinguishing it from Shield Field Audit Trail (paid; archived data is kept until you delete it).
 
 **Correct pattern:**
 
@@ -87,8 +87,8 @@ Standard Field History Tracking:
 
 Shield Field Audit Trail:
 - Requires Shield license
-- Up to 10-year configurable retention
-- 60 fields per object
+- Archived data kept until you delete it (archiveAfterMonths 1-18; archiveRetentionYears is a deletion reminder)
+- Up to 200 fields per object (security guide 262 L4835-4836)
 - Data stored in FieldHistoryArchive object
 - Required for: FINRA, HIPAA, SOX, long-term GDPR compliance
 

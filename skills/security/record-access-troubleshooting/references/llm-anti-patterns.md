@@ -120,9 +120,11 @@ Custom objects: on by default, can be disabled.
 
 ```
 RowCause='Manual' shares are deleted when the record's owner changes.
-Custom Apex sharing reasons survive ownership transfer — but they are
-available ONLY on custom objects. There is no way to declare one on
-Account, Opportunity, Case or any other standard object.
+Custom Apex sharing reasons survive ownership transfer — and they are
+available on custom objects and, at API 68.0 and later, on eligible
+standard objects (share object present, OWD Private or Public Read-Only,
+not a master-detail detail side; api_meta.txt L47644-47653). On API 67.0 or earlier,
+or an ineligible object, there is no way to declare one.
 
 // CUSTOM object — custom Apex sharing reason is available
 Project__Share s = new Project__Share(
@@ -134,7 +136,8 @@ Project__Share s = new Project__Share(
 insert s;
 
 // STANDARD object — different object name AND different field names.
-// Only built-in RowCause values are available; to survive an owner
+// On API 67.0 or earlier (or an ineligible object) only built-in RowCause
+// values are available; to survive an owner
 // change, re-create the share in an after-update trigger on OwnerId,
 // or move the requirement to a sharing rule / account team.
 AccountShare a = new AccountShare(
@@ -168,7 +171,7 @@ Also as SOQL: `SELECT ... FROM Account__Share WHERE ParentId = '001...'`, and as
 **Three errors compound in the generated block:**
 1. `Account__Share` does not exist. Standard objects append `Share` with no underscores: `AccountShare`, `OpportunityShare`, `CaseShare`, `ContactShare`.
 2. Standard object shares do not have `ParentId` or `AccessLevel`. They use `<Object>Id` and `<Object>AccessLevel` — `AccountShare.AccountId` and `AccountShare.AccountAccessLevel`.
-3. `Schema.AccountShare.RowCause.SalesOps__c` cannot exist under any spelling. The Apex Developer Guide: "Apex sharing reasons and Apex managed sharing recalculation are only available for custom objects."
+3. `Schema.Account__Share.RowCause.SalesOps__c` cannot compile because `Account__Share` does not exist. A custom sharing reason on `AccountShare` itself exists only at API 68.0+ on an eligible object (api_meta.txt L47644-47653); UNVERIFIED (2026-11-19): the corpus does not print the exact RowCause constant spelling for standard objects, so compile it against a 68.0 org.
 
 **Correct pattern:**
 ```
@@ -176,14 +179,14 @@ Also as SOQL: `SELECT ... FROM Account__Share WHERE ParentId = '001...'`, and as
 Share object         AccountShare             Project__Share
 Parent lookup        AccountId                ParentId
 Access level field   AccountAccessLevel       AccessLevel
-Custom Apex reason   NOT AVAILABLE            Schema.Project__Share.RowCause.X__c
+Custom Apex reason   API 68.0+, eligible only  Schema.Project__Share.RowCause.X__c
 
-To make a standard-object share survive an owner change, you cannot use a
-custom RowCause. Re-create the share from an after-update trigger on OwnerId,
+To make a standard-object share survive an owner change on API 67.0 or
+earlier (or an ineligible object), you cannot use a custom RowCause. Re-create the share from an after-update trigger on OwnerId,
 or express the requirement as a sharing rule / account team instead.
 ```
 
-**Detection hint:** the string `__Share` preceded by a standard object name is always wrong — mechanically, `__Share` on any token that does not end in `__c` before substitution. Second checkable tell: `ParentId` or a bare `AccessLevel` assigned on a share object whose name lacks `__`. Third: `Schema.<Anything>Share.RowCause.<Anything>__c` where the object is standard — a custom RowCause with no `__Share` in the type name cannot compile.
+**Detection hint:** the string `__Share` preceded by a standard object name is always wrong — mechanically, `__Share` on any token that does not end in `__c` before substitution. Second checkable tell: `ParentId` or a bare `AccessLevel` assigned on a share object whose name lacks `__`. Third: `Schema.<Anything>Share.RowCause.<Anything>__c` where the object is standard — it compiles only at API 68.0+ on an eligible object, so check the project API version and the object's eligibility.
 
 ---
 

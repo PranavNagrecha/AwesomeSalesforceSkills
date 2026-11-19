@@ -106,28 +106,32 @@ Salesforce-managed keys instead.
 
 ## Gotcha 5: Field Audit Trail retention is metadata XML, not a Setup checkbox
 
-**What happens.** Architects assume "I'll just set the retention to 10
-years in Setup" — there's no Setup UI for the per-object retention
-policy. They look for the toggle, can't find it, escalate.
+**What happens.** Architects assume "I'll just set the retention in
+Setup" — the guides document no Setup UI for the per-object retention
+policy (UNVERIFIED (2026-11-19): not in the guides, so a Setup page is
+neither confirmed nor ruled out). They look for the toggle, can't find it,
+escalate.
 
 **When it occurs.** Anyone treating Field Audit Trail like a checkbox
 feature.
 
 **How to avoid.** The retention is set per object via the
-`HistoryRetentionPolicy` element in the object's `.object-meta.xml`,
-deployed via Metadata API or Tooling API. Example:
+`historyRetentionPolicy` element in the object's `.object-meta.xml`,
+deployed via Metadata API (security guide 262 L4833-4835). Example:
 
 ```xml
-<HistoryRetentionPolicy>
+<historyRetentionPolicy>
     <archiveAfterMonths>18</archiveAfterMonths>
     <archiveRetentionYears>10</archiveRetentionYears>
-</HistoryRetentionPolicy>
+</historyRetentionPolicy>
 ```
 
-Maximum `archiveRetentionYears` is 10. The two values together describe
-a two-tier retention: standard `<Object>History` for the first
-`archiveAfterMonths`, then `FieldHistoryArchive` until
-`archiveRetentionYears` total.
+`archiveAfterMonths` is 1-18 (default 18; api_meta.txt L46342-46346).
+`archiveRetentionYears` is a reminder for manual deletion, not an
+enforced limit (api_meta.txt L46348-46351), and the guides document no
+maximum for it. The two values describe a two-tier layout: standard
+`<Object>History` for the first `archiveAfterMonths`, then
+`FieldHistoryArchive`, where the data stays until you delete it.
 
 ---
 

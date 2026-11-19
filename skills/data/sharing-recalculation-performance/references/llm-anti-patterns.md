@@ -84,7 +84,7 @@ global class TerritoryShareRecalculation implements Database.Batchable<SObject> 
 
 ```
 When multiple sharing structure changes are needed:
-1. Enable Defer Sharing Calculations (Setup > Defer Sharing Calculations)
+1. Enable Defer Sharing Calculations, if the feature is enabled for the org (off by default; Salesforce Customer Support enables it, api_meta.txt L130657-130659; UNVERIFIED (2026-11-19): the Setup path is not in the guides)
 2. Apply all structural changes (OWD edits, sharing rule additions, role changes)
 3. Resume sharing calculation, then manually initiate ONE full sharing rule
    recalculation (secguide 262 L3533-3534; the Recalculate button is disabled

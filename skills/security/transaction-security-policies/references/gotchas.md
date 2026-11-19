@@ -40,21 +40,13 @@ Confirmed unsupported event types (as of Spring '25):
 
 ---
 
-## Gotcha 4: Deactivated Execution Users or Notification Recipients Break Policies Silently
+## Gotcha 4: Deactivated Notification Recipients Stop Receiving Alerts Silently
 
-**What happens:** Each Transaction Security Policy has a designated execution user. For Enhanced (Condition Builder) policies, the execution user provides the running context for evaluation. For legacy Apex policies, the execution user must also have "Author Apex" permission. If the execution user is deactivated — for example, a former employee whose account was disabled — the policy stops evaluating entirely. No error is logged, no alert is raised. Similarly, deactivated notification recipients simply stop receiving alerts with no fallback.
+**What happens:** A policy's notifications go to named recipients. If a recipient's Salesforce user record is deactivated (for example a former employee), the alert is not delivered. UNVERIFIED (2026-11-19): the guides do not document what the platform logs or raises in that case, so treat the failure as silent until tested in a sandbox. Do not look for an execution user as the cause: `executionUser` / `ExecutionUserId` is Legacy Transaction Security only (retired Summer '20; api_meta.txt L138943, object_reference.txt L294806-294813).
 
-**When it occurs:** After org user offboarding. If the policy execution user or a notification recipient's Salesforce user record is deactivated (or deleted), the policy or notification breaks silently. This can go undetected for months until an incident reveals that the expected policy never fired.
+**When it occurs:** After org user offboarding, when a recipient's account is deactivated or deleted. This can go undetected until an incident reveals that the expected alert never arrived.
 
-**How to avoid:** Assign execution users and notification recipients to service accounts or role-based accounts that are not tied to individual employee tenure. Run a periodic audit SOQL query to detect broken references:
-
-```soql
-SELECT Id, MasterLabel, ExecutionUser.IsActive, ExecutionUser.Name
-FROM TransactionSecurityPolicy
-WHERE ExecutionUser.IsActive = false
-```
-
-Add this check to offboarding checklists. The `check_transaction_security.py` script in `scripts/` also flags inactive execution users when run against metadata.
+**How to avoid:** Point notifications at role-based or shared mailboxes and service accounts that are not tied to individual employee tenure, and add the recipients of every policy to the offboarding checklist. The `check_transaction_security.py` script does not check recipient status, so review the `notifications` blocks in source by hand.
 
 ---
 

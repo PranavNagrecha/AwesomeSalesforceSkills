@@ -3,8 +3,10 @@
 
 Catches three high-confidence anti-patterns:
 
-  1. `HistoryRetentionPolicy` block referencing `archiveRetentionYears`
-     greater than 10 (the platform maximum).
+  1. `historyRetentionPolicy` block whose `archiveAfterMonths` is outside the
+     1-18 range the Metadata API documents (api_meta HistoryRetentionPolicy).
+     `archiveRetentionYears` has no documented maximum and is only a reminder
+     for manual deletion, so it is not range-checked.
   2. Object metadata that declares an `EncryptionPolicy` listing a Formula,
      Roll-Up-Summary, or Auto-Number field — those types cannot be encrypted
      and the deploy will fail.
@@ -52,23 +54,23 @@ def _scan_object_meta(path: Path) -> list[str]:
     except ET.ParseError:
         return findings  # malformed XML — not our problem to flag
 
-    # 1. HistoryRetentionPolicy with archiveRetentionYears > 10
+    # 1. historyRetentionPolicy with archiveAfterMonths outside 1-18
     for hrp in root.findall(".//sf:historyRetentionPolicy", _NS) + root.findall(
         ".//historyRetentionPolicy"
     ):
-        years_el = hrp.find("sf:archiveRetentionYears", _NS)
-        if years_el is None:
-            years_el = hrp.find("archiveRetentionYears")
-        if years_el is not None and years_el.text:
+        months_el = hrp.find("sf:archiveAfterMonths", _NS)
+        if months_el is None:
+            months_el = hrp.find("archiveAfterMonths")
+        if months_el is not None and months_el.text:
             try:
-                yrs = int(years_el.text.strip())
+                months = int(months_el.text.strip())
             except ValueError:
                 continue
-            if yrs > 10:
+            if months < 1 or months > 18:
                 findings.append(
-                    f"{path}: archiveRetentionYears={yrs} exceeds the platform "
-                    "maximum of 10. Field Audit Trail caps at 10 years "
-                    "(references/gotchas.md § 5)"
+                    f"{path}: archiveAfterMonths={months} is outside the documented "
+                    "range of 1-18 months. It sets when history moves to the archive, "
+                    "not how long it is kept (references/gotchas.md § 5)"
                 )
 
     # 2. Field type vs encryption: scan inline `<encrypted>true</encrypted>` (or
@@ -130,7 +132,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Scan Salesforce metadata for Shield design smells "
-            "(retention > 10 years, encryption on un-encryptable field types)."
+            "(archiveAfterMonths outside 1-18, encryption on un-encryptable field types)."
         ),
     )
     parser.add_argument(

@@ -31,7 +31,7 @@ outputs:
 dependencies: []
 version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-10-03
+updated: 2026-11-19
 ---
 
 # Bulk API and Large Data Loads

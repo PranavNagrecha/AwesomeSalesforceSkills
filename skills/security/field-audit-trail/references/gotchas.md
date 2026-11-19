@@ -16,9 +16,9 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 
 **What happens:** Practitioners assume that licensing Shield and enabling FAT removes the 20-field limit on Field History Tracking. They attempt to enable Field History Tracking on a 21st field and receive an error or the 21st field silently does not get tracked.
 
-**When it occurs:** Any time more than 20 fields need standard Field History Tracking on a single object. FAT raises the capture limit to 60 fields per object, but only for the FAT-specific retention path. The standard history sObject (`XxxHistory`) still observes the 20-field limit.
+**When it occurs:** Any time more than 20 fields need standard Field History Tracking on a single object. With Field Audit Trail you can track up to 200 fields per object; without it, only up to 20 (security guide 262 L4835-4838). UNVERIFIED (2026-11-19): the guide gives only the 200-field and 20-field per-object figures; how the two limits interact per field is not documented.
 
-**How to avoid:** When you need to track more than 20 fields on an object, enable FAT for all fields exceeding the standard limit. Be explicit: the first 20 fields flow through both standard Field History Tracking and FAT; fields 21–60 flow only through FAT (and are therefore only queryable via `FieldHistoryArchive`, not via the standard History sObject or Reports). Document this split in your compliance evidence matrix.
+**How to avoid:** When you need to track more than 20 fields on an object, enable FAT for all fields exceeding the standard limit. Be explicit: UNVERIFIED (2026-11-19): the guide does not document a per-field split between the standard History sObject and `FieldHistoryArchive`, so confirm in a sandbox which fields appear where. fields 21–200 are tracked only because FAT is licensed (and are therefore only queryable via `FieldHistoryArchive`, not via the standard History sObject or Reports). Document this split in your compliance evidence matrix.
 
 ---
 
@@ -52,4 +52,4 @@ Non-obvious Salesforce platform behaviors that cause real production problems in
 - `ParentId = :specificRecordId` (most selective — use whenever querying for a specific record)
 - `CreatedDate >= :startDate AND CreatedDate <= :endDate` (bounded date range — keep ranges tight)
 
-For bulk extractions across many records, use Apex Batch with chunked `ParentId` sets rather than a single large SOQL query. If filtering by field name is required, add `FieldHistoryType = 'SomeField__c'` as a secondary filter after anchoring on `ParentId` or `CreatedDate`.
+For bulk extractions across many records, use Apex Batch with chunked `ParentId` sets rather than a single large SOQL query. If filtering by field name is required, add `Field = 'SomeField__c'` as a secondary filter after anchoring on `ParentId` or `CreatedDate`.

@@ -26,7 +26,7 @@ logoUrl = URL.getSalesforceBaseUrl().toExternalForm() + '/resource/CompanyLogo';
 
 ## Anti-Pattern 2: Loading Data via JavaScript or Remote Actions in a PDF Page
 
-**What the LLM generates:** A VF page with `renderAs="pdf"` that includes `<apex:remoteAction>`, `<script>` tags with `fetch()` calls, or `window.onload` callbacks to populate the page content dynamically.
+**What the LLM generates:** A VF page with `renderAs="pdf"` that includes JavaScript remoting (`Visualforce.remoting.Manager.invokeAction` / `{!$RemoteAction...}` calling an `@RemoteAction` method; there is no `<apex:remoteAction>` tag), `<script>` tags with `fetch()` calls, or `window.onload` callbacks to populate the page content dynamically.
 
 **Why it happens:** LLMs trained on general VF patterns correctly know that remote actions work in browser-rendered VF pages. The PDF rendering engine's lack of JS support is a platform-specific constraint that is underrepresented in training data.
 
@@ -43,7 +43,7 @@ public InvoicePdfController() {
 }
 ```
 
-**Detection hint:** Any `<script>` tag, `onclick`, `apex:remoteAction`, or JavaScript variable assignment inside a VF page that has `renderAs="pdf"` is an anti-pattern. Flag and remove.
+**Detection hint:** Any `<script>` tag, `onclick`, `Visualforce.remoting`, `$RemoteAction`, or JavaScript variable assignment inside a VF page that has `renderAs="pdf"` is an anti-pattern. Flag and remove.
 
 ---
 

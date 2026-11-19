@@ -15,10 +15,16 @@ Step 1 — Pre-load preparation
   reducing inter-batch lock collisions even in parallel mode.
 - Confirm CSV is UTF-8, line endings are LF, size <100 MB per chunk.
 
-Step 2 — Defer sharing calculation (Setup > Defer Sharing Calculation)
-- Suspend sharing rule calculation before the load.
-- This prevents ownership-change sharing recalculation from running
-  for every inserted record during the load window.
+Step 2 — Defer sharing calculation (only if it is enabled in the org)
+- The feature is not on by default; Salesforce Customer Support enables it
+  (api_meta.txt L130657-130659). The LDV guide describes a "defer sharing
+  calculation permission" that suspends and resumes two processes: group
+  membership calculation and sharing rule calculation (LDV L598-599).
+- Suspend both before the load; resume in a maintenance window, then manually
+  start a full sharing rule recalculation (security guide 262 L3532-3534).
+- UNVERIFIED (2026-11-19): the Setup path / UI label for turning this on is not
+  in the guides; the Metadata API route is SharingSettings
+  deferGroupMembership / deferSharingRules (API 49.0+, api_meta.txt L130652-130687).
 
 Step 3 - Create one ingest job per CSV file of at most 100 MB raw
 POST /services/data/v67.0/jobs/ingest/

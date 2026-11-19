@@ -64,7 +64,7 @@
     "f5c12490b04675bebd6c",
     "ff23ad2db37d6602f389"
   ],
-  "content_hash": "48618a12397ff63a7116473081abe7f60b3ec15499397d36a9946245a6e5fab1",
+  "content_hash": "8a86d7c1ec896a0f394ff84d936d6356e550a885cdb8c2810956da164cbf4cb2",
   "dependencies": [],
   "description": "System.runAs in Apex tests: user-context impersonation, mixed-DML workaround, profile/permission testing, sharing verification, FLS NOT enforced, runAs nesting limits. NOT for the MIXED_DML_OPERATION error outside tests \u2014 use apex/mixed-dml-and-setup-objects. NOT for general test setup and @TestSetup semantics \u2014 use apex/apex-test-setup-patterns.",
   "file_location": "skills/apex/apex-system-runas",
@@ -108,7 +108,7 @@
   "templates": [
     "skills/apex/apex-system-runas/templates/apex-system-runas-template.md"
   ],
-  "updated": "2026-04-22",
+  "updated": "2026-11-19",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

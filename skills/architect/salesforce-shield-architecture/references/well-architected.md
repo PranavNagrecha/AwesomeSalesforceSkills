@@ -36,10 +36,12 @@
   Middle ground (BYOK) gives customer-controlled rotation without
   HSM operational burden. Salesforce-managed is fine when no
   regulator demands customer custody.
-- **Field Audit Trail retention vs storage cost.** 10-year retention
-  on every audited object on a high-volume org is a significant
-  storage line item. Set retention per-object, sized to the actual
-  compliance requirement — not "10 years on everything for safety".
+- **Field Audit Trail retention vs storage cost.** Archived data is
+  kept until you delete it (security guide 262 L4836-4837), so keeping
+  everything on every audited object of a high-volume org is a
+  significant storage line item. Set `archiveRetentionYears` per object,
+  sized to the actual compliance requirement, and delete on schedule —
+  not "keep everything for safety".
 - **Real-Time Event Monitoring subscriber vs Transaction Security
   Policy.** Custom subscribers (Pub/Sub API consumers) give arbitrary
   reaction logic; TSP gives in-flight blocking. Most use cases need

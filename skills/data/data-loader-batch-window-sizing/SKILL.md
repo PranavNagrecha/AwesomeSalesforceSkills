@@ -40,9 +40,9 @@ outputs:
   - Pre-load freeze plan (trigger bypass, rule disablement) and post-load enrich plan
   - Fallback batch size if the first attempt errors with row-locks or CPU timeouts
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-11-19
 ---
 
 # Data Loader Batch Window Sizing
@@ -92,7 +92,7 @@ Bulk API V2 runs in **parallel mode by default**. When two parallel batches try 
 
 Inserting **100K Accounts into a Private OWD org with a role hierarchy** triggers implicit-share row creation for every level of the hierarchy that has access. The visible insert finishes quickly; the **sharing recalculation runs asynchronously for hours afterwards** and can lock out reports, list views, and other automation while it runs. This is the #1 reason "the load finished but the org is unusable for the rest of the day."
 
-Mitigations: load with the OWD owner unchanged (avoid post-insert ownership re-assignment), use **Defer Sharing Calculations** (Setup → Sharing Settings → Defer Sharing Calculations) for the load window if available, schedule the load before a low-traffic window, and **never re-parent ownership immediately after the load**.
+Mitigations: load with the OWD owner unchanged (avoid post-insert ownership re-assignment), use **Defer Sharing Calculations** for the load window if the feature has been enabled for the org (it is off by default and Salesforce Customer Support enables it, api_meta.txt L130657-130659; it suspends group membership and sharing rule calculation, LDV guide L598-599; UNVERIFIED (2026-11-19): the Setup path is not in the guides, so confirm in the org rather than navigating by a remembered path), schedule the load before a low-traffic window, and **never re-parent ownership immediately after the load**.
 
 ### 4. Trigger fire impact compounds linearly with batch size
 

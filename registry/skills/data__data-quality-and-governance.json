@@ -35,6 +35,7 @@
     "3728999d6a11bfb2cb42",
     "381cc65f8d5fc4aee844",
     "39558f34fd36e9f709d6",
+    "39b365af0282fb4e6659",
     "3a2d5f7e51e6ce78a119",
     "44ca9e4cc542f465e19c",
     "456a54d744ad649f3009",
@@ -132,7 +133,7 @@
     "fe601fcd8ced64b98f4d",
     "ffefebd95aa82e0835be"
   ],
-  "content_hash": "8c561e4c859bd3f2646d1d2a6f6b0272159f78c5b278427f2a82b5589d65cd78",
+  "content_hash": "027c24fae6f0276e31523de8d21024257286ef4565e7f4ac40a64c5c993c4606",
   "dependencies": [],
   "description": "Use this skill when designing data quality gates, auditing data quality posture, troubleshooting validation failures, or implementing governance controls (field history, GDPR erasure, data classification, duplicate strategy). Trigger keywords: validation rules, field history, duplicate management, GDPR right to erasure, data retention, data classification, Shield Field Audit Trail, Einstein Data Detect, Matching Rules, PII anonymization. NOT for configuring matching and duplicate rules in Setup \u2014 use admin/duplicate-management. NOT for executing a bulk data migration \u2014 use data/data-migration-planning.",
   "file_location": "skills/data/data-quality-and-governance",
@@ -185,7 +186,7 @@
   "templates": [
     "skills/data/data-quality-and-governance/templates/data-quality-and-governance-template.md"
   ],
-  "updated": "2026-04-04",
+  "updated": "2026-11-19",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

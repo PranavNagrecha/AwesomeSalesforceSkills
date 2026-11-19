@@ -46,7 +46,7 @@ moved back to `In Build`.
 ```csv
 req_id,source,description,priority,story_ids,test_case_ids,defect_ids,sprint,release,status,compliance_control_id,evidence_link
 REQ-001,regulatory,Encrypt PHI fields at rest using Shield Platform Encryption,must,US-201,TC-501,,Sprint-1,R1.0,Released,HIPAA-164.312(a)(2)(iv),evidence/r1-encryption-test.pdf
-REQ-002,regulatory,Field Audit Trail enabled on PHI fields with 10-year retention,must,US-202,TC-502,,Sprint-1,R1.0,Released,HIPAA-164.312(b),evidence/r1-fat-config-screenshot.png
+REQ-002,regulatory,Field Audit Trail enabled on PHI fields; archived history kept for at least 10 years (archiveRetentionYears 10 reminder; no deletion before then),must,US-202,TC-502,,Sprint-1,R1.0,Released,HIPAA-164.312(b),evidence/r1-fat-config-screenshot.png
 REQ-003,regulatory,Login IP ranges restrict org access to corporate network,must,US-203,TC-503,,Sprint-1,R1.0,Released,HIPAA-164.312(a)(1),evidence/r1-ip-restriction-policy.pdf
 REQ-004,regulatory,Two-factor authentication required for all users with PHI access,must,US-204,TC-504,DEF-601,Sprint-2,R1.0,Released,HIPAA-164.308(a)(5),evidence/r1-2fa-rollout-signoff.pdf
 REQ-005,interview,Care coordinators triage incoming patient cases by SLA,must,US-205|US-206,TC-505|TC-506,,Sprint-2,R1.0,Released,,

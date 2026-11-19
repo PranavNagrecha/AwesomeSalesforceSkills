@@ -1,6 +1,6 @@
 ---
 name: salesforce-shield-architecture
-description: "Salesforce Shield as an architectural choice — Platform Encryption + Event Monitoring + Field Audit Trail as three SEPARATELY-LICENSED components, none of which ship in any standard edition. Covers BYOK vs Cache-Only Key Service (CCKM) tradeoffs, probabilistic vs deterministic encryption schemes, the field-type encryption blocklist (Formula, Roll-Up Summary, indexed External ID), Field Audit Trail's 10-year retention model, and why every Shield design starts with a license confirmation. NOT for setting up one Shield feature — use security/platform-encryption, security/event-monitoring or security/field-audit-trail. NOT for HIPAA control mapping — use architect/hipaa-compliance-architecture. NOT for FedRAMP, FISMA or Government Cloud control mapping — use architect/government-cloud-compliance."
+description: "Salesforce Shield as an architectural choice — Platform Encryption + Event Monitoring + Field Audit Trail as three SEPARATELY-LICENSED components, none of which ship in any standard edition. Covers BYOK vs Cache-Only Key Service (CCKM) tradeoffs, probabilistic vs deterministic encryption schemes, the field-type encryption blocklist (Formula, Roll-Up Summary, indexed External ID), Field Audit Trail's retention model, and why every Shield design starts with a license confirmation. NOT for setting up one Shield feature — use security/platform-encryption, security/event-monitoring or security/field-audit-trail. NOT for HIPAA control mapping — use architect/hipaa-compliance-architecture. NOT for FedRAMP, FISMA or Government Cloud control mapping — use architect/government-cloud-compliance."
 category: architect
 salesforce-version: "Spring '25+"
 well-architected-pillars:
@@ -11,7 +11,7 @@ triggers:
   - "salesforce shield license required which components"
   - "platform encryption probabilistic vs deterministic decision"
   - "byok cache-only key service cckm comparison"
-  - "field audit trail retention 10 year configuration"
+  - "field audit trail retention policy configuration"
   - "shield platform encryption field types blocklist formula rollup"
   - "salesforce shield architecture compliance design"
 tags:
@@ -35,9 +35,9 @@ outputs:
   - "Field Audit Trail retention policy XML for each archived object"
   - "License-confirmation pre-flight checklist that runs before any Shield Setup work"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-05-04
+updated: 2026-11-19
 ---
 
 # Salesforce Shield Architecture
@@ -75,9 +75,11 @@ whole answer.
   Cache-Only Key Service design has implications for every Shield
   component (single point of unavailability) — choosing it after
   picking components forces rework.
-- **Decide retention up-front.** Field Audit Trail retention is set per
-  object in metadata XML, with a maximum of 10 years. Plan storage
-  cost and the 18-month-tier vs longer-tier transition.
+- **Decide retention up-front.** Field Audit Trail policies are set per
+  object in metadata XML (`archiveAfterMonths` 1-18, api_meta.txt L46342-46346);
+  archived data is kept until you delete it, and no maximum retention is
+  documented (security guide 262 salesforce_security_impl_guide.txt L4836-4837).
+  Plan storage cost and the History-to-archive transition.
 
 ---
 
@@ -89,7 +91,7 @@ whole answer.
 |---|---|---|
 | **Shield Platform Encryption** | At-rest encryption of selected fields, files, search indexes. Uses Salesforce-managed or customer-supplied keys. | `Platform Encryption` PSL |
 | **Event Monitoring** | Hourly / real-time event log files (Login, API, Apex, Visualforce, etc.) and Real-Time Event Monitoring streams via Pub/Sub. Backs Transaction Security Policies for in-flight blocking. | `Event Monitoring` PSL |
-| **Field Audit Trail** | Per-object configurable history retention up to 10 years; stores history rows in `FieldHistoryArchive` (queryable). Replaces the 18-month default `FieldHistory` retention. | `Field Audit Trail` PSL |
+| **Field Audit Trail** | Per-object archive policy; stores history rows in `FieldHistoryArchive` (queryable) and keeps them until you delete them (security guide 262 L4836-4837). Extends the 18-month default field history retention (262 L4553-4554). | `Field Audit Trail` PSL |
 
 Standard Salesforce ships with **classic encryption** (a different
 product — single-key, weaker, fewer field types) and **18-month field
@@ -161,20 +163,24 @@ require customer custody.
 
 ### Field Audit Trail retention
 
-Not a single dial — set *per object* in metadata XML:
+Not a single dial — set *per object* in metadata XML (element
+`historyRetentionPolicy`, api_meta.txt L46376-46380):
 
 ```xml
-<HistoryRetentionPolicy>
+<historyRetentionPolicy>
     <archiveAfterMonths>18</archiveAfterMonths>
     <archiveRetentionYears>10</archiveRetentionYears>
     <description>HIPAA-archived patient records</description>
-</HistoryRetentionPolicy>
+</historyRetentionPolicy>
 ```
 
-`archiveAfterMonths` controls when records move from the standard
+`archiveAfterMonths` (required, 1-18, default 18; api_meta.txt
+L46342-46346) controls when records move from the standard
 `<Object>History` table (queryable in reports) to `FieldHistoryArchive`
-(queryable via SOQL only). `archiveRetentionYears` controls deletion
-from the archive — capped at 10 years.
+(queryable via SOQL only). `archiveRetentionYears` is "the number of
+years until you manually delete data from the archive. Use this field as
+a reminder" — data is not automatically deleted (api_meta.txt
+L46348-46351), and the guides document no maximum for it.
 
 ---
 
@@ -201,7 +207,7 @@ from the archive — capped at 10 years.
 2. **Compliance driver inventory.** What forces Shield to be in scope (regulator, contract, internal control)? Map each requirement to the *minimum* Shield component that addresses it.
 3. **Field inventory + scheme decision.** For Platform Encryption: list every candidate field with its filter / sort / search requirement; pick probabilistic vs deterministic per field. Identify any encryption-blocked field types and reroute to source fields.
 4. **Key-management posture.** Salesforce-managed / BYOK / CCKM. Document the outage tradeoff for CCKM.
-5. **Audit retention design.** For Field Audit Trail: per-object `HistoryRetentionPolicy` XML, with `archiveAfterMonths` and `archiveRetentionYears` decided per object.
+5. **Audit retention design.** For Field Audit Trail: per-object `historyRetentionPolicy` XML, with `archiveAfterMonths` (1-18) and the `archiveRetentionYears` deletion reminder decided per object, plus a manual deletion step.
 6. **Event Monitoring scope.** Log-files-only vs Log-files + Real-Time Event Monitoring + Transaction Security Policies. Document which event types are subscribed and why.
 7. **Cost projection.** Component licenses + key-management infrastructure (HSM if CCKM) + storage growth from Field Audit Trail archive.
 
@@ -214,7 +220,7 @@ from the archive — capped at 10 years.
 - [ ] No field on the encryption list is a Formula / Roll-Up / unique-indexed External ID; if it was, the source field is encrypted instead.
 - [ ] Key-management posture named (Salesforce-managed / BYOK / CCKM) with one-sentence rationale.
 - [ ] CCKM design documents the HSM outage failure mode.
-- [ ] Field Audit Trail retention XML present for every audited object; `archiveRetentionYears` ≤ 10.
+- [ ] Field Audit Trail retention XML present for every audited object; `archiveAfterMonths` within 1-18 and a documented manual-deletion process for the archive.
 - [ ] Event Monitoring scope explicit (which event types, log-only vs real-time).
 - [ ] Total cost projection includes component licenses + HSM (if CCKM) + storage growth.
 
@@ -226,7 +232,7 @@ from the archive — capped at 10 years.
 2. **Probabilistic encryption blocks SOQL `WHERE` equality filters; deterministic restores exact-match filtering only.** Neither scheme restores sorting — you can't sort records in list views by fields containing encrypted data, and ciphertext order does not track plaintext order in any case. Wrong scheme = wrong queries; expecting sort from deterministic = a design that fails at query time. (See `references/gotchas.md` § 2.)
 3. **Formula / Roll-Up / unique-indexed External ID cannot be encrypted.** Encrypt the source field instead. (See `references/gotchas.md` § 3.)
 4. **Cache-Only Key Service outage = encryption operations fail.** A customer-HSM outage stops new writes that need encryption. Trade for the strongest custody posture. (See `references/gotchas.md` § 4.)
-5. **Field Audit Trail retention requires metadata XML, not Setup UI.** `HistoryRetentionPolicy` is set per object via Tooling API or metadata deploy — not a checkbox. (See `references/gotchas.md` § 5.)
+5. **Field Audit Trail retention requires metadata XML, not Setup UI.** `HistoryRetentionPolicy` is defined per object and deployed with Metadata API (security guide 262 L4833-4835) — not a checkbox. UNVERIFIED (2026-11-19): whether Setup offers any policy UI; the guides document none. (See `references/gotchas.md` § 5.)
 6. **Tenant secret rotation re-encrypts all data.** Plan the operation as a maintenance window for orgs with significant encrypted data volume. (See `references/gotchas.md` § 6.)
 7. **Real-Time Event Monitoring is Pub/Sub-only as of recent releases.** Old code paths against the streaming-API channels are deprecated. (See `references/gotchas.md` § 7.)
 

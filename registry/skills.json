@@ -12,7 +12,7 @@
     "omnistudio": 34,
     "security": 49
   },
-  "generated_from_hash": "9866ab5f4229315afbc4580ee313405384a118830b583a5f4e27223f53322a38",
+  "generated_from_hash": "41cedb4b34a8840381ea5851bf22615cf7437007b0639583bfad7f76c23a573b",
   "schema_version": 1,
   "skill_count": 1040,
   "skills": [
@@ -20101,9 +20101,9 @@
         "fa4137872513744a6bad",
         "ff949b07b85889f00b9f"
       ],
-      "content_hash": "33e264ad356f71d58dbfd28fb879263cb1084bb8f415e5c3a04a335784e2e359",
+      "content_hash": "7ae74d1bbf89d780a8655b9cd20cdbac78bb9d4403b01505e61d0c42bd4c029a",
       "dependencies": [],
-      "description": "Use when setting up CMS workspaces, creating or publishing content types for Experience Cloud sites, managing content scheduling, or configuring audience targeting on content variants. Triggers: 'set up CMS workspace', 'publish content to Experience Cloud site', 'content scheduling community', 'audience targeting content', 'managed content vs unmanaged', 'custom content type metadata', 'CMS channel configuration'. NOT for moderating member-posted content \u2014 use admin/experience-cloud-moderation. NOT for Knowledge vs an external CMS or CMS Connect \u2014 use architect/knowledge-vs-external-cms.",
+      "description": "Use when setting up CMS workspaces, creating or publishing content types for Experience Cloud sites, managing content scheduling, or targeting audiences at the experience variations that show CMS content (content variants are language variants, not audience variants). Triggers: 'set up CMS workspace', 'publish content to Experience Cloud site', 'content scheduling community', 'audience targeting content', 'managed content vs unmanaged', 'custom content type metadata', 'CMS channel configuration'. NOT for moderating member-posted content \u2014 use admin/experience-cloud-moderation. NOT for Knowledge vs an external CMS or CMS Connect \u2014 use architect/knowledge-vs-external-cms.",
       "file_location": "skills/admin/experience-cloud-cms-content",
       "id": "admin/experience-cloud-cms-content",
       "inputs": [
@@ -20155,7 +20155,7 @@
       "templates": [
         "skills/admin/experience-cloud-cms-content/templates/experience-cloud-cms-content-template.md"
       ],
-      "updated": "2026-10-20",
+      "updated": "2026-11-19",
       "vector_embedding": null,
       "version": "1.0.1"
     },
@@ -42504,7 +42504,7 @@
         "ff1cbd597bfb16994968",
         "fff1d7762f2f89e41a94"
       ],
-      "content_hash": "e0dffe9732083252740d497836b17abbd783ffe1a1d6d4b4dcfcf2e585839eb2",
+      "content_hash": "89e692b7c9ed7818dcf9fe9ea2ed6c38a10c639a99bcd3c10b4fb3810e119f6a",
       "dependencies": [],
       "description": "Use this skill when building or maintaining a Requirements Traceability Matrix (RTM) on a Salesforce project: one row per requirement, columns for source, user-story id(s), test-case id(s), defect id(s), sprint, release, and status. Covers forward traceability (req \u2192 story \u2192 code \u2192 test) and backward traceability (test \u2192 req). Trigger keywords: RTM, requirements traceability matrix, audit trail for salesforce delivery, traceability for steerco, deferred requirement tracking, regulatory traceability. NOT for eliciting the requirements in the first place \u2014 use admin/requirements-gathering-for-sf. NOT for user-story authoring \u2014 use admin/user-story-writing-for-salesforce. NOT for UAT test design \u2014 use admin/uat-test-case-design. NOT for Apex test design \u2014 use apex/test-class-standards. NOT for backlog prioritization \u2014 use admin/moscow-prioritization-for-sf-backlog. More triggers: traceability.md, build-layer traceability, REQ-XXX and FG-XXX id mapping, artefact-to-requirement orphan report, coverage-gap report, check_rtm.py --manifest-dir, owning run-time agent column, design decision ref column, metadata API name in a traceability row.",
       "file_location": "skills/admin/requirements-traceability-matrix",
@@ -42562,7 +42562,7 @@
         "skills/admin/requirements-traceability-matrix/templates/requirements-traceability-matrix-template.md",
         "skills/admin/requirements-traceability-matrix/templates/rtm.md"
       ],
-      "updated": "2026-10-20",
+      "updated": "2026-11-19",
       "vector_embedding": null,
       "version": "1.1.6"
     },
@@ -60860,7 +60860,7 @@
         "f5de7e32cec9a7c3dcbd",
         "f8b8dae169a028cda8ef"
       ],
-      "content_hash": "0b45dc4ab5fa07facce242797077fd24f2d966873e1454fe78ce26cf1d1ce0b1",
+      "content_hash": "1c897cc6659456be3fbb5f6a1155ed40292d36a18d4000a1182fcf580e14995b",
       "dependencies": [],
       "description": "Custom Permissions in Apex: FeatureManagement.checkPermission, $Permission global variable, permission-set gating of feature code, Custom Permission metadata. NOT for creating or assigning the permission in Setup \u2014 use admin/custom-permissions. NOT for CRUD/FLS enforcement \u2014 use apex/apex-stripinaccessible-and-fls-enforcement.",
       "file_location": "skills/apex/apex-custom-permissions-check",
@@ -60904,7 +60904,7 @@
       "templates": [
         "skills/apex/apex-custom-permissions-check/templates/apex-custom-permissions-check-template.md"
       ],
-      "updated": "2026-10-20",
+      "updated": "2026-11-19",
       "vector_embedding": null,
       "version": "1.0.1"
     },
@@ -66885,7 +66885,7 @@
         "f5c12490b04675bebd6c",
         "ff23ad2db37d6602f389"
       ],
-      "content_hash": "48618a12397ff63a7116473081abe7f60b3ec15499397d36a9946245a6e5fab1",
+      "content_hash": "8a86d7c1ec896a0f394ff84d936d6356e550a885cdb8c2810956da164cbf4cb2",
       "dependencies": [],
       "description": "System.runAs in Apex tests: user-context impersonation, mixed-DML workaround, profile/permission testing, sharing verification, FLS NOT enforced, runAs nesting limits. NOT for the MIXED_DML_OPERATION error outside tests \u2014 use apex/mixed-dml-and-setup-objects. NOT for general test setup and @TestSetup semantics \u2014 use apex/apex-test-setup-patterns.",
       "file_location": "skills/apex/apex-system-runas",
@@ -66929,9 +66929,9 @@
       "templates": [
         "skills/apex/apex-system-runas/templates/apex-system-runas-template.md"
       ],
-      "updated": "2026-04-22",
+      "updated": "2026-11-19",
       "vector_embedding": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "apex",
@@ -72339,7 +72339,7 @@
         "fd165ea23f9730f18802",
         "fef7438835dbb6db00eb"
       ],
-      "content_hash": "bfb98027d4ac569927c2acfe076ff5ee20faa8860d2b0850d710e8702398a86c",
+      "content_hash": "5bc1e50bb97a527f846872acd3438288c74b5ef75b9ef3e237607758080a574d",
       "dependencies": [],
       "description": "Use when building or reviewing code that constructs SOQL/SOSL at runtime, inspects schema metadata via Schema.describe methods, accesses fields dynamically on sObjects, or performs runtime type inspection. Triggers: 'Database.query', 'Schema.getGlobalDescribe', 'Schema.describeSObjects', 'dynamic field access', 'SObjectType', 'DescribeFieldResult'. NOT for static SOQL queries \u2014 use apex/soql-fundamentals. NOT for query performance tuning \u2014 use data/soql-query-optimization.",
       "file_location": "skills/apex/dynamic-apex",
@@ -72386,7 +72386,7 @@
       "templates": [
         "skills/apex/dynamic-apex/templates/dynamic-apex-template.md"
       ],
-      "updated": "2026-10-19",
+      "updated": "2026-11-19",
       "vector_embedding": null,
       "version": "1.0.1"
     },
@@ -78713,6 +78713,7 @@
         "b25acf51500b1d344f31",
         "b4dfbd4437a2d3f26c78",
         "b5597e670662988f37f7",
+        "b77b9c230f77861c945e",
         "bd75bebe427a2bf0bf2b",
         "c8ebe904d3cf4366e739",
         "ccbca85667d63f0103e9",
@@ -78739,7 +78740,7 @@
         "fc9b4e16715a1d87f960",
         "ff89ab1514220c660abe"
       ],
-      "content_hash": "7669d596dc7b6c194dbcdaa5d4a0f09fc2a1a5c9ede392be330dd10a52aa3c68",
+      "content_hash": "bbb7b6a78aeaea68a238615c6372c8dfedd95ce9ed35a008e8ef313b405d77ae",
       "dependencies": [],
       "description": "Generating PDF documents from Salesforce using Visualforce renderAs='pdf', PageReference.getContentAsPDF(), and ContentVersion storage. Covers the Flying Saucer rendering engine constraints, inline CSS requirements, server-side data loading, LWC PDF limitations, and programmatic PDF attachment to records. NOT for Quote PDF template customization (use apex/quote-pdf-customization). NOT for OmniStudio DocGen document generation. NOT for Salesforce Reports exported as PDF.",
       "file_location": "skills/apex/pdf-generation-patterns",
@@ -78791,9 +78792,9 @@
       "templates": [
         "skills/apex/pdf-generation-patterns/templates/pdf-generation-patterns-template.md"
       ],
-      "updated": "2026-04-06",
+      "updated": "2026-11-19",
       "vector_embedding": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "apex",
@@ -83071,7 +83072,7 @@
         "fe8cf1d029d92cbff293",
         "fefdf60b97efe8f9d5ec"
       ],
-      "content_hash": "ac4680b67100cfe12045d9f64e321e06d4f270694aaa8d5b31da83f3fcfc029b",
+      "content_hash": "da789124475f0a1f8d3e0f18d0f3a74b491e12013d7304fb864dde42cb282054",
       "dependencies": [],
       "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for the factory class itself \u2014 use apex/test-data-factory-patterns. NOT for the mock class itself \u2014 use apex/apex-http-callout-mocking.",
       "file_location": "skills/apex/test-class-standards",
@@ -83144,7 +83145,7 @@
       "templates": [
         "skills/apex/test-class-standards/templates/test-class-standards-template.md"
       ],
-      "updated": "2026-10-02",
+      "updated": "2026-11-19",
       "vector_embedding": null,
       "version": "1.3.5"
     },
@@ -91695,6 +91696,7 @@
         "c055a448a083944207ba",
         "c0b4686720c9c8fae153",
         "c56729bef4ecf2871c56",
+        "c5f0eb65334fd8d6cc2c",
         "c6aa5dd0fe0f9a65a677",
         "c9beb7afa9f5b365b9e8",
         "ca86a13fd7f8ceff89c2",
@@ -91724,7 +91726,7 @@
         "fbd513f9546f00e47f6a",
         "fe4f1710330673cd993e"
       ],
-      "content_hash": "446670f01cf7c27e771454e0d364645552a95ada74d38971b6c6892063d818d5",
+      "content_hash": "2c399cdda95096b7f8a8ad0f35abe83db1bd9148f155889ef934570780980106",
       "dependencies": [],
       "description": "Use this skill to design HIPAA-compliant Salesforce org architectures for healthcare organizations storing or processing Protected Health Information (PHI). Trigger keywords: HIPAA BAA, PHI storage, Shield encryption, Health Cloud compliance, HIPAA technical safeguards, covered entity Salesforce architecture. NOT for minimum-necessary access design \u2014 use admin/hipaa-workflow-design. NOT for non-healthcare org security review \u2014 use architect/security-architecture-review.",
       "file_location": "skills/architect/hipaa-compliance-architecture",
@@ -91775,9 +91777,9 @@
       "templates": [
         "skills/architect/hipaa-compliance-architecture/templates/hipaa-compliance-architecture-template.md"
       ],
-      "updated": "2026-04-28",
+      "updated": "2026-11-19",
       "vector_embedding": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "architect",
@@ -98905,12 +98907,14 @@
         "25a480f9eea11aca6d03",
         "282d2fe56925001a617c",
         "2ae4fa969f4cb26d13f2",
+        "2def23a21de86ae2cb68",
         "2f373d6185f19fbad39b",
         "2feb444dcab0626751df",
         "3d697b6db92209d3ae40",
         "42c3dc4edfa7d22e3d78",
         "48c65bef664c5bc2bec6",
         "4a3a3ae8220e9b0b7e6a",
+        "4ebe497221655c29a7fe",
         "509e379d582e697867ea",
         "52d781f1a89169caca51",
         "555b9111ac8c566514f0",
@@ -98937,11 +98941,13 @@
         "8609c33cffe22fb2844e",
         "887f0017cf98309c9636",
         "8936097a342d16c48bfb",
+        "8ef7a5c5129205a05b68",
         "917f1dc482fdb0da7c68",
         "9254c71a223113cc39b9",
         "946e3de6695d37796846",
         "9c1e4fa13d9b725d9e17",
         "9eae0daf6817d6aff608",
+        "9efa77f3810a2bbcaa76",
         "9f501ca266e6492a19f9",
         "a241a7bda37fd283f1ae",
         "a30e43ce11f4ab130835",
@@ -98949,6 +98955,7 @@
         "b29a43af52478cf5adee",
         "b4147e53d460d70872a1",
         "b63894a491557d6202d3",
+        "c2961e6da21331172672",
         "cb40c5e2d4927e2e47b3",
         "cd3db8a69efc113b235e",
         "cf307ecbaa21bbdbb551",
@@ -98966,14 +98973,15 @@
         "f195a7e68f75b39c8e25",
         "f3be52605c2a87235570",
         "f57665d0a271f6a8afde",
+        "f5edf0d098db7805ddf4",
         "f6bbc68fba973c604d94",
         "f8649762b6907c9eab1c",
         "f9e96ab2fa9cd5f05f59",
         "fb244a18b4e9da088768"
       ],
-      "content_hash": "021faec1a67859240553a126085f7343420666fa7dac2d14352d1cb6dbfc4e70",
+      "content_hash": "e4492375f8dc07b774aa725dd4683db96a82d61dc7019b51ba93509a3d190c5f",
       "dependencies": [],
-      "description": "Salesforce Shield as an architectural choice \u2014 Platform Encryption + Event Monitoring + Field Audit Trail as three SEPARATELY-LICENSED components, none of which ship in any standard edition. Covers BYOK vs Cache-Only Key Service (CCKM) tradeoffs, probabilistic vs deterministic encryption schemes, the field-type encryption blocklist (Formula, Roll-Up Summary, indexed External ID), Field Audit Trail's 10-year retention model, and why every Shield design starts with a license confirmation. NOT for setting up one Shield feature \u2014 use security/platform-encryption, security/event-monitoring or security/field-audit-trail. NOT for HIPAA control mapping \u2014 use architect/hipaa-compliance-architecture. NOT for FedRAMP, FISMA or Government Cloud control mapping \u2014 use architect/government-cloud-compliance.",
+      "description": "Salesforce Shield as an architectural choice \u2014 Platform Encryption + Event Monitoring + Field Audit Trail as three SEPARATELY-LICENSED components, none of which ship in any standard edition. Covers BYOK vs Cache-Only Key Service (CCKM) tradeoffs, probabilistic vs deterministic encryption schemes, the field-type encryption blocklist (Formula, Roll-Up Summary, indexed External ID), Field Audit Trail's retention model, and why every Shield design starts with a license confirmation. NOT for setting up one Shield feature \u2014 use security/platform-encryption, security/event-monitoring or security/field-audit-trail. NOT for HIPAA control mapping \u2014 use architect/hipaa-compliance-architecture. NOT for FedRAMP, FISMA or Government Cloud control mapping \u2014 use architect/government-cloud-compliance.",
       "file_location": "skills/architect/salesforce-shield-architecture",
       "id": "architect/salesforce-shield-architecture",
       "inputs": [
@@ -99026,9 +99034,9 @@
       "templates": [
         "skills/architect/salesforce-shield-architecture/templates/salesforce-shield-architecture-template.md"
       ],
-      "updated": "2026-05-04",
+      "updated": "2026-11-19",
       "vector_embedding": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "architect",
@@ -101946,6 +101954,7 @@
         "20ff3d60dcbb3bcb43e5",
         "22853d3ff0db49070258",
         "22d2afbb9fd4703f54d4",
+        "26b14c99deee4dfb0a39",
         "2ad947138dd295e6bf01",
         "2d21a9cabe4ca2c17dd4",
         "3002f87e891c40a07f11",
@@ -102040,7 +102049,7 @@
         "fc6c00319c48004b04ac",
         "fe991bb4ceb2dcf32a5f"
       ],
-      "content_hash": "312c73fa6557b6065b0c326dcfd0f7fd67e99fdc33efe48784a537f28a8fa017",
+      "content_hash": "49345f782535accd0ec647f11646baeb60b6fe8f9b0d1e49521a85319a0c13b6",
       "dependencies": [],
       "description": "Use when choosing between Bulk API 2.0 and REST/SOAP API for large-volume data operations, sizing batch jobs, monitoring bulk job status, and handling failed records in bulk pipelines. Triggers: bulk api, large data load, batch insert, bulk job, serial vs parallel mode. NOT for Data Loader UI steps (use data-import-and-management) or real-time single-record integrations (use apex/callouts-and-http-integrations).",
       "file_location": "skills/data/bulk-api-and-large-data-loads",
@@ -102088,7 +102097,7 @@
       "templates": [
         "skills/data/bulk-api-and-large-data-loads/templates/bulk-api-and-large-data-loads-template.md"
       ],
-      "updated": "2026-10-03",
+      "updated": "2026-11-19",
       "vector_embedding": null,
       "version": "1.0.1"
     },
@@ -105401,6 +105410,7 @@
         "d22697279a55ac37d7e8",
         "d6c1a216d398c3678c5f",
         "d95bdec9d9fe73f5303e",
+        "dc61cdcb4aa2c418d526",
         "de850dc4f8870ac30c8f",
         "df2e62667bbdd29cdd5e",
         "dfedd4e2b54ae3c9d284",
@@ -105424,7 +105434,7 @@
         "fd5c46e74a0b44a0ed17",
         "fdcd439b8404a9b0bd2f"
       ],
-      "content_hash": "8777dea7d0695b8b900ff50ceece718e84293a5ad3128acc955467b9b2995c47",
+      "content_hash": "2f31c64d006a1b46752899895ceb3986fbdf135fe2a52ee1358ef3920d1ba59b",
       "dependencies": [],
       "description": "Choose the right batch size, parallel/serial mode, and load window for Data Loader, Bulk API V1/V2, and custom Database.executeBatch jobs against a given object volume and complexity profile. Covers tradeoffs between batch size, trigger CPU cost, sharing recalculation cost, and row-skew lock contention. NOT for CSV column mapping (use data/data-loader-csv-column-mapping). NOT for picklist validation pre-load (use data/data-loader-picklist-validation-pre-load). NOT for sharing-recalc tuning after the load lands (use data/sharing-recalculation-performance).",
       "file_location": "skills/data/data-loader-batch-window-sizing",
@@ -105483,9 +105493,9 @@
       "templates": [
         "skills/data/data-loader-batch-window-sizing/templates/data-loader-batch-window-sizing-template.md"
       ],
-      "updated": "2026-04-28",
+      "updated": "2026-11-19",
       "vector_embedding": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "data",
@@ -106274,6 +106284,7 @@
         "3728999d6a11bfb2cb42",
         "381cc65f8d5fc4aee844",
         "39558f34fd36e9f709d6",
+        "39b365af0282fb4e6659",
         "3a2d5f7e51e6ce78a119",
         "44ca9e4cc542f465e19c",
         "456a54d744ad649f3009",
@@ -106371,7 +106382,7 @@
         "fe601fcd8ced64b98f4d",
         "ffefebd95aa82e0835be"
       ],
-      "content_hash": "8c561e4c859bd3f2646d1d2a6f6b0272159f78c5b278427f2a82b5589d65cd78",
+      "content_hash": "027c24fae6f0276e31523de8d21024257286ef4565e7f4ac40a64c5c993c4606",
       "dependencies": [],
       "description": "Use this skill when designing data quality gates, auditing data quality posture, troubleshooting validation failures, or implementing governance controls (field history, GDPR erasure, data classification, duplicate strategy). Trigger keywords: validation rules, field history, duplicate management, GDPR right to erasure, data retention, data classification, Shield Field Audit Trail, Einstein Data Detect, Matching Rules, PII anonymization. NOT for configuring matching and duplicate rules in Setup \u2014 use admin/duplicate-management. NOT for executing a bulk data migration \u2014 use data/data-migration-planning.",
       "file_location": "skills/data/data-quality-and-governance",
@@ -106424,9 +106435,9 @@
       "templates": [
         "skills/data/data-quality-and-governance/templates/data-quality-and-governance-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-11-19",
       "vector_embedding": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "data",
@@ -114151,7 +114162,7 @@
         "f434bdcb22a7416c7091",
         "f88ae6f3eb513077f3b9"
       ],
-      "content_hash": "ab0cffebc74b1c90461dc8b15d22c456d4d112a5a472af34162836d616218b59",
+      "content_hash": "916efbe05aabbbb53928c8f0e2bd72ceff1f7827e370356265d87147405a5df2",
       "dependencies": [],
       "description": "Plan, batch, and monitor Salesforce sharing recalculation jobs \u2014 including OWD changes, sharing rule add/remove, role hierarchy restructuring, and Apex managed share rebuild \u2014 to avoid multi-hour background jobs and data-access blackouts. NOT for diagnosing data-skew root causes (use admin/data-skew-and-sharing-performance), NOT for designing the sharing model itself (use admin/sharing-and-visibility), and NOT for Apex managed sharing row-cause creation (use apex/apex-managed-sharing).",
       "file_location": "skills/data/sharing-recalculation-performance",
@@ -114199,7 +114210,7 @@
       "templates": [
         "skills/data/sharing-recalculation-performance/templates/sharing-recalculation-performance-template.md"
       ],
-      "updated": "2026-10-20",
+      "updated": "2026-11-19",
       "vector_embedding": null,
       "version": "1.0.1"
     },
@@ -164004,14 +164015,15 @@
         "149c6a904a020ab4b9e9",
         "193f4e2a4f9759745ba3",
         "1cef9bcf48b36382b00b",
+        "1d50c661d00899edd4b1",
         "1d87abecc3b950a4f311",
         "215373208e027f3194ef",
         "2b0f460a777b25e553d6",
         "2e12f93575356193b2be",
         "2e5f41ffdd727db4e395",
         "31d12243fa95894b802b",
+        "337ac9d9d6fca945df7a",
         "3420097d38759ae3bbce",
-        "3453cac64092b6ee9288",
         "34c24d4a666ba2ac7536",
         "34dc3c1eeeb3a0c7854e",
         "34eb642afe92cf17c116",
@@ -164020,6 +164032,7 @@
         "3c3119aba6706aa3a657",
         "3c4cff7957c7008cfb13",
         "3d80d179af5ab503da74",
+        "3f4235778f811ac6bc0f",
         "43e543f6db5902421868",
         "44b02238be9307aa1593",
         "481b26113d2573544caa",
@@ -164027,6 +164040,7 @@
         "4d17537f1b75432ff2b9",
         "5244b1ec627c1e4209d5",
         "52bb00dce65946427cbd",
+        "52d61995c597e0b36d90",
         "556aa4bb5800ca655c4d",
         "5c807203830c678d1c94",
         "634e9e295d619cdbdfba",
@@ -164041,11 +164055,13 @@
         "8636843692749a5f2465",
         "869b1ddf59f897a40e50",
         "8aa4b37923a50bfb46da",
+        "8c80b1a842dfffec43c2",
         "8d9b7d82ee6fe6e58c6f",
         "8e35d2010bfb4fb8465d",
         "937215884d17f904b448",
         "9440e28219b7a9a86a26",
         "94b726cdc75a80a4490c",
+        "95022cb4add1db356cea",
         "96d28734b9a8068d978b",
         "9d32d91358f184419f52",
         "a0b394cd371dcfc24a55",
@@ -164053,10 +164069,11 @@
         "a1aaf3b89e70cdd6bb5b",
         "a3f776d411923d021d68",
         "a50a723a636430929fa6",
+        "a6041b3f7cea02d90d9a",
         "a8567d6d6ae5647a7363",
         "aba83ef091bb8d1a14aa",
+        "aeeaa6eb950c8bed9ce2",
         "af0f43794d905ef92846",
-        "af22e24b42c232a784e0",
         "b0902e57e0cee18a4b8e",
         "b7b40a8af9035309a5e6",
         "bcad4f7de7bd94cd5b18",
@@ -164078,11 +164095,13 @@
         "e1372e08fd3391da3940",
         "e1b5feee9e222850678a",
         "e2b6a304bf0e93835b2b",
+        "e3a7c6bd7b258bbbd017",
         "e4ccce6534c7e5ef682c",
         "e51fb8ed74f791cd3175",
         "e94d084ce888c20e1208",
         "ebe18b811c0cea5fe6c1",
         "ed54060d938991a819cf",
+        "eedc1899f2cb1d353909",
         "f0327e3fa66592ec76db",
         "f0ea12032e3c0ffd2139",
         "f0fd28cf84690196d6b7",
@@ -164090,7 +164109,7 @@
         "f395d504b28d4d86cab7",
         "f7b2ef95163a932dfd68"
       ],
-      "content_hash": "27c965f2d2694f42b80ab486701ac9f18ffb968344db904526fb3d13fc212d6d",
+      "content_hash": "ecf64b2e13af5b2d7400aa35f9f482ac8c1ef8bf60d9263a4f3565390ef33950",
       "dependencies": [],
       "description": "Salesforce Shield Field Audit Trail: configuration, retention policies, querying archived field data, compliance requirements. NOT for field history tracking (use field-history-tracking) \u2014 use data/field-history-tracking.",
       "file_location": "skills/security/field-audit-trail",
@@ -164099,7 +164118,7 @@
         "List of objects and fields that require long-term audit trail coverage",
         "Compliance framework driving retention requirements (FINRA, HIPAA, GDPR, SOX, etc.)",
         "Shield license confirmation (Field Audit Trail requires Salesforce Shield)",
-        "Required retention period in years (up to 10 years)"
+        "Required retention period for archived data (how long it must be kept before you delete it; the guides document no maximum)"
       ],
       "name": "field-audit-trail",
       "official_sources": [
@@ -164136,9 +164155,9 @@
       "templates": [
         "skills/security/field-audit-trail/templates/field-audit-trail-template.md"
       ],
-      "updated": "2026-04-04",
+      "updated": "2026-11-19",
       "vector_embedding": null,
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "category": "security",
@@ -166500,6 +166519,7 @@
         "247dd8f289bee5d1f92e",
         "2510c0cd29ea740c26bf",
         "2c650deb6da2cc1c2aff",
+        "30094b7469dccee1c15b",
         "3046a56e26be09538588",
         "31c4f046c06ad9d88f57",
         "33fcb3a3d5d5c8117127",
@@ -166580,7 +166600,7 @@
         "f39926accaac8fe1d4e0",
         "f46e88c2916da5f86689"
       ],
-      "content_hash": "6cd6cbfb59260d85f2603a96b50293c41f33ea55f8a21ba6567e10fdc91ac007",
+      "content_hash": "2d3d1ad866a17f664b7c1420cd9437a2e46dc39a8275d13889733a4dbf682b04",
       "dependencies": [],
       "description": "Diagnose why a user can or cannot see/edit a record: UserRecordAccess SOQL, Why Can a User Access This Record debug log, OWD, role hierarchy, sharing rules, manual/team/apex shares, implicit parent share. NOT for remediating a CRUD/FLS finding \u2014 use apex/apex-stripinaccessible-and-fls-enforcement. NOT for designing the sharing model itself \u2014 use admin/sharing-and-visibility.",
       "file_location": "skills/security/record-access-troubleshooting",
@@ -166602,7 +166622,7 @@
         "Apex Developer Guide \u2014 Understanding Apex Managed Sharing \u2014",
         "Restriction Rules (Help) \u2014",
         "Salesforce Well-Architected \u2014 Trusted (Secure) \u2014",
-        "Apex Developer Guide \u2014 Understanding Apex Managed Sharing (\"Apex sharing reasons and Apex managed sharing recalculation are only available for custom objects\") \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+        "Apex Developer Guide \u2014 Understanding Apex Managed Sharing (the 264 edition still prints \"only available for custom objects\", but the Metadata API reference, api_meta.txt L47644-47653, makes standard-object sharing reasons available at API 68.0+; see apex-managed-sharing-patterns) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
         "Apex Developer Guide \u2014 Creating Apex Managed Sharing (share object naming: AccountShare for standard, MyObject__Share for custom) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_creating_with_apex.htm",
         "Object Reference \u2014 AccountShare (AccountId, AccountAccessLevel, UserOrGroupId, RowCause) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accountshare.htm",
         "Object Reference \u2014 Relationships Among Objects (detail object has no Owner field; no sharing rules, manual sharing or queues on the detail side) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/relationships_among_objects.htm"
@@ -166632,7 +166652,7 @@
       "templates": [
         "skills/security/record-access-troubleshooting/templates/record-access-troubleshooting-template.md"
       ],
-      "updated": "2026-10-20",
+      "updated": "2026-11-19",
       "vector_embedding": null,
       "version": "1.1.1"
     },
@@ -168461,21 +168481,24 @@
         "0371a112b8f351262522",
         "06193a51abd8d3d3e37c",
         "068a548700a263ac9a5b",
-        "0a9e603fa9188d6f1c33",
+        "0aaa1f485c710fc03577",
         "0c120a67f7e39720dd86",
         "117c0f05b1b10091afec",
         "13a4f031b8a6feb32b57",
+        "1769e4e808791b8b17be",
         "18420d5696be7400b52f",
         "1e9fad485d7a15cfee36",
         "1ed7a0a7d28e436c97c3",
+        "21c075fdffe551512c4e",
         "223a6f4748fde6765301",
         "290f970c270481ec725e",
         "2d6ad789101a9574fede",
-        "2df3ad8e276f2670ee22",
+        "2db2a9a075d9e4375e72",
         "2ec12116d455561a02ce",
         "2eff7e06a0c2c98801f8",
         "2f17090724005aa53f36",
         "3183c0aaa27a728dd68a",
+        "3187c984640745e4082c",
         "33324c127a91d02b65b6",
         "357aa6515fe06c63a1fd",
         "358b930fe962a62c9e68",
@@ -168486,16 +168509,16 @@
         "43e9e895e61ffb6219fe",
         "45dff2eeee894f5bf508",
         "473e791ddfb35b910718",
+        "47a7f23311cfc9227ebb",
         "4a75f82297ef5f698983",
         "4bafcd6bf55c37e3bafe",
         "4e5653fb2c4f9901197a",
         "52591b8e550be0edc1ed",
-        "53d082f57bce48e3b938",
+        "554414b29158abee6061",
         "5889759380b0bc965937",
         "5d18fb2d55108017ed4f",
         "616593027ca8b44a7227",
         "627e28e2dd9305e92239",
-        "64960d7f043b4f55166e",
         "64ac862e856653372f09",
         "656ca50f0d2310dbc5cc",
         "6571d218837b0d8bd3a6",
@@ -168504,15 +168527,14 @@
         "6acc647c7cfac1e69949",
         "6da0f4ca78e97cfd8b52",
         "6e9b991dd6db9f59f56c",
-        "6ffaeef08aa3c0be77d8",
+        "71551229d22d7f95e809",
         "79cebac0b6f7d44f5c43",
         "7ab7c1b3e5f5ae4dccb9",
         "8364ac295d6ad0772619",
         "84480b418e7cf4a1216b",
         "84a0287941894d52021c",
-        "89f4d951e0fec38ead11",
+        "87b827f796ffad7e6f83",
         "89f8a3269d39b45bff67",
-        "8a739a80eb092a0a0843",
         "8dc2aefc9eab3abe49a2",
         "8f143baea10121bea708",
         "904091ab1084d56794ea",
@@ -168523,20 +168545,19 @@
         "999a30082902ac4cc8c6",
         "99c1bc7e18013da5967a",
         "9b68b24f2aa0209b24c1",
-        "9bfb08ee000b13a80cb6",
         "a06e0ad57d3163910ff2",
         "a14be36f420203341249",
-        "a324bb63c82500203aa8",
-        "a3b21bb11efd0ea06d9f",
         "a5940617af41d315aa9e",
+        "a7206216af548acd8a7c",
         "a910995ea016047fbd86",
         "ad000174895602a0f8a2",
         "ad9e863f40ad371697b2",
         "b1547c34f1e219344498",
         "b4268a418640aad3df23",
         "b5b94cb5e296ab83d2c8",
+        "b7617d9bcffa1eba667b",
         "b9bf5b9c2cb831732507",
-        "b9cf1e7b97711e041fe5",
+        "bb7abff8426859d258bb",
         "bb8b72ff317db122dd37",
         "bdaa4845447b5b4a7fe3",
         "bfc29fcbfb4f666dd8fb",
@@ -168551,13 +168572,18 @@
         "cc396bd8f53d919c0f67",
         "ce606e2284f50f40e8e9",
         "cf979352c6be6f41899c",
+        "d080e800c938dce7cef9",
         "d1eeb1eab9b0b0e41d10",
+        "d2e97b189784146c0be1",
         "d3690464cb08e62c929d",
         "d75e82e102561cce766d",
+        "d825414616ddb8931a52",
+        "d930a33e20ebb9df5a46",
         "d9b5937c12d8e772d5bb",
         "dd487566b1fa7e725f0a",
         "df2f25cf3da6b1f413fc",
         "e1744bb8c68eab3e808c",
+        "e35f3dc2aa0ee84dea0a",
         "e51f63ffb9e123d9955d",
         "e58d5c9efd502f201c9f",
         "ec2f67c391443cc7246e",
@@ -168565,11 +168591,12 @@
         "ee845b2111c3124ec693",
         "f24086f005772f60a893",
         "f2450d3efe458557d257",
-        "f43357b5c2ba3a52a3c3",
+        "f7b1d1f33866834fc4b7",
+        "f8b2cfbae68f0b602559",
         "fb83d9a5d4f27e0bf163",
         "fd19470bba19ecbc790a"
       ],
-      "content_hash": "2e099eef29e16ca2d1652454e51cb108b8da1c3c27c307c2e5b195563abd56c0",
+      "content_hash": "aa38cfefecb60269ff68cb8aaf510035ea1a4f9391e6741097f77d654dd7171e",
       "dependencies": [],
       "description": "Transaction Security policy creation and configuration: condition builder, enhanced policies, enforcement actions (block, MFA, notification, end session), real-time monitoring mode, and policy troubleshooting. NOT for Event Monitoring log analysis or Shield Event Monitoring setup \u2014 use security/event-monitoring.",
       "file_location": "skills/security/transaction-security-policies",
@@ -168621,7 +168648,7 @@
       "templates": [
         "skills/security/transaction-security-policies/templates/transaction-security-policies-template.md"
       ],
-      "updated": "2026-08-14",
+      "updated": "2026-11-19",
       "vector_embedding": null,
       "version": "1.0.1"
     },

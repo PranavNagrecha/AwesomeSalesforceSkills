@@ -35,7 +35,7 @@ outputs:
 dependencies: []
 version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-08-14
+updated: 2026-11-19
 ---
 
 # Transaction Security Policies
@@ -100,20 +100,20 @@ Creating a new Transaction Security Policy involves five decisions: which event 
 <?xml version="1.0" encoding="UTF-8"?>
 <TransactionSecurityPolicy xmlns="http://soap.sforce.com/2006/04/metadata">
     <action>
-        <blockMessage>This action is restricted by your organization's security policy.</blockMessage>
-        <type>Block</type>
+        <block>true</block>
+        <twoFactorAuthentication>false</twoFactorAuthentication>
     </action>
     <active>true</active>
-    <apexPolicy>false</apexPolicy>
     <description>Block logins originating outside the United States</description>
     <developerName>Block_Non_US_Logins</developerName>
     <eventName>LoginEvent</eventName>
-    <eventType>Login</eventType>
-    <executionUser>005xx000001SwEeAAK</executionUser>
+    <flow><!-- ID of the Flow that holds the Condition Builder logic --></flow>
     <masterLabel>Block Non-US Logins</masterLabel>
-    <resourceName>LoginEvent</resourceName>
+    <type>CustomConditionBuilderPolicy</type>
 </TransactionSecurityPolicy>
 ```
+
+The event a policy monitors is `eventName` (Real-Time Event Monitoring; valid values include `LoginEvent`, `ReportEvent`, `ApiEvent`, `ListViewEvent`, `FileEventStore`; api_meta.txt L138856-138917). `eventType` and `resourceName` are Legacy Transaction Security fields only — "As of Summer '20, Legacy Transaction Security is a retired feature in all Salesforce orgs" (api_meta.txt L138919-138941, L138960-138973) — and must not be written into a new policy. `action`, `active`, and `type` are the other fields marked Required; `apexClass` is required for Apex-based policies and `flow` for `CustomConditionBuilderPolicy` (api_meta.txt L138808, L138949). `blockMessage` is a top-level element, available only when `eventName` is `ApiEvent`, `ListViewEvent`, `BulkApiResultEventStore`, or `ReportEvent` (api_meta.txt L138814-138819), so it is omitted above for `LoginEvent`. `type` is `CustomApexPolicy` (Apex editor) or `CustomConditionBuilderPolicy` (Condition Builder); default `CustomApexPolicy` (api_meta.txt L138975-138980).
 
 Note: Condition Builder logic is stored in platform metadata and is not directly editable as raw XML in the same way as legacy Apex policies. For complex conditions, use the Setup UI and then retrieve via Metadata API.
 
@@ -125,7 +125,7 @@ When auditing existing policies in an org:
 
 2. **Review each policy's condition logic:** Open each policy and inspect the Condition Builder filters. Verify the conditions match the intended threat pattern.
 
-3. **Check execution user:** The policy must have an execution user configured. This user's permissions determine what context the policy evaluates in. The execution user should have the "Author Apex" permission if the policy uses an Apex policy class.
+3. **Check the policy's handler:** For a Condition Builder policy confirm the referenced Flow exists and is active; for an Apex policy confirm the `apexClass` compiles. Do not look for an execution user: `executionUser` / `ExecutionUserId` is Legacy Transaction Security only (retired Summer '20; api_meta.txt L138943, object_reference.txt L294806-294813), so a current policy does not set one.
 
 4. **Verify event type is policy-supported:** Cross-reference the event type against the confirmed policy-supported list (see Gotchas). Unsupported event types produce no enforcement.
 
@@ -133,10 +133,10 @@ When auditing existing policies in an org:
 
 6. **SOQL audit query for deployed policies:**
 ```soql
-SELECT Id, MasterLabel, DeveloperName, EventType, Active, Description,
+SELECT Id, MasterLabel, DeveloperName, EventName, State, Description,
        CreatedDate, LastModifiedDate, LastModifiedBy.Name
 FROM TransactionSecurityPolicy
-ORDER BY EventType, MasterLabel
+ORDER BY EventName, MasterLabel
 ```
 
 ### Mode 3 — Troubleshoot a Policy That Is Not Triggering
@@ -147,9 +147,9 @@ When a Transaction Security policy appears to be configured but never fires:
 
 1. **Is the policy set to Active (not Monitor)?** Monitor mode logs matches but takes no enforcement action. Check the "Active" flag — this is the most common miss.
 
-2. **Is the event type policy-supported?** Verify the `eventType` field value against the confirmed supported list. `MobileEmailEvent`, `IdentityVerificationEvent`, and several others do not support policy enforcement regardless of configuration.
+2. **Is the event type policy-supported?** Verify the `eventName` field value against the confirmed supported list (`EventType` on the object is Legacy Transaction Security only; object_reference.txt L294791-294804). `MobileEmailEvent`, `IdentityVerificationEvent`, and several others do not support policy enforcement regardless of configuration.
 
-3. **Is there an execution user set?** A policy without an execution user will not evaluate. The execution user must be an active user with appropriate permissions.
+3. **Is the handler valid?** A Condition Builder policy needs an existing Flow and an Apex policy needs a compiling `apexClass`. An execution user is not part of the check: `executionUser` / `ExecutionUserId` is Legacy Transaction Security only (retired Summer '20; api_meta.txt L138943, object_reference.txt L294806-294813).
 
 4. **Does the condition logic actually match the test scenario?** The condition builder uses exact-match semantics. Check field name capitalization, operator selection, and value formatting. Some fields (like `Country`) require ISO 3166-1 alpha-2 country codes (`US`), not full country names (`United States`).
 
@@ -215,7 +215,7 @@ When a Transaction Security policy appears to be configured but never fires:
 | Test a new policy without user impact | Monitor mode | Logs matches for review; zero enforcement until switched to Active |
 | Complex condition logic not expressible in Condition Builder | Legacy Apex PolicyCondition class | Apex allows arbitrary logic; requires Author Apex permission |
 | Audit what policies exist and their current state | SOQL on TransactionSecurityPolicy + Setup UI review | Single query covers all policies; Setup UI shows active/monitor status |
-| Policy fires in Monitor mode but not in Active mode | Check execution user, policy active flag, and event type support | Most common root cause of this discrepancy |
+| Policy fires in Monitor mode but not in Active mode | Check handler (Flow or Apex class), policy active flag, and event type support | Most common root cause of this discrepancy |
 
 ---
 
@@ -238,12 +238,12 @@ Run through these before marking work in this area complete:
 
 - [ ] Org has Shield or Event Monitoring add-on license; Transaction Security Policies are available in Setup
 - [ ] Event type selected is confirmed policy-supported (not in the unsupported list: `MobileEmailEvent`, `IdentityVerificationEvent`, `IdentityProviderEvent`, `MobileScreenshotEvent`, etc.)
-- [ ] Execution user is set on every policy and is an active user record
+- [ ] Handler is valid on every policy (existing Flow for Condition Builder, compiling `apexClass` for Apex); no legacy-only fields (`eventType`, `resourceName`, `executionUser`) are set
 - [ ] New policies started in Monitor mode; match log reviewed before switching to Active enforcement
 - [ ] Condition field values use correct formats (ISO country codes, exact field name capitalization, correct operator)
 - [ ] Block message is human-readable and explains the restriction to the affected user
 - [ ] Notification recipients are active users with valid email addresses
-- [ ] Legacy Apex-based policies (if any) compile without errors; execution user has "Author Apex" permission
+- [ ] Apex-based policies (if any) compile without errors
 - [ ] Policies with End Session action tested carefully — session termination is immediate and non-reversible
 - [ ] SOQL audit of `TransactionSecurityPolicy` run to inventory all policies and their active state
 
@@ -259,7 +259,7 @@ Non-obvious platform behaviors that cause real production problems:
 
 3. **Country field uses ISO codes, not full country names** — The `Country` field on `LoginEvent` stores ISO 3166-1 alpha-2 two-letter country codes (`US`, `GB`, `DE`), not full country names. A condition that filters on `Country` Equals `United States` will never match. This is a silent failure — the condition evaluates but never finds a match.
 
-4. **Execution user permissions affect policy evaluation context** — The execution user on each policy is not just an audit field — it defines the security context in which the policy logic runs. For legacy Apex-based policies, if the execution user lacks the "Author Apex" permission, the policy will fail silently. For Enhanced policies, the execution user must be active. Deactivated execution users cause the entire policy to stop evaluating without any system alert.
+4. **Do not set legacy-only fields** — `executionUser` / `ExecutionUserId` is Legacy Transaction Security only (retired Summer '20; api_meta.txt L138943, object_reference.txt L294806-294813); so do `eventType` and `resourceName`. Current policies identify the event with `eventName` and the handler with `flow` or `apexClass`.
 
 5. **Notification recipients must be active users — deactivation is silent** — If a user set as a notification recipient is later deactivated, the notification silently stops sending. No error is thrown; no fallback recipient is used. Regularly audit notification recipients, especially after org user offboarding, to avoid creating invisible alert gaps.
 

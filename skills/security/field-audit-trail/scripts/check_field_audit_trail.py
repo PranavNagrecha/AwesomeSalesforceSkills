@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Checker script for Field Audit Trail skill.
 
-Validates Salesforce metadata to confirm that high-sensitivity fields on key objects
-have Field History Tracking enabled (prerequisite for FAT to capture data) and that
-FieldAuditTrail policy configuration files are present.
+Validates Salesforce object metadata to confirm that high-sensitivity fields on key
+objects have Field History Tracking enabled (prerequisite for FAT to capture data) and
+that Field Audit Trail retention policies use values the Metadata API documents.
 
-Uses stdlib only — no pip dependencies.
+Reads only metadata the Metadata API actually defines: the object-level
+`historyRetentionPolicy` block (HistoryRetentionPolicy, api_meta.txt) and the field-level
+`trackHistory` element. There is no separate FieldAuditTrail metadata type.
+
+Uses stdlib only - no pip dependencies.
 
 Usage:
     python3 check_field_audit_trail.py [--manifest-dir path/to/metadata]
@@ -16,10 +20,18 @@ The manifest-dir should be the root of an SFDX or Metadata API project, e.g.:
 
 What this checker validates:
     1. Field History Tracking is enabled on high-sensitivity fields for common objects.
-    2. FieldAuditTrail policy XML files exist for the same objects (if FAT is claimed).
-    3. No object exceeds 20 FHT-tracked fields (standard platform limit).
-    4. No object exceeds 60 FAT-tracked fields (Shield FAT platform limit).
-    5. Objects with FAT configured have FHT enabled on the same fields (consistency check).
+    2. No object tracks more fields than the documented limit: 20 without Field Audit
+       Trail, 200 with it (security guide: "track up to 200 fields per object"; "Without
+       Field Audit Trail, you can track only up to 20 fields per object"). An object is
+       treated as FAT-enabled when its XML carries a historyRetentionPolicy block.
+    3. At least one in-scope object carries a historyRetentionPolicy block (otherwise a
+       warning that no FAT retention policy is in source control).
+    4. historyRetentionPolicy blocks use values the Metadata API documents:
+       archiveAfterMonths 1-18 (required), gracePeriodDays 0-10. archiveRetentionYears
+       is only a reminder for manual deletion; archived data is kept until you delete it,
+       so it is not range-checked here.
+
+Exit codes: 0 = no issues, 1 = issues found.
 """
 
 from __future__ import annotations
@@ -75,10 +87,10 @@ HIGH_SENSITIVITY_FIELDS: dict[str, list[str]] = {
     ],
 }
 
-# Standard Field History Tracking limit per object
+# Tracked-field limit per object without Field Audit Trail (security guide 262 L4838)
 FHT_FIELD_LIMIT = 20
-# Shield FAT limit per object
-FAT_FIELD_LIMIT = 60
+# Tracked-field limit per object with Field Audit Trail (security guide 262 L4835-4836)
+FAT_FIELD_LIMIT = 200
 
 # Salesforce Metadata API namespace
 SF_NS = "http://soap.sforce.com/2006/04/metadata"
@@ -106,20 +118,6 @@ def find_objects_dir(manifest_dir: Path) -> Path | None:
     return None
 
 
-def find_field_audit_trail_dir(manifest_dir: Path) -> Path | None:
-    """Locate the fieldAuditTrails/ metadata directory if present."""
-    candidates = [
-        manifest_dir / "force-app" / "main" / "default" / "fieldAuditTrails",
-        manifest_dir / "src" / "fieldAuditTrails",
-        manifest_dir / "unpackaged" / "fieldAuditTrails",
-        manifest_dir / "fieldAuditTrails",
-    ]
-    for candidate in candidates:
-        if candidate.is_dir():
-            return candidate
-    return None
-
-
 # ---------------------------------------------------------------------------
 # XML parsing helpers
 # ---------------------------------------------------------------------------
@@ -135,6 +133,7 @@ def parse_object_metadata(object_xml: Path) -> dict:
     Returns a dict with:
         - tracked_fields: list of field names with trackHistory=true
         - all_fields: list of all field names defined in the file
+        - has_retention_policy: True when a historyRetentionPolicy block is present
     """
     tracked_fields: list[str] = []
     all_fields: list[str] = []
@@ -151,7 +150,7 @@ def parse_object_metadata(object_xml: Path) -> dict:
         track_history_el is not None and track_history_el.text == "true"
     )
 
-    # Field-level trackHistory (field metadata within object XML)
+    # Field-level trackHistory (field metadata within object XML: Metadata API layout)
     for field_el in root.findall(_ns("fields")):
         full_name_el = field_el.find(_ns("fullName"))
         track_el = field_el.find(_ns("trackHistory"))
@@ -161,52 +160,34 @@ def parse_object_metadata(object_xml: Path) -> dict:
             if track_el is not None and track_el.text == "true":
                 tracked_fields.append(field_name)
 
+    # SFDX layout keeps each field in objects/<Object>/fields/<Field>.field-meta.xml
+    fields_dir = object_xml.parent / "fields"
+    if object_xml.name.endswith(".object-meta.xml") and fields_dir.is_dir():
+        for field_xml in sorted(fields_dir.glob("*.field-meta.xml")):
+            try:
+                field_root = ET.parse(field_xml).getroot()
+            except ET.ParseError:
+                continue
+            full_name_el = field_root.find(_ns("fullName"))
+            field_name = (
+                full_name_el.text
+                if full_name_el is not None and full_name_el.text
+                else field_xml.name.split(".")[0]
+            )
+            track_el = field_root.find(_ns("trackHistory"))
+            all_fields.append(field_name)
+            if track_el is not None and track_el.text == "true":
+                tracked_fields.append(field_name)
+
+    has_retention_policy = root.find(_ns("historyRetentionPolicy")) is not None
+
     return {
         "object_level_tracking": object_level_tracking,
         "tracked_fields": tracked_fields,
         "all_fields": all_fields,
+        "has_retention_policy": has_retention_policy,
         "error": None,
     }
-
-
-def parse_field_audit_trail_policy(policy_xml: Path) -> dict:
-    """Parse a FieldAuditTrail policy XML file.
-
-    Returns a dict with:
-        - object_name: the governed object
-        - tracked_fields: list of fields in the FAT policy
-        - retention_months: retention period if set
-    """
-    try:
-        tree = ET.parse(policy_xml)
-        root = tree.getroot()
-    except ET.ParseError as exc:
-        return {"error": str(exc)}
-
-    result: dict = {"error": None, "tracked_fields": [], "retention_months": None}
-
-    # masterLabel or fullName may indicate object
-    label_el = root.find(_ns("masterLabel"))
-    if label_el is not None:
-        result["label"] = label_el.text
-
-    # retentionPolicy retention period
-    retention_el = root.find(_ns("retentionPolicy"))
-    if retention_el is not None:
-        period_el = retention_el.find(_ns("retentionPeriod"))
-        if period_el is not None:
-            try:
-                result["retention_months"] = int(period_el.text or "0")
-            except ValueError:
-                pass
-
-    # Tracked fields listed in policy
-    for field_el in root.findall(_ns("fields")):
-        name_el = field_el.find(_ns("fieldName"))
-        if name_el is not None and name_el.text:
-            result["tracked_fields"].append(name_el.text)
-
-    return result
 
 
 # ---------------------------------------------------------------------------
@@ -256,140 +237,107 @@ def check_fht_on_sensitive_fields(
                     f"fields without FHT active."
                 )
 
-        # Check FHT field count limit
-        if len(tracked) > FHT_FIELD_LIMIT:
+        # Check tracked-field count: 20 without FAT, 200 with FAT. A historyRetentionPolicy
+        # block on the object is the signal that FAT is in use.
+        has_policy = parsed.get("has_retention_policy", False)
+        limit = FAT_FIELD_LIMIT if has_policy else FHT_FIELD_LIMIT
+        if len(tracked) > limit:
+            basis = "with Field Audit Trail" if has_policy else "without Field Audit Trail"
             issues.append(
-                f"[{object_name}] Field History Tracking enabled on {len(tracked)} fields "
-                f"— exceeds the platform limit of {FHT_FIELD_LIMIT}. "
-                f"Fields beyond {FHT_FIELD_LIMIT} will not be tracked."
+                f"[{object_name}] History tracking enabled on {len(tracked)} fields "
+                f"- exceeds the documented limit of {limit} per object {basis}."
             )
 
     return issues
 
 
-def check_fat_policy_files(
-    objects_dir: Path,
-    fat_dir: Path | None,
-) -> list[str]:
-    """Check FieldAuditTrail policy files for completeness and consistency."""
-    issues: list[str] = []
-
-    if fat_dir is None:
-        # FAT policies directory absent — either FAT is not configured or
-        # policies are managed in Setup only. Warn if high-sensitivity objects exist.
-        tracked_objects = []
-        for object_name in HIGH_SENSITIVITY_FIELDS:
-            sfdx_path = objects_dir / object_name / f"{object_name}.object-meta.xml"
-            meta_path = objects_dir / f"{object_name}.object"
-            if sfdx_path.exists() or meta_path.exists():
-                tracked_objects.append(object_name)
-        if tracked_objects:
-            issues.append(
-                "No fieldAuditTrails/ metadata directory found. "
-                "If Shield FAT is required for compliance, ensure FAT retention policies "
-                f"are configured in Setup and consider retrieving them into source control. "
-                f"Objects in scope: {', '.join(tracked_objects)}"
-            )
-        return issues
-
-    policy_files = list(fat_dir.glob("*.fieldAuditTrail-meta.xml")) + list(
-        fat_dir.glob("*.fieldAuditTrail")
-    )
-
-    if not policy_files:
-        issues.append(
-            f"fieldAuditTrails/ directory exists at {fat_dir} but contains no policy files. "
-            "Add FieldAuditTrail metadata files for each object requiring long-term retention."
-        )
-        return issues
-
-    for policy_file in policy_files:
-        parsed = parse_field_audit_trail_policy(policy_file)
-        if parsed.get("error"):
-            issues.append(
-                f"[FAT policy: {policy_file.name}] Could not parse: {parsed['error']}"
-            )
-            continue
-
-        # Check retention period is set
-        if parsed.get("retention_months") is None:
-            issues.append(
-                f"[FAT policy: {policy_file.name}] Retention period not found in policy XML. "
-                "Always set an explicit retention period — do not rely on platform defaults."
-            )
-        elif parsed["retention_months"] < 18:
-            issues.append(
-                f"[FAT policy: {policy_file.name}] Retention period is {parsed['retention_months']} months "
-                f"— shorter than the standard Field History Tracking window (18 months). "
-                f"FAT adds value only for retention beyond 18 months."
-            )
-
-        # Check FAT field count
-        if len(parsed["tracked_fields"]) > FAT_FIELD_LIMIT:
-            issues.append(
-                f"[FAT policy: {policy_file.name}] Policy defines {len(parsed['tracked_fields'])} tracked fields "
-                f"— exceeds the Shield FAT limit of {FAT_FIELD_LIMIT} fields per object."
-            )
-
-    return issues
+def find_object_xml(objects_dir: Path, object_name: str) -> Path | None:
+    """Return the object XML for object_name in SFDX or Metadata API layout."""
+    sfdx_path = objects_dir / object_name / f"{object_name}.object-meta.xml"
+    meta_path = objects_dir / f"{object_name}.object"
+    if sfdx_path.exists():
+        return sfdx_path
+    if meta_path.exists():
+        return meta_path
+    return None
 
 
-def check_fht_fat_consistency(
-    objects_dir: Path,
-    fat_dir: Path | None,
-) -> list[str]:
-    """Check that fields in FAT policies also have FHT enabled.
+def check_retention_policy_presence(objects_dir: Path) -> list[str]:
+    """Warn when no in-scope object carries a historyRetentionPolicy block.
 
-    FAT cannot archive changes for fields that Field History Tracking does not capture.
+    The Metadata API defines FAT retention policies as a historyRetentionPolicy block
+    inside the object definition (api_meta HistoryRetentionPolicy).
     """
     issues: list[str] = []
+    in_scope = []
+    with_policy = []
+    for object_name in HIGH_SENSITIVITY_FIELDS:
+        candidate = find_object_xml(objects_dir, object_name)
+        if candidate is None:
+            continue
+        in_scope.append(object_name)
+        try:
+            root = ET.parse(candidate).getroot()
+        except ET.ParseError:
+            continue
+        if root.find(_ns("historyRetentionPolicy")) is not None:
+            with_policy.append(object_name)
+    if in_scope and not with_policy:
+        issues.append(
+            "No historyRetentionPolicy block found in any in-scope object definition. "
+            "If Shield FAT is required for compliance, define a HistoryRetentionPolicy "
+            "per object (Metadata API) and keep it in source control; the default "
+            "archives after 18 months in production. "
+            f"Objects in scope: {', '.join(in_scope)}"
+        )
+    return issues
 
-    if fat_dir is None:
-        return issues
 
-    policy_files = list(fat_dir.glob("*.fieldAuditTrail-meta.xml")) + list(
-        fat_dir.glob("*.fieldAuditTrail")
+def check_history_retention_policies(objects_dir: Path) -> list[str]:
+    """Check historyRetentionPolicy blocks in object XML against the Metadata API field docs.
+
+    archiveAfterMonths: required, 1-18. gracePeriodDays: 0-10 (api_meta HistoryRetentionPolicy).
+    """
+    issues: list[str] = []
+    object_files = list(objects_dir.rglob("*.object-meta.xml")) + list(
+        objects_dir.rglob("*.object")
     )
-
-    for policy_file in policy_files:
-        parsed_fat = parse_field_audit_trail_policy(policy_file)
-        if parsed_fat.get("error") or not parsed_fat.get("tracked_fields"):
+    for object_xml in object_files:
+        try:
+            root = ET.parse(object_xml).getroot()
+        except ET.ParseError:
             continue
-
-        fat_fields = set(parsed_fat["tracked_fields"])
-
-        # Derive object name from policy file name (e.g., Account.fieldAuditTrail-meta.xml -> Account)
-        object_name = policy_file.name.split(".")[0]
-
-        sfdx_path = objects_dir / object_name / f"{object_name}.object-meta.xml"
-        meta_path = objects_dir / f"{object_name}.object"
-
-        object_xml: Path | None = None
-        if sfdx_path.exists():
-            object_xml = sfdx_path
-        elif meta_path.exists():
-            object_xml = meta_path
-
-        if object_xml is None:
-            # Cannot cross-check — object metadata not in source
-            continue
-
-        parsed_obj = parse_object_metadata(object_xml)
-        if parsed_obj.get("error"):
-            continue
-
-        fht_fields = set(parsed_obj["tracked_fields"])
-        all_fields = set(parsed_obj["all_fields"])
-
-        # Fields in FAT policy that are in the object metadata but NOT in FHT
-        fat_not_fht = fat_fields & all_fields - fht_fields
-        if fat_not_fht:
-            issues.append(
-                f"[{object_name}] The following fields are in the FAT policy but do NOT "
-                f"have Field History Tracking enabled. FAT will not capture changes for "
-                f"these fields until FHT is also enabled: {sorted(fat_not_fht)}"
-            )
-
+        for policy in root.findall(_ns("historyRetentionPolicy")):
+            name = object_xml.name
+            months_el = policy.find(_ns("archiveAfterMonths"))
+            if months_el is None or not (months_el.text or "").strip():
+                issues.append(
+                    f"[{name}] historyRetentionPolicy has no archiveAfterMonths "
+                    "(required; 1-18 months)."
+                )
+            else:
+                try:
+                    months = int(months_el.text.strip())
+                except ValueError:
+                    months = None
+                if months is None or months < 1 or months > 18:
+                    issues.append(
+                        f"[{name}] archiveAfterMonths={months_el.text.strip()} is outside "
+                        "the documented range of 1-18 months. It sets when history is "
+                        "archived, not how long it is kept; use archiveRetentionYears "
+                        "as the manual-deletion reminder."
+                    )
+            grace_el = policy.find(_ns("gracePeriodDays"))
+            if grace_el is not None and (grace_el.text or "").strip():
+                try:
+                    grace = int(grace_el.text.strip())
+                except ValueError:
+                    grace = None
+                if grace is None or grace < 0 or grace > 10:
+                    issues.append(
+                        f"[{name}] gracePeriodDays={grace_el.text.strip()} is outside "
+                        "the documented range of 0-10 days."
+                    )
     return issues
 
 
@@ -407,7 +355,6 @@ def check_field_audit_trail(manifest_dir: Path) -> list[str]:
         return issues
 
     objects_dir = find_objects_dir(manifest_dir)
-    fat_dir = find_field_audit_trail_dir(manifest_dir)
 
     if objects_dir is None:
         issues.append(
@@ -418,8 +365,8 @@ def check_field_audit_trail(manifest_dir: Path) -> list[str]:
 
     # Run individual checks
     issues.extend(check_fht_on_sensitive_fields(objects_dir))
-    issues.extend(check_fat_policy_files(objects_dir, fat_dir))
-    issues.extend(check_fht_fat_consistency(objects_dir, fat_dir))
+    issues.extend(check_retention_policy_presence(objects_dir))
+    issues.extend(check_history_retention_policies(objects_dir))
 
     return issues
 
@@ -429,8 +376,8 @@ def parse_args() -> argparse.Namespace:
         description=(
             "Check Salesforce metadata for Field Audit Trail configuration issues. "
             "Validates that high-sensitivity fields have Field History Tracking enabled "
-            "(required for FAT to capture data), that FAT policy files are present, "
-            "and that FHT and FAT configurations are consistent."
+            "(required for FAT to capture data), that tracked-field counts respect the "
+            "documented limits, and that historyRetentionPolicy values are in range."
         ),
     )
     parser.add_argument(

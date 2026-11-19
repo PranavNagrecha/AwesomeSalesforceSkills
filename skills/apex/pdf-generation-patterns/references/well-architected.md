@@ -18,7 +18,7 @@
 
 ## Anti-Patterns
 
-1. **Loading data client-side with JavaScript** — Using `<apex:remoteAction>` or `window.fetch` to populate table rows after the page loads produces empty tables in the PDF. The Flying Saucer renderer captures the static HTML; no JS executes. All data must be bound server-side in the Apex controller before the page is returned.
+1. **Loading data client-side with JavaScript** — Using JavaScript remoting (`Visualforce.remoting.Manager.invokeAction`) or `window.fetch` to populate table rows after the page loads produces empty tables in the PDF. The Flying Saucer renderer captures the static HTML; no JS executes. All data must be bound server-side in the Apex controller before the page is returned.
 
 2. **Using CSS `display:none` to hide sensitive sections** — Hidden HTML is still present in the raw page source. A user who intercepts the HTML response or views the VF page without `renderAs="pdf"` can see all data marked `display:none`. Use `rendered="{!showSection}"` where `showSection` is a server-side Boolean to exclude the HTML entirely.
 

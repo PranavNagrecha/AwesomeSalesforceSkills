@@ -29,9 +29,9 @@ outputs:
   - User fixture creation
   - FLS caveat notes
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-22
+updated: 2026-11-19
 status: stub
 ---
 
@@ -119,10 +119,9 @@ Do not depend on either default. State the access mode so the assertion means th
 ### Pattern: Permission-set assignment test
 
 ```
-User u = TestUserFactory.user();
-insert u;
-PermissionSet ps = [SELECT Id FROM PermissionSet WHERE Name = 'MyFeature'];
-insert new PermissionSetAssignment(AssigneeId = u.Id, PermissionSetId = ps.Id);
+// TestUserFactory.createUser(profileName, permSetNames) inserts the User and the
+// PermissionSetAssignment rows (the latter inside its own runAs fence) — templates/apex/tests/TestUserFactory.cls
+User u = TestUserFactory.createUser('Standard User', new List<String>{ 'MyFeature' });
 System.runAs(u) {
     // exercise code gated by the permset
 }

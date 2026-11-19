@@ -10,7 +10,7 @@ Non-obvious behaviours that lose records, stall jobs, or burn the org's daily al
 
 **How to avoid:**
 - Sort the CSV by parent ID so records that lock the same parent land in the same batch.
-- Defer sharing calculation for initial loads (LDV Guide, "Defer Sharing Calculation"), then resume it in a maintenance window.
+- Defer sharing calculation for initial loads (LDV Guide, "Defer Sharing Calculation"; not enabled by default, Salesforce Customer Support enables it per api_meta.txt L130657-130659), then resume it in a maintenance window and manually start a full sharing rule recalculation (security guide 262 L3532-3534).
 - Rewrite complex trigger logic as batch Apex that runs after the load, as the guide recommends.
 - If locks persist, move only that load to a Bulk API 1.0 job created with `concurrencyMode` Serial (see `references/rest-examples.md`). Serial is slower and the guide says to use it only when you "can't reorganize your batches to avoid locks."
 

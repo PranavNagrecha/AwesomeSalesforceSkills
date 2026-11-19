@@ -72,11 +72,14 @@ def check_vf_pages(manifest_dir: Path) -> list[str]:
                 "URL.getSalesforceBaseUrl().toExternalForm() + '/resource/Name'."
             )
 
-        # Anti-pattern: apex:remoteAction (JS callout — never executes in PDF)
-        if re.search(r"apex:remoteAction", content, re.IGNORECASE):
+        # Anti-pattern: JavaScript remoting (Visualforce.remoting.Manager.invokeAction,
+        # {!$RemoteAction.Controller.method}) — PDF rendering does not support
+        # JavaScript-rendered content. (There is no <apex:remoteAction> component.)
+        if re.search(r"Visualforce\.remoting|\$RemoteAction", content, re.IGNORECASE):
             issues.append(
-                f"{rel}: PDF page uses apex:remoteAction — JavaScript does not "
-                "execute during PDF rendering. Load all data in the Apex controller."
+                f"{rel}: PDF page uses JavaScript remoting (Visualforce.remoting / "
+                "$RemoteAction) — JavaScript does not execute during PDF rendering. "
+                "Load all data in the Apex controller."
             )
 
         # Anti-pattern: display:none hiding data (use rendered= instead)

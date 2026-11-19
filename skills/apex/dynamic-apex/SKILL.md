@@ -32,7 +32,7 @@ outputs:
 dependencies: []
 version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-10-19
+updated: 2026-11-19
 ---
 
 # Dynamic Apex

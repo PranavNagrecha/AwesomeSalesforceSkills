@@ -4,9 +4,9 @@
 
 - **Security** — Transaction Security Policies are a first-class Security pillar capability. They provide the platform's native real-time enforcement layer: the ability to block, challenge, notify, or terminate sessions based on user behavior events as they occur. Every org handling sensitive data should have an inventory of active policies covering at minimum login anomalies and high-volume data export.
 
-- **Operational Excellence** — Policy lifecycle management (Monitor mode, match-log review, promotion to Active, periodic audit of execution users and recipients) is an operational discipline. Well-architected orgs treat Transaction Security Policies the same as other automation: version-controlled via Metadata API, validated in sandboxes, and audited on a defined schedule.
+- **Operational Excellence** — Policy lifecycle management (Monitor mode, match-log review, promotion to Active, periodic audit of notification recipients) is an operational discipline. Well-architected orgs treat Transaction Security Policies the same as other automation: version-controlled via Metadata API, validated in sandboxes, and audited on a defined schedule.
 
-- **Reliability** — Over-aggressive policies (broad conditions, Block enforcement, no Monitor period) risk blocking legitimate users and degrading service reliability. Under-permissive policies (sitting in Monitor mode indefinitely, broken execution users, unsupported event types) create false assurance. Both failure modes reduce org reliability. The reliability tradeoff must be acknowledged when selecting enforcement actions.
+- **Reliability** — Over-aggressive policies (broad conditions, Block enforcement, no Monitor period) risk blocking legitimate users and degrading service reliability. Under-permissive policies (sitting in Monitor mode indefinitely, invalid handlers, unsupported event types) create false assurance. Both failure modes reduce org reliability. The reliability tradeoff must be acknowledged when selecting enforcement actions.
 
 ## Architectural Tradeoffs
 
@@ -24,7 +24,7 @@
 
 2. **Treating Transaction Security Policies as the only security control** — Transaction Security Policies are a behavioral enforcement layer, not a replacement for login IP ranges, session security settings, permission model hygiene, or Shield Platform Encryption. Over-relying on policies without baseline security hardening creates a false sense of security. Policies supplement other controls; they do not substitute for them.
 
-3. **Setting execution users and notification recipients to individual employee accounts** — Tying policy execution context and notification delivery to specific employees creates fragility. When those employees leave and their accounts are deactivated, policies silently stop working. Use dedicated service accounts or distribution groups for these roles, and include policy health in offboarding checklists.
+3. **Setting notification recipients to individual employee accounts** — Tying notification delivery to specific employees creates fragility. When those employees leave and their accounts are deactivated, alerts silently stop arriving (UNVERIFIED (2026-11-19): delivery behaviour for deactivated recipients is not documented). Use shared mailboxes or service accounts, and include policy recipients in offboarding checklists.
 
 4. **Ignoring the policy-supported event type list** — Configuring policies on unsupported event types (e.g., `IdentityVerificationEvent`) provides no enforcement while creating a false impression that a control is in place. This is a latent security gap — the org believes a protection exists, but it never fires. Always validate event type support before building a policy.
 

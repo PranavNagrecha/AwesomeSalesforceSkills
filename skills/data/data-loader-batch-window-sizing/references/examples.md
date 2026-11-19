@@ -29,7 +29,7 @@ record_count: 5_000_000
 batch_size: 200
 mode: Bulk API V2 serial
 trigger_bypass: TriggerControl__mdt → Bypass_Account__c = true (for migration user only)
-defer_sharing_calculations: true            # Setup → Sharing Settings, ON for the window
+defer_sharing_calculations: true            # ON for the window; feature is off by default (Support enables it, api_meta.txt L130657-130659)
 load_window: Saturday 22:00 – Sunday 14:00 UTC (16-hour maintenance window)
 load_user: dedicated migration user, NOT system admin
 external_id: Legacy_Account_Id__c (Unique, Case-Insensitive) — upsert, not insert

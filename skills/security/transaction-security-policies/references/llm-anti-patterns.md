@@ -78,26 +78,23 @@ Policy?" in the Salesforce Object Reference before designing the policy.
 
 ---
 
-## Anti-Pattern 4: Omitting the Execution User Configuration
+## Anti-Pattern 4: Emitting Legacy-Only Fields (eventType, resourceName, executionUser)
 
-**What the LLM generates:** Policy creation steps that do not mention setting an execution user.
+**What the LLM generates:** TransactionSecurityPolicy metadata with `<executionUser>`, `<eventType>` and `<resourceName>` set, or advice that "every policy requires an execution user".
 
-**Why it happens:** LLMs focus on the condition logic and enforcement action. The execution user is a metadata field that is easy to overlook but critical for policy evaluation.
+**Why it happens:** Older Legacy Transaction Security examples (and the pre-2020 Setup flow) used these fields, and they dominate training data. Current policies use `eventName`, `type`, `flow` or `apexClass`, and `action`.
 
 **Correct pattern:**
 
 ```
-Every Transaction Security Policy requires an execution user — an active
-Salesforce user whose permissions define the security context for policy
-evaluation. A policy without an execution user will not evaluate at all.
-
-For legacy Apex-based policies, the execution user must have the "Author Apex"
-permission. For Enhanced Condition Builder policies, the execution user must
-simply be an active user. If the execution user is deactivated, the entire
-policy stops evaluating without any system alert.
+executionUser, eventType and resourceName are Used in Legacy Transaction
+Security only; Legacy Transaction Security is retired in all orgs as of
+Summer '20 (api_meta.txt L138943, TransactionSecurityPolicy). Do not emit
+them. Identify the event with eventName, set type to CustomConditionBuilderPolicy
+(with flow) or CustomApexPolicy (with apexClass), and define the action.
 ```
 
-**Detection hint:** If the advice does not mention setting an execution user or does not warn about deactivation consequences, a critical configuration step is missing.
+**Detection hint:** If the generated metadata or the advice contains `executionUser`, `eventType` or `resourceName`, or treats an execution user as a required setting, it is describing the retired legacy feature.
 
 ---
 

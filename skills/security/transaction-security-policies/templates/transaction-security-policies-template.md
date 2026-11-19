@@ -23,7 +23,7 @@ Answer these before proceeding:
 - **Event type to target:** ______________________________
 - **Event type is policy-supported?** [ ] Yes [ ] No [ ] Unverified (check Platform Events Developer Guide)
 - **Enforcement approach:** [ ] Block [ ] MFA [ ] Notification [ ] End Session [ ] Multiple
-- **Execution user available?** Active user with appropriate permissions: [ ] Yes [ ] No [ ] TBD
+- **Handler ready?** Flow (Condition Builder) or Apex class exists: [ ] Yes [ ] No [ ] TBD (no execution user: Legacy Transaction Security only)
 - **Monitor mode first?** [ ] Yes — will validate before activating [ ] No — reason: _______________
 
 ---
@@ -70,20 +70,24 @@ Skeleton `TransactionSecurityPolicy` XML for version control:
 <?xml version="1.0" encoding="UTF-8"?>
 <TransactionSecurityPolicy xmlns="http://soap.sforce.com/2006/04/metadata">
     <action>
-        <!-- For Block: -->
-        <blockMessage><!-- Custom message shown to user --></blockMessage>
-        <type><!-- Block | MultiFactorAuthentication | Notification | EndSession --></type>
+        <block><!-- true to block the operation --></block>
+        <twoFactorAuthentication><!-- true to require MFA --></twoFactorAuthentication>
+        <notifications>
+            <inApp><!-- true | false --></inApp>
+            <sendEmail><!-- true | false --></sendEmail>
+            <user><!-- username of the recipient --></user>
+        </notifications>
     </action>
-    <!-- Add a second <action> block for multiple actions -->
     <active><!-- true (enforcement) or false (Monitor mode) --></active>
-    <apexPolicy><!-- false for Enhanced Condition Builder; true for legacy Apex --></apexPolicy>
+    <apexClass><!-- required when type is CustomApexPolicy --></apexClass>
+    <blockMessage><!-- only for ApiEvent, ListViewEvent, BulkApiResultEventStore, ReportEvent; max 1000 chars --></blockMessage>
     <description><!-- Human-readable description of what this policy does --></description>
     <developerName><!-- API name, no spaces --></developerName>
-    <eventName><!-- RTEM event type, e.g., LoginEvent, ReportEvent --></eventName>
-    <eventType><!-- Short event type label used in Setup UI, e.g., Login, Report --></eventType>
-    <executionUser><!-- User ID or username of the policy execution user --></executionUser>
+    <eventName><!-- Real-Time Event Monitoring event, e.g., LoginEvent, ReportEvent --></eventName>
+    <flow><!-- required when type is CustomConditionBuilderPolicy: ID of the Flow --></flow>
     <masterLabel><!-- Display name in Setup UI --></masterLabel>
-    <resourceName><!-- Same as eventName in most cases --></resourceName>
+    <type><!-- CustomApexPolicy | CustomConditionBuilderPolicy --></type>
+    <!-- eventType, resourceName, executionUser: Legacy Transaction Security only (retired Summer '20); do not set -->
 </TransactionSecurityPolicy>
 ```
 
@@ -106,7 +110,7 @@ Before activating enforcement, confirm the following in Monitor mode:
 Complete before switching the policy to Active:
 
 - [ ] Event type verified as policy-supported
-- [ ] Execution user is an active user with appropriate permissions
+- [ ] Handler (Flow or Apex class) exists and is valid; no legacy-only fields set
 - [ ] Condition field values use correct formats (ISO codes, exact strings, correct operators)
 - [ ] Block message is human-readable and includes contact/escalation instructions
 - [ ] Notification recipients are all active users
@@ -122,7 +126,7 @@ If the policy does not appear to fire after activation, check in order:
 
 1. Active flag is `true` (not Monitor mode): [ ] Confirmed
 2. Event type is policy-supported: [ ] Confirmed
-3. Execution user is active: [ ] Confirmed
+3. Handler (Flow or Apex class) is valid: [ ] Confirmed
 4. Condition field values match actual event field values: [ ] Confirmed
 5. For Apex policies: PolicyCondition class compiles without errors: [ ] Confirmed / [ ] N/A
 6. Time elapsed since activation (async delay — allow a few minutes): _______________

@@ -12,11 +12,11 @@ Configure a Transaction Security Policy on `LoginEvent` with a Country condition
 
 Setup UI steps:
 1. Setup > Security > Transaction Security Policies > New
-2. Event Type: `Login`
+2. Event: `LoginEvent` (the `eventName` field; `eventType` is Legacy Transaction Security only, api_meta.txt L138919-138941)
 3. Condition (Enhanced Condition Builder):
    - Field: `Country` | Operator: `Not Equal To` | Value: `US`
 4. Action: Block
-5. Block Message: "Access from outside the United States is restricted by your organization's security policy. Contact your administrator if you believe this is an error."
+5. Block Message: "Access from outside the United States is restricted by your organization's security policy. Contact your administrator if you believe this is an error." (UNVERIFIED (2026-11-19): a custom block message for `LoginEvent`; api_meta.txt L138814-138819 documents `blockMessage` only for `ApiEvent`, `ListViewEvent`, `BulkApiResultEventStore`, and `ReportEvent`, so the XML below omits it.)
 6. Add a secondary Notification action directed to the security admin user.
 7. Set to Monitor mode. Validate match log for 5 business days.
 8. Switch to Active.
@@ -26,16 +26,16 @@ Metadata API equivalent (after building in UI and retrieving):
 <?xml version="1.0" encoding="UTF-8"?>
 <TransactionSecurityPolicy xmlns="http://soap.sforce.com/2006/04/metadata">
     <action>
-        <blockMessage>Access from outside the United States is restricted by your organization's security policy. Contact your administrator if you believe this is an error.</blockMessage>
-        <type>Block</type>
+        <block>true</block>
+        <twoFactorAuthentication>false</twoFactorAuthentication>
     </action>
     <active>true</active>
-    <apexPolicy>false</apexPolicy>
     <description>Block all logins from non-US countries</description>
     <developerName>Block_Non_US_Logins</developerName>
     <eventName>LoginEvent</eventName>
-    <eventType>Login</eventType>
+    <flow><!-- ID of the Flow that holds the Condition Builder logic --></flow>
     <masterLabel>Block Non-US Logins</masterLabel>
+    <type>CustomConditionBuilderPolicy</type>
 </TransactionSecurityPolicy>
 ```
 

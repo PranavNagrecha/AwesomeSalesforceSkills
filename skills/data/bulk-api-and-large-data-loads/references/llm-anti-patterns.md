@@ -101,7 +101,7 @@ Pre-load preparation for large data volumes:
    - Temporarily deactivate non-essential Flows (with change management)
    - Use the "Disable Parallel Apex Testing" feature for batch loads
 3. Disable non-essential validation rules or add bypass criteria
-4. Defer sharing rule recalculation (Setup > Sharing Settings > Defer)
+4. Defer sharing rule and group membership calculation if the feature has been enabled for the org (not on by default; contact Salesforce Customer Support, api_meta.txt L130657-130659). UNVERIFIED (2026-11-19): the Setup path is not in the guides
 5. Schedule load during off-peak hours to avoid contention with users
 
 Re-enable all automation and verify data integrity after the load completes.

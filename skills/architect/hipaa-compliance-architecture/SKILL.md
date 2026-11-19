@@ -35,9 +35,9 @@ outputs:
   - "Non-Shield HIPAA control checklist (access controls, audit, workforce, incident response)"
   - "Uncovered-service risk register (services outside BAA scope that must not store PHI)"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-28
+updated: 2026-11-19
 ---
 
 # HIPAA Compliance Architecture
@@ -76,7 +76,7 @@ Shield is a paid add-on bundle providing three distinct compliance controls:
 
 1. **Shield Platform Encryption (SPE)** — Encrypts PHI at rest using AES-256 with Salesforce-managed or customer-managed keys (BYOK). Covers field-level and file encryption. Addresses the HIPAA Security Rule technical safeguard for data at rest (45 CFR §164.312(a)(2)(iv) and §164.312(e)(2)(ii)). SPE introduces functional tradeoffs: encrypted fields cannot be used in formula fields, external IDs, unique constraints, sorting, or certain SOQL operations — field selection must be designed carefully.
 
-2. **Field Audit Trail (FAT)** — Extends field history tracking retention from 18 months (standard History Tracking limit) to up to 10 years. HIPAA requires covered entities to retain documentation of HIPAA policies and procedures for 6 years from creation or last effective date; medical records retention varies by state but FAT supports the 10-year outer bound. Standard Field History Tracking is insufficient for HIPAA audit requirements.
+2. **Field Audit Trail (FAT)** — Extends field history tracking retention beyond 18 months (the standard limit without FAT; security guide 262 salesforce_security_impl_guide.txt L4553-4554): archived field history is kept until you delete it (262 L4836-4837), with no maximum retention documented. `archiveRetentionYears` on `HistoryRetentionPolicy` is only a reminder for manual deletion (api_meta.txt L46348-46351). HIPAA requires covered entities to retain documentation of HIPAA policies and procedures for 6 years from creation or last effective date; medical records retention varies by state, so set the deletion rule from the longest applicable requirement. Standard Field History Tracking is insufficient for HIPAA audit requirements.
 
 3. **Event Monitoring** — Provides detailed transaction security logs including login history, API calls, report exports, and data access events. Maps to HIPAA Security Rule audit control requirements (45 CFR §164.312(b)). Logs are stored as EventLogFile objects queryable via SOQL or exportable to a SIEM.
 
@@ -133,7 +133,7 @@ Shield is one component of a HIPAA compliance architecture. The HIPAA Security R
 | BAA not yet executed and go-live is imminent | Block PHI entry to the org via validation rules; do not proceed with PHI population until BAA is countersigned | No BAA = no HIPAA coverage regardless of technical controls |
 | AppExchange package will store PHI (e.g., e-signature, document generation) | Obtain a signed BAA addendum from the ISV before activation | Managed packages are separate business associates; ISV data handling is outside Salesforce's BAA |
 | Team requests standard Chatter for clinical care team collaboration | Redirect to Salesforce Communities or a BAA-covered messaging channel; document risk if standard Chatter is used with PHI | Standard Chatter is not covered under the Salesforce BAA as of current guidance |
-| Org needs 10-year audit trail for PHI fields | Enable Shield Field Audit Trail; configure retention to 10 years on all PHI fields | Standard Field History Tracking retains only 18 months — insufficient for HIPAA and many state medical records laws |
+| Org needs a multi-year audit trail for PHI fields | Enable Shield Field Audit Trail; deploy a `HistoryRetentionPolicy` on PHI objects with `archiveRetentionYears` set to the required years, and do not delete archive data before then | Standard Field History Tracking retains only 18 months — insufficient for HIPAA and many state medical records laws |
 | Client asks if Shield alone makes them HIPAA compliant | Provide Shield-to-HIPAA safeguard gap analysis; identify non-Shield requirements (MFA, access controls, risk assessment, workforce training, incident response) | Shield covers encryption at rest, audit trail, and event logging but does not address administrative or all technical safeguards |
 | PHI must be shared with external partner via Experience Cloud | Design sharing rules, guest user access controls, and data encryption; verify Experience Cloud is BAA-covered in executed agreement | Guest user misconfiguration is a leading PHI exposure vector in Experience Cloud |
 | Org uses Salesforce Sandbox for development/testing | Use synthetic or de-identified data in Sandbox unless Sandbox is explicitly covered in the BAA | Sandbox environments may not be covered under all BAA versions |
@@ -148,7 +148,7 @@ Step-by-step instructions for an AI agent or practitioner architecting a HIPAA-c
 
 2. **Conduct PHI field inventory.** Working with the health data team, enumerate all objects that will store any of the 18 HIPAA-defined PHI identifiers. Record object name, field name, data type, field label, and the HIPAA identifier category. This inventory drives the SPE encryption policy, FAT configuration, and access control design.
 
-3. **Design the Shield control stack.** For each PHI field, assign an SPE encryption scheme (deterministic vs. probabilistic). Identify functional conflicts (formula fields, external IDs, SOQL sorting) and re-architect those query patterns. Configure FAT retention to 10 years on all PHI fields. Confirm Event Monitoring transaction security policies capture login, report, and data export events for PHI-bearing objects. Document the key management approach (tenant secret vs. BYOK).
+3. **Design the Shield control stack.** For each PHI field, assign an SPE encryption scheme (deterministic vs. probabilistic). Identify functional conflicts (formula fields, external IDs, SOQL sorting) and re-architect those query patterns. Deploy a FAT `HistoryRetentionPolicy` (Metadata API; `archiveAfterMonths` 1-18, `archiveRetentionYears` as the deletion reminder) on all PHI objects and schedule archive deletion no earlier than the longest retention requirement. Confirm Event Monitoring transaction security policies capture login, report, and data export events for PHI-bearing objects. Document the key management approach (tenant secret vs. BYOK).
 
 4. **Design non-Shield technical safeguards.** Enforce MFA for all users accessing PHI. Apply least-privilege profile and permission set architecture — users should access only the minimum necessary PHI. Configure automatic session timeout. Define Named Credentials or OAuth flows for integration users — do not embed credentials in PHI-touching integration code. Review Connected App policies for external data consumers.
 
@@ -169,7 +169,7 @@ Run through these before marking a HIPAA compliance architecture design complete
 - [ ] Standard Chatter is confirmed NOT used for PHI — or a risk acceptance is documented
 - [ ] PHI field inventory is complete covering all 18 HIPAA identifiers across all objects
 - [ ] SPE encryption policy assigns deterministic or probabilistic scheme to every PHI field with functional conflict analysis completed
-- [ ] Shield Field Audit Trail is configured with 10-year retention on all PHI fields
+- [ ] Shield Field Audit Trail is configured on all PHI fields (HistoryRetentionPolicy deployed, `archiveRetentionYears` set to the required years, manual-deletion date recorded)
 - [ ] Event Monitoring transaction security policies are active for login, report export, and data access events on PHI objects
 - [ ] MFA is enforced for all users with access to PHI (required, not optional)
 - [ ] Least-privilege permission set architecture is documented and enforced

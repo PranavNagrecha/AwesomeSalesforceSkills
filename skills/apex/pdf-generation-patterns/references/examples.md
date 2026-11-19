@@ -4,7 +4,7 @@
 
 **Context:** A professional services org needs an "Download Invoice PDF" button on the Opportunity record page. Clicking it opens a formatted PDF with the company logo, opportunity details, and a line-item table. No file storage is needed — just a browser download.
 
-**Problem:** The initial implementation used `{!$Resource.CompanyLogo}` directly in an `<img src>` tag and loaded line-item data through an `<apex:remoteAction>` JavaScript call. The resulting PDF showed a broken image placeholder and an empty table — the logo URL was relative (unresolvable by Flying Saucer) and the JS remote action never executed.
+**Problem:** The initial implementation used `{!$Resource.CompanyLogo}` directly in an `<img src>` tag and loaded line-item data through a JavaScript remoting call (`Visualforce.remoting.Manager.invokeAction` against an `@RemoteAction` method). The resulting PDF showed a broken image placeholder and an empty table — the logo URL was relative (unresolvable by Flying Saucer) and the JavaScript remoting call never ran.
 
 **Solution:**
 
@@ -151,7 +151,7 @@ public class OpportunityPdfJob implements Queueable, Database.AllowsCallouts {
 
 ## Anti-Pattern: Using JavaScript to Load Data in a VF PDF Page
 
-**What practitioners do:** They write a Visualforce page that uses `<apex:remoteAction>` or `window.onload` JavaScript to fetch data after the page loads, then populate table rows or chart elements dynamically.
+**What practitioners do:** They write a Visualforce page that uses JavaScript remoting (`Visualforce.remoting.Manager.invokeAction`) or `window.onload` JavaScript to fetch data after the page loads, then populate table rows or chart elements dynamically.
 
 **What goes wrong:** The Flying Saucer PDF renderer has no JavaScript engine. The page HTML is captured immediately after server-side rendering, before any client-side JS would execute. The result is an empty table or missing chart with no error — the PDF silently omits all JS-driven content.
 

@@ -13,11 +13,19 @@ Usage:
     python3 check_transaction_security.py --manifest-dir force-app/main/default
 
 Checks performed:
-  1. TransactionSecurityPolicy files — warns on event types that do not support policies
+  1. TransactionSecurityPolicy files — reads <eventName> (Real-Time Event Monitoring) and
+     warns on event names that do not support policies; <eventType>/<resourceName> are
+     Legacy Transaction Security fields (retired Summer '20) and are only reported
   2. TransactionSecurityPolicy files — flags policies that are in Monitor (inactive) mode
-  3. TransactionSecurityPolicy files — warns if no execution user element is present
-  4. TransactionSecurityPolicy files — flags Block actions with no block message
+  3. TransactionSecurityPolicy files — flags Apex policies (<type>CustomApexPolicy</type>)
+     with no <apexClass> (required for Apex-based policies)
+  4. TransactionSecurityPolicy files — flags a blocking action with no top-level
+     <blockMessage> on events that support one (ApiEvent, ListViewEvent,
+     BulkApiResultEventStore, ReportEvent)
   5. General — warns if no TransactionSecurityPolicy metadata is found at all
+
+Field reference: api_meta TransactionSecurityPolicy. <executionUser> is Legacy
+Transaction Security only, so its absence is not flagged.
 """
 
 from __future__ import annotations
@@ -36,6 +44,19 @@ from pathlib import Path
 #   "Can Be Used in a Transaction Security Policy?" column
 POLICY_SUPPORTED_EVENTS: frozenset[str] = frozenset(
     {
+        # Valid <eventName> values per the Metadata API TransactionSecurityPolicy type.
+        "AdminSetupEvent",
+        "ApiAnomalyEventStore",
+        "ApiEvent",
+        "BulkApiResultEventStore",
+        "CredentialStuffingEventStore",
+        "FileEventStore",
+        "GuestUserAnomalyEventStore",
+        "LoginAnomalyEventStore",
+        "PermissionSetEventStore",
+        "ReportAnomalyEventStore",
+        "SessionHijackingEventStore",
+        "UniversalAnomalyEventStore",
         "ApiAnomalyEvent",
         "ApiEventStream",
         "BulkApiResultEvent",
@@ -105,30 +126,44 @@ def _extract_all_xml_values(content: str, tag: str) -> list[str]:
 
 
 def check_event_type_support(path: Path, content: str) -> list[str]:
-    """Flag policies whose event type does not support enforcement."""
-    issues: list[str] = []
-    event_type = _extract_xml_value(content, "eventType")
+    """Flag policies whose event name does not support enforcement.
 
-    if event_type is None:
-        issues.append(
-            f"WARN {path.name}: TransactionSecurityPolicy is missing <eventType> element. "
-            "The policy cannot evaluate without an event type."
-        )
+    Real-Time Event Monitoring policies name the event in <eventName>. <eventType>
+    belongs to Legacy Transaction Security, a retired feature since Summer '20.
+    """
+    issues: list[str] = []
+    event_name = _extract_xml_value(content, "eventName")
+
+    if event_name is None:
+        legacy = _extract_xml_value(content, "eventType")
+        if legacy is not None:
+            issues.append(
+                f"WARN {path.name}: policy sets <eventType>{legacy}</eventType> but no "
+                "<eventName>. eventType is Legacy Transaction Security only (retired in "
+                "Summer '20); a Real-Time Event Monitoring policy names its event in "
+                "<eventName> (e.g. LoginEvent, ReportEvent)."
+            )
+        else:
+            issues.append(
+                f"WARN {path.name}: TransactionSecurityPolicy is missing an <eventName> "
+                "element. Real-Time Event Monitoring policies name the event they monitor."
+            )
         return issues
+
+    event_type = event_name
 
     if event_type in POLICY_UNSUPPORTED_EVENTS:
         issues.append(
-            f"HIGH {path.name}: eventType='{event_type}' does NOT support Transaction Security "
+            f"HIGH {path.name}: eventName='{event_type}' does NOT support Transaction Security "
             "Policy enforcement. This policy will silently never fire regardless of its Active "
-            "flag or condition logic. Remove or retype this policy against a supported event type. "
-            f"Supported types include: {', '.join(sorted(POLICY_SUPPORTED_EVENTS)[:6])}..."
+            "flag or condition logic. Remove or retype this policy against a supported event. "
+            f"Supported events include: {', '.join(sorted(POLICY_SUPPORTED_EVENTS)[:6])}..."
         )
     elif event_type not in POLICY_SUPPORTED_EVENTS:
         issues.append(
-            f"WARN {path.name}: eventType='{event_type}' is not in the confirmed "
-            "policy-supported event type list. Verify this event type supports Transaction "
-            "Security Policy enforcement in the Salesforce Platform Events Developer Guide "
-            "before deploying."
+            f"WARN {path.name}: eventName='{event_type}' is not in the confirmed "
+            "policy-supported event list. Verify it is a valid TransactionSecurityEventName "
+            "value in the Metadata API Developer Guide before deploying."
         )
 
     return issues
@@ -155,40 +190,33 @@ def check_active_flag(path: Path, content: str) -> list[str]:
     return issues
 
 
-def check_execution_user(path: Path, content: str) -> list[str]:
-    """Warn if no execution user is set on the policy."""
-    issues: list[str] = []
-    execution_user = _extract_xml_value(content, "executionUser")
-
-    if execution_user is None or execution_user.strip() == "":
-        issues.append(
-            f"HIGH {path.name}: TransactionSecurityPolicy has no <executionUser> set. "
-            "Policies without an execution user do not evaluate. "
-            "Set <executionUser> to an active user ID or username."
-        )
-
-    return issues
+# Events for which <blockMessage> is available (api_meta TransactionSecurityPolicy).
+_BLOCK_MESSAGE_EVENTS = frozenset(
+    {"ApiEvent", "ListViewEvent", "BulkApiResultEventStore", "ReportEvent"}
+)
 
 
 def check_block_action_message(path: Path, content: str) -> list[str]:
-    """Warn on Block actions that have no custom block message configured."""
+    """Warn on blocking policies that have no custom block message configured.
+
+    The block flag lives in <action><block>true</block></action>; <blockMessage> is a
+    top-level element of the policy, available only for the events listed above.
+    """
     issues: list[str] = []
+    event_name = _extract_xml_value(content, "eventName")
+    if event_name not in _BLOCK_MESSAGE_EVENTS:
+        return issues
 
-    # Check if any action has type=Block
-    action_blocks = re.findall(
-        r"<action>(.*?)</action>", content, re.DOTALL
-    )
-    for action_block in action_blocks:
-        action_type = _extract_xml_value(action_block, "type")
-        block_message = _extract_xml_value(action_block, "blockMessage")
-
-        if action_type == "Block":
+    for action_block in re.findall(r"<action>(.*?)</action>", content, re.DOTALL):
+        block = _extract_xml_value(action_block, "block")
+        if block is not None and block.lower() == "true":
+            block_message = _extract_xml_value(content, "blockMessage")
             if block_message is None or block_message.strip() == "":
                 issues.append(
-                    f"WARN {path.name}: Policy has a Block action but no <blockMessage> is "
-                    "configured. Users who are blocked will see a generic platform error "
-                    "rather than an actionable message. Add a <blockMessage> that explains "
-                    "the restriction and how to seek assistance."
+                    f"WARN {path.name}: Policy blocks {event_name} but no <blockMessage> is "
+                    "configured. Users who are blocked will see the default message "
+                    "rather than an actionable one. Add a <blockMessage> (max 1000 "
+                    "characters) that explains the restriction and how to seek assistance."
                 )
             break  # Only report once per policy
 
@@ -196,17 +224,16 @@ def check_block_action_message(path: Path, content: str) -> list[str]:
 
 
 def check_apex_policy_flag(path: Path, content: str) -> list[str]:
-    """Inform when a policy uses legacy Apex (apexPolicy=true) rather than Condition Builder."""
+    """Flag Apex-based policies (type CustomApexPolicy) that name no apexClass."""
     issues: list[str] = []
-    apex_policy = _extract_xml_value(content, "apexPolicy")
+    policy_type = _extract_xml_value(content, "type")
+    apex_class = _extract_xml_value(content, "apexClass")
 
-    if apex_policy is not None and apex_policy.lower() == "true":
+    if policy_type == "CustomApexPolicy" and (apex_class is None or apex_class == ""):
         issues.append(
-            f"INFO {path.name}: Policy uses legacy Apex (apexPolicy=true). "
-            "Apex-based policies require the execution user to have 'Author Apex' permission. "
-            "Consider migrating to Enhanced Condition Builder (apexPolicy=false) if the "
-            "condition logic can be expressed without custom code. "
-            "Verify the referenced PolicyCondition Apex class compiles without errors."
+            f"HIGH {path.name}: Policy is <type>CustomApexPolicy</type> but has no "
+            "<apexClass>. apexClass (a class implementing TxnSecurity.PolicyCondition or "
+            "TxnSecurity.EventCondition) is required for Apex-based policies."
         )
 
     return issues
@@ -259,7 +286,6 @@ def check_transaction_security(manifest_dir: Path) -> list[str]:
 
         issues.extend(check_event_type_support(path, content))
         issues.extend(check_active_flag(path, content))
-        issues.extend(check_execution_user(path, content))
         issues.extend(check_block_action_message(path, content))
         issues.extend(check_apex_policy_flag(path, content))
 
@@ -272,8 +298,8 @@ def parse_args() -> argparse.Namespace:
         description=(
             "Check Salesforce metadata for Transaction Security Policy configuration issues. "
             "Validates .transactionSecurityPolicy XML files against known anti-patterns "
-            "including unsupported event types, Monitor-mode policies, missing execution users, "
-            "and Block actions without messages."
+            "including unsupported event names, Monitor-mode policies, Apex policies "
+            "without an apexClass, and blocking policies without a block message."
         ),
     )
     parser.add_argument(

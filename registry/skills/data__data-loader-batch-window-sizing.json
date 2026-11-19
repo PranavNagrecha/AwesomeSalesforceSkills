@@ -108,6 +108,7 @@
     "d22697279a55ac37d7e8",
     "d6c1a216d398c3678c5f",
     "d95bdec9d9fe73f5303e",
+    "dc61cdcb4aa2c418d526",
     "de850dc4f8870ac30c8f",
     "df2e62667bbdd29cdd5e",
     "dfedd4e2b54ae3c9d284",
@@ -131,7 +132,7 @@
     "fd5c46e74a0b44a0ed17",
     "fdcd439b8404a9b0bd2f"
   ],
-  "content_hash": "8777dea7d0695b8b900ff50ceece718e84293a5ad3128acc955467b9b2995c47",
+  "content_hash": "2f31c64d006a1b46752899895ceb3986fbdf135fe2a52ee1358ef3920d1ba59b",
   "dependencies": [],
   "description": "Choose the right batch size, parallel/serial mode, and load window for Data Loader, Bulk API V1/V2, and custom Database.executeBatch jobs against a given object volume and complexity profile. Covers tradeoffs between batch size, trigger CPU cost, sharing recalculation cost, and row-skew lock contention. NOT for CSV column mapping (use data/data-loader-csv-column-mapping). NOT for picklist validation pre-load (use data/data-loader-picklist-validation-pre-load). NOT for sharing-recalc tuning after the load lands (use data/sharing-recalculation-performance).",
   "file_location": "skills/data/data-loader-batch-window-sizing",
@@ -190,7 +191,7 @@
   "templates": [
     "skills/data/data-loader-batch-window-sizing/templates/data-loader-batch-window-sizing-template.md"
   ],
-  "updated": "2026-04-28",
+  "updated": "2026-11-19",
   "vector_embedding": null,
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

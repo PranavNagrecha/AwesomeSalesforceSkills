@@ -98,7 +98,7 @@
     "f434bdcb22a7416c7091",
     "f88ae6f3eb513077f3b9"
   ],
-  "content_hash": "ab0cffebc74b1c90461dc8b15d22c456d4d112a5a472af34162836d616218b59",
+  "content_hash": "916efbe05aabbbb53928c8f0e2bd72ceff1f7827e370356265d87147405a5df2",
   "dependencies": [],
   "description": "Plan, batch, and monitor Salesforce sharing recalculation jobs \u2014 including OWD changes, sharing rule add/remove, role hierarchy restructuring, and Apex managed share rebuild \u2014 to avoid multi-hour background jobs and data-access blackouts. NOT for diagnosing data-skew root causes (use admin/data-skew-and-sharing-performance), NOT for designing the sharing model itself (use admin/sharing-and-visibility), and NOT for Apex managed sharing row-cause creation (use apex/apex-managed-sharing).",
   "file_location": "skills/data/sharing-recalculation-performance",
@@ -146,7 +146,7 @@
   "templates": [
     "skills/data/sharing-recalculation-performance/templates/sharing-recalculation-performance-template.md"
   ],
-  "updated": "2026-10-20",
+  "updated": "2026-11-19",
   "vector_embedding": null,
   "version": "1.0.1"
 }

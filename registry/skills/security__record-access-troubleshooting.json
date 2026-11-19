@@ -15,6 +15,7 @@
     "247dd8f289bee5d1f92e",
     "2510c0cd29ea740c26bf",
     "2c650deb6da2cc1c2aff",
+    "30094b7469dccee1c15b",
     "3046a56e26be09538588",
     "31c4f046c06ad9d88f57",
     "33fcb3a3d5d5c8117127",
@@ -95,7 +96,7 @@
     "f39926accaac8fe1d4e0",
     "f46e88c2916da5f86689"
   ],
-  "content_hash": "6cd6cbfb59260d85f2603a96b50293c41f33ea55f8a21ba6567e10fdc91ac007",
+  "content_hash": "2d3d1ad866a17f664b7c1420cd9437a2e46dc39a8275d13889733a4dbf682b04",
   "dependencies": [],
   "description": "Diagnose why a user can or cannot see/edit a record: UserRecordAccess SOQL, Why Can a User Access This Record debug log, OWD, role hierarchy, sharing rules, manual/team/apex shares, implicit parent share. NOT for remediating a CRUD/FLS finding \u2014 use apex/apex-stripinaccessible-and-fls-enforcement. NOT for designing the sharing model itself \u2014 use admin/sharing-and-visibility.",
   "file_location": "skills/security/record-access-troubleshooting",
@@ -117,7 +118,7 @@
     "Apex Developer Guide \u2014 Understanding Apex Managed Sharing \u2014",
     "Restriction Rules (Help) \u2014",
     "Salesforce Well-Architected \u2014 Trusted (Secure) \u2014",
-    "Apex Developer Guide \u2014 Understanding Apex Managed Sharing (\"Apex sharing reasons and Apex managed sharing recalculation are only available for custom objects\") \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
+    "Apex Developer Guide \u2014 Understanding Apex Managed Sharing (the 264 edition still prints \"only available for custom objects\", but the Metadata API reference, api_meta.txt L47644-47653, makes standard-object sharing reasons available at API 68.0+; see apex-managed-sharing-patterns) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm",
     "Apex Developer Guide \u2014 Creating Apex Managed Sharing (share object naming: AccountShare for standard, MyObject__Share for custom) \u2014 https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_creating_with_apex.htm",
     "Object Reference \u2014 AccountShare (AccountId, AccountAccessLevel, UserOrGroupId, RowCause) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_accountshare.htm",
     "Object Reference \u2014 Relationships Among Objects (detail object has no Owner field; no sharing rules, manual sharing or queues on the detail side) \u2014 https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/relationships_among_objects.htm"
@@ -147,7 +148,7 @@
   "templates": [
     "skills/security/record-access-troubleshooting/templates/record-access-troubleshooting-template.md"
   ],
-  "updated": "2026-10-20",
+  "updated": "2026-11-19",
   "vector_embedding": null,
   "version": "1.1.1"
 }

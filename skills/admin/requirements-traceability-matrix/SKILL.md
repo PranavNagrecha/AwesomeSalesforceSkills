@@ -43,7 +43,7 @@ outputs:
 dependencies: []
 version: 1.1.6
 author: Pranav Nagrecha
-updated: 2026-10-20
+updated: 2026-11-19
 ---
 
 # Requirements Traceability Matrix (RTM) for Salesforce

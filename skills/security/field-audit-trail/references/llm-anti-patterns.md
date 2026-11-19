@@ -5,7 +5,7 @@ These patterns help the consuming agent self-check its own output.
 
 ## Anti-Pattern 1: Enabling FAT Without Enabling Field History Tracking
 
-**What the LLM generates:** "Enable Field Audit Trail on the Account object and set the retention policy to 84 months" without mentioning that Field History Tracking must also be enabled on the same fields.
+**What the LLM generates:** "Enable Field Audit Trail on the Account object and set the retention policy to 84 months" (there is no such setting: `archiveAfterMonths` is 1-18 and `archiveRetentionYears` is only a deletion reminder) without mentioning that Field History Tracking must also be enabled on the same fields.
 
 **Why it happens:** LLMs treat FAT as a standalone capture mechanism. Training data often describes FAT in isolation from standard Field History Tracking.
 
@@ -57,9 +57,9 @@ that will time out.
 
 Always include ParentId or a bounded CreatedDate range as the PRIMARY filter:
 
-SELECT ParentId, FieldHistoryType, OldValue, NewValue, CreatedById, CreatedDate
+SELECT ParentId, FieldHistoryType, Field, OldValue, NewValue, CreatedDate
 FROM FieldHistoryArchive
-WHERE SobjectType = 'Account'
+WHERE FieldHistoryType = 'Account'
   AND ParentId = '001XXXXXXXXXXXX'
   AND CreatedDate >= 2023-01-01T00:00:00Z
 ORDER BY CreatedDate DESC
@@ -94,17 +94,16 @@ query results immediately after enabling FAT as a configuration failure.
 
 **What the LLM generates:** "With Shield, you can track more than 20 fields per object using Field History Tracking."
 
-**Why it happens:** LLMs conflate the FAT 60-field ceiling with the standard Field History Tracking 20-field limit. These are separate limits.
+**Why it happens:** LLMs conflate the Field Audit Trail 200-field ceiling with the 20-field limit that applies without it (security guide 262 L4835-4838).
 
 **Correct pattern:**
 
 ```
 Standard Field History Tracking remains limited to 20 fields per object even
-with Shield. FAT raises the ceiling to 60 fields for FAT-tracked fields
-specifically, but the standard 20-field limit still governs the non-FAT
-history window. Plan field selection carefully: you can track up to 60 fields
-in FAT, but only 20 of those will also appear in the standard XxxHistory
-sObjects during the 18-month standard window.
+with Shield. Field Audit Trail raises the per-object ceiling to 200 fields; the 20-field
+limit applies without it (security guide 262 L4835-4838). UNVERIFIED
+(2026-11-19): which of the tracked fields also appear in the standard
+XxxHistory sObjects is not documented; confirm in a sandbox.
 ```
 
 **Detection hint:** If the advice states that Shield raises the Field History Tracking limit above 20 fields per object (rather than specifically the FAT limit), the distinction is lost.
@@ -115,19 +114,21 @@ sObjects during the 18-month standard window.
 
 **What the LLM generates:** "Enable FAT — the default retention is sufficient for compliance."
 
-**Why it happens:** LLMs assume defaults are safe. The default FAT retention period may not match the specific compliance requirement (e.g., FINRA 7-year, HIPAA 6-year).
+**Why it happens:** LLMs assume defaults are safe. The default FAT policy (archive after 18 months in production, one month in sandboxes; security guide 262 L4881-4883) is not tied to any specific compliance requirement (e.g., FINRA 7-year, HIPAA 6-year).
 
 **Correct pattern:**
 
 ```
-Always set an EXPLICIT retention policy per object. Do not rely on the Salesforce
-default. Map each tracked object to the governing compliance requirement:
-- FINRA Rule 17a-4: 84 months (7 years)
-- HIPAA access log retention: at least 72 months (6 years)
-- SOX: varies by jurisdiction, typically 84 months
+Always set an EXPLICIT HistoryRetentionPolicy per object. Do not rely on the
+Salesforce default. Map each tracked object to the governing compliance requirement:
+- FINRA Rule 17a-4: archiveRetentionYears 7
+- HIPAA access log retention: archiveRetentionYears of at least 6
+- SOX: varies by jurisdiction, typically 7
 
-Set the retention policy in Setup > Field Audit Trail to match or exceed the
-compliance minimum. Document the mapping between regulation and retention months.
+Archived data is kept until you delete it, and archiveRetentionYears is only a
+reminder for manual deletion (api_meta.txt L46348-46351). Define the policy with
+Metadata API (security guide 262 L4833-4835). Document the mapping between
+regulation and years, and do not delete archive rows before that date.
 ```
 
 **Detection hint:** If the advice enables FAT without specifying an explicit retention period tied to a compliance requirement, the default may create a compliance gap.

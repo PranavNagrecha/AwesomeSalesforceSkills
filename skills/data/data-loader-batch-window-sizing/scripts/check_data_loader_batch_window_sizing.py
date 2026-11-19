@@ -240,7 +240,7 @@ def collect_warnings(args: argparse.Namespace, recommendation: dict) -> List[str
     # Private OWD + role hierarchy + no Defer Sharing Calculations plan
     if args.owd == "private" and args.hierarchy_depth >= 3 and args.records >= 100_000:
         warnings.append(
-            "DEFER SHARING: Private OWD + hierarchy + >=100K records — enable Defer Sharing Calculations for the load window or expect a multi-hour async sharing-recalc tail"
+            "DEFER SHARING: Private OWD + hierarchy + >=100K records — enable Defer Sharing Calculations for the load window (off by default; Salesforce Customer Support enables it) or expect a multi-hour async sharing-recalc tail"
         )
 
     # One-time historical without trigger bypass plan

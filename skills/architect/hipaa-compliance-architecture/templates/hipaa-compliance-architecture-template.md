@@ -98,11 +98,11 @@ BYOK HSM details (if applicable): ____________________
 
 ### 4b. Shield Field Audit Trail
 
-| Object | PHI Fields Tracked | Retention Period Configured | Notes |
+| Object | PHI Fields Tracked | archiveAfterMonths (1-18) / archiveRetentionYears | Notes |
 |---|---|---|---|
-| | | 10 years | |
+| | | | Archived data is kept until deleted; archiveRetentionYears is only a deletion reminder |
 
-Field Audit Trail configured in Setup: Yes / No / Pending
+Field Audit Trail enabled and HistoryRetentionPolicy deployed (Metadata API): Yes / No / Pending
 
 ### 4c. Event Monitoring
 

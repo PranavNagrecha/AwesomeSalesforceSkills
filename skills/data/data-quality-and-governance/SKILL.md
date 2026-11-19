@@ -37,9 +37,9 @@ outputs:
   - "Data classification field attribute guidance (Data Sensitivity Level, Compliance Categorization)"
   - "Audit findings: missing bypass conditions, alert-only duplicate rules, objects with no history enabled"
 dependencies: []
-version: 1.0.0
+version: 1.0.1
 author: Pranav Nagrecha
-updated: 2026-04-04
+updated: 2026-11-19
 ---
 
 # Data Quality and Governance
@@ -109,7 +109,7 @@ Field history tracking records every change to a tracked field — who changed i
 **Key limits and behaviors:**
 - Hard limit: 20 fields per object can be tracked simultaneously.
 - Retention: standard field history is retained for 18 months rolling. Records older than 18 months are automatically deleted by Salesforce.
-- Shield Field Audit Trail: with the Shield add-on, history can be retained for up to 10 years and is queryable via SOQL on the `FieldHistoryArchive` object.
+- Shield Field Audit Trail: with the Shield add-on, archived history is kept until you delete it (`archiveAfterMonths` 1-18; `archiveRetentionYears` is only a manual-deletion reminder; api_meta.txt L46342-46351, security guide 262 L4836-4837) and is queryable via SOQL on the `FieldHistoryArchive` object.
 - Which fields are trackable: most field types are supported. The following are NOT trackable: encrypted fields (Classic Encryption), formula fields, auto-number fields, roll-up summary fields, and some system fields (e.g., `CreatedDate`, `LastModifiedDate` — these are already system-managed).
 - First-value behavior: field history does NOT record the initial value set when a record is created. The first history entry appears only after the first edit post-creation. This is a platform behavior, not a bug.
 
@@ -204,7 +204,7 @@ These attributes are metadata-only — they do not enforce access control. They 
 | Integration needs to bypass validation rules | Custom Permission + NOT($Permission.X) wrap | Profile-based or user-based bypasses are too broad and non-auditable |
 | New org, need to block duplicates from day one | Duplicate Rule in Block mode + standard Matching Rule | Alert mode creates false confidence and duplicate backlog immediately |
 | Large-volume deduplication of existing records | Third-party dedupe app (Cloudingo, DemandTools) | Standard Duplicate Rules do not run retroactively |
-| Need 10-year audit trail | Shield Field Audit Trail | Standard field history only retains 18 months |
+| Need multi-year audit trail (e.g., 7+ years) | Shield Field Audit Trail | Standard field history only retains 18 months |
 | GDPR erasure request received | Anonymize PII fields (tokenize), do not hard delete | Hard delete breaks referential integrity on related records |
 | Want to discover PII fields in existing org | Einstein Data Detect (requires Shield) | Manual field inventory misses fields; automated scanning is more complete |
 | Need to encrypt PII at rest | Shield Platform Encryption | Field-level masking does not encrypt stored values |
@@ -266,7 +266,7 @@ Non-obvious platform behaviors that cause real production problems:
 |---|---|
 | Validation rule audit report | List of all validation rules with bypass status, formula complexity rating, and API-safe flag |
 | Duplicate rule coverage matrix | Object-by-object table of Matching Rule and Duplicate Rule configuration, mode (alert/block/report), and API DML coverage |
-| Field history configuration list | Per-object table of history-tracked fields (up to 20), retention tier (18-month vs Shield 10-year), and first-value gap flag |
+| Field history configuration list | Per-object table of history-tracked fields (up to 20), retention tier (18-month vs Shield archive kept until you delete it), and first-value gap flag |
 | PII field register | Field-level inventory with Data Sensitivity Level, Compliance Categorization, and encryption status |
 | GDPR erasure runbook | Step-by-step process for receiving, executing, and logging a right-to-erasure request with tokenization map |
 | Data retention enforcement design | Batch job or Flow design for enforcing retention cutoffs, with `Retention_Expires__c` field configuration |

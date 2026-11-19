@@ -174,7 +174,7 @@
     "fe8cf1d029d92cbff293",
     "fefdf60b97efe8f9d5ec"
   ],
-  "content_hash": "ac4680b67100cfe12045d9f64e321e06d4f270694aaa8d5b31da83f3fcfc029b",
+  "content_hash": "da789124475f0a1f8d3e0f18d0f3a74b491e12013d7304fb864dde42cb282054",
   "dependencies": [],
   "description": "Use when writing, reviewing, or debugging Apex test classes, test data factories, async test behavior, negative-path assertions, or callout mocking. Triggers: 'SeeAllData', 'Test.startTest', 'HttpCalloutMock', 'test data factory', 'missing assertions'. NOT for the factory class itself \u2014 use apex/test-data-factory-patterns. NOT for the mock class itself \u2014 use apex/apex-http-callout-mocking.",
   "file_location": "skills/apex/test-class-standards",
@@ -247,7 +247,7 @@
   "templates": [
     "skills/apex/test-class-standards/templates/test-class-standards-template.md"
   ],
-  "updated": "2026-10-02",
+  "updated": "2026-11-19",
   "vector_embedding": null,
   "version": "1.3.5"
 }

@@ -189,14 +189,18 @@ private class Tier2EscalationServiceTest {
 
     @TestSetup
     static void seed() {
-        // (1) User is a setup object. Inserting it alongside Case DML in one
-        //     transaction is a mixed-DML error, so the setup-object work is
-        //     fenced inside runAs of the *current* user. This grants nothing.
+        // (1) PermissionSetAssignment is a setup object. Inserting it alongside
+        //     Case DML in one transaction is a mixed-DML error unless it sits inside
+        //     runAs. TestUserFactory already fences its own PermissionSetAssignment
+        //     insert in runAs of the *current* user; this outer fence is redundant
+        //     for the factory call but is the idiom for any setup-object DML you add
+        //     here yourself. It grants nothing.
         User agent;
         System.runAs(new User(Id = UserInfo.getUserId())) {
             agent = TestUserFactory.createUser(PROFILE, new List<String>{ PERM_SET });
             // TestUserFactory.createUser inserts the User and the matching
-            // PermissionSetAssignment rows; see templates/apex/tests/TestUserFactory.cls.
+            // PermissionSetAssignment rows (the latter inside its own runAs fence);
+            // see templates/apex/tests/TestUserFactory.cls.
             Assert.isNotNull(agent.Id, 'the runAs user must exist before any Case is seeded');
         }
 

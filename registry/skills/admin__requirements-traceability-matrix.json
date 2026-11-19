@@ -263,7 +263,7 @@
     "ff1cbd597bfb16994968",
     "fff1d7762f2f89e41a94"
   ],
-  "content_hash": "e0dffe9732083252740d497836b17abbd783ffe1a1d6d4b4dcfcf2e585839eb2",
+  "content_hash": "89e692b7c9ed7818dcf9fe9ea2ed6c38a10c639a99bcd3c10b4fb3810e119f6a",
   "dependencies": [],
   "description": "Use this skill when building or maintaining a Requirements Traceability Matrix (RTM) on a Salesforce project: one row per requirement, columns for source, user-story id(s), test-case id(s), defect id(s), sprint, release, and status. Covers forward traceability (req \u2192 story \u2192 code \u2192 test) and backward traceability (test \u2192 req). Trigger keywords: RTM, requirements traceability matrix, audit trail for salesforce delivery, traceability for steerco, deferred requirement tracking, regulatory traceability. NOT for eliciting the requirements in the first place \u2014 use admin/requirements-gathering-for-sf. NOT for user-story authoring \u2014 use admin/user-story-writing-for-salesforce. NOT for UAT test design \u2014 use admin/uat-test-case-design. NOT for Apex test design \u2014 use apex/test-class-standards. NOT for backlog prioritization \u2014 use admin/moscow-prioritization-for-sf-backlog. More triggers: traceability.md, build-layer traceability, REQ-XXX and FG-XXX id mapping, artefact-to-requirement orphan report, coverage-gap report, check_rtm.py --manifest-dir, owning run-time agent column, design decision ref column, metadata API name in a traceability row.",
   "file_location": "skills/admin/requirements-traceability-matrix",
@@ -321,7 +321,7 @@
     "skills/admin/requirements-traceability-matrix/templates/requirements-traceability-matrix-template.md",
     "skills/admin/requirements-traceability-matrix/templates/rtm.md"
   ],
-  "updated": "2026-10-20",
+  "updated": "2026-11-19",
   "vector_embedding": null,
   "version": "1.1.6"
 }

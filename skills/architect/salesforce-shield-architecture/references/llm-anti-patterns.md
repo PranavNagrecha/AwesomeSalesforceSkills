@@ -168,15 +168,19 @@ decision.
 ## Anti-Pattern 6: "Configure Field Audit Trail retention in Setup"
 
 **What the LLM generates.** "Setup → Field Audit Trail → Set
-Retention to 10 years."
+Retention to 10 years." (No such 10-year setting is documented; the
+guides describe `archiveAfterMonths` 1-18 and a manual-deletion reminder.)
 
 **Why it happens.** The LLM assumes a Setup UI exists for retention
 because Setup UIs exist for almost everything else.
 
-**Correct pattern.** Retention is set per object via the
-`HistoryRetentionPolicy` element in the object's metadata XML,
-deployed via Metadata API or Tooling API. There is no Setup UI for
-this; the Setup page only enables / disables the feature.
+**Correct pattern.** Retention policies are set per object via the
+`historyRetentionPolicy` element in the object's metadata XML,
+deployed via Metadata API (security guide 262 L4833-4835); enabling the
+feature goes through your Salesforce representative (262 L4830).
+UNVERIFIED (2026-11-19): whether any Setup page exists for policies; the
+guides document none. Archived data is kept until you delete it, and
+`archiveRetentionYears` is only a deletion reminder.
 
 **Detection hint.** Any Field Audit Trail retention recommendation
 without an XML snippet (or a metadata-deploy command) is wrong.

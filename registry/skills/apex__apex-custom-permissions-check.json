@@ -68,7 +68,7 @@
     "f5de7e32cec9a7c3dcbd",
     "f8b8dae169a028cda8ef"
   ],
-  "content_hash": "0b45dc4ab5fa07facce242797077fd24f2d966873e1454fe78ce26cf1d1ce0b1",
+  "content_hash": "1c897cc6659456be3fbb5f6a1155ed40292d36a18d4000a1182fcf580e14995b",
   "dependencies": [],
   "description": "Custom Permissions in Apex: FeatureManagement.checkPermission, $Permission global variable, permission-set gating of feature code, Custom Permission metadata. NOT for creating or assigning the permission in Setup \u2014 use admin/custom-permissions. NOT for CRUD/FLS enforcement \u2014 use apex/apex-stripinaccessible-and-fls-enforcement.",
   "file_location": "skills/apex/apex-custom-permissions-check",
@@ -112,7 +112,7 @@
   "templates": [
     "skills/apex/apex-custom-permissions-check/templates/apex-custom-permissions-check-template.md"
   ],
-  "updated": "2026-10-20",
+  "updated": "2026-11-19",
   "vector_embedding": null,
   "version": "1.0.1"
 }
