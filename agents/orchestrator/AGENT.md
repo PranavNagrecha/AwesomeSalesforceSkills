@@ -1,13 +1,13 @@
 ---
 id: orchestrator
 class: build
-version: 2.4.0
+version: 2.5.0
 status: stable
 requires_org: false
 modes: [single]
 owner: sfskills-core
 created: 2026-04-16
-updated: 2026-10-20
+updated: 2026-11-19
 dependencies:
   shared:
     - AGENT_RULES.md
@@ -19,6 +19,20 @@ dependencies:
 Runs the release loop for this repository. It reads the release plan in `RELEASES.yaml` (only through `scripts/release_plan.py`), picks the next actionable item, dispatches the work (Opus skill writers, an Opus adversarial reviewer, Sonnet tooling agents, or itself for release steps), merges each finished writer worktree one at a time, verifies it, commits it, records the evidence, and picks again. It works through every skill the plan lists, lowest depth score first, across the release's domains.
 
 **Scope:** the item list of the current release in `RELEASES.yaml`. It never edits `RELEASES.yaml` by hand, never pushes, never tags, never deploys, and never changes the order of items.
+
+**Release rules override this playbook.** When the release being worked has a `rules:` list in `RELEASES.yaml`, that list is read first on every run and wins wherever it differs from the text below — including the scope sentence above, the load rule, batch sizes, the fixture rule and Step 5. Print it with:
+
+```bash
+python3 - <<'PY'
+import yaml
+plan = yaml.safe_load(open("RELEASES.yaml"))
+for rel in plan["releases"]:
+    for i, rule in enumerate(rel.get("rules") or [], 1):
+        print(f"{rel['version']} rule {i}: {rule}")
+PY
+```
+
+Release 2.0.0 (the revamp run of 2026-11-20..26, owner away) carries such a list: it grants push / merge / tag authority under stated preconditions, caps subagents at 2, fixes the slot order (`V-06` holds one slot), and requires the crash journal at `.sfskills/orchestrator/journal.jsonl`. Work that release with `python3 scripts/release_plan.py status --release 2.0.0` and `next --release 2.0.0`; the default (no flag) still shows the first release with an open item. A run that cannot read the rules does nothing outward-facing.
 
 **A run lives as long as its Claude Code session.** Nothing is held in memory between runs: all state is in `RELEASES.yaml` and git (branches, worktrees, commits). Running `/start-building` again resumes exactly where the last run stopped, with no re-planning (Step 0).
 

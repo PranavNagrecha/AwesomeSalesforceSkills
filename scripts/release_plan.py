@@ -52,6 +52,16 @@ def current_index(data: dict) -> int | None:
     return None
 
 
+def release_index(data: dict, version: str | None) -> int | None:
+    """Index of the named release, or of the current one when no version is given."""
+    if not version:
+        return current_index(data)
+    for i, rel in enumerate(data["releases"]):
+        if str(rel["version"]) == version:
+            return i
+    raise SystemExit(f"no release {version} in the plan")
+
+
 def to_date(s: str | None) -> date:
     return date.fromisoformat(s) if s else date.today()
 
@@ -96,7 +106,7 @@ def work_list(item: dict, skills: Path) -> list[dict]:
 
 def cmd_status(args) -> int:
     header, data = load(Path(args.plan))
-    i = current_index(data)
+    i = release_index(data, args.release)
     if i is None:
         print("all releases done")
         return 0
@@ -110,7 +120,7 @@ def cmd_status(args) -> int:
 
 def cmd_next(args) -> int:
     header, data = load(Path(args.plan))
-    i = current_index(data)
+    i = release_index(data, args.release)
     item = actionable(data["releases"][i], to_date(args.today)) if i is not None else None
     if item is None:
         print("nothing actionable")
@@ -243,10 +253,12 @@ def build_parser() -> argparse.ArgumentParser:
     common.add_argument("--today", help="YYYY-MM-DD (default: today)")
 
     p = sub.add_parser("status", parents=[common], help="current release and its items")
+    p.add_argument("--release", help="release version (default: current = first with an open item)")
     p.set_defaults(func=cmd_status)
 
     p = sub.add_parser("next", parents=[common], help="next actionable item + skill work list")
     p.add_argument("--batch", type=int, default=10, help="skills to list (default 10)")
+    p.add_argument("--release", help="release version (default: current = first with an open item)")
     p.add_argument("--json", action="store_true", help="print JSON")
     p.set_defaults(func=cmd_next)
 

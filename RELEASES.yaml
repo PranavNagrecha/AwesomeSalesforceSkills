@@ -429,7 +429,8 @@ releases:
       — as a measured test: 3 listings, then clones/downloads/stars/issues tracked for 14 days'
     size: M
     owner_model: opus
-    status: todo
+    status: dropped
+    evidence: '2026-11-19: moved to V-16 in 2.0.0 (listings go out after 1.5.0 ships)'
   - id: R2-18
     title: 'Winter ''27 (264 / API 68.0) corpus: fetch, diff vs 262, delta list for writers, re-ground future waves'
     size: M
@@ -784,7 +785,9 @@ releases:
       set-plan adds a before-save reset-flow step)'
     size: S
     owner_model: opus
-    status: todo
+    status: dropped
+    evidence: '2026-11-19: needs a human gate on a signed example build; deferred to the owner (listed under deferred in 2.0.0
+      rules)'
   - id: R2-38
     title: 'build_plan.py: refuse set-status documented->running on a build whose status is done (or move the build back to
       building)'
@@ -800,7 +803,7 @@ releases:
       order: proven-agent-cited -> other agent-cited -> uncited'
     size: L
     owner_model: opus
-    status: running
+    status: dropped
     target: 679
     floor: 158
     domains:
@@ -941,6 +944,8 @@ releases:
     - admin/scoping-rules
     - admin/user-story-writing-for-salesforce
     - agentforce/agent-action-error-handling
+    evidence: '2026-11-19: paused at 108/679 (503 contradicted claims fixed, ledger through batch 16); superseded by V-06
+      in 2.0.0, which audits by demand order instead of the whole corpus. done_skills kept as the audit record'
   - id: R2-39
     title: 'templates/apex/tests/TestUserFactory.cls: PermissionSetAssignment insert needs System.runAs (mixed DML); sweep
       skills that cite it'
@@ -990,8 +995,8 @@ releases:
     status: done
     evidence: description no longer asserts audience targeting on content variants
   - id: R2-08
-    title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
-      nothing and record why)
+    title: 'Release 1.5.0 / 0.5.2 — executed as V-02 of the 2.0.0 plan (hardening first: init pins its own version tag, publish-pypi
+      needs publish-data, smoke query on an audited skill; then gate, PR with CI green, merge, tag, verify)'
     size: S
     owner_model: fable
     status: todo
@@ -1066,17 +1071,190 @@ releases:
         listings_R2_03: not yet done
       decision: IMPROVED on the measurable axis (knowledge lift 0->100% and 50->100% on probes; agents fixed by fixing skills).
         Continue the recipe on content; the unmeasured axis is adoption, which R2-03 must test before R2-08 ships anything.
-- version: 1.6.0
-  mcp_version: 0.5.3
-  branch: release/1.6.0
-  ships: 2026-12-01
-  freeze: 2026-11-27
-  theme: 'Decision release: direction chosen from 1.5.0 measurements; first slice of the better product (or the honest shrink)'
+- version: 2.0.0
+  mcp_version: 0.6.0
+  branch: release/2.0.0
+  ships: 2026-11-27
+  freeze: 2026-11-26
+  theme: 'Revamp: keep what is verified or needed by something proven, delete the rest, label what is unaudited, measure before
+    and after, test the market. Run autonomously 2026-11-20..26 while the owner is away; 2.0.0 itself stops at a green pull
+    request'
+  rules:
+  - 'AUTHORITY (owner, 2026-11-19, this week only): push; merge to main, tag and publish when the gate passes; post factual
+    listings; delete skills, agents, checkers and tooling that fail the bar; at most 2 subagents at any time; the paused claims
+    audit resumes. The orchestrator uses less than it was given: 1.5.0 ships unattended (V-02), 2.0.0 stops at a green PR
+    (V-15).'
+  - These rules override agents/orchestrator/AGENT.md wherever they differ (its 'never pushes, never tags', 3-agent load rule,
+    batch size 10, 'never re-point a fixture', 'fails twice -> todo'). Re-read this list at the start of every wake-up; a
+    session summary is not a substitute.
+  - Nobody can answer questions. Decide, write the decision and its reason into the item's evidence, continue. An item that
+    goes red three times is reverted to its last green commit, marked with what failed, and skipped.
+  - 'Never commit red: validate + pytest green before every commit. Before any merge to main: full release_gate.sh green on
+    the branch being merged, a PR whose CI checks are green (gh pr checks --watch), and a fresh shallow clone passing bootstrap
+    --verify-only. Before any mcp-v tag: the TestPyPI build installed and smoke-tested. Never force-push, never delete a remote
+    branch or tag, never create or delete a GitHub Release by hand, never touch repo settings or secrets, never delete anything
+    outside this repository, never print or commit a secret.'
+  - 'Evidence before deletion: every delete names the command that showed nothing live depends on the target, and is its own
+    commit. An agent, command or skill referenced by a committed example build is never deleted. Tag pre-revamp-2026-11-19
+    and branch archive/pre-revamp (V-01) are the way back.'
+  - 'Thresholds are not negotiable by the loop: a test count, a gate floor or a fixture changes only in a dedicated commit
+    that states old -> new and the reason, and a retrieval floor changes only by dropping queries whose label was deleted.'
+  - 'Accuracy rule unchanged: Opus writes skill content, an Opus adversarial reviewer checks every batch against the guides
+    in .sfskills/corpus (checksums in config/corpus.sha256 - if they do not match, stop auditing rather than re-fetch, because
+    cited line numbers would shift). No claim without a guide line; otherwise an inline UNVERIFIED marker. A claims fix bumps
+    `version` (patch) together with `updated:`.'
+  - One heavy local job at a time (skill_sync, validate --all, pytest, release gate, pre-push). skill_sync always with --skip-embeddings.
+    Never run build_index.py or generate_docs.py. Only the orchestrator writes RELEASES.yaml; subagents never run release_plan.py
+    set-status / add / measure.
+  - 'Slots: slot A belongs to V-06 whenever it has a batch to write or review; slot B takes the lowest-numbered open item
+    whose prerequisites are met (V-07 needs V-04 and V-05; V-14 needs the V-06 cut-off; V-15 needs V-14). When slot B is idle
+    it lends itself to V-06.'
+  - 'Crash safety: before every multi-step action (integrate a batch, delete a domain, merge, tag) append an intent line to
+    .sfskills/orchestrator/journal.jsonl and a done line after it. On wake-up, an intent without done is finished or rolled
+    back first: a dirty tree is saved as a patch under .sfskills/orchestrator/salvage/ and restored to HEAD, never left to
+    block the loop. A worktree without a REPORT.md from its writer is discarded, not merged. Push release/2.0.0 with --no-verify
+    every few hours so a lost laptop does not lose the week.'
+  - 'Deferred to the owner, not attempted: merging and publishing 2.0.0, forum or social posts, the contribution-licence (CLA)
+    question, R2-37 / R3-03 / R3-04 / R3-11 (signed example builds), the applicability rework of all checkers, tooling removal
+    beyond what a deleted target forces.'
+  - 'Calendar: Fri 11-20 V-01, V-02, V-03, batches 17-18. Sat V-04, V-08, V-16 submitted. Sun 12:00 V-08 closes, V-05, then
+    V-07. Mon V-07 finishes, V-09, V-10, V-11. Tue audit continues, probes drafted. Wed 12:00 audit cut-off, V-14, V-15. Thu
+    11-26 V-17.'
   items:
-  - id: R3-01
-    title: 'Direction decided from R2-06 memo: (a) linter product first slice, (b) build loop as the product, or (c) library
-      maintenance only — plan written as items here, reviewed by 3 adversarial reviewers before work starts'
+  - id: V-00
+    title: 'Run prerequisites, done 2026-11-19 with the owner present: plan reviewed by an adversarial Opus reviewer (10 blockers
+      folded in), orchestrator autonomous mode written, release_plan.py --release, guide corpus copied to .sfskills/corpus
+      with config/corpus.sha256, keep-awake running, tree clean and pushed, hourly wake armed'
+    size: S
+    owner_model: fable
+    status: todo
+  - id: V-01
+    title: 'Safety net and baseline before anything is deleted: annotated tags pre-revamp-2026-11-19 on origin/main and on
+      the release/1.5.0 head plus branch archive/pre-revamp, all pushed. Record every ''before'' number in measured.before:
+      skills, agents by status, commands, checkers, tracked files, held-out Hit@1/Hit@3, pytest and gate wall time, pre-push
+      time, stars / forks / issues / 14-day clones / PyPI monthly downloads'
+    size: S
+    owner_model: fable
+    status: todo
+  - id: V-02
+    title: 'Ship 1.5.0 / mcp 0.5.2 (closes R2-08), the last full-corpus release. Hardening first, because it is the last chance
+      to reach existing users: sfskills-mcp-init downloads the data bundle of its own version tag instead of releases/latest;
+      publish-mcp.yml publish-pypi needs [build, publish-data]; the workflow smoke query uses an audited skill; release_plan.py
+      measure merges into measured{} instead of replacing it; release_gate.sh gains a step that runs build_plan.py validate
+      on every examples/builds/*/plan.json. Then: full gate green, PR to main with CI green, TestPyPI dry run installed and
+      smoke-tested, merge, tags plugin-v1.5.0 + mcp-v0.5.2 (the workflow creates the GitHub Release; none is ever created
+      by hand), verify PyPI + release asset + fresh shallow clone bootstrap --verify-only. Then branch release/2.0.0 from
+      origin/main'
     size: M
+    owner_model: fable
+    status: todo
+  - id: V-03
+    title: 'Skill status and ship set as one stdlib script with tests (scripts/skill_status.py -> registry/skill-status.json
+      and config/ship-set.yaml). Status per skill: audited (full claims audit: R1-07, R3-06, V-06; holds only while the skill''s
+      tree hash equals the hash at its audit commit or every later commit is on an allowlist of reviewed / link-only commits),
+      corrected (R3-05 Winter ''27 delta, R1-08 top-up: not a full audit), unaudited. `updated:` is never evidence. Demand
+      = any reference from: Mandatory Reads of a stable or beta agent, examples/builds/** plan.json, evals/golden, held-out
+      query labels, evals/probes, routing-acceptance, standards/decision-trees, templates/, build_plugin.py curated seeds,
+      or `dependencies:` of a kept skill. Delete list = unaudited AND zero demand (expected about 550). Everything else is
+      kept; unaudited-with-demand is the V-06 audit queue, ordered stable/beta agent reads first'
+    size: M
+    owner_model: sonnet
+    status: todo
+  - id: V-04
+    title: 'One adversarial Opus reviewer attacks V-03 before anything is deleted: are the demand sources complete (what else
+      cites a skill by path - fixtures, registry consumers, MCP tools, router glosses, ''NOT for ... use x/y'' clauses), is
+      the audited definition honest, and a random sample of 40 from the delete list read for ''would a proven agent or example
+      be wrong without this''. Findings change the script, not individual verdicts'
+    size: S
+    owner_model: opus
+    status: todo
+  - id: V-05
+    title: 'Agent roster cut by rule, before skills are deleted so citations are repaired only in agents that survive. Remove:
+      the 14 deprecated agents and their 9 redirect commands; build-time agents whose mechanism no longer exists (read each
+      playbook first); every experimental agent that is not an owner of a step in a committed example build and was not graded
+      RIGHT in V-08. Never remove an agent or command a committed example build references. Update tests that pin roster counts
+      in dedicated commits (old -> new, reason)'
+    size: M
+    owner_model: sonnet
+    status: todo
+  - id: V-06
+    title: 'Claims audit of the audit queue in demand order - the R3-06 recipe: batches of 5, Opus writer with sweep, Opus
+      adversarial reviewer on every batch, integration refused when the release branch changed the skill since the worktree
+      base, one ledger line per batch with the skill names. Batches 17-18 (worktrees agent-a029f88ea9d46cfc9 / agent-af67a0b8164fdc2e6)
+      are reviewed and landed first. Holds one agent slot all week. Hard cut-off Wed 2026-11-25 12:00 local. The queue (about
+      270) will not drain: floor 100, target 150, stretch 220 newly audited'
+    size: L
+    owner_model: opus
+    status: todo
+  - id: V-07
+    title: 'Execute the reviewed delete list (Sun-Mon): remove the skill directories one domain per commit, repair every reference
+      in surviving agents, commands, kept skills (link-only commits, on the V-03 allowlist), eval fixtures and held-out labels
+      (queries whose label was deleted are dropped and listed; floors recomputed on the same index, never lowered otherwise);
+      skill_sync --all --skip-embeddings; a repo-wide scan fails on any domain/slug that does not resolve; example builds
+      validate; full pytest. Tests that pin corpus size change in dedicated commits'
+    size: M
+    owner_model: fable
+    status: todo
+  - id: V-08
+    title: 'Agent proof, bounded, closes Sun 2026-11-22 12:00: grade the four experimental agents that own example-build steps
+      (apex-builder, lwc-builder, story-drafter, sandbox-strategy-designer) and re-run the two PARTLY-WRONG stable agents
+      (flow-builder, object-designer), each once on a real example input with an adversarial Opus grader. Further experimental
+      agents only if the slot is idle. RIGHT -> beta; wrong because of a skill -> fix the skill, re-run once'
+    size: M
+    owner_model: opus
+    status: todo
+  - id: V-09
+    title: 'Unaudited skills that survive ship labelled, not hidden: status from registry/skill-status.json appears as an
+      UNAUDITED prefix in router glosses, in search_skill results, in docs/SKILLS.md and on the Pages catalog; README and
+      plugin counts come from the same file. No dual registry or dual bundle - the plugin ships the repository, so anything
+      in it ships'
+    size: M
+    owner_model: sonnet
+    status: todo
+  - id: V-10
+    title: 'Checkers: delete the four TODO-stub checkers (environment-strategy, flow-deployment-and-packaging, flow-migration-from-trigger,
+      retry-and-backoff-patterns); for skills in the ship set only, fix or delete the rules that assert false platform facts
+      or misread code (R3-10 list), each verified against the guides. Checkers stay step gates; no linter is claimed. The
+      applicability rework of all checkers is not attempted this week'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: V-11
+    title: 'Skills in the ship set that restate the corrected AGENT_CONTRACT idiom facts (R3-08 list): align or mark UNVERIFIED'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: V-14
+    title: 'Measure the result into measured.after next to measured.before (Wed afternoon, after the audit cut-off): the same
+      counters as V-01; held-out Hit@1/Hit@3 on the surviving labels vs the pre-revamp values on the same queries; at least
+      10 new wrong-fact probes built from this week''s corrected claims, with / without the audited skill; agent grades; skills
+      audited / corrected / unaudited-labelled / deleted'
+    size: M
+    owner_model: sonnet
+    status: todo
+  - id: V-15
+    title: 'Release candidate 2.0.0 / mcp 0.6.0, left for the owner to merge: full gate green on release/2.0.0, PR to main
+      with CI green, TestPyPI build installed and smoke-tested from a fresh environment, release notes written, and the exact
+      merge + tag commands in the PR body. Not merged, not tagged, not published unattended: PyPI cannot be yanked by anyone
+      this week, the release removes hundreds of skills for every plugin and MCP user, and nothing external needs it before
+      the owner is back'
+    size: S
+    owner_model: fable
+    status: todo
+  - id: V-16
+    title: 'Market test (closes R2-03), starts once V-02 is verified live: record the baseline, add the mcp-name marker the
+      official MCP registry needs, then submit factual pull-request listings (awesome-mcp-servers, Claude plugin / skill directories;
+      the MCP registry only if it can be done non-interactively) with text taken from the README and no quality claims. Check
+      the PRs daily and answer maintainers'' factual questions. Forum and social posts are written as drafts only. Numbers
+      re-read on 11-26'
+    size: M
+    owner_model: fable
+    status: todo
+  - id: V-17
+    title: 'Owner report, Thu 2026-11-26, in measured.decision_memo and as the session''s last message: before / after table,
+      what was deleted and why, what was reverted or failed, what the listings returned, the 2.0.0 PR link with the one-command
+      merge, and one recommendation - keep, shrink further, or stop'
+    size: S
     owner_model: fable
     status: todo
   - id: R3-03
@@ -1084,13 +1262,39 @@ releases:
       to record-triggered-flow-patterns'
     size: M
     owner_model: opus
-    status: todo
+    status: dropped
+    evidence: '2026-11-19: deferred to the owner - touches a signed example build and needs a human gate; not attempted in
+      the autonomous week'
   - id: R3-04
     title: 'case-onboarding: escalation scope, Tier 1 peer visibility, billing@ send-as, SuppliedEmail FLS + gotchas in two
       admin skills'
     size: M
     owner_model: opus
-    status: todo
+    status: dropped
+    evidence: '2026-11-19: deferred to the owner - touches a signed example build and needs a human gate; not attempted in
+      the autonomous week'
+  - id: R3-11
+    title: 'tier2-webhook example: Tier2WebhookFinalizer insert has no try/catch so a failed insert loses the retry; Tier2_Webhook_Admin
+      grants Modify All/View All/Delete on Integration_Failure__c to every escalating agent (HUMAN GATE: example build is
+      signed; needs an amendment, not an edit)'
+    size: S
+    owner_model: opus
+    status: dropped
+    evidence: '2026-11-19: deferred to the owner - touches a signed example build and needs a human gate; not attempted in
+      the autonomous week'
+  - id: R3-01
+    title: 'Direction decided from R2-06 memo: (a) linter product first slice, (b) build loop as the product, or (c) library
+      maintenance only — plan written as items here, reviewed by 3 adversarial reviewers before work starts'
+    size: M
+    owner_model: fable
+    status: dropped
+    evidence: 'superseded 2026-11-19: the owner gave a one-week autonomous revamp; direction = verified core only (plan V-01..V-17)'
+  - id: R3-02
+    title: Release 1.6.0 / 0.5.3 — content set by R3-01
+    size: S
+    owner_model: fable
+    status: dropped
+    evidence: superseded by V-15 (release 2.0.0)
   - id: R3-07
     title: 'Checker contract: ''nothing of my type in this project'' must be silent exit 0 (248 checkers print a finding,
       10 exit 1 with no severity-prefixed line: change-management-and-deployment, custom-field-creation, lightning-page-performance-tuning,
@@ -1098,21 +1302,16 @@ releases:
       community-user-data-migration, field-audit-trail)'
     size: S
     owner_model: sonnet
-    status: todo
-  - id: R3-08
-    title: 'Skills restating AGENT_CONTRACT idiom facts now marked UNVERIFIED or corrected: security-architecture-review gotchas
-      L28, lwc-custom-lookup gotchas L44, salesforce-debug-log-analysis security-sharing L68-104, apex-stripinaccessible-and-fls-enforcement
-      L55/L205, health-cloud-lwc-components L143; plus pdf-generation-patterns ''Flying Saucer'' (no guide hit), apex-system-runas
-      L68 Profile as setup object, data-skew-and-sharing-performance Defer Sharing Setup path'
-    size: S
-    owner_model: sonnet
-    status: todo
+    status: dropped
+    evidence: '2026-11-19: the applicability rework of 248 checkers is cut from the autonomous week (reviewer: no linter is
+      claimed, checkers stay step gates); re-file if checkers become a product'
   - id: R3-09
     title: 'Four checkers emit ''TODO: implement actual checks'' as an ISSUE (environment-strategy, flow-deployment-and-packaging,
       flow-migration-from-trigger, retry-and-backoff-patterns): write the rule or delete the script'
     size: S
     owner_model: sonnet
-    status: todo
+    status: dropped
+    evidence: folded into V-10
   - id: R3-10
     title: 'Checker rules asserting false platform facts or misreading code (R2-05 grader): timezone-and-datetime-pitfalls
       Date.today() ''may return server UTC date''; event-driven-architecture ignores EventUuid/ReplayId; async-apex + governor-limits
@@ -1121,19 +1320,17 @@ releases:
       — verify each against the guides before changing'
     size: S
     owner_model: opus
-    status: todo
-  - id: R3-11
-    title: 'tier2-webhook example: Tier2WebhookFinalizer insert has no try/catch so a failed insert loses the retry; Tier2_Webhook_Admin
-      grants Modify All/View All/Delete on Integration_Failure__c to every escalating agent (HUMAN GATE: example build is
-      signed; needs an amendment, not an edit)'
+    status: dropped
+    evidence: folded into V-10
+  - id: R3-08
+    title: 'Skills restating AGENT_CONTRACT idiom facts now marked UNVERIFIED or corrected: security-architecture-review gotchas
+      L28, lwc-custom-lookup gotchas L44, salesforce-debug-log-analysis security-sharing L68-104, apex-stripinaccessible-and-fls-enforcement
+      L55/L205, health-cloud-lwc-components L143; plus pdf-generation-patterns ''Flying Saucer'' (no guide hit), apex-system-runas
+      L68 Profile as setup object, data-skew-and-sharing-performance Defer Sharing Setup path'
     size: S
-    owner_model: opus
-    status: todo
-  - id: R3-02
-    title: Release 1.6.0 / 0.5.3 — content set by R3-01
-    size: S
-    owner_model: fable
-    status: todo
+    owner_model: sonnet
+    status: dropped
+    evidence: folded into V-11
   measured: {}
 inbox:
 - date: 2026-10-19
@@ -1268,7 +1465,7 @@ inbox:
     (api_meta L97491/L97668, API 62.0); (4) SuppliedEmail editable by every persona. Fix the build (plan amendment path) and
     add the escalation-scope + peer-visibility gotchas to admin/escalation-rules and admin/sharing-and-visibility'
   size: M
-  slotted_into: 1.6.0
+  slotted_into: 2.0.0
 - date: 2026-10-19
   ask: 'From agent proof R2-01-5: permission-set-architect asserted PermissionSet.emailRoutingAddressAccesses was ''not grounded
     in corpus'' — it is (api_meta 264 L97491, L97668: name + enabled, API 62.0). Add the element to admin/permission-set-architecture
@@ -1282,7 +1479,7 @@ inbox:
     new metadata types) — each with the 264 corpus cite as answer key, in evals/probes/winter27-probes.json (run_lift.py --probes
     format); then run the recipe on the owning skills and measure with/without'
   size: M
-  slotted_into: 1.6.0
+  slotted_into: 2.0.0
 - date: 2026-10-19
   ask: 'From agent proof R2-01-6: object-designer playbook must (a) never conclude ''no sharing change'' when the object''s
     OWD is unknown — state the answer conditionally per OWD value and name the question (sharing-selection Q1 has no ''unknown''
@@ -1298,7 +1495,7 @@ inbox:
     reviewer, rsync, sync, validate; then run_lift.py --probes both arms -> the with-skill arm must flip wrong->right. Also
     fix the 3 wrong rows + DevHubSettings naming in standards/release-delta-winter27.md'
   size: M
-  slotted_into: 1.6.0
+  slotted_into: 2.0.0
 - date: 2026-10-19
   ask: 'From agent proof R2-01-8 (cold build loop): (1) standards/build-orchestration.md section 3.1 says only cited skills''
     rows at ask tier while agents/requirements-clarifier Step 4 says always add admin/requirements-gathering-for-sf — reconcile
@@ -1408,7 +1605,7 @@ inbox:
     max, slow. Worklist is derived, not stored: skills in Mandatory Reads of status stable|beta agents, minus skills with
     updated >= 2026-10-19, minus done_skills of this item.'
   size: L
-  slotted_into: 1.6.0
+  slotted_into: 2.0.0
 - date: 2026-10-20
   ask: 'Found by R3-06 batch 2 (Sonnet writer): TestUserFactory inserts a User then a PermissionSetAssignment (setup object)
     with no System.runAs wrapper; a caller that then inserts non-setup records in the same test hits the mixed-DML rule (apexdev
@@ -1464,20 +1661,20 @@ inbox:
 - date: 2026-11-19
   ask: 'From the R2-05 measurement on 2026-11-19: not-applicable noise is 46% of linter output'
   size: S
-  slotted_into: 1.6.0
+  slotted_into: 2.0.0
 - date: 2026-11-19
   ask: Leftovers reported by the 2026-11-19 fix agents
   size: S
-  slotted_into: 1.6.0
+  slotted_into: 2.0.0
 - date: 2026-11-19
   ask: R2-05 grader 2026-11-19
   size: S
-  slotted_into: 1.6.0
+  slotted_into: 2.0.0
 - date: 2026-11-19
   ask: R2-05 grader 2026-11-19
   size: S
-  slotted_into: 1.6.0
+  slotted_into: 2.0.0
 - date: 2026-11-19
   ask: R2-05 grader 2026-11-19, found by apex-transaction-finalizers and permission-set-architecture checkers
   size: S
-  slotted_into: 1.6.0
+  slotted_into: 2.0.0
