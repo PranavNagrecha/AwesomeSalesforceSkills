@@ -468,9 +468,14 @@ releases:
       positives'
     size: M
     owner_model: sonnet
-    status: todo
+    status: running
     notes: 'Hypothesis to test, not a commitment: the checkers are the one asset a model cannot replace. Success = real findings
       a reviewer agrees with, false-positive rate under 20%, installable in one step.'
+    evidence: '2026-11-19 first measurement: run_all_checkers.py passed --src-root to every checker; 980/1065 exited 2 on
+      argparse and were counted as findings. Fixed (per-checker argument detection, usage errors/tracebacks reported as errors,
+      document-only checkers skipped) + tests. On tier2-webhook force-app (52 files): 949 run, 116 skipped, 10 errored, 340
+      with findings, 684 findings of which ~314 are ''nothing of my type here'' noise from 248 checkers. Next: silence not-applicable
+      output, hand-grade the ~370 substantive findings for false-positive rate, then the Action/CLI wrapper'
   - id: R2-06
     title: 'Decision memo in RELEASES.yaml measured{}: knowledge lift (R1-12), agent proof (R2-01), distribution metrics 14
       days after listing (R2-07), linter spike (R2-05) -> the direction for 1.6.0'
@@ -936,36 +941,49 @@ releases:
       skills that cite it'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: TestUserFactory fences the PermissionSetAssignment insert in System.runAs (apexdev 264 L8970, L9059-9060); 3
+      citing skills corrected
   - id: R2-40
     title: '<apex:remoteAction> does not exist: fix apex/pdf-generation-patterns (6 sites + checker) and security/visualforce-security-and-modernization'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: no <apex:remoteAction> in the 264 Visualforce guide; pdf-generation-patterns 5 sites + checker rule now match
+      Visualforce.remoting / $RemoteAction
   - id: R2-41
     title: 'Batch 4 out-of-batch contradictions: field-audit-trail ''10 years'', transaction-security-policies eventType vs
       eventName, apex-managed-sharing-patterns custom-only without the 68.0 gate, bulk-api Defer Sharing path'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: FAT retention, TransactionSecurityPolicy eventName (api_meta 264 L138856+; legacy eventType/executionUser/resourceName
+      removed from XML, prose, checker), Defer Sharing (Support-enabled, api_meta L130657) in 3 data skills; managed-sharing
+      lead was stale, real site record-access-troubleshooting fixed (api_meta L47644)
   - id: R2-42
     title: 'AGENT_CONTRACT.md Apex security idiom table (L170-172): SECURITY_ENFORCED wording, USER_MODE version, 55.0-56.0
       AccessLevel row, stripInaccessible gate'
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'AGENT_CONTRACT idiom table: Database.query accessLevel at 55.0 (apexdev 264 L11610) added; 3 unsupported claims
+      marked UNVERIFIED inline; security-scanner rule reworded'
   - id: R2-43
     title: Field Audit Trail 'up to 10 years' in 3 more skills (shield-architecture, hipaa-compliance-architecture, field-audit-trail
       L207)
     size: S
     owner_model: sonnet
-    status: todo
+    status: done
+    evidence: 'FAT: archived data kept until deleted, archiveAfterMonths 1-18, 200 fields/object (secguide 262 L4835-4837,
+      api_meta 264 L46342-46351) across 5 packages; field-audit-trail checker rebuilt on real metadata; FieldHistoryArchive
+      query fields corrected'
   - id: R2-44
     title: 'experience-cloud-cms-content description asserts ''audience targeting on content variants'' (contradicted: Audience
       targets ExperienceVariation/NavigationLinkSet/Report/Dashboard; variants are language variants)'
     size: S
     owner_model: opus
-    status: todo
+    status: done
+    evidence: description no longer asserts audience targeting on content variants
   - id: R2-08
     title: Release 1.5.0 / 0.5.2 (ships only if R1-12 shows lift or the accuracy corrections alone justify it; otherwise tag
       nothing and record why)
@@ -1067,6 +1085,22 @@ releases:
       admin skills'
     size: M
     owner_model: opus
+    status: todo
+  - id: R3-07
+    title: 'Checker contract: ''nothing of my type in this project'' must be silent exit 0 (248 checkers print a finding,
+      10 exit 1 with no severity-prefixed line: change-management-and-deployment, custom-field-creation, lightning-page-performance-tuning,
+      org-setup-and-configuration, partner-community-requirements, agentforce-in-slack, apex-regex-and-pattern-matching, apex-wsdl2apex-patterns,
+      community-user-data-migration, field-audit-trail)'
+    size: S
+    owner_model: sonnet
+    status: todo
+  - id: R3-08
+    title: 'Skills restating AGENT_CONTRACT idiom facts now marked UNVERIFIED or corrected: security-architecture-review gotchas
+      L28, lwc-custom-lookup gotchas L44, salesforce-debug-log-analysis security-sharing L68-104, apex-stripinaccessible-and-fls-enforcement
+      L55/L205, health-cloud-lwc-components L143; plus pdf-generation-patterns ''Flying Saucer'' (no guide hit), apex-system-runas
+      L68 Profile as setup object, data-skew-and-sharing-performance Defer Sharing Setup path'
+    size: S
+    owner_model: sonnet
     status: todo
   - id: R3-02
     title: Release 1.6.0 / 0.5.3 — content set by R3-01
@@ -1400,3 +1434,11 @@ inbox:
     the catalog, and re-run the retrieval fixtures that cite this skill.'
   size: S
   slotted_into: 1.5.0
+- date: 2026-11-19
+  ask: 'From the R2-05 measurement on 2026-11-19: not-applicable noise is 46% of linter output'
+  size: S
+  slotted_into: 1.6.0
+- date: 2026-11-19
+  ask: Leftovers reported by the 2026-11-19 fix agents
+  size: S
+  slotted_into: 1.6.0

@@ -4,15 +4,22 @@
 Each skill ships a checker under ``skills/<domain>/<skill>/scripts/check_*.py``
 that:
 
-  - Accepts ``--src-root <path>``.
-  - Writes ``WARN: ...`` lines (one per finding) to stderr.
-  - Exits 0 if no findings, 1 if findings.
+  - Accepts a source tree under its own option name (``--manifest-dir`` for
+    most, ``--src-root`` / ``--project-dir`` / a positional path for others).
+  - Writes one severity-prefixed line per finding (``WARN:``, ``ERROR:``,
+    ``HIGH`` ...) to stderr or stdout.
+  - Exits 1 on ERROR-class findings; WARN-only runs exit 0 unless ``--strict``.
+
+Checkers that take only a document (``--docs-dir``, ``--file``) are reported
+as skipped. A checker that exits non-zero without a parseable finding (usage
+error, traceback) is reported as an invocation error, never as a finding.
 
 This aggregator:
 
   - Discovers every ``check_*.py`` across the corpus.
+  - Reads each checker's argparse declarations to pick its source-tree argument.
   - Runs them in parallel against the target source tree.
-  - Parses ``WARN: ...`` lines and groups by skill.
+  - Parses the finding lines and groups by skill.
   - Writes a single markdown report (or JSON).
   - Exits 0 if no findings, 1 if any findings — so CI can gate.
 
@@ -65,6 +72,7 @@ import argparse
 import concurrent.futures as cf
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -96,10 +104,11 @@ class CheckerResult:
     exit_code: int
     duration_s: float
     error: str | None = None  # set if invocation itself blew up
+    skipped: str | None = None  # set if the checker takes no source-tree argument
 
     @property
     def had_findings(self) -> bool:
-        return bool(self.findings) or (self.exit_code != 0 and self.error is None)
+        return bool(self.findings) and self.error is None
 
 
 def _discover_checkers(root: Path) -> list[tuple[str, Path]]:
@@ -128,29 +137,84 @@ def _filter_by_include(
     ]
 
 
+# The checkers do not share one CLI: most take ``--manifest-dir``, some
+# ``--src-root`` / ``--project-dir`` / a positional path, and a few take only a
+# document (``--docs-dir``, ``--file``) and cannot scan a metadata tree at all.
+# Passing ``--src-root`` to all of them made ~92% exit 2 on an argparse usage
+# error, which this script then counted as "had findings". So read each
+# checker's own argparse declarations and speak its dialect.
+_TREE_OPTIONS = (
+    "--manifest-dir", "--src-root", "--project-dir", "--source-dir", "--src-dir",
+    "--project-root", "--root", "--repo-dir", "--path", "--dir", "--apex-dir",
+)
+_TREE_POSITIONALS = ("paths", "path", "dir", "directory", "root", "src", "manifest_dir")
+_ADD_ARGUMENT = re.compile(r"add_argument\(\s*[\"']([^\"']+)[\"']")
+_FINDING = re.compile(
+    r"^(?:\[\d+\]\s*)?\[?(WARN|WARNING|ERROR|HIGH|CRITICAL|MEDIUM|LOW|REVIEW|ISSUE|P[0-3])\]?(?=[:\s])[:\s-]*(.*)$"
+)
+
+
+def _tree_argv(checker: Path, src_root: Path) -> list[str] | None:
+    """Arguments that point ``checker`` at ``src_root``, or None when the
+    checker declares no source-tree argument (it checks a document instead)."""
+    try:
+        declared = _ADD_ARGUMENT.findall(checker.read_text(encoding="utf-8", errors="replace"))
+    except OSError:
+        return None
+    for option in _TREE_OPTIONS:
+        if option in declared:
+            return [option, str(src_root)]
+    for positional in _TREE_POSITIONALS:
+        if positional in declared:
+            return [str(src_root)]
+    return None
+
+
+def _parse_findings(*streams: str) -> list[str]:
+    findings: list[str] = []
+    for stream in streams:
+        for line in stream.splitlines():
+            match = _FINDING.match(line.strip())
+            if match and match.group(2):
+                level = match.group(1)
+                text = match.group(2).strip()
+                findings.append(text if level in ("WARN", "WARNING") else f"{level}: {text}")
+    return findings
+
+
 def _run_one(
     skill_id: str, checker: Path, src_root: Path, timeout: float
 ) -> CheckerResult:
     """Invoke one checker and return its result. Never raises."""
     started = time.monotonic()
+    argv = _tree_argv(checker, src_root)
+    if argv is None:
+        return CheckerResult(
+            skill_id=skill_id, checker_path=checker, findings=[], raw_stdout="",
+            raw_stderr="", exit_code=0, duration_s=0.0,
+            skipped="no source-tree argument (checks a document, not a project)",
+        )
     try:
         proc = subprocess.run(
-            [sys.executable, str(checker), "--src-root", str(src_root)],
+            [sys.executable, str(checker), *argv],
             capture_output=True,
             text=True,
             timeout=timeout,
         )
         elapsed = time.monotonic() - started
-        # Parse WARN lines from BOTH stdout and stderr — most checkers write
-        # to stderr, but some legacy ones write to stdout. Be permissive.
-        findings: list[str] = []
-        for stream in (proc.stdout, proc.stderr):
-            for line in stream.splitlines():
-                stripped = line.strip()
-                if stripped.startswith("WARN:"):
-                    findings.append(stripped[len("WARN:"):].strip())
-                elif stripped.startswith("ERROR:"):
-                    findings.append(stripped[len("ERROR:"):].strip())
+        # Findings come from BOTH streams — most checkers write to stderr,
+        # some to stdout — and carry a severity prefix (WARN, ERROR, HIGH, ...).
+        findings = _parse_findings(proc.stdout, proc.stderr)
+        error = None
+        if proc.returncode == 2 and "usage:" in proc.stderr:
+            # argparse rejected the invocation: the checker never ran.
+            findings = []
+            error = "usage error: " + (proc.stderr.strip().splitlines() or ["exit 2"])[-1]
+        elif proc.returncode != 0 and not findings:
+            # Non-zero exit with nothing parseable (a traceback, or a format this
+            # script does not know) is a failed run, never a silent "finding".
+            tail = (proc.stderr.strip() or proc.stdout.strip()).splitlines()
+            error = f"exit {proc.returncode} with no parseable finding: " + (tail[-1] if tail else "no output")
         return CheckerResult(
             skill_id=skill_id,
             checker_path=checker,
@@ -159,6 +223,7 @@ def _run_one(
             raw_stderr=proc.stderr,
             exit_code=proc.returncode,
             duration_s=elapsed,
+            error=error,
         )
     except subprocess.TimeoutExpired:
         return CheckerResult(
@@ -262,6 +327,7 @@ def _format_json(results: list[CheckerResult], src_root: Path, duration_s: float
         "checker_count": len(results),
         "had_findings_count": sum(1 for r in results if r.had_findings and r.error is None),
         "errored_count": sum(1 for r in results if r.error is not None),
+        "skipped_count": sum(1 for r in results if r.skipped is not None),
         "total_findings": sum(len(r.findings) for r in results if r.error is None),
         "duration_s": round(duration_s, 2),
         "results": [
@@ -272,6 +338,7 @@ def _format_json(results: list[CheckerResult], src_root: Path, duration_s: float
                 "duration_s": round(r.duration_s, 3),
                 "findings": r.findings,
                 "error": r.error,
+                "skipped": r.skipped,
             }
             for r in sorted(results, key=lambda x: x.skill_id)
         ],
@@ -373,6 +440,7 @@ Examples:
             f"{len(checkers)} checker(s), {with_findings} with findings, "
             f"{total_findings} total findings"
             + (f", {errored} errored" if errored else "")
+            + f", {sum(1 for r in results if r.skipped)} skipped (document-only)"
             + f" ({duration:.1f}s).",
             file=sys.stderr,
         )

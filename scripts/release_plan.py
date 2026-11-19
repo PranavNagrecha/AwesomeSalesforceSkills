@@ -175,7 +175,14 @@ def cmd_add(args) -> int:
     prefix = f"R{idx + 1}"
     if target["items"]:
         prefix = target["items"][0]["id"].rsplit("-", 1)[0]
-    n = max([int(it["id"].rsplit("-", 1)[1]) for it in target["items"] if it["id"].startswith(prefix + "-")] + [0]) + 1
+    # Ids are unique across the whole plan: an item numbered for a later release can
+    # live in an earlier one (R3-05 and R3-06 sit in 1.5.0), so scan every release.
+    taken = [
+        it["id"].split("-")[1]
+        for release in data["releases"] for it in release["items"]
+        if it["id"].startswith(prefix + "-")
+    ]
+    n = max([int(t) for t in taken if t.isdigit()] + [0]) + 1
     title = args.title or args.ask
     if args.size == "L":
         title = "[split before scheduling] " + title
