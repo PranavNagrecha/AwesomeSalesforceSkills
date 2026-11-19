@@ -134,7 +134,7 @@ For a whole workflow rather than a single question, invoke the
 matching subagent. Each reads its full `AGENT.md` playbook, cites
 every skill it consulted, and never deploys to an org.
 
-- **admin** — `assignment-and-auto-response-rules-designer`, `audit-router`, `automation-migration-router`, `build-doc-keeper`, `build-planner`, `business-hours-and-holidays-configurator`, `change-impact-planner`, `config-workbook-author`, `csv-to-object-mapper`, `custom-metadata-and-settings-designer`, `email-template-modernizer`, `entitlement-and-milestone-designer`, `experience-cloud-admin-designer`, `field-impact-analyzer`, `fit-gap-analyzer`, `knowledge-article-taxonomy-agent`, `lead-routing-rules-designer`, `metadata-builder`, `object-designer`, `omni-channel-routing-designer`, `path-designer`, `permission-set-architect`, `plan-verifier`, `process-flow-mapper`, `profile-to-permset-migrator`, `requirements-clarifier`, `sales-stage-designer`, `salesforce-learning-guide`, `story-drafter`, `user-access-diff`
+- **admin** — `access-path-explainer`, `assignment-and-auto-response-rules-designer`, `audit-router`, `automation-migration-router`, `build-doc-keeper`, `build-planner`, `business-hours-and-holidays-configurator`, `change-impact-planner`, `config-workbook-author`, `csv-to-object-mapper`, `custom-metadata-and-settings-designer`, `email-template-modernizer`, `entitlement-and-milestone-designer`, `experience-cloud-admin-designer`, `field-impact-analyzer`, `fit-gap-analyzer`, `knowledge-article-taxonomy-agent`, `lead-routing-rules-designer`, `metadata-builder`, `object-designer`, `omni-channel-routing-designer`, `path-designer`, `permission-set-architect`, `plan-verifier`, `process-flow-mapper`, `profile-to-permset-migrator`, `requirements-clarifier`, `sales-stage-designer`, `salesforce-learning-guide`, `story-drafter`, `user-access-diff`
 - **agentforce** — `agentforce-action-reviewer`, `agentforce-builder`, `agentforce-quality-engineer`
 - **apex** — `apex-builder`, `apex-refactorer`, `apex-test-failure-triager`, `automation-transaction-profiler`, `security-scanner`, `soql-optimizer`, `test-class-generator`, `trigger-consolidator`
 - **architect** — `org-health-assessor-v2`, `salesforce-decision-facilitator`, `waf-assessor`
@@ -144,7 +144,7 @@ every skill it consulted, and never deploys to an org.
 - **integration** — `bulk-migration-planner`, `integration-catalog-builder`, `integration-incident-triager`
 - **lwc** — `lwc-auditor`, `lwc-builder`, `lwc-debugger`
 - **omnistudio** — `omnistudio-designer`
-- **security** — `access-path-explainer`, `security-posture-reviewer`
+- **security** — `security-posture-reviewer`
 
 ## Rules
 

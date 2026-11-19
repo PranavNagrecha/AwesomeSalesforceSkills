@@ -76,7 +76,6 @@ solved more than one way, and cite the branch that decided it.
 Invoke one of these subagents when the ask is a whole workflow
 rather than a single question:
 
-- `access-path-explainer` — Access Path Explainer
 - `security-posture-reviewer` — Security Posture Review
 
 ## Rules

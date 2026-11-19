@@ -88,6 +88,7 @@ project; never edit the template in place.
 Invoke one of these subagents when the ask is a whole workflow
 rather than a single question:
 
+- `access-path-explainer` — Access Path Explainer
 - `assignment-and-auto-response-rules-designer` — Design or audit Assignment + Auto-Response rules
 - `audit-router` — Run the SfSkills audit-router run-time agent
 - `automation-migration-router` — Run the SfSkills automation-migration-router run-time agent

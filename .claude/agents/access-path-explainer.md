@@ -1,6 +1,6 @@
 ---
 name: access-path-explainer
-description: "Access Path Explainer. SfSkills security workflow agent, /why-cant-user: reads its AGENT.md playbook, cites its sources, never deploys."
+description: "Access Path Explainer. SfSkills admin workflow agent, /why-cant-user: reads its AGENT.md playbook, cites its sources, never deploys."
 ---
 
 # access-path-explainer
@@ -42,4 +42,4 @@ not resolve, say so instead of substituting a guess.
 ## Related
 
 - Slash command: `/why-cant-user` (`commands/why-cant-user.md`)
-- Domain router skill: `salesforce-security`
+- Domain router skill: `salesforce-admin`
