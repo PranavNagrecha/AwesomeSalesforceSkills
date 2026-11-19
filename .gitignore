@@ -207,3 +207,6 @@ docs/archive/
 
 # Generated static site (scripts/build_site.py)
 site/_build/
+
+# setuptools build output of the MCP package (a stale copy of src/ was tracked until 2026-11-19)
+mcp/sfskills-mcp/build/

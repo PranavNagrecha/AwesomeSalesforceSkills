@@ -41,7 +41,7 @@ from .__init__ import __version__ as _SERVER_VERSION
 # list_deprecated_redirects                                                    #
 # --------------------------------------------------------------------------- #
 
-# Source of truth: agents/_shared/AGENT_DISAMBIGUATION.md plus docs/MIGRATION.md.
+# Source of truth: agents/_shared/AGENT_DISAMBIGUATION.md.
 # Kept in code (not parsed from markdown) so the JSON contract is stable and
 # typo-free; the markdown is the human-readable counterpart.
 _DEPRECATED_REDIRECTS: dict[str, dict[str, str]] = {
@@ -78,7 +78,7 @@ def list_deprecated_redirects() -> dict[str, Any]:
     return {
         "count": len(_DEPRECATED_REDIRECTS),
         "redirects": _DEPRECATED_REDIRECTS,
-        "source": "agents/_shared/AGENT_DISAMBIGUATION.md + docs/MIGRATION.md",
+        "source": "agents/_shared/AGENT_DISAMBIGUATION.md",
     }
 
 

@@ -1,1 +1,0 @@
-"""Framework validation tests."""

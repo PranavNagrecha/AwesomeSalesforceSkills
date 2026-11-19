@@ -1,1 +1,0 @@
-"""Product vertical-slice tests."""
