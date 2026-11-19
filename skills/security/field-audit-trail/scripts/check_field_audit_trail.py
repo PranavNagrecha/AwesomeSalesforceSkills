@@ -31,7 +31,11 @@ What this checker validates:
        is only a reminder for manual deletion; archived data is kept until you delete it,
        so it is not range-checked here.
 
-Exit codes: 0 = no issues, 1 = issues found.
+Output: one severity-prefixed line per finding. ERROR (unparseable object, tracked-field
+count over the documented limit, historyRetentionPolicy values out of range, missing
+manifest directory) exits 1 always. WARN (a high-sensitivity field without history
+tracking, no retention policy in source control) exits 0 unless --strict. A tree with no
+objects/ directory prints one "INFO: nothing to check" line and exits 0.
 """
 
 from __future__ import annotations
@@ -108,6 +112,7 @@ def find_objects_dir(manifest_dir: Path) -> Path | None:
     """
     candidates = [
         manifest_dir / "force-app" / "main" / "default" / "objects",
+        manifest_dir / "main" / "default" / "objects",  # manifest-dir is force-app itself
         manifest_dir / "src" / "objects",
         manifest_dir / "unpackaged" / "objects",
         manifest_dir / "objects",
@@ -220,7 +225,7 @@ def check_fht_on_sensitive_fields(
         parsed = parse_object_metadata(object_xml)
         if parsed.get("error"):
             issues.append(
-                f"[{object_name}] Could not parse object metadata: {parsed['error']}"
+                f"ERROR: [{object_name}] Could not parse object metadata: {parsed['error']}"
             )
             continue
 
@@ -232,7 +237,7 @@ def check_fht_on_sensitive_fields(
             # (standard fields may not appear as XML elements if unmodified)
             if field in all_fields and field not in tracked:
                 issues.append(
-                    f"[{object_name}.{field}] Field History Tracking is NOT enabled "
+                    f"WARN: [{object_name}.{field}] Field History Tracking is NOT enabled "
                     f"on a high-sensitivity field. FAT cannot archive changes for "
                     f"fields without FHT active."
                 )
@@ -244,7 +249,7 @@ def check_fht_on_sensitive_fields(
         if len(tracked) > limit:
             basis = "with Field Audit Trail" if has_policy else "without Field Audit Trail"
             issues.append(
-                f"[{object_name}] History tracking enabled on {len(tracked)} fields "
+                f"ERROR: [{object_name}] History tracking enabled on {len(tracked)} fields "
                 f"- exceeds the documented limit of {limit} per object {basis}."
             )
 
@@ -284,7 +289,7 @@ def check_retention_policy_presence(objects_dir: Path) -> list[str]:
             with_policy.append(object_name)
     if in_scope and not with_policy:
         issues.append(
-            "No historyRetentionPolicy block found in any in-scope object definition. "
+            "WARN: No historyRetentionPolicy block found in any in-scope object definition. "
             "If Shield FAT is required for compliance, define a HistoryRetentionPolicy "
             "per object (Metadata API) and keep it in source control; the default "
             "archives after 18 months in production. "
@@ -312,7 +317,7 @@ def check_history_retention_policies(objects_dir: Path) -> list[str]:
             months_el = policy.find(_ns("archiveAfterMonths"))
             if months_el is None or not (months_el.text or "").strip():
                 issues.append(
-                    f"[{name}] historyRetentionPolicy has no archiveAfterMonths "
+                    f"ERROR: [{name}] historyRetentionPolicy has no archiveAfterMonths "
                     "(required; 1-18 months)."
                 )
             else:
@@ -322,7 +327,7 @@ def check_history_retention_policies(objects_dir: Path) -> list[str]:
                     months = None
                 if months is None or months < 1 or months > 18:
                     issues.append(
-                        f"[{name}] archiveAfterMonths={months_el.text.strip()} is outside "
+                        f"ERROR: [{name}] archiveAfterMonths={months_el.text.strip()} is outside "
                         "the documented range of 1-18 months. It sets when history is "
                         "archived, not how long it is kept; use archiveRetentionYears "
                         "as the manual-deletion reminder."
@@ -335,7 +340,7 @@ def check_history_retention_policies(objects_dir: Path) -> list[str]:
                     grace = None
                 if grace is None or grace < 0 or grace > 10:
                     issues.append(
-                        f"[{name}] gracePeriodDays={grace_el.text.strip()} is outside "
+                        f"ERROR: [{name}] gracePeriodDays={grace_el.text.strip()} is outside "
                         "the documented range of 0-10 days."
                     )
     return issues
@@ -351,15 +356,15 @@ def check_field_audit_trail(manifest_dir: Path) -> list[str]:
     issues: list[str] = []
 
     if not manifest_dir.exists():
-        issues.append(f"Manifest directory not found: {manifest_dir}")
+        issues.append(f"ERROR: Manifest directory not found: {manifest_dir}")
         return issues
 
     objects_dir = find_objects_dir(manifest_dir)
 
     if objects_dir is None:
         issues.append(
-            f"Could not locate an objects/ directory under {manifest_dir}. "
-            "Ensure this is an SFDX or Metadata API project root."
+            f"INFO: nothing to check: no objects/ directory under {manifest_dir} "
+            "(SFDX force-app/main/default/objects, or Metadata API src/ or unpackaged/ layout)."
         )
         return issues
 
@@ -385,6 +390,11 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root directory of the Salesforce metadata project (default: current directory).",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings as well as ERROR (INFO never fails).",
+    )
     return parser.parse_args()
 
 
@@ -401,15 +411,19 @@ def main() -> int:
         print("No issues found. Field Audit Trail configuration looks correct.")
         return 0
 
-    print(f"Found {len(issues)} issue(s):\n")
-    for i, issue in enumerate(issues, 1):
-        print(f"  [{i}] {issue}")
+    print(f"Found {len(issues)} finding(s):\n")
+    for issue in issues:
+        print(issue)
     print()
-    print(
-        "Resolve these issues before claiming FAT compliance coverage. "
-        "See skills/security/field-audit-trail/references/gotchas.md for details."
-    )
-    return 1
+    levels = [i.split(":", 1)[0] for i in issues]
+    if "ERROR" in levels or "WARN" in levels:
+        print(
+            "Resolve ERROR/WARN findings before claiming FAT compliance coverage. "
+            "See skills/security/field-audit-trail/references/gotchas.md for details."
+        )
+    if "ERROR" in levels or (args.strict and "WARN" in levels):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

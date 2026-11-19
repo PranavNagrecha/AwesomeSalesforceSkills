@@ -90,7 +90,7 @@
     "fcdf3326ea007c76595b",
     "ffcea3222e69f7bf8644"
   ],
-  "content_hash": "45d2bb33b8646b069426ada1cfa6130b5e7ffd87d359d7a3d6c11a61b86d0ffb",
+  "content_hash": "992432a6cce818c2ed369e87e1be21a232e9ff90898d619e717bda110ae3d9f1",
   "dependencies": [],
   "description": "Use when a Lightning record page, home page, or app page is slow to load or render \u2014 covers Experienced Page Time (EPT) analysis, component count reduction, progressive disclosure via tabs and conditional rendering, Lightning Experience Insights diagnostics, and DOM/XHR minimization strategies. Triggers: 'Lightning page is slow', 'EPT is high', 'record page takes too long to load', 'too many components on page', 'Lightning Experience Insights shows slow page', 'how to optimize Lightning page performance'. NOT for Visualforce page performance (separate concern). NOT for Apex or SOQL query optimization (use apex/apex-cpu-and-heap-optimization or data/soql-query-optimization). NOT for report or dashboard performance (use admin/report-performance-tuning).",
   "file_location": "skills/admin/lightning-page-performance-tuning",

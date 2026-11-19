@@ -189,7 +189,7 @@
     "fefc3c8f00835771e3e0",
     "ff367981c20b3d503740"
   ],
-  "content_hash": "5d5e64bb6b29c7774251952a9aec1adf50ef79617dd44c4f7c27b50b10431446",
+  "content_hash": "f40b8dd231fe8c3f9b5d89690dcc228ad77a9f73cb95f2f7c4d7fa8eb8589fef",
   "dependencies": [],
   "description": "Use when configuring org-wide platform settings: MFA enforcement, My Domain setup and deployment, session timeout and security settings, password policies, trusted IP ranges (Network Access), and CSP Trusted Sites. Owns these settings as deployable Settings metadata (Security.settings, MyDomain.settings, Company.settings, Language.settings) and the order in which a new org is stood up. Trigger keywords: 'MFA setup', 'My Domain', 'session settings', 'password policy', 'trusted IP ranges', 'CSP trusted sites', 'Security.settings', 'SecuritySettings metadata', 'MyDomainSettings', 'settings-meta.xml', 'enhanced domains', 'deploy org settings', 'new org setup order', 'sessionTimeout enum', 'lockSessionsToIp', 'enableAdminLoginAsAnyUser'. NOT for user-level login restrictions (use user-management), NOT for permission model design (use permission-sets-vs-profiles), NOT for security audit and hardening review (use security/org-hardening-and-baseline-config).",
   "file_location": "skills/admin/org-setup-and-configuration",

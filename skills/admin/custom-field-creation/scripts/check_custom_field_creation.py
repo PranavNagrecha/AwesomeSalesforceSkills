@@ -415,6 +415,11 @@ def parse_args() -> argparse.Namespace:
         help="Root directory of the Salesforce metadata (default: current directory).",
     )
     parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings as well as ERROR (INFO never fails).",
+    )
+    parser.add_argument(
         "--min-severity",
         choices=SEVERITIES,
         default="INFO",
@@ -431,7 +436,10 @@ def main() -> int:
     findings = [f for f in findings if SEVERITIES.index(f[0]) >= floor]
 
     if not findings:
-        print("No findings.")
+        if next(Path(args.manifest_dir).rglob("*.field-meta.xml"), None) is None:
+            print(f"INFO: nothing to check: no *.field-meta.xml files under {args.manifest_dir}")
+        else:
+            print("No findings.")
         return 0
 
     order = {"ERROR": 0, "WARN": 1, "INFO": 2}
@@ -443,7 +451,10 @@ def main() -> int:
         f"\n{len(findings)} finding(s): "
         f"{counts['ERROR']} ERROR, {counts['WARN']} WARN, {counts['INFO']} INFO"
     )
-    return 1
+    # Contract: ERROR always exits 1; WARN only under --strict; INFO never.
+    if counts["ERROR"] or (args.strict and counts["WARN"]):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

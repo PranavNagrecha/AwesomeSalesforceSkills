@@ -3,7 +3,13 @@
 
 Scans `force-app/main/default/classes/**/*.cls` for the issues documented in
 `references/gotchas.md` and `references/llm-anti-patterns.md`. Reports issues
-with file:line citations; exits 0 only when no issues are found.
+with file:line citations, one severity-prefixed line per finding.
+
+Severities and exit codes:
+  ERROR  WRONG-MOCK, AUTH-AND-NC, unreadable file, missing path   -> exit 1 always
+  WARN   every other rule (LITERAL-URL, NO-TIMEOUT, CATCH-ORDER,
+         HAND-EDIT)                                               -> exit 0 unless --strict
+  INFO   "nothing to check" (no *.cls under the scanned tree)     -> exit 0
 
 Detection heuristics (stdlib only, regex-based — no semantic Apex parse):
 
@@ -67,8 +73,16 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--apex-dir",
-        default="force-app/main/default/classes",
-        help="Override Apex class root relative to manifest-dir.",
+        default=None,
+        help=(
+            "Apex class root relative to manifest-dir (default: "
+            "force-app/main/default/classes if present, else every *.cls under manifest-dir)."
+        ),
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings as well as ERROR.",
     )
     return parser.parse_args()
 
@@ -213,20 +227,35 @@ def find_http_mock_in_soap_test(path: Path, text: str) -> list[str]:
     return issues
 
 
-def scan_directory(root: Path, apex_subdir: str) -> list[str]:
-    apex_root = root / apex_subdir
-    if not apex_root.exists():
-        return [
-            f"{root}: manifest-dir does not contain '{apex_subdir}' — "
-            "is this an SFDX project? Pass --apex-dir to override."
-        ]
+DEFAULT_APEX_DIR = "force-app/main/default/classes"
+
+
+def scan_directory(root: Path, apex_subdir: str | None) -> list[str]:
+    if not root.is_dir():
+        return [f"ERROR: {root}: manifest-dir does not exist or is not a directory."]
+    if apex_subdir is not None:
+        apex_root = root / apex_subdir
+        if not apex_root.exists():
+            return [
+                f"ERROR: {root}: manifest-dir does not contain '{apex_subdir}' "
+                "(passed with --apex-dir)."
+            ]
+    else:
+        default_root = root / DEFAULT_APEX_DIR
+        # --manifest-dir may already point inside the project (force-app, main/default,
+        # classes/), so fall back to every *.cls under it.
+        apex_root = default_root if default_root.exists() else root
+
+    cls_files = sorted(apex_root.rglob("*.cls"))
+    if not cls_files:
+        return [f"INFO: nothing to check: no *.cls files under {apex_root}"]
 
     all_issues: list[str] = []
-    for cls_file in apex_root.rglob("*.cls"):
+    for cls_file in cls_files:
         try:
             text = cls_file.read_text(encoding="utf-8", errors="replace")
         except OSError as exc:
-            all_issues.append(f"{cls_file}: read error — {exc}")
+            all_issues.append(f"ERROR: {cls_file}: read error — {exc}")
             continue
 
         all_issues.extend(find_hand_edits(cls_file, text))
@@ -245,6 +274,16 @@ def scan_directory(root: Path, apex_subdir: str) -> list[str]:
     return all_issues
 
 
+ERROR_RULES = (f"{ISSUE_PREFIX}-WRONG-MOCK", f"{ISSUE_PREFIX}-AUTH-AND-NC")
+
+
+def _tag(issue: str) -> str:
+    """Prefix a finding with its severity unless the scanner already did."""
+    if issue.startswith(("ERROR:", "WARN:", "REVIEW:", "INFO:")):
+        return issue
+    return f"ERROR: {issue}" if any(r in issue for r in ERROR_RULES) else f"WARN: {issue}"
+
+
 def main() -> int:
     args = parse_args()
     manifest_dir = Path(args.manifest_dir).resolve()
@@ -254,10 +293,13 @@ def main() -> int:
         print("No wsdl2apex anti-patterns detected.")
         return 0
 
-    print(f"Found {len(issues)} issue(s):", file=sys.stderr)
-    for issue in issues:
+    tagged = [_tag(issue) for issue in issues]
+    print(f"Found {len(tagged)} finding(s):", file=sys.stderr)
+    for issue in tagged:
         print(issue, file=sys.stderr)
-    return 1
+    has_error = any(i.startswith("ERROR:") for i in tagged)
+    has_warn = any(i.startswith("WARN:") for i in tagged)
+    return 1 if (has_error or (args.strict and has_warn)) else 0
 
 
 if __name__ == "__main__":

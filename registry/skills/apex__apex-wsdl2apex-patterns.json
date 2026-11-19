@@ -71,6 +71,7 @@
     "9e2ccebbb441aec5587b",
     "a39deb921757e9bc891b",
     "a6cc267b8321241dbf78",
+    "ac3c9595012a1ac6646a",
     "acbfcb90f9739cd252f7",
     "af3b3f07edaca7a5f701",
     "afa336baa5928fa21da1",
@@ -102,7 +103,7 @@
     "fe0a7f2a9cc265de9bb0",
     "feb4c859ee127eabc4c0"
   ],
-  "content_hash": "2d5be86aad45b48f3e603efa8d605a3f78cd0c96314bf3818bbc7acfd4e1131b",
+  "content_hash": "c35d542c7cd0d1759e8fd4d396552b1897f478501c7134a3fe6d2e1c5399f83b",
   "dependencies": [],
   "description": "Use when consuming a third-party SOAP web service from Apex by generating proxy classes from a WSDL \u2014 covers the Setup > Apex Classes > Generate from WSDL tool, WSDL pre-processing for the parser's limits, the generated stub's `_x` HTTP control properties, Named Credential wiring, SOAP fault handling, and WebServiceMock testing. Triggers: 'generate Apex from WSDL', 'wsdl2apex', 'WSDL parse error xsd:choice', 'outbound SOAP callout from Apex', 'WebServiceCalloutException not caught'. NOT for Salesforce-as-SOAP-server (enterprise/partner WSDL \u2014 use integration/soap-api-patterns), REST callouts (use apex/callouts-and-http-integrations), or generic HTTP retry (use apex/apex-callout-retry-and-resilience).",
   "file_location": "skills/apex/apex-wsdl2apex-patterns",

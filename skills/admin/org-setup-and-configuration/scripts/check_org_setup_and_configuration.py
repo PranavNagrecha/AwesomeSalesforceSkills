@@ -14,7 +14,8 @@ Every enum list and default below is taken from the Metadata API Developer Guide
 `CspTrustedSite`. Thresholds that are NOT in the guide are labelled as heuristics
 where they are declared.
 
-Stdlib only. Exits 1 when any finding is reported, 0 when the tree is clean.
+Stdlib only. Exits 1 on any ERROR finding; WARN/INFO findings exit 0 unless --strict
+(then WARN also exits 1). A path that does not exist is an ERROR.
 
 Usage:
     python3 check_org_setup_and_configuration.py [--manifest-dir PATH]
@@ -531,6 +532,11 @@ def parse_args() -> argparse.Namespace:
         default=".",
         help="Root of the Salesforce metadata project, e.g. force-app/main/default (default: .).",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings as well as ERROR (INFO never fails).",
+    )
     return parser.parse_args()
 
 
@@ -566,7 +572,9 @@ def main() -> int:
         counts[severity] = counts.get(severity, 0) + 1
     summary = ", ".join(f"{counts[s]} {s}" for s in ("ERROR", "WARN", "INFO") if s in counts)
     print(f"\n{len(findings)} finding(s): {summary}")
-    return 1
+    if counts.get("ERROR") or (args.strict and counts.get("WARN")):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

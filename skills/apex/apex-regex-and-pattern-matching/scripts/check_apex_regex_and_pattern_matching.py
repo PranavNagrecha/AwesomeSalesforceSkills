@@ -14,7 +14,10 @@ Flags the high-signal mistakes from references/llm-anti-patterns.md:
   7. `matches()` called on a string that is likely longer than the pattern
      (heuristic — flags as REVIEW, not HIGH).
 
-Stdlib only. Emits JSON for scoring.
+Stdlib only. Emits JSON for scoring (stdout), plus one severity-prefixed line per
+finding (`ERROR:` for CRITICAL/HIGH, `WARN:` for MEDIUM/LOW, `REVIEW:` for REVIEW)
+on stderr. ERROR findings exit 1 always; WARN/REVIEW exit 0 unless --strict. A path
+that does not exist is ERROR, exit 1; a tree with no Apex is `INFO: nothing to check`.
 
 Usage:
     python3 check_apex_regex_and_pattern_matching.py --path force-app/main/default
@@ -30,6 +33,8 @@ from pathlib import Path
 from typing import Iterable
 
 SEVERITY_WEIGHTS = {"CRITICAL": 20, "HIGH": 10, "MEDIUM": 5, "LOW": 1, "REVIEW": 0}
+# Contract prefix for each finding severity.
+PREFIX = {"CRITICAL": "ERROR", "HIGH": "ERROR", "MEDIUM": "WARN", "LOW": "WARN", "REVIEW": "REVIEW"}
 
 SINGLE_ESCAPE_IN_LITERAL = re.compile(
     r"'[^'\n]*?(?<!\\)\\([dswbnDWSB])[^']*?'"
@@ -173,6 +178,11 @@ def parse_args() -> argparse.Namespace:
         help="Root directory to scan (default: force-app/main/default).",
     )
     parser.add_argument("--format", choices=["json", "text"], default="json")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN/REVIEW findings as well as ERROR.",
+    )
     return parser.parse_args()
 
 
@@ -181,25 +191,36 @@ def main() -> int:
     root = Path(args.path)
     if not root.exists():
         print(json.dumps({"error": f"path not found: {root}"}))
-        return 2
+        print(f"ERROR: path not found: {root}", file=sys.stderr)
+        return 1
 
     issues: list[dict] = []
+    apex_seen = 0
     for apex_path in apex_files(root):
+        apex_seen += 1
         issues.extend(check_file(apex_path))
 
     score = sum(SEVERITY_WEIGHTS.get(i["severity"], 0) for i in issues)
 
+    def line_for(issue: dict) -> str:
+        prefix = PREFIX.get(issue["severity"], "WARN")
+        return f"{prefix}: {issue['file']}:{issue['line']}  [{issue['rule']}] {issue['message']}"
+
     if args.format == "json":
         print(json.dumps({"score": score, "issues": issues}, indent=2))
+        for issue in issues:
+            print(line_for(issue), file=sys.stderr)
+        if not issues and apex_seen == 0:
+            print(f"INFO: nothing to check: no *.cls or *.trigger files under {root}", file=sys.stderr)
     else:
         for issue in issues:
-            print(
-                f"{issue['severity']:8} {issue['file']}:{issue['line']}  "
-                f"[{issue['rule']}] {issue['message']}"
-            )
+            print(line_for(issue))
+        if not issues and apex_seen == 0:
+            print(f"INFO: nothing to check: no *.cls or *.trigger files under {root}")
         print(f"\nTotal weighted score: {score}")
 
-    return 0 if not issues else 1
+    has_error = any(PREFIX.get(i["severity"], "WARN") == "ERROR" for i in issues)
+    return 1 if (has_error or (args.strict and issues)) else 0
 
 
 if __name__ == "__main__":

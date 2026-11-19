@@ -115,6 +115,7 @@
     "c292c8b69f76bf84c92c",
     "c42738507dec390b596f",
     "c6978ee63bc836edf0b5",
+    "c6b2bd41a00f389bf045",
     "c72e393d872906c9298f",
     "ca4d7e011bee6c0b5e96",
     "ccc2e8de18134f69b1ce",
@@ -144,7 +145,7 @@
     "fc807a1362e2abfbb18d",
     "ffbcf462862901c65ed7"
   ],
-  "content_hash": "05f92075cb0cf882a1b21896431c1d14badbd767510aeba521b0e5c90706ab84",
+  "content_hash": "094393b50c10deb0ba8224c298775abd10e60417dfc1f23d9902b1c0d8d294e0",
   "dependencies": [],
   "description": "Use when planning, reviewing, or troubleshooting Salesforce metadata releases and admin deployment processes. Triggers: 'change set', 'deployment plan', 'rollback', 'DevOps Center', 'SFDX deploy', 'release checklist', 'production deployment', 'validation only deploy', 'quick deploy', 'test level', 'rollbackOnError', 'destructive changes', 'package.xml for an admin release', 'deployment status'. NOT for change set upload mechanics \u2014 use devops/change-set-deployment. NOT for scoring release risk up front \u2014 use admin/deployment-risk-assessment.",
   "file_location": "skills/admin/change-management-and-deployment",

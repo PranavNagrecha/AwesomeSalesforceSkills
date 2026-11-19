@@ -102,7 +102,7 @@ def check_flexipage(path: Path) -> list[str]:
     try:
         tree = ET.parse(path)
     except ET.ParseError as exc:
-        return [f"  XML parse error in {path.name}: {exc}"]
+        return [f"ERROR: XML parse error in {path.name}: {exc}"]
 
     root = tree.getroot()
     components = list(_find_all_components(root))
@@ -111,7 +111,7 @@ def check_flexipage(path: Path) -> list[str]:
     # --- Check 1: Total component count ---
     if total_count > TOTAL_COMPONENT_WARN_THRESHOLD:
         warnings.append(
-            f"  HIGH COMPONENT COUNT: {path.name} has {total_count} components "
+            f"WARN: HIGH COMPONENT COUNT: {path.name} has {total_count} components "
             f"(threshold: {TOTAL_COMPONENT_WARN_THRESHOLD}). "
             "Consider removing unused components or deferring to tabs."
         )
@@ -125,7 +125,7 @@ def check_flexipage(path: Path) -> list[str]:
 
     if heavy_components:
         warnings.append(
-            f"  DATA-HEAVY COMPONENTS: {path.name} contains "
+            f"WARN: DATA-HEAVY COMPONENTS: {path.name} contains "
             f"{len(heavy_components)} data-heavy component(s): "
             f"{', '.join(heavy_components)}. "
             "These trigger XHR calls on render. Consider deferring to non-default tabs."
@@ -134,7 +134,7 @@ def check_flexipage(path: Path) -> list[str]:
     # --- Check 3: No tabs component detected ---
     if total_count > INITIAL_VIEWPORT_WARN_THRESHOLD and not _has_tabs_component(root):
         warnings.append(
-            f"  NO PROGRESSIVE DISCLOSURE: {path.name} has {total_count} components "
+            f"WARN: NO PROGRESSIVE DISCLOSURE: {path.name} has {total_count} components "
             "but does not use a Tabs component. "
             "Consider grouping secondary components into tabs to defer rendering."
         )
@@ -146,7 +146,7 @@ def check_flexipage(path: Path) -> list[str]:
     ]
     if len(report_charts) > 2:
         warnings.append(
-            f"  EXCESSIVE REPORT CHARTS: {path.name} has {len(report_charts)} "
+            f"WARN: EXCESSIVE REPORT CHARTS: {path.name} has {len(report_charts)} "
             "Report Chart components. Each executes the underlying report on every "
             "page load. Consider reducing to 2 or fewer, or deferring to tabs."
         )
@@ -169,18 +169,24 @@ def main() -> int:
         help="Directory containing *.flexipage-meta.xml files "
              "(default: force-app/main/default/flexipages)",
     )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings as well as ERROR (default: WARN exits 0).",
+    )
     args = parser.parse_args()
 
     manifest_dir: Path = args.manifest_dir
     if not manifest_dir.is_dir():
-        print(f"Directory not found: {manifest_dir}")
+        print(f"ERROR: Directory not found: {manifest_dir}")
         print("Provide the path to your flexipages metadata directory via --manifest-dir.")
         return 1
 
-    flexipage_files = sorted(manifest_dir.glob("*.flexipage-meta.xml"))
+    # Recursive so a whole project root (force-app/...) is scanned, not only a flat folder.
+    flexipage_files = sorted(manifest_dir.rglob("*.flexipage-meta.xml"))
     if not flexipage_files:
-        print(f"No *.flexipage-meta.xml files found in {manifest_dir}")
-        return 1
+        print(f"INFO: nothing to check: no *.flexipage-meta.xml files under {manifest_dir}")
+        return 0
 
     print(f"Scanning {len(flexipage_files)} FlexiPage file(s) in {manifest_dir}…\n")
 
@@ -191,11 +197,12 @@ def main() -> int:
             all_warnings.extend(file_warnings)
 
     if all_warnings:
-        print("⚠  Performance warnings found:\n")
+        print("Performance findings:\n")
         for w in all_warnings:
             print(w)
-        print(f"\nTotal: {len(all_warnings)} warning(s) across {len(flexipage_files)} file(s).")
-        return 1
+        print(f"\nTotal: {len(all_warnings)} finding(s) across {len(flexipage_files)} file(s).")
+        has_error = any(w.startswith("ERROR:") for w in all_warnings)
+        return 1 if (has_error or args.strict) else 0
 
     print(f"✓ No performance anti-patterns detected in {len(flexipage_files)} FlexiPage file(s).")
     return 0

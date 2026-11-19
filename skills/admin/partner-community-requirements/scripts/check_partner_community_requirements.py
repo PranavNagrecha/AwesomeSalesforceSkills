@@ -736,7 +736,7 @@ def main() -> int:
     args = parse_args()
     if args.file is None and args.manifest_dir is None:
         print(
-            "Nothing to check. Pass --file <design.yaml> or --manifest-dir <path>.",
+            "ERROR: nothing to check. Pass --file <design.yaml> or --manifest-dir <path>.",
             file=sys.stderr,
         )
         return 1
@@ -775,13 +775,20 @@ def main() -> int:
             meta_errors, metadata_seen = check_manifest_dir(manifest_dir)
             errors.extend(meta_errors)
 
-    if designs_seen == 0 and metadata_seen == 0:
+    if designs_seen == 0 and metadata_seen == 0 and not errors:
+        # An explicit --file that is not a design is the caller's mistake; a scanned
+        # project that simply has no partner portal is not a defect in the project.
+        if args.file is not None:
+            print(
+                f"ERROR: {args.file}: not a partner-portal design YAML. Nothing was checked.",
+                file=sys.stderr,
+            )
+            return 1
         print(
-            "No partner-portal design YAML and no Network / SharingSet metadata found. "
-            "Nothing was checked.",
-            file=sys.stderr,
+            "INFO: nothing to check: no partner-portal design YAML and no "
+            "Network / SharingSet metadata found."
         )
-        return 1
+        return 0
 
     if errors:
         for error in errors:

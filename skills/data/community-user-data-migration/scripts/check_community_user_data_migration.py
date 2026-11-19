@@ -10,6 +10,13 @@ Usage:
     python3 check_community_user_data_migration.py [--help]
     python3 check_community_user_data_migration.py --csv path/to/users.csv
     python3 check_community_user_data_migration.py --csv users.csv --operation insert
+
+Output is one severity-prefixed line per finding. ERROR (a load that would fail:
+missing/unreadable CSV, missing required columns, blank ContactId, bad UserType,
+duplicate Username, non-boolean IsActive, UserType on update) exits 1 always.
+WARN (sandbox username suffix, header-only CSV) exits 0 unless --strict.
+--manifest-dir without --csv has no CSV to inspect and prints
+"INFO: nothing to check" (exit 0); a --manifest-dir that does not exist is an ERROR.
 """
 
 from __future__ import annotations
@@ -67,8 +74,16 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--manifest-dir",
-        default=".",
-        help="Root directory of Salesforce metadata (unused; kept for interface compatibility).",
+        default=None,
+        help=(
+            "Root directory of Salesforce metadata. This checker reads a CSV, not metadata, "
+            "so without --csv it reports nothing to check."
+        ),
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings as well as ERROR.",
     )
     return parser.parse_args()
 
@@ -188,12 +203,18 @@ def main() -> int:
     args = parse_args()
 
     if args.csv is None:
+        if args.manifest_dir is not None:
+            if not Path(args.manifest_dir).exists():
+                print(f"ERROR: manifest directory not found: {args.manifest_dir}", file=sys.stderr)
+                return 1
+            print(
+                "INFO: nothing to check: no --csv given; this checker inspects a User "
+                "migration CSV, not a metadata tree."
+            )
+            return 0
         print(
-            "No --csv file specified. Pass --csv path/to/users.csv to inspect a migration file.",
-            file=sys.stderr,
-        )
-        print(
-            "Run with --help for usage information.",
+            "ERROR: no --csv file specified. Pass --csv path/to/users.csv to inspect a "
+            "migration file (see --help).",
             file=sys.stderr,
         )
         return 1
@@ -205,10 +226,14 @@ def main() -> int:
         print(f"No issues found in {csv_path} ({args.operation} operation).")
         return 0
 
-    for issue in issues:
-        print(f"WARN: {issue}", file=sys.stderr)
+    warn_only = ("sandbox suffix", "contains no data rows")
+    levels = ["WARN" if any(w in issue for w in warn_only) else "ERROR" for issue in issues]
+    for level, issue in zip(levels, issues):
+        print(f"{level}: {issue}", file=sys.stderr)
 
-    return 1
+    if "ERROR" in levels or args.strict:
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

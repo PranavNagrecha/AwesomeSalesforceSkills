@@ -16,10 +16,16 @@ Checks performed:
 
 All checks use stdlib only — no pip dependencies.
 
+Output: one line per finding, prefixed with its severity (ERROR: / WARN: / INFO:).
+CHECK-2 is ERROR (a Public action returning the integration user's data to every
+invoker); CHECK-1 and CHECK-3 are WARN. CHECK-1 only fires when the inspected tree
+holds agent metadata AND references Slack; otherwise it prints one
+"INFO: nothing to check" line.
+
 Exit codes:
-  0 — no issues found
-  1 — one or more issues found (details printed to stdout)
-  2 — usage or file-access error
+  0 — no ERROR findings (WARN findings exit 0 unless --strict)
+  1 — one or more ERROR findings, any finding under --strict, or a path that
+      does not exist
 """
 
 import sys
@@ -75,7 +81,19 @@ CANVAS_PLAN_GUARD_PATTERNS = [
 ]
 
 # File extensions to inspect
-INSPECTABLE_EXTENSIONS = {".xml", ".cls", ".json", ".md", ".yaml", ".yml"}
+INSPECTABLE_EXTENSIONS = {".xml", ".cls", ".json", ".md", ".yaml", ".yml", ".agent"}
+
+# Metadata that makes a tree "contain an agent": CHECK-1 asserts a topic is MISSING,
+# so it is only meaningful when there is an agent to be missing it.
+AGENT_METADATA_SUFFIXES = (
+    ".genaiplannerbundle-meta.xml",
+    ".genaiplugin-meta.xml",
+    ".genaifunction-meta.xml",
+    ".bot-meta.xml",
+    ".botversion-meta.xml",
+    ".agent",
+)
+SLACK_PATTERN = re.compile(r"slack", re.IGNORECASE)
 
 
 # ---------------------------------------------------------------------------
@@ -95,7 +113,7 @@ def read_file(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8", errors="replace")
     except OSError as exc:
-        print(f"  [WARN] Could not read {path}: {exc}")
+        print(f"WARN: Could not read {path}: {exc}")
         return ""
 
 
@@ -114,15 +132,25 @@ def check_general_slack_actions_topic(files: list[Path]) -> list[str]:
     """
     issues = []
     found = False
+    has_agent_metadata = any(p.name.lower().endswith(AGENT_METADATA_SUFFIXES) for p in files)
+    mentions_slack = False
     for path in files:
         text = read_file(path)
         if GENERAL_SLACK_ACTIONS_PATTERN.search(text):
             found = True
             break
+        if not mentions_slack and SLACK_PATTERN.search(text):
+            mentions_slack = True
 
-    if not found:
+    if not found and not (has_agent_metadata and mentions_slack):
+        # No Slack-facing agent metadata here, so "topic missing" cannot be asserted.
         issues.append(
-            "[CHECK-1] 'General Slack Actions' topic not found in any inspected file. "
+            "INFO: nothing to check: no agent metadata that references Slack "
+            "(CHECK-1 'General Slack Actions' topic) in the inspected files."
+        )
+    elif not found:
+        issues.append(
+            "WARN: [CHECK-1] 'General Slack Actions' topic not found in any inspected file. "
             "This topic must be explicitly added in Agent Builder after Slack deployment "
             "to unlock Slack-native actions (Create Canvas, Send DM, Search Message "
             "History, Look Up User). If this repo does not contain agent XML metadata, "
@@ -149,7 +177,7 @@ def check_user_specific_soql_in_public_actions(files: list[Path]) -> list[str]:
         matched_patterns = [p.pattern for p in USER_SPECIFIC_SOQL_PATTERNS if p.search(text)]
         if matched_patterns:
             issues.append(
-                f"[CHECK-2] {path}: action appears to be Public scope but contains "
+                f"ERROR: [CHECK-2] {path}: action appears to be Public scope but contains "
                 f"user-specific SOQL pattern(s): {matched_patterns}. "
                 "Public actions execute under the integration user's identity — "
                 "user-specific queries will return the integration user's data to all "
@@ -176,7 +204,7 @@ def check_canvas_calls_without_plan_guard(files: list[Path]) -> list[str]:
             continue
         if not match_any(text, CANVAS_PLAN_GUARD_PATTERNS):
             issues.append(
-                f"[CHECK-3] {path}: file references canvas creation "
+                f"WARN: [CHECK-3] {path}: file references canvas creation "
                 "(Create Canvas / canvas.create) but contains no reference to a Slack "
                 "plan check or plan restriction handling. Canvas creation is unavailable "
                 "on the Slack Free plan. Add a plan validation step (confirm workspace is "
@@ -196,6 +224,11 @@ def main() -> int:
         description="Static checker for Agentforce-in-Slack configuration artifacts.",
     )
     parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit 1 on WARN findings as well as ERROR (default: WARN exits 0).",
+    )
+    parser.add_argument(
         "path",
         nargs="?",
         default=".",
@@ -205,8 +238,8 @@ def main() -> int:
     root = Path(args.path)
 
     if not root.exists():
-        print(f"Error: path does not exist: {root}", file=sys.stderr)
-        return 2
+        print(f"ERROR: path does not exist: {root}", file=sys.stderr)
+        return 1
 
     if not root.is_dir():
         # Support single file mode
@@ -217,7 +250,7 @@ def main() -> int:
         root_label = str(root)
 
     if not files:
-        print(f"No inspectable files found under: {root_label}")
+        print(f"INFO: nothing to check: no inspectable files found under: {root_label}")
         return 0
 
     print(f"check_agentforce_in_slack.py — inspecting {len(files)} file(s) under: {root_label}")
@@ -230,11 +263,14 @@ def main() -> int:
     all_issues.extend(check_canvas_calls_without_plan_guard(files))
 
     if all_issues:
-        print(f"Found {len(all_issues)} issue(s):\n")
+        print(f"Found {len(all_issues)} finding(s):\n")
         for issue in all_issues:
-            print(f"  {issue}")
-            print()
-        return 1
+            print(issue)
+        severities = [i.split(":", 1)[0] for i in all_issues]
+        print()
+        if "ERROR" in severities or (args.strict and "WARN" in severities):
+            return 1
+        return 0
     else:
         print("All checks passed. No Agentforce-in-Slack configuration issues detected.")
         return 0

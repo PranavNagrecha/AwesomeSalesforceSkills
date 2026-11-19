@@ -117,6 +117,10 @@ def emit_result(findings: list[str], summary: str, strict: bool = False) -> int:
     score = max(0, 100 - sum(SEVERITY_WEIGHTS.get(item["severity"], 0) for item in normalized))
     print(json.dumps({"score": score, "findings": normalized, "summary": summary}, indent=2))
     errors = [item for item in normalized if item["severity"] in BLOCKING_SEVERITIES]
+    # One severity-prefixed line per finding (the JSON above is the structured form).
+    for item in normalized:
+        where = f"{item['location']}: " if item["location"] else ""
+        print(f"{item['severity']}: {where}{item['message']}", file=sys.stderr)
     if normalized:
         print(
             f"{len(normalized)} finding(s) detected ({len(errors)} blocking)",
@@ -350,6 +354,9 @@ def audit_manifest_dir(directory: Path) -> list[str]:
                 )
 
     if not manifest_files:
+        # Stays an ERROR: build plans run this checker as a step gate on a
+        # directory that must contain a manifest (northwind-sales M4-S04), so a
+        # missing one has to fail the gate rather than pass as "nothing to check".
         findings.append(
             f"ERROR {directory}: no package.xml or destructive manifest found anywhere under this directory"
         )
